@@ -21,7 +21,7 @@
 -- ===========================================================================
 
 
-SELECT workuid FROM datas;
+SELECT datadrivenURI FROM works;
 
 --
 -- End Of File

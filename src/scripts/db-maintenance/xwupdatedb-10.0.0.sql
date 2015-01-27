@@ -23,22 +23,22 @@
 --
 
 
-ALTER TABLE  datas            ADD  COLUMN workUID       char(36);
-ALTER TABLE  datas            ADD  COLUMN package       varchar(254);
-ALTER TABLE  works            ADD  COLUMN replicatedUID char(36);
-ALTER TABLE  works            ADD  COLUMN replications  int(3);
-ALTER TABLE  works            ADD  COLUMN sizer         int(3);
-ALTER TABLE  works            ADD  COLUMN totalr        int(3);
-ALTER TABLE  works            ADD  COLUMN datadrivenUID char(36);
+ALTER TABLE  datas            ADD  COLUMN workUID        char(36);
+ALTER TABLE  datas            ADD  COLUMN package        varchar(254);
+ALTER TABLE  works            ADD  COLUMN replicatedUID  char(36);
+ALTER TABLE  works            ADD  COLUMN replications   int(3);
+ALTER TABLE  works            ADD  COLUMN sizer          int(3);
+ALTER TABLE  works            ADD  COLUMN totalr         int(3);
+ALTER TABLE  works            ADD  COLUMN datadrivenURI  varchar(254);
 ALTER TABLE  works            DROP COLUMN replicated;
 
-ALTER TABLE  datas_history    ADD  COLUMN workUID       char(36);
-ALTER TABLE  datas_history    ADD  COLUMN package       varchar(254);
-ALTER TABLE  works_history    ADD  COLUMN replicatedUID char(36);
-ALTER TABLE  works_history    ADD  COLUMN replications  int(3);
-ALTER TABLE  works_history    ADD  COLUMN sizer         int(3);
-ALTER TABLE  works_history    ADD  COLUMN totalr        int(3);
-ALTER TABLE  works_history    ADD  COLUMN datadrivenUID char(36);
+ALTER TABLE  datas_history    ADD  COLUMN workUID        char(36);
+ALTER TABLE  datas_history    ADD  COLUMN package        varchar(254);
+ALTER TABLE  works_history    ADD  COLUMN replicatedUID  char(36);
+ALTER TABLE  works_history    ADD  COLUMN replications   int(3);
+ALTER TABLE  works_history    ADD  COLUMN sizer          int(3);
+ALTER TABLE  works_history    ADD  COLUMN totalr         int(3);
+ALTER TABLE  works_history    ADD  COLUMN datadrivenURI  varchar(254);
 ALTER TABLE  works_history    DROP COLUMN replicated;
 
 

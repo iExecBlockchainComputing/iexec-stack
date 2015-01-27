@@ -584,8 +584,8 @@ show warnings;
 -- ---------------------------------------------------------------------------
 create table if not exists  datas  (
   uid            char(36)          not null  primary key      comment 'Primary key',
-  workUID        char(36)                                     comment 'This is the reference work for data driven scheduling. Since 9.2.0',
-  package        varchar(254)                                 comment 'Optional, needed packages on worker side. Since 9.2.0',
+  workUID        char(36)                                     comment 'This is the reference work for data driven scheduling. Since 10.0.0',
+  package        varchar(254)                                 comment 'Optional, needed packages on worker side. Since 10.0.0',
   statusId       tinyint unsigned  not null  default 255      comment 'Status Id. See common/XWStatus.java',
   status         varchar(36)       not null  default 'NONE'   comment 'Status (deprecated)',
   dataTypeId     tinyint unsigned                             comment 'DataType Id. See common/DataType.java',
@@ -842,7 +842,7 @@ create table if not exists  works  (
   replications        int(3)                      default 0        comment 'Optionnal. Amount of expected replications. No replication, if <= 0',
   sizer               int(3)                      default 0        comment 'Optionnal. This is the size of the replica set',
   totalr              int(3)                      default 0        comment 'Optionnal. Current amount of replicas',
-  datadrivenUID       char(36)                                     comment 'Optionnal. The UID of the data the work drives',
+  datadrivenURI       varchar(254)                                 comment 'Optionnal. The URI of the data the work drives',
   isService           char(5)                     default 'false'  comment 'Is it a service (see apps.isService)',
   isdeleted           char(5)                     default 'false'  comment 'True if row has been deleted ',
   envvars             varchar(254)                                 comment 'Opional,  Since 8.0.0',
