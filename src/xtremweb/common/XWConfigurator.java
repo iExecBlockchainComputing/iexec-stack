@@ -1510,15 +1510,16 @@ public final class XWConfigurator extends Properties {
 	}
 
 	/**
-	 * This retrieves a package directory
+	 * This retrieves a package directory, if any
 	 * @param pkgName is the package name
 	 * @throws IOException
 	 * @since 10.0.0
+	 * @return the package directory if set; the default tmp dir otherwise
 	 */
 	public File getPackageDir(final String pkgName) {
 		final String path = getProperty(XWTools.PACKAGENAMEHEADER + pkgName);
 		if((path == null) || (path.length() < 1)) {
-			return null;
+			return getTmpDir();
 		}
 		return new File(path); 
 	}
