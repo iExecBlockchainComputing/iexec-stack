@@ -1195,7 +1195,7 @@ public class ThreadWork extends Thread {
 	 * @return the directory where the file has been unzipped; the file itself,
 	 *         it not unzipped
 	 */
-	protected File installFile(URI uri, File home) throws IOException {
+	protected File installFile(final URI uri, final File home) throws IOException {
 
 		File ret = null;
 		File fData = null;
@@ -1302,37 +1302,31 @@ public class ThreadWork extends Thread {
 		logger.error("ThreadWork : can't use app library; please use executables");
 		// URI uri = app.getLibrary(Worker.getConfig().getHost().getCpu(),
 		// Worker.getConfig().getHost().getOs());
-		URI uri = null;
-		if (uri != null) {
-			logger.debug("prepareWorkingDirectory : using app library");
-			File libFile = installFile(uri, currentWork.getScratchDir());
-			addEnvVar(XWLIBPATHNAME, libFile.getCanonicalPath());
-			libFile = null;
-		}
+//		URI uri = null;
+//		if (uri != null) {
+//			logger.debug("prepareWorkingDirectory : using app library");
+//			File libFile = installFile(uri, currentWork.getScratchDir());
+//			addEnvVar(XWLIBPATHNAME, libFile.getCanonicalPath());
+//			libFile = null;
+//		}
 
 		//
 		// don't install app default dirin if job defined its own one
 		//
-		uri = currentWork.getDirin();
-		if (uri == null) {
-			uri = app.getDefaultDirin();
-			if (uri != null) {
-				logger.debug("prepareWorkingDirectory : using app default dirin");
-			}
-		}
-		if ((uri != null) && (uri.isNull() == false)) {
+		final URI dirinuri = currentWork.getDirin() != null ? currentWork.getDirin() : app.getDefaultDirin();
+		if ((dirinuri != null) && (dirinuri.isNull() == false)) {
 			File dirinFile = null;
 			try {
 				final DataInterface dirinData = (DataInterface) CommManager
-						.getInstance().commClient(uri).get(uri, false);
+						.getInstance().commClient(dirinuri).get(dirinuri, false);
 				final DataTypeEnum dirinType = (dirinData != null ? dirinData
 						.getType() : null);
 				logger.debug("dirinType = " + dirinType);
 				if ((dirinType == null)
 						|| (dirinType != DataTypeEnum.URIPASSTHROUGH)) {
-					dirinFile = installFile(uri, currentWork.getScratchDir());
+					dirinFile = installFile(dirinuri, currentWork.getScratchDir());
 				} else {
-					dirinFile = uriPassThrough(uri, currentWork.getScratchDir());
+					dirinFile = uriPassThrough(dirinuri, currentWork.getScratchDir());
 				}
 				addEnvVar(XWDIRINPATHNAME, dirinFile.getCanonicalPath());
 			} catch (final Exception e) {
@@ -1346,39 +1340,25 @@ public class ThreadWork extends Thread {
 		//
 		// don't install app default stdin if job defined its own one
 		//
-		uri = currentWork.getStdin();
-		if (uri == null) {
-			uri = app.getDefaultStdin();
-			if (uri != null) {
-				logger.debug("prepareWorkingDirectory : using app default stdin");
-			}
-		}
-		if ((uri != null) && (uri.isNull() == false)) {
-			File stdinFile = installFile(uri, currentWork.getScratchDir());
+		final URI stdinuri = currentWork.getStdin() != null ? currentWork.getStdin() : app.getDefaultStdin(); 
+		if ((stdinuri != null) && (stdinuri.isNull() == false)) {
+			final File stdinFile = installFile(stdinuri, currentWork.getScratchDir());
 			addEnvVar(XWSTDINPATHNAME, stdinFile.getCanonicalPath());
-			stdinFile = null;
 		} else {
 			logger.debug("prepareWorkingDirectory : job has no stdin");
 		}
 
-		// ** !! ** !! ** !! ** !! ** !! ** !! ** !! ** !! ** !! ** !! **
-		// ** !! ** !! ** !! ** !! ** !! ** !! ** !! ** !! ** !! ** !! **
-		// ** **
-		// ** If basedirin is set, we must install it AFTER all others **
-		// ** to ensure basedirin files are not overriden **
-		// ** **
-		// ** !! ** !! ** !! ** !! ** !! ** !! ** !! ** !! ** !! ** !! **
-		// ** !! ** !! ** !! ** !! ** !! ** !! ** !! ** !! ** !! ** !! **
+		// If application basedirin is set, we must install it AFTER all others
+		// to ensure basedirin files are not overriden
 
-		uri = app.getBaseDirin();
-		if (uri != null) {
+		final URI basedirinuri = app.getBaseDirin();
+		if (basedirinuri != null) {
 			logger.debug("prepareWorkingDirectory : using base app dirin");
-			File baseDirinFile = installFile(uri, currentWork.getScratchDir());
+			File baseDirinFile = installFile(basedirinuri, currentWork.getScratchDir());
 			addEnvVar(XWDIRINPATHNAME, baseDirinFile.getCanonicalPath());
 			baseDirinFile = null;
 		}
 
-		uri = null;
 		zipper.resetFilesList();
 		zipper.setFilesList(currentWork.getScratchDir());
 	}
