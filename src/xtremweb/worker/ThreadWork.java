@@ -763,10 +763,11 @@ public class ThreadWork extends Thread {
 
 		if (!killed) {
 			try {
-				if (currentWork.isService() == false) {
+				if((currentWork.isService() == false)
+						&& (currentWork.hasPackage() == false)){
 					zipResult();
-					ret = StatusEnum.COMPLETED;
 				}
+				ret = StatusEnum.COMPLETED;
 			} catch (final IOException e) {
 				ret = StatusEnum.ERROR;
 				currentWork.clean();
@@ -781,11 +782,7 @@ public class ThreadWork extends Thread {
 							+ currentWork.getErrorMsg()));
 		}
 
-		try {
-			XWTools.deleteDir(currentWork.getScratchDir());
-		} catch (final Exception ioe) {
-			logger.error("uuhh ? deleteDir() : " + ioe);
-		}
+		currentWork.clean();
 
 		mileStone.println("result managed", workUID);
 
@@ -1280,8 +1277,6 @@ public class ThreadWork extends Thread {
 		logger.debug("prepareWorkingDirectory : scratchDir = "
 				+ currentWork.getScratchDir());
 
-		XWTools.checkDir(currentWork.getScratchDir());
-
 		final UID appUID = currentWork.getApplication();
 		if (appUID == null) {
 			logger.debug("no app uid ; certainly a sandbox?");
@@ -1434,19 +1429,17 @@ public class ThreadWork extends Thread {
 			//
 			// We don't keep stdout nor stderr if empty
 			//
-			File out = new File(currentWork.getScratchDir(), XWTools.STDOUT);
-			File err = new File(currentWork.getScratchDir(), XWTools.STDERR);
+			final File out = new File(currentWork.getScratchDir(), XWTools.STDOUT);
+			final File err = new File(currentWork.getScratchDir(), XWTools.STDERR);
 
 			logger.debug("ThreadWork#zipResult : resultFile " + resultFilePath);
 
-			if (out.exists() && (out.length() == 0)) {
+			if(out.exists() && (out.length() == 0)) {
 				out.delete();
 			}
-			out = null;
-			if (err.exists() && (err.length() == 0)) {
+			if(err.exists() && (err.length() == 0)) {
 				err.delete();
 			}
-			err = null;
 
 			final String[] resultDirName = new String[1];
 			resultDirName[0] = new String(currentWork.getScratchDirName());

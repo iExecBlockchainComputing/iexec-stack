@@ -58,12 +58,16 @@ public final class Work extends WorkInterface {
 	 * structure as eventually provided in its files; <li>the result file if
 	 * computation run successfully which name is UID.zip
 	 */
-	private File workDir;
+	private File scratchDir;
 
 	/** The scratch dir name */
-	private final String SCRATCH = "scratch";
-	/** The scratch dir directory */
-	private File scratchDir;
+	private final String SCRATCHNAME = "scratch";
+
+	/**
+	 * This is this work package name (worker shared data used by the data driven scheduler)
+	 * @since 10.0.0
+	 */
+	private String packageName;
 
 	/**
 	 * This creates a new work, providing its interface. This is typically
@@ -98,6 +102,7 @@ public final class Work extends WorkInterface {
 
 		super(job);
 
+		packageName = null;
 		if (dir) {
 			prepareDir();
 		} else {
@@ -106,44 +111,96 @@ public final class Work extends WorkInterface {
 	}
 
 	/**
-	 * This creates needed directory structure
+	 * This creates needed directory structure accordingly to package, if any
+	 * @throws IOException 
 	 */
-	public void prepareDir() throws IOException {
-
-		setWorkingDir(new File(Worker.getConfig().getWorksDir(), getUID()
-				.toString() + "_cwd"));
-		getLogger().config("WORKDIR = " + workDir);
-		XWTools.checkDir(workDir);
+	public void prepareDir() throws IOException  {
+		final String extension = "" + getUID().toString() + "_cwd";
+		final File root = packageName != null ? Worker.getConfig().getPackageDir(packageName) : Worker.getConfig().getWorksDir();
+		setScratchDir(new File(root, extension));
 	}
 
-	public synchronized void setWorkingDir(File v) {
-		workDir = v;
-		scratchDir = new File(workDir, SCRATCH);
+	/**
+	 * This creates needed directory structure
+	 * @param v is the base path
+	 * @throws IOException 
+	 */
+	private synchronized void setScratchDir(final File v) throws IOException {
+		scratchDir = new File(v, SCRATCHNAME);
+		getLogger().config("SCRATCHDIR = " + scratchDir);
+		XWTools.checkDir(scratchDir);
 		notifyAll();
 	}
 
-	public File getWorkingDir() {
-		return workDir;
-	}
-
-	public String getWorkingDirName() {
-		try {
-			return workDir.getCanonicalPath();
-		} catch (final IOException e) {
-			return workDir.getAbsolutePath();
-		}
-	}
-
+	/**
+	 * This return the scratch directory
+	 * @return
+	 */
 	public File getScratchDir() {
 		return scratchDir;
 	}
 
-	public String getScratchDirName() {
-		try {
-			return scratchDir.getCanonicalPath();
-		} catch (final IOException e) {
-			return workDir.getAbsolutePath();
+	/**
+	 * This calls clean(scratchDir);
+	 */
+	public void clean() {
+		clean(scratchDir);
+	}
+
+	/**
+	 * This erases all work dir/files from disk
+	 */
+	private synchronized void clean(final File dirWork) {
+		if (dirWork == null) {
+			notifyAll();
+			return;
 		}
+
+		getLogger().config("cleaning = " + dirWork);
+
+		if (dirWork.isDirectory()) {
+
+			final String[] files = dirWork.list();
+			if (files == null) {
+				notifyAll();
+				return;
+			}
+
+			for (int i = 0; i < files.length; i++) {
+				clean(new File(dirWork, files[i]));
+			}
+		}
+		dirWork.delete();
+		notifyAll();
+	}
+
+	/**
+	 * This sets this work package name (worker shared data used by the data driven scheduler)
+	 * @param pkg is this work package name
+	 * @since 10.0.0
+	 */
+	public void setPackage(final String pkg) {
+		this.packageName = pkg;
+	}
+	/**
+	 * This retrieves this work package name (worker shared data used by the data driven scheduler)
+	 * @since 10.0.0
+	 */
+	public String getPackage() {
+		return packageName;
+	}
+
+	/**
+	 * This checks if this work has a package name
+	 * @since 10.0.0
+	 * @return true if packageName attribute is set; false otherwise
+	 */
+	public boolean hasPackage() {
+		return (packageName != null) && (packageName.length() > 0);
+	}
+
+	public String getScratchDirName() throws IOException {
+		return scratchDir.getCanonicalPath();
 	}
 
 	public boolean isRunning() {
@@ -187,46 +244,6 @@ public final class Work extends WorkInterface {
 	@Override
 	public synchronized void setPending() {
 		setStatus(StatusEnum.PENDING);
-		notifyAll();
-	}
-
-	/**
-	 * This erases all work dir/files from disk
-	 */
-	public void clean() {
-		clean(workDir);
-	}
-
-	/**
-	 * This erases all work dir/files from disk
-	 */
-	private synchronized void clean(File dirWork) {
-		if (dirWork == null) {
-			notifyAll();
-			return;
-		}
-
-		getLogger().config("cleaning = " + dirWork);
-
-		if (dirWork.isDirectory()) {
-
-			final String[] files = dirWork.list();
-			if (files == null) {
-				notifyAll();
-				return;
-			}
-
-			for (int i = 0; i < files.length; i++) {
-				File f = null;
-				try {
-					f = new File(dirWork, files[i]);
-					clean(f);
-				} finally {
-					f = null;
-				}
-			}
-		}
-		dirWork.delete();
 		notifyAll();
 	}
 }

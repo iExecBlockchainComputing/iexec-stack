@@ -261,7 +261,7 @@ public class HTTPBitdewHandler extends Thread implements
 			if (pkgPath == null) {
 				return;
 			}
-			Worker.getConfig().setTmpDir(pkgPath);
+			Worker.getConfig().setPackageDir(pkgName, pkgPath);
 		} catch (final Exception e) {
 			logger.exception("Can't manage data package", e);
 		}
