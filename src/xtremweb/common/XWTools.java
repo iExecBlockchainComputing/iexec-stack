@@ -493,7 +493,7 @@ public class XWTools {
 	}
 
 	/**
-	 * Ensure that a directory exists.
+	 * This ensures that a directory exists.
 	 * 
 	 * If the parameter is not a directory, the file will be deleted. If the
 	 * directory does not exists, <code>checkDir</code> will be called on its
@@ -504,7 +504,7 @@ public class XWTools {
 	 * @exception IOException
 	 *                if the directory does not exist and can't be created
 	 */
-	public static void checkDir(File dir) throws IOException {
+	public static void checkDir(final File dir) throws IOException {
 
 		if (dir == null) {
 			return;
@@ -518,13 +518,7 @@ public class XWTools {
 			if (dir.exists()) {
 				dir.delete();
 			} else {
-				File parent = null;
-				try {
-					parent = dir.getParentFile();
-					checkDir(parent);
-				} finally {
-					parent = null;
-				}
+				checkDir(dir.getParentFile());
 			}
 		}
 		if ((!dir.exists()) && (!dir.mkdirs())) {
@@ -533,14 +527,8 @@ public class XWTools {
 		}
 	}
 
-	public static void checkDir(String str) throws IOException {
-		File dir = null;
-		try {
-			dir = new File(str);
-			checkDir(dir);
-		} finally {
-			dir = null;
-		}
+	public static void checkDir(final String str) throws IOException {
+		checkDir(new File(str));
 	}
 
 	/**

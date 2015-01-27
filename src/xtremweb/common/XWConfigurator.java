@@ -278,12 +278,6 @@ public final class XWConfigurator extends Properties {
 	}
 
 	/**
-	 * This contains the DB vendor as found from config file
-	 * 
-	 * @since 7.0.0
-	 */
-	private XWDBs dbvendor = null;
-	/**
 	 * This is used to set new object owner when automatically inserting new
 	 * object. This is typically the case on unregistered user first connection.
 	 * If the user X509 certificate is validated against CA cert path, the
@@ -331,9 +325,6 @@ public final class XWConfigurator extends Properties {
 	/** various hardware configuration flag */
 	private boolean hasKeyboard = true;
 	private boolean hasMouse = true;
-
-	/** This is the base of tmp dir(default is /tmp) */
-	private String tmpDirBase;
 
 	/** This is the dir name where binaries are stored */
 	private String binCachedPath;
@@ -633,9 +624,9 @@ public final class XWConfigurator extends Properties {
 					+ XWRole.getMyRole().toString().toLowerCase() + ".conf";
 			final String[] stdLoc = {
 					getProperty(XWPropertyDefs.USERHOMEDIR) + File.separator
-							+ ".xtremweb" + File.separator + fname,
+					+ ".xtremweb" + File.separator + fname,
 					getProperty(XWPropertyDefs.USERHOMEDIR) + File.separator
-							+ ".xtremweb" + File.separator + "config.defaults",
+					+ ".xtremweb" + File.separator + "config.defaults",
 					"/etc/" + fname, getProperty(XWPropertyDefs.CONFIGFILE) };
 			for (int i = 0; i < stdLoc.length; i++) {
 				try {
@@ -730,7 +721,7 @@ public final class XWConfigurator extends Properties {
 	 *            is used to know whether the worker has upgrade
 	 */
 	private void refresh(boolean firstTime) throws IOException,
-			CertificateException, CertificateExpiredException {
+	CertificateException, CertificateExpiredException {
 
 		// parse all properties from config file
 		// we must be case insensitive
@@ -838,14 +829,6 @@ public final class XWConfigurator extends Properties {
 			throw new IOException("No admin login provided");
 		}
 		setProperty(XWPropertyDefs.ADMINLOGIN, astring);
-
-		try {
-			dbvendor = XWDBs.valueOf(getProperty(XWPropertyDefs.DBVENDOR)
-					.toUpperCase());
-		} catch (final Exception e) {
-			logger.exception(e);
-			logger.fatal("You must provide a DB vendor");
-		}
 
 		try {
 			final String uidstr = getProperty(XWPropertyDefs.USERUID);
@@ -1389,7 +1372,7 @@ public final class XWConfigurator extends Properties {
 	 *             if the class referred by the scheme can not be instantiated
 	 */
 	public CommClient defaultCommClient() throws IOException,
-			InstantiationException {
+	InstantiationException {
 
 		CommClient.setConfig(this);
 		final CommClient ret = CommClient.getClient(Connection.xwScheme());
@@ -1406,7 +1389,7 @@ public final class XWConfigurator extends Properties {
 	 *             if the class referred by the scheme can not be instantiated
 	 */
 	public CommClient getCommClient(URI uri) throws IOException,
-			InstantiationException {
+	InstantiationException {
 
 		CommClient.setConfig(this);
 		final CommClient ret = CommClient.getClient(uri);
@@ -1460,31 +1443,36 @@ public final class XWConfigurator extends Properties {
 	 * @since 7.0.0
 	 */
 	public void setTmpDir() throws IOException {
-		setTmpDir(getProperty(XWPropertyDefs.TMPDIR));
+		final File dir = new File(getProperty(XWPropertyDefs.TMPDIR), "XW."
+				+ XWRole.getMyRole().toString() + "."
+				+ UID.getMyUid().toString() + "."
+				+ ((Vector<String>) dispatchers).elementAt(currentDispatcher));
+
+		setTmpDir(dir);
 	}
 
-	public void setTmpDir(String d) throws IOException {
-		tmpDirBase = getPath(XWPropertyDefs.TMPDIR);
-		if (!tmpDirBase.endsWith(File.separator)) {
-			tmpDirBase = tmpDirBase.concat(File.separator);
-		}
-		setProperty(XWPropertyDefs.TMPDIR, tmpDirBase);
+	public void setTmpDir(final String dir) throws IOException {
+		setTmpDir(new File(dir));
+	}
+	/**
+	 * This sets and eventually creates the temporary directory
+	 * @param dir
+	 * @throws IOException
+	 */
+	public void setTmpDir(final File dir) throws IOException {
+		XWTools.checkDir(dir);
+		_host.setTotalTmp(dir.getTotalSpace() / XWTools.ONEMEGABYTES);
+		_host.setFreeTmp(dir.getUsableSpace() / XWTools.ONEMEGABYTES);
+		dir.deleteOnExit();
+
+		setProperty(XWPropertyDefs.TMPDIR, dir.getAbsolutePath());
 	}
 
 	/**
 	 * This retrieves the default temp dir
 	 */
 	public File getTmpDir() {
-
-		final File d = new File(tmpDirBase, "XW."
-				+ XWRole.getMyRole().toString() + "."
-				+ UID.getMyUid().toString() + "."
-				+ ((Vector<String>) dispatchers).elementAt(currentDispatcher));
-
-		_host.setTotalTmp(d.getTotalSpace() / XWTools.ONEMEGABYTES);
-		_host.setFreeTmp(d.getUsableSpace() / XWTools.ONEMEGABYTES);
-		d.deleteOnExit();
-		return d;
+		return new File(getProperty(XWPropertyDefs.TMPDIR)); 
 	}
 
 	/**
@@ -1495,16 +1483,9 @@ public final class XWConfigurator extends Properties {
 	 */
 	public File getCacheDir() throws IOException {
 
-		String c = getTmpDir() + ".cache";
-		try {
-			c = getTmpDir().getCanonicalPath() + ".cache";
-		} catch (final Exception e) {
-		}
-
+		final String c = getTmpDir().getCanonicalPath() + ".cache";
 		final File d = new File(c);
-
 		XWTools.checkDir(d);
-
 		return d;
 	}
 
@@ -1741,17 +1722,11 @@ public final class XWConfigurator extends Properties {
 	 * @return null if the key value is null or empty
 	 */
 	public String getPath(XWPropertyDefs key) throws IOException {
-		File f = null;
-		String ret = null;
-		try {
-			f = getFile(key);
-			if (f != null) {
-				ret = f.getCanonicalPath();
-			}
-		} finally {
-			f = null;
+		final File f = getFile(key);
+		if (f != null) {
+			return f.getCanonicalPath();
 		}
-		return ret;
+		return null;
 	}
 
 	/**
@@ -1772,9 +1747,9 @@ public final class XWConfigurator extends Properties {
 		}
 		final File pid = new File(dir, "pid");
 		if (pid.exists()) {
+			final BufferedReader pidf = new BufferedReader(new FileReader(
+					pid));
 			try {
-				final BufferedReader pidf = new BufferedReader(new FileReader(
-						pid));
 				final String line = pidf.readLine();
 				if (line != null) {
 					final int i = Integer.parseInt(line);
@@ -1786,6 +1761,9 @@ public final class XWConfigurator extends Properties {
 				}
 			} catch (final NumberFormatException e) {
 				logger.warn("ignoring corrupted pid file : " + pid);
+			}
+			finally {
+				pidf.close();
 			}
 			pid.delete();
 		}
@@ -2088,7 +2066,7 @@ public final class XWConfigurator extends Properties {
 	 * @since v1r2-rc1(RPC-V)
 	 */
 	private synchronized File dispatchersFile() {
-		final File d = new File(tmpDirBase + "XW." + "known_dispatchers");
+		final File d = new File(getTmpDir() + "XW." + "known_dispatchers");
 		notifyAll();
 		return d;
 	}
@@ -2099,7 +2077,7 @@ public final class XWConfigurator extends Properties {
 	 * @since XWHEP 1.0.0
 	 */
 	private synchronized File dataServersFile() {
-		final File d = new File(tmpDirBase + "XW." + "known_dataservers");
+		final File d = new File(getTmpDir() + "XW." + "known_dataservers");
 		notifyAll();
 		return d;
 	}

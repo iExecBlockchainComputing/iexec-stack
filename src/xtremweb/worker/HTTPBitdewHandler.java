@@ -60,10 +60,16 @@ public class HTTPBitdewHandler extends Thread implements
 	private HttpServletRequest request;
 	private HttpServletResponse response;
 
-	/** This is the HTML params to upload data from worker */
-	private final static String BITDEWPUT = "bitdewput";
-	/** This is the HTML params to download data to worker */
-	private final static String BITDEWGET = "bitdewget";
+	/**
+	 *  This is the HTML parameter to set this worker shared package name
+	 * @since 10.0.0 
+	 */
+	private final static String DATAPACKAGENAME = "datapackagename";
+	/** 
+	 * This is the HTML parameter to set the shared package path
+	 * @since 10.0.0 
+	 */
+	private final static String DATAPACKAGEPATH = "datapackagepath";
 	/**
 	 * This is the client host name; for debug purposes only
 	 */
@@ -245,61 +251,19 @@ public class HTTPBitdewHandler extends Thread implements
 	 * This handles XMLHTTPRequest
 	 */
 	private void bitdewRequest() throws IOException {
-		final Map paramsMap = request.getParameterMap();
-
-		UID theuid = null;
-		String param = null;
 		try {
-			param = BITDEWPUT;
-			String value = request.getParameter(BITDEWPUT);
-			if (value == null) {
-				param = BITDEWGET;
-				value = request.getParameter(BITDEWGET);
+			final String pkgName = request.getParameter(DATAPACKAGENAME);
+			if (pkgName == null) {
+				return;
 			}
-			Worker.getConfig().getHost().setSharedPackages(value);
-			theuid = new UID(value);
-			value = null;
-		} catch (final NullPointerException e) {
-		}
-/*
-  		logger.debug("theuid   " + theuid);
-		logger.debug("theparam " + param);
-		Table data = null;
-		CommClient commClient = null;
-		try {
-			commClient = Worker.getConfig().defaultCommClient();
-			CommClient.setConfig(Worker.getConfig());
-			data = commClient.get(theuid);
-			logger.debug(data.toXml());
-			boolean answer = false;
-			if (data != null) {
-				if (param.compareToIgnoreCase(BITDEWGET) == 0) {
-					answer = true;
-				} else {
-					final XWAccessRights ar = data.getAccessRights();
-					logger.debug("ar.value = " + ar.value() + " "
-							+ "XWAccessRights.OTHERALL_INT = "
-							+ XWAccessRights.OTHERALL_INT + " "
-							+ "ar.value() & XWAccessRights.OTHERALL_INT = "
-							+ (ar.value() & XWAccessRights.OTHERALL_INT));
-					if ((ar != null)
-							&& ((ar.value() & XWAccessRights.OTHERALL_INT) != 0)) {
-						answer = true;
-					}
-				}
+			Worker.getConfig().getHost().setSharedPackages(pkgName);
+			final String pkgPath = request.getParameter(DATAPACKAGEPATH);
+			if (pkgPath == null) {
+				return;
 			}
-			response.getWriter().println("" + answer);
-		response.getWriter().flush();
+			Worker.getConfig().setTmpDir(pkgPath);
 		} catch (final Exception e) {
-			e.printStackTrace();
-			response.getWriter().println("false");
-			response.getWriter().flush();
-		} finally {
-			data = null;
-			commClient = null;
-			theuid = null;
-			param = null;
+			logger.exception("Can't manage data package", e);
 		}
-		*/
 	}
 }
