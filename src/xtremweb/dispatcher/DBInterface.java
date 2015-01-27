@@ -535,7 +535,7 @@ public final class DBInterface {
 	 * @param conditions
 	 *            restrict selected rows
 	 * @return a Collection of found rows
-	 * @since 9.2.0
+	 * @since 10.0.0
 	 */
 	protected <T extends Table> T selectOne(T row, String conditions)
 			throws IOException {
@@ -2493,7 +2493,7 @@ public final class DBInterface {
 	 *            is the requesting user
 	 * @param originalUid is the UID of the replicated work
 	 * @return a Collection of UID
-	 * @since 9.2.0
+	 * @since 10.0.0
 	 */
 	protected Collection<UID> replicasUID(UserInterface u, final UID originalUid) throws IOException {
 		final WorkInterface row = readableWorkUID(u);

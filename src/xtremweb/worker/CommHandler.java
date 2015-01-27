@@ -567,8 +567,6 @@ xtremweb.communications.CommHandler {
 	}
 
 	/**
-	 * @see xtremweb.communications.ServerAPI#shutDown(UserInterface,
-	 *      HostInterface)
 	 */
 	public void shutDown(UserInterface client, HostInterface host)
 			throws RemoteException {

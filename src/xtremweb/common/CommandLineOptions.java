@@ -173,7 +173,7 @@ public enum CommandLineOptions {
 	/**
 	 * This for data driven scheduling. This defines the work to execute on data event. <br />
 	 * Parameter : an uid
-	 * @since 9.2.0
+	 * @since 10.0.0
 	 */
 	EXPECTEDWORK {
 		@Override
@@ -185,7 +185,7 @@ public enum CommandLineOptions {
 	/**
 	 * This for data driven scheduling. This defines the package this data belongs to. <br />
 	 * Parameter : a text
-	 * @since 9.2.0
+	 * @since 10.0.0
 	 */
 	PACKAGE {
 		@Override
@@ -353,7 +353,7 @@ public enum CommandLineOptions {
 	 * This option defines the amount of expected replica for a work. <br />
 	 * Parameter : the amount of expected replica
 	 * 
-	 * @since 9.2.0
+	 * @since 10.0.0
 	 */
 	REPLICA {
 		@Override
@@ -365,7 +365,7 @@ public enum CommandLineOptions {
 	 * This option defines the size of the replica set (how many replica in parallel). <br />
 	 * Parameter : the size of the replica set
 	 * 
-	 * @since 9.2.0
+	 * @since 10.0.0
 	 */
 	REPLICASIZE {
 		@Override

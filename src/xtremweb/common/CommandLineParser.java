@@ -511,7 +511,6 @@ public final class CommandLineParser {
 					case FORWARDADDRESSES:
 					case FORWARDPORT:
 					case LISTENPORT:
-					case PACKAGE:
 						setOption(opt, args[++i]);
 						break;
 					case XML:
@@ -535,6 +534,7 @@ public final class CommandLineParser {
 					case STDIN:
 					case CERT:
 					case OUT:
+					case PACKAGE:
 						setOption(opt, checkParam(args[++i]));
 						break;
 					case UPDATEWORKERS:

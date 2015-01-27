@@ -2965,8 +2965,8 @@ public final class Client {
 
 			DataTypeEnum dirinType = null;
 			final List envs = (List) args.getOption(CommandLineOptions.ENV);
-			String envPath = null;
 			if (envs != null) {
+				String envPath = null;
 				if (envs.size() == 1) {
 					final Object envparam = envs.get(0);
 					try {
@@ -3002,45 +3002,44 @@ public final class Client {
 					writer.close();
 					envPath = fname;
 				}
-			}
 
-			if (envPath != null) {
-				final File envFile = new File(envPath);
-				zipper.setFileName(envPath);
-				if (envPath.toLowerCase().endsWith(
-						DataTypeEnum.ZIP.getFileExtension()) == false) {
-					newZip = zip(work.getUID().toString() + DataTypeEnum.ZIP.getFileExtension(), envFile);
-				}
-				if (newZip) {
-					dirinType = DataTypeEnum.ZIP;
-				}
-				final File zipFile = new File(zipper.getFileName());
-				URI zipUri = sendData(OSEnum.NONE, CPUEnum.NONE, dirinType,
-						XWAccessRights.DEFAULT,
-						new URI("file://" + zipFile.getCanonicalPath()),
-						zipFile.getName());
-				work.setDirin(zipUri);
-				if (newZip) {
-					final File file = new File(zipper.getFileName());
-					if (file.exists()) {
-						file.delete();
+				if (envPath != null) {
+					final File envFile = new File(envPath);
+					zipper.setFileName(envPath);
+					if (envPath.toLowerCase().endsWith(
+							DataTypeEnum.ZIP.getFileExtension()) == false) {
+						newZip = zip(work.getUID().toString() + DataTypeEnum.ZIP.getFileExtension(), envFile);
 					}
-					newZip = false;
+					if (newZip) {
+						dirinType = DataTypeEnum.ZIP;
+					}
+					final File zipFile = new File(zipper.getFileName());
+					URI zipUri = sendData(OSEnum.NONE, CPUEnum.NONE, dirinType,
+							XWAccessRights.DEFAULT,
+							new URI("file://" + zipFile.getCanonicalPath()),
+							zipFile.getName());
+					work.setDirin(zipUri);
+					if (newZip) {
+						final File file = new File(zipper.getFileName());
+						if (file.exists()) {
+							file.delete();
+						}
+						newZip = false;
+					}
+					zipUri = null;
 				}
-				zipUri = null;
 			}
 
-			File stdin = null;
 			if (args.getOption(CommandLineOptions.STDIN) != null) {
+				File stdin = null;
 				try {
-					URI uri = (URI) args.getOption(CommandLineOptions.STDIN);
+					final URI uri = (URI) args.getOption(CommandLineOptions.STDIN);
 					if (uri.isFile() == false) {
 						work.setStdin((URI) args
 								.getOption(CommandLineOptions.STDIN));
 					} else {
 						stdin = new File(uri.getPath());
 					}
-					uri = null;
 				} catch (final ClassCastException e) {
 					try {
 						work.setStdin(commClient().newURI(
@@ -3051,16 +3050,14 @@ public final class Client {
 								.getOption(CommandLineOptions.STDIN));
 					}
 				}
+				if (stdin != null) {
+					final URI stdinUri = sendData(OSEnum.NONE, CPUEnum.NONE,
+							DataTypeEnum.TEXT, XWAccessRights.DEFAULT, new URI(
+									"file://" + stdin.getCanonicalPath()),
+									stdin.getName());
+					work.setStdin(stdinUri);
+				}
 			}
-			if (stdin != null) {
-				URI stdinUri = sendData(OSEnum.NONE, CPUEnum.NONE,
-						DataTypeEnum.TEXT, XWAccessRights.DEFAULT, new URI(
-								"file://" + stdin.getCanonicalPath()),
-								stdin.getName());
-				work.setStdin(stdinUri);
-				stdinUri = null;
-			}
-			stdin = null;
 
 			String cmdLineStr = new String(" ");
 			// i = 1 to bypass application name
@@ -3153,17 +3150,26 @@ public final class Client {
 
 		if (work != null) {
 			// data driven
-			final String pkgName = (String) args.getOption(CommandLineOptions.PACKAGE);
-			if (pkgName != null) {
-				final UID dataDrivenUID = new UID();
-				DataInterface dataDriven = new DataInterface();
-				dataDriven.setUID(dataDrivenUID);
-				dataDriven.setPackage(pkgName);
-				dataDriven.setWork(work.getUID());
-				dataDriven.setStatus(StatusEnum.WAITING);
-				commClient().send(dataDriven);
+			if (args.getOption(CommandLineOptions.PACKAGE) != null) {
+				try {
+					work.setDataDriven((URI) args.getOption(CommandLineOptions.PACKAGE));
+				} catch (final ClassCastException e) {
+					try {
+						work.setDataDriven(commClient().newURI(
+								(UID) args.getOption(CommandLineOptions.PACKAGE)));
+					} catch (final ClassCastException e2) {
+						final URI dataDrivenURI = commClient().newURI(new UID());
+						final DataInterface dataDriven = new DataInterface();
+						dataDriven.setUID(dataDrivenURI.getUID());
+						dataDriven.setURI(dataDrivenURI);
+						dataDriven.setPackage((String)args.getOption(CommandLineOptions.PACKAGE));
+						dataDriven.setWork(work.getUID());
+						dataDriven.setStatus(StatusEnum.WAITING);
+						commClient().send(dataDriven);
 
-				work.setDataDriven(dataDrivenUID);
+						work.setDataDriven(dataDrivenURI);
+					}
+				}
 			}
 
 			try {

@@ -163,12 +163,9 @@ public final class CommManager extends Thread {
 
 		setPoolWork(new PoolWork());
 		final Hashtable<UID, Work> sWorks = getPoolWork().getSavingWork();
-		Enumeration<Work> theEnumeration = null;
 
 		if (sWorks != null) {
-			theEnumeration = sWorks.elements();
-		}
-		if (theEnumeration != null) {
+			final Enumeration<Work> theEnumeration = sWorks.elements();
 			while (theEnumeration.hasMoreElements()) {
 				final Work w = theEnumeration.nextElement();
 				if (w != null) {
@@ -528,35 +525,37 @@ public final class CommManager extends Thread {
 	 *            is the work uid
 	 * 
 	 */
-	private void downloadWork(WorkInterface w) throws IOException {
+	private void downloadWork(final WorkInterface w) throws IOException {
 
-		URI uri = w.getStdin();
 		try {
-			downloadData(uri);
+			downloadData(w.getStdin());
 		} catch (final Exception e) {
 			throw new IOException("can't download stdin (" + w.getStdin() + ")");
 		}
 
-		uri = w.getDirin();
-		if (uri != null) {
-			try {
-				downloadData(uri);
-				final DataInterface dirin = getData(uri, false);
-				if (dirin != null) {
-					final DataTypeEnum dirinType = dirin.getType();
-					logger.debug("dirinType = " + dirinType);
-					if ((dirinType != null)
-							&& (dirinType == DataTypeEnum.URIPASSTHROUGH)) {
-						uriPassThrough(uri);
-					}
+		try {
+			final URI uri = w.getDirin();
+			downloadData(uri);
+			final DataInterface dirin = getData(uri, false);
+			if (dirin != null) {
+				final DataTypeEnum dirinType = dirin.getType();
+				logger.debug("dirinType = " + dirinType);
+				if ((dirinType != null)
+						&& (dirinType == DataTypeEnum.URIPASSTHROUGH)) {
+					uriPassThrough(uri);
 				}
-			} catch (final Exception e) {
-				logger.exception(e);
-				throw new IOException("can't download dirin (" + e.getMessage()
-						+ ")");
-			} finally {
-				uri = null;
 			}
+		} catch (final Exception e) {
+			logger.exception(e);
+			throw new IOException("can't download dirin (" + e.getMessage()
+					+ ")");
+		}
+		try {
+			getData(w.getDataDriven(), false);
+		} catch (Exception e) {
+			logger.exception(e);
+			throw new IOException("can't download driven data (" + e.getMessage()
+					+ ")");
 		}
 	}
 
@@ -1124,26 +1123,19 @@ public final class CommManager extends Thread {
 					newWork = getPoolWork().addWork(mw);
 					ThreadLaunch.getInstance().wakeup();
 
-					Exception downloadException = null;
-
 					try {
 						downloadWork(newWork);
 					} catch (final Exception e) {
-						downloadException = new IOException(
+						throw new IOException(
 								"can't download work :" + e.getMessage());
 					}
-					if (downloadException == null) {
-						try {
-							downloadApp(newWork.getApplication());
-						} catch (final Exception e) {
-							downloadException = new IOException(
-									"can't download app : " + e.getMessage());
-						}
+					try {
+						downloadApp(newWork.getApplication());
+					} catch (final Exception e) {
+						throw new IOException(
+								"can't download app : " + e.getMessage());
 					}
 
-					if (downloadException != null) {
-						throw downloadException;
-					}
 					mileStone.println("got new work files");
 
 					newWork.setPending();

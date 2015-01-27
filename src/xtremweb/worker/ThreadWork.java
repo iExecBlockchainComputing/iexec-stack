@@ -741,18 +741,14 @@ public class ThreadWork extends Thread {
 			}
 		}
 
-		Date d = new Date();
-		currentWork.setCompStartDate(d);
-		d = null;
+		currentWork.setCompStartDate(new Date());
 		if (currentWork.isService()) {
 			ret = executeService(cmdLine);
 		} else {
 			executeNativeJob(cmdLine);
 		}
 
-		d = new Date();
-		currentWork.setCompEndDate(d);
-		d = null;
+		currentWork.setCompEndDate(new Date());
 
 		try {
 			unload();
@@ -762,7 +758,7 @@ public class ThreadWork extends Thread {
 
 		ThreadLaunch.getInstance().raz();
 
-		UID workUID = currentWork.getUID();
+		final UID workUID = currentWork.getUID();
 		mileStone.println("managing result", workUID);
 
 		if (!killed) {
@@ -792,7 +788,6 @@ public class ThreadWork extends Thread {
 		}
 
 		mileStone.println("result managed", workUID);
-		workUID = null;
 
 		return ret;
 	}

@@ -649,7 +649,7 @@ public class DBConnPoolThread extends Thread {
 	 *            is string to use in SQL SELECT WHERE clause if not null
 	 *            otherwise TableInterface#criteria() is used
 	 * @see Table#criteria()
-	 * @since 9.2.0
+	 * @since 10.0.0
 	 */
 	public <T extends Type> T selectOne(final T row, final String criterias)
 			throws IOException {
@@ -670,7 +670,7 @@ public class DBConnPoolThread extends Thread {
 	 *            is string to use in SQL SELECT WHERE clause if not null
 	 *            otherwise TableInterface#criteria() is used
 	 * @see Table#criteria()
-	 * @since 9.2.0
+	 * @since 10.0.0
 	 */
 	public <T extends Type> Collection<T> selectAll(final T row, final String criterias)
 			throws IOException {

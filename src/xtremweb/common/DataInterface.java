@@ -295,7 +295,7 @@ public final class DataInterface extends Table {
 		},
 		/**
 		 * This is the column index of the referenced work UID for data driven scheduling
-		 * @since 9.2.0
+		 * @since 10.0.0
 		 */
 		WORKUID {
 			/**
@@ -313,7 +313,7 @@ public final class DataInterface extends Table {
 		 * This must match worker SHAREDDATAS.
 		 * @see xtremweb.database.SQLRequestWorkRequest
 		 * @see HostInterface.Columns#SHAREDDATAS
-		 * @since 9.2.0
+		 * @since 10.0.0
 		 */
 		PACKAGE,
 		/**
@@ -742,7 +742,7 @@ public final class DataInterface extends Table {
 	 * @return this attribute, or null if not set
 	 * @exception IOException
 	 *                is thrown is attribute is not well formed
-	 * @since 9.2.0
+	 * @since 10.0.0
 	 */
 	public UID getWork() throws IOException {
 		return (UID) getValue(Columns.WORKUID);
@@ -752,7 +752,7 @@ public final class DataInterface extends Table {
 	 * This retrieves the data package
 	 * 
 	 * @return this attribute, or null if not set
-	 * @since 9.2.0
+	 * @since 10.0.0
 	 */
 	public String getPackage() {
 		try {
@@ -938,7 +938,7 @@ public final class DataInterface extends Table {
 	/**
 	 * This sets the referenced work for data driven scheduling
 	 * 
-	 * @since 9.2.0
+	 * @since 10.0.0
 	 */
 	public boolean setWork(UID v) {
 		return setValue(Columns.WORKUID, v);
@@ -947,7 +947,7 @@ public final class DataInterface extends Table {
 	/**
 	 * This sets the data package
 	 * @return true if value has changed, false otherwise
-	 * @since 9.2.0
+	 * @since 10.0.0
 	 */
 	public boolean setPackage(String v) {
 		return setValue(Columns.PACKAGE, v);

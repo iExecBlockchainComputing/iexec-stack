@@ -139,27 +139,25 @@ public class TCPClient extends CommClient {
 			nio = config.nio();
 
 			String serverName = null;
-			String proxyName = config.getProperty(XWPropertyDefs.PROXYSERVER);
+			final String proxyName = config.getProperty(XWPropertyDefs.PROXYSERVER);
 			if ((proxyName != null) && (proxyName.trim().length() > 0)) {
 				serverName = proxyName;
 			} else {
 				serverName = XWTools.getHostName(uri.getHost());
 			}
-			proxyName = null;
 
 			int serverPort = uri.getPort();
 			if (serverPort == -1) {
 				serverPort = config.getPort(Connection.TCPPORT);
 			}
 
-			String porttxt = config.getProperty(XWPropertyDefs.PROXYPORT);
+			final String porttxt = config.getProperty(XWPropertyDefs.PROXYPORT);
 			if ((porttxt != null) && (porttxt.trim().length() > 0)) {
 				final int proxyPort = config.getPort(Connection.PROXYPORT);
 				if (proxyPort > 0) {
 					serverPort = proxyPort;
 				}
 			}
-			porttxt = null;
 
 			URI uri2 = null;
 			try {
@@ -167,7 +165,6 @@ public class TCPClient extends CommClient {
 			} catch (final Exception e) {
 				uri2 = uri;
 			}
-			uri = null;
 			uri = uri2;
 
 			mileStone("<open uri='" + uri + "'>");

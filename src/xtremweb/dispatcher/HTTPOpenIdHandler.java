@@ -70,7 +70,7 @@ import xtremweb.communications.XWPostParams;
  * @author Oleg Lodygensky
  * @since XWHEP 8.2.0
  * 
- * @deprecated since 9.2.0 OAuth should be preferred (see {@link HTTPOAuthHandler} )
+ * @deprecated since 10.0.0 OAuth should be preferred (see {@link HTTPOAuthHandler} )
  */
 
 public class HTTPOpenIdHandler extends Thread implements

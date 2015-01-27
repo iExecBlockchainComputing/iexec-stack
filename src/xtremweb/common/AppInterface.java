@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -58,7 +58,7 @@ public final class AppInterface extends Table {
 	/**
 	 * This is the database table name This was stored in
 	 * xtremweb.dispatcher.App
-	 * 
+	 *
 	 * @since 9.0.0
 	 */
 	public static final String TABLENAME = ("apps");
@@ -87,7 +87,7 @@ public final class AppInterface extends Table {
 			/**
 			 * This creates an object from String representation for this column
 			 * value This cleans the parameter to ensure SQL compliance
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return a Boolean representing the column value
@@ -106,14 +106,14 @@ public final class AppInterface extends Table {
 		 * A service is a java code inserted in the platform at compile time<br />
 		 * At launch time, the server inserts its embedded services into
 		 * database
-		 * 
+		 *
 		 * @since RPCXW
 		 */
 		ISSERVICE {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return a Boolean representing the column value
@@ -127,7 +127,7 @@ public final class AppInterface extends Table {
 		},
 		/**
 		 * This is the column index of the application type
-		 * 
+		 *
 		 * @since 8.0.0 (FG)
 		 * @see AppTypeEnum
 		 */
@@ -135,7 +135,7 @@ public final class AppInterface extends Table {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return an ApplicationType representing the column value
@@ -151,14 +151,14 @@ public final class AppInterface extends Table {
 		/**
 		 * This is the column index of the minimal free mass storage needed by
 		 * the application. This is in Mb
-		 * 
+		 *
 		 * @since 9.0.0
 		 */
 		MINFREEMASSSTORAGE {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return an Integer representing the column value
@@ -178,7 +178,7 @@ public final class AppInterface extends Table {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return an Integer representing the column value
@@ -198,7 +198,7 @@ public final class AppInterface extends Table {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return an Integer representing the column value
@@ -218,7 +218,7 @@ public final class AppInterface extends Table {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return an Integer representing the column value
@@ -233,14 +233,14 @@ public final class AppInterface extends Table {
 		/**
 		 * This is the column index of the launch script URI This is optional
 		 * This script is always executed before the job
-		 * 
+		 *
 		 * @since 8.0.0 (FG)
 		 */
 		LAUNCHSCRIPTSHURI {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return an URI representing the column value
@@ -255,14 +255,14 @@ public final class AppInterface extends Table {
 		/**
 		 * This is the column index of the launch script URI This is optional
 		 * This script is always executed before the job
-		 * 
+		 *
 		 * @since 8.0.0 (FG)
 		 */
 		LAUNCHSCRIPTCMDURI {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return an URI representing the column value
@@ -277,14 +277,14 @@ public final class AppInterface extends Table {
 		/**
 		 * This is the column index of the unload script URI This is optional
 		 * This script is always executed after the job
-		 * 
+		 *
 		 * @since 8.0.0 (FG)
 		 */
 		UNLOADSCRIPTSHURI {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return an URI representing the column value
@@ -299,14 +299,14 @@ public final class AppInterface extends Table {
 		/**
 		 * This is the column index of the unload script URI This is optional
 		 * This script is always executed after the job
-		 * 
+		 *
 		 * @since 8.0.0 (FG)
 		 */
 		UNLOADSCRIPTCMDURI {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return an URI representing the column value
@@ -326,7 +326,7 @@ public final class AppInterface extends Table {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return an Integer representing the column value
@@ -341,14 +341,14 @@ public final class AppInterface extends Table {
 		/**
 		 * This is the column index of the pending job counter; this is updated
 		 * on job submission
-		 * 
+		 *
 		 * @since 7.0.0
 		 */
 		PENDINGJOBS {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return an Integer representing the column value
@@ -363,14 +363,14 @@ public final class AppInterface extends Table {
 		/**
 		 * This is the column index of the running job counter this is updated
 		 * on succesfull worker request
-		 * 
+		 *
 		 * @since 7.0.0
 		 */
 		RUNNINGJOBS {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return an Integer representing the column value
@@ -385,14 +385,14 @@ public final class AppInterface extends Table {
 		/**
 		 * This is the column index of the error job counter; this is updated on
 		 * job error
-		 * 
+		 *
 		 * @since 7.0.0
 		 */
 		ERRORJOBS {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return an Integer representing the column value
@@ -406,16 +406,15 @@ public final class AppInterface extends Table {
 		},
 		/**
 		 * This is the column index of the application web page, if any
-		 * 
+		 *
 		 * @since 7.0.0
 		 */
 		WEBPAGE,
 		/**
-		 * This is the column index of the needed packages list.
-		 * This is optional.
-		 * This is a comma separated list of name packages.
-		 * This is used by the scheduler.
-		 * This must match worker SHAREDPACKAGES.
+		 * This is the column index of the needed packages list. This is
+		 * optional. This is a comma separated list of name packages. This is
+		 * used by the scheduler. This must match worker SHAREDPACKAGES.
+		 * 
 		 * @see xtremweb.database.SQLRequestWorkRequest
 		 * @see HostInterface.Columns#SHAREDPACKAGES
 		 * @since 8.0.0 (FG)
@@ -424,21 +423,21 @@ public final class AppInterface extends Table {
 		/**
 		 * This is the column index of the environment variables This is
 		 * optional This is a comma separated tuple NAME=VALUE[,NAME=VALUE]*
-		 * 
+		 *
 		 * @since 8.0.0 (FG)
 		 */
 		ENVVARS,
 		/**
 		 * This is the column index of the default stdin, if any. If this is
 		 * set, any job with no stdin defined receives this
-		 * 
+		 *
 		 * @see WorkInterface.Columns#STDINURI
 		 */
 		DEFAULTSTDINURI {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return an URI representing the column value
@@ -455,14 +454,14 @@ public final class AppInterface extends Table {
 		 * all jobs receive this. If set, this is installed **after**
 		 * defaultdirin or works.dirin to ensure those last do not override any
 		 * file contained in basedirin
-		 * 
+		 *
 		 * @see WorkInterface.Columns#DIRINURI
 		 */
 		BASEDIRINURI {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return an URI representing the column value
@@ -475,17 +474,18 @@ public final class AppInterface extends Table {
 			}
 		},
 		/**
-		 * This is the column index of the default dirin, if any. If this is set,
-		 * any job with no dirin defined receives this This is installed before
-		 * basedirin to ensure this does not override any of the basedirin files
-		 * 
+		 * This is the column index of the default dirin, if any. If this is
+		 * set, any job with no dirin defined receives this This is installed
+		 * before basedirin to ensure this does not override any of the
+		 * basedirin files
+		 *
 		 * @see WorkInterface.Columns#DIRINURI
 		 */
 		DEFAULTDIRINURI {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return an URI representing the column value
@@ -508,7 +508,7 @@ public final class AppInterface extends Table {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return an URI representing the column value
@@ -522,14 +522,14 @@ public final class AppInterface extends Table {
 		},
 		/**
 		 * This is the column index of the linux x86_64 library, if any.
-		 * 
+		 *
 		 * @since 7.2.0
 		 */
 		LDLINUX_X86_64URI {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return an URI representing the column value
@@ -548,7 +548,7 @@ public final class AppInterface extends Table {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return an URI representing the column value
@@ -562,14 +562,14 @@ public final class AppInterface extends Table {
 		},
 		/**
 		 * This is the column index of the linux intel itanuim library, if any.
-		 * 
+		 *
 		 * @since 7.0.0
 		 */
 		LDLINUX_IA64URI {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return an URI representing the column value
@@ -588,7 +588,7 @@ public final class AppInterface extends Table {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return an URI representing the column value
@@ -607,7 +607,7 @@ public final class AppInterface extends Table {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return an URI representing the column value
@@ -626,7 +626,7 @@ public final class AppInterface extends Table {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return an URI representing the column value
@@ -645,7 +645,7 @@ public final class AppInterface extends Table {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return an URI representing the column value
@@ -664,7 +664,7 @@ public final class AppInterface extends Table {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return an URI representing the column value
@@ -683,7 +683,7 @@ public final class AppInterface extends Table {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return an URI representing the column value
@@ -702,7 +702,7 @@ public final class AppInterface extends Table {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return an URI representing the column value
@@ -721,7 +721,7 @@ public final class AppInterface extends Table {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return an URI representing the column value
@@ -740,7 +740,7 @@ public final class AppInterface extends Table {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return an URI representing the column value
@@ -759,7 +759,7 @@ public final class AppInterface extends Table {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return an URI representing the column value
@@ -778,7 +778,7 @@ public final class AppInterface extends Table {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return an URI representing the column value
@@ -797,7 +797,7 @@ public final class AppInterface extends Table {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return an URI representing the column value
@@ -816,7 +816,7 @@ public final class AppInterface extends Table {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return an URI representing the column value
@@ -830,14 +830,14 @@ public final class AppInterface extends Table {
 		},
 		/**
 		 * This is the column index of the linux x86_64 binary, if any.
-		 * 
+		 *
 		 * @since 7.2.0
 		 */
 		LINUX_X86_64URI {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return an URI representing the column value
@@ -851,14 +851,14 @@ public final class AppInterface extends Table {
 		},
 		/**
 		 * This is the column index of the linux intel itanium binary, if any.
-		 * 
+		 *
 		 * @since 7.0.0
 		 */
 		LINUX_IA64URI {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return an URI representing the column value
@@ -877,7 +877,7 @@ public final class AppInterface extends Table {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return an URI representing the column value
@@ -896,7 +896,7 @@ public final class AppInterface extends Table {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return an URI representing the column value
@@ -915,7 +915,7 @@ public final class AppInterface extends Table {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return an URI representing the column value
@@ -934,7 +934,7 @@ public final class AppInterface extends Table {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return an URI representing the column value
@@ -953,7 +953,7 @@ public final class AppInterface extends Table {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return an URI representing the column value
@@ -972,7 +972,7 @@ public final class AppInterface extends Table {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return an URI representing the column value
@@ -991,7 +991,7 @@ public final class AppInterface extends Table {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return an URI representing the column value
@@ -1010,7 +1010,7 @@ public final class AppInterface extends Table {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return an URI representing the column value
@@ -1029,7 +1029,7 @@ public final class AppInterface extends Table {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return an URI representing the column value
@@ -1048,7 +1048,7 @@ public final class AppInterface extends Table {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return an URI representing the column value
@@ -1067,7 +1067,7 @@ public final class AppInterface extends Table {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return an URI representing the column value
@@ -1086,7 +1086,7 @@ public final class AppInterface extends Table {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return an URI representing the column value
@@ -1101,7 +1101,7 @@ public final class AppInterface extends Table {
 		/**
 		 * This is the index based on ordinal so that the first value is
 		 * TableColumns + 1
-		 * 
+		 *
 		 * @see xtremweb.common#TableColumns
 		 * @see Enum#ordinal()
 		 * @since 8.2.0
@@ -1111,7 +1111,7 @@ public final class AppInterface extends Table {
 		/**
 		 * This constructor sets the ord member as ord = this.ordinal +
 		 * TableColumns.SIZE
-		 * 
+		 *
 		 * @since 8.2.0
 		 */
 		Columns() {
@@ -1120,7 +1120,7 @@ public final class AppInterface extends Table {
 
 		/**
 		 * This retrieves the index based ordinal
-		 * 
+		 *
 		 * @return the index based ordinal
 		 * @since 8.2.0
 		 */
@@ -1131,7 +1131,7 @@ public final class AppInterface extends Table {
 		/**
 		 * This creates a new object from String for the given column This must
 		 * be overridden by enum which value is not a String
-		 * 
+		 *
 		 * @param v
 		 *            the String representation
 		 * @return v
@@ -1144,7 +1144,7 @@ public final class AppInterface extends Table {
 
 		/**
 		 * This creates a new object from the digen SQL result set
-		 * 
+		 *
 		 * @param rs
 		 *            the SQL result set
 		 * @return the object representing the column
@@ -1157,13 +1157,13 @@ public final class AppInterface extends Table {
 
 		/**
 		 * This retrieves an Columns from its integer value
-		 * 
+		 *
 		 * @param v
 		 *            is the integer value of the Columns
 		 * @return an Columns
 		 */
 		public static XWBaseColumn fromInt(int v)
-		throws IndexOutOfBoundsException {
+				throws IndexOutOfBoundsException {
 			try {
 				return TableColumns.fromInt(v);
 			} catch (final Exception e) {
@@ -1187,7 +1187,7 @@ public final class AppInterface extends Table {
 	 * version. If this version is null, this version is prior to 5.8.0. Before
 	 * 5.8.0, OWNERUID and ACCESSRIGHTS did not exist. Then this returns null
 	 * for these two columns.
-	 * 
+	 *
 	 * @param i
 	 *            is an ordinal of an Columns
 	 * @since 5.8.0
@@ -1222,7 +1222,7 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This constructs a new object providing its primary key value
-	 * 
+	 *
 	 * @param uid
 	 *            is this new object UID
 	 */
@@ -1242,7 +1242,7 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This constructs an object from DB
-	 * 
+	 *
 	 * @param rs
 	 *            is an SQL request result
 	 * @exception IOException
@@ -1254,7 +1254,7 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This fills columns from DB
-	 * 
+	 *
 	 * @since 9.0.0
 	 * @param rs
 	 *            is the SQL data set
@@ -1467,7 +1467,8 @@ public final class AppInterface extends Table {
 			} catch (final Exception e) {
 			}
 			try {
-				setMinFreeMassStorage((Long) Columns.MINFREEMASSSTORAGE.fromResultSet(rs));
+				setMinFreeMassStorage((Long) Columns.MINFREEMASSSTORAGE
+						.fromResultSet(rs));
 			} catch (final Exception e) {
 			}
 			try {
@@ -1500,7 +1501,7 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This calls this(StreamIO.stream(input));
-	 * 
+	 *
 	 * @param input
 	 *            is a String containing an XML representation
 	 */
@@ -1510,7 +1511,7 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This constructs a new object from an XML file
-	 * 
+	 *
 	 * @param f
 	 *            is the XML file
 	 * @see #AppInterface(InputStream)
@@ -1522,7 +1523,7 @@ public final class AppInterface extends Table {
 	/**
 	 * This constructs a new object from XML attributes received from input
 	 * stream
-	 * 
+	 *
 	 * @param input
 	 *            is the input stream
 	 * @throws IOException
@@ -1542,7 +1543,7 @@ public final class AppInterface extends Table {
 	/**
 	 * This constructs a new object from XML attributes received from input
 	 * stream
-	 * 
+	 *
 	 * @param attrs
 	 *            contains attributes XML representation
 	 * @see Table#fromXml(Attributes)
@@ -1556,7 +1557,7 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This updates this object from interface.
-	 * 
+	 *
 	 * @since 9.0.0
 	 */
 	@Override
@@ -1597,7 +1598,7 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This tests an attribute
-	 * 
+	 *
 	 * @return true if this is attribute is set, false otherwise
 	 */
 	public boolean isService() {
@@ -1611,7 +1612,7 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This retrieves the web page
-	 * 
+	 *
 	 * @return the URL of the web page
 	 * @since 7.0.0
 	 */
@@ -1621,7 +1622,7 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This retrieves the URI to get init script accordingly to OS
-	 * 
+	 *
 	 * @param os
 	 *            is the os for the expected binary
 	 * @return binary URI for the given OS and CPU; otherwise null if no binary
@@ -1649,7 +1650,7 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This retrieves the URI to get unload script accordingly to OS
-	 * 
+	 *
 	 * @param os
 	 *            is the os for the expected binary
 	 * @return binary URI for the given OS and CPU; otherwise null if no binary
@@ -1679,7 +1680,7 @@ public final class AppInterface extends Table {
 	 * This retrieves the URI to get application binary accordingly to OS and
 	 * CPU. If JAVA binary is set, java binary URI is returned independently of
 	 * OS and CPU
-	 * 
+	 *
 	 * @param cpu
 	 *            is the cpu for the expected binary
 	 * @param os
@@ -1765,7 +1766,7 @@ public final class AppInterface extends Table {
 	/**
 	 * This retrieves the URI to get application binary accordingly to OS and
 	 * CPU. This does **not** test JAVAURI
-	 * 
+	 *
 	 * @param cpu
 	 *            is the cpu for the expected binary
 	 * @param os
@@ -1849,7 +1850,7 @@ public final class AppInterface extends Table {
 	/**
 	 * This retrieves the URI to get application library accordingly to OS ane
 	 * CPU
-	 * 
+	 *
 	 * @param cpu
 	 *            is the cpu for the expected binary
 	 * @param os
@@ -1930,7 +1931,7 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This retrieves the URI to get application binary for linux ix86
-	 * 
+	 *
 	 * @return a data URI
 	 */
 	public URI getLinuxIX86() {
@@ -1939,7 +1940,7 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This retrieves the URI to get application binary for linux amd64
-	 * 
+	 *
 	 * @return a data URI
 	 */
 	public URI getLinuxAmd64() {
@@ -1948,7 +1949,7 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This retrieves the URI to get application binary for linux x86 64
-	 * 
+	 *
 	 * @return a data URI
 	 * @since 7.2.0
 	 */
@@ -1958,7 +1959,7 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This retrieves the URI to get application binary for linux amd64
-	 * 
+	 *
 	 * @return a data URI
 	 * @since 7.0.0
 	 */
@@ -1968,7 +1969,7 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This retrieves the URI to get application binary for linux ppc
-	 * 
+	 *
 	 * @return a data URI
 	 */
 	public URI getLinuxPpc() {
@@ -1977,7 +1978,7 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This retrieves the URI to get application binary for win32 ix86
-	 * 
+	 *
 	 * @return a data URI
 	 */
 	public URI getWin32IX86() {
@@ -1986,7 +1987,7 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This retrieves the URI to get application binary for win32 amd64
-	 * 
+	 *
 	 * @return a data URI
 	 */
 	public URI getWin32Amd64() {
@@ -1995,7 +1996,7 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This retrieves the URI to get application binary for win32 x86_64
-	 * 
+	 *
 	 * @return a data URI
 	 * @since 6.0.0
 	 */
@@ -2005,7 +2006,7 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This retrieves the URI to get application binary for mac os ix86
-	 * 
+	 *
 	 * @return a data URI
 	 */
 	public URI getMacosIX86() {
@@ -2014,7 +2015,7 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This retrieves the URI to get application binary for mac os x86_64
-	 * 
+	 *
 	 * @return a data URI
 	 * @since 5.8.0
 	 */
@@ -2024,7 +2025,7 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This retrieves the URI to get application binary for mac os ppc
-	 * 
+	 *
 	 * @return a data URI
 	 */
 	public URI getMacosPpc() {
@@ -2033,7 +2034,7 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This retrieves the URI to get application binary for java
-	 * 
+	 *
 	 * @return a data URI
 	 */
 	public URI getJava() {
@@ -2042,7 +2043,7 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This retrieves the URI to get application binary for solaris sparc
-	 * 
+	 *
 	 * @return a data URI
 	 */
 	public URI getSolarisSparc() {
@@ -2051,7 +2052,7 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This retrieves the URI to get application binary for solaris alpha
-	 * 
+	 *
 	 * @return a data URI
 	 */
 	public URI getSolarisAlpha() {
@@ -2060,7 +2061,7 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This retrieves the URI to get application binary for osf1 sparc
-	 * 
+	 *
 	 * @return a data URI
 	 */
 	public URI getOsf1Sparc() {
@@ -2069,7 +2070,7 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This retrieves the URI to get application binary for osf1 alpha
-	 * 
+	 *
 	 * @return a data URI
 	 */
 	public URI getOsf1Alpha() {
@@ -2078,7 +2079,7 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This retrieves the URI to get application library for linux ix86
-	 * 
+	 *
 	 * @return a data URI
 	 */
 	public URI getLDLinuxIX86() {
@@ -2087,7 +2088,7 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This retrieves the URI to get application library for linux amd64
-	 * 
+	 *
 	 * @return a data URI
 	 */
 	public URI getLDLinuxAmd64() {
@@ -2096,7 +2097,7 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This retrieves the URI to get application library for linux x86 64
-	 * 
+	 *
 	 * @return a data URI
 	 * @since 7.2.0
 	 */
@@ -2106,7 +2107,7 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This retrieves the URI to get application library for linux amd64
-	 * 
+	 *
 	 * @return a data URI
 	 * @since 7.0.0
 	 */
@@ -2116,7 +2117,7 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This retrieves the URI to get application library for linux ppc
-	 * 
+	 *
 	 * @return a data URI
 	 */
 	public URI getLDLinuxPpc() {
@@ -2125,7 +2126,7 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This retrieves the URI to get application library for win32 ix86
-	 * 
+	 *
 	 * @return a data URI
 	 */
 	public URI getLDWin32IX86() {
@@ -2134,7 +2135,7 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This retrieves the URI to get application library for win32 amd64
-	 * 
+	 *
 	 * @return a data URI
 	 */
 	public URI getLDWin32Amd64() {
@@ -2143,7 +2144,7 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This retrieves the URI to get application library for win32 X86_64
-	 * 
+	 *
 	 * @return a data URI
 	 * @since 6.0.0
 	 */
@@ -2153,7 +2154,7 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This retrieves the URI to get application library for mac os ix86
-	 * 
+	 *
 	 * @return a data URI
 	 */
 	public URI getLDMacosIX86() {
@@ -2162,7 +2163,7 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This retrieves the URI to get application library for mac os x86_64
-	 * 
+	 *
 	 * @return a data URI
 	 */
 	public URI getLDMacosX8664() {
@@ -2171,7 +2172,7 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This retrieves the URI to get application library for mac os ppc
-	 * 
+	 *
 	 * @return a data URI
 	 */
 	public URI getLDMacosPpc() {
@@ -2180,7 +2181,7 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This retrieves the URI to get application library for solaris sparc
-	 * 
+	 *
 	 * @return a data URI
 	 */
 	public URI getLDSolarisSparc() {
@@ -2189,7 +2190,7 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This retrieves the URI to get application library for solaris alpha
-	 * 
+	 *
 	 * @return a data URI
 	 */
 	public URI getLDSolarisAlpha() {
@@ -2198,7 +2199,7 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This retrieves the URI to get application library for osf1 sparc
-	 * 
+	 *
 	 * @return a data URI
 	 */
 	public URI getLDOsf1Sparc() {
@@ -2207,7 +2208,7 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This retrieves the URI to get application library for osf1 alpha
-	 * 
+	 *
 	 * @return a data URI
 	 */
 	public URI getLDOsf1Alpha() {
@@ -2216,7 +2217,7 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This get the number of jobs; if not set it is forced to 0
-	 * 
+	 *
 	 * @return nbjobs or 0 if not set
 	 */
 	public int getNbJobs() {
@@ -2231,7 +2232,7 @@ public final class AppInterface extends Table {
 	/**
 	 * This gets the amount of pending jobs<br />
 	 * If not set, this attr is forced to 0
-	 * 
+	 *
 	 * @return the attribute, or 0 is not set
 	 * @since 7.0.0
 	 */
@@ -2247,7 +2248,7 @@ public final class AppInterface extends Table {
 	/**
 	 * This gets the amount of running jobs<br />
 	 * If not set, this attr is forced to 0
-	 * 
+	 *
 	 * @return the attribute, or 0 is not set
 	 * @since 7.0.0
 	 */
@@ -2263,7 +2264,7 @@ public final class AppInterface extends Table {
 	/**
 	 * This gets the amount of erroneus jobs<br />
 	 * If not set, this attr is forced to 0
-	 * 
+	 *
 	 * @return the attribute, or 0 is not set
 	 * @since 7.0.0
 	 */
@@ -2278,7 +2279,7 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This get the average execution time; if not set it is forced to 0
-	 * 
+	 *
 	 * @return exec average time or 0 if not set
 	 */
 	public int getAvgExecTime() {
@@ -2291,8 +2292,9 @@ public final class AppInterface extends Table {
 	}
 
 	/**
-	 * This retrieves the mimimum RAM needed for this application; if not set it is forced to 0
-	 * This is ni Kb
+	 * This retrieves the mimimum RAM needed for this application; if not set it
+	 * is forced to 0 This is ni Kb
+	 * 
 	 * @return the mimimum RAM needed for this application in Kb
 	 */
 	public int getMinMemory() {
@@ -2305,8 +2307,9 @@ public final class AppInterface extends Table {
 	}
 
 	/**
-	 * This retrieves the mimimal CPU speed for this application; if not set it is forced to 0
-	 *  This is in MHz
+	 * This retrieves the mimimal CPU speed for this application; if not set it
+	 * is forced to 0 This is in MHz
+	 * 
 	 * @return the mimimal CPU speed for this application in MHz
 	 */
 	public int getMinCpuSpeed() {
@@ -2317,10 +2320,12 @@ public final class AppInterface extends Table {
 		setMinCpuSpeed(0);
 		return 0;
 	}
+
 	/**
-	 * This retrieves the minimum RAM for this application. If not set it is forced to 0
-	 * 
-	 * @return the minimal disk space needed for this application in Mb 
+	 * This retrieves the minimum RAM for this application. If not set it is
+	 * forced to 0
+	 *
+	 * @return the minimal disk space needed for this application in Mb
 	 * @since 9.0.5
 	 */
 	public Long getMinFreeMassStorage() {
@@ -2334,7 +2339,7 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This gets an attribute
-	 * 
+	 *
 	 * @return this attribute, or null if not set
 	 * @since 8.0.0 (FG)
 	 */
@@ -2348,7 +2353,7 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This gets an attribute
-	 * 
+	 *
 	 * @return this attribute, or null if not set
 	 * @since 8.0.0 (FG)
 	 */
@@ -2362,7 +2367,7 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This gets an attribute
-	 * 
+	 *
 	 * @return this attribute, or null if not set
 	 */
 	public String getName() {
@@ -2375,7 +2380,7 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This gets an attribute
-	 * 
+	 *
 	 * @return this attribute, or null if not set
 	 */
 	public URI getDefaultStdin() {
@@ -2384,7 +2389,7 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This gets an attribute
-	 * 
+	 *
 	 * @return this attribute, or null if not set
 	 */
 	public URI getBaseDirin() {
@@ -2393,7 +2398,7 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This gets an attribute
-	 * 
+	 *
 	 * @return this attribute, or null if not set
 	 * @since 8.0.0 (FG)
 	 */
@@ -2403,7 +2408,7 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This gets an attribute
-	 * 
+	 *
 	 * @return this attribute, or null if not set
 	 * @since 8.0.0 (FG)
 	 */
@@ -2413,7 +2418,7 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This gets an attribute
-	 * 
+	 *
 	 * @return this attribute, or null if not set
 	 * @since 8.0.0 (FG)
 	 */
@@ -2423,7 +2428,7 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This gets an attribute
-	 * 
+	 *
 	 * @return this attribute, or null if not set
 	 * @since 8.0.0 (FG)
 	 */
@@ -2433,7 +2438,7 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This gets an attribute
-	 * 
+	 *
 	 * @return this attribute, or null if not set
 	 */
 	public URI getDefaultDirin() {
@@ -2443,7 +2448,7 @@ public final class AppInterface extends Table {
 	/**
 	 * This retrieves if this application can be run with local binary on worker
 	 * side (a binary that is not downloaded by the worker)
-	 * 
+	 *
 	 * @return this attribute
 	 * @since 8.0.0 (FG)
 	 */
@@ -2459,7 +2464,7 @@ public final class AppInterface extends Table {
 	/**
 	 * This sets parameter value; this is called from
 	 * TableInterface#fromXml(Attributes)
-	 * 
+	 *
 	 * @param attribute
 	 *            is the name of the attribute to set
 	 * @param v
@@ -2469,7 +2474,7 @@ public final class AppInterface extends Table {
 	 */
 	@Override
 	public final boolean setValue(String attribute, Object v)
-	throws IllegalArgumentException {
+			throws IllegalArgumentException {
 		final String A = attribute.toUpperCase();
 		try {
 			return setValue(TableColumns.valueOf(A), v);
@@ -2480,11 +2485,11 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This sets the URI to retrieve application binary for linux ix86
-	 * 
+	 *
 	 * @return true if value has changed, false otherwise
 	 */
 	public boolean setBinary(CPUEnum cpu, OSEnum os, URI v)
-	throws ParseException {
+			throws ParseException {
 
 		if (os == null) {
 			throw new ParseException("unknown OS", 0);
@@ -2564,7 +2569,7 @@ public final class AppInterface extends Table {
 	/**
 	 * This sets the URI to retrieve application library accordingly to
 	 * parameters
-	 * 
+	 *
 	 * @param cpu
 	 *            is the cpu type
 	 * @param os
@@ -2574,7 +2579,7 @@ public final class AppInterface extends Table {
 	 * @return true if value has changed, false otherwise
 	 */
 	public boolean setLibrary(CPUEnum cpu, OSEnum os, URI v)
-	throws ParseException {
+			throws ParseException {
 
 		if (os == null) {
 			throw new ParseException("unknown OS", 0);
@@ -2651,7 +2656,7 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This sets the URI to retrieve application binary for linux ix86
-	 * 
+	 *
 	 * @return true if value has changed, false otherwise
 	 */
 	public boolean setLinux_ix86(URI v) {
@@ -2660,7 +2665,7 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This sets the URI to retrieve application binary for linux amd64
-	 * 
+	 *
 	 * @return true if value has changed, false otherwise
 	 */
 	public boolean setLinux_amd64(URI v) {
@@ -2669,7 +2674,7 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This sets the URI to retrieve application binary for linux x86 64
-	 * 
+	 *
 	 * @return true if value has changed, false otherwise
 	 * @since 7.2.0
 	 */
@@ -2679,7 +2684,7 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This sets the URI to retrieve application binary for linux amd64
-	 * 
+	 *
 	 * @return true if value has changed, false otherwise
 	 * @since 7.0.0
 	 */
@@ -2689,7 +2694,7 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This sets the URI to retrieve application binary for linux ppc
-	 * 
+	 *
 	 * @return true if value has changed, false otherwise
 	 */
 	public boolean setLinux_ppc(URI v) {
@@ -2698,7 +2703,7 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This sets the URI to retrieve application binary for win32 ix32
-	 * 
+	 *
 	 * @return true if value has changed, false otherwise
 	 */
 	public boolean setWin32_ix86(URI v) {
@@ -2707,7 +2712,7 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This sets the URI to retrieve application binary for win32 amd64
-	 * 
+	 *
 	 * @return true if value has changed, false otherwise
 	 */
 	public boolean setWin32_amd64(URI v) {
@@ -2716,7 +2721,7 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This sets the URI to retrieve application binary for win32 x86_64
-	 * 
+	 *
 	 * @return true if value has changed, false otherwise
 	 * @since 6.0.0
 	 */
@@ -2726,7 +2731,7 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This sets the URI to retrieve application binary for mac os ix86
-	 * 
+	 *
 	 * @return true if value has changed, false otherwise
 	 */
 	public boolean setMacos_ix86(URI v) {
@@ -2735,7 +2740,7 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This sets the URI to retrieve application binary for mac os x86_64
-	 * 
+	 *
 	 * @return true if value has changed, false otherwise
 	 * @since 5.8.0
 	 */
@@ -2745,7 +2750,7 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This sets the URI to retrieve application binary for mac os ppc
-	 * 
+	 *
 	 * @return true if value has changed, false otherwise
 	 */
 	public boolean setMacos_ppc(URI v) {
@@ -2754,7 +2759,7 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This sets the URI to retrieve application binary for java
-	 * 
+	 *
 	 * @return true if value has changed, false otherwise
 	 */
 	public boolean setJava(URI v) {
@@ -2763,7 +2768,7 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This sets the URI to retrieve application binary for solaris sparc
-	 * 
+	 *
 	 * @return true if value has changed, false otherwise
 	 */
 	public boolean setSolaris_sparc(URI v) {
@@ -2772,7 +2777,7 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This sets the URI to retrieve application binary for solaris alpha
-	 * 
+	 *
 	 * @return true if value has changed, false otherwise
 	 */
 	public boolean setSolaris_alpha(URI v) {
@@ -2781,7 +2786,7 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This sets the URI to retrieve application binary for osf1 sparc
-	 * 
+	 *
 	 * @return true if value has changed, false otherwise
 	 */
 	public boolean setOsf1_sparc(URI v) {
@@ -2790,7 +2795,7 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This sets the URI to retrieve application binary for osf1 alpha
-	 * 
+	 *
 	 * @return true if value has changed, false otherwise
 	 */
 	public boolean setOsf1_alpha(URI v) {
@@ -2799,7 +2804,7 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This sets the URI to retrieve application binary for linux ix86
-	 * 
+	 *
 	 * @return true if value has changed, false otherwise
 	 */
 	public boolean setLDLinux_ix86(URI v) {
@@ -2808,7 +2813,7 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This sets the URI to retrieve application binary for linux amd64
-	 * 
+	 *
 	 * @return true if value has changed, false otherwise
 	 */
 	public boolean setLDLinux_amd64(URI v) {
@@ -2817,7 +2822,7 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This sets the URI to retrieve application binary for linux x86 64
-	 * 
+	 *
 	 * @return true if value has changed, false otherwise
 	 */
 	public boolean setLDLinux_x86_64(URI v) {
@@ -2826,7 +2831,7 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This sets the URI to retrieve application binary for linux intel itanium
-	 * 
+	 *
 	 * @return true if value has changed, false otherwise
 	 */
 	public boolean setLDLinux_ia64(URI v) {
@@ -2835,7 +2840,7 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This sets the URI to retrieve application binary for linux ppc
-	 * 
+	 *
 	 * @return true if value has changed, false otherwise
 	 */
 	public boolean setLDLinux_ppc(URI v) {
@@ -2844,7 +2849,7 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This sets the URI to retrieve application binary for win32 ix32
-	 * 
+	 *
 	 * @return true if value has changed, false otherwise
 	 */
 	public boolean setLDWin32_ix86(URI v) {
@@ -2853,7 +2858,7 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This sets the URI to retrieve application binary for win32 amd64
-	 * 
+	 *
 	 * @return true if value has changed, false otherwise
 	 */
 	public boolean setLDWin32_amd64(URI v) {
@@ -2862,7 +2867,7 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This sets the URI to retrieve application binary for win32 x86_64
-	 * 
+	 *
 	 * @return true if value has changed, false otherwise
 	 * @since 6.0.0
 	 */
@@ -2872,7 +2877,7 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This sets the URI to retrieve application binary for mac os ix86
-	 * 
+	 *
 	 * @return true if value has changed, false otherwise
 	 */
 	public boolean setLDMacos_ix86(URI v) {
@@ -2881,7 +2886,7 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This sets the URI to retrieve application binary for mac os x86_64
-	 * 
+	 *
 	 * @return true if value has changed, false otherwise
 	 * @since 5.8.0
 	 */
@@ -2891,7 +2896,7 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This sets the URI to retrieve application binary for mac os ppc
-	 * 
+	 *
 	 * @return true if value has changed, false otherwise
 	 */
 	public boolean setLDMacos_ppc(URI v) {
@@ -2900,7 +2905,7 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This sets the URI to retrieve application binary for solaris sparc
-	 * 
+	 *
 	 * @return true if value has changed, false otherwise
 	 */
 	public boolean setLDSolaris_sparc(URI v) {
@@ -2909,7 +2914,7 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This sets the URI to retrieve application binary for solaris alpha
-	 * 
+	 *
 	 * @return true if value has changed, false otherwise
 	 */
 	public boolean setLDSolaris_alpha(URI v) {
@@ -2918,7 +2923,7 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This sets the URI to retrieve application binary for osf1 sparc
-	 * 
+	 *
 	 * @return true if value has changed, false otherwise
 	 */
 	public boolean setLDOsf1_sparc(URI v) {
@@ -2927,7 +2932,7 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This sets the URI to retrieve application binary for osf1 alpha
-	 * 
+	 *
 	 * @return true if value has changed, false otherwise
 	 */
 	public boolean setLDOsf1_alpha(URI v) {
@@ -2936,7 +2941,7 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This sets this application web page
-	 * 
+	 *
 	 * @param v
 	 *            is the URL
 	 * @return true if value has changed, false otherwise
@@ -2955,7 +2960,7 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This sets amount of pending jobs
-	 * 
+	 *
 	 * @return true is value has changed
 	 * @since 7.0.0
 	 */
@@ -2965,7 +2970,7 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This sets amount of running jobs
-	 * 
+	 *
 	 * @return true is value has changed
 	 * @since 7.0.0
 	 */
@@ -2975,7 +2980,7 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This sets amout of erroneus jobs
-	 * 
+	 *
 	 * @return true is value has changed
 	 * @since 7.0.0
 	 */
@@ -2992,7 +2997,7 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This increments the amount of pending jobs for this application
-	 * 
+	 *
 	 * @since 7.0.0
 	 */
 	public void incPendingJobs() {
@@ -3001,7 +3006,7 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This increments the amount of running jobs for this application
-	 * 
+	 *
 	 * @since 7.0.0
 	 */
 	public void incRunningJobs() {
@@ -3010,7 +3015,7 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This increments the amount of erroneus jobs for this application
-	 * 
+	 *
 	 * @since 7.0.0
 	 */
 	public void incErrorJobs() {
@@ -3019,7 +3024,7 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This decrements the amount of pending jobs for this application
-	 * 
+	 *
 	 * @since 7.0.0
 	 */
 	public void decPendingJobs() {
@@ -3028,7 +3033,7 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This decrements the amount of running jobs for this application
-	 * 
+	 *
 	 * @since 7.0.0
 	 */
 	public void decRunningJobs() {
@@ -3044,7 +3049,7 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This increments NbJobs and recalculates avg exec time
-	 * 
+	 *
 	 * @param v
 	 *            is the last execution time
 	 */
@@ -3068,7 +3073,9 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This set the mimumal RAM needed for this application
-	 * @param v is the mimumal RAM needed for this application in Kb
+	 * 
+	 * @param v
+	 *            is the mimumal RAM needed for this application in Kb
 	 * @return true if value has changed, false otherwise
 	 */
 	public boolean setMinMemory(final Integer v) {
@@ -3076,55 +3083,68 @@ public final class AppInterface extends Table {
 	}
 
 	/**
-	 * This sets the minimal amount of RAM this work needs, in Kb.
-	 * Provided value must be positive and can not exceed XWPropertyDefs.MAXRAMSPACE.
-	 * If(v > XWPropertyDefs.MAXDISKSPACE) v is forced to XWPropertyDefs.MAXDISKSPACE.
-	 * If(v < 0) v is forced to 0.
-	 * @param v is the minimal amount of RAM this work needs in Kb.
+	 * This sets the minimal amount of RAM this work needs, in Kb. Provided
+	 * value must be positive and can not exceed XWPropertyDefs.MAXRAMSPACE.
+	 * If(v > XWPropertyDefs.MAXDISKSPACE) v is forced to
+	 * XWPropertyDefs.MAXDISKSPACE. If(v < 0) v is forced to 0.
+	 * 
+	 * @param v
+	 *            is the minimal amount of RAM this work needs in Kb.
 	 * @return true if value has changed, false otherwise
 	 * @see XWPropertyDefs#MAXRAMSPACE
 	 */
 	public final boolean setMinMemory(final int v) {
 		try {
-			final String sysValueStr = System.getProperty(XWPropertyDefs.MAXRAMSPACE.toString());
-			final String maxValueStr = sysValueStr == null ? XWPropertyDefs.MAXRAMSPACE.defaultValue() : sysValueStr;
-			final int maxValue = Integer.valueOf(maxValueStr); 
+			final String sysValueStr = System
+					.getProperty(XWPropertyDefs.MAXRAMSPACE.toString());
+			final String maxValueStr = sysValueStr == null ? XWPropertyDefs.MAXRAMSPACE
+					.defaultValue() : sysValueStr;
+			final int maxValue = Integer.valueOf(maxValueStr);
 			final int value = v > maxValue ? maxValue : v;
-			return setValue(Columns.MINMEMORY, Integer.valueOf(value < 0 ? 0 : value));
-		} catch(Exception e) {
+			return setValue(Columns.MINMEMORY,
+					Integer.valueOf(value < 0 ? 0 : value));
+		} catch (final Exception e) {
 			return setValue(Columns.MINMEMORY, Integer.valueOf(0));
 		}
 	}
 
 	/**
 	 * This sets the mimimal CPU speed for this application
-	 * @param v is the mimimal CPU speed for this application, in MHz
+	 * 
+	 * @param v
+	 *            is the mimimal CPU speed for this application, in MHz
 	 * @return true if value has changed, false otherwise
 	 */
 	public boolean setMinCpuSpeed(int v) {
 		return setValue(Columns.MINCPUSPEED, Integer.valueOf(v < 0 ? 0 : v));
 	}
+
 	/**
-	 * This sets the minimal disk space for this application
-	 * Provided value can not exceed XWPropertyDefs.MAXDISKSPACE
-	 * If(v > XWPropertyDefs.MAXDISKSPACE) v is forced to XWPropertyDefs.MAXDISKSPACE.
+	 * This sets the minimal disk space for this application Provided value can
+	 * not exceed XWPropertyDefs.MAXDISKSPACE If(v >
+	 * XWPropertyDefs.MAXDISKSPACE) v is forced to XWPropertyDefs.MAXDISKSPACE.
 	 * If(v < 0) v is forced to 0.
-	 * @param v is  the minimal amount of disk space this work needs in Mb.
+	 * 
+	 * @param v
+	 *            is the minimal amount of disk space this work needs in Mb.
 	 * @return true if value has changed, false otherwise
 	 * @since 9.0.5
 	 * @see XWPropertyDefs#MAXDISKSPACE
 	 */
 	public boolean setMinFreeMassStorage(long v) {
-		try {	
+		try {
 			long value = v;
-			final String sysValueStr = System.getProperty(XWPropertyDefs.MAXDISKSPACE.toString());
-			final String maxValueStr = sysValueStr == null ? XWPropertyDefs.MAXDISKSPACE.defaultValue() : sysValueStr;
-			long maxValue = Long.valueOf(maxValueStr); 
+			final String sysValueStr = System
+					.getProperty(XWPropertyDefs.MAXDISKSPACE.toString());
+			final String maxValueStr = sysValueStr == null ? XWPropertyDefs.MAXDISKSPACE
+					.defaultValue() : sysValueStr;
+			final long maxValue = Long.valueOf(maxValueStr);
 			if (value > maxValue) {
 				value = maxValue;
 			}
-			return setValue(Columns.MINFREEMASSSTORAGE, Long.valueOf(value < 0L ? 0L : value));
-		} catch(Exception e) {
+			return setValue(Columns.MINFREEMASSSTORAGE,
+					Long.valueOf(value < 0L ? 0L : value));
+		} catch (final Exception e) {
 			return setValue(Columns.MINFREEMASSSTORAGE, 0L);
 		}
 	}
@@ -3266,7 +3286,8 @@ public final class AppInterface extends Table {
 			}
 			itf.setLoggerLevel(logLevel);
 			itf.setDUMPNULLS(true);
-			final XMLWriter writer = new XMLWriter(new DataOutputStream(System.out));
+			final XMLWriter writer = new XMLWriter(new DataOutputStream(
+					System.out));
 			writer.write(itf);
 		} catch (final Exception e) {
 			final Logger logger = new Logger();

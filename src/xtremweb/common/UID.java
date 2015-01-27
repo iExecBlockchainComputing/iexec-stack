@@ -167,11 +167,9 @@ public final class UID extends XMLable {
 			return false;
 		}
 		boolean ret = false;
-		String uid2str = uid2.toString();
-		String thisstr = this.toString();
+		final String uid2str = uid2.toString();
+		final String thisstr = this.toString();
 		ret = (uid2str.compareTo(thisstr) == 0);
-		uid2str = null;
-		thisstr = null;
 		return ret;
 	}
 
@@ -228,23 +226,17 @@ public final class UID extends XMLable {
 	 *            is the UID String representation
 	 * @exception IllegalArgumentException
 	 *                is thrown if parameter does not represents an UID
-	 * @see java.rmi.server.UID#read(DataInput)
 	 */
-	public void fromString(String value) throws IllegalArgumentException {
+	public void fromString(final String value) throws IllegalArgumentException {
 
-		String v = null;
-		try {
-			if (value == null) {
-				throw new IllegalArgumentException("value is null");
-			}
-			v = value.trim();
-			if (v.compareToIgnoreCase(NULLUID_LABEL) == 0) {
-				this.uid = UUID.fromString(NULLUID.toString());
-			} else {
-				this.uid = UUID.fromString(v);
-			}
-		} finally {
-			v = null;
+		if (value == null) {
+			throw new IllegalArgumentException("value is null");
+		}
+		final String v = value.trim();
+		if (v.compareToIgnoreCase(NULLUID_LABEL) == 0) {
+			this.uid = UUID.fromString(NULLUID.toString());
+		} else {
+			this.uid = UUID.fromString(v);
 		}
 	}
 

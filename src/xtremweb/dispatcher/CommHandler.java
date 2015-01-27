@@ -917,8 +917,6 @@ xtremweb.communications.CommHandler {
 	} 
 
 	/**
-	 * @see xtremweb.communications.ServerAPI#shutDown(UserInterface,
-	 *      HostInterface)
 	 */
 	public void shutDown(final UserInterface client, final HostInterface host)
 	throws IOException, InvalidKeyException, AccessControlException {

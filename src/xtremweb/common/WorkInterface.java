@@ -364,7 +364,7 @@ public class WorkInterface extends Table {
 		/**
 		 * This is the column index of the amount of expected replicas
 		 * No replica, if <= 0
-		 * @since 9.2.0
+		 * @since 10.0.0
 		 */
 		REPLICATIONS {
 			@Override
@@ -374,7 +374,7 @@ public class WorkInterface extends Table {
 		},
 		/**
 		 * This is the current amount of submitted replica
-		 * @since 9.2.0
+		 * @since 10.0.0
 		 */
 		TOTALR {
 			@Override
@@ -384,7 +384,7 @@ public class WorkInterface extends Table {
 		},
 		/**
 		 * This is the size of the replica set (how many replica can be computed simultaneously)
-		 * @since 9.2.0
+		 * @since 10.0.0
 		 */
 		SIZER {
 			@Override
@@ -394,7 +394,7 @@ public class WorkInterface extends Table {
 		},
 		/**
 		 * This is the column index of the UID of the original work
-		 * @since 9.2.0
+		 * @since 10.0.0
 		 */
 		REPLICATEDUID {
 			/**
@@ -407,15 +407,16 @@ public class WorkInterface extends Table {
 		},
 		/**
 		 * This is the column index of the UID of the data to drive
-		 * @since 9.2.0
+		 * @since 10.0.0
 		 */
-		DATADRIVENUID {
+		DATADRIVENURI {
 			/**
 			 * This creates a new UID from string
+			 * @throws URISyntaxException 
 			 */
 			@Override
-			public UID fromString(String v) {
-				return new UID(v);
+			public URI fromString(String v) throws URISyntaxException {
+				return new URI(v);
 			}
 		},
 		/**
@@ -832,7 +833,7 @@ public class WorkInterface extends Table {
 		} catch (final Exception e) {
 		}
 		try {
-			setDataDriven((UID) Columns.DATADRIVENUID.fromResultSet(rs));
+			setDataDriven((URI) Columns.DATADRIVENURI.fromResultSet(rs));
 		} catch (final Exception e) {
 		}
 		try {
@@ -1000,18 +1001,18 @@ public class WorkInterface extends Table {
 	 * This retrieves the data driven by this work
 	 * 
 	 * @return this attribute, or null if not set
-	 * @since 9.2.0
+	 * @since 10.0.0
 	 */
-	public UID getDataDriven() {
+	public URI getDataDriven() {
 		try {
-			return (UID) getValue(Columns.DATADRIVENUID);
+			return (URI) getValue(Columns.DATADRIVENURI);
 		} catch (final Exception e) {
 			return null;
 		}
 	}
 	/**
 	 * This retrieves the original work
-	 * @since 9.2.0
+	 * @since 10.0.0
 	 * @return this attribute, or null if not set
 	 */
 	public UID getReplicatedUid() {
@@ -1445,7 +1446,7 @@ public class WorkInterface extends Table {
 	/**
 	 * This retrieves the current amount of submitted replica.
 	 * This forces the total amount of replica to 0, if not set
-	 * @since 9.2.0
+	 * @since 10.0.0
 	 * @return this attribute
 	 */
 	public final int getTotalReplica() {
@@ -1460,7 +1461,7 @@ public class WorkInterface extends Table {
 	/**
 	 * This retrieves the replica set size (how many replica can be run simultaneously).
 	 * This forces the replica set size to 0, if not set
-	 * @since 9.2.0
+	 * @since 10.0.0
 	 * @return this attribute
 	 */
 	public final int getReplicaSetSize() {
@@ -1475,7 +1476,7 @@ public class WorkInterface extends Table {
 	/**
 	 * This retrieves the amount of expected replica.
 	 * This forces the amount of expected replica to 0, if not set
-	 * @since 9.2.0
+	 * @since 10.0.0
 	 * @return this attribute
 	 */
 	public final int getExpectedReplications() {
@@ -1568,15 +1569,15 @@ public class WorkInterface extends Table {
 	 * 
 	 * @return true if job name modified (and thus this work should be updated),
 	 *         false otherwise
-	 * @since 9.2.0
+	 * @since 10.0.0
 	 */
-	public final boolean setDataDriven(UID v) {
-		return setValue(Columns.DATADRIVENUID, v);
+	public final boolean setDataDriven(final URI v) {
+		return setValue(Columns.DATADRIVENURI, v);
 	}
 
 	/**
 	 * This marks this work as a replication of the given work UID.
-	 * @since 9.2.0
+	 * @since 10.0.0
 	 * @param v is the original work UID
 	 * @return true if modified, false otherwise
 	 */
@@ -1587,7 +1588,7 @@ public class WorkInterface extends Table {
 	/**
 	 * This marks this work as a replication of the given work UID.
 	 * If (v != null), this work is marked as non replica-t-able (because we don't want to replicate a replica).
-	 * @since 9.2.0
+	 * @since 10.0.0
 	 * @param v is the original work UID
 	 * @return true if job name modified (and thus this work should be updated),
 	 *         false otherwise
@@ -2062,7 +2063,7 @@ public class WorkInterface extends Table {
 	/**
 	 * This sets the total amount of submitted replica
 	 * @return true if value has changed, false otherwise
-	 * @since 9.2.0
+	 * @since 10.0.0
 	 */
 	public final boolean setTotalReplica(int v) {
 		final Integer b = new Integer(v);
@@ -2072,7 +2073,7 @@ public class WorkInterface extends Table {
 	/**
 	 * This increments the total amount of submitted replica
 	 * @return true if value has changed, false otherwise
-	 * @since 9.2.0
+	 * @since 10.0.0
 	 */
 	public final boolean incTotalReplica() {
 		return setTotalReplica(getTotalReplica() + 1);
@@ -2081,7 +2082,7 @@ public class WorkInterface extends Table {
 	/**
 	 * This sets the amount of replica that can be computed simultaneously
 	 * @return true if value has changed, false otherwise
-	 * @since 9.2.0
+	 * @since 10.0.0
 	 */
 	public final boolean setReplicaSetSize(int v) {
 		final Integer b = new Integer(v);
@@ -2090,7 +2091,7 @@ public class WorkInterface extends Table {
 
 	/**
 	 * This sets the expected amount of replica
-	 * @since 9.2.0
+	 * @since 10.0.0
 	 * @return true if value has changed, false otherwise
 	 */
 	public final boolean setExpectedReplications(int v) {
