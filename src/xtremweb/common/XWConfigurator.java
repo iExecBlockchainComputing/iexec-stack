@@ -1476,6 +1476,54 @@ public final class XWConfigurator extends Properties {
 	}
 
 	/**
+	 * This sets and eventually creates a package directory
+	 * @param pkgName is the package name
+	 * @param dir is the package directory
+	 * @throws IOException
+	 * @since 10.0.0
+	 */
+	public void setPackageDir(final String pkgName, final String dir) throws IOException {
+		setPackageDir(pkgName, new File(dir));
+	}
+	/**
+	 * This sets and eventually creates a package directory
+	 * @param pkgName is the package name
+	 * @param dir is the package directory
+	 * @throws IOException
+	 * @since 10.0.0
+	 */
+	public void setPackageDir(final String pkgName, final File dir) throws IOException {
+		XWTools.checkDir(dir);
+		dir.deleteOnExit();
+		setProperty(XWTools.PACKAGENAMEHEADER + pkgName, dir.getAbsolutePath());
+	}
+
+	/**
+	 * This resets and eventually creates a package directory
+	 * @param pkgName is the package name
+	 * @param dir is the package directory
+	 * @throws IOException
+	 * @since 10.0.0
+	 */
+	public void resetPackageDir(final String pkgName) throws IOException {
+		setProperty(XWTools.PACKAGENAMEHEADER + pkgName, "");
+	}
+
+	/**
+	 * This retrieves a package directory
+	 * @param pkgName is the package name
+	 * @throws IOException
+	 * @since 10.0.0
+	 */
+	public File getPackageDir(final String pkgName) {
+		final String path = getProperty(XWTools.PACKAGENAMEHEADER + pkgName);
+		if((path == null) || (path.length() < 1)) {
+			return null;
+		}
+		return new File(path); 
+	}
+
+	/**
 	 * This retrieves the default cache dir; it is created if necessary
 	 * 
 	 * @exception IOException

@@ -156,6 +156,10 @@ public class XWTools {
 	public static final int BUFFEREND = 4096;
 
 	/**
+	 * @since 10.0.0
+	 */
+	public final static String PACKAGENAMEHEADER = "XWPKG_";
+	/**
 	 * This formats a date to String
 	 * 
 	 * @param d
