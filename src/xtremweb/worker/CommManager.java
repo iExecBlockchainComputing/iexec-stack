@@ -525,7 +525,7 @@ public final class CommManager extends Thread {
 	 *            is the work uid
 	 * 
 	 */
-	private void downloadWork(final WorkInterface w) throws IOException {
+	private void downloadWork(final Work w) throws IOException {
 
 		try {
 			downloadData(w.getStdin());
@@ -557,6 +557,7 @@ public final class CommManager extends Thread {
 				if(drivenData.getPackage().compareTo(sharedPkg) != 0) {
 					throw new IOException("Driven data package doesn't match : " + sharedPkg + " / " + drivenData.getPackage());
 				}
+				w.setPackage(sharedPkg);
 			} catch (Exception e) {
 				logger.exception(e);
 				throw new IOException("can't download driven data (" + e.getMessage()
@@ -823,7 +824,7 @@ public final class CommManager extends Thread {
 			}
 			commClient.lock(uri);
 			islocked = true;
-			URI datauri = data.getURI();
+			final URI datauri = data.getURI();
 			if (datauri != null) {
 				if (islocked) {
 					commClient.unlock(uri);
@@ -833,18 +834,15 @@ public final class CommManager extends Thread {
 				commClient.lock(uri);
 				islocked = true;
 			}
-			datauri = null;
 
 			commClient.addToCache(data, uri);
 
 			fdata = commClient.getContentFile(uri);
 			if (data.getType() == DataTypeEnum.BAT) {
-				UID uid = data.getUID();
-				String cmdname = uid.toString()
+				final UID uid = data.getUID();
+				final String cmdname = uid.toString()
 						+ DataTypeEnum.BAT.getFileExtension();
-				uid = null;
 				fdata = new File(fdata.getParentFile(), cmdname);
-				cmdname = null;
 				commClient.setContentFile(uri, fdata);
 			}
 
