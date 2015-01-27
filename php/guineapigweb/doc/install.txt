@@ -1,0 +1,172 @@
+Those are the steps to install this interface on a new environment :
+
+requirements
+------------
+VirtualHost with at least PHP 5.1.6 ( 5.2 recommanded )
+Access to a mysql database 
+the XtremWeb-HEP client has to be installed, you can find it at this address :
+http://xw.lri.fr:4330/XWHEP/v2/use.php
+and of course you need at least one standard account on XtremWeb-HEP LRI deployment to test it
+
+prepare directories
+-------------------
+
+make a working directory
+mkdir -p xwgp/svn; cd svn
+checkout the code :
+svn checkout svn://svn.code.sf.net/p/myciproject/code/trunk myciproject-code
+
+$CI_PATH is the path where you install CodeIgniter, and it is also the Apache DocumentRoot of your VirtualHost
+CI_PATH=~/xwgp/xwportal
+$SVN_PATH is the path where you checkout this svn
+SVN_PATH=~/xwgp/svn/myciproject-code 
+
+get codeigniter
+---------------
+
+wget http://downloads.codeigniter.com/reactor/CodeIgniter_2.0.2.zip
+unzip CodeIgniter_2.0.2.zip
+mv CodeIgniter_2.0.2 xwportal
+chmod o+rx nxwportal
+
+make symbolic links
+-------------------
+
+cd $CI_PATH/application/controllers
+ln -s $SVN_PATH/application/controllers/xwgp.php xwgp.php
+ln -s $SVN_PATH/application/controllers/sessions.php sessions.php
+cd $CI_PATH/application/models
+ln -s $SVN_PATH/application/models/xwgp_model.php xwgp_model.php
+ln -s $SVN_PATH/application/models/user.php user.php
+cd $CI_PATH/application/views
+ln -s $SVN_PATH/application/views/footer.php footer.php
+ln -s $SVN_PATH/application/views/xwgp_view.php xwgp_view.php
+ln -s $SVN_PATH/application/views/login.php login.php
+cd $CI_PATH/application/core
+ln -s $SVN_PATH/application/core/MY_Controller.php MY_Controller.php
+cd $CI_PATH
+ln -s $SVN_PATH/css css
+ln -s $SVN_PATH/images images
+ln -s $SVN_PATH/guineapig guineapig
+ln -s $SVN_PATH/js js
+
+create gpsimu SQL table
+-----------------------
+
+In $SVN_PATH/doc/gpsimu.sql there is the SQL request to create the gpsimu table
+
+set up specific variables
+-------------------------
+
+In $CI_PATH/application/config/routes.php :
+$route['default_controller'] = "xwgp";
+
+In $CI_PATH/application/config/config.php :
+$config['encryption_key'] = 'Ok voici la clef d"encryption';
+
+In $CI_PATH/application/config/database.php :
+$db['default']['hostname'] = 'localhost';
+$db['default']['username'] = '*****';
+$db['default']['password'] = '*****';
+$db['default']['database'] = '*****';
+$db['default']['dbdriver'] = 'mysql';
+
+In $CI_PATH/application/config/ add file xwgpconfig.php :
+<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+$config['portal_path'] = $CI_PATH;
+$config['users_dir'] = 'xwrun';
+$config['users_path'] = $config['portal_path'].'/'.$config['users_dir'];
+
+In $CI_PATH/application/config/autoload.php
+$autoload['config'] = array('xwgpconfig');
+
+create xwrun directory
+----------------------
+
+mkdir $CI_PATH/xwrun
+# apache needs to write in this directory
+chmod o+w $CI_PATH/xwrun
+
+XtremWeb_HEP configuration and keys
+-----------------------------------
+replace $CI_PATH by its value
+
+In $CI_PATH/xwrun create the file xtremweb.client.conf.lri.template, this is an example :
+
+xtremweb.role=client
+dispatcher.servers=xw.lri.fr
+login=@DEFAULTUSER@
+password=@DEFAULTPASSWORD@
+SSLKeyStore=$CI_PATH/xwrun/xwhepclient.lri.keys
+logger.level=@LOGGERLEVEL@
+
+as you can see you also have to copy the file xwhepclient.lri.keys
+
+get javascript libraries
+------------------------
+
+mkdir $CI_PATH/extjs ; cd $CI_PATH/extjs
+wget http://code.jquery.com/jquery-1.6.2.min.js
+mkdir jquery-ui; cd jquery-ui
+wget http://jqueryui.com/download/jquery-ui-1.8.16.custom.zip
+unzip jquery-ui-1.8.16.custom.zip
+
+cd $CI_PATH/extjs
+wget http://flot.googlecode.com/files/flot-0.7.tar.gz
+tar zxf flot-0.7.tar.gz
+
+create a shell script $CI_PATH/xwrun/goxwgp.sh for crontab
+----------------------------------------------------------
+replace $CI_PATH and $SVN_PATH by their values
+
+cd $CI_PATH/xwrun
+vim goxwgp.sh
+ 
+#/bin/bash
+# Start program
+echo "start"
+echo "-----"
+XWGP_PATH=$CI_PATH"/xwrun/"
+XWVERSION_PATH="/usr/bin/xwversion"
+SVN_PATH=$SVN_PATH
+source $SVN_PATH/shell/xwgp.sh
+scansimu
+# End program
+echo "end"
+echo "---"
+
+add it in crontab
+-----------------
+
+crontab -e
+*/1 * * * * /bin/bash $CI_PATH/xwrun/goxwgp.sh > $CI_PATH/xwrun/goxwgp.out
+
+example of Apache VirtualHost configuration
+-------------------------------------------
+
+Alias /xwportal $CI_PATH
+<Directory $CI_PATH>
+        Options FollowSymLinks
+        DirectoryIndex index.php
+        <IfModule mod_php5.c>
+                AddType application/x-httpd-php .php
+                php_flag magic_quotes_gpc Off
+                php_flag track_vars On
+                php_flag register_globals Off
+                php_value include_path .
+        </IfModule>
+</Directory>
+
+________________________________________________________________________________
+
+python library for generate a histogram : matplotlib
+----------------------------------------------------
+http://matplotlib.sourceforge.net/
+To install it on Debian : apt-get install python-matplotlib
+
+technique used for authentication:
+----------------------------------
+
+http://davidwinter.me/articles/2011/01/29/authentication-with-codeigniter-2-0/
+
+

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry excluding="xtremweb/testbed/" kind="src" path="src"/>
+	<classpathentry kind="lib" path="build/lib/ant-antlr-1.6.jar"/>
+	<classpathentry kind="lib" path="build/lib/ant-antlr.jar"/>
+	<classpathentry kind="lib" path="build/lib/ant-launcher.jar"/>
+	<classpathentry kind="lib" path="build/lib/ant-nodeps.jar"/>
+	<classpathentry kind="lib" path="build/lib/ant-stylebook.jar"/>
+	<classpathentry kind="lib" path="build/lib/ant-xslp.jar"/>
+	<classpathentry kind="lib" path="build/lib/ant.jar"/>
+	<classpathentry kind="lib" path="build/lib/jarbundler-1.8.1.jar"/>
+	<classpathentry kind="lib" path="build/lib/optional.jar"/>
+	<classpathentry kind="lib" path="build/lib/xercesImpl.jar"/>
+	<classpathentry kind="lib" path="build/lib/xml-apis.jar"/>
+	<classpathentry kind="lib" path="classes/activation.jar"/>
+	<classpathentry kind="lib" path="classes/antlr.jar"/>
+	<classpathentry kind="lib" path="classes/jcert.jar"/>
+	<classpathentry kind="lib" path="classes/MinML.jar"/>
+	<classpathentry kind="lib" path="classes/pop3.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="classes/smartsockets-1.4.jar"/>
+	<classpathentry kind="lib" path="classes/jetty-6.1.7.jar"/>
+	<classpathentry kind="lib" path="classes/jetty-util-6.1.7.jar"/>
+	<classpathentry kind="lib" path="classes/attic-all-0.3.jar"/>
+	<classpathentry kind="lib" path="classes/bcprov-jdk16-140.jar"/>
+	<classpathentry kind="lib" path="classes/commons-codec-1.3.jar"/>
+	<classpathentry kind="lib" path="classes/commons-fileupload-1.2.jar"/>
+	<classpathentry kind="lib" path="classes/commons-httpclient-3.0.1.jar"/>
+	<classpathentry kind="lib" path="classes/commons-io-1.3.2.jar"/>
+	<classpathentry kind="lib" path="classes/commons-logging-1.1.jar"/>
+	<classpathentry kind="lib" path="classes/hsqldb-2.0.1.jar"/>
+	<classpathentry kind="lib" path="classes/ibis-util-2.1.jar"/>
+	<classpathentry kind="lib" path="classes/log4j-1.2.9.jar"/>
+	<classpathentry kind="lib" path="classes/mysql-connector-java-5.1.6-bin.jar"/>
+	<classpathentry kind="lib" path="classes/servlet-api-2.5-6.1.5.jar"/>
+	<classpathentry kind="lib" path="classes/slf4j-api-1.5.3.jar"/>
+	<classpathentry kind="lib" path="classes/slf4j-log4j12-1.5.3.jar"/>
+	<classpathentry kind="output" path="src"/>
+</classpath>

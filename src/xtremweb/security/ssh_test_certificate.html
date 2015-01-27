@@ -1,0 +1,265 @@
+<!--
+ * Copyrights     : CNRS
+ * Author         : Oleg Lodygensky
+ * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
+ * Web            : http://www.xtremweb-hep.org
+ * 
+ *      This file is part of XtremWeb-HEP.
+ *
+ *    XtremWeb-HEP is free software: you can redistribute it and/or modify
+ *    it under the terms of the GNU General Public License as published by
+ *    the Free Software Foundation, either version 3 of the License, or
+ *    (at your option) any later version.
+ *
+ *    XtremWeb-HEP is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *    GNU General Public License for more details.
+ *
+ *    You should have received a copy of the GNU General Public License
+ *    along with XtremWeb-HEP.  If not, see <http://www.gnu.org/licenses/>.
+ *
+-->
+
+
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+  <HEAD>
+    <META name="generator" content="HTML Tidy, see www.w3.org">
+    <META http-equiv="expires" content="86400">
+    <META name="author" content="AKADIA Information Technology AG">
+    <META name="description" content="AKADIA Information Technology AG, Bern, Schweiz">
+    <META name="distribution" content="global">
+    <LINK rel="stylesheet" href="http://www.akadia.com/docroot/css/website.css" type="text/css">
+    <TITLE>
+      How to create a self-signed Certificate
+    </TITLE>
+  </HEAD>
+  <BODY bgcolor="#FFFFFF" text="#000000" vlink="#0000FF" alink="#0000FF" leftmargin="20">
+    <TABLE border="0" cellpadding="0" cellspacing="0" width="778" height="20">
+      <TR>
+        <TD valign="top" colspan="2" width="778">
+          &nbsp;&nbsp;
+        </TD>
+      </TR>
+      <TR>
+        <TD valign="top" width="153" height="51">
+          <A href="javascript:history.back()"><IMG src="../img/zurueck.gif" alt="Zur&uuml;ck"
+          border="0" width="76" height="19"></A> 
+        </TD>
+        <TD valign="top" height="17" width="625">
+          <H1>
+            <SPAN lang="en-us">How to create a self-signed</SPAN> SSL <SPAN lang=
+            "en-us">Certificate ...</SPAN>
+          </H1>
+          <P class="big">
+            <SPAN style="font-weight: 400" lang="en-us">...&nbsp; which can be used for testing
+            purposes or internal usage</SPAN>
+          </P>
+          <HR color="#34B389" noshade>
+        </TD>
+      </TR>
+      <TR>
+        <TD valign="top" colspan="2" height="74" width="778">
+          <P class="big">
+            <SPAN lang="en-us">Overview</SPAN>
+          </P>
+          <BLOCKQUOTE>
+            <P>
+              <SPAN lang="en-us">The following is an extremely simplified view of how SSL is
+              implemented and what part the certificate plays in the entire process.</SPAN>
+            </P>
+            <P>
+              <SPAN lang="en-us">Normal web traffic is sent unencrypted over the Internet. That is,
+              anyone with access to the right tools can snoop all of that traffic. Obviously, this
+              can lead to problems, especially where security and privacy is necessary, such as in
+              credit card data and bank transactions. The Secure Socket Layer is used to encrypt
+              the data stream between the web server and the web client (the browser).</SPAN>
+            </P>
+            <P>
+              <SPAN lang="en-us">SSL makes use of what is known as <B>asymmetric cryptography</B>,
+              commonly referred to as <B>public key cryptography (PKI)</B>. With public key
+              cryptography, two keys are created, one public, one private. Anything encrypted with
+              either key can only be decrypted with its corresponding key. Thus if a message or
+              data stream were encrypted with the server's private key, it can be decrypted only
+              using its corresponding public key, ensuring that the data only could have come from
+              the server.</SPAN>
+            </P>
+            <P>
+              <SPAN lang="en-us">If SSL utilizes public key cryptography to encrypt the data stream
+              traveling over the Internet, why is a certificate necessary? The technical answer to
+              that question is that a certificate is not really necessary</SPAN> - <SPAN lang=
+              "en-us">the data is secure and cannot easily be decrypted by a third party. However,
+              certificates do serve a crucial role in the communication process. The certificate,
+              signed by a trusted Certificate Authority (CA), ensures that the certificate holder
+              is really who he claims to be. Without a trusted signed certificate, your data may be
+              encrypted, however, the party you are communicating with may not be whom you think.
+              Without certificates, impersonation attacks would be much more common.</SPAN>
+            </P>
+          </BLOCKQUOTE>
+          <P class="big">
+            Step 1: <SPAN lang="en-us">Gener</SPAN>ate a <SPAN lang="en-us">Private Key</SPAN>
+          </P>
+          <BLOCKQUOTE>
+            <P class="normal">
+              <SPAN lang="en-us">The <B>openssl</B> toolkit is used to generate an <B>RSA Private
+              Key</B> and <B>CSR (Certificate Signing Request)</B>. It can also be used to generate
+              self-signed certificates which can be used for testing purposes or internal
+              usage.</SPAN>
+            </P>
+            <P class="normal">
+              <SPAN lang="en-us">The first step is to create your RSA Private Key. This key is a
+              1024 bit RSA key which is encrypted using Triple-DES and stored in a PEM format so
+              that it is readable as ASCII text.</SPAN>
+            </P>
+            <P class="courier">
+              <B>openssl genrsa -des3 -out server.key 1024<BR>
+              <BR>
+              </B> <FONT color="#0000FF">Generating RSA private key, 1024 bit long modulus<BR>
+               .........................................................++++++<BR>
+               ........++++++<BR>
+               e is 65537 (0x10001)<BR>
+               Enter PEM pass phrase:<BR>
+               Verifying password - Enter PEM pass phrase:</FONT>
+            </P>
+          </BLOCKQUOTE>
+          <P class="big">
+            Step 2: Generate a CSR (Certificate Signing Request)
+          </P>
+          <BLOCKQUOTE>
+            <P class="normal">
+              Once the private key is generated a Certificate Signing Request can be generated. The
+              CSR is then used in one of two ways. Ideally, the CSR will be sent to a Certificate
+              Authority, such as Thawte or Verisign who will verify the identity of the requestor
+              and issue a signed certificate. <B>The second option is to self-sign the CSR, which
+              will be demonstrated in the next section</B>.
+            </P>
+            <P class="normal">
+              During the generation of the CSR, you will be prompted for several pieces of
+              information. These are the X.509 attributes of the certificate. One of the prompts
+              will be for "Common Name (e.g., YOUR name)". It is important that this field be
+              filled in with the fully qualified domain name of the server to be protected by SSL.
+              If the website to be protected will be https://public.akadia.com, then enter
+              public.akadia.com at this prompt. The command to generate the CSR is as follows:
+            </P>
+            <P class="courier">
+              <B>openssl req -new -key server.key -out server.csr<BR>
+              <BR>
+              </B> <FONT color="#0000FF">Country Name (2 letter code) [GB]</FONT>:<B>CH</B><BR>
+               <FONT color="#0000FF">State or Province Name (full name)
+              [Berkshire]</FONT>:<B>Bern</B><BR>
+               <FONT color="#0000FF">Locality Name (eg, city)
+              [Newbury]</FONT>:<B>Oberdiessbach</B><BR>
+               <FONT color="#0000FF">Organization Name (eg, company) [My Company
+              Ltd]</FONT>:<B>Akadia AG</B><BR>
+               <FONT color="#0000FF">Organizational Unit Name (eg, section)
+              []</FONT>:<B>Information Technology</B><BR>
+               <FONT color="#0000FF">Common Name (eg, your name or your server's hostname)
+              []</FONT>:<B>public.akadia.com</B><BR>
+               <FONT color="#0000FF">Email Address []</FONT>:<B>martin dot zahn at akadia dot ch</B><BR>
+               <FONT color="#0000FF">Please enter the following 'extra' attributes<BR>
+               to be sent with your certificate request<BR>
+               A challenge password []:<BR>
+               An optional company name []:</FONT>
+            </P>
+          </BLOCKQUOTE>
+          <P class="big">
+            Step 3: Remove Passphrase from Key
+          </P>
+          <BLOCKQUOTE>
+            <P class="normal">
+              One unfortunate side-effect of the pass-phrased private key is <B>that Apache will
+              ask for the pass-phrase each time the web server is started</B>. Obviously this is
+              not necessarily convenient as someone will not always be around to type in the
+              pass-phrase, such as after a reboot or crash. mod_ssl includes the ability to use an
+              external program in place of the built-in pass-phrase dialog, however, this is not
+              necessarily the most secure option either. <B>It is possible to remove the Triple-DES
+              encryption from the key</B>, thereby no longer needing to type in a pass-phrase. If
+              the private key is no longer encrypted, it is critical that this file only be
+              readable by the root user! If your system is ever compromised and a third party
+              obtains your unencrypted private key, the corresponding certificate will need to be
+              revoked. With that being said, use the following command to remove the pass-phrase
+              from the key:
+            </P>
+            <P class="courier">
+              <B>cp server.key server.key.org<BR>
+               openssl rsa -in server.key.org -out server.key</B>
+            </P>
+            <P>
+              The newly created server.key file has no more passphrase in it.
+            </P>
+            <P class="courier">
+              <FONT color="#0000FF">-rw-r--r-- 1 root root 745 Jun 29 12:19 server.csr<BR>
+               -rw-r--r-- 1 root root 891 Jun 29 13:22 server.key<BR>
+               -rw-r--r-- 1 root root 963 Jun 29 13:22 server.key.org</FONT>
+            </P>
+          </BLOCKQUOTE>
+          <P class="big">
+            Step 4: Generating a Self-Signed Certificate
+          </P>
+          <BLOCKQUOTE>
+            <P>
+              At this point you will need to generate a self-signed certificate because you either
+              don't plan on having your certificate signed by a CA, or you wish to test your new
+              SSL implementation while the CA is signing your certificate. This temporary
+              certificate will generate an error in the client browser to the effect that the
+              signing certificate authority is unknown and not trusted.
+            </P>
+            <P>
+              To generate a temporary certificate which is good for 365 days, issue the following
+              command:
+            </P>
+            <P class="courier">
+              <B>openssl x509 -req -days 365 -in server.csr -signkey server.key -out
+              server.crt</B><BR>
+               <FONT color="#0000FF">Signature ok<BR>
+               subject=/C=CH/ST=Bern/L=Oberdiessbach/O=Akadia AG/OU=Information<BR>
+               Technology/CN=public.akadia.com/Email=martin dot zahn at akadia dot ch<BR>
+               Getting Private key</FONT>
+            </P>
+          </BLOCKQUOTE>
+          <P class="big">
+            Step 5: Installing the Private Key and Certificate
+          </P>
+          <BLOCKQUOTE>
+            <P>
+              When Apache with mod_ssl is installed, it creates several directories in the Apache
+              config directory. The location of this directory will differ depending on how Apache
+              was compiled.
+            </P>
+            <P class="courier">
+              <B>cp server.crt /usr/local/apache/conf/ssl.crt<BR>
+               cp server.key /usr/local/apache/conf/ssl.key</B>
+            </P>
+          </BLOCKQUOTE>
+          <P class="big">
+            Step 6: Configuring SSL Enabled Virtual Hosts
+          </P>
+          <BLOCKQUOTE>
+            <P class="courier">
+              <B>SSLEngine on<BR>
+               SSLCertificateFile /usr/local/apache/conf/ssl.crt/server.crt<BR>
+               SSLCertificateKeyFile /usr/local/apache/conf/ssl.key/server.key<BR>
+               SetEnvIf User-Agent ".*MSIE.*" nokeepalive ssl-unclean-shutdown<BR>
+               CustomLog logs/ssl_request_log \<BR>
+               &nbsp;&nbsp; "%t %h %{SSL_PROTOCOL}x %{SSL_CIPHER}x \"%r\" %b"</B>
+            </P>
+          </BLOCKQUOTE>
+          <P class="big">
+            <B>Step 7: Restart Apache and Test</B>
+          </P>
+          <BLOCKQUOTE>
+            <P class="courier">
+              <B>/etc/init.d/httpd stop<BR>
+               /etc/init.d/httpd stop</B>
+            </P>
+            <P class="courier">
+              <B>https://public.akadia.com</B>
+            </P>
+          </BLOCKQUOTE>
+        </TD>
+      </TR>
+    </TABLE>
+  </BODY>
+</HTML>

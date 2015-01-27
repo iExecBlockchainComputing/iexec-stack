@@ -1,0 +1,168 @@
+{PHPHTML} HOWTO
+
+Author: Geraud P. Krawezik (gk@lri.fr)
+
+1. Introduction
+2. Page Creation
+3. Template files and template instructions
+
+1. Introduction
+1.1 Why {PHPTMPL}?
+When designing a web site, one always faces the same problems:
+- how to separate the layout of the pages from the contents?
+- how to quickly change from one layout or graphical aspect to another?
+- how to update quickly the contents without having to do undreds of updates
+
+{PHPTMPL} is designed to enable web designers, graphics designers and 'contents maker' to work in perfect harmony and produce efficient sites quickly, without needing lots of knowledge about JavaScript, Java, HTML or PHP. Each member stays in his own domain, without needing to look into code he may experience difficulties to understand.
+
+{PHPTMPL} is based on an Object-Oriented model. But no need to be a C++ or Java expert to use it, neither a PHP one. Everything is explained in the following lines. I have chosen this model as it seems to be very convenient with the goals of {PHPTMPL}.
+
+1.2 Structure of a web site
+The structure can be represented as the following tree:
+
+Site
+ |
+ |__ Section 1
+ |       |
+ |       |__ SubSection 1.1 -> content
+ |       |__ SubSection 1.2 -> content
+ |
+ |__ Section 2
+         |
+	 |__ SubSection 2.1 -> content
+         |__ SubSection 2.2 -> content
+	 |__ SubSection 2.3 -> content
+
+  ...
+
+The content of a SubSection can be:
+- a String (then it will be displayed)
+- a text file (including HTML pages)
+- a PHP program which will be evaluated
+
+They all will be presented according to the layouts defined in the templates files
+
+
+2. Page Creation (for the main developper of the site)
+2.0 Generalities
+Here are presented the PHP functions you will need to create a site, add contents to it (through sections and subsections), and display it to the visitor of yur web site.
+
+To use those functions, you just need to 
+
+  include "[path to phptmpl]/PHPTMPL.php";
+
+at the beginning of the main page of your site (which should usually be index.html or index.php).
+
+2.1 Site
+2.1.1 Creating a new Site
+Site(string name, string title, string url, boolean [hiddenParameters], string [templatePage], string [templatesDir]);
+- name: the internal name, mainly used as a dummy argument, for example in generic structutres like 'name_background.gif'
+- title: the title in 'clear' as it is for example displayed in the browser head
+- url: the complete or relative URL of the file
+Options:
+- hiddenParameters: a flag used to tell if the parameters (section, subsection) shall be passed through POST or GET. In the first case, they will be put inside a <FORM> and will not appear in the address (as url?section=***&subsection=***). The Problem is that if you choose this, and have another <FORM> inside your pages, you will lose the value of section and subsection... Of course you can use action=url?section=***&subsection=***, but then you lose the advantage of using POST parameters.
+As a conclution: use hiddenParameters for raw HTML or PHP involving no <FORM>'s, do not use it otherwise.
+- templatePage: this is the name of the page to be used as a template for the page main layout. by default, it is {PAGE}.html
+- templatesDir: the directory where PHPTMPL needs to go to get the templates files. You can also use sub directories inside this one.
+
+2.1.2 Displaying the site
+$[siteName]->toString();
+
+2.2 Section
+2.2.1 Creating a new Section
+Section(string name, string title);
+- name: the internal name of the Section. This can be used for image name purposes for example. IOt is also used as an argument to the {LINKTO()} template function.
+- title: the explicit name of the Section, as it will be displayed to the visitor browsing your web pages for example.
+
+2.2.2 Adding a Section to a site
+You just need to use:
+
+  $<siteName>->add($<sectionName>);
+
+You can also add invisible sections using the syntax:
+
+  $<siteName>->addInvisible($<sectionName>);
+
+Invisible sections are accessible, but will not be displayer in Sections lists when using constructs such as {FORALL(SECTION,*)}. They shall be used for pages that are needed, but do not really need to be displayed in menus or table of contents. The best example is for example if you intend to build a particular section for errors. Then you want it to exist, but surely not to be displayed in menus... Thus you will make it invisible.
+
+2.2.3 Passing a variable to the contents file
+Just use:
+
+  $<siteName>->addVariable("VARIABLE-NAME",VARIABLE-VALUE);
+
+This is to be used if you modify the variable value inside the index file, or creates this value (for example after checking it does not exist)
+
+2.3 Subsection
+2.3.0 Presentation
+Subsections are probably one of the most important elements in {PHPTMPL}, as they are the ones which contain the real 'contents' of the website (ie, texts, images, etc...)
+The contents of a subsection can be of different type: pure text, text embedding HTML, PHP program, image, or even a simple String.
+
+2.3.1 Creating a new subsection
+Subsection($name, $title, $linksToContents);
+- name: the internal name of the Subsection. This can be used for image name purposes for example. It is also used as an argument to the {LINKTO()} template function.
+- title:  the explicit name of the Subsection, as it will be displayed to the visitor browsing your web pages for example.
+- linkToContents: the contents, which can be a single string, or a url, relative or absolute, to a plain text file, an HTML page, or a PHP program.
+
+2.3.2 Adding a subsection to a section
+Just use the following:
+
+  $<sectionName>->add($<subsectionName>);
+
+You can also add invisible subsections:
+
+  $<subsectionName>->addInvisible($<subsectionName>);
+
+2.3.3 Notes about PHP programs
+As only contents files ending with '.php' or '.php3' will be evaluated as PHP programs, it is very important that you take care of this aspect when using such files with the template engine.
+
+
+3. Template files and template instructions (for the designer of the layout)
+3.1 Site functions
+{SITE-NAME}: name of the site
+{SITE-TITLE}: title of the site
+{SITE-URL}: URL of the site
+{SITE-NBSECTIONS}: number of visible sections in this site
+{SITE-SECTION[INDEX]}: name of the INDEX-th visible section of the site
+
+3.2 Section functions
+{SECTION-NAME}: name of the current section
+{SECTION-TITLE}: title of the current section
+{SECTION-INDEX}: index of the current section in the VISIBLE sections: be carefule, they start at 1!!
+{SECTION-DISPLAYED}: name of the section being displayed 
+{SECTION-NBSUBSECTIONS}: number of visible subsections in the current section
+{SECTION-SUBSECTION[INDEX]}: name of the INDEX-th visible subsection of the current section
+
+3.3 Subsection functions
+{SUBSECTION-NAME}: name of the current subsection
+{SUBSECTION-TITLE}: title of the current subsection
+{SUBSECTION-INDEX}: index of the current subsection in the VISIBLE ones: be careful, they start at 1!!
+{SUBSECTION-DISPLAYED}: name of the subsection being displayed
+{SUBSECTION-CONTENTS}: contents of the current subsection 
+
+3.4 Loop structure
+{FORALL(TYPE,ACTION)}
+Where TYPE is SECTION or SUBSECTION
+- SECTION: loops through the site's sections and executes ACTION for each visible one
+- SUBSECTION: loops through the current section subsections and executes ACTION for each visible one
+
+3.5 Control structures
+In the two following functions, TEST must be a PHP boolean expression. Of course, it can itself contain templates
+{IFTHEN(TEST,ACTION)}: execute ACTION if TEST is true
+{IFTHENELSE(TEST,ACTION1,ACTION2)}: execute ACTION1 if TEST is true, ACTION2 if not
+
+3.6 Mathematical function
+{EVAL(EXPRESSION)}: evals the EXPRESSION as a mathematical expression
+
+3.7 Link
+{LINKTO(SECTION,SUBSECTION)}: creates a link to SECTION, SUBSECTION
+If SUBSECTION is "", then the link is created to the first Subsection of SECTION
+This funcion gives back a warning if the SECTION/SUBSECTION does not exist in the site
+
+3.8 Forms
+{ACTION(SECTION,SUBSECTION)}: in a <FORM>, creates two HIDDEN parameters SECTION
+and SUBSECTION, that will be used to choose the 'action'  of the form
+
+3.9 PHP interaction
+{PHP(ACTION)}: Evaluates the PHP code of ACTION: be careful that it must be fully PHP: no HTML tags inside...
+This is useful for template files since in contents file using PHP is authorized
+{VAR(VARIABLE-NAME)}: Returns the value of the given variable

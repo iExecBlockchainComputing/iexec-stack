@@ -1,0 +1,19 @@
+#!/bin/bash -x
+oned stop
+/etc/init.d/oned stop
+kill -9 $(ps aux | grep oneadmin | grep -v grep | awk '{print \$2}')
+mysql -uroot -proot -e \"drop database opennebula;\"
+userdel -r oneadmin
+groupdel cloud
+service mysqld stop
+yum remove one stratuslab-cli-sysadmin stratuslab-cli-user mysql mysql-server dhcp stratuslab-one-proxy stratuslab-cloud-proxy stratuslab-authn-config -y
+yum update -y --nogpgcheck dhclient || true
+rm -rf /etc/stratuslab
+rm -rf /var/lib/mysql
+rm -rf /home/oneadmin
+rm -rf /var/lib/one
+rm -rf /var/log/one
+rm -rf /instances
+rm -rf /var/lib/stratuslab
+rm -rf /var/log/stratuslab
+rm -f /root/.ssh/known_hosts

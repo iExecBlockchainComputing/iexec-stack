@@ -1,0 +1,16 @@
+*.ppt
+*.odp
+*.odt
+*.pages
+*.doc
+*.key
+.svn
+*log
+*zip
+*gz
+*out
+*sav
+.DS_Store
+*~
+databases/*.sql
+datas/*.out

@@ -1,0 +1,269 @@
+body 
+{
+background:white;
+font-size:20px;
+}
+.menuprincipal
+{
+text-align:justify;
+padding-right:50px;
+padding-left:90px;
+font-size:16px;
+color:back;
+text-decoration:none;
+}
+a:hover.menuprincipal
+{
+color:#b4ff44;
+text-decoration:overline underline;
+}
+a.videos
+{
+color:#578417;
+text-decoration:none;
+}
+a:hover.videos
+{
+color:#578417;
+text-decoration:overline underline;
+}
+
+
+hr {
+margin-top:50px;
+margin-left:100px; 
+margin-right:100px;
+}
+
+ul.liste { 
+  position:absolute;
+  top:15px;
+  left:15px;
+  width:300px;
+  background: transparent;
+  margin: 0px 0px 0px 0px;
+  padding-left: 75px;
+}
+/*
+li { 
+  color: white;
+  background: #3366cc;
+  margin: 12px 12px 12px 12px;
+  padding: 12px 0px 12px 12px;
+  list-style: none;
+}
+*/
+ul.capable{list-style-type: none;padding: 0;margin-left: 35px;}
+li.enable { 
+  color: black;
+  background : transparent url(../images/enable.png) no-repeat 0pt 0px ;
+  padding: 5px 0px 0px 35px;
+}
+li.disable { 
+  color: black;
+  background : transparent url(../images/disable.png) no-repeat 0pt 0px ;
+  padding: 5px 0px 0px 35px;
+}
+li.icone { 
+  color: black;
+  background : transparent url(../images/video20x20.png) no-repeat 0pt 0px ;
+  padding: 5px 0px 0px 25px;
+}
+li.icone2 { 
+  color: black;
+  background : transparent url(../images/video25x25.png) no-repeat 0pt 0px ;
+  padding: 5px 0px 5px 30px;
+}
+div#textelettre
+{
+/*
+border: solid 1px #701b14;
+background:#CC9966;
+*/
+padding:20px;
+margin-top:5px;
+}
+.abstract
+{
+font-style:italic;
+font-size:16px;
+text-align:justify;
+padding-left:50px;
+padding-right:50px;
+margin-top:5px;
+}
+.author
+{
+font-size:18px;
+text-align:right;
+padding-left:50px;
+padding-right:50px;
+margin-top:5px;
+}
+div.container
+{
+width:900px;
+margin-left:100px;
+border:1px solid gray;
+line-height:150%;
+background:transparent url(../images/rpamtile_v6.jpg) repeat-y scroll top left;
+}
+div.header
+{
+font-size:36px;
+padding-left:100px;
+clear:left;
+}
+div.footer
+{
+padding:0.5em;
+color:white;
+background-color:gray;
+clear:left;
+}
+h1.header
+{
+padding:0;
+margin:0;
+}
+div.internsep
+{
+padding:15px;
+float:left;
+}
+div.interngauche{
+float:left;
+clear:left;
+width:300px;
+}
+div.interndroite{
+width:300px;
+float:left;
+}
+div.gauche
+{
+/*
+border-style:outset;
+*/
+float:left;
+clear:left;
+margin:0;
+padding:10px;
+}
+div.droite
+{
+margin-left:211px;
+margin-top:320px;
+clear:right;
+}
+div.deuxdiv
+{
+text-align:justify;
+font-size:16px;
+padding:5px;
+float:left;
+width:670px;
+clear:right;
+}
+img#titre_site
+{
+height:150px;
+width: 450px;
+padding: 5px 10px;
+vertical-align:top
+}
+img#titre_site_bas
+{
+position:absolute;
+top:190px;
+left:110px;
+}
+
+div.lettres
+{
+background: transparent url(../images/fond_listlettres2.gif) no-repeat scroll top left;
+height: 340px;
+width: 300px;
+margin-top:5px;
+padding-top:40px;
+margin-right:40px;
+border: solid 0px green;
+}
+div.lettre
+{
+overflow : hidden;
+height: 255px;
+width: 280px;
+padding:10px 0px 0px 20px;
+border: solid 0px red;
+}
+.titre_app
+{
+font-size:32px;
+padding-left:70px;
+text-align:center;
+}
+img#wadd
+{
+margin:0;
+padding :0;
+border: none;
+height: 200px;
+width: 136px;
+vertical-align:top;
+}
+div#menuThemes
+{
+/*
+position: absolute;
+top: 280px;
+left: 90px;
+*/
+width: 180px;
+overflow:visible;
+border: solid 1px black;
+/*
+background: white repeat scroll center;
+*/
+background: transparent url(../images/bgthemes.jpg) repeat scroll center;
+padding-left: 25px;
+margin-left: -25px;
+margin-top: 20px;
+}
+div#titreThemes
+{
+font-size:24px;
+color:#6D3800;
+text-decoration:none;
+padding:10px 0px 0px 40px;
+width:90px;
+text-align:center;
+}
+div#rubriqueVideos
+{
+border: 0px solid white;
+color:black;
+}
+h3.spip
+{
+color:black;
+}
+p.menuthemes
+{
+font-size:16px;
+padding:10px 0px 0px 30px;
+}
+p.menuthemes_selected
+{
+font-size:18px;
+color:#701b14;
+font-variant: small-caps;
+text-decoration:underline overline;
+padding:10px 0px 0px 50px;
+}
+p.menuthemes_selected:first-letter
+{
+/*
+color:red;
+*/
+}

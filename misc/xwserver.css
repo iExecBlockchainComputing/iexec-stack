@@ -1,0 +1,571 @@
+/*
+ *
+ * Copyrights     : CNRS
+ * Author         : Oleg Lodygensky
+ * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
+ * Web            : http://www.xtremweb-hep.org
+ * Since          : 8.1.0
+ * 
+ *      This file is part of XtremWeb-HEP.
+ *
+ *    XtremWeb-HEP is free software: you can redistribute it and/or modify
+ *    it under the terms of the GNU General Public License as published by
+ *    the Free Software Foundation, either version 3 of the License, or
+ *    (at your option) any later version.
+ *
+ *    XtremWeb-HEP is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *    GNU General Public License for more details.
+ *
+ *    You should have received a copy of the GNU General Public License
+ *    along with XtremWeb-HEP.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *
+ *
+ */
+
+body
+{
+font-family : Times New Roman, Times;
+font-size : 16;
+background-color: #545454;
+padding:0% 5% 0% 5%;
+width:90%;
+text-align:center;
+}
+
+.basdepage {
+padding: 15px;
+clear: left;
+float: left;
+background-color:#a0a0a0;
+font-style: italic;
+text-align:right
+}
+
+div
+{
+width: 800px;
+text-align : center;
+}
+
+.titre
+{
+  float:left;
+  font-size : 24px;
+  text-align : left;
+  vertical-align : middle;
+  background-color:#a0a0a0;
+  color : #050064;
+  height:100px;
+}
+
+.tabtitre
+{
+border-top-left-radius: 15px;
+border-top-right-radius: 15px;
+float:left;
+font-size : 18px;
+font-style : italic;
+text-align : center;
+background-color:#a0a0a0;
+color : white;
+margin-bottom:1px;
+padding-bottom:10px;
+margin-bottom:5px;
+}
+
+.tabcontent {
+  display:block;
+}
+
+.tabtrailer
+{
+border-bottom-left-radius: 15px;
+border-bottom-right-radius: 15px;
+clear:both;
+float:right;
+border:0px solid grey;
+}
+
+.modalpane
+{
+width:500px;
+border-radius: 15px;
+padding:3px;
+font-size: 14px;
+text-align : center;
+background-color : lightgrey;
+color : #050064;
+float:left;
+clear:both;
+}
+
+.modaltitre
+{
+border-top-left-radius: 15px;
+border-top-right-radius: 15px;
+float:left;
+font-size : 16px;
+font-style : italic;
+text-align : center;
+background-color:#a0a0a0;
+color : white;
+margin-bottom:1px;
+padding-bottom:10px;
+margin-bottom:5px;
+width:500px;
+clear:both;
+}
+
+.modaltitreerror
+{
+border-top-left-radius: 15px;
+border-top-right-radius: 15px;
+float:left;
+font-size : 16px;
+font-style : italic;
+text-align : center;
+background-color:red;
+color : white;
+margin-bottom:1px;
+padding-bottom:10px;
+margin-bottom:5px;
+width:500px;
+clear:both;
+}
+
+.modaltitrewarning
+{
+border-top-left-radius: 15px;
+border-top-right-radius: 15px;
+float:left;
+font-size : 16px;
+font-style : italic;
+text-align : center;
+background-color:#ffa500;
+color : white;
+margin-bottom:1px;
+padding-bottom:10px;
+margin-bottom:5px;
+width:500px;
+clear:both;
+}
+
+.modalcontent {
+}
+
+.modaltrailer
+{
+  background-color:#a0a0a0;
+  width:500px;
+  border-bottom-left-radius: 15px;
+  border-bottom-right-radius: 15px;
+  clear:both;
+  float:left;
+  border:0px solid grey;
+}
+div.selection {
+  width:490px;
+  overflow:hidden;
+}
+.chapter
+{
+  display:block;
+  border-top-left-radius: 15px;
+  border-top-right-radius: 15px;
+  border-bottom-left-radius: 15px;
+  border-bottom-right-radius: 15px;
+  float:left;
+  font-size : 16px;
+  font-style : italic;
+  text-align : center;
+  background-color:lightgrey;
+  color : white;
+  margin-bottom:1px;
+  margin-left:1px;
+  padding-left:2px;
+  padding-right:2px;
+  padding-bottom:10px;
+  margin-bottom:5px;
+}
+
+.chaptertitre
+{
+  width:100%;
+  border-top-left-radius: 15px;
+  border-top-right-radius: 15px;
+  float:left;
+  font-size : 16px;
+  font-style : italic;
+  text-align : center;
+  background-color:#a0a0a0;
+  color : white;
+}
+
+.chaptercontent {
+  background-color:white;
+}
+
+.chaptertrailer
+{
+  width:100%;
+  background-color:#a0a0a0;
+  color : white;
+  border-bottom-left-radius: 15px;
+  border-bottom-right-radius: 15px;
+  clear:both;
+  margin-bottom:15px;
+}
+.overviewleft {
+  padding: 2px 5px 2px 4px;
+  float:left;
+  clear:left;
+  width:45%;
+}
+.overviewright {
+  padding: 2px 4px 2px 4px;
+  float:right;
+  clear:right;
+  width:45%;
+  overflow:hidden;
+  white-space:nowrap;
+}
+.overviewchapter
+{
+  overflow:hidden;
+  display:block;
+  border-top-left-radius: 15px;
+  border-top-right-radius: 15px;
+  border-bottom-left-radius: 15px;
+  border-bottom-right-radius: 15px;
+  float:left;
+  font-size : 16px;
+  font-style : italic;
+  text-align : center;
+  background-color:lightgrey;
+  color : white;
+  margin-bottom:1px;
+  margin-left:1px;
+  padding-left:2px;
+  padding-right:2px;
+  padding-bottom:10px;
+  margin-bottom:5px;
+}
+
+.overviewchaptertitre
+{
+  width:100%;
+  border-top-left-radius: 15px;
+  border-top-right-radius: 15px;
+  float:left;
+  font-size : 16px;
+  font-style : italic;
+  text-align : center;
+  background-color:#a0a0a0;
+  color : white;
+}
+
+.overviewchaptercontent {
+  width:100%;
+  background-color:red;
+}
+
+.overviewchaptertrailer
+{
+  width:100%;
+  background-color:#a0a0a0;
+  color : white;
+  border-bottom-left-radius: 15px;
+  border-bottom-right-radius: 15px;
+  clear:both;
+  margin-bottom:15px;
+}
+
+.paragraph
+{
+  width:75%;
+  margin-left:0px;
+  padding:2px;
+  padding-bottom:2px;
+  float:left;
+  border:1px solid grey;
+}
+
+.tuple
+{
+  padding-top:2px;
+  padding-bottom:2px;
+  clear:both;
+  float:left;
+  border:0px solid grey;
+}
+.tupletitre
+{
+  background-color:FFCC99;
+  padding-top:2px;
+  padding-bottom:2px;
+  clear:both;
+  float:right;
+  border:0px solid grey;
+}
+
+.selectbutton
+{
+  width:15px;
+  margin-right:20px;
+  float:left;
+  clear:left;
+}
+
+.firstvalue
+{
+  font-size:9px;
+  float:left;
+  width : 10%;
+  text-align : center;
+  float:left;
+  color : black;
+  padding-left:8px;
+}
+.value
+{
+  font-style : italic;
+  width : 20%;
+  font-size : 14px;
+  text-align : center;
+  float:left;
+  color : black;
+}
+.lastvalue
+{
+  clear:right;
+  font-style : italic;
+  width : 20%;
+  font-size : 14px;
+  text-align : center;
+  float:left;
+  color : black;
+}
+
+.tupledetail
+{
+  padding-top:2px;
+  padding-bottom:2px;
+  clear:both;
+  float:right;
+  border:0px solid grey;
+  font-size:15px;
+  width:500px;
+  position: relative;
+  left:-300px;
+}
+.firstdetail
+{
+  clear:left;
+  width : 30%;
+  text-align : center;
+  float:left;
+  color : black;
+  padding-left:8px;
+}
+.lastdetail
+{
+  clear:right;
+  font-style : italic;
+  width : 30%;
+  font-size : 14px;
+  text-align : center;
+  float:left;
+  color : black;
+}
+
+.tabpane
+{
+  border-radius: 15px;
+  padding:3px;
+  font-size: 16px;
+  text-align : center;
+  background-color : lightgrey;
+  color : #050064;
+  float:left;
+  clear:both;
+}
+.groupworks {
+  border : 3px dotted grey;
+  padding:3px;
+  font-size: 16px;
+  text-align : center;
+  float:left;
+  clear:both;
+  margin-left:50px;
+  margin-right:50px;
+  width:700px;
+  overflow:hidden;
+}
+
+.aide
+{
+  clear:both;
+  background-color : white;
+  color : gray;
+  width : 100%;
+  height:80px;
+  text-align : center;
+  visibility:hidden;
+}
+
+.tooltip + div {
+  display: none;
+  position: absolute;
+  top:-10px;
+  margin-left: 50px;
+  padding: 15px;
+  border: 1px solid black;
+  background-color: white;
+  width:60%;
+  color: black;
+  z-index:100;
+  text-align:left;
+}
+
+.tooltip:hover + div, .tooltip + div:hover { display: block; }
+
+
+div.tabContent {
+  border: #454545 solid 3px;
+  background-color: #4a4a4a;
+  float: left;
+  padding: 12px;
+  clear:both;
+}
+
+.firstbutton {
+  float:left;
+  clear:left;
+  padding-left:15px;
+  padding-right:15px;
+  padding-top:5px;
+  padding-bottom:5px;
+}
+
+.button {
+  float:left;
+  padding-left:15px;
+  padding-right:15px;
+  padding-top:5px;
+  padding-bottom:5px;
+}
+
+ol#toc {
+    height: 2em;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+ol#toc a {
+    background-color: #a0a0a0;
+    color: white;
+    display: block;
+    float: left;
+    height: 2em;
+    padding-left: 10px;
+    text-decoration: none;
+}
+
+ol#toc a:hover {
+  color:lightgrey;
+}
+
+ol#toc a:hover span {
+    color: black;
+
+}
+
+ol#toc li {
+    float: left;
+    margin: 0 1px 0 0;
+	margin-top:5px;
+}
+
+ol#toc li.current a {
+    background-color:#454545;
+    color: #fff;
+    font-weight: bold;
+	margin-top:-5px;
+}
+
+
+ol#toc span {
+    display: block;
+    line-height: 2em;
+    padding-right: 10px;
+}
+
+
+div.overdiv {
+  filter: alpha(opacity=75);
+  -moz-opacity: .75;
+  opacity: .75;
+  background-color: #c0c0c0;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 100%;
+}
+
+div.square {
+  position: absolute;
+  top: 125px;
+  left: 200px;
+  background-color: Menu;
+  border: #f9f9f9;
+  width: 530px;
+}
+
+div.square div.msg {
+  color: #3e6bc2;
+  font-size: 15px;
+  padding: 15px; 
+}
+
+div.webworker
+{
+display:block;
+width:7px;
+height:3px;
+}
+
+.errors {
+    background-color:#ff0033;
+	fill: #ff0033;
+}
+.pending {
+    background-color:#ffcc00;
+	fill: #ffcc00;
+}
+.running {
+    background-color: white;
+	fill: white;
+}
+.completed {
+    background-color:#00ff33;
+	fill: #00ff33;
+}
+.chartlegende {
+	width:100px;
+	color: black;
+	float:right;
+	clear:right;
+	padding:1px;
+	margin-right:10px;
+}
+.bchart {
+  float:left;clear:left;
+  border:1px;
+}
+
+

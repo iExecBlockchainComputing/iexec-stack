@@ -1,0 +1,8 @@
+AuthUserFile ./.htpasswd
+AuthGroupFile /dev/null
+AuthName "Desktop Grid"
+AuthType Basic
+ 
+<Limit GET POST>
+require user xtremweb
+</Limit>

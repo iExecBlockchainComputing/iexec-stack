@@ -1,0 +1,16 @@
+<?
+  $receiver="@WEBMASTERURL@";
+
+
+  if(mail($receiver, "XtremWeb BUG: ".$category, $bugdescription."\n---\n".$name,"From: ".$name."<".$email.">")) {
+    echo "Your bug report has been notified to the proper developer. Thank you for your help!";
+
+  } else {
+    <center>
+    include "fakeaddr.php";
+    echo "Your bug report could not be notified, please advise <a
+    href=\"mailto:@WEBMASTERURL@?SUBJECT=XtremWeb bug notification
+    problem\">@WEBMASTER@</a> about it.";
+    </center>
+  }
+?>

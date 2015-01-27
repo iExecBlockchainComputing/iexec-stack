@@ -1,0 +1,21 @@
+<?php
+// ----------------------------------------------------------------------------
+// Edit this settings
+
+$cfgBase =  "@DBNAME@";        // Name of the MySQL database
+$cfgUser =  "@DBUSER@";    
+$cfgPass =  "@DBPASSWORD@";    // and his password
+$cfgHote =  "@DBHOST@";        // Machine hosting the database
+
+$cfgRootName = "@DBUSER@";     // Name of the priviliged user (access to
+                               // all informations)
+$cfgRootPass = "@DBPASSWORD@"; // and its password
+
+$cfgXtremWebServer = "@DISPATCHERHOST@"; // Name of the machine hosting the server
+$cfgServerPort = 80;              //Port on wich the server may be contacted
+
+$cfgHomeDir = "db/";
+
+$version = "@XWVERSION@";	// Worker version 
+// ----------------------------------------------------------------------------
+?>
