@@ -75,7 +75,7 @@ public class SQLRequestWorkRequest extends SQLRequest {
 			+ " AND ((NOT (ISNULL(apps.%s) AND ISNULL(apps.JAVAURI)) AND apps.TYPE='DEPLOYABLE') OR apps.TYPE IN (%s) )"
 			+ " AND (ISNULL(apps.NEEDEDPACKAGES)             OR  (apps.NEEDEDPACKAGES='')   OR  (apps.NEEDEDPACKAGES IN (%s)))"
 			+ " AND (maintable.appuid=apps.uid)"
-			+ " AND ((maintable.DATADRIVENURI IS NULL) OR (maintable.DATADRIVENURI='') OR ((maintable.DATADRIVENURI=datas.UID) AND (datas.PACKAGE IS NOT NULL) AND (datas.PACKAGE IN (%s))))";
+			+ " AND ((maintable.DATADRIVENURI IS NULL) OR (maintable.DATADRIVENURI='') OR ((maintable.DATADRIVENURI=datas.URI) AND (datas.PACKAGE IS NOT NULL) AND (datas.PACKAGE IN (%s))))";
 
 	/**
 	 * This is used if host.acceptBin == false. This retrieves job referring
@@ -91,7 +91,7 @@ public class SQLRequestWorkRequest extends SQLRequest {
 			+ " AND ( (ISNULL(maintable.MINFREEMASSSTORAGE))   OR (maintable.MINFREEMASSSTORAGE   <= %d))"
 			+ " AND (apps.TYPE IN (%s))"
 			+ " AND (ISNULL(apps.NEEDEDPACKAGES)             OR  (apps.NEEDEDPACKAGES='')   OR  (apps.NEEDEDPACKAGES IN (%s)))"
-			+ " AND ((maintable.DATADRIVENURI IS NULL) OR (maintable.DATADRIVENURI='') OR ((maintable.DATADRIVENURI=datas.UID) AND (datas.PACKAGE IS NOT NULL) AND (datas.PACKAGE IN (%s))))";
+			+ " AND ((maintable.DATADRIVENURI IS NULL) OR (maintable.DATADRIVENURI='') OR ((maintable.DATADRIVENURI=datas.URI) AND (datas.PACKAGE IS NOT NULL) AND (datas.PACKAGE IN (%s))))";
 
 	/**
 	 * This concatenates SQLRequestAccessible.CRITERIAS and
