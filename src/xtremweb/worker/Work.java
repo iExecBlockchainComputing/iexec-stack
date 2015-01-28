@@ -116,7 +116,7 @@ public final class Work extends WorkInterface {
 	 */
 	public void prepareDir() throws IOException  {
 		final String extension = "" + getUID().toString() + "_cwd";
-		final File root = packageName != null ? Worker.getConfig().getPackageDir(packageName) : Worker.getConfig().getWorksDir();
+		final File root = packageName != null ? Worker.getConfig().getDataPackageDir(packageName) : Worker.getConfig().getWorksDir();
 		setScratchDir(new File(root, extension));
 	}
 

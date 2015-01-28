@@ -1476,36 +1476,43 @@ public final class XWConfigurator extends Properties {
 	}
 
 	/**
-	 * This sets and eventually creates a package directory
+	 * This sets and eventually creates a package directory for the given package name
 	 * @param pkgName is the package name
-	 * @param dir is the package directory
+	 * @param path is the package path
 	 * @throws IOException
 	 * @since 10.0.0
 	 */
-	public void setPackageDir(final String pkgName, final String dir) throws IOException {
-		setPackageDir(pkgName, new File(dir));
+	public void setDataPackageDir(final String pkgName, final String path) throws IOException {
+		final File fdir = (path == null || path.length() < 1) ? null : new File(path); 
+		setDataPackageDir(pkgName, fdir);
 	}
 	/**
-	 * This sets and eventually creates a package directory
+	 * This sets and eventually creates a package directory for the given package name
+	 * To avoid property conflict, the name of the package is automatically prefixed by XWTools#PACKAGENAMEHEADER 
 	 * @param pkgName is the package name
 	 * @param dir is the package directory
 	 * @throws IOException
 	 * @since 10.0.0
+	 * @see XWTools#PACKAGENAMEHEADER
 	 */
-	public void setPackageDir(final String pkgName, final File dir) throws IOException {
-		XWTools.checkDir(dir);
-		dir.deleteOnExit();
-		setProperty(XWTools.PACKAGENAMEHEADER + pkgName, dir.getAbsolutePath());
+	public void setDataPackageDir(final String pkgName, final File dir) throws IOException {
+		if(dir != null) {
+			XWTools.checkDir(dir);
+			dir.deleteOnExit();
+		}
+		System.out.println("setDataPackageDir : " + pkgName + ", " + (dir == null ? "" : dir.getAbsolutePath()));
+		setProperty(XWTools.PACKAGENAMEHEADER + pkgName, (dir == null ? "" : dir.getAbsolutePath()));
 	}
 
 	/**
 	 * This resets and eventually creates a package directory
+	 * To avoid property conflict, the name of the package is automatically prefixed by XWTools#PACKAGENAMEHEADER 
 	 * @param pkgName is the package name
-	 * @param dir is the package directory
 	 * @throws IOException
 	 * @since 10.0.0
+	 * @see XWTools#PACKAGENAMEHEADER
 	 */
-	public void resetPackageDir(final String pkgName) throws IOException {
+	public void resetDataPackageDir(final String pkgName) throws IOException {
 		setProperty(XWTools.PACKAGENAMEHEADER + pkgName, "");
 	}
 
@@ -1516,11 +1523,13 @@ public final class XWConfigurator extends Properties {
 	 * @since 10.0.0
 	 * @return the package directory if set; the default tmp dir otherwise
 	 */
-	public File getPackageDir(final String pkgName) {
+	public File getDataPackageDir(final String pkgName) {
 		final String path = getProperty(XWTools.PACKAGENAMEHEADER + pkgName);
 		if((path == null) || (path.length() < 1)) {
+			System.out.println("getDataPackageDir : return tmpdir " + getTmpDir());
 			return getTmpDir();
 		}
+		System.out.println("getDataPackageDir (" + pkgName + ") : " + path);
 		return new File(path); 
 	}
 

@@ -351,10 +351,10 @@ public class SQLRequestWorkRequest extends SQLRequest {
 		final boolean incomingConnections = host.incomingConnections();
 		final UID hostUid = host.getUID();
 
-		logger.finest("hostSharedAppNames = " + hostSharedAppNames);
-		logger.finest("hostSharedPkgNames = " + hostSharedPkgNames);
-		logger.finest("projectLabel = " + projectLabel);
-		logger.debug("criterias = " + getCriterias());
+		logger.finest("hostSharedAppNames  = " + hostSharedAppNames);
+		logger.finest("hostSharedPkgNames  = " + hostSharedPkgNames);
+		logger.finest("hostSharedDataNames = " + hostSharedData);
+		logger.finest("projectLabel        = " + projectLabel);
 
 		String ret = null;
 		if ((projectLabel == null) || (projectLabel.length() <= 0)) {

@@ -256,12 +256,12 @@ public class HTTPBitdewHandler extends Thread implements
 			if (pkgName == null) {
 				return;
 			}
-			Worker.getConfig().getHost().setSharedPackages(pkgName);
+			Worker.getConfig().getHost().setSharedDatas(pkgName);
 			final String pkgPath = request.getParameter(DATAPACKAGEPATH);
 			if (pkgPath == null) {
 				return;
 			}
-			Worker.getConfig().setPackageDir(pkgName, pkgPath);
+			Worker.getConfig().setDataPackageDir(pkgName, pkgPath);
 		} catch (final Exception e) {
 			logger.exception("Can't manage data package", e);
 		}
