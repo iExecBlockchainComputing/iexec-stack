@@ -306,7 +306,7 @@ public class ThreadWork extends Thread {
 					final UID uid = currentWork.getUID();
 					currentWork.setRunning();
 
-					mileStone.println("executing", uid);
+					mileStone.println("<executejob uid='" + uid + "'>");
 
 					addEnvVar(XWSCRATCHNAME, currentWork.getScratchDirName());
 
@@ -324,14 +324,15 @@ public class ThreadWork extends Thread {
 					}
 					jobuid = null;
 					status = executeJob();
-					mileStone.println("executed", uid);
 				} catch (final Throwable e) {
 					killed = true;
 					logger.exception("job launch error", new Exception(e));
 					status = StatusEnum.ERROR;
 					currentWork.clean();
 					currentWork.setErrorMsg(e.getMessage());
+					mileStone.println("<executeerror>" + e + "</executeerror>");
 				}
+				mileStone.println("</executejob>");
 
 				currentWork.setStatus(status);
 
@@ -759,7 +760,6 @@ public class ThreadWork extends Thread {
 		ThreadLaunch.getInstance().raz();
 
 		final UID workUID = currentWork.getUID();
-		mileStone.println("managing result", workUID);
 
 		if (!killed) {
 			try {
@@ -782,9 +782,7 @@ public class ThreadWork extends Thread {
 							+ currentWork.getErrorMsg()));
 		}
 
-		currentWork.clean();
-
-		mileStone.println("result managed", workUID);
+		currentWork.clean(false);
 
 		return ret;
 	}
@@ -1374,7 +1372,7 @@ public class ThreadWork extends Thread {
 		boolean islocked = false;
 
 		final UID workUID = currentWork.getUID();
-		mileStone.println("zipResult() ", workUID);
+		mileStone.println("<zipresult uid='" + workUID +"'>");
 
 		DataInterface data = null;
 		URI resulturi = currentWork.getResult();
@@ -1485,7 +1483,7 @@ public class ThreadWork extends Thread {
 				.unlock(currentWork.getResult());
 			}
 		}
-		mileStone.println("zipResult() done", currentWork.getUID());
+		mileStone.println("</zipresult>");
 
 		return resultFile;
 	}

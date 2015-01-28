@@ -55,6 +55,8 @@ import xtremweb.security.XWAccessRights;
 public class HTTPBitdewHandler extends Thread implements
 		Handler {
 
+	public static final String PATH = "/shareddata";
+
 	private Logger logger;
 
 	private HttpServletRequest request;

@@ -64,10 +64,10 @@ public final class Work extends WorkInterface {
 	private final String SCRATCHNAME = "scratch";
 
 	/**
-	 * This is this work package name (worker shared data used by the data driven scheduler)
+	 * This is this work data package name (worker shared data used by the data driven scheduler)
 	 * @since 10.0.0
 	 */
-	private String packageName;
+	private String dataPackageName;
 
 	/**
 	 * This creates a new work, providing its interface. This is typically
@@ -102,7 +102,7 @@ public final class Work extends WorkInterface {
 
 		super(job);
 
-		packageName = null;
+		dataPackageName = null;
 		if (dir) {
 			prepareDir();
 		} else {
@@ -116,7 +116,8 @@ public final class Work extends WorkInterface {
 	 */
 	public void prepareDir() throws IOException  {
 		final String extension = "" + getUID().toString() + "_cwd";
-		final File root = packageName != null ? Worker.getConfig().getDataPackageDir(packageName) : Worker.getConfig().getWorksDir();
+		final File root = dataPackageName != null ? Worker.getConfig().getDataPackageDir(dataPackageName) : Worker.getConfig().getWorksDir();
+		getLogger().debug("prepareDir packageName = " + dataPackageName + " ; " + root);
 		setScratchDir(new File(root, extension));
 	}
 
@@ -141,18 +142,33 @@ public final class Work extends WorkInterface {
 	}
 
 	/**
-	 * This calls clean(scratchDir);
+	 * This calls clean(true) to force cleaning
+	 * @see #clean(boolean)
 	 */
 	public void clean() {
-		clean(scratchDir);
+		clean(scratchDir, true);
 	}
 
 	/**
-	 * This erases all work dir/files from disk
+	 * This calls clean(scratchDir, force)
+	 * @see #clean(File, boolean)
 	 */
-	private synchronized void clean(final File dirWork) {
+	public void clean(final boolean force) {
+		clean(scratchDir, force);
+	}
+
+	/**
+	 * This erases provided file/directory from disk, except if dataPacakgeName is set
+	 * @param dirWork is the directory to clean
+	 * @param force is true to remove provided file/directory, even if dataPackageName is set
+	 * @see #dataPackageName
+	 */
+	private synchronized void clean(final File dirWork, final boolean force) {
 		if (dirWork == null) {
 			notifyAll();
+			return;
+		}
+		if((force == false) && (hasPackage() == true)) {
 			return;
 		}
 
@@ -167,7 +183,7 @@ public final class Work extends WorkInterface {
 			}
 
 			for (int i = 0; i < files.length; i++) {
-				clean(new File(dirWork, files[i]));
+				clean(new File(dirWork, files[i]), force);
 			}
 		}
 		dirWork.delete();
@@ -177,17 +193,20 @@ public final class Work extends WorkInterface {
 	/**
 	 * This sets this work package name (worker shared data used by the data driven scheduler)
 	 * @param pkg is this work package name
+	 * @throws IOException 
 	 * @since 10.0.0
 	 */
-	public void setPackage(final String pkg) {
-		this.packageName = pkg;
+	public void setDataPackage(final String pkg) throws IOException {
+		clean();
+		this.dataPackageName = pkg;
+		prepareDir();
 	}
 	/**
 	 * This retrieves this work package name (worker shared data used by the data driven scheduler)
 	 * @since 10.0.0
 	 */
-	public String getPackage() {
-		return packageName;
+	public String getDataPackage() {
+		return dataPackageName;
 	}
 
 	/**
@@ -196,7 +215,7 @@ public final class Work extends WorkInterface {
 	 * @return true if packageName attribute is set; false otherwise
 	 */
 	public boolean hasPackage() {
-		return (packageName != null) && (packageName.length() > 0);
+		return (dataPackageName != null) && (dataPackageName.length() > 0);
 	}
 
 	public String getScratchDirName() throws IOException {

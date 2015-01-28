@@ -550,14 +550,17 @@ public final class CommManager extends Thread {
 			throw new IOException("can't download dirin (" + e.getMessage()
 					+ ")");
 		}
-		final String sharedPkg = Worker.getConfig().getHost().getSharedPackages();
-		if((sharedPkg != null) && (sharedPkg.length() > 0)){
+		final String sharedDataPkg = Worker.getConfig().getHost().getSharedDatas();
+
+		logger.debug("downloadWork sharedDataPkg = " + sharedDataPkg);
+
+		if((sharedDataPkg != null) && (sharedDataPkg.length() > 0)){
 			try {
 				final DataInterface drivenData = getData(w.getDataDriven(), false);
-				if(drivenData.getPackage().compareTo(sharedPkg) != 0) {
-					throw new IOException("Driven data package doesn't match : " + sharedPkg + " / " + drivenData.getPackage());
+				if(drivenData.getPackage().compareTo(sharedDataPkg) != 0) {
+					throw new IOException("Driven data package doesn't match : " + sharedDataPkg + " / " + drivenData.getPackage());
 				}
-				w.setPackage(sharedPkg);
+				w.setDataPackage(sharedDataPkg);
 			} catch (Exception e) {
 				logger.exception(e);
 				throw new IOException("can't download driven data (" + e.getMessage()
