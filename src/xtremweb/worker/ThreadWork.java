@@ -518,7 +518,7 @@ public class ThreadWork extends Thread {
 		sport = currentWork.getSmartSocketClient();
 		if (sport != null) {
 
-			final Hashtable<String, String> serverAddresses = XWTools.hash(
+			final Hashtable<String, String> serverAddresses = (Hashtable<String, String>) XWTools.hash(
 					sport, ";", ",");
 			if (serverAddresses != null) {
 				final Enumeration<String> addressesenum = serverAddresses
@@ -763,9 +763,12 @@ public class ThreadWork extends Thread {
 
 		if (!killed) {
 			try {
-				if((currentWork.isService() == false)
-						&& (currentWork.hasPackage() == false)){
-					zipResult();
+				if(currentWork.isService() == false) {
+					if (currentWork.hasPackage() == false) {
+						zipResult();
+					} else {
+						currentWork.setResult(null);
+					}
 				}
 				ret = StatusEnum.COMPLETED;
 			} catch (final IOException e) {
@@ -819,7 +822,7 @@ public class ThreadWork extends Thread {
 			throw new IOException("work has no application");
 		}
 		final AppInterface app = (AppInterface) CommManager.getInstance().commClient()
-					.get(workApp, false);
+				.get(workApp, false);
 
 		if (app == null) {
 			throw new IOException("can find application " + workApp);
@@ -827,7 +830,7 @@ public class ThreadWork extends Thread {
 
 		// retrieve work env vars, if any
 		final String envstrWork = currentWork.getEnvVars();
-		final Hashtable<String, String> hwork = XWTools.hash(envstrWork, ",", "=");
+		final Hashtable<String, String> hwork = (Hashtable<String, String>) XWTools.hash(envstrWork, ",", "=");
 		logger.debug("currentWork.getEnvVars().length = " + hwork.size());
 		if (hwork != null) {
 			envvars.putAll(hwork);
@@ -836,7 +839,7 @@ public class ThreadWork extends Thread {
 
 		// retrieve app env vars, if any
 		final String envstrApp = app.getEnvVars();
-		final Hashtable<String, String> happ = XWTools.hash(envstrApp, ",", "=");
+		final Hashtable<String, String> happ = (Hashtable<String, String>) XWTools.hash(envstrApp, ",", "=");
 		logger.debug("currentWork.app.getEnvVars().length = " + happ.size());
 		if (happ != null) {
 			envvars.putAll(happ);
@@ -1295,13 +1298,13 @@ public class ThreadWork extends Thread {
 		logger.error("ThreadWork : can't use app library; please use executables");
 		// URI uri = app.getLibrary(Worker.getConfig().getHost().getCpu(),
 		// Worker.getConfig().getHost().getOs());
-//		URI uri = null;
-//		if (uri != null) {
-//			logger.debug("prepareWorkingDirectory : using app library");
-//			File libFile = installFile(uri, currentWork.getScratchDir());
-//			addEnvVar(XWLIBPATHNAME, libFile.getCanonicalPath());
-//			libFile = null;
-//		}
+		//		URI uri = null;
+		//		if (uri != null) {
+		//			logger.debug("prepareWorkingDirectory : using app library");
+		//			File libFile = installFile(uri, currentWork.getScratchDir());
+		//			addEnvVar(XWLIBPATHNAME, libFile.getCanonicalPath());
+		//			libFile = null;
+		//		}
 
 		//
 		// don't install app default dirin if job defined its own one

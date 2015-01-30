@@ -272,7 +272,7 @@ public class ThreadAlive extends Thread {
 
 			logger.debug("threadAlive() : jobResults.size() = "
 					+ jobResults.size());
-			Hashtable rmiParams = new Hashtable();
+			final Hashtable rmiParams = new Hashtable();
 			rmiParams.put(XWPostParams.JOBRESULTS.toString(), jobResults);
 
 			//
@@ -286,7 +286,6 @@ public class ThreadAlive extends Thread {
 			}
 
 			rmiParams.clear();
-			rmiParams = null;
 
 			if (rmiResults == null) {
 				logger.debug("ThreadAlive::synchronize() : rmiResults = null");
@@ -309,7 +308,7 @@ public class ThreadAlive extends Thread {
 			}
 
 			//
-			// RPC-V : retreive saved tasks and remove them from from
+			// RPC-V : retrieve saved tasks and remove them from from
 			// PoolWork::savingTasks
 			//
 			final Vector finishedTasks = (Vector) rmiResults
@@ -329,7 +328,7 @@ public class ThreadAlive extends Thread {
 			}
 
 			//
-			// RPC-V : retreive tasks which results are expected by the
+			// RPC-V : retrieve tasks which results are expected by the
 			// coordinator
 			//
 			final Vector resultsExpected = (Vector) rmiResults

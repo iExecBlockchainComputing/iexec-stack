@@ -44,9 +44,11 @@ import java.net.URL;
 import java.net.UnknownHostException;
 import java.security.AccessControlException;
 import java.security.InvalidKeyException;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Iterator;
 
 import org.xml.sax.SAXException;
 
@@ -550,22 +552,31 @@ public final class CommManager extends Thread {
 			throw new IOException("can't download dirin (" + e.getMessage()
 					+ ")");
 		}
-		final String sharedDataPkg = Worker.getConfig().getHost().getSharedDatas();
 
-		logger.debug("downloadWork sharedDataPkg = " + sharedDataPkg);
 
-		if((sharedDataPkg != null) && (sharedDataPkg.length() > 0)){
-			try {
-				final DataInterface drivenData = getData(w.getDataDriven(), false);
-				if(drivenData.getPackage().compareTo(sharedDataPkg) != 0) {
-					throw new IOException("Driven data package doesn't match : " + sharedDataPkg + " / " + drivenData.getPackage());
+		try {
+			final DataInterface drivenData = getData(w.getDataDriven(), false);
+			if(drivenData != null){
+				final String sharedDataPkgs = Worker.getConfig().getHost().getSharedDatas();
+				logger.debug("downloadWork worker sharedDataPkg = " + sharedDataPkgs);
+				final Collection<String> datas = XWTools.split(sharedDataPkgs, ",");
+				boolean found = false;
+				for(final Iterator<String> datasIterator = datas.iterator(); datasIterator.hasNext();) {
+					final String sharedData = datasIterator.next();
+					if(drivenData.getPackage().compareTo(sharedData) == 0) {
+						w.setDataPackage(sharedData);
+						found = true;
+						break;
+					}
 				}
-				w.setDataPackage(sharedDataPkg);
-			} catch (Exception e) {
-				logger.exception(e);
-				throw new IOException("can't download driven data (" + e.getMessage()
-						+ ")");
+				if(!found) {
+					throw new IOException("Driven data package (" + drivenData.getPackage() + ") doesn't match worker packages : " + sharedDataPkgs);
+				}
 			}
+		} catch (Exception e) {
+			logger.exception(e);
+			throw new IOException("can't download driven data (" + e.getMessage()
+					+ ")");
 		}
 	}
 

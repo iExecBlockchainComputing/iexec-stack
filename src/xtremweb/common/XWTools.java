@@ -45,6 +45,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.Locale;
+import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
@@ -563,12 +564,12 @@ public class XWTools {
 	 * @see #hash(String,String,String)
 	 * @since XWHEP 1.0.0
 	 */
-	public static Hashtable<String, String> hash(String src) {
+	public static Map<String, String> hash(String src) {
 		return hash(src, ",", ":");
 	}
 
 	/**
-	 * This converts a string into an hashtable of strings accordingly to
+	 * This converts a string into an hash table of strings accordingly to
 	 * separators.
 	 * 
 	 * @param src
@@ -577,11 +578,11 @@ public class XWTools {
 	 *            contains separators to split Tuples
 	 * @param separator2
 	 *            contains separators to split keys from values
-	 * @return an hashtable of String
+	 * @return an hash table of String
 	 * @since XWHEP 1.0.0
 	 */
-	public static Hashtable<String, String> hash(String src, String separator1,
-			String separator2) {
+	public static Map<String, String> hash(final String src, final String separator1,
+			final String separator2) {
 
 		final Hashtable<String, String> ret = new Hashtable<String, String>();
 
@@ -617,7 +618,7 @@ public class XWTools {
 	 * @return an array of String
 	 * @since v1r2-rc1(RPC-V)
 	 */
-	public static Collection<String> split(String src, String separator) {
+	public static Collection<String> split(final String src, final String separator) {
 		if ((src == null) || (separator == null)) {
 			return null;
 		}
@@ -642,7 +643,7 @@ public class XWTools {
 	 * @return an array of String
 	 * @since v1r2-rc1(RPC-V)
 	 */
-	public static Collection<String> split(String src) {
+	public static Collection<String> split(final String src) {
 		return split(src, " \t");
 	}
 
@@ -657,7 +658,7 @@ public class XWTools {
 	 * @param url
 	 *            is the URL to display
 	 */
-	public static void launchBrowser(String url) {
+	public static void launchBrowser(final String url) {
 		final String osName = System.getProperty("os.name");
 		try {
 			if (osName.startsWith("Mac OS")) {

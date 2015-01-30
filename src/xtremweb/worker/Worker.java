@@ -241,7 +241,7 @@ public class Worker {
 				final HTTPServer httpServer = new HTTPServer();
 				httpServer.initComm(getConfig(), new HTTPHandler());
 				httpServer.addHandler(new HTTPStatHandler());
-				httpServer.addHandler(HTTPBitdewHandler.PATH, new HTTPBitdewHandler());
+				httpServer.addHandler(HTTPSharedDataHandler.PATH, new HTTPSharedDataHandler());
 				httpServer.start();
 			} catch (final Exception ex) {
 				logger.exception(

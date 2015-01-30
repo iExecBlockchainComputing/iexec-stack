@@ -118,7 +118,11 @@ public final class Work extends WorkInterface {
 		final String extension = "" + getUID().toString() + "_cwd";
 		final File root = dataPackageName != null ? Worker.getConfig().getDataPackageDir(dataPackageName) : Worker.getConfig().getWorksDir();
 		getLogger().debug("prepareDir packageName = " + dataPackageName + " ; " + root);
-		setScratchDir(new File(root, extension));
+		if(dataPackageName == null) {
+			setScratchDir(new File(root, extension));
+		} else {
+			setScratchDir(root);
+		}
 	}
 
 	/**
@@ -127,7 +131,11 @@ public final class Work extends WorkInterface {
 	 * @throws IOException 
 	 */
 	private synchronized void setScratchDir(final File v) throws IOException {
-		scratchDir = new File(v, SCRATCHNAME);
+		if(dataPackageName == null) {
+			scratchDir = new File(v, SCRATCHNAME);
+		} else {
+			scratchDir = v;
+		}
 		getLogger().config("SCRATCHDIR = " + scratchDir);
 		XWTools.checkDir(scratchDir);
 		notifyAll();
@@ -155,6 +163,18 @@ public final class Work extends WorkInterface {
 	 */
 	public void clean(final boolean force) {
 		clean(scratchDir, force);
+		try {
+			scratchDir.delete();
+			getLogger().debug("cleaning deleted " + scratchDir);
+		} catch (Exception e) {
+			getLogger().exception("Work clean can't delete scratchdir", e);
+		}
+		try {
+			scratchDir.getParentFile().delete();
+			getLogger().debug("cleaning deleted " + scratchDir.getParent());
+		} catch (Exception e) {
+			getLogger().exception("Work clean can't delete scratchdir parent", e);
+		}
 	}
 
 	/**
@@ -172,21 +192,13 @@ public final class Work extends WorkInterface {
 			return;
 		}
 
-		getLogger().config("cleaning = " + dirWork);
+		getLogger().debug("cleaning = " + dirWork);
 
-		if (dirWork.isDirectory()) {
-
-			final String[] files = dirWork.list();
-			if (files == null) {
-				notifyAll();
-				return;
-			}
-
-			for (int i = 0; i < files.length; i++) {
-				clean(new File(dirWork, files[i]), force);
-			}
+		try {
+			XWTools.deleteDir(dirWork);
+		} catch (Exception e) {
+			getLogger().exception("Work clean error", e);
 		}
-		dirWork.delete();
 		notifyAll();
 	}
 
@@ -198,7 +210,7 @@ public final class Work extends WorkInterface {
 	 */
 	public void setDataPackage(final String pkg) throws IOException {
 		clean();
-		this.dataPackageName = pkg;
+		dataPackageName = pkg;
 		prepareDir();
 	}
 	/**

@@ -1253,6 +1253,10 @@ public final class XWConfigurator extends Properties {
 		if (localDatasProperty != null) {
 			_host.setSharedDatas(localDatasProperty.trim());
 		}
+		final String localDatasPathProperty = getProperty(XWPropertyDefs.SHAREDDATASPATH);
+		if((localDatasProperty != null) && (localDatasPathProperty != null)) {
+			setDataPackagesDir(localDatasProperty, localDatasProperty);
+		}
 
 		if (!(new File(getProperty(XWPropertyDefs.SANDBOXPATH))).exists()) {
 			logger.warn("Not Using Sandboxing \""
@@ -1475,6 +1479,30 @@ public final class XWConfigurator extends Properties {
 		return new File(getProperty(XWPropertyDefs.TMPDIR)); 
 	}
 
+	/**
+	 * This sets and eventually creates a package directory for the given package name
+	 * @param pkgNames contains a comma separated data package names 
+	 * @param pkgPaths contains a comma separated data package paths 
+	 * @throws IOException
+	 * @since 10.0.0
+	 */
+	public void setDataPackagesDir(final String pkgNames, final String pkgPaths) throws IOException {
+		final Collection<String> names = XWTools.split(pkgNames, ",");
+		final Collection<String> paths = XWTools.split(pkgPaths, ",");
+		if((names == null) || (paths == null)) {
+			return;
+		}
+		final Iterator<String> namesIterator = names.iterator();
+		final Iterator<String> pathsIterator = paths.iterator();
+		for(; namesIterator.hasNext();) {
+			final String name = namesIterator.next();
+			final String path = pathsIterator.next();
+			if((name == null) || (path == null)) {
+				continue;
+			}
+			setDataPackageDir(name, path);
+		}
+	}
 	/**
 	 * This sets and eventually creates a package directory for the given package name
 	 * @param pkgName is the package name
@@ -1964,7 +1992,9 @@ public final class XWConfigurator extends Properties {
 			final String srv) throws IOException {
 
 		boolean ret = false;
-
+		if((v == null) || (srv == null)) {
+			return false;
+		}
 		final String hn = XWTools.getHostName(srv);
 		if (!v.contains(srv)) {
 			v.add(hn);
@@ -2009,6 +2039,10 @@ public final class XWConfigurator extends Properties {
 	 */
 	private boolean addServers(final Collection<String> v,
 			final Collection<String> srv) throws IOException {
+
+		if(srv == null) {
+			return false;
+		}
 
 		boolean ret = false;
 
@@ -2106,14 +2140,13 @@ public final class XWConfigurator extends Properties {
 		}
 		for (final Iterator<String> iter = ret.iterator(); iter.hasNext();) {
 			final String srv = iter.next();
-			String srv_hn = srv;
 			try {
-				srv_hn = XWTools.getHostName(srv);
+				final String srv_hn = XWTools.getHostName(srv);
+				ret.remove(srv);
+				ret.add(srv_hn);
 			} catch (final IOException e) {
 				logger.exception(e);
 			}
-			ret.remove(srv);
-			ret.add(srv_hn);
 		}
 		return ret;
 	}
@@ -2124,9 +2157,7 @@ public final class XWConfigurator extends Properties {
 	 * @since v1r2-rc1(RPC-V)
 	 */
 	private synchronized File dispatchersFile() {
-		final File d = new File(getTmpDir() + "XW." + "known_dispatchers");
-		notifyAll();
-		return d;
+		return new File(getTmpDir() + "XW." + "known_dispatchers");
 	}
 
 	/**
@@ -2135,9 +2166,7 @@ public final class XWConfigurator extends Properties {
 	 * @since XWHEP 1.0.0
 	 */
 	private synchronized File dataServersFile() {
-		final File d = new File(getTmpDir() + "XW." + "known_dataservers");
-		notifyAll();
-		return d;
+		return new File(getTmpDir() + "XW." + "known_dataservers");
 	}
 
 	/**

@@ -501,16 +501,13 @@ public final class Cache extends XMLable {
 			 */
 			@Override
 			public void run() {
-				if (XWRole.getMyRole() == XWRole.WORKER) {
-					try {
-						if (cacheFile != null) {
-							cacheFile.delete();
-						}
-						XWTools.deleteDir(contentDir);
-					} catch (final IOException e) {
+				flush();
+				try {
+					if (cacheFile != null) {
+						cacheFile.delete();
 					}
-				} else {
-					flush();
+					XWTools.deleteDir(contentDir);
+				} catch (final IOException e) {
 				}
 			}
 		});

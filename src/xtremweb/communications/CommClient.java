@@ -306,7 +306,7 @@ public abstract class CommClient implements ClientAPI {
 
 		commHandlers = new Hashtable();
 
-		final Hashtable layers = XWTools.hash(config
+		final Hashtable layers = (Hashtable) XWTools.hash(config
 				.getProperty(XWPropertyDefs.COMMHANDLERS));
 		final Enumeration enumLayers = layers.keys();
 

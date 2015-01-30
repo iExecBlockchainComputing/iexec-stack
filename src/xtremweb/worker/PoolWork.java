@@ -235,7 +235,7 @@ public class PoolWork {
 				+ (ret == null ? "not" : "") + " found in savings");
 
 		if (ret != null) {
-			ret.clean();
+			ret.clean(false);
 		}
 		notifyAll();
 	}

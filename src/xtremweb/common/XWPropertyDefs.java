@@ -2052,12 +2052,12 @@ public enum XWPropertyDefs {
 	 * </code>
 	 * </p>
 	 * 
-	 * @since 8.0.0 (FG)
+	 * @since 8.0.0 
 	 */
 	SHAREDAPPS,
 	/**
-	 * Worker : this contains a list of local data the worker shares This is a
-	 * comma separated list of data URI
+	 * Worker : this contains a list of local data the worker shares.
+	 * This is a comma separated list of data names.
 	 * <p>
 	 * Property type : string
 	 * </p>
@@ -2068,9 +2068,36 @@ public enum XWPropertyDefs {
 	 * Example :<code> root,geant4 </code>
 	 * </p>
 	 * 
-	 * @since 8.0.0 (FG)
+	 * @since 8.0.0 
 	 */
 	SHAREDDATAS,
+	/**
+	 * Worker : this contains a list of local paths the worker can find shared data.
+	 * This is a comma separated list of paths.
+	 *  It must be in the same order as SHAREDDATAS.
+	 *  If set, the worker uses these paths as current working directory of works processing these data.
+	 *  If set, the worker does not send result to the XWHEP server.
+	 *  If set, the worker does delete data processing result; it is the responsibility of the data owner
+	 *  
+	 * Example :
+	 *   SHAREDDATASPATH=/path/one,/path/two
+	 * 
+	 *   If SHAREDDATAS=dataset1,dataset2
+	 *   Then the worker find dataset1 content in /path/one
+	 *   and dataset2 content in /path/two
+	 * <p>
+	 * Property type : string
+	 * </p>
+	 * <p>
+	 * Default : null
+	 * </p>
+	 * <p>
+	 * Example :<code> root,geant4 </code>
+	 * </p>
+	 * 
+	 * @since 10.0.0
+	 */
+	SHAREDDATASPATH,
 	/**
 	 * Worker : this contains a list of local packages the worker shares This is
 	 * a comma separated list of packages name
@@ -2084,7 +2111,7 @@ public enum XWPropertyDefs {
 	 * Example : <code>root,geant4 </code>
 	 * </p>
 	 * 
-	 * @since 8.0.0 (FG)
+	 * @since 8.0.0 
 	 */
 	SHAREDPACKAGES,
 	/**
