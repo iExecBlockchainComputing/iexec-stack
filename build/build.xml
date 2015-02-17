@@ -914,7 +914,7 @@ and try the 6 following exec tasks
 	<property name="sonar.jdbc.username" value="${sonar.jdbc.username}" />
 	<property name="sonar.jdbc.password" value="${sonar.jdbc.password}" />
 	<!-- Define the Sonar project properties -->
-	<property name="sonar.projectKey" value="xwhep-9.x" />
+	<property name="sonar.projectKey" value="xwhep-10.x" />
 	<property name="sonar.projectName" value="XtremWeb-HEP" />
 	<property name="sonar.projectVersion" value="${version}" />
 	<property name="sonar.language" value="java" />
