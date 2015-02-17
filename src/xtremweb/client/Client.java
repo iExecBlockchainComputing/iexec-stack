@@ -2953,10 +2953,10 @@ public final class Client {
 				logger.exception("Can't set REPLICA", e);
 			}
 			try {
-				final Integer replica = (Integer) args
+				final Integer rsize = (Integer) args
 						.getOption(CommandLineOptions.REPLICASIZE);
-				if (replica != null) {
-					work.setReplicaSetSize(replica.intValue());
+				if (rsize != null) {
+					work.setReplicaSetSize(rsize.intValue());
 				}
 			} catch (final Exception e) {
 				logger.exception("Can't set REPLICASIZE", e);
@@ -3173,6 +3173,11 @@ public final class Client {
 			}
 
 			try {
+				if((work.getExpectedReplications() > 0) && (work.getReplicaSetSize() < 1)) {
+					logger.warn("Forcing replication set size to 1");
+					work.setReplicaSetSize(1);
+				}
+
 				commClient().send(work);
 				println(commClient().newURI(work.getUID()));
 			} catch (final ClassNotFoundException e) {
