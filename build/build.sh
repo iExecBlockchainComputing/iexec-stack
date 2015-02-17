@@ -25,6 +25,5 @@
 #!/bin/sh
 
 export ANT_HOME=`dirname $0`
-[ -n "$JAVA_HOME" ] || eval `java -classpath tools JavaHome`
-exec $ANT_HOME/bin/ant $*
+exec ant $*
 
