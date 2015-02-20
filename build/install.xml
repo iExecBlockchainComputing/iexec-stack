@@ -325,22 +325,6 @@ version=${version}
   <!-- ************************ UNINSTALL ************************ -->
 
   <target name="uninstall" depends="configure">
-    <delete includeEmptyDirs="true" >
-      <fileset dir="${build.dir}/stand-alone" >
-        <include name="COM/**" />
-        <include name="META-INF/**" />
-        <include name="antlr/**" />
-        <include name="com/**" />
-        <include name="data/**" />
-        <include name="javax/**" />
-        <include name="org/**" />
-        <include name="uk/**" />
-        <include name="xtremweb/**" />
-        <include name="CHANGELOG" />
-        <include name="License**" />
-        <include name="${JARFILE}" />
-      </fileset>
-    </delete>
 
     <delete dir="${dist.dir}"
             failonerror="false"
@@ -454,7 +438,7 @@ version=${version}
       </fileset>
     </copy>
 
-    <copy todir="${macosxpkg.server}/installer/PckRoot/private/etc/xwhep.server/lib"
+    <copy todir="${dist.dir.macosx.server}/installer/PckRoot/private/etc/xwhep.server/lib"
           filtering="no" overwrite="yes">
       <fileset dir="${lib.dir}">
 	<patternset refid="XW-LIBS" />
@@ -532,32 +516,32 @@ version=${version}
     <filter token="KEYDIR" value="/private/etc/xwhep.worker"/>
 
     <copy file="${misc.dir}/xtremweb.worker.conf.in" 
-          tofile="${macosxpkg.worker}/installer/PckRoot/private/etc/xwhep.worker/conf/xtremweb.worker.conf"
+          tofile="${dist.dir.macosx.worker}/installer/PckRoot/private/etc/xwhep.worker/conf/xtremweb.worker.conf"
           filtering="yes" overwrite="yes" />
     <copy file="${misc.dir}/worker-start.html" 
-          tofile="${macosxpkg.worker}/installer/PckRoot/Applications/xwhep.worker/index.html"
+          tofile="${dist.dir.macosx.worker}/installer/PckRoot/Applications/xwhep.worker/index.html"
           filtering="no" overwrite="yes" />
     <copy file="${misc.dir}/xwhep.sb" 
-          todir="${macosxpkg.worker}/installer/PckRoot/private/etc/xwhep.worker/conf"
+          todir="${dist.dir.macosx.worker}/installer/PckRoot/private/etc/xwhep.worker/conf"
           filtering="no" overwrite="yes" />
     <copy file="${misc.dir}/worker-start.html" 
-          tofile="${macosxpkg.vworker}/installer/PckRoot/Applications/xwhep.vworker/index.html"
+          tofile="${dist.dir.macosx.vworker}/installer/PckRoot/Applications/xwhep.vworker/index.html"
           filtering="no" overwrite="yes" />
     <copy file="${src.scripts.dir}/xwstartvm.sh" 
-          todir="${macosxpkg.vworker}/installer/PckRoot/private/etc/xwhep.vworker/bin"
+          todir="${dist.dir.macosx.vworker}/installer/PckRoot/private/etc/xwhep.vworker/bin"
           filtering="no" overwrite="yes" />
 
     <copy file="${misc.dir}/xtremweb.client.conf.in" 
-          tofile="${macosxpkg.client}/installer/PckRoot/Applications/xwhep.client/conf/xtremweb.client.conf"
+          tofile="${dist.dir.macosx.client}/installer/PckRoot/Applications/xwhep.client/conf/xtremweb.client.conf"
           filtering="yes" overwrite="yes" />
 
     <filter token="KEYDIR" value="/private/etc/xwhep.server"/>
 
     <copy file="${misc.dir}/xtremweb.server.conf.in" 
-          tofile="${macosxpkg.server}/installer/PckRoot/private/etc/xwhep.server/conf/xtremweb.server.conf"
+          tofile="${dist.dir.macosx.server}/installer/PckRoot/private/etc/xwhep.server/conf/xtremweb.server.conf"
           filtering="yes" overwrite="yes" />
-    <mkdir dir="${macosxpkg.server}/installer/PckRoot/Applications/xwhep.server/doc" />
-    <copy todir="${macosxpkg.server}/installer/PckRoot/Applications/xwhep.server/doc"
+    <mkdir dir="${dist.dir.macosx.server}/installer/PckRoot/Applications/xwhep.server/doc" />
+    <copy todir="${dist.dir.macosx.server}/installer/PckRoot/Applications/xwhep.server/doc"
           filtering="no" overwrite="yes">
       <fileset dir="${doc.dir}">
 	<patternset refid="XW-DOC" />
@@ -571,7 +555,7 @@ version=${version}
 
 
     <copy file="${misc.dir}/xtremweb.client.conf.in" 
-          tofile="${msi.dir}/Client/conf/xtremweb.client.conf"
+          tofile="${dist.dir.win32.client}/conf/xtremweb.client.conf"
           filtering="yes" overwrite="yes" />
     <mkdir dir="${dist.dir.client.innosetup}/client/bin" />
     <mkdir dir="${dist.dir.client.innosetup}/client/conf" />
@@ -587,7 +571,7 @@ version=${version}
 
 
     <copy file="${misc.dir}/xtremweb.worker.conf.in" 
-          tofile="${msi.dir}/Worker/conf/xtremweb.worker.conf"
+          tofile="${dist.dir.win32.worker}/conf/xtremweb.worker.conf"
           filtering="yes" overwrite="yes" />
     <mkdir dir="${dist.dir.worker.innosetup}/worker/bin" />
     <mkdir dir="${dist.dir.worker.innosetup}/worker/conf" />
@@ -599,12 +583,12 @@ version=${version}
           tofile="${dist.dir.worker.innosetup}/worker/conf/xtremweb.worker.conf"
           filtering="yes" overwrite="yes" />
     <copy file="${build.dir}/wrapper/conf/wrapper-worker.conf" 
-          tofile="${msi.dir}/Worker/conf/wrapper-worker.conf"
+          tofile="${dist.dir.win32.worker}/conf/wrapper-worker.conf"
           filtering="no" overwrite="yes" />
     <copy file="${build.dir}/wrapper/conf/wrapper-worker.conf" 
           tofile="${dist.dir.worker.innosetup}/worker/conf/wrapper-worker.conf"
           filtering="no" overwrite="yes" />
-    <copy todir="${msi.dir}/Worker/lib/"
+    <copy todir="${dist.dir.win32.worker}/lib/"
           filtering="no" overwrite="yes">
       <fileset dir="${build.dir}/wrapper/lib">
 	      <include name="*" />
@@ -629,7 +613,7 @@ version=${version}
     <copy todir="${dist.dir.worker.innosetup}/worker/doc"
           filtering="no" overwrite="yes"
 	  file="${misc.dir}/worker-start.html" />
-    <copy todir="${msi.dir}/Worker/bin"
+    <copy todir="${dist.dir.win32.worker}/bin"
           filtering="no" overwrite="yes">
       <fileset dir="${build.dir}/wrapper/bin">
 	      <include name="*" />
@@ -645,7 +629,7 @@ version=${version}
 	      <include name="xtremweb.worker.bat" />
       </fileset>
     </copy>
-    <copy todir="${msi.dir}/Worker/doc"
+    <copy todir="${dist.dir.win32.worker}/doc"
           filtering="no" overwrite="yes"
 	  file="${misc.dir}/worker-start.html" />
 
@@ -654,7 +638,7 @@ version=${version}
 
 
     <copy file="${misc.dir}/xtremweb.server.conf.in" 
-          tofile="${msi.dir}/Server/conf/xtremweb.server.conf"
+          tofile="${dist.dir.win32.server}/conf/xtremweb.server.conf"
           filtering="yes" overwrite="yes" />
     <mkdir dir="${dist.dir.server.innosetup}/server/bin" />
     <mkdir dir="${dist.dir.server.innosetup}/server/conf" />
@@ -666,12 +650,12 @@ version=${version}
           tofile="${dist.dir.server.innosetup}/server/conf/xtremweb.server.conf"
           filtering="yes" overwrite="yes" />
     <copy file="${build.dir}/wrapper/conf/wrapper-server.conf" 
-          tofile="${msi.dir}/Server/conf/wrapper-server.conf"
+          tofile="${dist.dir.win32.server}/conf/wrapper-server.conf"
           filtering="no" overwrite="yes" />
     <copy file="${build.dir}/wrapper/conf/wrapper-server.conf" 
           tofile="${dist.dir.server.innosetup}/server/conf/wrapper-server.conf"
           filtering="no" overwrite="yes" />
-    <copy todir="${msi.dir}/Server/lib/"
+    <copy todir="${dist.dir.win32.server}/lib/"
           filtering="no" overwrite="yes">
       <fileset dir="${build.dir}/wrapper/lib">
 	      <include name="*" />
@@ -811,30 +795,30 @@ version=${version}
 
       <!-- Install Mac OS X  -->
     <copy file="${build.dir}/stand-alone/${JARFILE}"
-          todir="${macosxpkg.worker}/installer/PckRoot/private/etc/xwhep.worker/lib"
+          todir="${dist.dir.macosx.worker}/installer/PckRoot/private/etc/xwhep.worker/lib"
           overwrite="yes" />
     <copy file="${dist.dir.keystore}/xwhepworker.keys" 
-          todir="${macosxpkg.worker}/installer/PckRoot/private/etc/xwhep.worker/keystore"
+          todir="${dist.dir.macosx.worker}/installer/PckRoot/private/etc/xwhep.worker/keystore"
           failonerror="no" filtering="no" overwrite="yes" />
 
     <copy file="${build.dir}/stand-alone/${JARFILE}"
-          todir="${macosxpkg.client}/installer/PckRoot/Applications/xwhep.client/lib"
+          todir="${dist.dir.macosx.client}/installer/PckRoot/Applications/xwhep.client/lib"
           overwrite="yes" />
     <copy file="${lib.dir}/bcprov-jdk15on-151.jar"
-          todir="${macosxpkg.client}/installer/PckRoot/Applications/xwhep.client/lib"
+          todir="${dist.dir.macosx.client}/installer/PckRoot/Applications/xwhep.client/lib"
           overwrite="yes" />
     <copy file="${lib.dir}/bcpkix-jdk15on-151.jar"
-          todir="${macosxpkg.client}/installer/PckRoot/Applications/xwhep.client/lib"
+          todir="${dist.dir.macosx.client}/installer/PckRoot/Applications/xwhep.client/lib"
           overwrite="yes" />
     <copy file="${dist.dir.keystore}/xwhepclient.keys" 
-          todir="${macosxpkg.client}/installer/PckRoot/Applications/xwhep.client/keystore"
+          todir="${dist.dir.macosx.client}/installer/PckRoot/Applications/xwhep.client/keystore"
           failonerror="no" filtering="no" overwrite="yes" />
 
     <copy file="${build.dir}/stand-alone/${JARFILE}"
-          todir="${macosxpkg.server}/installer/PckRoot/private/etc/xwhep.server/lib"
+          todir="${dist.dir.macosx.server}/installer/PckRoot/private/etc/xwhep.server/lib"
           overwrite="yes" />
     <copy file="${dist.dir.keystore}/xwhepserver.keys" 
-          todir="${macosxpkg.server}/installer/PckRoot/private/etc/xwhep.server/keystore"
+          todir="${dist.dir.macosx.server}/installer/PckRoot/private/etc/xwhep.server/keystore"
           failonerror="no" filtering="no" overwrite="yes" />
 
     <copy file="${src.scripts.dir}/db-maintenance/xwhep-core-tables-create-tables.sql.in"
@@ -1072,7 +1056,7 @@ version=${version}
 	  todir="${dist.dir.server.innosetup}/server/lib/"
           overwrite="yes" />
     <copy file="${build.dir}/stand-alone/${JARFILE}"
-	  todir="${msi.dir}/Worker/lib/"
+	  todir="${dist.dir.win32.worker}/lib/"
           overwrite="yes" />
 
 

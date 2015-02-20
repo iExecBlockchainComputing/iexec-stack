@@ -44,7 +44,6 @@
   <property name="src.scripts.dir" value="${src.dir}/scripts" />
   <property name="lib.dir" value="${basedir}/classes" />
   <property name="build.dir" value="${basedir}/build" />
-  <property name="installers.dir" value="${basedir}/installers" />
   <property name="build.classes" value="${build.dir}/classes" />
   <property name="rpm.dir" value="${build.dir}/rpm" />
   <property name="xwidl.dir" value="${src.java.dir}/XwIDL" />
@@ -803,58 +802,25 @@ and try the 6 following exec tasks
     <delete dir="${rpm.dir}/SOURCES" includeEmptyDirs="true" failonerror="false" />
     <delete dir="${rpm.dir}/SPECS" includeEmptyDirs="true" failonerror="false" />
     <delete dir="${rpm.dir}/SRPMS" includeEmptyDirs="true" failonerror="false" />
-    <delete file="${installers.dir}/macosx/xwhep.worker/installer/PckRoot/private/etc/xwhep.worker/lib/${JARFILE}" failonerror="false" />
-    <delete file="${installers.dir}/macosx/xwhep.worker/installer/PckRoot/private/etc/xwhep.worker/conf/xtremweb.worker.conf" failonerror="false" />
-    <delete file="${installers.dir}/macosx/xwhep.worker/installer/PckRoot/private/etc/xwhep.worker/keystore/xwhepworker.keys" failonerror="false" />
-  	<delete file="${installers.dir}/macosx/xwhep.client/installer/PckRoot/private/etc/xwhep.client/lib/${JARFILE}" failonerror="false" />
-    <delete file="${installers.dir}/macosx/xwhep.client/installer/PckRoot/private/etc/xwhep.client/conf/xtremweb.worker.conf" failonerror="false" />
-    <delete file="${installers.dir}/macosx/xwhep.client/installer/PckRoot/private/etc/xwhep.client/keystore/xwhepworker.keys" failonerror="false" />
-    <delete dir="${installers.dir}/win32/innoSetup/worker/" includeEmptyDirs="true" failonerror="false" />
-    <delete file="${installers.dir}/win32/msi/Worker/conf/xtremweb.worker.conf" failonerror="false" />
 
-    <delete dir="${installers.dir}/xwhep.client/" failonerror="false" />
-    <delete file="${installers.dir}/xwhep.client-${version}.zip" failonerror="false" />
     <delete file="${install.www.dir}/download/xwhep.client-${version}.zip" failonerror="false" />
 
-    <delete failonerror="false">
-      <fileset dir="${installers.dir}/macosx/xwhep.server/installer/PckRoot/private/etc/xwhep.server/bin">
-	<exclude name="*.sh" />
-      </fileset>
-    </delete>
-    <delete file="${installers.dir}/macosx/xwhep.server/installer/PckRoot/private/etc/xwhep.server/conf/xtremweb.server.conf" failonerror="false" />
-    <delete file="${installers.dir}/macosx/xwhep.server/installer/PckRoot/private/etc/xwhep.server/keystore/xwhepserver.keys" failonerror="false" />
-    <delete includeEmptyDirs="true" failonerror="false">
-      <fileset dir="${installers.dir}/macosx/xwhep.server/installer/PckRoot/Applications/xwhep.server/">
-	<exclude name="bin/uninstall.sh" />
-	<exclude name="bin/start.sh" />
-	<exclude name="bin/stop.sh" />
-	<include name="**" />
-      </fileset>
-    </delete>
-    <delete includeEmptyDirs="true" failonerror="false">
-      <fileset dir="${installers.dir}/macosx/xwhep.server/installer/PckRoot/private/etc/xwhep.server/lib">
-	<include name="**" />
-      </fileset>
-    </delete>
-
-    <delete file="${installers.dir}/win32/xwhep.worker.conf" />
-    <delete file="${installers.dir}/win32/msi/Worker/lib/${JARFILE}" failonerror="false" />
-    <delete file="${installers.dir}/win32/msi/Worker/conf/xwhep.worker.conf" failonerror="false" />
-    <delete file="${installers.dir}/win32/msi/Worker/keystore/xwhepworker.keys" failonerror="false" />
-    <delete file="${installers.dir}/win32/msi/Worker/conf/wrapper-worker.conf" failonerror="false" />
-    <delete failonerror="false">
-      <fileset dir="${installers.dir}/win32/msi/Worker/doc/">
-	<include name="*" />
-      </fileset>
-    </delete>
-    <delete failonerror="false">
-      <fileset dir="${installers.dir}/win32/msi/Worker/lib/">
-	<include name="*" />
-      </fileset>
-    </delete>
-    <delete failonerror="false">
-      <fileset dir="${installers.dir}/win32/msi/Worker/bin/">
-	<include name="*" />
+    <delete includeEmptyDirs="true" >
+      <fileset dir="${build.dir}/stand-alone" >
+        <include name="COM/**" />
+        <include name="META-INF/**" />
+        <include name="antlr/**" />
+        <include name="com/**" />
+        <include name="data/**" />
+        <include name="javax/**" />
+        <include name="org/**" />
+        <include name="uk/**" />
+        <include name="xtremweb/**" />
+        <include name="CHANGELOG" />
+        <include name="openid-providers.properties" />
+        <include name="plugin.properties" />
+        <include name="License**" />
+        <include name="${JARFILE}" />
       </fileset>
     </delete>
     
