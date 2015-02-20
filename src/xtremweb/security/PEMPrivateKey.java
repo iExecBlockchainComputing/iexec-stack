@@ -42,14 +42,11 @@ import java.security.Signature;
 import java.security.SignatureException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.Arrays;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.bouncycastle.util.io.pem.PemReader;
-import org.bouncycastle.openssl.PEMDecryptorProvider;
-import org.bouncycastle.openssl.PEMEncryptedKeyPair;
-import org.bouncycastle.openssl.PEMKeyPair;
-import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
-import org.bouncycastle.openssl.jcajce.JcePEMDecryptorProviderBuilder;
+import org.bouncycastle.openssl.PEMReader;
+import org.bouncycastle.openssl.PasswordFinder;
 import org.bouncycastle.util.encoders.Hex;
 
 import xtremweb.common.Logger;
@@ -63,6 +60,19 @@ public final class PEMPrivateKey {
 
 	static {
 		Security.addProvider(new BouncyCastleProvider());
+	}
+
+	private static class DefaultPasswordFinder implements PasswordFinder {
+
+		private final char[] password;
+
+		private DefaultPasswordFinder(final char[] password) {
+			this.password = password.clone();
+		}
+
+		public char[] getPassword() {
+			return Arrays.copyOf(password, password.length);
+		}
 	}
 
 	/**
@@ -83,7 +93,6 @@ public final class PEMPrivateKey {
 	 */
 	public PEMPrivateKey() {
 		publicKey = null;
-		privateKey = null;
 		logger = new Logger(this);
 	}
 
@@ -99,8 +108,13 @@ public final class PEMPrivateKey {
 	public void read(String keyPath, String password)
 			throws CertificateException, FileNotFoundException, IOException {
 
-		final File f = new File(keyPath);
-		read(f, password);
+		File f = null;
+		try {
+			f = new File(keyPath);
+			read(f, password);
+		} finally {
+			f = null;
+		}
 	}
 
 	/**
@@ -113,7 +127,7 @@ public final class PEMPrivateKey {
 	 * @see #read(File, char[])
 	 */
 	public void read(File f, String password) throws CertificateException,
-	FileNotFoundException, IOException {
+			FileNotFoundException, IOException {
 
 		if (f == null) {
 			throw new IOException("key file is null");
@@ -140,7 +154,7 @@ public final class PEMPrivateKey {
 	 * @param password
 	 *            is the private key password
 	 */
-	private void read(File keyFile, char[] password)
+	public void read(File keyFile, char[] password)
 			throws CertificateException, FileNotFoundException, IOException {
 
 		if (keyFile == null) {
@@ -150,36 +164,36 @@ public final class PEMPrivateKey {
 			throw new IOException("password is null");
 		}
 
-		PemReader pemReader = null;
+		FileReader fr = null;
+		PEMReader r = null;
+		KeyPair kp = null;
+		DefaultPasswordFinder pfinder = null;
 		try {
-			final FileReader fr = new FileReader(keyFile);
-			pemReader = new PemReader(fr);
-			final Object pemObj = pemReader.readPemObject();
-			final PEMDecryptorProvider decProv = new JcePEMDecryptorProviderBuilder().build(password);
-			final JcaPEMKeyConverter converter = new JcaPEMKeyConverter().setProvider("BC");
-
-			KeyPair kp = null;
-			if (pemObj instanceof PEMEncryptedKeyPair) {
-				System.out.println("Encrypted key - we will use provided password");
-				kp = converter.getKeyPair(((PEMEncryptedKeyPair) pemObj).decryptKeyPair(decProv));
-			} else {
-				System.out.println("Unencrypted key - no password needed");
-				kp = converter.getKeyPair((PEMKeyPair) pemObj);
-			}
+			fr = new FileReader(keyFile);
+			pfinder = new DefaultPasswordFinder(password);
+			r = new PEMReader(fr, pfinder);
+			kp = (KeyPair) r.readObject();
 			try {
 				publicKey = kp.getPublic();
 			} catch (final Exception ingore) {
 			}
 			privateKey = kp.getPrivate();
 		}
-		catch (final Exception e) {
+		catch (final ClassCastException e) {
 			throw new CertificateException(e);
 		} finally {
 			try {
-				pemReader.close();
+				r.close();
 			} catch (final Exception ignore) {
 			}
-			pemReader = null;
+			try {
+				fr.close();
+			} catch (final Exception ignore) {
+			}
+			kp = null;
+			fr = null;
+			r = null;
+			pfinder = null;
 		}
 	}
 
@@ -218,7 +232,7 @@ public final class PEMPrivateKey {
 	 * This is for testing only
 	 */
 	public void sendAuthentication(OutputStream outStream) throws IOException,
-	NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+			NoSuchAlgorithmException, InvalidKeyException, SignatureException {
 
 		final DataOutputStream out = new DataOutputStream(outStream);
 		final long t = System.currentTimeMillis();

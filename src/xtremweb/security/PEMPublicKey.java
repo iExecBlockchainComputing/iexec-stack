@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- *
+ * 
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -33,7 +33,6 @@ import java.io.Reader;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.security.InvalidKeyException;
-import java.security.KeyPair;
 import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 import java.security.Security;
@@ -46,16 +45,13 @@ import javax.security.auth.x500.X500Principal;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.jce.provider.X509CertificateObject;
-import org.bouncycastle.openssl.PEMEncryptedKeyPair;
-import org.bouncycastle.openssl.PEMKeyPair;
-import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
-import org.bouncycastle.util.io.pem.PemReader;
+import org.bouncycastle.openssl.PEMReader;
 
 import xtremweb.common.Logger;
 
 /**
  * This reads X509 public key from PEM files
- *
+ * 
  * @since 7.4.0
  */
 public class PEMPublicKey {
@@ -63,10 +59,9 @@ public class PEMPublicKey {
 		Security.addProvider(new BouncyCastleProvider());
 	}
 	/**
-	 * This is the certificate read from file
+	 * This is the certifiate read from file
 	 */
 	private X509CertificateObject certificate;
-
 	/**
 	 * This retrieves this public key certificate
 	 */
@@ -83,25 +78,30 @@ public class PEMPublicKey {
 
 	/**
 	 * This reads public key from file
-	 *
+	 * 
 	 * @param keyPath
 	 *            is the public key file path
 	 */
 	public PublicKey read(String keyPath) throws CertificateException,
-			FileNotFoundException, IOException {
+	FileNotFoundException, IOException {
 
-		final File f = new File(keyPath);
-		return read(f);
+		File f = null;
+		try {
+			f = new File(keyPath);
+			return read(f);
+		} finally {
+			f = null;
+		}
 	}
 
 	/**
 	 * This reads public key from file
-	 *
+	 * 
 	 * @param keyFile
 	 *            is the public key file path
 	 */
 	public PublicKey read(File keyFile) throws CertificateException,
-			FileNotFoundException, IOException {
+	FileNotFoundException, IOException {
 
 		FileReader fr = null;
 		try {
@@ -120,33 +120,19 @@ public class PEMPublicKey {
 
 	/**
 	 * This reads public key from file
-	 *
+	 * 
 	 * @param reader
 	 *            is the reader to read key from
 	 * @exception CertificateException
 	 *                on certificate format or validity error
 	 */
-	private PublicKey read(Reader reader) throws CertificateException,
-			FileNotFoundException, IOException {
+	public PublicKey read(Reader reader) throws CertificateException,
+	FileNotFoundException, IOException {
 
-		PemReader pemReader = null;
+		PEMReader r = null;
 		try {
-			pemReader = new PemReader(reader);
-			final Object pemObj = pemReader.readPemObject();
-			final JcaPEMKeyConverter converter = new JcaPEMKeyConverter()
-					.setProvider("BC");
-			KeyPair kp = null;
-			if (pemObj instanceof PEMEncryptedKeyPair) {
-				throw new CertificateException(
-						"Encrypted key - can't read public key");
-			} else {
-				System.out.println("Unencrypted key - no password needed");
-				kp = converter.getKeyPair((PEMKeyPair) pemObj);
-			}
-			try {
-				certificate = (X509CertificateObject) kp.getPublic();
-			} catch (final Exception ingore) {
-			}
+			r = new PEMReader(reader);
+			certificate = (X509CertificateObject) r.readObject();
 			if (certificate == null) {
 				throw new CertificateException("invalid certificate file");
 			}
@@ -156,10 +142,10 @@ public class PEMPublicKey {
 			throw new CertificateException(e);
 		} finally {
 			try {
-				pemReader.close();
+				r.close();
 			} catch (final Exception ignore) {
 			}
-			pemReader = null;
+			r = null;
 		}
 	}
 
@@ -175,7 +161,7 @@ public class PEMPublicKey {
 
 	/**
 	 * This retrieves the subject distinguished name of this proxy
-	 *
+	 * 
 	 * @see #getSubject()
 	 */
 	public String getSubjectName() {
@@ -200,7 +186,7 @@ public class PEMPublicKey {
 
 	/**
 	 * This retrieves the subject distinguished name of this proxy
-	 *
+	 * 
 	 * @see #getSubject()
 	 */
 	public String getIssuerName() {
@@ -243,10 +229,10 @@ public class PEMPublicKey {
 		final Logger logger = new Logger();
 
 		if (args.length < 1) {
-			logger.fatal("Usage : PublicKey file [--server]\n "
-					+ "Where : file is the public key file\n"
-					+ "        --server to accept connection from localhost:79999 for testing\n"
-					+ "        (then you can start PrivateKeyReader to connect - see PrivateKeyReader)");
+			logger.fatal("Usage : PublicKey file [--server]\n " +
+					"Where : file is the public key file\n" +
+					"        --server to accept connection from localhost:79999 for testing\n" +
+					"        (then you can start PrivateKeyReader to connect - see PrivateKeyReader)");
 		}
 		final PEMPublicKey reader = new PEMPublicKey();
 		final PublicKey publicKey = reader.read(args[0]);
@@ -270,9 +256,8 @@ public class PEMPublicKey {
 			final int port = 7999;
 			final ServerSocket s = new ServerSocket(port);
 			final Socket client = s.accept();
-
-			logger.info("Client logged in = "
-					+ reader.authenticate(client.getInputStream(), publicKey));
+			
+			logger.info("Client logged in = " + reader.authenticate(client.getInputStream(), publicKey));
 
 			s.close();
 		}
