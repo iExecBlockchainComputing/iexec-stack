@@ -842,7 +842,7 @@ version=${version}
       </filterset>
     </copy>
 
-    <copy todir="${installers.dir}/xwhep.client/doc"
+    <copy todir="${dist.doc}/xwhep.client/doc"
           filtering="no" overwrite="yes">
       <fileset dir="${doc.dir}">
 	      <patternset refid="XW-DOC" />
