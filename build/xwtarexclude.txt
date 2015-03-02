@@ -5,6 +5,7 @@
 *.doc
 *.key
 .svn
+.git
 *log
 *zip
 *gz
