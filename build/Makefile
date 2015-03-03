@@ -59,5 +59,5 @@ clean:
 	./build.sh -f build.xml $@ 
 %:
 	@if test ! -f "./build.conf" ; then echo "  **** oups!! Where is your 'build.conf' ?!? **** " ; echo ; exit 2 ; fi
-	@if grep "*** MUST BE" build.conf > /dev/null 2>&1 ; then  echo "  *****" ; echo "  *****" ; echo "  ***** ERROR: Your build.conf file is not filled properly" ; echo "  *****" ; echo "  *****" ; echo ; exit 3 ; else echo " build.conf OK" ; fi
+	@if grep "\*\*\* MUST BE" build.conf > /dev/null 2>&1 ; then  echo "  *****" ; echo "  *****" ; echo "  ***** ERROR: Your build.conf file is not filled properly" ; echo "  *****" ; echo "  *****" ; echo ; exit 3 ; else echo " build.conf OK" ; fi
 	@echo
