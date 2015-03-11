@@ -80,6 +80,7 @@ org.eclipse.jetty.server.Handler {
 
 	private HttpServletRequest request;
 	private HttpServletResponse response;
+	private HttpSession session;
 
 	/**
 	 * This contains the gap while a login is valid
@@ -276,6 +277,7 @@ org.eclipse.jetty.server.Handler {
 		logger.debug("new connection");
 		request = _request;
 		response = _response;
+		session = baseRequest.getSession(true); 
 
 		final String path = request.getPathInfo();
 		try {
@@ -320,6 +322,7 @@ org.eclipse.jetty.server.Handler {
 		response.getWriter().flush();
 		request  = null;
 		response = null;
+		session = null;
 	}
 
 	/**
@@ -340,7 +343,6 @@ org.eclipse.jetty.server.Handler {
 			// redirect to Google or Yahoo sign on page:
 			final Endpoint endpoint = manager.lookupEndpoint(op);
 			final Association association = manager.lookupAssociation(endpoint);
-			final HttpSession session = baseRequest.getSession(true);
 			session.setAttribute(ATTR_MAC, association.getRawMacKey());
 			session.setAttribute(ATTR_ALIAS, endpoint.getAlias());
 			final String url = manager.getAuthenticationUrl(endpoint, association);

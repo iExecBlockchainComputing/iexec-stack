@@ -263,13 +263,10 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 					+ "<body><center><h1>XtremWeb-HEP</h1><br /><h3>You are not logged in</h3></center><br /><br />"
 					+ "<center><p style='color:red;'>" + TAGMESSAGE + "</p></center><br /><br />"
 					+ "You can go to the <a href=\"" + HTTPStatsHandler.PATH + "\">the statistics page</a><br /><br />"
-					+ "If your email address is registered in this XWHEP server, you can connect using:<ul>";
-	/*
-  					+ "<li><a href=\"" + HTTPOpenIdHandler.PATH + "?" + XWPostParams.AUTH_OPERATOR + "=" + HTTPOpenIdHandler.OP_GOOGLE + "\">your Google account</a></li>"
-					+ "<li><a href=\"" + HTTPOpenIdHandler.PATH + "?" + XWPostParams.AUTH_OPERATOR + "=" + HTTPOpenIdHandler.OP_YAHOO + "\">your Yahoo account</a></li>"
-					+ "<li><a href=\"" + HTTPOAuthHandler.PATH + "?" + XWPostParams.AUTH_OPERATOR + "=" + HTTPOAuthHandler.OP_YAHOO + "\">your Google account</a></li>"
-					+ "<li><a href=\"" + HTTPOAuthHandler.PATH + "?" + XWPostParams.AUTH_OPERATOR + "=" + HTTPOAuthHandler.OP_GOOGLE + "\">your Google account</a></li>"
-	 */
+					+ "If your email address is registered in this XWHEP server, you can connect using one of the authentifcation methods :<ul>"
+					+ "<li><a href=\"" + HTTPOpenIdHandler.handlerPath + "?" + XWPostParams.AUTH_OPERATOR + "=" + HTTPOpenIdHandler.OP_GOOGLE + "\">your Google account</a></li>"
+					+ "<li><a href=\"" + HTTPOpenIdHandler.handlerPath + "?" + XWPostParams.AUTH_OPERATOR + "=" + HTTPOpenIdHandler.OP_YAHOO + "\">your Yahoo account</a></li>";
+
 	private final String REDIRECTPAGE_CONTENT_TRAILER = "</ul></body></html>";
 
 	private final String DEFAULT_ANSWER_HEAD = 
@@ -853,14 +850,6 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 			user = userFromOAuth(request);
 		}
 
-		if(user == null) {
-			resetIdRpc();
-			logger.debug("no credential found");
-			redirectPage(errorMsg);
-			baseRequest.setHandled(true);
-			return;
-		}
-
 		final Vector<String> paths = (Vector<String>)XWTools.split(target, "/");
 		logger.debug("paths.size() = " + paths.size());
 
@@ -890,6 +879,14 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 				logger.debug("ignoring " + pathInfo);
 				return;
 			}
+		}
+
+		if(user == null) {
+			resetIdRpc();
+			logger.debug("no credential found");
+			redirectPage(errorMsg);
+			baseRequest.setHandled(true);
+			return;
 		}
 
 		try {
@@ -1121,17 +1118,8 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 		}
 
 		final Logger logger = getLogger();
-		final UserInterface client = new UserInterface();
-		UserInterface ret = null;
-		final UserInterface admin =
-				(Dispatcher.getConfig().getProperty(XWPropertyDefs.ADMINLOGIN) == null ? 
-						null:
-							DBInterface.getInstance().user(SQLRequest.MAINTABLEALIAS + "."
-									+ UserInterface.Columns.LOGIN.toString() + "='"
-									+ Dispatcher.getConfig().getProperty(XWPropertyDefs.ADMINLOGIN)
-									+ "'"));
 
-		final UID newUid = new UID();
+		final UserInterface client = new UserInterface();
 
 		final X509Certificate certs[] = (X509Certificate[]) certChain;
 		int i = 0;
@@ -1157,60 +1145,25 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 			catch(Exception e) {
 			}
 		}
-		Principal principal = certs[0].getSubjectX500Principal();
-		String subjectName = principal.getName();
-		principal = certs[0].getIssuerX500Principal();
-		String issuerName = principal.getName();
-		final String loginName = subjectName + "_" + issuerName;
-		subjectName = null;
-		issuerName = null;
-		principal = null;
-		final String random = loginName + Math.random() + System.currentTimeMillis();
-		final byte[] strb = random.getBytes();
+		final String subjectName = certs[0].getSubjectX500Principal().getName();
+		final String issuerName  = certs[0].getIssuerX500Principal().getName();
+		final String loginName   = subjectName + "_" + issuerName;
+		final String random      = loginName + Math.random() + System.currentTimeMillis();
+		final byte[] strb        = random.getBytes();
 		final MD5 md5 = new MD5(strb);
 		final String md5hex = md5.asHex();
 		client.setLogin(loginName); // login may be truncated; see
 		// UserIntergace.USERLOGINLENGTH
 
-		ret = DBInterface.getInstance().user(UserInterface.Columns.LOGIN.toString()
+		final UserInterface ret = DBInterface.getInstance().user(UserInterface.Columns.LOGIN.toString()
 				+ "= '" + client.getLogin() + "'");
 
 		if(ret != null) {
 			ret.setEMail(client.getEMail());
 			logger.debug("user = " + ret == null ? "null" : ret.toXml());
-		}
-		else {
-			if(admin == null) {
-				throw new IOException("can't insert new certified user");
-			}
-
-			client.setUID(newUid);
-			client.setLogin(loginName);
-			client.setPassword(md5hex);
-			if(client.getEMail() == null) {
-				client.setEMail(loginName);
-			}
-			client.setOwner(Dispatcher.getConfig().getAdminUid());
-			client.setRights(UserRightEnum.STANDARD_USER);
-
-			try {
-				DBInterface.getInstance().addUser(admin, client);
-				ret = client;
-			} catch(Exception e) {
-				throw new IOException("user certification error : " + e.getMessage());
-			}
+			return ret;
 		}
 
-		return ret;
-	}
-
-	/**
-	 * This retrieves the user from a remove OpenId server
-	 */
-	private UserInterface userFromOpenId(final HttpServletRequest request) throws IOException {
-		final UserInterface client = new UserInterface();
-		final UID newUid = new UID();
-		UserInterface ret = null;
 		final UserInterface admin =
 				(Dispatcher.getConfig().getProperty(XWPropertyDefs.ADMINLOGIN) == null ? 
 						null:
@@ -1218,8 +1171,49 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 									+ UserInterface.Columns.LOGIN.toString() + "='"
 									+ Dispatcher.getConfig().getProperty(XWPropertyDefs.ADMINLOGIN)
 									+ "'"));
+		if(admin == null) {
+			throw new IOException("can't insert new certified user");
+		}
+
+		client.setUID(new UID());
+		client.setLogin(loginName);
+		client.setPassword(md5hex);
+		if(client.getEMail() == null) {
+			client.setEMail(loginName);
+		}
+		client.setOwner(Dispatcher.getConfig().getAdminUid());
+		client.setRights(UserRightEnum.STANDARD_USER);
+
+		try {
+			DBInterface.getInstance().addUser(admin, client);
+			return client;
+		} catch(Exception e) {
+			throw new IOException("user certification error : " + e.getMessage());
+		}
+	}
+
+	/**
+	 * This retrieves the user from a remove OpenId server
+	 */
+	private UserInterface userFromOpenId(final HttpServletRequest request) throws IOException {
 
 		final HttpSession session = request.getSession(true); 
+		/*
+			String nonce = request.getParameter(XWPostParams.AUTH_NONCE.toString());
+			String email = request.getParameter(XWPostParams.AUTH_EMAIL.toString());
+			String id    = request.getParameter(XWPostParams.AUTH_IDENTITY.toString());
+
+			if(nonce == null) {
+				nonce = (String) session.getAttribute(XWPostParams.AUTH_NONCE.toString());
+			}
+			if(email == null) {
+				email = (String) session.getAttribute(XWPostParams.AUTH_EMAIL.toString());
+			}
+			if(id == null) {
+				id = (String) session.getAttribute(XWPostParams.AUTH_IDENTITY.toString());
+			}
+
+		 */
 		final String authNonce = (request.getParameter(XWPostParams.AUTH_NONCE.toString()) != null ?
 				request.getParameter(XWPostParams.AUTH_NONCE.toString()) :  (String)session.getAttribute(XWPostParams.AUTH_NONCE.toString()));
 		final String authEmail = (request.getParameter(XWPostParams.AUTH_EMAIL.toString()) != null ?
@@ -1230,31 +1224,41 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 		if ((authNonce == null) || (authEmail == null)) {
 			return null;
 		}
+
+		UserInterface ret = null;
+
 		try {
 			HTTPOpenIdHandler.getInstance().verifyNonce(authNonce);
 			ret = DBInterface.getInstance().user(UserInterface.Columns.EMAIL.toString()
 					+ "= '" + authEmail + "'");
 			if (ret == null) {
 				if (Dispatcher.getConfig().getBoolean(XWPropertyDefs.DELEGATEDREGISTRATION) == false) {
-					throw new IOException("unaccepted email address : " + authEmail);
+					throw new IOException("delegated registration is not allowed");
 				}
-				else {
-					if(admin == null) {
-						throw new IOException("can't insert new OpenId user");
-					}
-					final String random = authEmail + System.currentTimeMillis() + Math.random();
-					final byte[] strb = random.getBytes();
-					final MD5 md5 = new MD5(strb);
-					final String md5hex = md5.asHex();
-					client.setUID(newUid);
-					client.setOwner(Dispatcher.getConfig().getAdminUid());
-					client.setLogin(authId);
-					client.setPassword(md5hex);
-					client.setRights(UserRightEnum.STANDARD_USER);
-					client.setEMail(authEmail);
-					DBInterface.getInstance().addUser(admin, client);
-					ret = client;
+
+				final UserInterface admin =
+						(Dispatcher.getConfig().getProperty(XWPropertyDefs.ADMINLOGIN) == null ? 
+								null:
+									DBInterface.getInstance().user(SQLRequest.MAINTABLEALIAS + "."
+											+ UserInterface.Columns.LOGIN.toString() + "='"
+											+ Dispatcher.getConfig().getProperty(XWPropertyDefs.ADMINLOGIN)
+											+ "'"));
+				if(admin == null) {
+					throw new IOException("can't insert new OpenId user (cant't retrieve admin)");
 				}
+				final String random = authEmail + System.currentTimeMillis() + Math.random();
+				final byte[] strb = random.getBytes();
+				final MD5 md5 = new MD5(strb);
+				final String md5hex = md5.asHex();
+				final UserInterface client = new UserInterface();
+				client.setUID(new UID());
+				client.setOwner(Dispatcher.getConfig().getAdminUid());
+				client.setLogin(authId);
+				client.setPassword(md5hex);
+				client.setRights(UserRightEnum.STANDARD_USER);
+				client.setEMail(authEmail);
+				DBInterface.getInstance().addUser(admin, client);
+				ret = client;
 			}
 			session.setAttribute(XWPostParams.AUTH_NONCE.toString(), authNonce);
 			session.setAttribute(XWPostParams.AUTH_EMAIL.toString(), authEmail);
@@ -1265,14 +1269,11 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 
 		return ret;
 	}
-	
+
 	/**
 	 * This retrieves the user from a remove OAuth server
 	 */
 	private UserInterface userFromOAuth(final HttpServletRequest request) throws IOException {
-		final UserInterface client = new UserInterface();
-		final UID newUid = new UID();
-		UserInterface ret = null;
 		final UserInterface admin =
 				(Dispatcher.getConfig().getProperty(XWPropertyDefs.ADMINLOGIN) == null ? 
 						null:
@@ -1294,6 +1295,8 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 		if ((authState == null) || (authEmail == null)) {
 			return null;
 		}
+
+		UserInterface ret = null;
 		try {
 			HTTPOpenIdHandler.getInstance().verifyNonce(authNonce);
 			ret = DBInterface.getInstance().user(UserInterface.Columns.EMAIL.toString()
@@ -1310,7 +1313,8 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 					final byte[] strb = random.getBytes();
 					final MD5 md5 = new MD5(strb);
 					final String md5hex = md5.asHex();
-					client.setUID(newUid);
+					final UserInterface client = new UserInterface();
+					client.setUID(new UID());
 					client.setOwner(Dispatcher.getConfig().getAdminUid());
 					client.setLogin(authId);
 					client.setPassword(md5hex);
