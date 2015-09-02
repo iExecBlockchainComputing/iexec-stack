@@ -1528,7 +1528,7 @@ public final class XWConfigurator extends Properties {
 			XWTools.checkDir(dir);
 			dir.deleteOnExit();
 		}
-		System.out.println("setDataPackageDir : " + pkgName + ", " + (dir == null ? "" : dir.getAbsolutePath()));
+		logger.debug("setDataPackageDir : " + pkgName + ", " + (dir == null ? "" : dir.getAbsolutePath()));
 		setProperty(XWTools.PACKAGENAMEHEADER + pkgName, (dir == null ? "" : dir.getAbsolutePath()));
 	}
 
@@ -1554,10 +1554,10 @@ public final class XWConfigurator extends Properties {
 	public File getDataPackageDir(final String pkgName) {
 		final String path = getProperty(XWTools.PACKAGENAMEHEADER + pkgName);
 		if((path == null) || (path.length() < 1)) {
-			System.out.println("getDataPackageDir : return tmpdir " + getTmpDir());
+			logger.debug("getDataPackageDir : return tmpdir " + getTmpDir());
 			return getTmpDir();
 		}
-		System.out.println("getDataPackageDir (" + pkgName + ") : " + path);
+		logger.debug("getDataPackageDir (" + pkgName + ") : " + path);
 		return new File(path); 
 	}
 

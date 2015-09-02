@@ -162,6 +162,10 @@ public final class Work extends WorkInterface {
 	 * @see #clean(File, boolean)
 	 */
 	public void clean(final boolean force) {
+		if((force == false) && (hasPackage() == true)) {
+			getLogger().debug("don't clean " + force + ", " + hasPackage());
+			return;
+		}
 		clean(scratchDir, force);
 		try {
 			scratchDir.delete();
@@ -189,11 +193,11 @@ public final class Work extends WorkInterface {
 			return;
 		}
 		if((force == false) && (hasPackage() == true)) {
+			getLogger().debug("do not clean " + force + ", " + hasPackage());
 			return;
 		}
 
 		getLogger().debug("cleaning = " + dirWork);
-
 		try {
 			XWTools.deleteDir(dirWork);
 		} catch (Exception e) {
@@ -209,7 +213,7 @@ public final class Work extends WorkInterface {
 	 * @since 10.0.0
 	 */
 	public void setDataPackage(final String pkg) throws IOException {
-		clean();
+		clean(false);
 		dataPackageName = pkg;
 		prepareDir();
 	}

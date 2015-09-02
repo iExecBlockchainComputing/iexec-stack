@@ -233,20 +233,19 @@ public final class HelloWorld {
 				logger.info("File not found '" + inputFileName + "'");
 			}
 
-			if((commandLineParams != null) && (commandLineParams.size() > 2)) {
-				String cmdLineStr = new String(" ");
-				for (int i = 2; i < commandLineParams.size(); i++) {
-					cmdLineStr += commandLineParams.get(i).toString() + " ";
-				}
-
-				if (cmdLineStr.indexOf(XWTools.QUOTE) != -1) {
-					throw new ParseException(
-							"6 dec 2005 : command line cannot have \""
-									+ XWTools.QUOTE
-									+ "\" character until further notification", 0);
-				}
-				work.setCmdLine(cmdLineStr);
+			String cmdLineStr = new String(" ");
+			for (int i = 1; i < commandLineParams.size(); i++) {
+				cmdLineStr += commandLineParams.get(i).toString() + " ";
 			}
+
+			if (cmdLineStr.indexOf(XWTools.QUOTE) != -1) {
+				throw new ParseException(
+						"6 dec 2005 : command line cannot have \""
+								+ XWTools.QUOTE
+								+ "\" character until further notification", 0);
+			}
+			work.setCmdLine(cmdLineStr);
+
 			logger.info("Submitting a new work for application '" + appUid
 					+ "' : " + work.toXml());
 
