@@ -89,7 +89,7 @@ public class HTTPSharedDataHandler extends Thread implements
 	 * This is the default constructor which only calls super("HTTPStatHandler")
 	 */
 	public HTTPSharedDataHandler() {
-		super("HTTPBitdewHandler");
+		super("HTTPSharedHandler");
 		logger = new Logger(this);
 	}
 
@@ -230,14 +230,14 @@ public class HTTPSharedDataHandler extends Thread implements
 			logger.debug("Handling method         = "
 					+ request.getMethod());
 
-			logger.info("HTTPBitdewHandler new connection " + path);
+			logger.info("HTTPSharedHandler new connection " + path);
 
 			remoteName = request.getRemoteHost();
 			remoteIP = request.getRemoteAddr();
 			remotePort = request.getRemotePort();
 
 			if (request.getParameterMap().size() > 0) {
-				bitdewRequest();
+				shareddataRequest();
 				baseRequest.setHandled(true);
 				return;
 			}
@@ -252,7 +252,7 @@ public class HTTPSharedDataHandler extends Thread implements
 	/**
 	 * This handles XMLHTTPRequest
 	 */
-	private void bitdewRequest() throws IOException {
+	private void shareddataRequest() throws IOException {
 		try {
 			final String pkgName = request.getParameter(DATAPACKAGENAME);
 			if (pkgName == null) {
@@ -263,7 +263,6 @@ public class HTTPSharedDataHandler extends Thread implements
 			if (pkgPath == null) {
 				return;
 			}
-//			Worker.getConfig().setDataPackageDir(pkgName, pkgPath);
 			Worker.getConfig().setDataPackagesDir(pkgName, pkgPath);
 		} catch (final Exception e) {
 			logger.exception("Can't manage data package", e);
