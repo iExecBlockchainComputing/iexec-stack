@@ -104,6 +104,27 @@ public final class CommManager extends Thread {
 	 */
 	private boolean connected = true;
 	/**
+	 * This tells if this thread is sleeping
+	 * @since 10.1.0
+	 */
+	private boolean sleeping;
+	/**
+	 * @return the sleeping
+	 * @since 10.1.0
+	 */
+	public boolean isSleeping() {
+		return sleeping;
+	}
+
+	/**
+	 * @param sleeping the sleeping to set
+	 * @since 10.1.0
+	 */
+	private void setSleeping(boolean sleeping) {
+		this.sleeping = sleeping;
+	}
+
+	/**
 	 * This manages works
 	 */
 	private PoolWork poolWork;
@@ -152,6 +173,7 @@ public final class CommManager extends Thread {
 
 		mileStone = new MileStone(getClass());
 
+		setSleeping(false);
 		resetTimeouts();
 
 		instance = this;
@@ -202,8 +224,12 @@ public final class CommManager extends Thread {
 				+ d);
 
 		try {
+			setSleeping(true);
 			Thread.sleep(d);
 		} catch (final Exception e) {
+			logger.exception("was sleeping " + d, e);
+			setSleeping(false);
+			resetTimeouts();
 		}
 	}
 
@@ -912,7 +938,7 @@ public final class CommManager extends Thread {
 						break;
 					}
 					try {
-						Thread.sleep(100);
+						sleeping(SleepEvent.DOWNLOADERROR, "download error", 100);
 					} catch (final Exception e) {
 					}
 				}

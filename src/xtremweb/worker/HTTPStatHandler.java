@@ -661,7 +661,7 @@ public class HTTPStatHandler extends Thread implements
 	}
 
 	/**
-	 * This retreives the application currently running
+	 * This retrieves the application currently running
 	 */
 	private void getRunning() {
 		try {

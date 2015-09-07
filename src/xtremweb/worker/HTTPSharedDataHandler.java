@@ -105,14 +105,14 @@ public class HTTPSharedDataHandler extends Thread implements
 	}
 
 	/**
-	 * This does nothing and must be overidden by any HTTP handler This is
+	 * This does nothing and must be overridden by any HTTP handler This is
 	 * inherited from org.mortbay.jetty.Handler
 	 */
 	public void setServer(Server server) {
 	}
 
 	/**
-	 * This does nothing and must be overidden by any HTTP handler This is
+	 * This does nothing and must be overridden by any HTTP handler This is
 	 * inherited from org.mortbay.jetty.Handler
 	 */
 	public Server getServer() {
@@ -120,7 +120,7 @@ public class HTTPSharedDataHandler extends Thread implements
 	}
 
 	/**
-	 * This does nothing and must be overidden by any HTTP handler This is
+	 * This does nothing and must be overridden by any HTTP handler This is
 	 * inherited from org.mortbay.component.LifeCycle
 	 * 
 	 * @return true
@@ -130,7 +130,7 @@ public class HTTPSharedDataHandler extends Thread implements
 	}
 
 	/**
-	 * This does nothing and must be overidden by any HTTP handler This is
+	 * This does nothing and must be overridden by any HTTP handler This is
 	 * inherited from org.mortbay.component.LifeCycle
 	 * 
 	 * @return false
@@ -140,7 +140,7 @@ public class HTTPSharedDataHandler extends Thread implements
 	}
 
 	/**
-	 * This does nothing and must be overidden by any HTTP handler This is
+	 * This does nothing and must be overridden by any HTTP handler This is
 	 * inherited from org.mortbay.component.LifeCycle
 	 * 
 	 * @return false
@@ -150,7 +150,7 @@ public class HTTPSharedDataHandler extends Thread implements
 	}
 
 	/**
-	 * This does nothing and must be overidden by any HTTP handler This is
+	 * This does nothing and must be overridden by any HTTP handler This is
 	 * inherited from org.mortbay.component.LifeCycle
 	 * 
 	 * @return false
@@ -160,7 +160,7 @@ public class HTTPSharedDataHandler extends Thread implements
 	}
 
 	/**
-	 * This does nothing and must be overidden by any HTTP handler This is
+	 * This does nothing and must be overridden by any HTTP handler This is
 	 * inherited from org.mortbay.component.LifeCycle
 	 * 
 	 * @return true
@@ -170,7 +170,7 @@ public class HTTPSharedDataHandler extends Thread implements
 	}
 
 	/**
-	 * This does nothing and must be overidden by any HTTP handler This is
+	 * This does nothing and must be overridden by any HTTP handler This is
 	 * inherited from org.mortbay.component.LifeCycle
 	 * 
 	 * @return false
@@ -180,7 +180,7 @@ public class HTTPSharedDataHandler extends Thread implements
 	}
 
 	/**
-	 * This does nothing and must be overidden by any HTTP handler This is
+	 * This does nothing and must be overridden by any HTTP handler This is
 	 * inherited from org.mortbay.component.LifeCycle
 	 */
 	@Override
@@ -264,6 +264,10 @@ public class HTTPSharedDataHandler extends Thread implements
 				return;
 			}
 			Worker.getConfig().setDataPackagesDir(pkgName, pkgPath);
+
+			if (CommManager.getInstance().isSleeping()) {
+				CommManager.getInstance().interrupt();
+			}
 		} catch (final Exception e) {
 			logger.exception("Can't manage data package", e);
 		}
