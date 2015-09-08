@@ -27,8 +27,8 @@ SCRIPTDIR=$(ROOTDIR)/scripts
 
 
 all:
-	cd $(DATADIR) && make 
+	cd $(DATADIR) && make -e
 
 clean :
-	cd $(DATADIR) && make clean
+	cd $(DATADIR) && make -e clean
 
