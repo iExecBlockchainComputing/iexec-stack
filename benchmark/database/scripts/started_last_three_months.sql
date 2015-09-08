@@ -30,12 +30,11 @@
 
 select laststartdate,count(*)
        from (
-         (select date_format(laststartdate,"%u") as laststartdate from tasks 
+         (select date_format(laststartdate,"%Y/%m") as laststartdate from tasks 
          where not isnull(laststartdate)
-            and laststartdate > date_sub(now(), interval 1 quarter) 
-	       	and status="COMPLETED")
+            and laststartdate > date_sub(now(), interval 1 quarter))
 	     union all
-         (select date_format(laststartdate,"%u") as completeddate from tasks_history 
+         (select date_format(laststartdate,"%Y/%m") as laststartdate from tasks_history 
          where not isnull(laststartdate)
             and laststartdate > date_sub(now(), interval 1 quarter))
  	  ) as t 

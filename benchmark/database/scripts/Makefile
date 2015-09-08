@@ -26,7 +26,7 @@ FIGDIR=$(ROOTDIR)/fig
 CSVDIR=$(ROOTDIR)/csv
 SCRIPTDIR=$(ROOTDIR)/scripts
 
-MYSQL=@mysql -B -h $(DBHOST) -u $(DBUSER) --password=$(DBPASSWD)
+MYSQL=@mysql -B -h ${DBHOST} -u $(DBUSER) --password=$(DBPASSWD)
 ECHOMYSQL=mysql -B -h $(DBHOST) -u $(DBUSER) --password=XXXXXX
 
 RAWS = $(wildcard *.sql)

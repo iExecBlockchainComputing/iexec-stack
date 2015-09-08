@@ -30,12 +30,12 @@
 
 select laststartdate,count(*)
        from (
-         (select date_format(laststartdate,"%u") as laststartdate,count(*) as restarteds from tasks 
+         (select date_format(laststartdate,"%Y/%m") as laststartdate,count(*) as restarteds from tasks 
          where not isnull(laststartdate)
  	 		and not isnull(startdate)
             and laststartdate > date_sub(now(), interval 6 month) group by laststartdate)
 	     union all
-         (select date_format(laststartdate,"%u") as laststartdate,count(*) as restarteds from tasks_history
+         (select date_format(laststartdate,"%Y/%m") as laststartdate,count(*) as restarteds from tasks_history
          where not isnull(laststartdate)
  	 		and not isnull(startdate)
             and laststartdate > date_sub(now(), interval 6 month) group by laststartdate)

@@ -31,11 +31,9 @@
 select lastalive,count(*)
        from (
          (select date_format(lastalive,"%Y/%m/%d %H:%i") as lastalive from hosts 
-         where date(lastalive)>"2009-07-14" 
- 	 		and not isnull(lastalive))
+         where not isnull(lastalive))
 	     union all
          (select date_format(lastalive,"%Y/%m/%d %H:%i") as lastalive from hosts_history
-         where date(lastalive)>"2009-07-14" 
- 	 		and not isnull(lastalive))
+         where not isnull(lastalive))
  	  ) as t 
  	  group by lastalive order by lastalive;

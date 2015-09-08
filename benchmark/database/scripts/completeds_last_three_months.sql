@@ -30,12 +30,12 @@
 
 select completeddate,count(*)
        from (
-         (select date_format(completeddate,"%u") as completeddate from works 
+         (select date_format(completeddate,"%Y/%m") as completeddate from works 
          where not isnull(completeddate)
             and completeddate > date_sub(now(), interval 1 quarter) 
 	       	and status="COMPLETED")
 	     union all
-         (select date_format(completeddate,"%u") as completeddate from works_history 
+         (select date_format(completeddate,"%Y/%m") as completeddate from works_history 
          where not isnull(completeddate)
             and completeddate > date_sub(now(), interval 1 quarter) 
 	       	and status="COMPLETED")

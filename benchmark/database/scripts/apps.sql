@@ -19,7 +19,19 @@
 --     along with XtremWeb-HEP.  If not, see <http://www.gnu.org/licenses/>.
 -- 
 
-select date(completeddate),
+create temporary table appsjobs (
+       thedate    datetime,
+       appname    varchar(254),
+       avgexec    int(10) default 0,
+       completeds int(10) default 0,
+       proxieds   int(10) default 0,
+       errors     int(10) default 0,
+       piloteds   int(10) default 0
+);
+
+
+insert into appsjobs (thedate,appname,completeds,avgexec,proxieds)
+  select date(completeddate),
        apps.name,
        count(*) as completed,
        format(avg(UNIX_TIMESTAMP(completeddate)-UNIX_TIMESTAMP(laststartdate)),0) as avgexec,
@@ -28,33 +40,35 @@ select date(completeddate),
        where works.appuid=apps.uid
          and works.uid=tasks.workuid
          and tasks.hostuid=hosts.uid
- 	 and date(completeddate)>"2009-07-14" 
  	 and not isnull(completeddate)
  	 and works.status="COMPLETED"
-       group by apps.name, date(completeddate)
-       order by apps.name, date(completeddate);
+       group by apps.name, date(completeddate);
 
-select date(arrivaldate),
+insert into appsjobs (thedate,appname,errors)
+  select date(arrivaldate),
        apps.name,
        count(*) as errors
        from apps,works
        where works.appuid=apps.uid
- 	 and date(arrivaldate)>"2009-07-14" 
  	 and not isnull(arrivaldate)
  	 and works.status="ERROR"
        group by apps.name, date(arrivaldate)
        order by apps.name, date(arrivaldate);
 
-select date(completeddate),
+insert into appsjobs (thedate,appname,piloteds)
+  select date(completeddate),
        apps.name,
        count(*) as piloteds
        from apps,works,tasks,hosts
        where works.appuid=apps.uid
          and works.uid=tasks.workuid
          and tasks.hostuid=hosts.uid
-	 and date(completeddate)>"2009-07-14" 
 	 and not isnull(completeddate)
 	 and works.status="COMPLETED"
 	 and hosts.pilotjob="true"
-       group by apps.name, date(completeddate)
-       order by apps.name, date(completeddate);
+       group by apps.name, date(completeddate);
+
+
+select * from appsjobs
+       group by appname, date(completeds)
+       order by appname, date(completeds);

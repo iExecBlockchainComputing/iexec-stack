@@ -31,13 +31,11 @@
 select arrivaldate,count(*)
        from (
          (select date_format(arrivaldate,"%Y/%m/%d %H:%i") as arrivaldate from works 
-         where date(arrivaldate)>"2009-07-14" 
- 	 		and not isnull(arrivaldate)
+         where not isnull(arrivaldate)
 	  		and not isnull(userproxy))
 	     union all
          (select date_format(arrivaldate,"%Y/%m/%d %H:%i") as arrivaldate from works_history
-         where date(arrivaldate)>"2009-07-14" 
- 	 		and not isnull(arrivaldate)
+         where not isnull(arrivaldate)
 	  		and not isnull(userproxy))
  	  ) as t 
  	  group by arrivaldate order by arrivaldate;

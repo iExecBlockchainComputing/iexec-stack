@@ -48,8 +48,7 @@ select completeddate,
 		       unix_timestamp(startdate)-unix_timestamp(insertiondate) as pending,
 		       unix_timestamp(insertiondate)-unix_timestamp(arrivaldate) as waiting
             from works, tasks
-            where date(completeddate)>"2009-07-14" 
-              and works.uid=tasks.workuid
+            where works.uid=tasks.workuid
 	       	  and works.status="COMPLETED" 
  	 		  and not isnull(completeddate))
 	     union all
@@ -63,8 +62,7 @@ select completeddate,
 		       unix_timestamp(startdate)-unix_timestamp(insertiondate) as pending,
 		       unix_timestamp(insertiondate)-unix_timestamp(arrivaldate) as waiting
             from works_history, tasks_history
-            where date(completeddate)>"2009-07-14" 
-              and works_history.uid=tasks_history.workuid
+            where works_history.uid=tasks_history.workuid
 	       	  and works_history.status="COMPLETED" 
  	 		  and not isnull(completeddate))
  	  ) as t 

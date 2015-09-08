@@ -30,12 +30,12 @@
 
 select arrivaldate,count(*)
        from (
-         (select date_format(arrivaldate,"%u") as arrivaldate from works 
+         (select date_format(arrivaldate,"%Y/%m") as arrivaldate from works 
          where not isnull(arrivaldate)
             and arrivaldate > date_sub(now(), interval 6 month)
 	       	and status="ERROR")
 	     union all
-         (select date_format(arrivaldate,"%u") as arrivaldate from works_history 
+         (select date_format(arrivaldate,"%Y/%m") as arrivaldate from works_history 
          where not isnull(arrivaldate)
             and arrivaldate > date_sub(now(), interval 6 month)
 	       	and status="ERROR")
