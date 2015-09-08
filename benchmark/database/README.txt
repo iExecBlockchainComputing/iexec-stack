@@ -27,9 +27,18 @@ Author : Oleg Lodygensky
 This directory contains necessary make files and tools to extract statistics from XtremWeb databases
 and generate graphs.
 
-To do so, copy a dump of the database to databases/
-and enter 
-$> make
+To do so:
+-1- copy a dump of the database to databases/
+-2- create the database just like
+   $> mysql -e "create database [your database name]"
+   $> mysql [your database name] < databases/[yourdatabasename.sql]
+-3- set some environment variables
+  - DBHOST
+  - DBUSER
+  - DBPASSWD
+
+-4- run the make tool 
+     $> make
 
 The extracted statistics are then in csv/ and generated graphs in fig/
 
