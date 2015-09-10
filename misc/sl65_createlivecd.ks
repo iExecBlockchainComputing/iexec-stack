@@ -441,6 +441,8 @@ exit 0
 # install VirtualBox extensions
 #
 
+yum -y install kernel-devel kernel-headers
+
 VBLA=`ls /usr/local/VBOXADDITIONS*/VBoxLinuxAdditions.run | tail -1`
 sh $VBLA
 if [ $? -eq 0 ] ; then
@@ -451,9 +453,9 @@ fi
 
 #
 # Clean VirtualBox installation requirements
-#
-rm -Rf /usr/local/VBOXADDITIONS*
-yum -y erase kernel-devel kernel-headers
+# Sept 10th, 2015 : we don't because it removes gcc
+#rm -Rf /usr/local/VBOXADDITIONS*
+#yum -y erase kernel-devel kernel-headers
 yum -y clean
 
 
