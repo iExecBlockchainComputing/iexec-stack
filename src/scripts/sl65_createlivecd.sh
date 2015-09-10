@@ -40,7 +40,7 @@
 #   - Please refer to sl65_createlivecd.ks 
 #
 # -2- The created Live CD is configured as follow:
-#   - Root access denied except if id_rsa.pub is provided at LiveCD creation time
+#   - Root access denied except if authorized_keys is provided at LiveCD creation time
 #     (see -3- below)
 #   - network access customized if iptables_rules.sh provided
 #     (see -3- below)
@@ -48,7 +48,7 @@
 #   - mount points : see xwcontext_prologue.sh
 #
 #  -3- Optional files may be installed in the resulted LiveCD
-#     - id_rsa.pub installed in /root/.ssh/authorized_keys2 so that the live cd creator may connect
+#     - authorized_keys installed in /root/.ssh/authorized_keys2 to allow root connection
 #     - iptables_rules.sh installed in /root/
 #     - user.packages, a text file, containing a list of optional packages to install
 #     - user.hostname, a text file, containing the expected host name
@@ -86,8 +86,8 @@ if [ ! -f $EPILOGUE_FILE ] ; then
   exit 1
 fi
 
-if [ ! -f $ROOTDIR/id_rsa.pub ] ; then
-  echo "WARN : pub key not found ($ROOTDIR/id_rsa.pub) : root access not allowed"
+if [ ! -f $ROOTDIR/authorized_keys ] ; then
+  echo "WARN : pub key not found ($ROOTDIR/authorized_keys) : root access not allowed"
 fi
 
 if [ ! -f $ROOTDIR/iptables_rules.sh ] ; then
