@@ -395,24 +395,26 @@ stop ()
   
   [ "$VERBOSE" ]  &&  echo  > /dev/stderr
   wait_for_other_virtualbox_management_to_finish  stop
+
+#  VM_STATE="$("$VBMGT"  showvminfo  "$VMNAME"  --machinereadable  |  \
+#         grep  '^State=' )"
+#  debug_message  "stop :  VM_STATE='$VM_STATE'"
   
-  VM_STATE="$("$VBMGT"  showvminfo  "$VMNAME"  --machinereadable  |  \
-         grep  '^VMState='  |  cut  -d \"  -f 2)"
-  debug_message  "stop :  VM_STATE='$VM_STATE'"
-  
-  if [ "$VM_STATE" = "poweroff" ]; then
-    info_message  "stop:  Already stopped"
-  else
-    if [ "$VM_STATE" = "aborted" ]; then
-      info_message  "stop:  Aborted, restarting"
+ # echo $VM_STATE | grep "powered off" > /dev/null 2>&1
+ # if [ $? -eq 0 ]; then
+ #   info_message  "stop:  Already stopped"
+ # else
+#    echo $VM_STATE | grep -E "aborted|saved" > /dev/null 2>&1
+#    if [ $? -eq 0 ]; then
+      info_message  "stop:  restarting to be sure we can stop (regardless the machine state)"
       ( [ "$VERBOSE" ]  &&  set -x
         "$VBHL"  --startvm  "$VMNAME" )  &
       sleep 5
-    fi
+#    fi
     info_message  "stop:  Stopping"
     ( [ "$VERBOSE" ]  &&  set -x
       "$VBMGT"  controlvm  "$VMNAME"  poweroff )
-  fi
+#  fi
 }
 
 
@@ -615,11 +617,12 @@ END_OF_DISKDETTACH_VARS
 	{ echo "$DISKFILE"  |  grep "${VWORKERDISKTRAILERNAME}"  > /dev/null 2>&1 ; }  &&  \
 		EFFACE="--delete"
 
-	wait_for_other_virtualbox_management_to_finish  disk_dettach
-	debug_message  "dettach disk '$VMNAME' : closemedium  $DISK_TYPE_CLOSE'  '$DISKFILE'  $EFFACE"
-	( [ "$VERBOSE" ]  &&  set -x
-		"$VBMGT"  closemedium  "$DISK_TYPE_CLOSE"  "$DISKUUID"  $EFFACE )
-
+    if [ "$TESTINGONLY" != "TRUE" ] ; then
+	  wait_for_other_virtualbox_management_to_finish  disk_dettach
+	  debug_message  "dettach disk '$VMNAME' : closemedium  $DISK_TYPE_CLOSE'  '$DISKFILE'  $EFFACE"
+	  ( [ "$VERBOSE" ]  &&  set -x
+		  "$VBMGT"  closemedium  "$DISK_TYPE_CLOSE"  "$DISKUUID"  $EFFACE )
+    fi
 	[ $? -ne 0 ] && return
 
 }
@@ -650,18 +653,19 @@ clean ()
     exit 1
   fi
   [ "$VERBOSE" ]  &&  cat "$INFOFILE"  > /dev/stderr
-  
-  if [ "$(grep  '^VMState='  "$INFOFILE"  |  cut  -d \"  -f 2)" !=  \
-       "poweroff" ]; then
+
+#  if [ "$(grep  '^VMState='  "$INFOFILE"  |  cut  -d \"  -f 2)" !=  \
+#       "poweroff" ]; then
+ 
+#  grep  '^State:'  $INFOFILE  |  grep 'powered off' > /dev/null  2>&1
+#  if [ $? -ne 0 ]; then
     stop
-    [ "$VERBOSE" ]  &&  echo  > /dev/stderr
-  fi
+#    [ "$VERBOSE" ]  &&  echo  > /dev/stderr
+#  fi
 
   #---------------------------------------------------------------------------
   #  Detach Boot disk
   #---------------------------------------------------------------------------
-  BDEL=""
-  [ "$TESTINGONLY" = "TRUE" ] && BDEL="FALSE"
   disk_dettach ${HDA1PORT} ${HDADEVICE}
 
   #---------------------------------------------------------------------------
@@ -700,8 +704,9 @@ clean ()
   info_message  "clean:  delete disks"
   #---------------------------------------------------------------------------
   sleep  "$WAITDELAY"
-  CFGFILE="$(grep CfgFile "$INFOFILE"  |  cut  -d \"  -f 2)"
-  CFGDIR=`dirname $CFGFILE`
+#  CFGFILE="$(grep CfgFile "$INFOFILE"  |  cut  -d \"  -f 2)"
+  CFGFILE="$(grep "Config file" "$INFOFILE"  |  cut  -d :  -f 2)"
+  CFGDIR=`dirname "$CFGFILE"`
   [ -d "$CFGDIR" ] &&  debug_message  "clean '$VMNAME' :  deleting $CFGDIR"   &&  rm  -Rf  "$CFGDIR"
   
   rm  -f  "$LOCKFILE"
