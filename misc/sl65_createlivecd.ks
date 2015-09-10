@@ -39,7 +39,7 @@
 #   Please see packages section
 #
 # -2- The created Live CD is configured as follow:
-#   - Root access denied except if id_rsa.pub is provided at LiveCD creation time
+#   - Root access denied except if authorized_keys is provided at LiveCD creation time
 #     (see -3- below)
 #   - network access customized if iptables_rules.sh provided
 #     (see -3- below)
@@ -47,7 +47,7 @@
 #   - mount points : see xwcontext_prologue.sh
 #
 #  -3- Optional files may be installed in the resulted LiveCD
-#     - id_rsa.pub installed in /root/.ssh/authorized_keys2 so that the live cd creator may connect
+#     - authorized_keys installed in /root/.ssh/authorized_keys2 to allow root connection
 #     - iptables_rules.sh installed in /root/
 #     - user.packages, a text file, containing a list of optional packages to install
 #     - user.hostname, a text file, containing the expected host name
@@ -55,6 +55,8 @@
 #
 # Changelog:
 #              $Log: sl65_createlivecd.ks,v $
+# - sept 9th, 2015
+#   * "authorized_keys" is preferred to "id_rsa.pub" to allow more than one user to connect as root 
 # - dec 4th, 2014
 #   * VirtualBox shared file system extension
 #
@@ -308,15 +310,15 @@ else
   echo "WARN : iptables rules not found ($ROOTDIR/iptables_rules.sh) : LAN access allowed"
 fi
 
-if [ -f $ROOTDIR/id_rsa.pub ] ; then
+if [ -f $ROOTDIR/authorized_keys ] ; then
   echo "INFO: pub key found : root access allowed"
   mkdir -p $LIVE/root/.ssh
   chmod 600 $LIVE/root/.ssh
-  cp $ROOTDIR/id_rsa.pub  $LIVE/root/.ssh/authorized_keys
-  cp $ROOTDIR/id_rsa.pub  $LIVE/root/.ssh/authorized_keys2
+  cp $ROOTDIR/authorized_keys  $LIVE/root/.ssh/authorized_keys
+  cp $ROOTDIR/authorized_keys  $LIVE/root/.ssh/authorized_keys2
   chmod 600 $LIVE/root/.ssh/authorized_keys*
 else
-  echo "WARN : pub key not found ($ROOTDIR/id_rsa.pub) : root access not allowed"
+  echo "WARN : pub key not found ($ROOTDIR/authorized_keys) : root access not allowed"
 fi
 
 
