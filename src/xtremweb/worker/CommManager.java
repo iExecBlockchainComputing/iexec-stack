@@ -917,6 +917,7 @@ public final class CommManager extends Thread {
 				commClient.addToCache(data, uri);
 			} else if (uri.isXtremWeb()) {
 				commClient.downloadData(uri, fdata);
+				fsize = fdata.length();
 			} else if (!uri.isFile()) {
 				throw new IOException(uri.toString() + " : unknown schema");
 			}
