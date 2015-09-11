@@ -617,12 +617,13 @@ END_OF_DISKDETTACH_VARS
 	{ echo "$DISKFILE"  |  grep "${VWORKERDISKTRAILERNAME}"  > /dev/null 2>&1 ; }  &&  \
 		EFFACE="--delete"
 
-    if [ "$TESTINGONLY" != "TRUE" ] ; then
-	  wait_for_other_virtualbox_management_to_finish  disk_dettach
-	  debug_message  "dettach disk '$VMNAME' : closemedium  $DISK_TYPE_CLOSE'  '$DISKFILE'  $EFFACE"
-	  ( [ "$VERBOSE" ]  &&  set -x
-		  "$VBMGT"  closemedium  "$DISK_TYPE_CLOSE"  "$DISKUUID"  $EFFACE )
-    fi
+    [ "$TESTINGONLY" = "TRUE" ] && EFFACE=""
+
+    wait_for_other_virtualbox_management_to_finish  disk_dettach
+	debug_message  "dettach disk '$VMNAME' : closemedium  $DISK_TYPE_CLOSE'  '$DISKFILE'  $EFFACE"
+	( [ "$VERBOSE" ]  &&  set -x
+	 "$VBMGT"  closemedium  "$DISK_TYPE_CLOSE"  "$DISKUUID"  $EFFACE )
+
 	[ $? -ne 0 ] && return
 
 }
