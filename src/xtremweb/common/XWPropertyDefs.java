@@ -916,6 +916,28 @@ public enum XWPropertyDefs {
 		}
 	},
 	/**
+	 * Dispatcher, worker : this defines the amount of physical memory; this en variable is set by xtremwebconf.sh
+	 * <p>
+	 * Property type : long
+	 * </p>
+	 * <p>
+	 * Default: System.getProperty("HWMEM")
+	 * </p>
+	 * @see xtremweb.common.XWTools#MAXDISKSIZE
+	 * @since 10.1.0
+	 */
+	HWMEM {
+		/**
+		 * This retrieves the String representation of the default value
+		 * 
+		 * @return System.getproperty("HWMEM");
+		 */
+		@Override
+		public String defaultValue() {
+			return System.getProperty("HWMEM");
+		}
+	},
+	/**
 	 * Dispatcher, worker : this defines the maximum usable disk space per application and work; this is in Mb
 	 * <p>
 	 * Property type : long

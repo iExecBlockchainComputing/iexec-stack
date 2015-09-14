@@ -1173,6 +1173,8 @@ public final class XWConfigurator extends Properties {
 		_host.setTotalMem(0);
 		_host.setTotalSwap(0);
 		_host.setOs(OSEnum.getOs());
+		final long totalMem = getProperty(XWPropertyDefs.HWMEM).length() <= 0 ? 0 : Long.parseLong(getProperty(XWPropertyDefs.HWMEM));
+		_host.setTotalMem(totalMem);
 
 		_host.setCpu(CPUEnum.getCpu());
 		_host.setAvailable(false);
