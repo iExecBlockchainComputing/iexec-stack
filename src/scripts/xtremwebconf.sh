@@ -588,7 +588,32 @@ PROFCLASS=""
 #[ "$PROFILER" != "" ] && JAVAOPTS=""
 
 
-JAVACMD="$JAVA $JAVAOPTS $JAVANETDEBUG $JETTYDEBUG $JAVATRUSTKEY $PROFILER -cp $MAINJAR:$XW_CLASSES:$PROFCLASS"
+#
+# Sept 10th, 2015: determine machine RAM
+# HWMEM is in Gb
+#
+HWMEM=0
+
+case $OSTYPE in
+  
+  darwin* )
+	HWMEMBYTES=`sysctl -a| grep hw\.mem | cut -d : -f 2`
+	HWMEM=$(($HWMEMBYTES/(1024*1024)))
+    ;;
+  
+  linux* )
+	HWMEMKILOBYTES=`more /proc/meminfo | grep MemTotal | cut -d : -f 2 | sed "s/kB//g"`
+	HWMEM=$(($HWMEMKILOBYTES/1024))
+    ;;
+  
+  * )
+    ;;
+  
+esac
+
+
+
+JAVACMD="$JAVA -DHWMEM=$HWMEM $JAVAOPTS $JAVANETDEBUG $JETTYDEBUG $JAVATRUSTKEY $PROFILER -cp $MAINJAR:$XW_CLASSES:$PROFCLASS"
 JAVA="$JAVACMD $MAINCLASS --xwconfig $CFGFILE $XWVERBOSE $XWDOWNLOAD $XWFORMAT $XWSTATUS $PARAMS"
 IBISHUB="$JAVACMD -Dsmartsockets.hub.port=$IBISHUBPORT $IBISHUBCLASS"
 
