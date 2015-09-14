@@ -917,16 +917,15 @@ public final class CommManager extends Thread {
 				commClient.addToCache(data, uri);
 			} else if (uri.isXtremWeb()) {
 				commClient.downloadData(uri, fdata);
-				fsize = fdata.length();
 			} else if (!uri.isFile()) {
 				throw new IOException(uri.toString() + " : unknown schema");
 			}
+
+			fsize = fdata.length();
 			final long end = System.currentTimeMillis();
 			final float bandwidth = fsize / ((end - start) + 1);
 			Worker.getConfig().getHost().setDownloadBandwidth(bandwidth);
 			logger.info("Download bandwidth = " + bandwidth);
-
-			fsize = fdata.length();
 
 			if ((data.getMD5().compareTo(MD5.asHex(MD5.getHash(fdata))) != 0)
 					|| (data.getSize() != fsize)) {
