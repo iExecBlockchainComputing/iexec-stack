@@ -1173,8 +1173,6 @@ public final class XWConfigurator extends Properties {
 		_host.setTotalMem(0);
 		_host.setTotalSwap(0);
 		_host.setOs(OSEnum.getOs());
-		final long totalMem = getProperty(XWPropertyDefs.HWMEM).length() <= 0 ? 0 : Long.parseLong(getProperty(XWPropertyDefs.HWMEM));
-		_host.setTotalMem(totalMem);
 
 		_host.setCpu(CPUEnum.getCpu());
 		_host.setAvailable(false);
@@ -1468,7 +1466,7 @@ public final class XWConfigurator extends Properties {
 	public void setTmpDir(final File dir) throws IOException {
 		XWTools.checkDir(dir);
 		_host.setTotalTmp(dir.getTotalSpace() / XWTools.ONEMEGABYTES);
-		_host.setFreeTmp(dir.getUsableSpace() / XWTools.ONEMEGABYTES);
+		_host.setFreeTmp(dir.getFreeSpace() / XWTools.ONEMEGABYTES);
 		dir.deleteOnExit();
 
 		setProperty(XWPropertyDefs.TMPDIR, dir.getAbsolutePath());
