@@ -1015,10 +1015,6 @@ public final class Client {
 				continue;
 			}
 
-			if (dataUri != null) {
-				remove(dataUri);
-			}
-
 			switch (jobStatus) {
 			case COMPLETED:
 			case ERROR:
