@@ -23,21 +23,21 @@
 #
 
 #  ******************************************************************
-#  File    : sl65_createlivecd.sh
+#  File    : sl_createlivecd.sh 
+#            formerly sl65_createlivecd.sh
 #  Date    : Septembre 22nd, 2014
 #  Author  : Oleg Lodygensky
 # 
 #  OS      : Scientific Linux 6.5
 #  Arch    : 32bits
 # 
-#  Purpose : this script creates a new SL6 LiveCD
+#  Purpose : this script creates a new Scientific Linux LiveCD
 #
-#  See     : sl65_createlivecd.ks; xwcontext_prologue; xwcontext_epilogue
+#  See     : misc/*.ks; xwcontext_prologue; xwcontext_epilogue
 #
 #  Requirements: xwcontext_prologue and xwcontext_epilogue scripts
 #
-# -1- The created Live CD contains the following packages
-#   - Please refer to sl65_createlivecd.ks 
+# -1- The created Live CD which content is define in the kickstart file
 #
 # -2- The created Live CD is configured as follow:
 #   - Root access denied except if authorized_keys is provided at LiveCD creation time
@@ -54,6 +54,16 @@
 #     - user.hostname, a text file, containing the expected host name
 #     - *.rpm are installed
 # 
+# Changelog:
+#
+# - sept 16th, 2015
+#   * user may gives the kickstart file on command line (retrieved in $1)
+#     Default kickstart file is  sl65_createlivecd.ks
+#
+# - sept 9th, 2015
+#   * "authorized_keys" is preferred to "id_rsa.pub" to allow more than one user to connect as root 
+#
+#
 #  !!!!!!!!!!!!!!!!    DO NOT EDIT    !!!!!!!!!!!!!!!!
 #  
 #  ******************************************************************
@@ -72,11 +82,15 @@ EPILOGUE_FILE=$ROOTDIR/$EPILOGUE_NAME
 CMAKE_RPMFILENAME=cmake-2.6.4-5.el6.x86_64.rpm
 CMAKE_RPMFILE=$ROOTDIR/$CMAKE_RPMFILENAME
 
-
+[ "$1" != "" ] && KSFILE=$1
+ 
 if [ ! -f $KSFILE ] ; then
   echo "FATAL : kickstart file not found ($KSFILE)"
   exit 1
 fi
+
+echo "Kickstart file = $KSFILE"
+
 if [ ! -f $PROLOGUE_FILE ] ; then
   echo "FATAL : prologue not found ($PROLOGUE_FILE)"
   exit 1
@@ -118,7 +132,9 @@ yum -y update
 #yum -y --enablerepo=sl-addons install liveusb-creator
 #yum -y install livecd-tools
 
-yum -y install revisor-cli
+# docker-io is available on epel repository
+yum install -y epel-release
+yum install -y revisor-cli
 
 LIVETMPDIR=/mnt/xwscratch/livecdsl6/$CUSTOMHOSTNAME
 mkdir -p $LIVETMPDIR
