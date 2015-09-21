@@ -38,6 +38,10 @@ package xtremweb.common;
  *     |                     v                           |
  *     |                  Running <--- ResultRequest -> Lost
  *     |                     |               ^           ^
+ *     |                     v               |           ^
+ *     |                     |               |           ^
+ *     |                Replicating          |           ^
+ *     |                     |               |           ^
  *     |                     v               |           |
  *  Aborted <----+-----------+---------------+-----------+
  *               |           |               |           |
@@ -46,7 +50,10 @@ package xtremweb.common;
  * 
  * </code>
  * 
- * AVAILABLE and UNVAILABLE may apply to data only
+ * Any update in this enum must be reflected in src/scripts/db-maintenance:
+ * - xwhep-core-tables-create-tables.sql.in
+ * - xwhep-core-tables-create-views-for-sessions-and-groups.sql
+ * - xwhep-core-tables-from-8-create-new-tables-columns-fk.sql
  * 
  */
 public enum StatusEnum {
@@ -109,9 +116,14 @@ public enum StatusEnum {
 	/**
 	 * This tells this object is not available
 	 */
-	UNAVAILABLE;
+	UNAVAILABLE,
+	/**
+	 * This tells work has not reached expected replication yet
+	 * @since 10.2.0
+	 */
+	REPLICATING;
 
-	public static final StatusEnum LAST = UNAVAILABLE;
+	public static final StatusEnum LAST = REPLICATING;
 	public static final int SIZE = LAST.ordinal() + 1;
 
 	/**

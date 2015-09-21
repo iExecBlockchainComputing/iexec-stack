@@ -2767,7 +2767,9 @@ public final class Client {
 			InstantiationException {
 
 		final Collection params = (Collection) args.commandParams();
-
+		if (params == null) {
+			usage(IdRpc.GETGROUPWORKS);
+		}
 		final Iterator theEnum = params.iterator();
 		final Object param = theEnum.next();
 		GroupInterface group = null;
@@ -3169,7 +3171,7 @@ public final class Client {
 			}
 
 			try {
-				if((work.getExpectedReplications() > 0) && (work.getReplicaSetSize() < 1)) {
+				if((work.getExpectedReplications() != 0) && (work.getReplicaSetSize() < 1)) {
 					logger.warn("Forcing replication set size to 1");
 					work.setReplicaSetSize(1);
 				}

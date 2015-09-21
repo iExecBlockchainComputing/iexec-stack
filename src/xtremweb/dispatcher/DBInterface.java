@@ -4600,11 +4600,13 @@ public final class DBInterface {
 			throws IOException, InvalidKeyException, AccessControlException {
 
 		if (jobUID == null) {
+			System.out.println("jobuid is null");
 			return false;
 		}
 
 		final WorkInterface theWork = work(theClient, jobUID);
 		if (theWork == null) {
+			System.out.println("no work for jobuid " + jobUID);
 			return false;
 		}
 		if ((theClient.getRights() == null)
@@ -4736,6 +4738,7 @@ public final class DBInterface {
 			while (li.hasNext()) {
 				final UID jobUID = li.next();
 				if (deleteJob(theClient, jobUID) == false) {
+					System.out.println("deletejob(" + jobUID + ") returned false");
 					result = false;
 				}
 			}
@@ -5006,11 +5009,15 @@ public final class DBInterface {
 							final WorkInterface replicatedWork = work(originalUid);
 							final int expectedReplications = replicatedWork.getExpectedReplications();
 							final int currentReplications = replicatedWork.getTotalReplica();
-							if(currentReplications < expectedReplications) {
-								logger.debug(delegatedClient.getLogin() + " " + originalUid + " still has replications " + currentReplications  + " < " +  expectedReplications);
+							if((currentReplications < expectedReplications) 
+									|| (expectedReplications < 0)){
+								logger.debug(delegatedClient.getLogin() + " " + originalUid + " still has replications ; currently " + currentReplications  + " ; expected " +  expectedReplications);
 								final WorkInterface newWork = new WorkInterface(replicatedWork);
 								newWork.setUID(new UID());
 								newWork.replicate(originalUid);
+								newWork.setTotalReplica(0);
+								newWork.setReplicaSetSize(0);
+								newWork.setExpectedReplications(0);
 
 								theApp.incPendingJobs();
 								jobOwner.incPendingJobs();
@@ -5022,9 +5029,18 @@ public final class DBInterface {
 								rows.add(newWork);
 								replicatedWork.incTotalReplica();
 							}
-							if(currentReplications != replicatedWork.getTotalReplica()) {
-								update(replicatedWork);
+							replicatedWork.setReplicating();
+							if(currentReplications >= replicatedWork.getTotalReplica()) {
+								replicatedWork.setCompleted();
 							}
+							rows.add(replicatedWork);
+						}
+					} else {
+						final int expectedReplications = theWork.getExpectedReplications();
+						final int currentReplications = theWork.getTotalReplica();
+						if((currentReplications < expectedReplications) 
+								|| (expectedReplications < 0)){
+							theWork.setReplicating();
 						}
 					}
 					break;
@@ -5076,11 +5092,16 @@ public final class DBInterface {
 			job.setReplicatedUid(null);
 			logger.debug(theClient.getLogin() + " " + jobUID + " replications = " + job.getExpectedReplications() + " by " + job.getReplicaSetSize());
 
-			for(int replica = 0 ; replica <= job.getReplicaSetSize() && replica <= job.getExpectedReplications(); replica++) {
+			// if job.getExpectedReplications() < 0, we replicate for ever
+			int replica =  job.getExpectedReplications() < 0 ? job.getExpectedReplications() - job.getReplicaSetSize() : 0;
+			boolean firstJob = true;
+			
+			for( ; replica <= job.getReplicaSetSize() && replica <= job.getExpectedReplications(); replica++) {
 				final WorkInterface newWork = new WorkInterface(job);
 				newWork.setUID(jobUID); // we insert the original work (to eventually be replicated)
-				if(replica == 0) {
+				if(firstJob == true) {
 					newWork.setTotalReplica(Math.min(job.getReplicaSetSize(), job.getExpectedReplications()));   // this is the original work
+					firstJob= false;
 				} else {
 					newWork.setUID(new UID());  // each eventual replica has its own UID
 					newWork.replicate(jobUID);

@@ -363,7 +363,7 @@ public class WorkInterface extends Table {
 		},
 		/**
 		 * This is the column index of the amount of expected replicas
-		 * No replica, if <= 0
+		 * This job is replicated forever, if < 0
 		 * @since 10.0.0
 		 */
 		REPLICATIONS {
@@ -1777,10 +1777,18 @@ public class WorkInterface extends Table {
 	}
 
 	/**
-	 * This sets the status
+	 * This marks this work as running
 	 */
 	public void setRunning() {
 		setStatus(StatusEnum.RUNNING);
+	}
+
+	/**
+	 * This marks this work as being replicated
+	 * @since 10.2.0
+	 */
+	public void setReplicating() {
+		setStatus(StatusEnum.REPLICATING);
 	}
 
 	/**
@@ -2090,7 +2098,8 @@ public class WorkInterface extends Table {
 	}
 
 	/**
-	 * This sets the expected amount of replica
+	 * This sets the expected amount of replica. 
+	 * This job is replicated for ever if v < 0
 	 * @since 10.0.0
 	 * @return true if value has changed, false otherwise
 	 */
