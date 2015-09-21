@@ -137,6 +137,7 @@ yum install -y epel-release
 yum install -y revisor-cli
 
 LIVETMPDIR=/mnt/xwscratch/livecdsl6/$CUSTOMHOSTNAME
+rm -Rf $LIVETMPDIR 
 mkdir -p $LIVETMPDIR
 if [ $? -eq 0 ] ; then
   echo "LANG=C livecd-creator --config=$KSCFILE --fslabel=$CUSTOMHOSTNAME --tmpdir=$LIVETMPDIR"
