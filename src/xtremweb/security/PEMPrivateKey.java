@@ -129,20 +129,8 @@ public final class PEMPrivateKey {
 	public void read(File f, String password) throws CertificateException,
 			FileNotFoundException, IOException {
 
-		if (f == null) {
-			throw new IOException("key file is null");
-		}
-		if (password == null) {
-			throw new IOException("password is null");
-		}
-
-		char[] p = null;
-		try {
-			p = password.toCharArray();
-			read(f, p);
-		} finally {
-			p = null;
-		}
+		final char[] p = password == null ? null : password.toCharArray();
+		read(f, p);
 	}
 
 	/**
@@ -166,13 +154,11 @@ public final class PEMPrivateKey {
 
 		FileReader fr = null;
 		PEMReader r = null;
-		KeyPair kp = null;
-		DefaultPasswordFinder pfinder = null;
 		try {
 			fr = new FileReader(keyFile);
-			pfinder = new DefaultPasswordFinder(password);
+			final DefaultPasswordFinder pfinder = new DefaultPasswordFinder(password);
 			r = new PEMReader(fr, pfinder);
-			kp = (KeyPair) r.readObject();
+			final KeyPair kp = (KeyPair) r.readObject();
 			try {
 				publicKey = kp.getPublic();
 			} catch (final Exception ingore) {
@@ -190,10 +176,8 @@ public final class PEMPrivateKey {
 				fr.close();
 			} catch (final Exception ignore) {
 			}
-			kp = null;
 			fr = null;
 			r = null;
-			pfinder = null;
 		}
 	}
 
@@ -211,19 +195,15 @@ public final class PEMPrivateKey {
 	 */
 	public KeyStore setKeyntries(KeyStore store, X509Certificate cert,
 			String password) {
-		char[] p = null;
-		X509Certificate[] chain = new X509Certificate[1];
 
 		try {
+			final X509Certificate[] chain = new X509Certificate[1];
 			chain[0] = cert;
-			p = password.toCharArray();
+			final char[] p = password.toCharArray();
 			store.setKeyEntry(cert.getSubjectX500Principal().getName(),
 					privateKey, p, chain);
 		} catch (final KeyStoreException e) {
 			logger.exception("Can't insert key into keystore", e);
-		} finally {
-			p = null;
-			chain = null;
 		}
 		return store;
 	}
@@ -261,7 +241,7 @@ public final class PEMPrivateKey {
 			logger.info("Where : file is the private key file");
 			logger.info("        password is the private key password");
 			logger.info("        --connect to connect to localhost:79999 for testing");
-			logger.info("        (of course you have started PublicKeyReader as server - see PublicKeyReader)");
+			logger.info("        (of course you have started PublicKey as server - see PublicKeyReader)");
 			System.exit(1);
 		}
 		final String message = "hello world";
