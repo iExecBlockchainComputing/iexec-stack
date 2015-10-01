@@ -80,10 +80,12 @@ ifeq ("$(TARGET)","Mac OS X")
 #  endif
   JAVA_HEADERS_10_8 = /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk/System/Library/Frameworks/JavaVM.framework/Headers/
   JAVA_HEADERS_10_9 = /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/System/Library/Frameworks/JavaVM.framework/Headers/
-  JAVA_HEADERS = $(JAVA_HEADERS_10_9)
+  JAVA_HEADERS_10_10 = /System/Library/Frameworks/JavaVM.framework/Versions/Current/Headers/
+  JAVA_HEADERS = $(JAVA_HEADERS_10_10)
   if ( test -d $(JAVA_HOME)/../Headers ) ; then  JAVA_HEADERS = $(JAVA_HOME)/../Headers ; fi
   if ( test -d $(JAVA_HEADERS_10_8)    ) ; then JAVA_HEADERS = $(JAVA_HEADERS_10_8) ; fi
   if ( test -d $(JAVA_HEADERS_10_9)    ) ; then JAVA_HEADERS = $(JAVA_HEADERS_10_9) ; fi
+  if ( test -d $(JAVA_HEADERS_10_10)   ) ; then JAVA_HEADERS = $(JAVA_HEADERS_10_10) ; fi
 #  ifeq ("$(JAVA_HEADERS)", "")
 #	@echo "Can't determine JAVA_HEADERS"
 #	exit 1
