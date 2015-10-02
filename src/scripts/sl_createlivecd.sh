@@ -133,8 +133,8 @@ yum -y update
 #yum -y install livecd-tools
 
 # docker-io is available on epel repository
-yum install -y epel-release
-yum install -y revisor-cli
+#yum install -y epel-release
+#yum install -y revisor-cli
 
 LIVETMPDIR=/mnt/xwscratch/livecdsl6/$CUSTOMHOSTNAME
 rm -Rf $LIVETMPDIR 
