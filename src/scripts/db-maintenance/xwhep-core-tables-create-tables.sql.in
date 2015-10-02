@@ -348,7 +348,7 @@ create table if not exists  users  (
   runningJobs   int(15)                     default 0        comment 'Running jobs counter. updated on work request',
   errorJobs     int(15)                     default 0        comment 'Error jobs counter. updated on job error',
   usedCpuTime   bigint                      default 0        comment 'Average execution time. updated on work completion',
-  certificate   varchar(32760)                               comment 'This is the X.509 proxy file content',
+  certificate   text                                         comment 'This is the X.509 proxy file content',
   accessRights  int(4)                      default 0x700    comment 'Since 5.8.0  This defines access rights "a la" linux FS  See xtremweb.common.XWAccessRights.java',
   password      varchar(254)      not null  default ''       comment 'User password',
   email         varchar(254)      not null  default ''       comment 'User email',
@@ -821,7 +821,7 @@ create table if not exists  works  (
   maxWallClockTime    int(10)                                      comment 'Wallclocktime : how many seconds a job can be computed.  The job is stopped as the wall clocktime is reached.  If < 0, the job is not stopped.',
   returnCode          int(3)                                       comment 'Application return code',
   server              varchar(254)                                 comment 'For replication',
-  cmdLine             varchar(32760)                               comment 'This work command line to provide to application',
+  cmdLine             text                                         comment 'This work command line to provide to application',
   listenport          varchar(254)                                 comment 'The job may be a server that needs to listen to some ports  This is a comma separated integer list  Privileged ports (lower than 1024) are ignored  Default : null (no port)  Since 8.0.0',
   smartsocketaddr     varchar(8190)                                comment 'The SmartSockets addresses to connect to the listened ports  This is set if listenport != null  This is a comma separated SmartSockets addresses list  Default : null  Since 8.0.0',
   smartsocketclient   varchar(8190)                                comment 'This is the column index of a semicolon list containing tuple of   SmartSockets address and local port.  This helps a job running on XWHEP worker side to connect to a server  Like application running on XWHEP client side.  E.g. "Saddr1, port1; Saddr2, por',  --  This is the column index of a semicolon list containing tuple of   SmartSockets address and local port.  This helps a job running on XWHEP worker side to connect to a server  Like application running on XWHEP client side.  E.g. "Saddr1, port1; Saddr2, port2"   Default : null  Since 8.0.0',
@@ -952,7 +952,7 @@ grant all privileges on * to @DBUSER@@localhost.localdomain identified by '@DBUS
 
 grant all privileges on * to @DBUSER@@'@XWHOST@'            identified by '@DBUSERPASSWORD@' with grant option;
 
-#set password for @DBUSER@@localhost = old_password ('@DBUSERPASSWORD@');
+-- set password for @DBUSER@@localhost = old_password ('@DBUSERPASSWORD@');
 
 
 -- ===========================================================================
