@@ -952,7 +952,7 @@ grant all privileges on * to @DBUSER@@localhost.localdomain identified by '@DBUS
 
 grant all privileges on * to @DBUSER@@'@XWHOST@'            identified by '@DBUSERPASSWORD@' with grant option;
 
-set password for @DBUSER@@localhost = old_password ('@DBUSERPASSWORD@');
+#set password for @DBUSER@@localhost = old_password ('@DBUSERPASSWORD@');
 
 
 -- ===========================================================================
