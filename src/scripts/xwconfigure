@@ -1840,7 +1840,7 @@ if [ \$IMPORTKEY -eq 1 ] ; then
 	[ \$? -ne 0 ] && fatal "\${KEYTOOL} : can't export public key from found certificates"
 else
 	info "No certificate found; creating self signed ones"
-	\${KEYTOOL} -genkey -dname "\${CERTNAME}" -alias \${SERVERALIAS} -storepass "\${SSLKeyServerpassword}" -keypass "\${SSLKEYPASSPHRASE}" -keystore \${SERVERFILE} -validity 365 -v
+	\${KEYTOOL} -genkey -dname "\${CERTNAME}" -alias \${SERVERALIAS} -storepass "\${SSLKeyServerpassword}" -keypass "\${SSLKEYPASSPHRASE}" -keystore \${SERVERFILE} -validity 365 -v  -keyalg RSA
 	[ \$? -ne 0 ] && fatal "can't create self signed certificates"
 	\${KEYTOOL} -export     -keystore \${SERVERFILE} -alias \${SERVERALIAS} -file \${CERTFILE} -storepass "\${SSLKeyServerpassword}" -v
 	[ \$? -ne 0 ] && fatal "can't export self signed public key"
@@ -1864,7 +1864,7 @@ else
   info "Generating worker keystore file \${WORKERFILE}"
 fi
 
-\${KEYTOOL} -genkey -dname "\${CERTNAME}" -alias \${WORKERALIAS} -storepass "\${SSLKeyWorkerpassword}" -keypass "\${SSLKeyWorkerpassword}" -keystore \${WORKERFILE} -v
+\${KEYTOOL} -genkey -dname "\${CERTNAME}" -alias \${WORKERALIAS} -storepass "\${SSLKeyWorkerpassword}" -keypass "\${SSLKeyWorkerpassword}" -keystore \${WORKERFILE} -v  -keyalg RSA
 [ $? -ne 0 ] && fatal "can't generate worker keystore"
 info "Importing server public key into worker keystore (\${WORKERFILE})"
 \${KEYTOOL} -import -alias \${SERVERALIAS} -file \${CERTFILE} -trustcacerts -keystore \${WORKERFILE} -storepass "\${SSLKeyWorkerpassword}" -v -noprompt
@@ -1881,7 +1881,7 @@ else
   info "Generating client keystore file \${CLIENTFILE}"
 fi
 
-\${KEYTOOL} -genkey -dname "\${CERTNAME}" -alias \${CLIENTALIAS} -storepass "\${SSLKeyClientpassword}" -keypass "\${SSLKeyClientpassword}" -keystore \${CLIENTFILE} -v
+\${KEYTOOL} -genkey -dname "\${CERTNAME}" -alias \${CLIENTALIAS} -storepass "\${SSLKeyClientpassword}" -keypass "\${SSLKeyClientpassword}" -keystore \${CLIENTFILE} -v  -keyalg RSA
 [ $? -ne 0 ] && fatal "can't generate client keystore"
 info "Importing server public key into client keystore (\${WORKERFILE})"
 \${KEYTOOL} -import -alias \${SERVERALIAS} -file \${CERTFILE} -trustcacerts -keystore \${CLIENTFILE} -storepass "\${SSLKeyClientpassword}" -v -noprompt
