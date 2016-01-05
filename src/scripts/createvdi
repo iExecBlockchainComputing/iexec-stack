@@ -108,6 +108,33 @@ clean()
 #=============================================================================
 trap fatal SIGINT SIGTERM
 
+
+#-----------------------------------------------------------------------------
+#  Depending on the OS, set :
+#  -  The date format
+#  -  VB_MGT as the VirtualBox management command
+#-----------------------------------------------------------------------------
+case $OSTYPE in
+  
+  darwin* )
+    DATE_FORMAT='+%Y-%m-%d %H:%M:%S%z'
+    VB_MGT=/Applications/VirtualBox.app/Contents/MacOS/VBoxManage
+    ;;
+  
+  linux* )
+    DATE_FORMAT='--rfc-3339=seconds'
+    VB_MGT=/usr/bin/vboxmanage
+    ;;
+  
+  * )
+    fatal "$OSTYPE not supported"
+    ;;
+  
+esac
+
+
+
+
 DEFAULTDISKSIZE=10240
 DISKSIZE=$DEFAULTDISKSIZE
 
@@ -177,29 +204,6 @@ if [ -n "$SOURCE" ] ; then
 	SOURCE=$(echo "$SOURCE"  |  perl  -wpe  's=(.)/+$=$1=')
 
 fi
-
-#-----------------------------------------------------------------------------
-#  Depending on the OS, set :
-#  -  The date format
-#  -  VB_MGT as the VirtualBox management command
-#-----------------------------------------------------------------------------
-case $OSTYPE in
-  
-  darwin* )
-    DATE_FORMAT='+%Y-%m-%d %H:%M:%S%z'
-    VB_MGT=/Applications/VirtualBox.app/Contents/MacOS/VBoxManage
-    ;;
-  
-  linux* )
-    DATE_FORMAT='--rfc-3339=seconds'
-    VB_MGT=/usr/bin/vboxmanage
-    ;;
-  
-  * )
-    fatal "$OSTYPE not supported"
-    ;;
-  
-esac
 
 
 #-----------------------------------------------------------------------------
