@@ -24,7 +24,7 @@
 #      * application disk is attached to disk port 2
 #      * input       disk is attached to disk port 3
 #      * result      disk is attached to disk port 4
-# - jan 24th, 2014 : Oleg Lodygensky
+# - Oct 24th, 2014 : Oleg Lodygensky
 #   Get kernel console for debugging boot process, if needed
 #     sl6[2|4]_createlivecd.ks bootloader options : bootloader --location=mbr --driveorder=sda --append="selinux=0 console=ttyS0 console=tty0 ignore_loglevel"
 #     See SERIALOUT
@@ -34,7 +34,7 @@
 #    - the worker can not create ISO files since this requires administrator privileges
 #      hence createsiso script is not used any more
 #
-#  OS      : Linux, max os x
+#  OS      : Linux, mac os x
 # 
 #  Purpose : this script creates and starts a new VirtualBox VM on worker side
 #
@@ -454,7 +454,7 @@ calculate_disk_type_in_function_of_suffix ()
 # @param $1 : informative text
 # @param $2 : virtual disk file
 # @param $3 : device port number
-# @param $4 : if TRUE, create a new empty disk
+# @param $4 : if TRUE, create a new empty disk (not used)
 #
 #=============================================================================
 disk_attach () 
@@ -462,13 +462,16 @@ disk_attach ()
 	DTEXT=$1
 	DFILE=$2
 	DEVICEPORT=$3
-	CREATE="TRUE"
+#	CREATE="TRUE"
+	NEWDISK="FALSE"
+
+echo "00 NEWDISK=$NEWDISK"
 
 	#---------------------------------------------------------------------------
 	#  Results disk or new disk with free space
 	#---------------------------------------------------------------------------
 	if [ -z "$DFILE" ]; then
-		if [ "$CREATE" = "TRUE" ]; then
+#		if [ "$CREATE" = "TRUE" ]; then
 			#-------------------------------------------------------------------------
 			info_message  "disk_attach '${DTEXT}':  create new disk (${SCRATCHSIZE}Mb)"
 			#-------------------------------------------------------------------------
@@ -486,12 +489,15 @@ disk_attach ()
 				--filename "$DFILE" \
 				--size     "$SCRATCHSIZE" )  ||  \
 			  fatal "disk_attach '${DTEXT}': can not create new disk '$DFILE'"  TRUE
-		else
-			#-------------------------------------------------------------------------
-			info_message  "disk_attach '${DTEXT}':  not creating/attaching any new disk"
-			#-------------------------------------------------------------------------
-			return
-		fi
+
+			NEWDISK="TRUE"
+
+#		else
+#			#-------------------------------------------------------------------------
+#			info_message  "disk_attach '${DTEXT}':  not creating/attaching any new disk"
+#			#-------------------------------------------------------------------------
+#			return
+#		fi
 	else
 		if [ -r ${DFILE} ] ; then
 			download_if_http  "$DFILE"
@@ -516,23 +522,24 @@ disk_attach ()
 	calculate_disk_type_in_function_of_suffix  "$DFILE"
 
 	#-----------------------------------------------------------------------
-	#  Rename the Restults disk and set a new UUID for non ISO,
+	#  Rename the Results disk and set a new UUID for non ISO,
 	#  in order to be able to launch several simultaneous VM using
 	#  the same disk
 	#-----------------------------------------------------------------------
 	DFILENAME="$(basename "$DFILE")"
 	DIRNAME="$(dirname "$DFILE")"
-	if [ "$CREATE" != "TRUE" ]; then
-		TMPFILE="$DIRNAME/xwhd$XWJOBUID-$DFILENAME"
-		mv  "$DFILE"  "$TMPFILE"
-		DFILE="$TMPFILE"
-	fi
+#	if [ "$CREATE" != "TRUE" ]; then
+#		TMPFILE="$DIRNAME/xwhd$XWJOBUID-$DFILENAME"
+#		mv  "$DFILE"  "$TMPFILE"
+#		DFILE="$TMPFILE"
+#	fi
+
+echo "01 NEWDISK=$NEWDISK"
 
 	if [ "$DISK_TYPE" != "$DVDTYPE" ] ; then
 		wait_for_other_virtualbox_management_to_finish  install
 		debug_message  "disk_attach '${DTEXT}' :  setuuid '$DFILE'"
-		( [ "$VERBOSE" ]  &&  set -x
-			"$VBMGT"  internalcommands  sethduuid  "$DFILE" )
+		[ "$NEWDISK" = "FALSE" ] &&  (  [ "$VERBOSE" ]  &&  set -x "$VBMGT"  internalcommands  sethduuid  "$DFILE" )
 	fi
 
 	if [ -z "$DFILE" ]; then
@@ -789,32 +796,23 @@ install ()
   info_message  "install '$VMNAME'"
 
   if [ -n "$HDB1FILE_CONTEXT" ] ; then 
-#	HDB1FILE_CONTEXT_SAV=$HDB1FILE_CONTEXT
-#	if [ $? -ne 0 ] ; then
-#		HDB1FILE_CONTEXT=$HDB1FILE_CONTEXT_SAV
-		HDB1FILE_CONTEXT=`$CREATEVDI --src $HDB1FILE_CONTEXT`
-		[ $? -ne 0 ] && fatal "Can't create context disk from $HDB1FILE_CONTEXT"
-#	fi
+	HDB1FILE_CONTEXT_SAV=$HDB1FILE_CONTEXT
+	HDB1FILE_CONTEXT=`$CREATEVDI --src $HDB1FILE_CONTEXT`
+	[ $? -ne 0 ] && fatal "Can't create context disk from $HDB1FILE_CONTEXT_SAV"
   else
 	warning_message  "install :  no contextualization disk provided"
   fi
 
   if [ -n "$HDB2FILE_APP" ] ; then
-#  	HDB2FILE_APP_SAV=$HDB2FILE_APP
-#  	if [ $? -ne 0 ] ; then 
-#	  	HDB2FILE_APP=$HDB2FILE_APP_SAV
-  		HDB2FILE_APP=`$CREATEVDI --src  $HDB2FILE_APP`
-		[ $? -ne 0 ] && fatal "Can't create application disk from $HDB2FILE_APP"
-#	fi
+  	HDB2FILE_APP_SAV=$HDB2FILE_APP
+	HDB2FILE_APP=`$CREATEVDI --src  $HDB2FILE_APP`
+	[ $? -ne 0 ] && fatal "Can't create application disk from $HDB2FILE_APP_SAV"
   fi
 
   if [ -n "$HDB3FILE_INPUT" ] ; then 
-#  	HDB3FILE_INPUT_SAV=$HDB3FILE_INPUT
-#  	if [ $? -ne 0 ] ; then 
-#	  	HDB3FILE_INPUT=$HDB3FILE_INPUT_SAV
-  		HDB3FILE_INPUT=`$CREATEVDI --src  $HDB3FILE_INPUT`
-		[ $? -ne 0 ] && fatal "Can't create input disk from $HDB3FILE_INPUT"
-#	fi
+  	HDB3FILE_INPUT_SAV=$HDB3FILE_INPUT
+	HDB3FILE_INPUT=`$CREATEVDI --src  $HDB3FILE_INPUT`
+	[ $? -ne 0 ] && fatal "Can't create input disk from $HDB3FILE_INPUT_SAV"
   fi
 
   if [ -n "$HDB4FILE_OUTPUT" ] ; then
