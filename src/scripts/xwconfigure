@@ -1840,7 +1840,7 @@ if [ \$IMPORTKEY -eq 1 ] ; then
 	[ \$? -ne 0 ] && fatal "\${KEYTOOL} : can't export public key from found certificates"
 else
 	info "No certificate found; creating self signed ones"
-	\${KEYTOOL} -genkey -dname "\${CERTNAME}" -alias \${SERVERALIAS} -storepass "\${SSLKeyServerpassword}" -keypass "\${SSLKEYPASSPHRASE}" -keystore \${SERVERFILE} -validity 365 -v  -keyalg RSA
+	\${KEYTOOL} -genkey -dname "\${CERTNAME}" -alias \${SERVERALIAS} -storepass "\${SSLKeyServerpassword}" -keypass "\${SSLKEYPASSPHRASE}" -keystore \${SERVERFILE} -validity 365 -v  -keyalg RSA -keysize 2048
 	[ \$? -ne 0 ] && fatal "can't create self signed certificates"
 	\${KEYTOOL} -export     -keystore \${SERVERFILE} -alias \${SERVERALIAS} -file \${CERTFILE} -storepass "\${SSLKeyServerpassword}" -v
 	[ \$? -ne 0 ] && fatal "can't export self signed public key"
@@ -1864,7 +1864,7 @@ else
   info "Generating worker keystore file \${WORKERFILE}"
 fi
 
-\${KEYTOOL} -genkey -dname "\${CERTNAME}" -alias \${WORKERALIAS} -storepass "\${SSLKeyWorkerpassword}" -keypass "\${SSLKeyWorkerpassword}" -keystore \${WORKERFILE} -v  -keyalg RSA
+\${KEYTOOL} -genkey -dname "\${CERTNAME}" -alias \${WORKERALIAS} -storepass "\${SSLKeyWorkerpassword}" -keypass "\${SSLKeyWorkerpassword}" -keystore \${WORKERFILE} -v  -keyalg RSA -keysize 2048
 [ $? -ne 0 ] && fatal "can't generate worker keystore"
 info "Importing server public key into worker keystore (\${WORKERFILE})"
 \${KEYTOOL} -import -alias \${SERVERALIAS} -file \${CERTFILE} -trustcacerts -keystore \${WORKERFILE} -storepass "\${SSLKeyWorkerpassword}" -v -noprompt
@@ -1881,7 +1881,7 @@ else
   info "Generating client keystore file \${CLIENTFILE}"
 fi
 
-\${KEYTOOL} -genkey -dname "\${CERTNAME}" -alias \${CLIENTALIAS} -storepass "\${SSLKeyClientpassword}" -keypass "\${SSLKeyClientpassword}" -keystore \${CLIENTFILE} -v  -keyalg RSA
+\${KEYTOOL} -genkey -dname "\${CERTNAME}" -alias \${CLIENTALIAS} -storepass "\${SSLKeyClientpassword}" -keypass "\${SSLKeyClientpassword}" -keystore \${CLIENTFILE} -v  -keyalg RSA  -keysize 2048
 [ $? -ne 0 ] && fatal "can't generate client keystore"
 info "Importing server public key into client keystore (\${WORKERFILE})"
 \${KEYTOOL} -import -alias \${SERVERALIAS} -file \${CERTFILE} -trustcacerts -keystore \${CLIENTFILE} -storepass "\${SSLKeyClientpassword}" -v -noprompt
@@ -2698,9 +2698,9 @@ EOF
     rpmbuild  --buildroot $CURRENTWORKINGDIR/BUILD/xwhep-server-$VERSION -bb $CURRENTWORKINGDIR/xwhep-server.spec
     if [ $? -ne 0 ] ; then
 
-	cp -f $HOME/.rpmmacros  $CONFDIR/rpmmacros-server
+		cp -f $HOME/.rpmmacros  $CONFDIR/rpmmacros-server
 
-	cat <<EOF > $CURRENTWORKINGDIR/RPMBUILD.txt
+		cat <<EOF > $CURRENTWORKINGDIR/RPMBUILD.txt
 
 ***********************************************************
                         ATTENTION
@@ -2720,11 +2720,13 @@ $> rpmbuild --buildroot $CURRENTWORKINGDIR/BUILD/xwhep-server-$VERSION -bb $CURR
 The RPM is then ready in :
   $CURRENTWORKINGDIR/RPMS/noarch/
 
-(Hit Enter)
 EOF
-	cat $CURRENTWORKINGDIR/RPMBUILD.txt
+		cat $CURRENTWORKINGDIR/RPMBUILD.txt
 
-	read
+		if [ "$FORCEYES" = "NO"  ] ; then
+			printf "(Hit Enter key) "
+			read
+		fi
     fi
 
     [ -f $HOME/.rpmmacros_sav ] && mv $HOME/.rpmmacros_sav $HOME/.rpmmacros 
@@ -2804,9 +2806,9 @@ EOF
     rpmbuild  --buildroot $CURRENTWORKINGDIR/BUILD/xwhep-server-conf-$VERSION -bb $CURRENTWORKINGDIR/xwhep-server-conf.spec
     if [ $? -ne 0 ] ; then
 
-	cp -f $HOME/.rpmmacros  $CONFDIR/rpmmacros-server
+		cp -f $HOME/.rpmmacros  $CONFDIR/rpmmacros-server
 
-	cat <<EOF > $CURRENTWORKINGDIR/RPMBUILD.txt
+		cat <<EOF > $CURRENTWORKINGDIR/RPMBUILD.txt
 
 ***********************************************************
                         ATTENTION
@@ -2826,11 +2828,13 @@ $> rpmbuild --buildroot $CURRENTWORKINGDIR/BUILD/xwhep-server-conf-$VERSION -bb 
 The RPM is then ready in :
   $CURRENTWORKINGDIR/RPMS/noarch/
 
-(Hit Enter)
 EOF
-	cat $CURRENTWORKINGDIR/RPMBUILD.txt
+		cat $CURRENTWORKINGDIR/RPMBUILD.txt
 
-	read
+		if [ "$FORCEYES" = "NO"  ] ; then
+			printf "(Hit Enter key) "
+			read
+		fi
     fi
 
     [ -f $HOME/.rpmmacros_sav ] && mv $HOME/.rpmmacros_sav $HOME/.rpmmacros 
@@ -2859,7 +2863,7 @@ if [ $DEBIANOS -eq 1 -o $MACOS -eq 1 ] ; then
     dpkg-deb --build $INSTALLERSDIR/linux/dpkg/xwhep.server xwhep-server-$VERSION.deb
     if [ $? -ne 0 ] ; then
 
-	cat <<EOF > $INSTALLERSDIR/linux/dpkg/xwhep-server.build.txt
+		cat <<EOF > $INSTALLERSDIR/linux/dpkg/xwhep-server.build.txt
 
 ***********************************************************
                         ATTENTION
@@ -2874,10 +2878,12 @@ $> dpkg-deb --build $INSTALLERSDIR/linux/dpkg/xwhep.server xwhep-server-$VERSION
 The Debian package is then ready in :
   $INSTALLERSDIR/linux/dpkg/xwhep-server-$VERSION.deb
 
-(Hit Enter key)
 EOF
-	cat $INSTALLERSDIR/linux/dpkg/xwhep-server.build.txt
-	read
+		cat $INSTALLERSDIR/linux/dpkg/xwhep-server.build.txt
+		if [ "$FORCEYES" = "NO"  ] ; then
+			printf "(Hit Enter key) "
+			read
+		fi
     fi
 fi
 echo "Server Debian package ready"
@@ -2905,7 +2911,7 @@ if [ $DEBIANOS -eq 1 -o $MACOS -eq 1 ] ; then
     dpkg-deb --build $INSTALLERSDIR/linux/dpkg/xwhep.server.conf xwhep-server-conf-$VERSION.deb
     if [ $? -ne 0 ] ; then
 
-	cat <<EOF > $INSTALLERSDIR/linux/dpkg/xwhep-server-conf.build.txt
+		cat <<EOF > $INSTALLERSDIR/linux/dpkg/xwhep-server-conf.build.txt
 
 ***********************************************************
                         ATTENTION
@@ -2920,10 +2926,12 @@ $> dpkg-deb --build $INSTALLERSDIR/linux/dpkg/xwhep.server.conf xwhep-server-con
 The Debian package is then ready in :
   $INSTALLERSDIR/linux/dpkg/xwhep-server-conf-$VERSION.deb
 
-(Hit Enter key)
 EOF
-	cat $INSTALLERSDIR/linux/dpkg/xwhep-server-conf.build.txt
-	read
+		cat $INSTALLERSDIR/linux/dpkg/xwhep-server-conf.build.txt
+		if [ "$FORCEYES" = "NO"  ] ; then
+			printf "(Hit Enter key) "
+			read
+		fi
     fi
 fi
 echo "Server Configuration Debian package ready"
@@ -3123,9 +3131,9 @@ EOF
     rpmbuild  --buildroot $INSTALLERSDIR/linux/rpm/xwhep.bridgedgsg/BUILD/xwhep-bridgedgsg-$VERSION -bb $INSTALLERSDIR/linux/rpm/xwhep.bridgedgsg/xwhep-bridgedgsg.spec
     if [ $? -ne 0 ] ; then
 
-	cp -f $HOME/.rpmmacros  $CONFDIR/rpmmacros-bridgedgsg
+		cp -f $HOME/.rpmmacros  $CONFDIR/rpmmacros-bridgedgsg
 
-	cat <<EOF > $INSTALLERSDIR/linux/rpm/xwhep.bridgedgsg/RPMBUILD.txt
+		cat <<EOF > $INSTALLERSDIR/linux/rpm/xwhep.bridgedgsg/RPMBUILD.txt
 
 ***********************************************************
                         ATTENTION
@@ -3145,10 +3153,12 @@ $> rpmbuild --buildroot $INSTALLERSDIR/linux/rpm/xwhep.bridgedgsg/BUILD/xwhep-br
 The RPM is then ready in :
   $INSTALLERSDIR/linux/rpm/xwhep.bridgedgsg/RPMS/noarch/
 
-(Hit Enter key)
 EOF
-	cat $INSTALLERSDIR/linux/rpm/xwhep.bridgedgsg/RPMBUILD.txt
-	read
+		cat $INSTALLERSDIR/linux/rpm/xwhep.bridgedgsg/RPMBUILD.txt
+		if [ "$FORCEYES" = "NO"  ] ; then
+			printf "(Hit Enter key) "
+			read
+		fi
     fi
 
     [ -f $HOME/.rpmmacros_sav ] && mv $HOME/.rpmmacros_sav $HOME/.rpmmacros 
@@ -3169,7 +3179,7 @@ if [ $DEBIANOS -eq 1 -o $MACOS -eq 1 ] ; then
     dpkg-deb --build $INSTALLERSDIR/linux/dpkg/xwhep.bridgedgsg xwhep-bridgedgsg-$VERSION.deb
     if [ $? -ne 0 ] ; then
 
-	cat <<EOF > $INSTALLERSDIR/linux/dpkg/xwhep-bridgedgsg.build.txt
+		cat <<EOF > $INSTALLERSDIR/linux/dpkg/xwhep-bridgedgsg.build.txt
 
 ***********************************************************
                         ATTENTION
@@ -3184,10 +3194,12 @@ $> dpkg-deb --build $INSTALLERSDIR/linux/dpkg/xwhep.bridgedgsg xwhep-bridgedgsg-
 The Debian package is then ready in :
   $INSTALLERSDIR/linux/dpkg/xwhep-bridgedgsg-$VERSION.deb
 
-(Hit Enter key)
 EOF
-	cat $INSTALLERSDIR/linux/dpkg/xwhep-bridgedgsg.build.txt
-	read
+		cat $INSTALLERSDIR/linux/dpkg/xwhep-bridgedgsg.build.txt
+		if [ "$FORCEYES" = "NO"  ] ; then
+			printf "(Hit Enter key) "
+			read
+		fi
     fi
 fi
 
@@ -3305,9 +3317,9 @@ EOF
     rpmbuild --buildroot $INSTALLERSDIR/linux/rpm/xwhep.bridgesgdg/BUILD/xwhep-bridgesgdg-$VERSION -bb $INSTALLERSDIR/linux/rpm/xwhep.bridgesgdg/xwhep-bridgesgdg.spec
     if [ $? -ne 0 ] ; then
 
-	cp -f $HOME/.rpmmacros  $CONFDIR/rpmmacros-bridgesgdg
+		cp -f $HOME/.rpmmacros  $CONFDIR/rpmmacros-bridgesgdg
 
-	cat <<EOF > $INSTALLERSDIR/linux/rpm/xwhep.bridgesgdg/RPMBUILD.txt
+		cat <<EOF > $INSTALLERSDIR/linux/rpm/xwhep.bridgesgdg/RPMBUILD.txt
 
 ***********************************************************
                         ATTENTION
@@ -3327,10 +3339,12 @@ $> rpmbuild --buildroot $INSTALLERSDIR/linux/rpm/xwhep.bridgesgdg/BUILD/xwhep-br
 The RPM is then ready in :
   $INSTALLERSDIR/linux/rpm/xwhep.bridgesgdg/RPMS/noarch/
 
-(Hit Enter key)
 EOF
-	cat $INSTALLERSDIR/linux/rpm/xwhep.bridgesgdg/RPMBUILD.txt
-	read
+		cat $INSTALLERSDIR/linux/rpm/xwhep.bridgesgdg/RPMBUILD.txt
+		if [ "$FORCEYES" = "NO"  ] ; then
+			printf "(Hit Enter key) "
+			read
+		fi
     fi
 
     [ -f $HOME/.rpmmacros_sav ] && mv $HOME/.rpmmacros_sav $HOME/.rpmmacros 
@@ -3351,7 +3365,7 @@ if [ $DEBIANOS -eq 1 -o $MACOS -eq 1 ] ; then
     dpkg-deb --build $INSTALLERSDIR/linux/dpkg/xwhep.bridgesgdg xwhep-bridgesgdg-$VERSION.deb
     if [ $? -ne 0 ] ; then
 
-	cat <<EOF > $INSTALLERSDIR/linux/dpkg/xwhep-bridgesgdg.build.txt
+		cat <<EOF > $INSTALLERSDIR/linux/dpkg/xwhep-bridgesgdg.build.txt
 
 ***********************************************************
                         ATTENTION
@@ -3366,10 +3380,12 @@ $> dpkg-deb --build $INSTALLERSDIR/linux/dpkg/xwhep.bridgesgdg xwhep-bridgesgdg-
 The Debuan package is then ready in :
   $INSTALLERSDIR/linux/dpkg/xwhep-bridgesgdg-$VERSION.deb
 
-(Hit Enter key)
 EOF
-	cat $INSTALLERSDIR/linux/dpkg/xwhep-bridgesgdg.build.txt
-	read
+		cat $INSTALLERSDIR/linux/dpkg/xwhep-bridgesgdg.build.txt
+		if [ "$FORCEYES" = "NO"  ] ; then
+			printf "(Hit Enter key) "
+			read
+		fi
     fi
 fi
 
@@ -3488,9 +3504,9 @@ EOF
     rpmbuild --buildroot $INSTALLERSDIR/linux/rpm/xwhep.client/BUILD/xwhep-client-$VERSION -bb $INSTALLERSDIR/linux/rpm/xwhep.client/xwhep-client.spec
     if [ $? -ne 0 ] ; then
 
-	cp -f $HOME/.rpmmacros  $CONFDIR/rpmmacros-client
+		cp -f $HOME/.rpmmacros  $CONFDIR/rpmmacros-client
 
-	cat <<EOF > $INSTALLERSDIR/linux/rpm/xwhep.client/RPMBUILD.txt
+		cat <<EOF > $INSTALLERSDIR/linux/rpm/xwhep.client/RPMBUILD.txt
 
 ***********************************************************
                         ATTENTION
@@ -3510,10 +3526,12 @@ $> rpmbuild --buildroot $INSTALLERSDIR/linux/rpm/xwhep.client/BUILD/xwhep-client
 The RPM is then ready in :
   $INSTALLERSDIR/linux/rpm/xwhep.client/RPMS/noarch/
 
-(Hit Enter key)
 EOF
-	cat $INSTALLERSDIR/linux/rpm/xwhep.client/RPMBUILD.txt
-	read
+		cat $INSTALLERSDIR/linux/rpm/xwhep.client/RPMBUILD.txt
+		if [ "$FORCEYES" = "NO"  ] ; then
+			printf "(Hit Enter key) "
+			read
+		fi
     fi
 
     [ -f $HOME/.rpmmacros_sav ] && mv $HOME/.rpmmacros_sav $HOME/.rpmmacros 
@@ -3534,7 +3552,7 @@ if [ $DEBIANOS -eq 1 -o $MACOS -eq 1 ] ; then
     dpkg-deb --build $INSTALLERSDIR/linux/dpkg/xwhep.client xwhep-client-$VERSION.deb
     if [ $? -ne 0 ] ; then
 
-	cat <<EOF > $INSTALLERSDIR/linux/dpkg/xwhep-client.build.txt
+		cat <<EOF > $INSTALLERSDIR/linux/dpkg/xwhep-client.build.txt
 
 ***********************************************************
                         ATTENTION
@@ -3549,10 +3567,12 @@ $> dpkg-deb --build $INSTALLERSDIR/linux/dpkg/xwhep.client xwhep-client-$VERSION
 The Debuan package is then ready in :
   $INSTALLERSDIR/linux/dpkg/xwhep-client-$VERSION.deb
 
-(Hit Enter key)
 EOF
-	cat $INSTALLERSDIR/linux/dpkg/xwhep-client.build.txt
-	read
+		cat $INSTALLERSDIR/linux/dpkg/xwhep-client.build.txt
+		if [ "$FORCEYES" = "NO"  ] ; then
+			printf "(Hit Enter key) "
+			read
+		fi
     fi
 fi
 
@@ -3685,9 +3705,9 @@ EOF
     rpmbuild -bb $INSTALLERSDIR/linux/rpm/xwhep.worker/xwhep-worker.spec
     if [ $? -ne 0 ] ; then
 
-	cp -f $HOME/.rpmmacros $CONFDIR/rpmmacros-worker
+		cp -f $HOME/.rpmmacros $CONFDIR/rpmmacros-worker
 
-	cat <<EOF > $INSTALLERSDIR/linux/rpm/xwhep.worker/RPMBUILD.txt
+		cat <<EOF > $INSTALLERSDIR/linux/rpm/xwhep.worker/RPMBUILD.txt
 
 ***********************************************************
                         ATTENTION
@@ -3707,10 +3727,12 @@ $> rpmbuild --buildroot $INSTALLERSDIR/linux/rpm/xwhep.worker/BUILD/xwhep-worker
 The RPM is then ready in :
   $INSTALLERSDIR/linux/rpm/xwhep.worker/RPMS/noarch/
 
-(Hit Enter key)
 EOF
-	cat $INSTALLERSDIR/linux/rpm/xwhep.worker/RPMBUILD.txt
-	read
+		cat $INSTALLERSDIR/linux/rpm/xwhep.worker/RPMBUILD.txt
+		if [ "$FORCEYES" = "NO"  ] ; then
+			printf "(Hit Enter key) "
+			read
+		fi
     fi
 
     [ -f $HOME/.rpmmacros_sav ] && mv $HOME/.rpmmacros_sav $HOME/.rpmmacros 
@@ -3731,7 +3753,7 @@ if [ $DEBIANOS -eq 1 -o $MACOS -eq 1 ] ; then
     dpkg-deb --build $INSTALLERSDIR/linux/dpkg/xwhep.worker xwhep-worker-$VERSION.deb
     if [ $? -ne 0 ] ; then
 
-	cat <<EOF > $INSTALLERSDIR/linux/dpkg/xwhep-worker.build.txt
+		cat <<EOF > $INSTALLERSDIR/linux/dpkg/xwhep-worker.build.txt
 
 ***********************************************************
                         ATTENTION
@@ -3746,10 +3768,12 @@ $> dpkg-deb --build $INSTALLERSDIR/linux/dpkg/xwhep.worker xwhep-worker-$VERSION
 The Debuan package is then ready in :
   $INSTALLERSDIR/linux/dpkg/xwhep-worker-$VERSION.deb
 
-(Hit Enter key)
 EOF
-	cat $INSTALLERSDIR/linux/dpkg/xwhep-worker.build.txt
-	read
+		cat $INSTALLERSDIR/linux/dpkg/xwhep-worker.build.txt
+		if [ "$FORCEYES" = "NO"  ] ; then
+			printf "(Hit Enter key) "
+			read
+		fi
     fi
 fi
 
