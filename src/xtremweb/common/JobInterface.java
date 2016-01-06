@@ -218,11 +218,6 @@ public class JobInterface extends Table {
 		HOSTNAME;
 
 		/**
-		 * This array stores enum as string
-		 */
-		private static String[] labels = null;
-
-		/**
 		 * This is the index based on ordinal so that the first value is
 		 * TableColumns + 1
 		 * 
@@ -305,10 +300,7 @@ public class JobInterface extends Table {
 		 * @return a array containing this enum string representation
 		 */
 		public static String[] getLabels() {
-			if (labels != null) {
-				return labels;
-			}
-			labels = new String[ENUMSIZE];
+			final String[] labels = new String[ENUMSIZE];
 			for (final TableColumns c : TableColumns.values()) {
 				labels[c.getOrdinal()] = c.toString();
 			}
