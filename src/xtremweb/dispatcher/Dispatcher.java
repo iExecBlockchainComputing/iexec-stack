@@ -196,27 +196,25 @@ public class Dispatcher {
 				//				httpServer.initComm(getConfig(), new HTTPHandler(getConfig()));
 
 				// Handler needs HTTP session to handle openid call returns
-				SessionHandler main_sessionHandler = new SessionHandler();
+				final SessionHandler main_sessionHandler = new SessionHandler();
 				main_sessionHandler.setHandler(new HTTPHandler(getConfig()));
 				httpServer.initComm(getConfig(), main_sessionHandler);
 				httpServer.addHandler(HTTPHandler.PATH, main_sessionHandler);
 
 				// OpenId Handler needs HTTP session
-				SessionHandler opid_sessionHandler = new SessionHandler();
+				final SessionHandler opid_sessionHandler = new SessionHandler();
 				final HTTPOpenIdHandler oh = new HTTPOpenIdHandler();
 				HTTPOpenIdHandler.setCACertificateEntries(getConfig().getKeyStore());
 				opid_sessionHandler.setHandler(oh);
 				httpServer.addHandler(HTTPOpenIdHandler.handlerPath, opid_sessionHandler);
 
-				// OAuth Handler needs HTTP session
-				if((config.getProperty(XWPropertyDefs.FACEBOOKAPPID) != null) &&
-						(config.getProperty(XWPropertyDefs.FACEBOOKAPPKEY) != null)) {
-					SessionHandler oauth_sessionHandler = new SessionHandler();
-					final HTTPOAuthHandler oah = new HTTPOAuthHandler();
-					HTTPOAuthHandler.setCACertificateEntries(getConfig().getKeyStore());
-					oauth_sessionHandler.setHandler(oah);
-					httpServer.addHandler(HTTPOAuthHandler.handlerPath, oauth_sessionHandler);
-				}
+//				// OAuth Handler needs HTTP session
+//				final SessionHandler oauth_sessionHandler = new SessionHandler();
+//				final HTTPOAuthHandler oah = new HTTPOAuthHandler();
+//				HTTPOAuthHandler.setCACertificateEntries(getConfig().getKeyStore());
+//				oauth_sessionHandler.setHandler(oah);
+//				httpServer.addHandler(HTTPOAuthHandler.handlerPath, oauth_sessionHandler);
+
 				// StatsHandler does not need HTTP session
 				httpServer.addHandler(HTTPStatsHandler.PATH, new HTTPStatsHandler());
 				httpServer.start();
