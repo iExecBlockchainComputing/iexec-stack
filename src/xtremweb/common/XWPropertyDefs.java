@@ -2057,10 +2057,9 @@ public enum XWPropertyDefs {
 	/**
 	 * Worker : this contains a list of local applications the worker shares So
 	 * that users could submit jobs for this application The worker then don't
-	 * download the application binary This is a semicolon separated list of
-	 * comma separated tuples of app name/app path. Where the application name
-	 * must be the one of the registered application on server side. And the app
-	 * path must be the local path to the binary of the application
+	 * download the application binary This is a comma separated list of
+	 * application name. Where the application name must be the one of the 
+	 * registered application on server side.
 	 * <p>
 	 * Property type : string
 	 * </p>
@@ -2074,7 +2073,8 @@ public enum XWPropertyDefs {
 	 * </code>
 	 * </p>
 	 * 
-	 * @since 8.0.0 
+	 * @since 8.0.0
+	 * @see xtremweb.common.AppTypeEnum 
 	 */
 	SHAREDAPPS,
 	/**
