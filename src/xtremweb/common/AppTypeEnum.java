@@ -76,21 +76,12 @@ public enum AppTypeEnum {
 	}
 
 	/**
-	 * This array stores enum as string
-	 */
-	private static String[] labels = null;
-
-	/**
-	 * This retreives this enum string representation
+	 * This retrieves this string representation
 	 * 
-	 * @return a array containing this enum string representation
+	 * @return a array containing this string representation
 	 */
 	public static String[] getLabels() {
-		if (labels != null) {
-			return labels;
-		}
-
-		labels = new String[SIZE];
+		final String[] labels = new String[SIZE];
 		for (final AppTypeEnum c : AppTypeEnum.values()) {
 			labels[c.ordinal()] = c.toString();
 		}
@@ -125,120 +116,56 @@ public enum AppTypeEnum {
 	 * @see xtremweb.common.OSEnum#getOs(String)
 	 * @since 8.0.0 (FG)
 	 */
-	public static String getPathName(AppTypeEnum t)
-			throws FileNotFoundException {
-		try {
-			switch (t) {
-			case VIRTUALBOX:
-				return virtualboxpaths[OSEnum.getOs().ordinal()];
-			}
-		} catch (final Exception e) {
-		}
-		throw new FileNotFoundException("no default path name for " + t);
-	}
-
-	/**
-	 * This calls getPathName(this)
-	 * 
-	 * @throws FileNotFoundException
-	 *             if no application binary path found for the current OS
-	 * @since 8.0.0 (FG)
-	 */
-	public String getPathName() throws FileNotFoundException {
-		return getPathName(this);
+	public String getPathName()  {
+		return virtualboxpaths[OSEnum.getOs().ordinal()];
 	}
 
 	/**
 	 * This retrieves application default pathname
 	 * 
-	 * @param t
-	 *            is the application type to retrieve path for
 	 * @return application binary path for the current OS
 	 * @throws FileNotFoundException
 	 *             if no application binary path found for the current OS
 	 * @see xtremweb.common.OSEnum#getOs(String)
 	 * @since 8.0.0 (FG)
 	 */
-	public static File getPath(AppTypeEnum t) throws FileNotFoundException {
-		File f = null;
-		Collection<String> v = null;
-		Iterator<String> elems = null;
-		try {
-			v = XWTools.split(getPathName(t), ";");
-			elems = v.iterator();
-			while (elems.hasNext()) {
-				final String path = elems.next();
-				System.out.println(t.toString() + ".getPath = " + path);
-				f = new File(path);
-				if (f.exists() == true) {
-					return f;
-				}
-			}
-		} finally {
-			f = null;
-			elems = null;
-			v = null;
-		}
-		throw new FileNotFoundException("no binary path for " + t);
-	}
-
-	/**
-	 * This calls getPath(this)
-	 * 
-	 * @throws FileNotFoundException
-	 *             if no application binary path found for the current OS
-	 * @since 8.0.0 (FG)
-	 */
 	public File getPath() throws FileNotFoundException {
-		return getPath(this);
+		final String filePath = virtualboxpaths[OSEnum.getOs().ordinal()];
+		if (filePath == null) {
+			throw new FileNotFoundException("no binary path for " + this);
+		}
+		final File f = new File(filePath);
+		if (f.exists() == true) {
+			return f;
+		}
+		throw new FileNotFoundException("no binary path for " + this);
 	}
-
 	/**
 	 * This dumps path
 	 * 
 	 * @see xtremweb.common.OSEnum#getOs(String)
 	 * @since 8.0.0 (FG)
 	 */
-	public void dumpPath() {
-		Collection<String> v = null;
-		Iterator<String> elems = null;
-		try {
-			v = XWTools.split(getPathName(), ";");
-			elems = v.iterator();
-			while (elems.hasNext()) {
-				final String path = elems.next();
-				System.out.println(path);
+	static public void dumpPath() {
+		for (final AppTypeEnum a : AppTypeEnum.values()) {
+			try {
+				System.out.println(a.getPath());
+			} catch (Exception e) {
 			}
-		} catch (final FileNotFoundException e) {
-			e.printStackTrace();
-		} finally {
-			elems = null;
-			v = null;
 		}
 	}
 
 	/**
 	 * This checks if the provided application is available
 	 * 
-	 * @param t
-	 *            is the application type to retrieve path for
-	 * @return true if getPath(t) != null; false otherwise
+	 * @return true if getPath() != null; false otherwise
 	 * @throws FileNotFoundException
 	 *             if application path is not valid
-	 * @see #getPath(AppTypeEnum)
-	 * @since 8.0.0 (FG)
-	 */
-	public static boolean available(AppTypeEnum t) throws FileNotFoundException {
-		return (getPath(t) != null);
-	}
-
-	/**
-	 * This calls availabel(this)
-	 * 
+	 * @see #getPath()
 	 * @since 8.0.0 (FG)
 	 */
 	public boolean available() throws FileNotFoundException {
-		return available(this);
+		return (getPath() != null);
 	}
 
 	/**
