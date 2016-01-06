@@ -42,7 +42,7 @@ public enum OSEnum {
 	public static final int SIZE = LAST.ordinal() + 1;
 
 	/**
-	 * This retreives an OS from its ordinal value
+	 * This retrieves an OS from its ordinal value
 	 * 
 	 * @exception IllegalArgumentException
 	 *                is thrown if v is not a valid ordinal value
@@ -223,21 +223,12 @@ public enum OSEnum {
 	}
 
 	/**
-	 * This array stores enum as string
-	 */
-	private static String[] labels = null;
-
-	/**
 	 * This retrieves this enum string representation
 	 * 
 	 * @return a array containing this enum string representation
 	 */
 	public static String[] getLabels() {
-		if (labels != null) {
-			return labels;
-		}
-
-		labels = new String[SIZE];
+		final String[] labels = new String[SIZE];
 		for (final OSEnum c : OSEnum.values()) {
 			labels[c.ordinal()] = c.toString();
 		}
