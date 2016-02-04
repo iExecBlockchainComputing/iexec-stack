@@ -140,7 +140,8 @@ create()
 			networksetup -duplicatenetworkservice "$ITF" $ALIASITF
 			[ $? -ne 0 ] && fatal "Cannot duplicate network service $ITF"
 			echo networksetup -setmanualwithdhcprouter $ALIASITF $ALIASIP
-			networksetup -setmanualwithdhcprouter $ALIASITF $ALIASIP
+			#networksetup -setmanualwithdhcprouter $ALIASITF $ALIASIP
+			networksetup -setmanual $ALIASITF $ALIASIP "255.255.255.0"
 			[ $? -ne 0 ] && fatal "Cannot setmanual IP addr $ALIASITF $ALIASIP"
 		;;
 
