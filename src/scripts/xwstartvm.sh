@@ -85,6 +85,7 @@
 #
 #  Global variables
 #
+#qemu-system-x86_64 -m 2048 -cdrom xwhd2016-01-05-14-06-29-livecd-sl64.iso -net user,hostfwd=tcp::10022-:22 -net nic
 #=============================================================================
 SCRIPTNAME="$0"
 if [ "${SCRIPTNAME#*.sh}" ]; then
@@ -264,7 +265,7 @@ case "$OSTYPE" in
 esac
 
 
-VBREQUIREDVERSION="4.3"
+VBREQUIREDVERSION="5.0"
 
 VBVERSION="$("$VBMGT"  -v  |  cut  -d .  -f 1-2)"
 
@@ -485,7 +486,7 @@ echo "00 NEWDISK=$NEWDISK"
 			wait_for_other_virtualbox_management_to_finish  install
 			debug_message  "install '$VMNAME' :   '$DFILE' :  createhd"
 			( [ "$VERBOSE" ]  &&  set -x
-			  "$VBMGT"  createhd  \
+			  "$VBMGT"  createmedium  \
 				--filename "$DFILE" \
 				--size     "$SCRATCHSIZE" )  ||  \
 			  fatal "disk_attach '${DTEXT}': can not create new disk '$DFILE'"  TRUE
