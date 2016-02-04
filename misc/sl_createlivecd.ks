@@ -22,12 +22,12 @@
 
 
 #  ******************************************************************
-#  File    : sl65_createlivecd.ks
+#  File    : sl_createlivecd.ks
 #  Date    : Sept 22nd, 2014
 #  Author  : Oleg Lodygensky
 # 
-#  OS      : Scientific Linux 6.5
-#  Arch    : 32bits
+#  OS      : Scientific Linux 6.7
+#  Arch    : 64bits
 # 
 #  Purpose : this is the kickstart file to create a new SL 6 livecd
 #
@@ -54,7 +54,6 @@
 #     - *.rpm are installed
 #
 # Changelog:
-#              $Log: sl65_createlivecd.ks,v $
 # - sept 9th, 2015
 #   * "authorized_keys" is preferred to "id_rsa.pub" to allow more than one user to connect as root 
 # - dec 4th, 2014
@@ -77,8 +76,8 @@ lang en_US.UTF-8
 keyboard us
 timezone Europe/Paris
 auth --useshadow --enablemd5
-selinux --enforcing
-firewall --enabled --service=mdns,ssh,http
+selinux --disabled
+firewall --disabled
 text
 
 #
@@ -90,11 +89,11 @@ text
 
 xconfig
 #services --enabled=NetworkManager,network,sshd --disabled=firstboot,ip6tables
-services --enabled=network,sshd --disabled=firstboot,ip6tables
-network --onboot yes --device eth0 --bootproto dhcp --noipv6  --hostname=%CUSTOMHOSTNAME%
+services --enabled=network,sshd --disabled=firstboot
+network --onboot yes --device eth0 --bootproto dhcp  --hostname=%CUSTOMHOSTNAME%
 
 # no root access
-rootpw  --lock dummy
+rootpw  --plaintext rootpw
 
 authconfig --enableshadow --passalgo=sha512 --enablefingerprint
 
@@ -117,15 +116,15 @@ bootloader --location=mbr --driveorder=sda --append="selinux=0 console=ttyS0 con
 
 
 # SL repositories
-repo --name=base      --baseurl=http://ftp.scientificlinux.org/linux/scientific/6.5/$basearch/os/
-repo --name=security  --baseurl=http://ftp.scientificlinux.org/linux/scientific/6.5/$basearch/updates/security/
+repo --name=base      --baseurl=http://ftp.scientificlinux.org/linux/scientific/6.7/$basearch/os/
+repo --name=security  --baseurl=http://ftp.scientificlinux.org/linux/scientific/6.7/$basearch/updates/security/
 
 # or use a mirror close to you
-#repo --name=base      --baseurl=http://mirror.switch.ch/ftp/mirror/scientificlinux/6.5/$basearch/os/
-#repo --name=security  --baseurl=http://mirror.switch.ch/ftp/mirror/scientificlinux/6.5/$basearch/updates/security/
+#repo --name=base      --baseurl=http://mirror.switch.ch/ftp/mirror/scientificlinux/6.7/$basearch/os/
+#repo --name=security  --baseurl=http://mirror.switch.ch/ftp/mirror/scientificlinux/6.7/$basearch/updates/security/
 
 # fastbugs is disabled
-#repo --name=fastbugs  --baseurl=http://ftp.scientificlinux.org/linux/scientific/6.5/$basearch/updates/fastbugs/
+#repo --name=fastbugs  --baseurl=http://ftp.scientificlinux.org/linux/scientific/6.7/$basearch/updates/fastbugs/
 
 firstboot --disabled
 group --name=vmuser
@@ -169,12 +168,14 @@ user --name=vmuser --groups=vmuser
 -system-config-users-docs
 -thunderbird
 -vixie-cron
+acpid
 anaconda
 automake
 bind-utils
 binutils
 bzip2-devel
-cmake-2.6.4
+#cloud-init
+#cmake-2.6.4
 cpp
 dhclient
 dosfstools
@@ -255,10 +256,36 @@ zip
 zlib
 %end
 
+
+
 ###############################################################################
-# This is run outside chroot; this copies custom files
+# This is run outside chroot. This is executed before pkg section
 ###############################################################################
-%post --nochroot --log=/var/log/sl65_createlivecd.log
+%pre
+#
+# install user's RPM
+#
+ls  $ROOTDIR/*.rpm
+if [ $? -eq 0 ] ; then
+  for p in `ls $ROOTDIR/*.rpm` ; do 
+	echo "yum -y -c $LIVE/etc/yum.conf --installroot=$LIVE install $p"
+	yum -y -c $LIVE/etc/yum.conf --installroot=$LIVE install $p
+	if [ $? -eq 0 ] ; then
+		echo "DONE"
+	else
+		echo "FAILED"
+	fi
+  done
+else
+  echo "No user package"
+fi
+
+%end
+
+###############################################################################
+# This is run outside chroot. Here we copy custom files
+###############################################################################
+%post --nochroot --log=/var/log/sl_createlivecd.log
 
 TMPDIR=/mnt/xwscratch
 find $TMPDIR -type d -iname install_root
@@ -347,6 +374,18 @@ else
 fi
 
 #
+# Under SL7, cloud-init can't be installed from pkg list, but by hand only ( ?!?! )
+# install cloud-init
+#
+echo "yum -y -c $LIVE/etc/yum.conf --installroot=$LIVE install cloud-init"
+yum -y -c $LIVE/etc/yum.conf --installroot=$LIVE install cloud-init
+if [ $? -eq 0 ] ; then
+	echo "INFO: cloud-init installed"
+else
+	echo "WARN: cloud-init installation error"
+fi
+
+#
 # install user's RPM
 #
 ls  $ROOTDIR/*.rpm
@@ -432,9 +471,9 @@ exit 0
 
 
 ###############################################################################
-# This is run inside chroot; this installs custom files
+# This is run inside chroot. Here, we install custom files
 ###############################################################################
-%post --log=/var/log/sl65_createlivecd.log
+%post --log=/var/log/sl_createlivecd.log
 
 #
 # install VirtualBox extensions
@@ -445,11 +484,18 @@ yum -y install kernel-devel kernel-headers
 VBLA=`ls /usr/local/VBOXADDITIONS*/VBoxLinuxAdditions.run | tail -1`
 sh $VBLA
 if [ $? -eq 0 ] ; then
-	logger -t xwCreateLiveCDSL65 -s "VBox Additions correctly installed"
+	logger -t xwhep-create-livecd -s "VBox Additions correctly installed"
 else
-	logger -t xwCreateLiveCDSL65 -s "VBox Additions installation error"
+	logger -t xwhep-create-livecd -s "VBox Additions installation error"
 fi
 
+/sbin/chkconfig acpid on
+/sbin/chkconfig cloud-init on
+/sbin/chkconfig cloud-init-local on
+echo "NOZEROCONF=yes" >> /etc/sysconfig/network
+rm    /etc/udev/rules.d/70-persistent-net.rules
+touch /etc/udev/rules.d/70-persistent-net.rules
+   
 #
 # Clean VirtualBox installation requirements
 # Sept 10th, 2015 : we don't because it removes gcc
@@ -462,20 +508,20 @@ yum -y clean
 # Install user pub key for root access
 #
 if [ -f /root/.ssh/authorized_keys ] ; then
-  logger -t xwCreateLiveCDSL65 -s "WARN : pub key found : root access allowed"
+  logger -t xwhep-create-livecd -s "WARN : pub key found : root access allowed"
 else
-  logger -t xwCreateLiveCDSL65 -s "WARN : pub key not found : root access not allowed"
+  logger -t xwhep-create-livecd -s "WARN : pub key not found : root access not allowed"
 fi
 
 #
 # configure firewall
 #
 if [ -f /root/iptables_rules.sh ] ; then
-	logger -t xwCreateLiveCDSL65 -s "INFO : iptables rules found, LAN access not allowed"
+	logger -t xwhep-create-livecd -s "INFO : iptables rules found, LAN access not allowed"
 	chmod +x /root/iptables_rules.sh
 	/root/iptables_rules.sh > /root/iptables_rules.out
 else
-	logger -t xwCreateLiveCDSL65 -s "WARN : iptables rules not found : LAN access allowed"
+	logger -t xwhep-create-livecd -s "WARN : iptables rules not found : LAN access allowed"
 fi
 
 #
@@ -509,6 +555,6 @@ echo "RUN_FIRSTBOOT=NO" > /etc/sysconfig/firstboot
 
 [ -x /etc/init.d/sshd ] && /sbin/chkconfig --add sshd
 [ -x /etc/init.d/sshd ] && /sbin/chkconfig sshd on
-
+ifconfig
 exit 0
 %end

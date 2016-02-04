@@ -58,7 +58,7 @@
 #
 # - sept 16th, 2015
 #   * user may gives the kickstart file on command line (retrieved in $1)
-#     Default kickstart file is  sl65_createlivecd.ks
+#     Default kickstart file is  sl_createlivecd.ks
 #
 # - sept 9th, 2015
 #   * "authorized_keys" is preferred to "id_rsa.pub" to allow more than one user to connect as root 
@@ -70,17 +70,14 @@
 
 CURRENTDIR=`pwd`
 ROOTDIR=`dirname $0`
-KSFILE=$ROOTDIR/sl65_createlivecd.ks
-KSCFILENAME=$ROOTDIR/sl65_createlivecd.ks_customhostname
+KSFILE=$ROOTDIR/sl_createlivecd.ks
+KSCFILENAME=$ROOTDIR/sl_createlivecd.ks_customhostname
 KSCFILE=/tmp/$KSCFILENAME
 
 PROLOGUE_NAME=xwcontext_prologue
 PROLOGUE_FILE=$ROOTDIR/$PROLOGUE_NAME
 EPILOGUE_NAME=xwcontext_epilogue
 EPILOGUE_FILE=$ROOTDIR/$EPILOGUE_NAME
-
-CMAKE_RPMFILENAME=cmake-2.6.4-5.el6.x86_64.rpm
-CMAKE_RPMFILE=$ROOTDIR/$CMAKE_RPMFILENAME
 
 [ "$1" != "" ] && KSFILE=$1
  
@@ -108,16 +105,13 @@ if [ ! -f $ROOTDIR/iptables_rules.sh ] ; then
   echo "WARN : iptables rules not found ($ROOTDIR/iptables_rules.sh) : LAN access allowed"
 fi
 
-if [ ! -f CMAKE_RPMFILE ] ; then
-  echo "WARN : $CMAKE_RPMFILENAME not found ($CMAKE_RPMFILE) : cmake will not be installed"
-fi
 
 #
 # Custom host name
 #
 USERHOSTNAME="user.hostname"
 USERHOSTNAMEFILE=$CURRENTDIR/$USERHOSTNAME
-CUSTOMHOSTNAME="xwlivecd_sl65.localdomain"
+CUSTOMHOSTNAME="xwlivecd_sl71.localdomain"
 if [ -r $USERHOSTNAMEFILE ] ; then
   CUSTOMHOSTNAME=`cat $USERHOSTNAMEFILE` 
   echo "INFO : custom host name found : $CUSTOMHOSTNAME"
@@ -126,7 +120,7 @@ else
 fi
 cat $KSFILE | sed "s/%CUSTOMHOSTNAME%/$CUSTOMHOSTNAME/g" > $KSCFILE
 
-#setarch amd64 LANG=C livecd-creator --config=$KSCFILE --fslabel=XWCD-sl65_$CUSTOMHOSTNAME --tmpdir=$LIVETMPDIR
+#setarch amd64 LANG=C livecd-creator --config=$KSCFILE --fslabel=XWCD-sl71_$CUSTOMHOSTNAME --tmpdir=$LIVETMPDIR
 
 yum -y update
 #yum -y --enablerepo=sl-addons install liveusb-creator
