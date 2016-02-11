@@ -89,12 +89,10 @@ fi
 echo "Kickstart file = $KSFILE"
 
 if [ ! -f $PROLOGUE_FILE ] ; then
-  echo "FATAL : prologue not found ($PROLOGUE_FILE)"
-  exit 1
+  echo "WARN : prologue not found ($PROLOGUE_FILE)"
 fi
 if [ ! -f $EPILOGUE_FILE ] ; then
-  echo "FATAL : epilogue not found ($EPILOGUE_FILE)"
-  exit 1
+  echo "WARN : epilogue not found ($EPILOGUE_FILE)"
 fi
 
 if [ ! -f $ROOTDIR/authorized_keys ] ; then
