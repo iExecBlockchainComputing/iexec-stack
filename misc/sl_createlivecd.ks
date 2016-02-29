@@ -76,7 +76,7 @@ lang en_US.UTF-8
 keyboard us
 timezone Europe/Paris
 auth --useshadow --enablemd5
-selinux --disabled
+selinux --permissive
 firewall --disabled
 text
 
