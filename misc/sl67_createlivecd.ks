@@ -537,7 +537,10 @@ fi
 #
 # configure sudoers
 #
+# vmuser account is for volunteer cloud: not allowed to do all
 echo "vmuser ALL = NOPASSWD: /sbin/poweroff" >> /etc/sudoers
+# cloud-user account is for cloud using cloud-init : allowed to do all
+echo "cloud-user ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
 #
 # insert "vmuser" into "fuse" group
