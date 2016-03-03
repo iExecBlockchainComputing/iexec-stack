@@ -33,6 +33,8 @@
 #
 #  See     : sl67_createlivecd.sh; xwcontext_prologue; xwcontext_epilogue
 #
+#  See     : http://www.livecd.ethz.ch/build.html
+#
 #  Requirements: xwcontext_prologue and xwcontext_epilogue scripts
 #
 # -1- The created Live CD contains the following packages
