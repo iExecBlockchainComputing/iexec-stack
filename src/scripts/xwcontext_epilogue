@@ -63,8 +63,6 @@ start() {
 
     touch $LOGFILE
 
-    echo -n $"XWHEP contextualization epilog:                            "
-
     cd $MNTCONTEXT >> $LOGFILE 2>&1
     RETVAL=$?
 
@@ -75,18 +73,12 @@ start() {
             /bin/su -l vmuser bash -c $EPILOG >> $LOGFILE 2>&1
             RETVAL=$?
         else
-            echo "No contextualization epilog found" >> $LOGFILE 2>&1
-         	RETVAL=0
+            echo "[`date`] XWHEP Volunteer Cloud [WARN]: no contextualization epilog found" >> $LOGFILE 2>&1
         fi
      fi
 
-    if [ 0 -eq $RETVAL ]; then
-      echo "[  OK  ]"
-    else
-      echo "[ FAILED ]"
-    fi
+    echo $"XWHEP contextualization epilog:                            [  OK  ]"
 
-	echo "RETVAL=$RETVAL" >> $LOGFILE 2>&1
     return $RETVAL
 }
 
@@ -95,7 +87,7 @@ start() {
 # stop()
 #  ******************************************************************
 stop() {
-#    echo -n $"xwcontext_epilogue : unmouting context disk: "
+#    echo -n $"[`date`] XWHEP Volunteer Cloud [INFO]: unmouting context disk: "
 #    umount $MNTAPP     >> $LOGFILE 2>&1
 #    umount $MNTINPUT   >> $LOGFILE 2>&1
 #    umount $MNTCONTEXT >> $LOGFILE 2>&1
@@ -108,8 +100,8 @@ stop() {
 #    fi
 #     echo
 #     return $RETVAL
-    echo "xwcontext_prologue does nothing" >> $LOGFILE 2>&1
-    echo "[  OK  ]"
+    echo "[`date`] XWHEP Volunteer Cloud [INFO]: xwcontext_prologue stop does nothing" >> $LOGFILE 2>&1
+    echo -n $"XWHEP contextualization epilog:                            [  OK  ]"
     return 0
 }
 
