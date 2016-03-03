@@ -89,7 +89,7 @@ start() {
 	PASSWD=`dd if=/dev/urandom count=50|md5sum`
 
     touch $LOGFILE
-    echo $"[`date`] XWHEP contextualization prolog" >> $LOGFILE 2>&1
+    echo $"[`date`] XWHEP Volunteer Cloud [INFO]: contextualization prolog" >> $LOGFILE 2>&1
 	/usr/sbin/groupadd -f vmuser >> $LOGFILE 2>&1
 	/usr/sbin/useradd -d /home/vmuser -g vmuser -p "$PASSWD" -m -s /bin/bash vmuser >> $LOGFILE 2>&1
 
@@ -112,7 +112,7 @@ start() {
 	CDDISK=/dev/sr1
 
 
-	echo "Looking for context disk in ${CDDISK}, ${SLDISK} or ${UDISK}" >> $LOGFILE 2>&1
+	echo "[`date`] XWHEP Volunteer Cloud [INFO]: Looking for context disk in ${CDDISK}, ${SLDISK} or ${UDISK}" >> $LOGFILE 2>&1
 
     if [ -b ${CDDISK} ]; then
 		disk=${CDDISK}
@@ -122,7 +122,7 @@ start() {
 		disk=${UDISK}
     fi
 
-    echo "Trying to mount context disk ${disk}" >> $LOGFILE 2>&1
+    echo "[`date`] XWHEP Volunteer Cloud [INFO]: trying to mount context disk ${disk}" >> $LOGFILE 2>&1
 	mkdir -p $MNTCONTEXT >> $LOGFILE 2>&1
     mount ${disk} $MNTCONTEXT >> $LOGFILE 2>&1
     RETVAL=$?
@@ -132,31 +132,31 @@ start() {
 		/bin/chown -R vmuser:vmuser $MNTCONTEXT >> $LOGFILE 2>&1
 
         if [ -e $PROLOG ]; then
-              echo "Found $PROLOG" >> $LOGFILE 2>&1
+              echo "[`date`] XWHEP Volunteer Cloud [INFO]: found $PROLOG" >> $LOGFILE 2>&1
               chmod +x $PROLOG >> $LOGFILE 2>&1
               /bin/su -l vmuser bash -c $PROLOG >> $LOGFILE 2>&1
 	         RETVAL=$?
         elif [ -e $INITSH ]; then
-             echo "Found $INITSH" >> $LOGFILE 2>&1
+             echo "[`date`] XWHEP Volunteer Cloud [INFO]: found $INITSH" >> $LOGFILE 2>&1
              chmod +x $INITSH >> $LOGFILE 2>&1
              /bin/su -l vmuser bash -c $INITSH >> $LOGFILE 2>&1
 	         RETVAL=$?
         elif [ -e $CONTEXTSH ]; then
-             echo "Found $CONTEXTSH" >> $LOGFILE 2>&1
+             echo "[`date`] XWHEP Volunteer Cloud [INFO]: found $CONTEXTSH" >> $LOGFILE 2>&1
              chmod +x $CONTEXTSH >> $LOGFILE 2>&1
              /bin/su -l vmuser bash -c $CONTEXTSH >> $LOGFILE 2>&1
 	         RETVAL=$?
         else
-         	echo "No contextualization prolog found" >> $LOGFILE 2>&1
+         	echo "[`date`] XWHEP Volunteer Cloud [WARN]: no contextualization prolog found" >> $LOGFILE 2>&1
          	RETVAL=0
         fi
     else
     	rm -Rf $MNTCONTEXT >> $LOGFILE 2>&1
-        echo "WARN: no mountable contextualization disk." >> $LOGFILE 2>&1
+        echo "[`date`] XWHEP Volunteer Cloud [WARN]: no mountable contextualization disk." >> $LOGFILE 2>&1
         RETVAL=0
 	fi
 
-	[ 0 -eq $RETVAL ] || echo "ERROR : contextualization error (${disk})" >> $LOGFILE 2>&1
+	[ 0 -eq $RETVAL ] || echo "[`date`] XWHEP Volunteer Cloud [ERROR] : contextualization error (${disk})" >> $LOGFILE 2>&1
 
 #
 # mount application disk, if any
@@ -165,7 +165,7 @@ start() {
 	SLDISK=/dev/sdb1
 	CDDISK=/dev/sr2
 
-	echo "Looking for application disk in ${CDDISK}, ${SLDISK} or ${UDISK}" >> $LOGFILE 2>&1
+	echo "[`date`] XWHEP Volunteer Cloud [INFO]: looking for application disk in ${CDDISK}, ${SLDISK} or ${UDISK}" >> $LOGFILE 2>&1
 
 	disk=""
     if [ -b ${CDDISK} ]; then
@@ -177,18 +177,18 @@ start() {
 	fi
 
 	if [ ! -z "${disk}" ] ; then
-	    echo "Trying to mount application disk ${disk}" >> $LOGFILE 2>&1
+	    echo "[`date`] XWHEP Volunteer Cloud [INFO]: trying to mount application disk ${disk}" >> $LOGFILE 2>&1
 		mkdir -p $MNTAPP >> $LOGFILE 2>&1
 	    mount ${disk} $MNTAPP >> $LOGFILE 2>&1
     	RETVAL=$?
 		/bin/chown -R vmuser:vmuser $MNTAPP >> $LOGFILE 2>&1
 	else
     	rm -Rf $MNTAPP >> $LOGFILE 2>&1
-        echo "INFO: can't find any application disk" >> $LOGFILE 2>&1
+        echo "[`date`] XWHEP Volunteer Cloud [WARN] : can't find any application disk" >> $LOGFILE 2>&1
         RETVAL=0
 	fi
 
-	[ 0 -eq $RETVAL ] || echo "ERROR : application volume error (${disk})" >> $LOGFILE 2>&1
+	[ 0 -eq $RETVAL ] || echo "[`date`] XWHEP Volunteer Cloud [ERROR] : application volume error (${disk})" >> $LOGFILE 2>&1
 
 #
 # mount input files disk, if any
@@ -197,7 +197,7 @@ start() {
 	SLDISK=/dev/sdc1
 	CDDISK=/dev/sr3
 
-	echo "Looking for input disk in ${CDDISK}, ${SLDISK} or ${UDISK}" >> $LOGFILE 2>&1
+	echo "[`date`] XWHEP Volunteer Cloud [INFO]: looking for input disk in ${CDDISK}, ${SLDISK} or ${UDISK}" >> $LOGFILE 2>&1
 
 	disk=""
     if [ -b ${CDDISK} ]; then
@@ -209,18 +209,18 @@ start() {
 	fi
 
 	if [ ! -z "${disk}" ] ; then
-	    echo "Trying to mount input disk ${disk}" >> $LOGFILE 2>&1
+	    echo "[`date`] XWHEP Volunteer Cloud [INFO]: trying to mount input disk ${disk}" >> $LOGFILE 2>&1
 		mkdir -p $MNTINPUT >> $LOGFILE 2>&1
 	    mount ${disk} $MNTINPUT >> $LOGFILE 2>&1
     	RETVAL=$?
 		/bin/chown -R vmuser:vmuser $MNTINPUT >> $LOGFILE 2>&1
 	else
     	rm -Rf $MNTINPUT >> $LOGFILE 2>&1
-        echo "INFO: can't find any input disk" >> $LOGFILE 2>&1
+        echo "[`date`] XWHEP Volunteer Cloud [WARN]: can't find any input disk" >> $LOGFILE 2>&1
         RETVAL=0
 	fi
 
-	[ 0 -eq $RETVAL ] || echo "ERROR : input volume error (${disk})" >> $LOGFILE 2>&1
+	[ 0 -eq $RETVAL ] || echo "[`date`] XWHEP Volunteer Cloud [ERROR]: input volume error (${disk})" >> $LOGFILE 2>&1
 
 #
 # create and mount a result disk, if device available
@@ -230,7 +230,7 @@ start() {
 	SLDEV=/dev/sdd
 	SLDISK=${SLDEV}1
 
-	echo "Looking for result disk in ${SLDISK} or ${UDISK}" >> $LOGFILE 2>&1
+	echo "[`date`] XWHEP Volunteer Cloud [INFO]: looking for result disk in ${SLDISK} or ${UDISK}" >> $LOGFILE 2>&1
 
 	if [ -b ${SLDEV} ] ; then
 		device=${SLDEV}
@@ -242,8 +242,8 @@ start() {
 	if [ -b "$device" ] ; then
 		disk=${device}1
 	else
- 		echo "ERROR : can't find any device to store result " >> $LOGFILE 2>&1
-		RETVAL=1
+ 		echo "[`date`] XWHEP Volunteer Cloud [WARN] : can't find any device to store result " >> $LOGFILE 2>&1
+		RETVAL=0
 	fi
 
 	/bin/mkdir -p $MNTRESULTS >> $LOGFILE 2>&1
@@ -258,19 +258,19 @@ p
 w
 FDISKEOF
 
-		[ 0 -eq $? ] || echo "ERROR: cannot fdisk ${disk}" >> $LOGFILE 2>&1
+		[ 0 -eq $? ] || echo "[`date`] XWHEP Volunteer Cloud [ERROR]: cannot fdisk ${disk}" >> $LOGFILE 2>&1
 
 		/sbin/mkfs.ext3 ${disk} >> $LOGFILE 2>&1
-		[ 0 -eq $? ] || echo "ERROR: cannot mkfs ${disk}" >> $LOGFILE 2>&1
+		[ 0 -eq $? ] || echo "[`date`] XWHEP Volunteer Cloud [ERROR]: cannot mkfs ${disk}" >> $LOGFILE 2>&1
 	fi
 
 	/bin/mount ${disk} ${MNTRESULTS} >> $LOGFILE 2>&1
 	RETVAL=$?
-	[ 0 -eq $RETVAL ] || echo "ERROR : cannot mount ${disk} to $MNTRESULTS" >> $LOGFILE 2>&1
+	[ 0 -eq $RETVAL ] || echo "[`date`] XWHEP Volunteer Cloud [ERROR]: cannot mount ${disk} to $MNTRESULTS" >> $LOGFILE 2>&1
 
 
 	/bin/chown -R vmuser:vmuser $MNTRESULTS >> $LOGFILE 2>&1
-	[ 0 -eq $RETVAL ] || echo "ERROR : cannot chown -R vmuser:vmuser $MNTRESULTS" >> $LOGFILE 2>&1
+	[ 0 -eq $RETVAL ] || echo "[`date`] XWHEP Volunteer Cloud [ERROR]: cannot chown -R vmuser:vmuser $MNTRESULTS" >> $LOGFILE 2>&1
 	
 	#
 	# configure iptables
@@ -280,12 +280,12 @@ FDISKEOF
 	  /root/iptables_rules.sh >> $LOGFILE 2>&1
 	  RETVAL=$?
 	  if [ 0 -eq $RETVAL ] ; then
-	    echo "INFO : iptables rules found; LAN access not allowed" >> $LOGFILE 2>&1
+	    echo "[`date`] XWHEP Volunteer Cloud [INFO]: iptables rules found; LAN access not allowed" >> $LOGFILE 2>&1
 	  else
-	    echo "ERROR : cannot execute /root/iptables_rules.sh" >> $LOGFILE 2>&1
+	    echo "[`date`] XWHEP Volunteer Cloud [ERROR]: cannot execute /root/iptables_rules.sh" >> $LOGFILE 2>&1
 	  fi
 	else
-	  echo "WARN : iptables rules not found ; LAN access allowed" >> $LOGFILE 2>&1
+	  echo "[`date`] XWHEP Volunteer Cloud [WARN]: iptables rules not found ; LAN access allowed" >> $LOGFILE 2>&1
 	fi
 
 	
@@ -300,9 +300,9 @@ FDISKEOF
 	[ -x /etc/init.d/xtremweb.worker ] && /etc/init.d/xtremweb.worker restart >> $LOGFILE 2>&1
 
     if [ 0 -eq $RETVAL ]; then
-      echo "[  OK  ]"
+      echo $"XWHEP contextualization epilog:                            [  OK  ]"
     else
-      echo "[ FAILED ]"
+      echo $"XWHEP contextualization epilog:                            [  FAILED  ]"
     fi
 
 	#
@@ -312,7 +312,7 @@ FDISKEOF
 	XWUSERUID=`id -u vmuser`
 	mount xwsharedfs -t vboxsf /mnt/sharedfs -o rw,uid=$XWUSERUID >> $LOGFILE 2>&1
 
-	echo "RETVAL=$RETVAL" >> $LOGFILE 2>&1
+	echo "[`date`] XWHEP Volunteer Cloud [DEBUG]: RETVAL=$RETVAL" >> $LOGFILE 2>&1
     return $RETVAL
 }
 
@@ -321,7 +321,7 @@ FDISKEOF
 # stop()
 #  ******************************************************************
 stop() {
-    echo "xwcontext_prologue does nothing" >> $LOGFILE 2>&1
+    echo "[`date`] XWHEP Volunteer Cloud [INFO]: xwcontext_prologue stop does nothing" >> $LOGFILE 2>&1
     return 0
 }
 
