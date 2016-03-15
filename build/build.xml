@@ -27,7 +27,7 @@
 <!--    build.xml - Ant build file for the XWHEP sources
         created Mon Mar 25 2002 by Samuel Heriard
  -->
-<project basedir=".." default="all" name="xwhep">
+<project basedir=".." default="all" name="xwhep" xmlns:sonar="antlib:org.sonar.ant" >
   
 
   <!-- NAMES -->
@@ -885,8 +885,8 @@ and try the 6 following exec tasks
 	<property name="sonar.projectVersion" value="${version}" />
 	<property name="sonar.language" value="java" />
 	<property name="sonar.sources" value="${src.dir}" />
-	<property name="sonar.binaries" value="${dist.lib}" />
 <!--
+	<property name="sonar.binaries" value="${dist.lib}" />
 	<property name="sonar.dynamicAnalysis" value="true" />
 -->
 	<property name="sonar.dynamicAnalysis" value="reuseReports" />
@@ -911,13 +911,12 @@ and try the 6 following exec tasks
 		<mkdir dir="${sonar.reports.dir}" />
 		<mkdir dir="${junit.reports.dir}" />
 		<mkdir dir="${coverage.reports.dir}" />
+		<taskdef uri="antlib:org.sonar.ant" resource="org/sonar/ant/antlib.xml">
+		</taskdef>
 	</target>
 	
 	<target name="sonar" depends="sonar-init">
-		 <taskdef name="sonar" 
-		         classname="org.sonar.ant.SonarTask" />
-	 	    <!-- Execute Sonar -->
-	    <sonar />
+		<sonar:sonar />
 	</target>
 
 
