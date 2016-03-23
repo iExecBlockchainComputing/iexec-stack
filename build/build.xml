@@ -876,9 +876,6 @@ and try the 6 following exec tasks
 	<property name="sonar.reports.dir" value="${build.dir}/sonar-reports" />
 	<property name="sonar.jacoco.itReportPath" value="${sonar.reports.dir}/jacoco.exec" />
 	<property name="sonar.host.url" value="${sonar.host.url}" />
-	<property name="sonar.jdbc.url" value="${sonar.jdbc.url}" />
-	<property name="sonar.jdbc.username" value="${sonar.jdbc.username}" />
-	<property name="sonar.jdbc.password" value="${sonar.jdbc.password}" />
 	<!-- Define the Sonar project properties -->
 	<property name="sonar.projectKey" value="xwhep-10.x" />
 	<property name="sonar.projectName" value="XtremWeb-HEP" />
@@ -891,10 +888,13 @@ and try the 6 following exec tasks
 -->
 	<property name="sonar.dynamicAnalysis" value="reuseReports" />
 	
+	<!--
 	<property name="junit.reports.dir" value="${sonar.reports.dir}/junit-test" />
+	-->
+	<property name="sonar.junit.reportPaths" value="${sonar.reports.dir}/junit-test" />
 	<property name="coverage.reports.dir" value="${sonar.reports.dir}/coverage" />
 
-   	<property name="sonar.surefire.reportsPath" value="${junit.reports.dir}" />
+   	<property name="sonar.surefire.reportsPath" value="${sonar.junit.reportPaths}" />
 <!--
 	<property name="sonar.jacoco.reportPath" value="${coverage.reports.dir}" />
 -->
@@ -909,7 +909,7 @@ and try the 6 following exec tasks
 	<target name="sonar-init" depends="configure">
 		<mkdir dir="${sonar.root.dir}" />
 		<mkdir dir="${sonar.reports.dir}" />
-		<mkdir dir="${junit.reports.dir}" />
+		<mkdir dir="${sonar.junit.reportPaths}" />
 		<mkdir dir="${coverage.reports.dir}" />
 		<taskdef uri="antlib:org.sonar.ant" resource="org/sonar/ant/antlib.xml">
 		</taskdef>
@@ -938,7 +938,7 @@ and try the 6 following exec tasks
         <classpath>
   	  	  <pathelement path="${classpath}" />
         </classpath>
-        <batchtest fork="yes" todir="${junit.reports.dir}">
+        <batchtest fork="yes" todir="${sonar.junit.reportPaths}">
           <formatter type="plain" usefile="false" />
           <formatter type="xml" usefile="true" />
           <fileset dir="${src.test.dir}">
