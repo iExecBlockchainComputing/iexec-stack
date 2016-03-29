@@ -466,8 +466,6 @@ disk_attach ()
 #	CREATE="TRUE"
 	NEWDISK="FALSE"
 
-echo "00 NEWDISK=$NEWDISK"
-
 	#---------------------------------------------------------------------------
 	#  Results disk or new disk with free space
 	#---------------------------------------------------------------------------
@@ -500,7 +498,7 @@ echo "00 NEWDISK=$NEWDISK"
 #			return
 #		fi
 	else
-		if [ -r ${DFILE} ] ; then
+		if [ -r "${DFILE}" ] ; then
 			download_if_http  "$DFILE"
 			DFILE="$FILE_LOCAL"
 		else
@@ -508,7 +506,7 @@ echo "00 NEWDISK=$NEWDISK"
 		fi
 	fi
 
-	if [ ! -r ${DFILE} ] ; then
+	if [ ! -r "${DFILE}" ] ; then
 		info_message  "disk_attach '${DTEXT}':  can't read disk ${DFILE}"
 		return
 	fi
@@ -527,15 +525,12 @@ echo "00 NEWDISK=$NEWDISK"
 	#  in order to be able to launch several simultaneous VM using
 	#  the same disk
 	#-----------------------------------------------------------------------
-	DFILENAME="$(basename "$DFILE")"
 	DIRNAME="$(dirname "$DFILE")"
 #	if [ "$CREATE" != "TRUE" ]; then
 #		TMPFILE="$DIRNAME/xwhd$XWJOBUID-$DFILENAME"
 #		mv  "$DFILE"  "$TMPFILE"
 #		DFILE="$TMPFILE"
 #	fi
-
-echo "01 NEWDISK=$NEWDISK"
 
 	if [ "$DISK_TYPE" != "$DVDTYPE" ] ; then
 		wait_for_other_virtualbox_management_to_finish  install
@@ -855,10 +850,12 @@ END_OF_INSTALL_VARS
       fatal  "HDA1 file not found : '$HDA1FILE'"  TRUE
   fi
   
-  download_if_http  "$HDB1FILE_CONTEXT"
-  HDB1FILE_CONTEXT="$FILE_LOCAL"
-  if [ ! -f "$HDB1FILE_CONTEXT" ] ; then
-      HDB1FILE_CONTEXT="$XWSCRATCHPATH/$HDB1FILE_CONTEXT"
+  if [ -n "$HDB1FILE_CONTEXT" ] ; then
+    download_if_http  "$HDB1FILE_CONTEXT"
+    HDB1FILE_CONTEXT="$FILE_LOCAL"
+    if [ ! -f "$HDB1FILE_CONTEXT" ] ; then
+        HDB1FILE_CONTEXT="$XWSCRATCHPATH/$HDB1FILE_CONTEXT"
+    fi
   fi
   
   #---------------------------------------------------------------------------
@@ -973,7 +970,11 @@ END_OF_INSTALL_VARS
   #---------------------------------------------------------------------------
   info_message  "install: contextualization disk ${HDB1FILE_CONTEXT}"
   #---------------------------------------------------------------------------
-  disk_attach "context" "${HDB1FILE_CONTEXT}" "${CONTEXT_DISKPORT}"
+  if [ -n "$HDB1FILE_CONTEXT" ] ; then
+	disk_attach "context" "${HDB1FILE_CONTEXT}" "${CONTEXT_DISKPORT}"
+  else
+	warning_message  "install :  no contextualization disk to attach"
+  fi
 
   #---------------------------------------------------------------------------
   info_message  "install: application disk ${HDB2FILE_APP}"
