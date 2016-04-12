@@ -112,7 +112,7 @@ public final class DBInterface {
 	}
 
 	/**
-	 * This implements connection to database
+	 * This is the database connection
 	 */
 	private final DBConnPoolThread dbConnPool;
 
