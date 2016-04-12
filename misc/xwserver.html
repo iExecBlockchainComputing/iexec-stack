@@ -1142,9 +1142,24 @@ function getAppStateChanged()
 		    var name = xmlDoc.getElementsByTagName("name").item(0).firstChild.nodeValue;
 	    	var uid = xmlDoc.getElementsByTagName("uid").item(0).firstChild.nodeValue;
 		    var type = xmlDoc.getElementsByTagName("type").item(0).firstChild.nodeValue;
-		    var nbJobs = xmlDoc.getElementsByTagName("nbjobs").item(0).firstChild.nodeValue;
-		    var runningJobs = xmlDoc.getElementsByTagName("runningjobs").item(0).firstChild.nodeValue;
-		    var pendingJobs = xmlDoc.getElementsByTagName("pendingjobs").item(0).firstChild.nodeValue;
+		    var nbJobs = 0;
+		    try {
+		    	nbJobs = xmlDoc.getElementsByTagName("nbjobs").item(0).firstChild.nodeValue;
+		    }
+		    catch(err) {
+		    }
+		    var runningJobs = 0;
+		    try {
+		    	runningJobs = xmlDoc.getElementsByTagName("runningjobs").item(0).firstChild.nodeValue;
+		    }
+		    catch(err) {
+		    }
+		    var pendingJobs = 0;
+		    try {
+			    pendingJobs = xmlDoc.getElementsByTagName("pendingjobs").item(0).firstChild.nodeValue;
+		    }
+		    catch(err) {
+		    }
 
 			appDataTreemap.push(new Array(name, 'Applications', parseInt(nbJobs), parseInt(pendingJobs)));
 
@@ -1154,16 +1169,6 @@ function getAppStateChanged()
         	    "<span class=\"firstvalue\" id=\"" + appuidheader + uid + "\">" + uid + "</span>" +
         		"<span class=\"value\" id=\"" + appnameheader + uid + "\">" + name + "</span>" +
         		"<span class=\"lastvalue\">" + type + "</span>";
-
-			if((nbJobs == undefined) || (nbJobs == null)) {
-				nbJobs = 0;
-			}
-			if((runningJobs == undefined) || (runningJobs == null)) {
-				runningJobs = 0;
-			}
-			if((pendingJobs == undefined) || (pendingJobs == null)) {
-				pendingJobs = 0;
-			}
 
 			if (overviewAppContent.length == 0) {
 				overviewAppContent.push(new Array('AppName', 'Parent', 'Completed', 'Running'));
