@@ -180,7 +180,8 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 			public String getPath() {
 				return RESOURCE_PATHROOT + getName();
 			}
-			/**
+
+ 			/**
 			 * This writes resource content as text to the given response
 			 */
 			@Override
@@ -225,7 +226,7 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 			final byte[] buf = new byte[10240];
 			for (int n = reader.read(buf); n > 0; n = reader.read(buf)) {
 				String ligne = new String(buf, 0, n);
-				writer.println(ligne);
+				writer.print(ligne);
 			}
 			writer.flush();
 		}
@@ -810,8 +811,10 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 					+ request.getUserPrincipal().getName());
 		}
 		logger.debug("Handling target         = " + target);
-		logger.debug("Handling request        = " + request.getContentLength()
-				+ " " + request.getContentType());
+		logger.debug("Handling request        = " + request.getContentLength() +
+				" " + request.getContentType());
+		logger.debug("Handling request auth   = " + request.getAuthType());
+		logger.debug("Handling request user   = " + request.getRemoteUser());
 		logger.debug("Handling parameter size = "
 				+ request.getParameterMap().size());
 		logger.debug("Handling query string   = " + request.getQueryString());
@@ -1012,8 +1015,14 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 				}
 			}
 
-			logger.debug("obj = " + (obj == null ? "null" : obj.toXml()));
-
+			if(obj != null) {
+				logger.debug("obj = " + obj.toXml());
+				if(obj.getUID() == null) {
+					obj.setUID(new UID());
+				}
+			} else {
+				logger.debug("obj = null");
+			}
 			command = getIdRpc().newCommand(uri, user, obj);
 
 			final String parameter = request
