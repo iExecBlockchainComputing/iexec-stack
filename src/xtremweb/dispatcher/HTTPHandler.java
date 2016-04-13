@@ -248,10 +248,6 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 	/** This is the last modified label HTTP header */
 	private static final String LASTMODIFIEDLABEL = new String("Last-Modified");
 
-	/** this tag is replaced by the current version in misc/xwserver.html */
-	private final String TAGVERSION = "@XWVERSION@";
-	/** this tag is replaced by the client login in misc/xwserver.html */
-	private final String TAGLOGIN = "@XWLOGIN@";
 	private static final Version CURRENTVERSION = CommonVersion.getCurrent();
 	private static final String CURRENTVERSIONSTRING = CURRENTVERSION
 			.toString();
@@ -260,13 +256,10 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 	private final String TAGMESSAGE = "@XWMSG@";
 
 	private final String REDIRECTPAGE_CONTENT_HEADER = 
-			"<html><head><title>XtremWeb-HEP " + TAGVERSION + "</title></head>"
+			"<html><head><title>XtremWeb-HEP " + CURRENTVERSIONSTRING + "</title></head>"
 					+ "<body><center><h1>XtremWeb-HEP</h1><br /><h3>You are not logged in</h3></center><br /><br />"
-					+ "<center><p style='color:red;'>" + TAGMESSAGE + "</p></center><br /><br />"
 					+ "You can go to the <a href=\"" + HTTPStatsHandler.PATH + "\">the statistics page</a><br /><br />"
-					+ "If your email address is registered in this XWHEP server, you can connect using one of the authentifcation methods :<ul>"
-					+ "<li><a href=\"" + HTTPOpenIdHandler.handlerPath + "?" + XWPostParams.AUTH_OPERATOR + "=" + HTTPOpenIdHandler.OP_GOOGLE + "\">your Google account</a></li>"
-					+ "<li><a href=\"" + HTTPOpenIdHandler.handlerPath + "?" + XWPostParams.AUTH_OPERATOR + "=" + HTTPOpenIdHandler.OP_YAHOO + "\">your Yahoo account</a></li>";
+					+ "If your email address is registered in this XWHEP server, you can connect using one of the authentifcation methods :";
 
 	private final String REDIRECTPAGE_CONTENT_TRAILER = "</ul></body></html>";
 
@@ -599,24 +592,7 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 		final Cookie cookie = new Cookie(COOKIE_USERUID, client.getUID().toString());
 		getLogger().debug("setCookie " + COOKIE_USERUID + " = " + client.getUID().toString());
 		response.addCookie(cookie);
-		final InputStream reader = getClass().getClassLoader()
-				.getResourceAsStream(Resources.HTML.getPath());
-
-		if ((reader != null) && (reader.available() > 0)) {
-			String content = new String();
-			byte[] buf = new byte[10240];
-			for (int n = reader.read(buf); n > 0; n = reader.read(buf)) {
-				String ligne = new String(buf, 0, n);
-				ligne = ligne.replaceAll(TAGVERSION, CURRENTVERSIONSTRING);
-				ligne = ligne.replaceAll(TAGLOGIN,  client.getEMail() != null ? client.getEMail() : client.getLogin());
-				content += ligne;
-				ligne = null;
-			}
-			buf = null;
-			response.getWriter().println(content);
-		}
-
-		response.getWriter().flush();
+		Resources.HTML.write(response);
 		response.setStatus(HttpServletResponse.SC_OK);
 	}
 
@@ -646,7 +622,7 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 		response.setContentType("text/html");
 		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 
-		rWriter.println(REDIRECTPAGE_CONTENT_HEADER.replaceAll(TAGVERSION, CURRENTVERSIONSTRING).replaceAll(TAGMESSAGE, theMessage));
+		rWriter.println(REDIRECTPAGE_CONTENT_HEADER.replaceAll(TAGMESSAGE, theMessage));
 		for (final HTTPOAuthHandler.Operator op : Operator.values()) {
 			final String opName = op.toString();
 			rWriter.print("<li><a href=\"" + HTTPOAuthHandler.handlerPath + "?" + XWPostParams.AUTH_OPERATOR + "=" + opName + "\">" + opName.toLowerCase() + "</a></li>");
