@@ -484,7 +484,7 @@ public class HTTPOAuthHandler extends Thread implements
 			response.sendRedirect(url);
 			return;
 		}
-		logger.debug("operator = " + op);
+
 		try {
 			final Operator operator = Operator.fromString(op);
 			logger.debug("operator = " + op);
@@ -512,7 +512,6 @@ public class HTTPOAuthHandler extends Thread implements
 		final String newState = newState(operator);
 		logger.debug("newState = " + newState);
 
-		final String oauthUrl = "https://accounts.google.com/o/oauth2/auth?scope=https://www.googleapis.com/auth/userinfo.email&response_type=code&client_id=1078690626706-rb5lpg7bhofsbmklqtmgjcvfjch64s8r.apps.googleusercontent.com&redirect_uri=https://xwservpub.lal.in2p3.fr:4324/oauth";
 		logger.debug("oathUrl = " + oauthUrl);
 
 		final HttpSession session = request.getSession(true);
