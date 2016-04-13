@@ -15,3 +15,5 @@
 *~
 databases/*.sql
 datas/*.out
+dist/
+*-head*/
