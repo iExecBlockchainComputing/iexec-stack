@@ -208,12 +208,12 @@ public class Dispatcher {
 				opid_sessionHandler.setHandler(oh);
 				httpServer.addHandler(HTTPOpenIdHandler.handlerPath, opid_sessionHandler);
 
-//				// OAuth Handler needs HTTP session
-//				final SessionHandler oauth_sessionHandler = new SessionHandler();
-//				final HTTPOAuthHandler oah = new HTTPOAuthHandler();
-//				HTTPOAuthHandler.setCACertificateEntries(getConfig().getKeyStore());
-//				oauth_sessionHandler.setHandler(oah);
-//				httpServer.addHandler(HTTPOAuthHandler.handlerPath, oauth_sessionHandler);
+				// OAuth Handler needs HTTP session
+				final SessionHandler oauth_sessionHandler = new SessionHandler();
+				final HTTPOAuthHandler oah = new HTTPOAuthHandler();
+				HTTPOAuthHandler.setCACertificateEntries(getConfig().getKeyStore());
+				oauth_sessionHandler.setHandler(oah);
+				httpServer.addHandler(HTTPOAuthHandler.handlerPath, oauth_sessionHandler);
 
 				// StatsHandler does not need HTTP session
 				httpServer.addHandler(HTTPStatsHandler.PATH, new HTTPStatsHandler());
