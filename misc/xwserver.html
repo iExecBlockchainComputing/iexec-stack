@@ -264,13 +264,13 @@ var runningListID   = "runningWorks";
 var completedListID = "completedWorks";
 var errorListID     = "errorWorks";
 var theOverviewID   = "theOverview";
-var theAppsID   = "theApplications";
-var theDatasID  = "theDatas";
-var theWorksID  = "theJobs";
-var theBotsID   = "theBots";
-var theSubmitID = "theSubmit";
-var theHelpID   = "theHelp";
-var theAPIID    = "theApi";
+var theAppsID       = "theApplications";
+var theDatasID      = "theDatas";
+var theWorksID      = "theJobs";
+var theBotsID       = "theBots";
+var theSubmitID     = "theSubmit";
+var theHelpID       = "theHelp";
+var theAPIID        = "theApi";
 /**
  * These are HTML element name in "sendForm" form 
  */
@@ -3281,14 +3281,9 @@ function deleteFromServerStateChanged()
   <div class="titre">
     <div >
       <img src="logo.jpg" height="100px" style="float:left;vertical-align:text-top" />
-      <!-- XWVERSION is replaced by server version in xtremweb.server.HTTPHandler#index() -->
+      <!-- @XWVERSION@ is replaced at installation time in build.xml -->
       <br />XtremWeb-HEP @XWVERSION@
     </div>
-  </div>
-
-  <div style="clear:both;float:left;color:lightgrey">
-      <!-- XWLOGIN is replaced by user login in xtremweb.server.HTTPHandler#index() -->
-    <h4>Logged in as @XWLOGIN@</h4>
   </div>
 
   <ol id="toc" style="clear:both;float:left;">
