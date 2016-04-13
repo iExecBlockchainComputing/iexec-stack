@@ -613,7 +613,7 @@ and try the 6 following exec tasks
     <filter token="DATASERVERS" value="${data.servers}" />
 
     <copy todir="${build.classes}/data"
-          filtering="no" overwrite="yes">
+          filtering="yes" overwrite="yes">
       <fileset dir="${misc.dir}">
         <include name="**/*.ico" />
         <include name="**/*.html" />
@@ -885,16 +885,16 @@ and try the 6 following exec tasks
 <!--
 	<property name="sonar.binaries" value="${dist.lib}" />
 	<property name="sonar.dynamicAnalysis" value="true" />
--->
 	<property name="sonar.dynamicAnalysis" value="reuseReports" />
+-->
 	
 	<!--
 	<property name="junit.reports.dir" value="${sonar.reports.dir}/junit-test" />
 	-->
-	<property name="sonar.junit.reportPaths" value="${sonar.reports.dir}/junit-test" />
+	<property name="sonar.junit.reportsPath" value="${sonar.reports.dir}/junit-test" />
 	<property name="coverage.reports.dir" value="${sonar.reports.dir}/coverage" />
 
-   	<property name="sonar.surefire.reportsPath" value="${sonar.junit.reportPaths}" />
+   	<property name="sonar.surefire.reportsPath" value="${sonar.junit.reportsPath}" />
 <!--
 	<property name="sonar.jacoco.reportPath" value="${coverage.reports.dir}" />
 -->
@@ -909,7 +909,7 @@ and try the 6 following exec tasks
 	<target name="sonar-init" depends="configure">
 		<mkdir dir="${sonar.root.dir}" />
 		<mkdir dir="${sonar.reports.dir}" />
-		<mkdir dir="${sonar.junit.reportPaths}" />
+		<mkdir dir="${sonar.junit.reportsPath}" />
 		<mkdir dir="${coverage.reports.dir}" />
 		<taskdef uri="antlib:org.sonar.ant" resource="org/sonar/ant/antlib.xml">
 		</taskdef>
@@ -931,14 +931,10 @@ and try the 6 following exec tasks
 		         classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTask" />
 	  <junit fork="yes" printsummary="yes" haltonfailure="yes" clonevm="true">
 	    <sysproperty key="net.sourceforge.cobertura.datafile" file="cobertura.ser" />
-        <jvmarg value="-XX:-UseSplitVerifier"/>
-<!-- 
-        <jvmarg value="-DLOGGERLEVEL=FINEST"/>
- -->
         <classpath>
   	  	  <pathelement path="${classpath}" />
         </classpath>
-        <batchtest fork="yes" todir="${sonar.junit.reportPaths}">
+        <batchtest fork="yes" todir="${sonar.junit.reportsPath}">
           <formatter type="plain" usefile="false" />
           <formatter type="xml" usefile="true" />
           <fileset dir="${src.test.dir}">
