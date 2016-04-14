@@ -118,11 +118,31 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 
 	/**
 	 * This is the resource path in the xtremweb java archive (xtremweb.jar) :
-	 * "data/"
+	 * "data"
 	 */
-	public static final String RESOURCE_PATHROOT = "data";
+	public static final String RESOURCE_PATH = "data";
 	/**
-	 * This is the dashboard HTML file name : xwserver.html
+	 * This is the Bootstrap dashboard HTML file name : dashboard.html
+	 * @since 10.2.0
+	 */
+	public static final String DASHBOARDFILENAME_HTML = "/dashboard.html";
+	/**
+	 * This is the Bootstrap dashboard CSS file name : dashboard.css
+	 * @since 10.2.0
+	 */
+	public static final String DASHBOARDFILENAME_CSS = "/dashboard.css";
+	/**
+	 * This is the Bootstrap CSS file name : bootstrap.min.css
+	 * @since 10.2.0
+	 */
+	public static final String BOOTSTRAPFILENAME_CSS = "/bootstrap.min.css";
+	/**
+	 * This is the Bootstrap CSS file name : bootstrap.min.css
+	 * @since 10.2.0
+	 */
+	public static final String IEVIEWPORTFILENAME_CSS = "/ie10-viewport-bug-workaround.css";
+	/**
+	 * This is the HTML file name : xwserver.html
 	 */
 	public static final String RESOURCEFILENAME_HTML = "/xwserver.html";
 	/**
@@ -130,106 +150,135 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 	 */
 	public static final String RESOURCEFILENAME_CSS = "/xwserver.css";
 	/**
-	 * This is the CSS file name : logo.jpg
+	 * This is the favicon file name : favicon.ico
+	 * @since 10.2.0
+	 */
+	public static final String FAVICOFILENAME_ICO = "/favicon.ico";
+	/**
+	 * This is the logo file name : logo.jpg
 	 */
 	public static final String RESOURCEFILENAME_LOGO = "/logo.jpg";
 
+	private static final String[] names = {
+			RESOURCEFILENAME_HTML,
+			RESOURCEFILENAME_CSS,
+			DASHBOARDFILENAME_HTML,
+			DASHBOARDFILENAME_CSS,
+			BOOTSTRAPFILENAME_CSS,
+			IEVIEWPORTFILENAME_CSS,
+			FAVICOFILENAME_ICO,
+			RESOURCEFILENAME_LOGO
+	};
+	private static final String[] mimeTypes = {
+			"text/html",
+			"text/css",
+			"text/html",
+			"text/css",
+			"text/css",
+			"text/css",
+			"image/x-icon",
+			"image/jpeg"
+	};
 	/**
 	 * This enumerates resources needed by the dashboard html file (css, images, javascript)
 	 * @since 8.3.0
 	 */
 	public enum Resources {
-		HTML {
-			@Override
-			public String getName() {
-				return RESOURCEFILENAME_HTML;
-			}
-			@Override
-			public String getMimeType() {
-				return "text/html";
-			}
-			@Override
-			public String getPath() {
-				return RESOURCE_PATHROOT + getName();
-			}
-		},
-		CSS {
-			@Override
-			public String getName() {
-				return RESOURCEFILENAME_CSS;
-			}
-			@Override
-			public String getMimeType() {
-				return "text/css";
-			}
-			@Override
-			public String getPath() {
-				return RESOURCE_PATHROOT + getName();
-			}
-		},
-		LOGO {
-			@Override
-			public String getName() {
-				return RESOURCEFILENAME_LOGO;
-			}
-			@Override
-			public String getMimeType() {
-				return "image/jpeg";
-			}
-			@Override
-			public String getPath() {
-				return RESOURCE_PATHROOT + getName();
-			}
+		XWHTML,
+		XWCSS,
+		/**
+		 * This is the Bootstrap dashboard HTML
+		 * @since 10.2.0
+		 */
+		DHTML,
+		/**
+		 * This is the Bootstrap dashboard CSS
+		 * @since 10.2.0
+		 */
+		DCSS,
+		/**
+		 * This is the Bootstrap CSS
+		 * @since 10.2.0
+		 */
+		BCSS,
+		/**
+		 * This is another Bootstrap CSS
+		 * @since 10.2.0
+		 */
+		IEVIEWPORTFILENAME_CSS,
+		/**
+		 * This is the favicon resource
+		 * @since 10.2.0
+		 */
+		FAVICON,
+		LOGO;
 
- 			/**
-			 * This writes resource content as text to the given response
-			 */
-			@Override
-			public void write(final HttpServletResponse response) throws IOException {
-				final InputStream reader = getClass().getClassLoader().getResourceAsStream(getPath());
-
-				if (reader == null) {
-					throw new IOException(getPath() + " not found");
-				}
-				final OutputStream out = response.getOutputStream(); 
-				final byte[] buf = new byte[10240];
-				for (int n = reader.read(buf); n > 0; n = reader.read(buf)) {
-					out.write(buf, 0, n);
-				}
-				out.flush();
-			}
-		};
 		/**
 		 * This retrieves the resource name started with a slash. This is both used to retrieve resource from the archive and as path for web access
 		 * @return the resource name
 		 */
-		public abstract String getName();
+		public String getName() {
+			return names[this.ordinal()];
+		}
 		/**
 		 * This retrieves the resource path in the xtremweb java archive (xtremweb.jar)
 		 * @return the resource path in the archive
 		 */
-		public abstract String getPath();
+		public String getPath() {
+			return RESOURCE_PATH + this.getName();
+		}
 		/**
 		 * @return the resource path
 		 */
-		public abstract String getMimeType();
+		public String getMimeType() {
+			return mimeTypes[this.ordinal()];
+		}
 		/**
-		 * This writes resource content as text to the given response
+		 * This writes resource content to the given response.
+		 * This calls writeBinary() for non text resources
+		 * @see #writeBinary(HttpServletResponse)
+		 * @param response is the output channel to write to
+		 * @throws IOException is thrown if resource is not found
 		 */
 		public void write(final HttpServletResponse response) throws IOException {
+//			if ((this == FAVICON) || (this == LOGO)) {
+//				writeBinary(response);
+//				return;
+//			}
+//
+//			final InputStream reader = getClass().getClassLoader().getResourceAsStream(getPath());
+//
+//			if (reader == null) {
+//				throw new IOException(getPath() + " not found");
+//			}
+//			final PrintWriter writer = response.getWriter(); 
+//			final byte[] buf = new byte[10240];
+//			for (int n = reader.read(buf); n > 0; n = reader.read(buf)) {
+//				String ligne = new String(buf, 0, n);
+//				writer.print(ligne);
+//			}
+//			writer.flush();
+//		}
+//		/**
+//		 * This sends binary resources
+//		 * @param response is the output channel to write to
+//		 * @throws IOException is thrown if resource is not found
+//		 * @since 10.2.0
+//		 */
+//		private void writeBinary(final HttpServletResponse response) throws IOException {
 			final InputStream reader = getClass().getClassLoader().getResourceAsStream(getPath());
 
 			if (reader == null) {
 				throw new IOException(getPath() + " not found");
 			}
-			final PrintWriter writer = response.getWriter(); 
+			final OutputStream out = response.getOutputStream(); 
 			final byte[] buf = new byte[10240];
 			for (int n = reader.read(buf); n > 0; n = reader.read(buf)) {
-				String ligne = new String(buf, 0, n);
-				writer.print(ligne);
+				out.write(buf, 0, n);
 			}
-			writer.flush();
+			out.flush();
 		}
+
 	}
 
 	/** This is the content type label HTTP header */
@@ -592,7 +641,7 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 		final Cookie cookie = new Cookie(COOKIE_USERUID, client.getUID().toString());
 		getLogger().debug("setCookie " + COOKIE_USERUID + " = " + client.getUID().toString());
 		response.addCookie(cookie);
-		Resources.HTML.write(response);
+		Resources.XWHTML.write(response);
 		response.setStatus(HttpServletResponse.SC_OK);
 	}
 
