@@ -1,0 +1,315 @@
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+<meta name="keywords" content="distributed computing,volunteer cloud,cloud computing,desktop grid,volunteer computing,idle cpu,xtremweb-hep" />
+<meta name="author" content="Oleg Lodygensky" />
+<meta name="description" content="This is the XtremWeb-HEP client main page" />
+
+<title>XtremWeb-HEP @XWVERSION@</title>
+
+<!--
+#
+# Copyrights     : CNRS
+# Author         : Oleg Lodygensky
+# Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
+# Web            : http://www.xtremweb-hep.org
+# Since          : 8.1.0
+# 
+#      This file is part of XtremWeb-HEP.
+#
+#    XtremWeb-HEP is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    XtremWeb-HEP is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with XtremWeb-HEP.  If not, see <http://www.gnu.org/licenses/>.
+#
+#
+#
+-->
+
+<link  href="xwserver.css" rel="stylesheet" type="text/css" media="all">
+<script src="xwserver2.js"></script>
+
+</head>
+
+<body>
+    
+  <div class="titre">
+    <div >
+      <img src="logo.jpg" height="100px" style="float:left;vertical-align:text-top" />
+      <!-- @XWVERSION@ is replaced at installation time in build.xml -->
+      <br />XtremWeb-HEP @XWVERSION@
+    </div>
+  </div>
+
+  <ol id="toc" style="clear:both;float:left;">
+    <li id="tabOverview" class="current"><a href="javascript:showTab(theOverviewID, overviewTabID);"><span>Overview</span></a></li>
+    <li id="tabApps"><a href="javascript:showTab(theAppsID, appsTabID);"><span>Applications</span></a></li>
+    <li id="tabDatas"><a href="javascript:showTab(theDatasID, datasTabID);"><span>Data</span></a></li>
+    <li id="tabJobs"><a href="javascript:showTab(theWorksID, worksTabID);"><span>Jobs</span></a></li>
+    <li id="tabBots"><a href="javascript:showTab(theBotsID, botsTabID);"><span>Group of jobs</span></a></li>
+    <li id="tabHelp"><a href="javascript:showTab(theHelpID, helpTabID);"><span>Help</span></a></li>
+    <li id="tabAPI"><a href="javascript:showTab(theAPIID, apiTabID);"><span>API</span></a></li>
+</ol>
+<div id="worker8" class="webworker">&nbsp;</div>
+<div id="worker7" class="webworker">&nbsp;</div>
+<div id="worker6" class="webworker">&nbsp;</div>
+<div id="worker5" class="webworker">&nbsp;</div>
+<div id="worker4" class="webworker">&nbsp;</div>
+<div id="worker3" class="webworker">&nbsp;</div>
+<div id="worker2" class="webworker">&nbsp;</div>
+<div id="worker1" class="webworker">&nbsp;</div>
+<div id="worker0" class="webworker">&nbsp;</div>
+
+<!-- empty buttons bar -->
+  <div id="emptyBar" style="display:none">
+    <span class="firstbutton" style="margin:8px">&nbsp;</span>
+  </div>
+
+<!-- overview buttons bar -->
+  <div id="overviewBar" style="display:block">
+    <span class="firstbutton" style="margin:8px"><button type="button" onclick="refresh();">Refresh</button></span>
+  </div>
+
+<!-- objects buttons bar -->
+  <div id="objectsBar" style="display:none">
+    <span class="firstbutton" style="margin:8px"><button type="button" onclick="refresh();">Refresh</button></span>
+    <span class="button" style="margin-top:8px"> <button type="button" onclick="send();">Send</button></span>
+    <span class="button" style="margin-top:8px"> <button type="button" onclick="details();">Details</button></span>
+    <span class="button" style="margin-top:8px"> <button type="button" onclick="deleteFromServer();">Delete</button></span>
+    <span class="button" style="margin-top:8px;color:white"><form action=""><input type="checkbox" id="useWebWorker">&nbsp;Web workers</form></span>
+  </div>
+
+<!-- Overview -->
+  <div id="theOverview" class="tabContent" style="display:block">
+    <div class="tabpane">
+      <div class="tabtitre">
+        <span >Overview</span>
+        <span><a style="float:right;margin-right:15px;" href="javascript:showHide(overviewListID);" >show/hide</a></span>
+      </div>
+      <form id="overviewList">
+          <div class="tuple" id="overviewIntro" style="display:none"><span class="firstvalue">&nbsp;</span><span class="lastvalue" id="uid">Please, click &quot;Refresh&quot; first</span></div>
+          
+          <!-- User overview -->
+            <div class="overviewchapter" style="padding-left:20px; width:95%" id="contenuuser">
+              <div class="overviewchaptertitre">
+                <span>Account summary</span>
+                <span><a style="float:right;margin-right:15px;color:black" href="javascript:showHide(overviewCurrentUserID);" >show/hide</a></span>
+              </div>
+
+  	          <div id="overviewCurrentUser" class="overviewchaptercontent">
+  	          
+	  	        <div id="overviewCurrentUserIntro" class="overviewchaptercontent">
+                  <span class="overviewleft">Please refresh</span><span class="overviewright" id="overviewLogin"><i>Please refresh</i></span>
+				</div>
+				
+			  	<div id="graph" class="bchart" style="border:1px solid;width:600px; height:100px;float:left;clear:left"></div>
+
+	  		  	<div class="errors chartlegende">Errors</div>
+	  		  	<div class="pending chartlegende">Pending</div>
+	  		  	<div class="running chartlegende">Running</div>
+	  		  	<div class="completed chartlegende">Completed</div>
+        	  </div> <!-- overviewCurrentUser -->
+
+	          <div class="chaptertrailer" style="background-color:#F8F8F8">&nbsp;</div>
+			</div> <!-- contenuuser -->
+
+          <!-- /User overview -->
+
+          <!-- Applications overview -->
+            <div class="overviewchapter" id="contenuapp">
+              <div class="overviewchaptertitre">
+                <span>Applications</span>
+                <span><a style="float:right;margin-right:15px;color:black" href="javascript:showHide(overviewAppsID);" >show/hide</a></span>
+              </div>
+
+    	      <div id="overviewApps" class="overviewchaptercontent">
+		      <div id="chart_div" style="width: 450px; height: 300px;margin-top:25px;"></div>
+        	  </div> <!-- overviewApps -->
+	          <div class="overviewchaptertrailer" style="background-color:#F8F8F8">&nbsp;</div>
+            </div> <!-- contenuapp -->
+          <!-- /Applications overview -->
+
+          <!-- Hosts overview -->
+            <div class="overviewchapter" id="contenuhost">
+              <div class="overviewchaptertitre">
+                <span>Ressources</span>
+                <span><a style="float:right;margin-right:15px;color:black" href="javascript:showHide(overviewHostsID);" >show/hide</a></span>
+              </div>
+
+    	        <div id="overviewHosts" class="overviewchaptercontent">
+        	  </div> <!-- overviewHost -->
+	          <div class="overviewchaptertrailer" style="background-color:#F8F8F8">&nbsp;</div>
+            </div> <!-- contentuhost -->
+          <!-- /Hosts overview -->
+      </form>
+        <div class="tabtrailer">&nbsp;</div>
+    </div>
+
+  </div> <!-- theOverview -->
+
+
+<!-- Applications -->
+  <div class="tabContent" id="theApplications" style="display:none">
+    <div class="tabpane">
+      <div class="tabtitre">
+        <span >Applications</span>
+        <span><a style="float:right;margin-right:15px;" href="javascript:showHide(appListID);" >show/hide</a></span>
+	    <select class="firstbutton" style="margin:3px">
+	      <option onclick="checkAll();">Select all</option>
+	      <option onclick="uncheckAll();">Unselect all</option>
+	    </select>
+        <span class="button"><button type="button" onclick="submit();">Submit a job</button> </span>
+      </div>
+      <form id="listAppForm">
+        <div id="appList" style="display:block">
+          <div class="tuple"><span class="firstvalue">&nbsp;</span><span class="lastvalue" id="uid">Please, click &quot;Refresh&quot; first</span></div>
+        </div>
+        <div class="tabtrailer">&nbsp;</div>
+      </form>
+    </div>
+  </div>
+
+
+<!-- Datas -->
+  <div class="tabContent" id="theDatas" style="display:none">
+    <div class="tabpane">
+      <div class="tabtitre">
+        <span >Data</span>
+        <span><a style="float:right;margin-right:15px;" href="javascript:showHide(dataListID);" >show/hide</a></span>
+	    <select class="firstbutton" style="margin:3px">
+	      <option onclick="checkAll();">Select all</option>
+	      <option onclick="uncheckAll();">Unselect all</option>
+	    </select>
+        <span class="button"><button type="button" onclick="upload();">Upload</button> </span>
+      </div>
+      <form id="listDataForm">
+        <div id="dataList" style="display:block">
+          <div class="tuple"><span class="firstvalue">&nbsp;</span><span class="lastvalue" id="uid">Please, click &quot;Refresh&quot; first</span></div>
+        </div>
+        <div class="tabtrailer">&nbsp;</div>
+      </div>
+    </form>
+  </div>
+
+
+<!-- Jobs -->
+  <div class="tabContent" id="theJobs" style="display:none">
+    <div class="tabpane">
+      <div class="tabtitre">
+        <span id="jobTabTitle">Jobs</span>
+        <span><a style="float:right;margin-right:15px;" href="javascript:showHide(worksListsID);" >show/hide</a></span>
+	    <select class="firstbutton" style="margin:3px">
+	      <option onclick="checkAll();">Select all</option>
+	      <option onclick="uncheckAll();">Unselect all</option>
+	    </select>
+      </div>
+      
+      <form id="listWorkForm">
+        <div id="jobsLists" class="chapter" style="display:block">
+          <div class="chaptertitre" style="background-color:#F8F8F8;color:black">
+            <span>Pending</span>
+            <span><a style="float:right;margin-right:15px;color:black" href="javascript:showHide(pendingListID);" >show/hide</a></span>
+          </div>
+
+	      <div id="pendingWorks" class="chaptercontent" style="display:block">
+            <div class="paragraph"><span class="firstvalue">&nbsp;</span><span class="lastvalue" id="uid">Please, click &quot;Refresh&quot; first</span></div>
+    	  </div> <!-- pendingWorks -->
+	      <div class="chaptertrailer" style="background-color:#F8F8F8">&nbsp;</div>
+
+          <div class="chaptertitre" style="background-color:#0099ff">
+            <span>Running</span>
+            <span><a style="float:right;margin-right:15px;color:white" href="javascript:showHide(runningListID);" >show/hide</a></span>
+          </div>
+	      <div id="runningWorks" class="chaptercontent" style="display:block">
+            <div class="paragraph"><span class="firstvalue">&nbsp;</span><span class="lastvalue" id="uid">Please, click &quot;Refresh&quot; first</span></div>
+    	  </div> <!-- runningWorks -->
+	      <div class="chaptertrailer" style="background-color:#0099ff">&nbsp;</div>
+
+          <div class="chaptertitre"  style="background-color:#00cc66">
+            <span >Completed</span>
+            <span><a style="float:right;margin-right:15px;color:white" href="javascript:showHide(completedListID);" >show/hide</a></span>
+            </div>
+	      <div id="completedWorks" class="chaptercontent" style="display:block">
+            <div class="paragraph"><span class="firstvalue">&nbsp;</span><span class="lastvalue" id="uid">Please, click &quot;Refresh&quot; first</span></div>
+    	  </div> <!-- completedWorks -->
+	      <div class="chaptertrailer" style="background-color:#00cc66">&nbsp;</div>
+
+          <div class="chaptertitre"  style="background-color:#CC3366">
+            <span>Error</span>
+            <span><a style="float:right;margin-right:15px;color:white" href="javascript:showHide(errorListID);" >show/hide</a></span>
+          </div>
+	      <div id="errorWorks" class="chaptercontent" style="display:block">
+            <div class="paragraph"><span class="firstvalue">&nbsp;</span><span class="lastvalue" id="uid">Please, click &quot;Refresh&quot; first</span></div>
+    	  </div> <!-- errorWorks -->
+	      <div class="chaptertrailer" style="background-color:#CC3366">&nbsp;</div>
+        </div> <!-- jobsLists -->
+        <div class="tabtrailer">&nbsp;</div>
+	  </form>
+    </div> <!-- tabpane -->
+  </div> <!-- tabContent -->
+    
+
+<!-- Group of jobs -->
+  <div class="tabContent" id="theBots" style="display:none">
+    <div class="tabpane">
+      <div class="tabtitre">
+        <span >Group of jobs</span>
+        <span><a style="float:right;margin-right:15px;" href="javascript:showHide(botListID);" >show/hide</a></span>
+	    <select class="firstbutton" style="margin:3px">
+	      <option onclick="checkAll();">Select all</option>
+	      <option onclick="uncheckAll();">Unselect all</option>
+	    </select>
+      </div>
+      <form id="listBotForm">
+        <div id="botList" style="display:block">
+          <div class="tuple"><span class="firstvalue">&nbsp;</span><span class="lastvalue" id="uid">Please, click &quot;Refresh&quot; first</span></div>
+        </div>
+        <div class="tabtrailer">&nbsp;</div>
+      </div>
+    </form>
+  </div>
+
+
+<!-- Help -->
+  <div class="tabContent" id="theHelp" style="display:none">
+    <div class="tabpane">
+      <div class="tabtitre"><span >Help</span><span><a style="float:right;margin-right:15px;" href="javascript:showHide(helpListID);" >show/hide</a></span></div>
+        <div id="helpList" style="display:block; text-align:left">
+
+<div style="padding:15px;width:770px;text-align:left">
+Please refer to the chapter <i>Web Interface</i> in the &quot;XtremWeb-HEP User Guide&quot; 
+available <a href="http://www.xtremweb-hep.org/spip.php?rubrique16">here</a>.
+</div>
+        </div>
+      <div class="tabtrailer">&nbsp;</div>
+    </div>
+  </div>
+
+<!-- API -->
+  <div class="tabContent" id="theApi" style="display:none">
+    <div class="tabpane">
+      <div class="tabtitre"><span >API</span><span><a style="float:right;margin-right:15px;" href="javascript:showHide(apiListID);" >show/hide</a></span></div>
+        <div id="apiList" style="display:block">
+        You can access the full API here: <a href="/api">XWHEP API</a>
+        </div>
+      <div class="tabtrailer">&nbsp;</div>
+    </div>
+  </div>
+
+  <div class="basdepage">
+    <span style="font-size:14px;padding-left:50px;padding-top:5px;;float:left">Web interface (v&nbsp;1.2)</span>
+    <a href="http://www.xtremweb-hep.org/spip.php?rubrique13" style="color:#050064;font-size:18px;float: right">XtremWeb-Hep.org</a>
+  </div>
+  
+
+</div>
+
+</body>
+</html>
