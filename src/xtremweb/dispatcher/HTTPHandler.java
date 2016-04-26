@@ -150,6 +150,16 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 	 */
 	public static final String RESOURCEFILENAME_CSS = "/xwserver.css";
 	/**
+	 * This is a new HTML without JavaScript file name : xwserver2.html
+	 * @since 10.2.0
+	 */
+	public static final String RESOURCEFILENAME2_HTML = "/xwserver2.html";
+	/**
+	 * This is JavaScript -extracted from xwserver.html- file name : xwserver2.js
+	 * @since 10.2.0
+	 */
+	public static final String SCRIPTFILENAME_JS = "/xwserver2.js";
+	/**
 	 * This is the favicon file name : favicon.ico
 	 * @since 10.2.0
 	 */
@@ -167,7 +177,9 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 			BOOTSTRAPFILENAME_CSS,
 			IEVIEWPORTFILENAME_CSS,
 			FAVICOFILENAME_ICO,
-			RESOURCEFILENAME_LOGO
+			RESOURCEFILENAME_LOGO,
+			RESOURCEFILENAME2_HTML,
+			SCRIPTFILENAME_JS
 	};
 	private static final String[] mimeTypes = {
 			"text/html",
@@ -177,7 +189,9 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 			"text/css",
 			"text/css",
 			"image/x-icon",
-			"image/jpeg"
+			"image/jpeg",
+			"text/html",
+			"application/javascript"
 	};
 	/**
 	 * This enumerates resources needed by the dashboard html file (css, images, javascript)
@@ -211,7 +225,17 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 		 * @since 10.2.0
 		 */
 		FAVICON,
-		LOGO;
+		LOGO,
+		/**
+		 * This is a new HTML without JavaScript
+		 * @since 10.2.0
+		 */
+		XWHTML2,
+		/**
+		 * This is JavaScript, extracted from xwserver.html
+		 * @since 10.2.0
+		 */
+		XWJS;
 
 		/**
 		 * This retrieves the resource name started with a slash. This is both used to retrieve resource from the archive and as path for web access
@@ -631,7 +655,7 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 	}
 
 	/**
-	 * This sends the dashboard page to the client
+	 * This sends the HTML page to the client
 	 * 
 	 * @since 8.1.0
 	 */
