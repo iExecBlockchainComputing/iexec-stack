@@ -1988,21 +1988,26 @@ SSLKeyServerpassword=$SAFE_SSLKEYSERVERPASSWORD
 echo "Inserting known OpenId servers certificate paths into server keystore"
 echo " - google"
 echo " - yahoo"
-java -cp \$OID_CP \$OID_MAINCLASS --sav
-[ \$? -ne 0 ] &&  warn "can't run java -cp \$OID_CP \$OID_MAINCLASS --sav"
+echo " - facebook"
+java -cp \$OID_CP \$OID_MAINCLASS --sav www.google.com www.yahoo.com  www.facebook.com
+[ \$? -ne 0 ] &&  warn "can't run java -cp \$OID_CP \$OID_MAINCLASS --sav www.google.com www.yahoo.com www.facebook.com"
 
 # previous command generated
-# - open.login.yahooapis.com_0.pem
-# - open.login.yahooapis.com_1.pem
-# - open.login.yahooapis.com_2.pem
+# - www.yahoo.com_0.pem
+# - www.yahoo.com_1.pem
+# - www.yahoo.com_2.pem
 # - www.google.com_0.pem
 # - www.google.com_1.pem
+# - www.facebook.com_0.pem
+# - www.facebook.com_1.pem
 #
-\${KEYTOOL} -importcert -trustcacerts -noprompt -alias yahoo_\${DATE}_0  -file open.login.yahooapis.com_0.pem -keystore \${SERVERFILE} -storepass "\${SSLKeyServerpassword}"
-\${KEYTOOL} -importcert -trustcacerts -noprompt -alias yahoo_\${DATE}_1  -file open.login.yahooapis.com_1.pem -keystore \${SERVERFILE} -storepass "\${SSLKeyServerpassword}"
-\${KEYTOOL} -importcert -trustcacerts -noprompt -alias yahoo_\${DATE}_2  -file open.login.yahooapis.com_2.pem -keystore \${SERVERFILE} -storepass "\${SSLKeyServerpassword}"
-\${KEYTOOL} -importcert -trustcacerts -noprompt -alias google_\${DATE}_0 -file www.google.com_0.pem           -keystore \${SERVERFILE} -storepass "\${SSLKeyServerpassword}"
-\${KEYTOOL} -importcert -trustcacerts -noprompt -alias google_\${DATE}_1 -file www.google.com_1.pem           -keystore \${SERVERFILE} -storepass "\${SSLKeyServerpassword}"
+\${KEYTOOL} -importcert -trustcacerts -noprompt -alias yahoo_\${DATE}_0    -file www.yahoo.com_0.pem    -keystore \${SERVERFILE} -storepass "\${SSLKeyServerpassword}"
+\${KEYTOOL} -importcert -trustcacerts -noprompt -alias yahoo_\${DATE}_1    -file www.yahoo.com_1.pem    -keystore \${SERVERFILE} -storepass "\${SSLKeyServerpassword}"
+\${KEYTOOL} -importcert -trustcacerts -noprompt -alias yahoo_\${DATE}_2    -file www.yahoo.com_2.pem    -keystore \${SERVERFILE} -storepass "\${SSLKeyServerpassword}"
+\${KEYTOOL} -importcert -trustcacerts -noprompt -alias google_\${DATE}_0   -file www.google.com_0.pem   -keystore \${SERVERFILE} -storepass "\${SSLKeyServerpassword}"
+\${KEYTOOL} -importcert -trustcacerts -noprompt -alias google_\${DATE}_1   -file www.google.com_1.pem   -keystore \${SERVERFILE} -storepass "\${SSLKeyServerpassword}"
+\${KEYTOOL} -importcert -trustcacerts -noprompt -alias facebook_\${DATE}_0 -file www.facebook.com_0.pem -keystore \${SERVERFILE} -storepass "\${SSLKeyServerpassword}"
+\${KEYTOOL} -importcert -trustcacerts -noprompt -alias facebook_\${DATE}_1 -file www.facebook.com_1.pem -keystore \${SERVERFILE} -storepass "\${SSLKeyServerpassword}"
 
 EOF
 
