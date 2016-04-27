@@ -98,7 +98,7 @@ org.eclipse.jetty.server.Handler {
 
 
 	public static final String GOOGLE_ADDR = "www.google.com";
-	public static final String YAHOO_ADDR = "open.login.yahooapis.com";
+	public static final String YAHOO_ADDR = "www.yahoo.com";
 
 
 	public static final String OPENID_NONCE_PARAMETER = "openid.response_nonce";
@@ -537,8 +537,6 @@ org.eclipse.jetty.server.Handler {
 	public static void main(String[] args) throws Exception {
 		int i = 0;
 		boolean sav = (args.length <= 0 ? false : (args[0].compareToIgnoreCase("--sav") == 0));
-		HTTPOpenIdHandler.retrieveCertificates(HTTPOpenIdHandler.GOOGLE_ADDR, sav);
-		HTTPOpenIdHandler.retrieveCertificates(HTTPOpenIdHandler.YAHOO_ADDR, sav);
 		if(sav) {
 			i = 1;
 		}
