@@ -3253,6 +3253,48 @@ function deleteFromServerStateChanged()
     }    	    	
 }
 
+/*
+ * OSes chart
+ */
+google.charts.load("current", {packages:["corechart"]});
+google.charts.setOnLoadCallback(drawOSesChart);
+function drawOSesChart() {
+  var osesData = google.visualization.arrayToDataTable([
+      ['OSes', 'OS types'],
+      ['Windows',     11],
+      ['Mac OS',      2],
+      ['Linux',  2]
+  ]);
+
+  var osesChartOptions = {
+      pieHole: 0.4,
+      legend: 'none'
+  };
+
+  var osesChart = new google.visualization.PieChart(document.getElementById('osesChart'));
+  osesChart.draw(osesData, osesChartOptions);
+}
+                
+/*
+ * CPUs chart
+ */
+google.charts.setOnLoadCallback(drawCPUsChart);
+function drawCPUsChart() {
+	var cpusData = google.visualization.arrayToDataTable([
+    					['CPUs', 'CPU types'],
+						['x86_64',     110],
+						['ix86',      78],
+						['PPC',  10]
+	]);
+ 
+    var cpuChartOptions = {
+    	pieHole: 0.4,
+        legend: 'none'
+    };
+
+    var cpusChart = new google.visualization.PieChart(document.getElementById('cpusChart'));
+    cpusChart.draw(cpusData, cpuChartOptions);
+}
 
 /*********************
  * End of scripts    *
