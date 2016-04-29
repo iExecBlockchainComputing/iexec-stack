@@ -206,7 +206,19 @@ public enum XWPostParams {
 	 * 
 	 * @since 5.8.0
 	 */
-	ALIVEPERIOD;
+	ALIVEPERIOD,
+	/**
+	 * This is the login parameter from the login formulaire
+	 * 
+	 * @since 10.2.0
+	 */
+	XWLOGIN,
+	/**
+	 * This is the passowrd parameter from the login formulaire
+	 * 
+	 * @since 10.2.0
+	 */
+	XWPASSWD;
 
 	/**
 	 * This is the max upload size : 500Mb
