@@ -155,6 +155,11 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 	 */
 	public static final String RESOURCEFILENAME2_HTML = "/xwserver2.html";
 	/**
+	 * This is the login page
+	 * @since 10.2.0
+	 */
+	public static final String LOGIN_HTML = "/login.html";
+	/**
 	 * This is JavaScript -extracted from xwserver.html- file name : xwserver2.js
 	 * @since 10.2.0
 	 */
@@ -179,7 +184,8 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 			FAVICOFILENAME_ICO,
 			RESOURCEFILENAME_LOGO,
 			RESOURCEFILENAME2_HTML,
-			SCRIPTFILENAME_JS
+			SCRIPTFILENAME_JS,
+			LOGIN_HTML
 	};
 	private static final String[] mimeTypes = {
 			"text/html",
@@ -191,7 +197,8 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 			"image/x-icon",
 			"image/jpeg",
 			"text/html",
-			"application/javascript"
+			"application/javascript",
+			"text/html"
 	};
 	/**
 	 * This enumerates resources needed by the dashboard html file (css, images, javascript)
@@ -235,7 +242,12 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 		 * This is JavaScript, extracted from xwserver.html
 		 * @since 10.2.0
 		 */
-		XWJS;
+		XWJS,
+		/**
+		 * This is the login page
+		 * @since 10.2.0
+		 */
+		LOGINPAGE;
 
 		/**
 		 * This retrieves the resource name started with a slash. This is both used to retrieve resource from the archive and as path for web access
@@ -327,14 +339,6 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 
 	/** this tag is replaced by a potential message */
 	private final String TAGMESSAGE = "@XWMSG@";
-
-	private final String REDIRECTPAGE_CONTENT_HEADER = 
-			"<html><head><title>XtremWeb-HEP " + CURRENTVERSIONSTRING + "</title></head>"
-					+ "<body><center><h1>XtremWeb-HEP</h1><br /><h3>You are not logged in</h3></center><br /><br />"
-					+ "You can go to the <a href=\"" + HTTPStatsHandler.PATH + "\">the statistics page</a><br /><br />"
-					+ "If your email address is registered in this XWHEP server, you can connect using one of the authentifcation methods :";
-
-	private final String REDIRECTPAGE_CONTENT_TRAILER = "</ul></body></html>";
 
 	private final String DEFAULT_ANSWER_HEAD = 
 			"<html><head><title>XtremWeb-HEP API</title></head>"
@@ -689,19 +693,10 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 	 * 
 	 * @since 8.2.0
 	 */
-	private void redirectPage(final String msg) throws IOException {
-		final String theMessage = msg == null ? "" : msg;
-		final PrintWriter rWriter = response.getWriter();
+	private void redirectPage() throws IOException {
 		response.setContentType("text/html");
 		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-
-		rWriter.println(REDIRECTPAGE_CONTENT_HEADER.replaceAll(TAGMESSAGE, theMessage));
-		for (final HTTPOAuthHandler.Operator op : Operator.values()) {
-			final String opName = op.toString();
-			rWriter.print("<li><a href=\"" + HTTPOAuthHandler.handlerPath + "?" + XWPostParams.AUTH_OPERATOR + "=" + opName + "\">" + opName.toLowerCase() + "</a></li>");
-		}
-		rWriter.println(REDIRECTPAGE_CONTENT_TRAILER);
-		rWriter.flush();
+		response.sendRedirect("/login.html");
 	}
 
 	/**
@@ -825,7 +820,7 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 		throw new IOException("HTTPHandler#readFile not implemented");
 	}
 
-	/**
+    /**
 	 * This handles incoming connections. This is inherited from
 	 * org.mortbay.jetty.Handler. This expects a POST parameter :
 	 * XWPostParams.COMMAND
@@ -842,15 +837,12 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 		final boolean answered = false;
 		XMLRPCCommand command = null;
 		final Logger logger = getLogger();
-
-		logger.debug("new connection");
-
+		Table obj = null;
 		dataUpload = null;
 
 		request = _request;
 		response = _response;
 
-		final String pathInfo = request.getPathInfo().toUpperCase();
 		String reqUri = baseRequest.getUri().toString();
 
 		if (request.getUserPrincipal() == null) {
@@ -860,39 +852,39 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 					+ request.getUserPrincipal().getName());
 		}
 		logger.debug("Handling target         = " + target);
-		logger.debug("Handling request        = " + request.getContentLength() +
+		logger.finest("Handling request        = " + request.getContentLength() +
 				" " + request.getContentType());
 		logger.debug("Handling request auth   = " + request.getAuthType());
 		logger.debug("Handling request user   = " + request.getRemoteUser());
 		logger.debug("Handling parameter size = "
 				+ request.getParameterMap().size());
 		logger.debug("Handling query string   = " + request.getQueryString());
-		logger.debug("Handling path info      = " + pathInfo);
 		logger.debug("Handling method         = " + request.getMethod());
 		logger.debug("Request URI             = " + reqUri);
-		logger.debug("Request server          = " + request.getServerName());
-		logger.debug("Request port            = " + request.getServerPort());
+//		logger.debug("Request server          = " + request.getServerName());
+//		logger.debug("Request port            = " + request.getServerPort());
 		logger.debug("Authorization           = " + request.getHeader(HttpHeaders.AUTHORIZATION));
-		for (final Enumeration e = request.getParameterNames(); e
+		for (final Enumeration<String> e = request.getParameterNames(); e
 				.hasMoreElements();) {
-			logger.debug("parameter " + e.nextElement());
+			logger.finest("parameter " + e.nextElement());
 		}
-		for (final Enumeration e = request.getHeaderNames(); e
+		for (final Enumeration<String> e = request.getHeaderNames(); e
 				.hasMoreElements();) {
-			logger.debug("header " + e.nextElement());
+			logger.finest("header " + e.nextElement());
 		}
 
-		for (final Resources r : Resources.values()) {
-			logger.debug("Checking resource " + r + " " + r.getName() + " " + target);
-			if(r.getName().compareToIgnoreCase(target) == 0) {
-				logger.debug("Sending resource " + r.getName());
-				sendResource(r);
-				return;
+		if(request.getParameterMap().size() <= 0) {
+			for (final Resources r : Resources.values()) {
+				logger.debug("Checking resource " + r + " " + r.getName() + " " + target);
+				if(r.getName().compareToIgnoreCase(target) == 0) {
+					logger.debug("Sending resource " + r.getName());
+					sendResource(r);
+					return;
+				}
 			}
 		}
 
 		UserInterface user = null;
-		String errorMsg = null;
 
 		user = userFromCertificate(request);
 		if(user == null) {
@@ -900,6 +892,9 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 		}
 		if(user == null) {
 			user = userFromOAuth(request);
+		}
+		if(user == null) {
+			user = userFromPostParams(request);
 		}
 
 		final Vector<String> paths = (Vector<String>)XWTools.split(target, "/");
@@ -928,7 +923,7 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 				waitIdRpc(i);
 			} catch(final Exception e)  {
 				// let other handlers manage this (e.g. /stats, /openid)
-				logger.debug("ignoring " + pathInfo);
+				logger.debug("ignoring " + reqUri);
 				return;
 			}
 		}
@@ -936,7 +931,7 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 		if(user == null) {
 			resetIdRpc();
 			logger.debug("no credential found");
-			redirectPage(errorMsg);
+			redirectPage();
 			baseRequest.setHandled(true);
 			return;
 		}
@@ -984,11 +979,11 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 				}
 			}
 
-			for (final Enumeration e = request.getParameterNames(); e
+			for (final Enumeration<String> e = request.getParameterNames(); e
 					.hasMoreElements();) {
 				logger.debug("parameter " + e.nextElement());
 			}
-			for (final Enumeration e = request.getHeaderNames(); e
+			for (final Enumeration<String> e = request.getHeaderNames(); e
 					.hasMoreElements();) {
 				logger.debug("header " + e.nextElement());
 			}
@@ -1054,7 +1049,7 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 			final String objXmlDesc = request
 					.getParameter(XWPostParams.XMLDESC.toString());
 			logger.debug("objXmlDesc = " + objXmlDesc);
-			Table obj = null;
+
 			if (objXmlDesc != null) {
 				final ByteArrayInputStream in = new ByteArrayInputStream(objXmlDesc.getBytes());
 				try {
@@ -1157,6 +1152,8 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 			}
 		} finally {
 			command = null;
+			user = null;
+			obj = null;
 			baseRequest.setHandled(true);
 			notifyAll();
 		}
@@ -1391,6 +1388,39 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 
 		return ret;
 	}
+	
+	/**
+	 * This retrieves the user from login/password
+	 * @since 10.2.0
+	 */
+	private UserInterface userFromPostParams(final HttpServletRequest request) throws IOException {
+		
+		final HttpSession session = request.getSession(true); 
+		final String login = (request.getParameter(XWPostParams.XWLOGIN.toString()) != null ?
+				request.getParameter(XWPostParams.XWLOGIN.toString()) :  (String)session.getAttribute(XWPostParams.XWLOGIN.toString()));
+		final String passwd = (request.getParameter(XWPostParams.XWPASSWD.toString()) != null ?
+				request.getParameter(XWPostParams.XWPASSWD.toString()) :  (String)session.getAttribute(XWPostParams.XWPASSWD.toString()));
+
+		if ((login == null) || (passwd == null)) {
+			return null;
+		}
+		
+		try {
+			UserInterface ret = DBInterface.getInstance().user(SQLRequest.MAINTABLEALIAS + "."
+					+ UserInterface.Columns.LOGIN.toString() + "='" + login 
+					+ "' AND "
+					+ SQLRequest.MAINTABLEALIAS + "."
+					+ UserInterface.Columns.PASSWORD.toString() + "='" + passwd + "'");
+
+			session.setAttribute(XWPostParams.XWLOGIN.toString(), login);
+			session.setAttribute(XWPostParams.XWPASSWD.toString(), passwd);
+			return ret;
+		}
+		catch(Exception e) {
+			throw new IOException("userFromPostParams error : " + e.getMessage());
+		}
+}
+	
 	/**
 	 * This uploads a data to server<br />
 	 * Data must be defined on server side (i.e. sendData() must be called

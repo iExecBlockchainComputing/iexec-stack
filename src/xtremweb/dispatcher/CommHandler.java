@@ -352,7 +352,7 @@ xtremweb.communications.CommHandler {
 	}
 
 	/**
-	 * This does nothing and must be overidden by any HTTP handler This is
+	 * This does nothing and must be overridden by any HTTP handler This is
 	 * inherited from org.mortbay.jetty.Handler
 	 */
 	public void handle(String target,
@@ -779,9 +779,9 @@ xtremweb.communications.CommHandler {
 					}
 				}
 
-				if (idRpc != IdRpc.SEND) {
+//				if (idRpc != IdRpc.SEND) {
 					debug("answer (" + idRpc.toString() + ") " + resultxml);
-				}
+//				}
 				write(result);
 			} catch (final Exception e) {
 				logger.exception("Can't write result", e);
