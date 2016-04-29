@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="XWHEP login page">
+    <meta name="author" content="Oleg Lodygensky (C) CNRS 2016">
+    <link rel="icon" href="/favicon.ico">
+
+    <title>XWHEP login page</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="bootstrap.min.css" rel="stylesheet">
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <link href="ie10-viewport-bug-workaround.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="dashboard.css" rel="stylesheet">
+
+    <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
+    <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+    <script src="ie-emulation-modes-warning.js"></script>
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+	<script src="xwserver2.js"></script>
+
+  </head>
+
+  <body>
+
+    <div class="container">
+
+	<center>
+		<h1>XtremWeb-HEP</h1><br />
+		<h3>You are not logged in</h3>
+	</center>
+	<br /><br />
+
+	<p>You can go to the <a href="/stats">the statistics page</a></p>
+	<br /><br />
+
+	<p>
+	If your email address is registered in this XWHEP server, you can connect using one of the authentifcation methods :
+	</p>
+	<ul>
+		<li>
+			<a href="/oauth?AUTH_OPERATOR=GOOGLE">Google</a>
+		</li>
+		<li>
+			<a href="/oauth?AUTH_OPERATOR=YAHOO">Yahoo</a>
+		</li>
+	</ul>
+
+	<br />	
+	Or you can use your login/password
+	<br />	
+	<br />	
+
+<!--
+  Input names must be as defined by XWPostParams.XWLOGIN and XWPostParams.XWPASSWD
+ -->
+    <form class="form-signin" method="post" action="/">
+      <label for="xwlogin" class="sr-only">Login</label>
+      <input type="text" id="xwlogin" name="XWLOGIN" class="form-control" placeholder="login" required autofocus>
+      <label for="xwpassword" class="sr-only">Password</label>
+      <input type="password" id="xwpassword" name="XWPASSWD" class="form-control" placeholder="Password" required>
+      <div class="checkbox">
+        <label>
+          <input type="checkbox" value="remember-me"> Remember me
+        </label>
+      </div>
+      <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+    </form>
+
+    </div> <!-- /container -->
+
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="../../assets/js/ie10-viewport-bug-workaround.js"></script>
+ 
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js"><\/script>')</script>
+    <script src="../../dist/js/bootstrap.min.js"></script>
+    <!-- Just to make our placeholder images work. Don't actually copy the next line! -->
+    <script src="../../assets/js/vendor/holder.min.js"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="../../assets/js/ie10-viewport-bug-workaround.js"></script>
+  </body>
+</html>
