@@ -132,15 +132,15 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 	 */
 	public static final String DASHBOARDFILENAME_CSS = "/dashboard.css";
 	/**
-	 * This is the Bootstrap CSS file name : bootstrap.min.css
+	 * This is the Bootstrap carousel HTML file name : carousel.html
 	 * @since 10.2.0
 	 */
-	public static final String BOOTSTRAPFILENAME_CSS = "/bootstrap.min.css";
+	public static final String CAROUSELFILENAME_HTML = "/carousel.html";
 	/**
-	 * This is the Bootstrap CSS file name : bootstrap.min.css
+	 * This is the Bootstrap carousel CSS file name : carousel.css
 	 * @since 10.2.0
 	 */
-	public static final String IEVIEWPORTFILENAME_CSS = "/ie10-viewport-bug-workaround.css";
+	public static final String CAROUSELFILENAME_CSS = "/carousel.css";
 	/**
 	 * This is the HTML file name : xwserver.html
 	 */
@@ -179,8 +179,8 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 			RESOURCEFILENAME_CSS,
 			DASHBOARDFILENAME_HTML,
 			DASHBOARDFILENAME_CSS,
-			BOOTSTRAPFILENAME_CSS,
-			IEVIEWPORTFILENAME_CSS,
+			CAROUSELFILENAME_HTML,
+			CAROUSELFILENAME_CSS,
 			FAVICOFILENAME_ICO,
 			RESOURCEFILENAME_LOGO,
 			RESOURCEFILENAME2_HTML,
@@ -192,7 +192,7 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 			"text/css",
 			"text/html",
 			"text/css",
-			"text/css",
+			"text/html",
 			"text/css",
 			"image/x-icon",
 			"image/jpeg",
@@ -211,22 +211,22 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 		 * This is the Bootstrap dashboard HTML
 		 * @since 10.2.0
 		 */
-		DHTML,
+		DASHBOARDHTML,
+		/**
+		 * This is the Bootstrap carousel HTML
+		 * @since 10.2.0
+		 */
+		DASHBOARDCSS,
 		/**
 		 * This is the Bootstrap dashboard CSS
 		 * @since 10.2.0
 		 */
-		DCSS,
+		CAROUSELHTML,
 		/**
-		 * This is the Bootstrap CSS
+		 * This is the Bootstrap dashboard CSS
 		 * @since 10.2.0
 		 */
-		BCSS,
-		/**
-		 * This is another Bootstrap CSS
-		 * @since 10.2.0
-		 */
-		IEVIEWPORTFILENAME_CSS,
+		CAROUSELCSS,
 		/**
 		 * This is the favicon resource
 		 * @since 10.2.0
@@ -277,31 +277,6 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 		 * @throws IOException is thrown if resource is not found
 		 */
 		public void write(final HttpServletResponse response) throws IOException {
-//			if ((this == FAVICON) || (this == LOGO)) {
-//				writeBinary(response);
-//				return;
-//			}
-//
-//			final InputStream reader = getClass().getClassLoader().getResourceAsStream(getPath());
-//
-//			if (reader == null) {
-//				throw new IOException(getPath() + " not found");
-//			}
-//			final PrintWriter writer = response.getWriter(); 
-//			final byte[] buf = new byte[10240];
-//			for (int n = reader.read(buf); n > 0; n = reader.read(buf)) {
-//				String ligne = new String(buf, 0, n);
-//				writer.print(ligne);
-//			}
-//			writer.flush();
-//		}
-//		/**
-//		 * This sends binary resources
-//		 * @param response is the output channel to write to
-//		 * @throws IOException is thrown if resource is not found
-//		 * @since 10.2.0
-//		 */
-//		private void writeBinary(final HttpServletResponse response) throws IOException {
 			final InputStream reader = getClass().getClassLoader().getResourceAsStream(getPath());
 
 			if (reader == null) {
@@ -693,10 +668,12 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 	 * 
 	 * @since 8.2.0
 	 */
-	private void redirectPage() throws IOException {
+	private void redirectPage(final Request baseRequest, Resources res) throws IOException {
+		getLogger().debug("redirectPage " + res);
 		response.setContentType("text/html");
 		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-		response.sendRedirect("/login.html");
+		response.sendRedirect(res.getName());
+		baseRequest.setHandled(true);
 	}
 
 	/**
@@ -874,8 +851,13 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 		}
 
 		if(request.getParameterMap().size() <= 0) {
+/*
+			if(target.equals(PATH) == true){
+				redirectPage(baseRequest, Resources.XWHTML);
+				return;
+			}
+*/
 			for (final Resources r : Resources.values()) {
-				logger.debug("Checking resource " + r + " " + r.getName() + " " + target);
 				if(r.getName().compareToIgnoreCase(target) == 0) {
 					logger.debug("Sending resource " + r.getName());
 					sendResource(r);
@@ -931,8 +913,7 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 		if(user == null) {
 			resetIdRpc();
 			logger.debug("no credential found");
-			redirectPage();
-			baseRequest.setHandled(true);
+			redirectPage(baseRequest, Resources.LOGINPAGE);
 			return;
 		}
 
