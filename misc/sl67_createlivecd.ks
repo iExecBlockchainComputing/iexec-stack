@@ -109,9 +109,6 @@ logvol / --fstype=ext4 --name=lv_root --vgname=VG --size=40960
 logvol /home --fstype=ext4 --name=lv_home --vgname=VG --size=25600
 logvol swap --fstype swap --name=lv_swap --vgname=VG --size=4096
 
-#bootloader --location=mbr --driveorder=sda --append="rhgb quiet"
-#bootloader --location=mbr --driveorder=sda --append=""
-#bootloader --location=mbr --driveorder=sda --append="selinux=0 console=ttyS0 console=tty0 ignore_loglevel"
 bootloader --location=mbr --driveorder=sda --append="selinux=0 console=ttyS0 console=tty0 ignore_loglevel" --timeout=1
 
 
@@ -119,16 +116,8 @@ bootloader --location=mbr --driveorder=sda --append="selinux=0 console=ttyS0 con
 # SL repositories
 repo --name=base          --baseurl=http://ftp.scientificlinux.org/linux/scientific/6.7/$basearch/os/
 repo --name=security      --baseurl=http://ftp.scientificlinux.org/linux/scientific/6.7/$basearch/updates/security/
-#repo --name=epel-release  --baseurl=http://download.fedoraproject.org/pub/epel/7/$basearch
+repo --name=epel          --baseurl=http://dl.fedoraproject.org/pub/epel/6/$basearch
 
-
-# or use a mirror close to you
-#repo --name=base      --baseurl=http://mirror.switch.ch/ftp/mirror/scientificlinux/6.7/$basearch/os/
-#repo --name=security  --baseurl=http://mirror.switch.ch/ftp/mirror/scientificlinux/6.7/$basearch/updates/security/
-#repo --name=epel      --baseurl=https://mirrors.fedoraproject.org/metalink?repo=epel-7&arch=$basearch
-
-# fastbugs is disabled
-#repo --name=fastbugs  --baseurl=http://ftp.scientificlinux.org/linux/scientific/6.7/$basearch/updates/fastbugs/
 
 firstboot --disabled
 group --name=vmuser
@@ -178,7 +167,7 @@ automake
 bind-utils
 binutils
 bzip2-devel
-#cloud-init
+cloud-init
 #cmake-2.6.4
 cpp
 dhclient
@@ -446,18 +435,6 @@ else
 fi
 
 
-# Under SL7, cloud-init can't be installed from pkg list, but by hand only ( ?!?! )
-# install cloud-init
-#
-echo "yum -y -c $LIVE/etc/yum.conf --installroot=$LIVE install cloud-init"
-yum -y -c $LIVE/etc/yum.conf --installroot=$LIVE install cloud-init
-if [ $? -eq 0 ] ; then
-       echo "INFO: cloud-init installed"
-else
-       echo "WARN: cloud-init installation error"
-fi
-
-
 #
 # install VirtualBox extensions
 #
@@ -546,12 +523,8 @@ echo "cloud-user ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 # insert "vmuser" into "fuse" group
 #
 usermod -G fuse vmuser
+usermod -G fuse cloud-user
 
-#
-# add VMUSER user
-#
-#/usr/sbin/groupadd -f vmuser
-#/usr/sbin/adduser vmuser -g vmuser -G fuse -m -s /bin/bash -d /home/vmuser
 
 chmod +x /etc/init.d/xwcontext_prologue
 chmod +x /etc/init.d/xwcontext_epilogue
@@ -566,8 +539,12 @@ chmod +x /etc/init.d/xwcontext_epilogue
 [ -x /etc/init.d/firstboot ] && /sbin/chkconfig firstboot off
 echo "RUN_FIRSTBOOT=NO" > /etc/sysconfig/firstboot
 
-[ -x /etc/init.d/sshd ] && /sbin/chkconfig --add sshd
-[ -x /etc/init.d/sshd ] && /sbin/chkconfig sshd on
-ifconfig
+/sbin/chkconfig --add cloud-init
+/sbin/chkconfig       cloud-init on
+/sbin/chkconfig --add sshd
+/sbin/chkconfig       sshd       on 
+#/sbin/service         cloud-init start
+#/sbin/service         sshd       start
+
 exit 0
 %end
