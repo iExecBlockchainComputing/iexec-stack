@@ -61,7 +61,6 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.http.HttpHeaders;
 
 import xtremweb.common.BytePacket;
 import xtremweb.common.CommonVersion;
@@ -820,7 +819,7 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 		request = _request;
 		response = _response;
 
-		String reqUri = baseRequest.getUri().toString();
+		String reqUri = baseRequest.getRequestURI().toString();
 
 		if (request.getUserPrincipal() == null) {
 			logger.debug("Handling user principal = null");
@@ -840,7 +839,7 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 		logger.debug("Request URI             = " + reqUri);
 //		logger.debug("Request server          = " + request.getServerName());
 //		logger.debug("Request port            = " + request.getServerPort());
-		logger.debug("Authorization           = " + request.getHeader(HttpHeaders.AUTHORIZATION));
+//		logger.debug("Authorization           = " + request.getHeader(HttpHeaders.AUTHORIZATION));
 		for (final Enumeration<String> e = request.getParameterNames(); e
 				.hasMoreElements();) {
 			logger.finest("parameter " + e.nextElement());
