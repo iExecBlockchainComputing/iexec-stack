@@ -512,7 +512,7 @@ public class HTTPOAuthHandler extends Thread implements
 		final String newState = newState(operator);
 		logger.debug("newState = " + newState);
 
-		final String oauthUrl = "not defined";
+		final String oauthUrl = "to be filled";
 		logger.debug("oathUrl = " + oauthUrl);
 
 		final HttpSession session = request.getSession(true);
