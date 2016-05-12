@@ -28,14 +28,18 @@ import java.io.FileOutputStream;
 import java.rmi.RemoteException;
 import java.security.KeyStore;
 
+import org.apache.commons.httpclient.HttpVersion;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;
+import org.eclipse.jetty.server.HttpConfiguration;
+import org.eclipse.jetty.server.HttpConnectionFactory;
+import org.eclipse.jetty.server.SecureRequestCustomizer;
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.bio.SocketConnector;
+import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.server.SslConnectionFactory;
 import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.eclipse.jetty.server.handler.ResourceHandler;
-import org.eclipse.jetty.server.ssl.SslSocketConnector;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 
 import xtremweb.common.XWConfigurator;
@@ -67,7 +71,7 @@ import xtremweb.common.XWRole;
 public class HTTPServer extends CommServer {
 
 	/**
-	 * This is the jetty HTTP server
+	 * This is the Jetty HTTP server
 	 */
 	private Server httpServer;
 
@@ -94,40 +98,37 @@ public class HTTPServer extends CommServer {
 			setPort(Connection.HTTPWORKERPORT.defaultPortValue());
 		}
 		try {
-			String porttxt = prop.getProperty(Connection.HTTPPORT.toString()).trim();
+			final int httpPort = (prop.getRole() == XWRole.WORKER ? 
+					Integer.parseInt(prop.getProperty(Connection.HTTPPORT.toString())) :
+					Integer.parseInt(prop.getProperty(Connection.HTTPWORKERPORT.toString())));
 
-			if (prop.getRole() == XWRole.WORKER) {
-				porttxt = prop
-						.getProperty(Connection.HTTPWORKERPORT.toString());
-			}
-
-			if (porttxt != null) {
-				setPort(Integer.parseInt(porttxt));
-			}
-
-			httpServer = new Server();
+			setPort(httpPort);
 
 			final File keyFile = prop.getKeyStoreFile();
 
-			if ((keyFile == null) || (keyFile.exists() == false)
+			if ((keyFile == null) || (!keyFile.exists())
 					|| (prop.getRole() == XWRole.WORKER)) {
+
 				getLogger().warn("unsecured communications : not using SSL");
-				final SocketConnector socketConnector = new SocketConnector();
-				socketConnector.setPort(getPort());
-				httpServer.setConnectors(new Connector[] { socketConnector });
+
+				final HttpConfiguration http_config = new HttpConfiguration();
+		        http_config.setSecureScheme("https");
+		        http_config.setSecurePort(8443);
+		        http_config.setOutputBufferSize(32768);
+
+		        final ServerConnector http = new ServerConnector(httpServer,
+		                new HttpConnectionFactory(http_config));
+		        http.setPort(getPort());
+		        http.setIdleTimeout(30000);
+		        httpServer.setConnectors(new Connector[] { http});
 			} else {
 				final String password = prop
 						.getProperty(XWPropertyDefs.SSLKEYPASSWORD);
 				final String passphrase = prop
 						.getProperty(XWPropertyDefs.SSLKEYPASSPHRASE);
 				try {
-					//
-					// a temporary keystore is filled using known CA
-					// certificates
-					// see
-					// xtremweb.security.X509ProxyValidator#setCACertificateEntries(KeyStore)
-					//
-					final int sport = Integer.parseInt(prop.getProperty(Connection.HTTPSPORT.toString()));
+					final int httpsPort = Integer.parseInt(prop.getProperty(Connection.HTTPSPORT.toString()));
+					setPort(httpsPort);
 
 					final File fstore = File.createTempFile("xwcacert", null);
 					fstore.deleteOnExit();
@@ -140,16 +141,28 @@ public class HTTPServer extends CommServer {
 							fstore.getCanonicalPath());
 					sslContextFactory.setKeyStorePassword(password);
 					sslContextFactory.setKeyManagerPassword(passphrase);
-					sslContextFactory.setTrustStore(fstore.getCanonicalPath());
+					sslContextFactory.setTrustStore(store);
 					sslContextFactory.setTrustStorePassword(password);
-					// sslContextFactory.setNeedClientAuth(true);
 					sslContextFactory.setWantClientAuth(true);
 
-					final SslSocketConnector sslSocketConnector = new SslSocketConnector(
-							sslContextFactory);
-					sslSocketConnector.setPort(sport);
-					setPort(sport);
-					httpServer.setConnectors(new Connector[] { sslSocketConnector });
+					final HttpConfiguration http_config = new HttpConfiguration();
+			        http_config.setSecureScheme("https");
+			        http_config.setSecurePort(getPort());
+			        http_config.setOutputBufferSize(32768);
+
+			        final HttpConfiguration https_config = new HttpConfiguration(http_config);
+			        final SecureRequestCustomizer src = new SecureRequestCustomizer();
+			        src.setStsMaxAge(2000);
+			        src.setStsIncludeSubDomains(true);
+			        https_config.addCustomizer(src);
+			        
+			        final ServerConnector https = new ServerConnector(httpServer,
+			        		new SslConnectionFactory(sslContextFactory,HttpVersion.HTTP_1_1.toString()),
+			        		new HttpConnectionFactory(https_config));
+			            https.setPort(getPort());
+			            https.setIdleTimeout(500000);
+
+					httpServer.setConnectors(new Connector[] { https });
 
 				} catch (final Exception e) {
 					getLogger().exception("Can't init SSL layer", e);
