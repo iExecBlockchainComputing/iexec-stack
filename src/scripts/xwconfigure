@@ -116,6 +116,11 @@ XWCLIENTKEYSTOREFILE=$KEYSTOREDIR/$XWCLIENTKEYSTOREFILENAME
 XWBRIDGEKEYSTOREFILE=$XWCLIENTKEYSTOREFILE
 XWCERTFILE=$KEYSTOREDIR/$XWCERTFILENAME
 
+
+JETTY=$LIBDIR/jetty-server-9.3.8.v20160314.jar
+JETTYUTIL=$LIBDIR/jetty-util-9.3.8.v20160314.jar
+JETTYHTTP=$LIBDIR/jetty-http-9.3.8.v20160314.jar
+
 DEBIANVERSION="/etc/debian_version"
 DEBIANOS=0
 [ -f $DEBIANVERSION ] && DEBIANOS=1
@@ -1749,8 +1754,11 @@ JARFILE=\$LIBDIR/xtremweb.jar
 KEYSDIR=\$PREFIX/../keystore
 X509CERTDIR=$X509CERTDIR
 USERCERTDIR=$USERCERTDIR
+JETTY=\$LIBDIR/jetty-server-9.3.8.v20160314.jar
+JETTYUTIL=\$LIBDIR/jetty-util-9.3.8.v20160314.jar
+JETTYHTTP=\$LIBDIR/jetty-http-9.3.8.v20160314.jar
 
-OID_CP="\$JARFILE:\$LIBDIR/jetty-all-8.1.8.v20121106.jar:\$LIBDIR/JOpenId-1.08.jar"
+OID_CP="\$JARFILE:\$JETTY:\$JETTYUTIL:\$JETTYHTTP:\$LIBDIR/JOpenId-1.08.jar"
 OID_MAINCLASS="xtremweb.dispatcher.HTTPOpenIdHandler"
 
 DATE=\`date "+%Y%m%d%H%M%S"\`
@@ -1960,7 +1968,11 @@ KEYSDIR=\$PREFIX/../keystore
 LIBDIR=\$PREFIX/../lib
 JARFILE=\$LIBDIR/xtremweb.jar
 
-OID_CP="\$JARFILE:\$LIBDIR/jetty-all-8.1.8.v20121106.jar:\$LIBDIR/JOpenId-1.08.jar"
+JETTY=\$LIBDIR/jetty-server-9.3.8.v20160314.jar
+JETTYUTIL=\$LIBDIR/jetty-util-9.3.8.v20160314.jar
+JETTYHTTP=\$LIBDIR/jetty-http-9.3.8.v20160314.jar
+
+OID_CP="\$JARFILE:\$JETTY:\$JETTYUTIL:\$JETTYHTTP:\$LIBDIR/JOpenId-1.08.jar"
 OID_MAINCLASS="xtremweb.dispatcher.HTTPOpenIdHandler"
 
 DATE=\`date "+%Y%m%d%H%M%S"\`
@@ -2143,9 +2155,11 @@ SOURCE=$LIBDIR/smartsockets-1.4.jar
 cp $SOURCE $DEST > /dev/null 2>&1 || fatal "Can't copy $SOURCE to $DEST"
 SOURCE=$LIBDIR/log4j-1.2.17.jar
 cp $SOURCE $DEST > /dev/null 2>&1 || fatal "Can't copy $SOURCE to $DEST"
-SOURCE=$LIBDIR/jetty-all-8.1.8.v20121106.jar
+SOURCE=$JETTY
 cp $SOURCE $DEST > /dev/null 2>&1 || fatal "Can't copy $SOURCE to $DEST"
-SOURCE=$LIBDIR/jetty-util-8.1.8.v20121106.jar
+SOURCE=$JETTYUTIL
+cp $SOURCE $DEST > /dev/null 2>&1 || fatal "Can't copy $SOURCE to $DEST"
+SOURCE=$JETTYHTTP
 cp $SOURCE $DEST > /dev/null 2>&1 || fatal "Can't copy $SOURCE to $DEST"
 
 
@@ -2199,9 +2213,11 @@ SOURCE=$LIBDIR/smartsockets-1.4.jar
 cp $SOURCE $DEST > /dev/null 2>&1 || fatal "Can't copy $SOURCE to $DEST"
 SOURCE=$LIBDIR/log4j-1.2.17.jar
 cp $SOURCE $DEST > /dev/null 2>&1 || fatal "Can't copy $SOURCE to $DEST"
-SOURCE=$LIBDIR/jetty-all-8.1.8.v20121106.jar
+SOURCE=$JETTY
 cp $SOURCE $DEST > /dev/null 2>&1 || fatal "Can't copy $SOURCE to $DEST"
-SOURCE=$LIBDIR/jetty-util-8.1.8.v20121106.jar
+SOURCE=$JETTYUTIL
+cp $SOURCE $DEST > /dev/null 2>&1 || fatal "Can't copy $SOURCE to $DEST"
+SOURCE=$JETTYHTTP
 cp $SOURCE $DEST > /dev/null 2>&1 || fatal "Can't copy $SOURCE to $DEST"
 
 
@@ -3677,9 +3693,11 @@ SOURCE=$LIBDIR/smartsockets-1.4.jar
 cp $SOURCE $DEST > /dev/null 2>&1 || fatal "Can't copy $SOURCE to $DEST"
 SOURCE=$LIBDIR/log4j-1.2.17.jar
 cp $SOURCE $DEST > /dev/null 2>&1 || fatal "Can't copy $SOURCE to $DEST"
-SOURCE=$LIBDIR/jetty-all-8.1.8.v20121106.jar
+SOURCE=$JETTY
 cp $SOURCE $DEST > /dev/null 2>&1 || fatal "Can't copy $SOURCE to $DEST"
-SOURCE=$LIBDIR/jetty-util-8.1.8.v20121106.jar
+SOURCE=$JETTYUTIL
+cp $SOURCE $DEST > /dev/null 2>&1 || fatal "Can't copy $SOURCE to $DEST"
+SOURCE=$JETTYHTTP
 cp $SOURCE $DEST > /dev/null 2>&1 || fatal "Can't copy $SOURCE to $DEST"
 
 chmod +x $wkrRpmDir/bin/* > /dev/null 2>&1 || fatal "Can't chmod +x"
