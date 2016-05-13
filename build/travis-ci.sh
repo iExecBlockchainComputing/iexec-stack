@@ -26,7 +26,9 @@
 
 ROOTDIR=`dirname $0`
 
-cat <<EOF_CONF > $ROOTDIR/build.conf
+cd $ROOTDIR
+
+cat <<EOF_CONF > ./build.conf
 
 SHELL=/bin/sh
 
