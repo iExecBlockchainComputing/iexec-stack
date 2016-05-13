@@ -1,3 +1,7 @@
+.project
+.clasppath
+.sonar/
+.settings/
 /out/
 *.class
 build/dist/
@@ -13,3 +17,4 @@ build/classes/jni/
 build/classes/data/
 build/classes/obj/
 build/classes/xwclasses.mf
+/target/
