@@ -2,8 +2,8 @@ language: java
 jdk:
   - oraclejdk8
 notifications:
-  email: false
+  - email: false
 script:
-  pwd
-  ls -lR
-  ./lodygens/xtremweb-hep/build/travis-ci.sh
+  - pwd
+  - ls -lR
+  - ./lodygens/xtremweb-hep/build/travis-ci.sh
