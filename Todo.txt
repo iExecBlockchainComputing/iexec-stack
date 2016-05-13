@@ -24,6 +24,6 @@
 
 
 
-   Please, see https://trac.lal.in2p3.fr/DGHEP/report/9
+   Please, see https://github.com/lodygens/xtremweb-hep/issues
 
 
