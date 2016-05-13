@@ -5,5 +5,7 @@ notifications:
   - email: false
 script:
   - pwd
-  - ls -lR
-  - ./lodygens/xtremweb-hep/build/travis-ci.sh
+  - ls -l
+  - cd ./build/
+  - chmod +x travis-ci.sh build.sh
+  - ./travis-ci.sh
