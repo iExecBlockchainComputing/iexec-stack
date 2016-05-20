@@ -47,7 +47,7 @@ usage() {
 Usage : $0 -u dbuser -p dbpassword [-d databasename] [-n nbhosts]
 	This insert <nbhosts> new machine
 	Default database name = "xtremweb"
-	Default nbhost        = 25
+	Default nbhost        = 5
 
 EOFUSAGE
 
@@ -79,6 +79,7 @@ type mysql > /dev/null 2>&1 || fatal "mysql is not installed; please install it 
 
 MYSQLOPTS=""
 DBNAME="xtremweb"
+NBHOSTS=5
 
 while [ $# -gt 0 ]; do
 	case $1 in
@@ -131,11 +132,11 @@ for ((i=0;i<NBHOSTS;i++)) ; do
 	echo $i $OS $CPU
 
 	WORKER_UID=`uuidgen`
-	mysql $MYSQLOPTS -B -e "insert into hosts (uid,owneruid,accessrights,version,osid,os,cputypeid,cputype)       \
-							values (\"$WORKER_UID\",\"$WORKER_OWNER_UID\",'1792','10.2.0-head', \
+	mysql $MYSQLOPTS -B -e "insert into hosts (uid,owneruid,accessrights,lastalive,version,osid,os,cputypeid,cputype)       \
+							values (\"$WORKER_UID\",\"$WORKER_OWNER_UID\",'1792', now(),'10.2.0-head', \
 			               			(select osId from oses where osName = \"$OS\"),\"$OS\",    \
 			               			(select cpuTypeId from cputypes where cpuTypeName = \"$CPU\"),\"$CPU\"     \
 			               		)"
 done
 
-mysql $MYSQLOPTS -e "select uid,owneruid,accessrights,version,osid,os from hosts"
+mysql $MYSQLOPTS -e "select uid,owneruid,lastalive,accessrights,version,os,cputype from hosts"
