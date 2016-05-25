@@ -64,6 +64,7 @@
   <property name="xwidl.dir" value="${src.java.dir}/XwIDL" />
   <property name="antlr.dir" value="${src.java.dir}/antlr" />
   <property name="doc.dir" value="${basedir}/doc"/>
+  <property name="install.www.dir" value="${build.dir}/WWW" />
 
     <!-- NEED TO CHANGE THE VERSION ? -->
     <condition property="version.changed">
@@ -168,11 +169,6 @@
     <condition property="launcher.url" value="http://nohost/">
       <not>
         <isset property="${launcher.url}"/>
-      </not>
-    </condition>
-    <condition property="data.servers" value="${dispatcher.servers}">
-      <not>
-        <isset property="data.servers"/>
       </not>
     </condition>
 
@@ -453,22 +449,9 @@ version=${version}
 	<delete file="${build.dir}/dbusers.property" />
 	-->
     <!-- **** Create java-config script file **** -->
-    <filter token="DBVENDOR" value="${db.system}"/>
-    <filter token="DBHOST" value="${db.host}"/>
-    <filter token="DBNAME" value="${db.name}" />   
-    <filter token="DBUSER" value="${dbUserLogin}"/>
-    <filter token="DBPASSWORD" value="${dbUserPassword}"/>
-    <filter token="DEFAULTUSER" value="${xtremweb.admin.login}"/>
-    <filter token="DEFAULTPASSWORD" value="${xtremweb.admin.password}"/>
     <filter token="INSTALLDIR" value="${installDir}"/>
     <filter token="HOMEDIR" value="/var/xwhep" />
     <filter token="KEYDIR" value="${installDir.keystore}" />
-    <filter token="SMTPHOST" value="${smtp.host}"/>
-    <filter token="KEYPASSPHRASE" value="${xw.keypassphrase}"/>
-    <filter token="KEYSERVERPASSWORD" value="${xw.server.keypassword}"/>
-    <filter token="KEYWORKERPASSWORD" value="${xw.worker.keypassword}"/>
-    <filter token="KEYCLIENTPASSWORD" value="${xw.client.keypassword}"/>
-    <filter token="LOGGERLEVEL" value="${logger.level}"/>
 
     <!-- Install config files -->
 
@@ -476,7 +459,6 @@ version=${version}
           filtering="yes" overwrite="yes"
           tofile="${dist.dir}/conf/xtremweb.server.conf" />
     
-    <filter token="DISPATCHERS" value="${dispatcher.servers}"/>
     <filter token="DATASERVERS" value="${data.servers}"/>
     <filter token="XWUSER" value="${xw.user}"/>
     <filter token="XWPASSWORD" value="${xw.password}"/>
@@ -710,7 +692,6 @@ version=${version}
     <filter token="HOMEDIR" value="${install.www.dir}/db"/>
     <filter token="KEYDIR" value="${installDir.keystore}"/>
     <filter token="PROJECTNAME" value="${project}"/>
-    <filter token="DISPATCHERS" value="${dispatcher.servers}"/>
     <filter token="DATASERVERS" value="${data.servers}"/>
     <filter token="XWUSER" value="${xw.user}"/>
     <filter token="XWPASSWORD" value="${xw.password}"/>
@@ -1141,83 +1122,6 @@ version=${version}
     </delete>
 
   </target>
-
-
-  <target name="installDB" 
-          depends="setupDB, nosetupDB">
-  </target>
-
-    <!-- **** Database setup error **** -->
-
-  <target name="nosetupDB" depends="installConfig" unless="dispatcher.servers">
-    <echo>
-      Can't install database since no dispatcher host set...
-      Edit ${build.dir}/build.conf to set dispatcher host
-    </echo>
-  </target>
-
-
-    <!-- **** Database setup **** -->
-
-  <target name="setupDB" depends="installConfig" if="dispatcher.servers">
-
-    <uuid />
-    <property name="uid.admin" value="${uuid}"/>
-    <uuid />
-    <property name="uid.admingroup" value="${uuid}"/>
-    <uuid />
-    <property name="uid.publicworkersgroup" value="${uuid}"/>
-    <uuid />
-    <property name="uid.worker" value="${uuid}"/>
-
-    <filter token="DBNAME" value="${db.name}" />
-    <filter token="DBENGINE" value="${dbEngine}" />
-    <filter token="DBUSER" value="${dbUserLogin}" />
-    <filter token="DBUSERPASSWORD" value="${dbUserPassword}" />
-    <filter token="DISPATCHERS" value="${dispatcher.servers}" />
-    <filter token="DATASERVERS" value="${data.servers}" />
-    <filter token="DBADMIN" value="${xtremweb.admin.login}" />
-    <filter token="DBADMINPASSWORD" value="${xtremweb.admin.password}" />
-    <filter token="DBADMINFNAME" value="${xtremweb.admin.fname}" />
-    <filter token="DBADMINLNAME" value="${xtremweb.admin.lname}" />
-    <filter token="DBADMINEMAIL" value="${xtremweb.admin.email}" />
-    <filter token="DBWORKER" value="${xtremweb.worker.login}" />
-    <filter token="DBWORKERPASSWORD" value="${xtremweb.worker.password}" />
-    <filter token="KEYPASSPHRASE" value="${xw.keypassphrase}"/>
-    <filter token="KEYSERVERPASSWORD" value="${xw.server.keypassword}"/>
-    <filter token="KEYWORKERPASSWORD" value="${xw.worker.keypassword}"/>
-    <filter token="KEYCLIENTPASSWORD" value="${xw.client.keypassword}"/>
-    <filter token="ADMINGROUPUID" value="${uid.admingroup}" />
-    <filter token="PUBLICWORKERSGROUPUID" value="${uid.publicworkersgroup}" />
-    <filter token="ADMINUID" value="${uid.admin}" />
-    <filter token="WORKERUID" value="${uid.worker}" />
-
-      <!-- Install config files -->
-
-    <copy file="${src.scripts.dir}/xwhep-core-tables-create-tables.sql.in"
-          filtering="yes" overwrite="yes"
-          tofile="${src.scripts.dir}/xwhep-core-tables-create-tables.sql" />
-
-    <!-- **** Create database **** -->
-    <!-- I don't know why I can't pass an SQL script file (ant bug?)... -->
-    <sql classpath="${lib.dir}/mysql-connector-java-5.1.6-bin.jar"
-	 driver="com.mysql.jdbc.Driver"
-	 url="jdbc:mysql://${db.host}/"
-	 userid="${dbSuName}"
-	 password="${dbSuPassword}"
-	 src="${src.scripts.dir}/xwhep-core-tables-create-tables.sql" />
-
-
-
-    <echo>
-      Db setup done
-    </echo>
-
-  </target>
-
-
-
-
 
 
 
