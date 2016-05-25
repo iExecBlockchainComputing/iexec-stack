@@ -25,39 +25,35 @@ SHELL=/bin/sh
 
 all: install
 
-distrib: %
+distrib:
 	./build.sh $@ 
-rpmserver: %
+rpmserver:
 	./build.sh -f install.xml $@ 
-rpmworker: %
+rpmworker:
 	./build.sh -f install.xml $@ 
 install: distrib
 	./build.sh -f install.xml $@ 
-createKeys: %
+createKeys:
 	./build.sh -f install.xml $@ 
-sonar-clean: %
+sonar-clean:
 	./build.sh -f build.xml $@ 
-sonar: %
+sonar:
 	./build.sh -f build.xml $@ 
-junit: %
+junit:
 	./build.sh -f build.xml $@ 
-coverage: %
+coverage:
 	./build.sh -f build.xml $@ 
-doc: %
+doc:
 	./build.sh -f build.xml $@ 
-doxygen: %
+doxygen:
 	./build.sh -f build.xml $@ 
-installDB: %
+installDB:
 	./build.sh -f install.xml $@ 
-removeDB: %
+removeDB:
 	./build.sh -f install.xml $@ 
-uninstall: %
+uninstall:
 	./build.sh -f install.xml $@ 
-uninstallAll: %
+uninstallAll:
 	./build.sh -f install.xml $@ 
 clean:
 	./build.sh -f build.xml $@ 
-%:
-	@if test ! -f "./build.conf" ; then echo "  **** oups!! Where is your 'build.conf' ?!? **** " ; echo ; exit 2 ; fi
-	@if grep "\*\*\* MUST BE" build.conf > /dev/null 2>&1 ; then  echo "  *****" ; echo "  *****" ; echo "  ***** ERROR: Your build.conf file is not filled properly" ; echo "  *****" ; echo "  *****" ; echo ; exit 3 ; else echo " build.conf OK" ; fi
-	@echo

@@ -311,7 +311,6 @@
     <mkdir dir="${install.dir}/share/${project}" />
     <mkdir dir="${install.dir}/share/${project}/classes" />
     <mkdir dir="${install.dir}/share/${project}/keystore" />
-    <mkdir dir="${install.www.dir}" />
   </target>
 
   
