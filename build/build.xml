@@ -48,6 +48,7 @@
   <property name="rpm.dir" value="${build.dir}/rpm" />
   <property name="xwidl.dir" value="${src.java.dir}/XwIDL" />
   <property name="antlr.dir" value="${src.java.dir}/antlr" />
+  <property name="install.www.dir" value="${build.dir}/WWW" />
 
   <!-- BUILD CONFIG -->
   <target name="configure" depends="version" >
@@ -191,18 +192,8 @@
     <filter token="BUILD_TIME" value="${v.build}" />
     <filter token="XWVERSION" value="${v.rev}" />
     <filter token="VBRANCH" value="${v.branch}" />   
-    <filter token="ADMINUSER" value="${xtremweb.admin.login}" />
     <copy file="${src.java.dir}/common/CommonVersion.java.in" 
 	  filtering="yes" overwrite="yes" tofile="${src.java.dir}/common/CommonVersion.java" />
-    <filter token="KEYPASSPHRASE" value="${xw.keypassphrase}" />
-    <filter token="KEYSERVERPASSWORD" value="${xw.server.keypassword}" />
-    <filter token="SMTPHOST" value="${smtp.host}" />
-    <filter token="ALIVEPERIOD" value="${alive.period}" />
-    <filter token="DEFAULTUSER" value="${xtremweb.admin.login}"/>
-    <checksum file="${build.dir}/build.conf" property="xtremweb.admin.password.coded" />
-    <filter token="DEFAULTPASSWORD" value="${xtremweb.admin.password.coded}"/>
-    <checksum file="${build.dir}/build.xml" property="xtremweb.admin.password.coded2" />
-    <filter token="DEFAULTPASSWORD2" value="${xtremweb.admin.password.coded2}"/>
   </target>
 
   
@@ -320,7 +311,6 @@
     <mkdir dir="${install.dir}/share/${project}" />
     <mkdir dir="${install.dir}/share/${project}/classes" />
     <mkdir dir="${install.dir}/share/${project}/keystore" />
-    <mkdir dir="${install.www.dir}" />
   </target>
 
   
@@ -609,8 +599,6 @@ and try the 6 following exec tasks
 
     <mkdir dir="${build.classes}/data" />
 
-    <filter token="DISPATCHERS" value="${dispatcher.servers}" />
-    <filter token="DATASERVERS" value="${data.servers}" />
 
     <copy todir="${build.classes}/data"
           filtering="yes" overwrite="yes">

@@ -104,15 +104,6 @@
   </target>
   
 
-  <target name="prepareWWW">
-    <property file="${build.dir}/build.conf"/>
-
-    <mkdir dir="${install.www.dir}"/>
-    <mkdir dir="${install.www.dir}/download"/>
-    <mkdir dir="${install.www.dir}/db"/>
-
-  </target>
-
   <target name="prepare" depends="version">
     <property file="${build.dir}/build.conf"/>
 
@@ -168,11 +159,6 @@
     <condition property="launcher.url" value="http://nohost/">
       <not>
         <isset property="${launcher.url}"/>
-      </not>
-    </condition>
-    <condition property="data.servers" value="${dispatcher.servers}">
-      <not>
-        <isset property="data.servers"/>
       </not>
     </condition>
 
@@ -337,17 +323,6 @@ version=${version}
     </echo>
   </target>
 
-  <target name="uninstallAll" depends="uninstall, removeDB">
-
-    <delete dir="${install.www.dir}"
-            failonerror="false"
-            includeEmptyDirs="true"/>
-
-    <echo>
-      Done
-    </echo>
-  </target>
-
   <target name="removeDB" depends="installConfig">
     <sql classpath="${lib.dir}/mysql-connector-java-5.1.6-bin.jar"
 	 driver="com.mysql.jdbc.Driver"
@@ -374,11 +349,7 @@ version=${version}
 
   <!-- ************************ INSTALL ************************** -->
   
-  <target name="install" depends="installWebFiles,ganglia">
-    <chmod dir="${install.www.dir}/db/" 
-	   perm="775" includes="**" type="both"/>
-    <chmod dir="${install.www.dir}/download/"
-	   perm="755" type="both" includes="**"/>
+  <target name="install" depends="createDownload,ganglia">
     <chmod dir="${dist.dir.bin}"
 	   perm="755" type="both" includes="**"/>
     <chmod dir="${dist.dir.bin}"
@@ -453,22 +424,9 @@ version=${version}
 	<delete file="${build.dir}/dbusers.property" />
 	-->
     <!-- **** Create java-config script file **** -->
-    <filter token="DBVENDOR" value="${db.system}"/>
-    <filter token="DBHOST" value="${db.host}"/>
-    <filter token="DBNAME" value="${db.name}" />   
-    <filter token="DBUSER" value="${dbUserLogin}"/>
-    <filter token="DBPASSWORD" value="${dbUserPassword}"/>
-    <filter token="DEFAULTUSER" value="${xtremweb.admin.login}"/>
-    <filter token="DEFAULTPASSWORD" value="${xtremweb.admin.password}"/>
     <filter token="INSTALLDIR" value="${installDir}"/>
     <filter token="HOMEDIR" value="/var/xwhep" />
     <filter token="KEYDIR" value="${installDir.keystore}" />
-    <filter token="SMTPHOST" value="${smtp.host}"/>
-    <filter token="KEYPASSPHRASE" value="${xw.keypassphrase}"/>
-    <filter token="KEYSERVERPASSWORD" value="${xw.server.keypassword}"/>
-    <filter token="KEYWORKERPASSWORD" value="${xw.worker.keypassword}"/>
-    <filter token="KEYCLIENTPASSWORD" value="${xw.client.keypassword}"/>
-    <filter token="LOGGERLEVEL" value="${logger.level}"/>
 
     <!-- Install config files -->
 
@@ -476,7 +434,6 @@ version=${version}
           filtering="yes" overwrite="yes"
           tofile="${dist.dir}/conf/xtremweb.server.conf" />
     
-    <filter token="DISPATCHERS" value="${dispatcher.servers}"/>
     <filter token="DATASERVERS" value="${data.servers}"/>
     <filter token="XWUSER" value="${xw.user}"/>
     <filter token="XWPASSWORD" value="${xw.password}"/>
@@ -684,7 +641,7 @@ version=${version}
   </target>
 
 
-  <target name="ganglia" if="ganglia.www.dir" depends="installConfig,prepareWWW">
+  <target name="ganglia" if="ganglia.www.dir" depends="installConfig">
     <echo>
       Installing ganglia ${ant.project.name} template
     </echo>
@@ -693,62 +650,6 @@ version=${version}
     </copy>
   </target>
 
-
-  <target name="installWebFiles" depends="installConfig, prepareWWW, createDownload">
-
-        <!-- ********************************************** -->
-        <!-- **** Note that every following copies uses *** -->
-        <!-- ****  filtering (i.e. uses defined tokens) *** -->
-        <!-- ********************************************** -->
-
-        <!-- **** Create java-config script file **** -->
-    <filter token="DBVENDOR" value="${db.system}"/>
-    <filter token="DBHOST" value="${db.host}"/>
-    <filter token="DBNAME" value="${db.name}" />   
-    <filter token="DBUSER" value="${dbUserLogin}"/>
-    <filter token="DBPASSWORD" value="${dbUserPassword}"/>
-    <filter token="HOMEDIR" value="${install.www.dir}/db"/>
-    <filter token="KEYDIR" value="${installDir.keystore}"/>
-    <filter token="PROJECTNAME" value="${project}"/>
-    <filter token="DISPATCHERS" value="${dispatcher.servers}"/>
-    <filter token="DATASERVERS" value="${data.servers}"/>
-    <filter token="XWUSER" value="${xw.user}"/>
-    <filter token="XWPASSWORD" value="${xw.password}"/>
-    <filter token="KEYPASSPHRASE" value="${xw.keypassphrase}"/>
-    <filter token="KEYSERVERPASSWORD" value="${xw.server.keypassword}"/>
-    <filter token="KEYWORKERPASSWORD" value="${xw.worker.keypassword}"/>
-    <filter token="KEYCLIENTPASSWORD" value="${xw.client.keypassword}"/>
-    <filter token="XWVERSION" value="${version}"/>
-    <filter token="SYSTEMUSER" value="${system.user}"/>
-
-    <copy overwrite="yes" todir="${install.www.dir}">
-      <fileset dir="${basedir}/php"/>
-    </copy>
-
-    <move filtering="yes" overwrite="yes"
-          file="${install.www.dir}/php/config/library.php.in" 
-          tofile="${install.www.dir}/php/config/library.php"/>
-
-    <move filtering="yes" overwrite="yes"
-          file="${install.www.dir}/php/config/version.php.in" 
-          tofile="${install.www.dir}/php/config/version.php"/>
-
-    <move filtering="yes" overwrite="yes"
-          file="${install.www.dir}/templates/{PAGE}.html.in" 
-          tofile="${install.www.dir}/templates/{PAGE}.html"/>
-    <move filtering="yes" overwrite="yes"
-          file="${install.www.dir}/textes/contact.php.in" 
-          tofile="${install.www.dir}/textes/contact.php"/>
-
-    <move filtering="yes" overwrite="yes"
-          file="${install.www.dir}/textes/register.php.in" 
-          tofile="${install.www.dir}/textes/register.php"/>
-
-    <move filtering="yes" overwrite="yes"
-          file="${install.www.dir}/textes/bugreport_action.php.in" 
-          tofile="${install.www.dir}/textes/bugreport_action.php"/>
-
-  </target>
 
 
   <target name="createDownload" depends="installScripts">
@@ -782,16 +683,6 @@ version=${version}
       <env key="CROSS"    value="${cross.prefix}" />
       <env key="XWVERSION" value="${version}" />
     </exec>
-
-      <!-- Install downloadable worker -->
-    <copy file="${build.dir}/stand-alone/${JARFILE}"
-          tofile="${install.www.dir}/download/${JARFILE}"
-          overwrite="yes" />
-
-      <!-- Install worker wrapper -->
-    <copy file="${build.dir}/stand-alone/${JARFILE}"
-          tofile="${dist.dir}/lib/${JARFILE}"
-          overwrite="yes" />
 
       <!-- Install Mac OS X  -->
     <copy file="${build.dir}/stand-alone/${JARFILE}"
@@ -1112,7 +1003,6 @@ version=${version}
     <filter token="KEYSERVERPASSWORD" value="${xw.server.keypassword}"/>
     <filter token="KEYWORKERPASSWORD" value="${xw.worker.keypassword}"/>
     <filter token="KEYCLIENTPASSWORD" value="${xw.client.keypassword}"/>
-    <filter token="WWWDIR" value="${install.www.dir}"/>
     <filter token="sysconfdir" value="../conf"/>
     <filter token="INSTALLDIR" value="${dist.dir}"/>
     <filter token="DEFAULTUSER" value="${xtremweb.admin.login}"/>
@@ -1143,130 +1033,8 @@ version=${version}
   </target>
 
 
-  <target name="installDB" 
-          depends="setupDB, nosetupDB">
-  </target>
-
-    <!-- **** Database setup error **** -->
-
-  <target name="nosetupDB" depends="installConfig" unless="dispatcher.servers">
-    <echo>
-      Can't install database since no dispatcher host set...
-      Edit ${build.dir}/build.conf to set dispatcher host
-    </echo>
-  </target>
 
 
-    <!-- **** Database setup **** -->
-
-  <target name="setupDB" depends="installConfig" if="dispatcher.servers">
-
-    <uuid />
-    <property name="uid.admin" value="${uuid}"/>
-    <uuid />
-    <property name="uid.admingroup" value="${uuid}"/>
-    <uuid />
-    <property name="uid.publicworkersgroup" value="${uuid}"/>
-    <uuid />
-    <property name="uid.worker" value="${uuid}"/>
-
-    <filter token="DBNAME" value="${db.name}" />
-    <filter token="DBENGINE" value="${dbEngine}" />
-    <filter token="DBUSER" value="${dbUserLogin}" />
-    <filter token="DBUSERPASSWORD" value="${dbUserPassword}" />
-    <filter token="DISPATCHERS" value="${dispatcher.servers}" />
-    <filter token="DATASERVERS" value="${data.servers}" />
-    <filter token="DBADMIN" value="${xtremweb.admin.login}" />
-    <filter token="DBADMINPASSWORD" value="${xtremweb.admin.password}" />
-    <filter token="DBADMINFNAME" value="${xtremweb.admin.fname}" />
-    <filter token="DBADMINLNAME" value="${xtremweb.admin.lname}" />
-    <filter token="DBADMINEMAIL" value="${xtremweb.admin.email}" />
-    <filter token="DBWORKER" value="${xtremweb.worker.login}" />
-    <filter token="DBWORKERPASSWORD" value="${xtremweb.worker.password}" />
-    <filter token="KEYPASSPHRASE" value="${xw.keypassphrase}"/>
-    <filter token="KEYSERVERPASSWORD" value="${xw.server.keypassword}"/>
-    <filter token="KEYWORKERPASSWORD" value="${xw.worker.keypassword}"/>
-    <filter token="KEYCLIENTPASSWORD" value="${xw.client.keypassword}"/>
-    <filter token="ADMINGROUPUID" value="${uid.admingroup}" />
-    <filter token="PUBLICWORKERSGROUPUID" value="${uid.publicworkersgroup}" />
-    <filter token="ADMINUID" value="${uid.admin}" />
-    <filter token="WORKERUID" value="${uid.worker}" />
-
-      <!-- Install config files -->
-
-    <copy file="${src.scripts.dir}/xwhep-core-tables-create-tables.sql.in"
-          filtering="yes" overwrite="yes"
-          tofile="${src.scripts.dir}/xwhep-core-tables-create-tables.sql" />
-
-    <!-- **** Create database **** -->
-    <!-- I don't know why I can't pass an SQL script file (ant bug?)... -->
-    <sql classpath="${lib.dir}/mysql-connector-java-5.1.6-bin.jar"
-	 driver="com.mysql.jdbc.Driver"
-	 url="jdbc:mysql://${db.host}/"
-	 userid="${dbSuName}"
-	 password="${dbSuPassword}"
-	 src="${src.scripts.dir}/xwhep-core-tables-create-tables.sql" />
-
-
-
-    <echo>
-      Db setup done
-    </echo>
-
-  </target>
-
-
-
-
-
-
-
-
-
-
-<!--
-    We can't use installApp to install upgradable worker
-    since it's a very special case
- -->
-  <target name="upgradeWorker" depends="installUpgradableWorker">
-  </target>
-
-
-  <target name="installUpgradableWorker"
-   depends="installUpgradableWorkerYes,installUpgradableWorkerNo">
-  </target>
-
-
-  <target name="installUpgradableWorkerNo" unless="installUpgradableWorker" depends="copyWorkerBin">
-    <echo>
-      Worker already installed in DB
-    </echo>
-    <fail message="Worker allready in DB">
-    </fail>
-  </target>
-
-
-  <target name="installUpgradableWorkerYes" if="installUpgradableWorker" depends="copyWorkerBin">
-    <echo>
-      Installing worker in DB is not implemented any more
-    </echo>
-  </target>
-
-
-  <target name="copyWorkerBin">
-    <echo>
-      Copying worker bin
-    </echo>
-
-    <mkdir dir="${install.www.dir}/db/worker"/>
-    <mkdir dir="${install.www.dir}/db/worker/bin"/>
-    <copy overwrite="yes" todir="${install.www.dir}/db/worker/bin/">
-      <fileset dir="${dist.lib}">
-        <include name="${JARFILE}"/>
-      </fileset>
-    </copy>
-
-  </target>
 
 
   <!-- *************************** END OF INSTALL ************************** -->

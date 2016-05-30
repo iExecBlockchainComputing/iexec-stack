@@ -100,7 +100,7 @@ jar xf $BASEDIR/classes/antlr.jar
 jar xf $BASEDIR/classes/commons-codec-1.3.jar
 jar xf $BASEDIR/classes/commons-httpclient-3.0.1.jar
 jar xf $BASEDIR/classes/commons-logging-1.1.jar
-jar xf $BASEDIR/classes/servlet-api-3.0.jar
+jar xf $BASEDIR/classes/servlet-api-3.1.jar
 jar xf $BASEDIR/classes/log4j-1.2.17.jar
 #jar xf $BASEDIR/classes/attic-all-0.3.jar
 

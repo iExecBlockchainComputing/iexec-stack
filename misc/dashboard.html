@@ -1,16 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-    <meta name="description" content="XtremWeb-HEP volunteer platform">
-    <meta name="author" content="Oleg Lodygensky (C) CNRS 2016">
-    <link rel="icon" href="/favicon.ico">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+<meta name="description" content="XtremWeb-HEP volunteer platform">
+<meta name="author" content="Oleg Lodygensky (C) CNRS 2016">
+<link rel="icon" href="/favicon.ico">
 
-    <title>XtremWeb-HEP</title>
-  </head>
+
+
+<title>XtremWeb-HEP</title>
+</head>
 
 <!--
 #
@@ -40,233 +42,255 @@
 -->
 
 
-  <body>
+<body onload="refresh();">
 
-    <nav class="navbar navbar-inverse navbar-fixed-top">
-      <div class="container-fluid">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a class="navbar-brand" href="#">XtremWeb-HEP</a>
-        </div>
-        <div id="navbar" class="navbar-collapse collapse">
-          <ul class="nav navbar-nav navbar-right">
-            <li><a href="#">Dashboard</a></li>
-            <li><a href="#">Settings</a></li>
-            <li><a href="#">Profile</a></li>
-            <li><a href="#">Help</a></li>
-          </ul>
-          <form class="navbar-form navbar-right">
-            <input type="text" class="form-control" placeholder="Search...">
-          </form>
-        </div>
-      </div>
-    </nav>
+	<nav class="navbar navbar-inverse navbar-fixed-top">
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle collapsed"
+					data-toggle="collapse" data-target="#navbar" aria-expanded="false"
+					aria-controls="navbar">
+					<span class="sr-only">Toggle navigation</span> <span
+						class="icon-bar"></span> <span class="icon-bar"></span> <span
+						class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand" href="#">XtremWeb-HEP test changement</a>
+			</div>
+			<div id="navbar" class="navbar-collapse collapse">
+				<ul class="nav navbar-nav navbar-right">
+					<li><a href="#">Dashboard</a></li>
+					<li><a href="#">Settings</a></li>
+					<li><a href="#">Profile</a></li>
+					<li><a href="#">Help</a></li>
+				</ul>
+				<form class="navbar-form navbar-right">
+					<input type="text" class="form-control" placeholder="Search...">
+				</form>
+			</div>
+		</div>
+	</nav>
 
-    <div class="container-fluid">
-      <div class="row">
-        <div class="col-sm-3 col-md-2 sidebar">
-          <ul class="nav nav-sidebar">
-            <li class="active"><a href="#">Overview <span class="sr-only">(current)</span></a></li>
-            <li><a href="#">Reports</a></li>
-            <li><a href="#">Analytics</a></li>
-            <li><a href="#">Export</a></li>
-          </ul>
-          <ul class="nav nav-sidebar">
-            <li><a href="">Nav item</a></li>
-            <li><a href="">Nav item again</a></li>
-            <li><a href="">One more nav</a></li>
-            <li><a href="">Another nav item</a></li>
-            <li><a href="">More navigation</a></li>
-          </ul>
-          <ul class="nav nav-sidebar">
-            <li><a href="">Nav item again</a></li>
-            <li><a href="">One more nav</a></li>
-            <li><a href="">Another nav item</a></li>
-          </ul>
-        </div>
-        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main" style="position:absolute; padding-top:50px">
-          <h1 class="page-header">Dashboard</h1>
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-sm-3 col-md-2 sidebar" data-spy="affix">
+				<ul class="nav nav-sidebar" >
+					<li id="tabOverview" class="current"><a
+						href="javascript:showTab(theAppsID, appsTabID);">Overview</a></li>
+					<li><a href="#">Applications</a></li>
+					<li><a href="#">Export</a></li>
+				</ul>
+				<ul class="nav nav-sidebar">
+					<li><a href="">Nav item</a></li>
+					<li><a href="">Nav item again</a></li>
+					<li><a href="">One more nav</a></li>
+					<li><a href="">Another nav item</a></li>
+					<li><a href="">More navigation</a></li>
+				</ul>
+				<ul class="nav nav-sidebar">
+					<li><a href="">Nav item again</a></li>
+					<li><a href="">One more nav</a></li>
+					<li><a href="">Another nav item</a></li>
+				</ul>
+				<button class="btn btn-success" onclick="refresh()">Refresh <span class="glyphicon glyphicon-refresh"></span>
+				</button>
+				
+				<button class="btn btn-danger" onclick="getWorkers()">WORKERS TEST<span class="glyphicon glyphicon-danger"></span>
+				</button>
+				
+			</div>
+			<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main"
+				style="position: absolute; padding-top: 50px">
+				<h1 class="page-header">Dashboard</h1>
 
-          <div class="row placeholders">
-            <div class="col-xs-6 col-sm-3 placeholder">
-              <div id="osesChart" style="width: 200px; height: 200px;">
-              </div>
-              <h4>OSes</h4>
-              <span class="text-muted">Operating systems</span>
-            </div>
-            <div class="col-xs-6 col-sm-3 placeholder">
-              <div id="cpusChart" style="width: 200px; height: 200px;">
-              </div>
-              <h4>CPU</h4>
-              <span class="text-muted">CPU types</span>
-            </div>
-            <div class="col-xs-6 col-sm-3 placeholder">
-              <img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">
-              <h4>Label</h4>
-              <span class="text-muted">Something else</span>
-            </div>
-            <div class="col-xs-6 col-sm-3 placeholder">
-              <img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">
-              <h4>Label</h4>
-              <span class="text-muted">Something else</span>
-            </div>
-          </div>
+				<div class="row placeholders">
+					<div class="col-xs-6 col-sm-4 placeholder">
+						 <div id="osesChart" ></div>
+						<h4>OSes</h4>
+						<span class="text-muted">Operating systems</span>
+						<!-- <div id="workerList"></div> -->
+					</div> 
+						<!-- style="width: 200px; height: 200px;" -->
+					<div class="col-xs-6 col-sm-4 placeholder">
+						<div id="cpusChart" ></div>
+						<h4>CPU</h4>
+						<span class="text-muted">CPU types</span>
+					</div>
 
-          <h2 class="sub-header">Section title</h2>
-          <div class="table-responsive">
-            <table class="table table-striped">
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>Header</th>
-                  <th>Header</th>
-                  <th>Header</th>
-                  <th>Header</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>1,001</td>
-                  <td>Lorem</td>
-                  <td>ipsum</td>
-                  <td>dolor</td>
-                  <td>sit</td>
-                </tr>
-                <tr>
-                  <td>1,002</td>
-                  <td>amet</td>
-                  <td>consectetur</td>
-                  <td>adipiscing</td>
-                  <td>elit</td>
-                </tr>
-                <tr>
-                  <td>1,003</td>
-                  <td>Integer</td>
-                  <td>nec</td>
-                  <td>odio</td>
-                  <td>Praesent</td>
-                </tr>
-                <tr>
-                  <td>1,003</td>
-                  <td>libero</td>
-                  <td>Sed</td>
-                  <td>cursus</td>
-                  <td>ante</td>
-                </tr>
-                <tr>
-                  <td>1,004</td>
-                  <td>dapibus</td>
-                  <td>diam</td>
-                  <td>Sed</td>
-                  <td>nisi</td>
-                </tr>
-                <tr>
-                  <td>1,005</td>
-                  <td>Nulla</td>
-                  <td>quis</td>
-                  <td>sem</td>
-                  <td>at</td>
-                </tr>
-                <tr>
-                  <td>1,006</td>
-                  <td>nibh</td>
-                  <td>elementum</td>
-                  <td>imperdiet</td>
-                  <td>Duis</td>
-                </tr>
-                <tr>
-                  <td>1,007</td>
-                  <td>sagittis</td>
-                  <td>ipsum</td>
-                  <td>Praesent</td>
-                  <td>mauris</td>
-                </tr>
-                <tr>
-                  <td>1,008</td>
-                  <td>Fusce</td>
-                  <td>nec</td>
-                  <td>tellus</td>
-                  <td>sed</td>
-                </tr>
-                <tr>
-                  <td>1,009</td>
-                  <td>augue</td>
-                  <td>semper</td>
-                  <td>porta</td>
-                  <td>Mauris</td>
-                </tr>
-                <tr>
-                  <td>1,010</td>
-                  <td>massa</td>
-                  <td>Vestibulum</td>
-                  <td>lacinia</td>
-                  <td>arcu</td>
-                </tr>
-                <tr>
-                  <td>1,011</td>
-                  <td>eget</td>
-                  <td>nulla</td>
-                  <td>Class</td>
-                  <td>aptent</td>
-                </tr>
-                <tr>
-                  <td>1,012</td>
-                  <td>taciti</td>
-                  <td>sociosqu</td>
-                  <td>ad</td>
-                  <td>litora</td>
-                </tr>
-                <tr>
-                  <td>1,013</td>
-                  <td>torquent</td>
-                  <td>per</td>
-                  <td>conubia</td>
-                  <td>nostra</td>
-                </tr>
-                <tr>
-                  <td>1,014</td>
-                  <td>per</td>
-                  <td>inceptos</td>
-                  <td>himenaeos</td>
-                  <td>Curabitur</td>
-                </tr>
-                <tr>
-                  <td>1,015</td>
-                  <td>sodales</td>
-                  <td>ligula</td>
-                  <td>in</td>
-                  <td>libero</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    </div>
+					<div class="col-xs-6 col-sm-4 placeholder">
+
+						<h3>Account summary</h3>
+									<div id="overviewCurrentUserIntro"
+										class="overviewchaptercontent">
+											<div class="row" id="grilleInfo"></div>
+									</div><!--  style="width: 300px; height: 200px" -->
+					</div>
+					
+					<div class="row placeholders">
+						<div class="col-xs-11 placeholder"><h2>Jobs</h2>
+							<div id="listeJobsUser"></div>
+						</div>
+					</div>
+
+					<!-- <h2 class="sub-header">Application disponibles</h2>
+					<div class="table-responsive">
+						<table class="table table-striped">
+							<thead>
+								<tr>
+									<th>#</th>
+									<th>Application</th>
+									<th>Status</th>
+									<th>Error</th>
+									<th>Header</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td>1,001</td>
+									<td>Lorem</td>
+									<td>ipsum</td>
+									<td>dolor</td>
+									<td>sit</td>
+								</tr>
+								<tr>
+									<td>1,002</td>
+									<td>amet</td>
+									<td>consectetur</td>
+									<td>adipiscing</td>
+									<td>elit</td>
+								</tr>
+								<tr>
+									<td>1,003</td>
+									<td>Integer</td>
+									<td>nec</td>
+									<td>odio</td>
+									<td>Praesent</td>
+								</tr>
+								<tr>
+									<td>1,003</td>
+									<td>libero</td>
+									<td>Sed</td>
+									<td>cursus</td>
+									<td>ante</td>
+								</tr>
+								<tr>
+									<td>1,004</td>
+									<td>dapibus</td>
+									<td>diam</td>
+									<td>Sed</td>
+									<td>nisi</td>
+								</tr>
+								<tr>
+									<td>1,005</td>
+									<td>Nulla</td>
+									<td>quis</td>
+									<td>sem</td>
+									<td>at</td>
+								</tr>
+								<tr>
+									<td>1,006</td>
+									<td>nibh</td>
+									<td>elementum</td>
+									<td>imperdiet</td>
+									<td>Duis</td>
+								</tr>
+								<tr>
+									<td>1,007</td>
+									<td>sagittis</td>
+									<td>ipsum</td>
+									<td>Praesent</td>
+									<td>mauris</td>
+								</tr>
+								<tr>
+									<td>1,008</td>
+									<td>Fusce</td>
+									<td>nec</td>
+									<td>tellus</td>
+									<td>sed</td>
+								</tr>
+								<tr>
+									<td>1,009</td>
+									<td>augue</td>
+									<td>semper</td>
+									<td>porta</td>
+									<td>Mauris</td>
+								</tr>
+								<tr>
+									<td>1,010</td>
+									<td>massa</td>
+									<td>Vestibulum</td>
+									<td>lacinia</td>
+									<td>arcu</td>
+								</tr>
+								<tr>
+									<td>1,011</td>
+									<td>eget</td>
+									<td>nulla</td>
+									<td>Class</td>
+									<td>aptent</td>
+								</tr>
+								<tr>
+									<td>1,012</td>
+									<td>taciti</td>
+									<td>sociosqu</td>
+									<td>ad</td>
+									<td>litora</td>
+								</tr>
+								<tr>
+									<td>1,013</td>
+									<td>torquent</td>
+									<td>per</td>
+									<td>conubia</td>
+									<td>nostra</td>
+								</tr>
+								<tr>
+									<td>1,014</td>
+									<td>per</td>
+									<td>inceptos</td>
+									<td>himenaeos</td>
+									<td>Curabitur</td>
+								</tr>
+								<tr>
+									<td>1,015</td>
+									<td>sodales</td>
+									<td>ligula</td>
+									<td>in</td>
+									<td>libero</td>
+								</tr>
+							</tbody>
+						</table>
+					</div> -->
+				</div>
+			</div>
+		</div>
 
 
-<!-- Bootstrap core JavaScript
+		<!-- Bootstrap core JavaScript
 ================================================== -->
-<!-- Placed at the end of the document so the pages load faster -->
-<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+		<!-- Placed at the end of the document so the pages load faster -->
+		<script type="text/javascript"
+			src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+		<script type="text/javascript"
+			src="https://www.gstatic.com/charts/loader.js"></script>
 
-<!-- Latest compiled and minified CSS -->
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
-<!-- Optional theme -->
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+		<!-- Latest compiled and minified CSS -->
+		<link rel="stylesheet"
+			href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
+			integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7"
+			crossorigin="anonymous">
+		<!-- Optional theme -->
+		<link rel="stylesheet"
+			href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css"
+			integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r"
+			crossorigin="anonymous">
 
-<!-- Latest compiled and minified JavaScript -->
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+		<!-- Latest compiled and minified JavaScript -->
+		<script
+			src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"
+			integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS"
+			crossorigin="anonymous"></script>
 
-<!-- XtremWeb-HEP JavaScript
+		<!-- XtremWeb-HEP JavaScript
 ================================================== -->
-<script src="xwserver2.js"></script>
-
-  </body>
+		<script src="xwserver2.js"></script>
+</body>
 </html>

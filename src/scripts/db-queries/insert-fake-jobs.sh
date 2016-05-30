@@ -44,10 +44,11 @@
 usage() {
 	cat <<EOFUSAGE
 
-Usage : $0 -u dbuser -p dbpassword -a appname [-d databasename] [-n nbjobs]
-	This insert <nbjobs> new jobs for application "appname"
+Usage : $0 -u dbuser -p dbpassword -a appname [-d databasename] [-n nbjobs] [-o user_login]
+	This insert <nbjobs> new jobs for application "appname for user user_login"
 	Default database name = "xtremweb"
 	Default nbhost        = 5
+	Default user login    = "admin"
 
 EOFUSAGE
 
@@ -81,6 +82,7 @@ MYSQLOPTS=""
 DBNAME="xtremweb"
 NBJOBS=5
 APPNAME=""
+USERLOGIN="admin"
 
 while [ $# -gt 0 ]; do
 	case $1 in
@@ -107,6 +109,10 @@ while [ $# -gt 0 ]; do
 			shift
 			NBJOBS=$1
 			;;
+		"-o" )
+			shift
+			USERLOGIN=$1
+			;;
 	esac
 	shift
 done
@@ -115,7 +121,7 @@ done
 
 MYSQLOPTS="$MYSQLOPTS $DBNAME"
 
-JOB_OWNER_UID=`mysql $MYSQLOPTS -B -e "select uid,login from users where login='admin'" | tail -1 | cut -f 1`
+JOB_OWNER_UID=`mysql $MYSQLOPTS -B -e "select uid,login from users where login=\"$USERLOGIN\"" | tail -1 | cut -f 1`
 if [ $? -ne 0 ] ; then
 	fatal "Can't retrieve 'admin' user"
 fi
@@ -148,4 +154,4 @@ for ((i=0;i<NBJOBS;i++)) ; do
 			               		)"
 done
 
-mysql $MYSQLOPTS -e "select uid,status from works"
+mysql $MYSQLOPTS -e "select works.uid,works.status,apps.name,users.login from works,apps,users where works.appuid=apps.uid and works.owneruid=users.uid"
