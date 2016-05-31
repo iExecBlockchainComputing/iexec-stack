@@ -123,7 +123,7 @@ MYSQLOPTS="$MYSQLOPTS $DBNAME"
 
 JOB_OWNER_UID=`mysql $MYSQLOPTS -B -e "select uid,login from users where login=\"$USERLOGIN\"" | tail -1 | cut -f 1`
 if [ $? -ne 0 ] ; then
-	fatal "Can't retrieve 'admin' user"
+	fatal "Can't retrieve \"$USERLOGIN\" user"
 fi
 [ -z $JOB_OWNER_UID ] && fatal "Can't retrieve 'admin' user"
 
