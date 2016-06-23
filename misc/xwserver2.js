@@ -167,6 +167,8 @@ var hashtableGetDetail = new Object();
 var hashtableDelete    = new Object();
 var hashtableGetWorker    = new Object();
 
+var hashtableAppName = new Object();
+
 /**
  * This is the URL to upload data
  * @see uploadData()
@@ -277,6 +279,11 @@ var actualCPUs = [];
 
 var retourDataWorkerOSes = false;
 var retourDataWorkerCPUs = false;
+
+var hashtableGlobalUID = new Object();
+var actualUserUID;
+
+var co;
 
 /**
  * These are HTML element name in "sendForm" form 
@@ -859,6 +866,7 @@ function refresh() {
 		
 		getWorksBOOTSTRAP();
 		getCurrentUser();
+		
         return;
 	}
 	if(document.getElementById(appsTabID).getAttribute("class") == "current") {
@@ -1034,8 +1042,11 @@ function getCurrentUserBOOTSTRAPStateChanged()
 	}
 
 	try { //les balises br en fin de lignes sont pour des tests 
+		var uid = xmlDoc.getElementsByTagName("uid").item(0).firstChild.nodeValue;
+		actualUserUID = uid;
        	document.getElementById(divID).innerHTML =
        	      "<div class=\"col-sm-6 placeholder\" >Login</div><div class=\"col-sm-6 placeholder\">"+xmlDoc.getElementsByTagName("login").item(0).firstChild.nodeValue + "</div>"
+       	      +"<div class=\"col-sm-6 placeholder\" >UID</div><div class=\"col-sm-6 placeholder\">"+ xmlDoc.getElementsByTagName("uid").item(0).firstChild.nodeValue + "</div>" 
               + "<div class=\"col-sm-6 placeholder\" >Email</div><div class=\"col-sm-6 placeholder\">"+ xmlDoc.getElementsByTagName("email").item(0).firstChild.nodeValue + "</div>" 
               + "<div class=\"col-sm-6 placeholder\">Rights</div><div class=\"col-sm-6 placeholder\">" + xmlDoc.getElementsByTagName("rights").item(0).firstChild.nodeValue + "</div>"; 
 		try {
@@ -1150,13 +1161,13 @@ function getAppsStateChanged()
         return;
 	}
 
-	document.getElementById(appListID).innerHTML = 
+	/*document.getElementById(appListID).innerHTML = 
 		  "<div class=\"tupletitre\">"+
 		    "<span class=\"selectbutton\">Select</span>" +
 		    "<span class=\"firstvalue\">UID</span>" +
 		    "<span class=\"value\">Name</span>" +
 		    "<span class=\"value\">Type</span>" +
-		"</div>";
+		"</div>";*/
 
 	appDataTreemapLength = xmlDoc.getElementsByTagName(xmlTagName).length;
 
@@ -1168,9 +1179,9 @@ function getAppsStateChanged()
 			var color = colors[(i % 2)];
 				
 			// this creates a new DIV with the ID=uid
-        	document.getElementById(appListID).innerHTML += 
+        	/*document.getElementById(appListID).innerHTML += 
         		"<div class=\"tuple\" style=\"background-color:" + color +
-        		"\" id=\"" + uid + "\"></div>";
+        		"\" id=\"" + uid + "\"></div>";*/
 
 			
         	getApp(uid);
@@ -1275,11 +1286,16 @@ function getAppStateChanged()
 
 		    console.log("App " + name);
 
-        	document.getElementById(uid).innerHTML = "<span class=\"selectbutton\"><input type=\"checkbox\" name=\"" + uid + "\" /></span>" +
+/*        	document.getElementById(uid).innerHTML = "<span class=\"selectbutton\"><input type=\"checkbox\" name=\"" + uid + "\" /></span>" +
         	    "<span class=\"firstvalue\" id=\"" + appuidheader + uid + "\">" + uid + "</span> </br>" +
         		"<span class=\"value\" id=\"" + appnameheader + uid + "\">" + name + "</span></br>" +
         		"<span class=\"lastvalue\">" + type + "</span></br>";
-		   
+        	*/
+           //alert("test");
+           //alert("contains : "+hashtableAppName.containsKey(uid));
+		   if(!(uid in hashtableAppName)){
+			   hashtableAppName[uid] = name;
+		   }
 
 			if (overviewAppContent.length == 0) {
 				overviewAppContent.push(new Array('AppName', 'Parent', 'Completed', 'Running'));
@@ -2145,8 +2161,8 @@ function getWorksStateChangedBOOTSTRAP()
         "<tr>" +
             "<th>UID</th>" +
             "<th>Application</th>" +
-            "<th>OwnerUID</th>" +
             "<th>Status</th>" +
+            "<th>Downloads</th>" +
         "</tr>"+
     "</thead>" +
     "<tbody id=\"bodytableau\">" +
@@ -2164,9 +2180,8 @@ function getWorksStateChangedBOOTSTRAP()
 				
 			// this creates a new DIV with the ID=uid
 			
-			document.getElementById("bodytableau").innerHTML += "<tr id=\""+uid+"\"></tr>";
+			//document.getElementById("bodytableau").innerHTML += "<tr id=\""+uid+"\"></tr>";
 
-			
         	getWorkBOOTSTRAP(uid);
     	}
     	catch(err){
@@ -2225,7 +2240,7 @@ function getWorkStateChangedBOOTSTRAP(){
 
     	// get returns an app XML object
 		var xmlTagName = "work";
-
+		
     	delete hashtableGetWork[uid];
 		--workDataTreemapLength;
 
@@ -2234,6 +2249,9 @@ function getWorkStateChangedBOOTSTRAP(){
 		}
 	    //document.getElementById(uid).innerHTML += "<td> TEST </td>";
 
+	    var resulturi = null;
+		var resultuid = null;
+	    
    		try {
 		    //var name = xmlDoc.getElementsByTagName("name").item(0).firstChild.nodeValue;
    			
@@ -2241,8 +2259,13 @@ function getWorkStateChangedBOOTSTRAP(){
 	    	var application = xmlDoc.getElementsByTagName("appuid").item(0).firstChild.nodeValue;
 	    	var ownerUID = xmlDoc.getElementsByTagName("owneruid").item(0).firstChild.nodeValue;
 		    var status = xmlDoc.getElementsByTagName("status").item(0).firstChild.nodeValue;
-		   
-		    //alert("" + uid);
+		    
+		    var name = hashtableAppName[application];
+
+		    try {
+			    resulturi = xmlDoc.getElementsByTagName("resulturi").item(0).firstChild.nodeValue;
+			} catch(err) {
+			}
 		    
 		   /* var nbJobs = 0;
 		    try {
@@ -2267,11 +2290,29 @@ function getWorkStateChangedBOOTSTRAP(){
 
 		    console.log("Work " + name);*/
 
-		    
-		    document.getElementById(uid).innerHTML += "<td>" + uid + "</td>" +
-			 "<td>" + application + "</td>" +
-			 "<td>" + ownerUID + "</td>" +
-			 "<td>" + status + "</td>";
+			if((resulturi != null) && (resulturi.length > 0)) {
+				var lastindex = resulturi.lastIndexOf("/");
+				resultuid = resulturi.substring(lastindex + 1, resulturi.length);
+			}
+			var resultname = resultHeader + uid;
+			/*onclick=\"window.location.href='/downloaddata/" + resultuid + "\"download=\"" + resultname'"\" */
+			
+			
+		    if(ownerUID == actualUserUID){
+		    	if(resultuid != null){
+		    		document.getElementById("bodytableau").innerHTML += "<tr><td>" + uid + "</td>" +
+		    		"<td>" + name + "</td>" +
+		    		"<td>" + status + "</td>"+
+		    		"<td><button class=\"btn btn-primary\" onclick=\"window.location.href='/downloaddata/" + resultuid + "'\" download=\"resultname\">Download</button></td></tr>";
+		    	}
+		    	else{
+		    		document.getElementById("bodytableau").innerHTML += "<tr><td>" + uid + "</td>" +
+		    		"<td>" + name + "</td>" +
+		    		"<td>" + status + "</td>"+
+		    		"<td><button class=\"btn btn-danger disabled\">Disabled</button></td></tr>";
+		    		
+		    	}
+		    }
 		   
 			/*if (overviewWorkContent.length == 0) {
 				overviewWorkContent.push(new Array('AppName', 'Parent', 'Completed', 'Running'));
