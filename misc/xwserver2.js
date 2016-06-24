@@ -145,6 +145,8 @@ var xmlHttpConnectionGetApps;
 var xmlHttpConnectionGetDatas;
 var xmlHttpConnectionGetBots;
 var xmlHttpConnectionGetWorks;
+var xmlHttpConnectionGetWorkers;
+
 /**
  * This is used to register an object
  */
@@ -163,6 +165,9 @@ var hashtableGetBot    = new Object();
 var hashtableGetWork   = new Object();
 var hashtableGetDetail = new Object();
 var hashtableDelete    = new Object();
+var hashtableGetWorker    = new Object();
+
+var hashtableAppName = new Object();
 
 /**
  * This is the URL to upload data
@@ -233,6 +238,8 @@ var apiTabID    = "tabAPI";
 
 var overviewAppContent = new Array();
 
+
+
 /**
  * These are HTML element ID 
  */
@@ -260,6 +267,24 @@ var theBotsID       = "theBots";
 var theSubmitID     = "theSubmit";
 var theHelpID       = "theHelp";
 var theAPIID        = "theApi";
+
+var grilleInfoID	="grilleInfo";
+
+var workerListID = "workerList";
+
+var affichageID ="affichage";
+
+var actualOSes = [];
+var actualCPUs = [];
+
+var retourDataWorkerOSes = false;
+var retourDataWorkerCPUs = false;
+
+var hashtableGlobalUID = new Object();
+var actualUserUID;
+
+var co;
+
 /**
  * These are HTML element name in "sendForm" form 
  */
@@ -326,6 +351,7 @@ var arTooltip = "<p>Access rights (<i>AR</i>) allows or denies access; it must b
  * This contains the web worker pool with 8 workers
  */
 var webWorkerPool = new WorkerPool(8);
+
 
 /**
  * Web Worker Pool
@@ -812,7 +838,7 @@ function getXmlHttpObject()
 	// Internet Explorer
 	try
 	{
-	    ret=new ActiveXObject("Msxml2.XMLHTTP");
+	    ret=new ActiveXObject("Msxml2.sXMLHTTP");
 	}
 	catch (e)
 	{
@@ -827,9 +853,21 @@ function getXmlHttpObject()
  */
 function refresh() {
 	if(document.getElementById(overviewTabID).getAttribute("class") == "current") {
-		getCurrentUser();
+
+		//document.getElementById(affichageID).innerHTML = actualOSes;
+		
+		
 		getApps();
-		return;
+		
+		getWorkers();
+		
+		drawOSesChart();
+		drawCPUsChart();
+		
+		getWorksBOOTSTRAP();
+		getCurrentUser();
+		
+        return;
 	}
 	if(document.getElementById(appsTabID).getAttribute("class") == "current") {
 		getApps();
@@ -847,6 +885,7 @@ function refresh() {
 		getBots();
 		return;
 	}
+
 }
 
 /**
@@ -868,7 +907,7 @@ function getCurrentUser()
 	}
 
     var url="/get/" + uid;
-    xmlHttpConnectionGetCurrentUser.onreadystatechange=getCurrentUserStateChanged;
+    xmlHttpConnectionGetCurrentUser.onreadystatechange=getCurrentUserBOOTSTRAPStateChanged;
     xmlHttpConnectionGetCurrentUser.open("POST",url,true);
     xmlHttpConnectionGetCurrentUser.send(null);
 }
@@ -914,43 +953,134 @@ function getCurrentUserStateChanged()
 		return;
 	}
 
-	try {
+	try { //les balises br en fin de lignes sont pour des tests 
        	document.getElementById(divID).innerHTML =
-       	      "<span class=\"overviewleft\">Login</span><span class=\"overviewright\" id=\"overviewUserLogin\">" + xmlDoc.getElementsByTagName("login").item(0).firstChild.nodeValue + "</span>"
-              + "<span class=\"overviewleft\">Email</span><span class=\"overviewright\" id=\"overviewUserEmail\">" + xmlDoc.getElementsByTagName("email").item(0).firstChild.nodeValue + "</span>" 
-              + "<span class=\"overviewleft\">Rights</span><span class=\"overviewright\" id=\"overviewUserRights\">" + xmlDoc.getElementsByTagName("rights").item(0).firstChild.nodeValue + "</span>"; 
+       	      "<span class=\"overviewleft\">Login</span><span class=\"overviewright\" id=\"overviewUserLogin\">" +"            "+xmlDoc.getElementsByTagName("login").item(0).firstChild.nodeValue + "</span> </br>"
+              + "<span class=\"overviewleft\">Email</span><span class=\"overviewright\" id=\"overviewUserEmail\">" +"            "+ xmlDoc.getElementsByTagName("email").item(0).firstChild.nodeValue + "</span> </br>" 
+              + "<span class=\"overviewleft\">Rights</span><span class=\"overviewright\" id=\"overviewUserRights\">" +"            "+ xmlDoc.getElementsByTagName("rights").item(0).firstChild.nodeValue + "</span> </br>"; 
 		try {
        		document.getElementById(divID).innerHTML +=
-            	"<span class=\"overviewleft\">First Name</span><span class=\"overviewright\" id=\"overviewUserFName\">" + xmlDoc.getElementsByTagName("fname").item(0).firstChild.nodeValue + "</span>";
+            	"<span class=\"overviewleft\">First Name</span><span class=\"overviewright\" id=\"overviewUserFName\">" +"            "+ xmlDoc.getElementsByTagName("fname").item(0).firstChild.nodeValue + "</span></br>";
          } catch(err) {
          } 
          try {
        		document.getElementById(divID).innerHTML +=
-             	"<span class=\"overviewleft\">Last Name</span><span class=\"overviewright\" id=\"overviewUserLName\">" + xmlDoc.getElementsByTagName("lname").item(0).firstChild.nodeValue + "</span>";
+             	"<span class=\"overviewleft\">Last Name</span><span class=\"overviewright\" id=\"overviewUserLName\">" +"            "+ xmlDoc.getElementsByTagName("lname").item(0).firstChild.nodeValue + "</span></br>";
          } catch(err) {
          } 
 
    		document.getElementById(divID).innerHTML +=
-              "<span class=\"overviewleft\">&nbsp;</span><span class=\"overviewright\">&nbsp;</span>";
+              "<span class=\"overviewleft\">&nbsp;</span><span class=\"overviewright\">&nbsp;</span></br>";
 
          try {
        		document.getElementById(divID).innerHTML +=
-              "<span class=\"overviewleft\">Pending jobs</span><span class=\"overviewright\" id=\"overviewUserPending\">" + xmlDoc.getElementsByTagName("pendingjobs").item(0).firstChild.nodeValue + "</span>"; 
+              "<span class=\"overviewleft\">Pending jobs</span><span class=\"overviewright\" id=\"overviewUserPending\">" +"            "+ xmlDoc.getElementsByTagName("pendingjobs").item(0).firstChild.nodeValue + "</span></br>"; 
          } catch(err) {
          } 
          try {
        		document.getElementById(divID).innerHTML +=
-              "<span class=\"overviewleft\">Running jobs</span><span class=\"overviewright\" id=\"overviewUserRunning\">" + xmlDoc.getElementsByTagName("runningjobs").item(0).firstChild.nodeValue + "</span>"; 
+              "<span class=\"overviewleft\">Running jobs</span><span class=\"overviewright\" id=\"overviewUserRunning\">" + xmlDoc.getElementsByTagName("runningjobs").item(0).firstChild.nodeValue + "</span></br>"; 
          } catch(err) {
          } 
          try {
        		document.getElementById(divID).innerHTML +=
-              "<span class=\"overviewleft\">Error jobs</span><span class=\"overviewright\" id=\"overviewUserError\">" + xmlDoc.getElementsByTagName("errorjobs").item(0).firstChild.nodeValue + "</span>"; 
+              "<span class=\"overviewleft\">Error jobs</span><span class=\"overviewright\" id=\"overviewUserError\">" + xmlDoc.getElementsByTagName("errorjobs").item(0).firstChild.nodeValue + "</span></br>"; 
          } catch(err) {
          } 
          try {
        		document.getElementById(divID).innerHTML +=
-              "<span class=\"overviewleft\">Completed jobs</span><span class=\"overviewright\" id=\"overviewUserJobs\">" + xmlDoc.getElementsByTagName("nbjobs").item(0).firstChild.nodeValue + "</span>"; 
+              "<span class=\"overviewleft\">Completed jobs</span><span class=\"overviewright\" id=\"overviewUserJobs\">" + xmlDoc.getElementsByTagName("nbjobs").item(0).firstChild.nodeValue + "</span></br>"; 
+         } catch(err) {
+         } 
+
+       	var pendings   = parseInt(xmlDoc.getElementsByTagName("pendingjobs").item(0).firstChild.nodeValue);
+       	var runnings   = parseInt(xmlDoc.getElementsByTagName("runningjobs").item(0).firstChild.nodeValue);
+       	var completeds = parseInt(xmlDoc.getElementsByTagName("nbjobs").item(0).firstChild.nodeValue);
+       	var errors     = parseInt(xmlDoc.getElementsByTagName("errorjobs").item(0).firstChild.nodeValue);
+
+	var propertyNames = ["pending", "running", "completed", "errors"];
+		addData("graph", {"id":new Date().getTime(), "pending":pendings, "running":runnings, "completed":completeds, "errors":errors});
+	}
+	catch(err){
+		console.log("getCurrentUserStateChanged err " + err);
+   	}
+}
+
+function getCurrentUserBOOTSTRAPStateChanged()
+{
+	var current = xmlHttpConnectionGetCurrentUser;
+   	if (current.readyState!=4) {
+        return;
+   	}
+
+	var uid = getCookie("USERUID");
+	console.log("getCurrentUserStateChanged#USERUID = " + uid);
+	if (uid == null || uid == "")
+	{
+		return;
+	}
+
+    var xmlDoc = null;
+    try {
+    	if (xmlDoc=current.responseXML == null) {
+    		if (current.status == 401) {
+	    		document.documentElement.innerHTML=current.responseText;
+	   			return;
+    		}
+    	}
+    	xmlDoc=current.responseXML.documentElement;
+	}
+	catch(err) {
+		connectionError();
+		return;
+	}
+
+	var divID = grilleInfoID;
+
+    if(rpcError(xmlDoc) == true) {
+		return;
+	}
+
+	try { //les balises br en fin de lignes sont pour des tests 
+		var uid = xmlDoc.getElementsByTagName("uid").item(0).firstChild.nodeValue;
+		actualUserUID = uid;
+       	document.getElementById(divID).innerHTML =
+       	      "<div class=\"col-sm-6 placeholder\" >Login</div><div class=\"col-sm-6 placeholder\">"+xmlDoc.getElementsByTagName("login").item(0).firstChild.nodeValue + "</div>"
+       	      +"<div class=\"col-sm-6 placeholder\" >UID</div><div class=\"col-sm-6 placeholder\">"+ xmlDoc.getElementsByTagName("uid").item(0).firstChild.nodeValue + "</div>" 
+              + "<div class=\"col-sm-6 placeholder\" >Email</div><div class=\"col-sm-6 placeholder\">"+ xmlDoc.getElementsByTagName("email").item(0).firstChild.nodeValue + "</div>" 
+              + "<div class=\"col-sm-6 placeholder\">Rights</div><div class=\"col-sm-6 placeholder\">" + xmlDoc.getElementsByTagName("rights").item(0).firstChild.nodeValue + "</div>"; 
+		try {
+       		document.getElementById(divID).innerHTML +=
+            	"<div class=\"col-sm-6 placeholder\">First Name</div><div class=\"col-sm-6 placeholder\">" +xmlDoc.getElementsByTagName("fname").item(0).firstChild.nodeValue + "</div>";
+         } catch(err) {
+         } 
+         try {
+       		document.getElementById(divID).innerHTML +=
+             	"<div class=\"col-sm-6 placeholder\">Last Name</div><div class=\"col-sm-6 placeholder\">" +xmlDoc.getElementsByTagName("lname").item(0).firstChild.nodeValue + "</div>";
+         } catch(err) {
+         } 
+
+   		document.getElementById(divID).innerHTML +=
+              "<div class=\"col-sm-6 placeholder\">&nbsp;</div><div class=\"col-sm-6 placeholder\">&nbsp;</div>";
+
+         try {
+       		document.getElementById(divID).innerHTML +=
+              "<div class=\"col-sm-6 placeholder\">Pending jobs</div><div class=\"col-sm-6 placeholder\">" + xmlDoc.getElementsByTagName("pendingjobs").item(0).firstChild.nodeValue + "</div>"; 
+         } catch(err) {
+         } 
+         try {
+       		document.getElementById(divID).innerHTML +=
+              "<div class=\"col-sm-6 placeholder\">Running jobs</div><div class=\"col-sm-6 placeholder\">" + xmlDoc.getElementsByTagName("runningjobs").item(0).firstChild.nodeValue + "</div>"; 
+         } catch(err) {
+         } 
+         try {
+       		document.getElementById(divID).innerHTML +=
+              "<div class=\"col-sm-6 placeholder\">Error jobs</div><div class=\"col-sm-6 placeholder\">" + xmlDoc.getElementsByTagName("errorjobs").item(0).firstChild.nodeValue + "</div>"; 
+         } catch(err) {
+         } 
+         try {
+       		document.getElementById(divID).innerHTML +=
+              "<div class=\"col-sm-6 placeholder\">Completed jobs</div><div class=\"col-sm-6 placeholder\">" + xmlDoc.getElementsByTagName("nbjobs").item(0).firstChild.nodeValue + "</div>"; 
          } catch(err) {
          } 
 
@@ -1031,13 +1161,13 @@ function getAppsStateChanged()
         return;
 	}
 
-	document.getElementById(appListID).innerHTML = 
+	/*document.getElementById(appListID).innerHTML = 
 		  "<div class=\"tupletitre\">"+
 		    "<span class=\"selectbutton\">Select</span>" +
 		    "<span class=\"firstvalue\">UID</span>" +
 		    "<span class=\"value\">Name</span>" +
 		    "<span class=\"value\">Type</span>" +
-		"</div>";
+		"</div>";*/
 
 	appDataTreemapLength = xmlDoc.getElementsByTagName(xmlTagName).length;
 
@@ -1049,10 +1179,11 @@ function getAppsStateChanged()
 			var color = colors[(i % 2)];
 				
 			// this creates a new DIV with the ID=uid
-        	document.getElementById(appListID).innerHTML += 
+        	/*document.getElementById(appListID).innerHTML += 
         		"<div class=\"tuple\" style=\"background-color:" + color +
-        		"\" id=\"" + uid + "\"></div>";
+        		"\" id=\"" + uid + "\"></div>";*/
 
+			
         	getApp(uid);
     	}
     	catch(err){
@@ -1131,6 +1262,7 @@ function getAppStateChanged()
 		    var name = xmlDoc.getElementsByTagName("name").item(0).firstChild.nodeValue;
 	    	var uid = xmlDoc.getElementsByTagName("uid").item(0).firstChild.nodeValue;
 		    var type = xmlDoc.getElementsByTagName("type").item(0).firstChild.nodeValue;
+		    
 		    var nbJobs = 0;
 		    try {
 		    	nbJobs = xmlDoc.getElementsByTagName("nbjobs").item(0).firstChild.nodeValue;
@@ -1154,10 +1286,16 @@ function getAppStateChanged()
 
 		    console.log("App " + name);
 
-        	document.getElementById(uid).innerHTML = "<span class=\"selectbutton\"><input type=\"checkbox\" name=\"" + uid + "\" /></span>" +
-        	    "<span class=\"firstvalue\" id=\"" + appuidheader + uid + "\">" + uid + "</span>" +
-        		"<span class=\"value\" id=\"" + appnameheader + uid + "\">" + name + "</span>" +
-        		"<span class=\"lastvalue\">" + type + "</span>";
+/*        	document.getElementById(uid).innerHTML = "<span class=\"selectbutton\"><input type=\"checkbox\" name=\"" + uid + "\" /></span>" +
+        	    "<span class=\"firstvalue\" id=\"" + appuidheader + uid + "\">" + uid + "</span> </br>" +
+        		"<span class=\"value\" id=\"" + appnameheader + uid + "\">" + name + "</span></br>" +
+        		"<span class=\"lastvalue\">" + type + "</span></br>";
+        	*/
+           //alert("test");
+           //alert("contains : "+hashtableAppName.containsKey(uid));
+		   if(!(uid in hashtableAppName)){
+			   hashtableAppName[uid] = name;
+		   }
 
 			if (overviewAppContent.length == 0) {
 				overviewAppContent.push(new Array('AppName', 'Parent', 'Completed', 'Running'));
@@ -1172,6 +1310,97 @@ function getAppStateChanged()
     }    	    	
 
 }
+
+/*function getAppBOOTSTRAPStateChanged(){
+	
+	for (var uid in hashtableGetApp) {
+
+	    if (hashtableGetApp.hasOwnProperty(uid) == false) {
+		    console.log("hashtableGetApp.hasOwnProperty(" + uid + ") = false");
+	    	continue;
+    	}
+    	
+	    var current = hashtableGetApp[uid];
+	     
+    	if (current.readyState!=4) {
+	        continue;
+    	}
+
+	    var xmlDoc = null;
+	    try {
+	    	if (xmlDoc=current.responseXML == null) {
+	    		if (current.status == 401) {
+		    		document.documentElement.innerHTML=current.responseText;
+		   			return;
+	    		}
+	    	}
+	    	xmlDoc=current.responseXML.documentElement;
+		}
+		catch(err) {
+			connectionError();
+			return;
+		}
+    	// get returns an app XML object
+		var xmlTagName = "app";
+
+    	delete hashtableGetApp[uid];
+		--appDataTreemapLength;
+
+	    if(rpcError(xmlDoc) == true) {
+	        continue;
+		}
+
+   		try {
+		    var name = xmlDoc.getElementsByTagName("name").item(0).firstChild.nodeValue;
+	    	var uid = xmlDoc.getElementsByTagName("uid").item(0).firstChild.nodeValue;
+		    var type = xmlDoc.getElementsByTagName("type").item(0).firstChild.nodeValue;
+		    
+		    var nbJobs = 0;
+		    try {
+		    	nbJobs = xmlDoc.getElementsByTagName("nbjobs").item(0).firstChild.nodeValue;
+		    }
+		    catch(err) {
+		    }
+		    var runningJobs = 0;
+		    try {
+		    	runningJobs = xmlDoc.getElementsByTagName("runningjobs").item(0).firstChild.nodeValue;
+		    }
+		    catch(err) {
+		    }
+		    var pendingJobs = 0;
+		    try {
+			    pendingJobs = xmlDoc.getElementsByTagName("pendingjobs").item(0).firstChild.nodeValue;
+		    }
+		    catch(err) {
+		    }
+
+			appDataTreemap.push(new Array(name, 'Applications', parseInt(nbJobs), parseInt(pendingJobs)));
+
+		    console.log("App " + name);
+
+        	/*document.getElementById(uid).innerHTML = "<span class=\"selectbutton\"><input type=\"checkbox\" name=\"" + uid + "\" /></span>" +
+        	    "<span class=\"firstvalue\" id=\"" + appuidheader + uid + "\">" + uid + "</span> </br>" +
+        		"<span class=\"value\" id=\"" + appnameheader + uid + "\">" + name + "</span></br>" +
+        		"<span class=\"lastvalue\">" + type + "</span></br>";
+		    
+		    document.getElementById(uid).innerHTML = "<td>" + name + "</td>" +
+			 "<td>" + uid + "</td>" +
+			 "<td>" + type + "</td>";
+		    	
+        	
+			if (overviewAppContent.length == 0) {
+				overviewAppContent.push(new Array('AppName', 'Parent', 'Completed', 'Running'));
+				overviewAppContent.push(new Array('Global' ,  null   ,  0         ,  0));
+			}
+			var appContent = new Array(name, 'Global', nbJobs, runningJobs + pendingJobs);
+			overviewAppContent.push(appContent);
+   		}
+   		catch(err){
+   		console.log(err);
+   		}
+    } 
+	
+}*/
 
 
 /**
@@ -1604,6 +1833,18 @@ function getWorksStateChanged()
 		    "<span class=\"value\">Label</span>" +
 		    "<span class=\"value\">Error Msg</span>" +
 		"</div>";
+    
+    /*document.getElementById("listeJobsUser").innerHTML = "<table class=\"table table-striped\">" + 
+    "<thead>" +
+        "<tr>" +
+            "<th>Name</th>" +
+            "<th>UID</th>" +
+            "<th>Type</th>" +
+        "</tr>"+
+    "</thead>" +
+    "<tbody id=\"bodytableau\">" +
+    "</tbody>"+
+    "</table>";*/
 
 	for (var i = 0; i < xmlDoc.getElementsByTagName(xmlTagName).length; i++) {
     	try {
@@ -1634,6 +1875,8 @@ function getWorksStateChanged()
         		"<div class=\"tuple\" style=\"background-color:" + color +
         		"\" id=\"" + errorid + "\"></div>";
         	hide(errorid);
+			
+			//document.getElementById("bodytableau").innerHTML += "<tr id=\""+uid+"\"></tr>";
 
         	getWork(uid);
     	}
@@ -1758,6 +2001,7 @@ function getWorkStateChanged()
 	}
 }
 
+
 function displayWork(xmlDoc)
 {
 	// get returns an work XML object
@@ -1866,6 +2110,342 @@ function displayWork(xmlDoc)
 		console.log("displayWork error " + err);
 	}
 }
+
+function getWorksBOOTSTRAP()
+{ 
+    xmlHttpConnectionGetWorks=getXmlHttpObject();
+    if (xmlHttpConnectionGetWorks==null)
+    {
+		return;
+    }
+
+    var url = "/getworks";
+	
+    xmlHttpConnectionGetWorks.onreadystatechange=getWorksStateChangedBOOTSTRAP;
+    xmlHttpConnectionGetWorks.open("POST",url,true);
+    xmlHttpConnectionGetWorks.send(null);
+}
+
+function getWorksStateChangedBOOTSTRAP()
+{ 
+	var current = xmlHttpConnectionGetWorks;
+    if (current.readyState!=4)
+    {
+        return;
+    }
+
+    var xmlDoc = null;
+    try {
+    	if (xmlDoc=current.responseXML == null) {
+    		if (current.status == 401) {
+	    		document.documentElement.innerHTML=current.responseText;
+	   			return;
+    		}
+    	}
+    	xmlDoc=current.responseXML.documentElement;
+	}
+	catch(err) {
+		connectionError();
+		return;
+	}
+
+	var xmlTagName = "XMLVALUE";
+	
+
+    if(rpcError(xmlDoc) == true) {
+        return;
+	}
+    
+    document.getElementById("listeJobsUser").innerHTML = "<table class=\"table table-striped\">" + 
+    "<thead>" +
+        "<tr>" +
+            "<th>UID</th>" +
+            "<th>Application</th>" +
+            "<th>Status</th>" +
+            "<th>Downloads</th>" +
+        "</tr>"+
+    "</thead>" +
+    "<tbody id=\"bodytableau\">" +
+    "</tbody>"+
+    "</table>";
+
+	workDataTreemapLength = xmlDoc.getElementsByTagName(xmlTagName).length;
+
+	for (var i = 0; i < xmlDoc.getElementsByTagName(xmlTagName).length; i++) {
+    	try {
+			// this is the UID of the application
+			var uid = xmlDoc.getElementsByTagName(xmlTagName)[i].getAttribute("value");
+
+			var color = colors[(i % 2)];
+				
+			// this creates a new DIV with the ID=uid
+			
+			//document.getElementById("bodytableau").innerHTML += "<tr id=\""+uid+"\"></tr>";
+
+        	getWorkBOOTSTRAP(uid);
+    	}
+    	catch(err){
+    	}
+    }
+
+	// now, the user can get its jobs
+	hide("worksRefreshInfo");
+    show("worksRefresh");	
+}
+
+function getWorkBOOTSTRAP(uid)
+{ 
+    hashtableGetWork[uid]=getXmlHttpObject();
+    if (hashtableGetWork[uid]==null)
+    {
+		return;
+    }
+
+    var url="/get/" + uid;
+    
+    hashtableGetWork[uid].onreadystatechange=getWorkStateChangedBOOTSTRAP;
+    hashtableGetWork[uid].open("POST",url,true);
+    hashtableGetWork[uid].send(null);
+}
+
+function getWorkStateChangedBOOTSTRAP(){
+	
+	for (var uid in hashtableGetWork) {
+
+	    if (hashtableGetWork.hasOwnProperty(uid) == false) {
+		    console.log("hashtableGetWork.hasOwnProperty(" + uid + ") = false");
+	    	continue;
+    	}
+    	
+	    var current = hashtableGetWork[uid];
+	     
+    	if (current.readyState!=4) {
+	        continue;
+    	}
+
+	    var xmlDoc = null;
+	    try {
+	    	if (xmlDoc=current.responseXML == null) {
+	    		if (current.status == 401) {
+		    		document.documentElement.innerHTML=current.responseText;
+		   			return;
+	    		}
+	    	}
+	    	xmlDoc=current.responseXML.documentElement;
+		}
+		catch(err) {
+			connectionError();
+			return;
+		}
+
+    	// get returns an app XML object
+		var xmlTagName = "work";
+		
+    	delete hashtableGetWork[uid];
+		--workDataTreemapLength;
+
+	    if(rpcError(xmlDoc) == true) {
+	        continue;
+		}
+	    //document.getElementById(uid).innerHTML += "<td> TEST </td>";
+
+	    var resulturi = null;
+		var resultuid = null;
+	    
+   		try {
+		    //var name = xmlDoc.getElementsByTagName("name").item(0).firstChild.nodeValue;
+   			
+	    	var uid = xmlDoc.getElementsByTagName("uid").item(0).firstChild.nodeValue;
+	    	var application = xmlDoc.getElementsByTagName("appuid").item(0).firstChild.nodeValue;
+	    	var ownerUID = xmlDoc.getElementsByTagName("owneruid").item(0).firstChild.nodeValue;
+		    var status = xmlDoc.getElementsByTagName("status").item(0).firstChild.nodeValue;
+		    
+		    var name = hashtableAppName[application];
+
+		    try {
+			    resulturi = xmlDoc.getElementsByTagName("resulturi").item(0).firstChild.nodeValue;
+			} catch(err) {
+			}
+		    
+		   /* var nbJobs = 0;
+		    try {
+		    	nbJobs = xmlDoc.getElementsByTagName("nbjobs").item(0).firstChild.nodeValue;
+		    }
+		    catch(err) {
+		    }
+		    var runningJobs = 0;
+		    try {
+		    	runningJobs = xmlDoc.getElementsByTagName("runningjobs").item(0).firstChild.nodeValue;
+		    }
+		    catch(err) {
+		    }
+		    var pendingJobs = 0;
+		    try {
+			    pendingJobs = xmlDoc.getElementsByTagName("pendingjobs").item(0).firstChild.nodeValue;
+		    }
+		    catch(err) {
+		    }
+
+			workDataTreemap.push(new Array(name, 'Applications', parseInt(nbJobs), parseInt(pendingJobs)));
+
+		    console.log("Work " + name);*/
+
+			if((resulturi != null) && (resulturi.length > 0)) {
+				var lastindex = resulturi.lastIndexOf("/");
+				resultuid = resulturi.substring(lastindex + 1, resulturi.length);
+			}
+			var resultname = resultHeader + uid;
+			/*onclick=\"window.location.href='/downloaddata/" + resultuid + "\"download=\"" + resultname'"\" */
+			
+			
+		    if(ownerUID == actualUserUID){
+		    	if(resultuid != null){
+		    		document.getElementById("bodytableau").innerHTML += "<tr><td>" + uid + "</td>" +
+		    		"<td>" + name + "</td>" +
+		    		"<td>" + status + "</td>"+
+		    		"<td><button class=\"btn btn-primary\" onclick=\"window.location.href='/downloaddata/" + resultuid + "'\" download=\"resultname\">Download</button></td></tr>";
+		    	}
+		    	else{
+		    		document.getElementById("bodytableau").innerHTML += "<tr><td>" + uid + "</td>" +
+		    		"<td>" + name + "</td>" +
+		    		"<td>" + status + "</td>"+
+		    		"<td><button class=\"btn btn-danger disabled\">Disabled</button></td></tr>";
+		    		
+		    	}
+		    }
+		   
+			/*if (overviewWorkContent.length == 0) {
+				overviewWorkContent.push(new Array('AppName', 'Parent', 'Completed', 'Running'));
+				overviewWorkContent.push(new Array('Global' ,  null   ,  0         ,  0));
+			}
+			var workContent = new Array(name, 'Global', nbJobs, runningJobs + pendingJobs);
+			overviewWorkContent.push(workContent);*/
+   		}
+   		catch(err){
+   		console.log(err);
+   		}
+    }
+}
+
+/*function displayWorkBOOTSTRAP(xmlDoc)
+{
+	// get returns an work XML object
+	var xmlTagName = "work";
+
+    if(rpcError(xmlDoc) == true) {
+        return;
+	}
+
+	try {
+		
+		var name = xmlDoc.getElementsByTagName("name").item(0).firstChild.nodeValue;
+    	var uid = xmlDoc.getElementsByTagName("uid").item(0).firstChild.nodeValue;
+	    var type = xmlDoc.getElementsByTagName("type").item(0).firstChild.nodeValue;
+	    
+	    document.getElementById(uid).innerHTML = "<span class=\"selectbutton\"><input type=\"checkbox\" name=\"" + uid + "\" /></span>" +
+	    "<span class=\"firstvalue\" id=\"" + appuidheader + uid + "\">" + uid + "</span> </br>" +
+		"<span class=\"value\" id=\"" + appnameheader + uid + "\">" + name + "</span></br>" +
+		"<span class=\"lastvalue\">" + type + "</span></br>";
+	    
+		
+    	/*var uid  = xmlDoc.getElementsByTagName("uid").item(0).firstChild.nodeValue;
+		var pendingid   = pendingheader   + uid;
+		var runningid   = runningheader   + uid;
+		var completedid = completedheader + uid;
+		var datauriid   = datauriheader   + uid;
+		var errorid     = errorheader     + uid;
+    	var appuid      = xmlDoc.getElementsByTagName("appuid").item(0).firstChild.nodeValue;
+    	var appnameid = appnameheader + appuid;
+    	var appname = null;
+    	try {
+    		appname = document.getElementById(appnameid).innerHTML;
+		} catch(err) {
+		}
+    	var status = xmlDoc.getElementsByTagName("status").item(0).firstChild.nodeValue;
+	    var label = null;
+	    try {
+		    label = xmlDoc.getElementsByTagName("label").item(0).firstChild.nodeValue
+		} catch(err) {
+		}
+	    var error_msg = null;
+		try {
+		    error_msg = xmlDoc.getElementsByTagName("errormsg").item(0).firstChild.nodeValue;
+		} catch(err) {
+		}
+
+	    var groupuid = null;
+	    try {
+		    groupuid = xmlDoc.getElementsByTagName("groupuid").item(0).firstChild.nodeValue;
+		} catch(err) {
+		}
+
+		var groupdivid = null;
+		if((groupuid != null) && (groupuid != ""))
+			groupdivid = botjobsuidheader + groupuid;
+		var groupdiv = null;
+		if(groupdivid != null)
+			document.getElementById(groupdivid);
+		console.log("groupuid = " + groupuid + " groupdivid = " + groupdivid + " " + groupdiv);
+
+	    var resulturi = null;
+		var resultuid = null;
+	    try {
+		    resulturi = xmlDoc.getElementsByTagName("resulturi").item(0).firstChild.nodeValue;
+		} catch(err) {
+		}
+		    
+		if((resulturi != null) && (resulturi.length > 0)) {
+			var lastindex = resulturi.lastIndexOf("/");
+			resultuid = resulturi.substring(lastindex + 1, resulturi.length);
+		}
+		var resultname = resultHeader + uid;
+    	var datanameid = datanameheader + resultuid;
+    	var datauriid  = datauriheader + resultuid;
+	    if(document.getElementById(datanameid) != null)
+		    resultname = document.getElementById(datanameid).innerHTML;
+
+	    console.log("work " + uid + " " + groupuid + " " + appname + " " + status + " " + error_msg + " " + resultuid);
+
+		var id = pendingid;
+		var workbkgcolor = colorpending;
+		
+		switch(status) {
+			case "RUNNING":
+				id = runningid;
+				workbkgcolor = colorrunning;
+    		break;
+			case "COMPLETED":
+				id = completedid;
+				workbkgcolor = colorcompleted;
+    		break;
+			case "ERROR":
+				id = errorid;
+				workbkgcolor = colorerror;
+    		break;
+   		}
+
+   		var theBody =
+   			"<span class=\"firstvalue\">" + uid + "</span>" +
+			"<span class=\"value\" >" + (appname != null ? appname : appuid) + "</span>";
+		if(resultuid != null)
+			theBody += "<span class=\"value\"><a href=\"/downloaddata/" + resultuid +"\" download=\"" + resultname+ "\">" + status + "</a></span>";
+		else				
+			theBody += "<span class=\"value\">" + status + "</span>";
+		theBody += "<span class=\"value\">" + label + "</span>" +
+			"<span class=\"value\">" + error_msg + "</span>" +
+			"<span class=\"lastvalue\" style=\"display:none\" id=\"" + datauriid + "\">" + resulturi + "</span>";
+
+   		document.getElementById(id).innerHTML = "<span class=\"selectbutton\"><input type=\"checkbox\" name=\"" + uid + "\" /></span>" + theBody;
+		show(id);
+		if(groupdiv != null) {
+			groupdiv.innerHTML += "<div class=\"tuple\" style=\"background-color:" + workbkgcolor + "\">" + theBody + "</div>";
+			show(groupdivid);
+   		}
+	}
+	catch(err){
+		console.log("displayWork error " + err);
+	}
+}*/
 
 /**
  * This details all checked object
@@ -3253,18 +3833,380 @@ function deleteFromServerStateChanged()
     }    	    	
 }
 
+function getWorkers()
+{
+	
+    xmlHttpConnectionGetWorkers=getXmlHttpObject();
+    if (xmlHttpConnectionGetWorkers==null)
+    {
+		return;
+    }
+
+	workerDataTreemapLength = 0;
+	workerDataTreemap = new Array();
+	workerDataTreemap.push(new Array('Name', 'Parent', 'Completed', 'Pending'));
+	workerDataTreemap.push(new Array('Applications', null, 0, 0));
+
+    var url="/gethosts";
+    xmlHttpConnectionGetWorkers.onreadystatechange=getWorkersStateChanged;
+    xmlHttpConnectionGetWorkers.open("POST",url,true);
+    xmlHttpConnectionGetWorkers.send(null);
+    
+}
+
+function getWorkersStateChanged()
+{ 
+	
+	var current = xmlHttpConnectionGetWorkers;
+    if (current.readyState!=4)
+    {
+        return;
+    }
+
+    var xmlDoc = null;
+    try {
+    	if (xmlDoc=current.responseXML == null) {
+    		if (current.status == 401) {
+	    		document.documentElement.innerHTML=current.responseText;
+	   			return;
+    		}
+    	}
+    	xmlDoc=current.responseXML.documentElement;
+	}
+	catch(err) {
+		connectionError();
+		return;
+	}
+
+	var xmlTagName = "XMLVALUE";
+	
+
+    if(rpcError(xmlDoc) == true) {
+        return;
+	}
+
+	/*document.getElementById(workerListID).innerHTML = 
+		  "<div class=\"tupletitre\">"+
+		    "<span class=\"value\">OS</span>" + " " +
+		    "<span class=\"value\">Proco</span>" +
+		"</div>";*/
+
+	workerDataTreemapLength = xmlDoc.getElementsByTagName(xmlTagName).length;
+
+	for (var i = 0; i < xmlDoc.getElementsByTagName(xmlTagName).length; i++) {
+    	try {
+			// this is the UID of the application
+			var uid = xmlDoc.getElementsByTagName(xmlTagName)[i].getAttribute("value");
+
+			var color = colors[(i % 2)];
+				
+			// this creates a new DIV with the ID=uid
+        	/*document.getElementById(workerListID).innerHTML += 
+        		"<div class=\"tuple\" style=\"background-color:" + color +
+        		"\" id=\"" + uid + "\"></div>";*/
+        	
+        	getWorker(uid);
+    	}
+    	catch(err){
+    	}
+    }
+	
+
+
+	// now, the user can get its jobs
+	hide("worksRefreshInfo");
+    show("worksRefresh");
+    
+    retourDataWorkerOSes = true;
+    retourDataWorkerCPUs = true;
+    
+    //refresh();
+	
+}
+
+function getWorker(uid)
+{ 
+    hashtableGetWorker[uid]=getXmlHttpObject();
+    if (hashtableGetWorker[uid]==null)
+    {
+		return;
+    }
+
+    var url="/get/" + uid;
+    hashtableGetWorker[uid].onreadystatechange=getWorkerStateChanged;
+    hashtableGetWorker[uid].open("POST",url,true);
+    hashtableGetWorker[uid].send(null);
+   
+
+}
+
+function getWorkerStateChanged()
+{
+	
+	for (var uid in hashtableGetWorker) {
+
+	    if (hashtableGetWorker.hasOwnProperty(uid) == false) {
+		    console.log("hashtableGetWorker.hasOwnProperty(" + uid + ") = false");
+	    	continue;
+    	}
+    	
+	    var current = hashtableGetWorker[uid];
+	     
+    	if (current.readyState!=4) {
+	        continue;
+    	}
+
+	    var xmlDoc = null;
+	    try {
+	    	if (xmlDoc=current.responseXML == null) {
+	    		if (current.status == 401) {
+		    		document.documentElement.innerHTML=current.responseText;
+		   			return;
+	    		}
+	    	}
+	    	xmlDoc=current.responseXML.documentElement;
+		}
+		catch(err) {
+			connectionError();
+			return;
+		}
+    	// get returns an app XML object
+		var xmlTagName = "worker";
+
+    	delete hashtableGetWorker[uid];
+		--workerDataTreemapLength;
+
+	    if(rpcError(xmlDoc) == true) {
+	        continue;
+		}
+	    
+   		try {
+   			
+		    var OS = xmlDoc.getElementsByTagName("os").item(0).firstChild.nodeValue;
+	    	var CPU = xmlDoc.getElementsByTagName("cputype").item(0).firstChild.nodeValue;
+	    	
+		    /*var nbJobs = 0;
+		    try {
+		    	nbJobs = xmlDoc.getElementsByTagName("nbjobs").item(0).firstChild.nodeValue;
+		    }
+		    catch(err) {
+		    }
+		    var runningJobs = 0;
+		    try {
+		    	runningJobs = xmlDoc.getElementsByTagName("runningjobs").item(0).firstChild.nodeValue;
+		    }
+		    catch(err) {
+		    }
+		    var pendingJobs = 0;
+		    try {
+			    pendingJobs = xmlDoc.getElementsByTagName("pendingjobs").item(0).firstChild.nodeValue;
+		    }
+		    catch(err) {
+		    }
+
+			workerDataTreemap.push(new Array(name, 'Applications', parseInt(nbJobs), parseInt(pendingJobs)));
+
+		    console.log("Worker " + name);*/
+
+        	/*document.getElementById(uid).innerHTML =
+        	    "<span class=\"firstvalue\" id=\"" + appuidheader + uid + "\">" + OS + "</span>" +"     "+
+        		"<span class=\"lastvalue\">" + CPU + "</span></br>";*/
+        	
+        	actualOSes.push(OS);
+        	actualCPUs.push(CPU);
+        		
+			if (overviewWorkerContent.length == 0) {
+				overviewWorkerContent.push(new Array('WorkerName', 'Parent', 'Completed', 'Running'));
+				overviewWorkerContent.push(new Array('Global' ,  null   ,  0         ,  0));
+			}
+			var workerContent = new Array(name, 'Global', nbJobs, runningJobs + pendingJobs);
+			overviewWorkerContent.push(workerContent);
+		    
+   		}
+   		catch(err){
+   		console.log(err);
+   		}
+    }
+    
+}
+
+/*
+ * FONCTIONS RECUPERATION NOMBRE OS
+ */
+
+function countMACOSX(){
+	
+	var countMACOSX = 0;
+	for (var i in actualOSes){
+		if(actualOSes[i] == "MACOSX"){
+			countMACOSX += 1;
+		}	
+	}
+	return countMACOSX;
+}
+
+function countLINUX(){
+	var countLINUX = 0;
+	for (var i in actualOSes){
+		if(actualOSes[i] == "LINUX"){
+			countLINUX++;
+		}	
+	}
+	return countLINUX;
+}
+
+function countWIN32(){
+	var countWIN32 = 0;
+	for (var i in actualOSes){
+		if(actualOSes[i] == "WIN32"){
+			countWIN32++;
+		}	
+	}
+	return countWIN32;
+}
+
+function countOSF1(){
+	var countOSF1 = 0;
+	for (var i in actualOSes){
+		if(actualOSes[i] == "OSF1"){
+			countOSF1++;
+		}	
+	}
+	return countOSF1;
+}
+
+function countJAVA(){
+	var countJAVA = 0;
+	for (var i in actualOSes){
+		if(actualOSes[i] == "JAVA"){
+			countJAVA++;
+		}	
+	}
+	return countJAVA;
+}
+
+function countSOLARIS(){
+	var countSOLARIS = 0;
+	for (var i in actualOSes){
+		if(actualOSes[i] == "SOLARIS"){
+			countSOLARIS++;
+		}	
+	}
+	return countSOLARIS;
+}
+
+/*
+ * FIN FONCTIONS RECUPERATION NOMBRE OS
+ */
+
+/*
+ * FONCTIONS RECUPERATION NOMBRE CPU
+ */
+
+function countX86_64(){
+	var countX86_64 = 0;
+	for (var i in actualCPUs){
+		if(actualCPUs[i] == "X86_64"){
+			countX86_64++;
+		}
+	}
+	return countX86_64;
+}
+
+function countARM(){
+	var countARM = 0;
+	for (var i in actualCPUs){
+		if(actualCPUs[i] == "ARM"){
+			countARM++;
+		}
+	}
+	return countARM;
+}
+
+function countIX86(){
+	var countIX86 = 0;
+	for (var i in actualCPUs){
+		if(actualCPUs[i] == "IX86"){
+			countIX86++;
+		}
+	}
+	return countIX86;
+}
+
+function countIA64(){
+	var countIA64 = 0;
+	for (var i in actualCPUs){
+		if(actualCPUs[i] == "IA64"){
+			countIA64++;
+		}
+	}
+	return countIA64;
+}
+
+function countPPC(){
+	var countPPC = 0;
+	for (var i in actualCPUs){
+		if(actualCPUs[i] == "PPC"){
+			countPPC++;
+		}
+	}
+	return countPPC;
+}
+
+function countSPARC(){
+	var countSPARC = 0;
+	for (var i in actualCPUs){
+		if(actualCPUs[i] == "SPARC"){
+			countSPARC++;
+		}
+	}
+	return countSPARC;
+}
+
+function countALPHA(){
+	var countALPHA = 0;
+	for (var i in actualCPUs){
+		if(actualCPUs[i] == "ALPHA"){
+			countALPHA++;
+		}
+	}
+	return countALPHA;
+}
+
+function countAMD64(){
+	var countAMD64 = 0;
+	for (var i in actualCPUs){
+		if(actualCPUs[i] == "AMD64"){
+			countAMD64++;
+		}
+	}
+	return countAMD64;
+}
+/*
+ * FIN FONCTIONS RECUPERATION NOMBRE CPU
+ */
+
 /*
  * OSes chart
  */
+
 google.charts.load("current", {packages:["corechart"]});
-google.charts.setOnLoadCallback(drawOSesChart);
-function drawOSesChart() {
+
+function drawOSesChart() {	
+	
+  if(retourDataWorkerOSes == false){
+	  return;
+  }
+  else{
   var osesData = google.visualization.arrayToDataTable([
       ['OSes', 'OS types'],
-      ['Windows',     11],
-      ['Mac OS',      2],
-      ['Linux',  2]
-  ]);
+      ['LINUX', countLINUX()],
+      ['WIN32', countWIN32()],
+      ['MACOSX', countMACOSX()],
+      ['OSF1', countOSF1()],
+      ['SOLARIS', countSOLARIS()],
+      ['JAVA', countJAVA()]
+    		  ]);
 
   var osesChartOptions = {
       pieHole: 0.4,
@@ -3273,18 +4215,32 @@ function drawOSesChart() {
 
   var osesChart = new google.visualization.PieChart(document.getElementById('osesChart'));
   osesChart.draw(osesData, osesChartOptions);
+  actualOSes = [];
+  //alert("est false OSes");
+  retourDataWorkerOSes = false;
+  }
 }
                 
 /*
  * CPUs chart
  */
-google.charts.setOnLoadCallback(drawCPUsChart);
-function drawCPUsChart() {
+
+function drawCPUsChart(Array) {
+	
+	if(retourDataWorkerCPUs == false){
+		return;
+	}
+	else{
 	var cpusData = google.visualization.arrayToDataTable([
     					['CPUs', 'CPU types'],
-						['x86_64',     110],
-						['ix86',      78],
-						['PPC',  10]
+						['IX86', countIX86()],
+						['X86_64', countX86_64()],
+						['IA64', countIA64()],
+						['PPC', countPPC()],
+						['SPARC', countSPARC()],
+						['ALPHA', countALPHA()],
+						['AMD64', countAMD64()],
+						['ARM', countARM()]
 	]);
  
     var cpuChartOptions = {
@@ -3294,6 +4250,10 @@ function drawCPUsChart() {
 
     var cpusChart = new google.visualization.PieChart(document.getElementById('cpusChart'));
     cpusChart.draw(cpusData, cpuChartOptions);
+    actualCPUs = [];
+    //alert("set false CPUs");
+    retourDataWorkerCPUs = false;
+	}
 }
 
 /*********************
