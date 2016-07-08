@@ -322,7 +322,7 @@
     	includeAntRuntime="false"
     	destdir="${build.classes}"
 	   srcdir="${src.java.dir}"
-	   source="1.6"
+	   source="1.7"
 	   deprecation="on">
       <patternset>
         <include name="XwIDL/**/*.java" />
@@ -338,7 +338,7 @@
     	includeAntRuntime="false"
 	   destdir="${build.classes}"
 	   srcdir="${src.java.dir}"
-	   source="1.6"
+	   source="1.7"
 	   deprecation="on">
       <patternset>
         <include name="obj/**/*.java" />
@@ -354,7 +354,7 @@
     	includeAntRuntime="false"
 	   destdir="${build.classes}"
 	   srcdir="${src.java.dir}"
-	   source="1.6"
+	   source="1.7"
 	   deprecation="on">
       <patternset>
         <include name="iface/**/*.java" />
@@ -374,7 +374,7 @@
     	includeAntRuntime="false"
 	   destdir="${build.classes}"
 	   srcdir="${src.java.dir}"
-	   source="1.6"
+	   source="1.7"
 	   deprecation="on">
       <patternset>
         <include name="**/*.java" />
@@ -394,7 +394,7 @@
     	includeAntRuntime="false"
 	   destdir="${build.classes}" 
 	   srcdir="${src.java.dir}"
-	   source="1.6"
+	   source="1.7"
 	   deprecation="on">
       <patternset>
         <include name="communications/**/*.java" />
@@ -410,7 +410,7 @@
     	includeAntRuntime="false"
 	   destdir="${build.classes}" 
 	   srcdir="${src.java.dir}"
-	   source="1.6"
+	   source="1.7"
 	   deprecation="on">
       <patternset>
         <include name="services/**/*.java" />
@@ -500,7 +500,7 @@ and try the 6 following exec tasks
     	includeAntRuntime="false"
 	   destdir="${build.classes}" 
 	   srcdir="${src.java.dir}"
-	   source="1.6"
+	   source="1.7"
 	   deprecation="on">
       <patternset><include name="archdep/**" /></patternset> 
     </javac>
@@ -516,7 +516,7 @@ and try the 6 following exec tasks
 	    	includeAntRuntime="false"
 		   destdir="${build.classes}" 
 		   srcdir="${src.java.test.dir}"
-		   source="1.6"
+		   source="1.7"
 		   deprecation="on">
 	      <patternset>
 	        <include name="**" />
@@ -534,7 +534,7 @@ and try the 6 following exec tasks
     	includeAntRuntime="false"
 	   destdir="${build.classes}" 
 	   srcdir="${src.java.dir}"
-	   source="1.6"
+	   source="1.7"
 	   deprecation="on">
       <patternset>
         <include name="dispatcher/**" />
@@ -554,7 +554,7 @@ and try the 6 following exec tasks
     	includeAntRuntime="false"
 	   destdir="${build.classes}"
 	   srcdir="${src.java.dir}"
-	   source="1.6"
+	   source="1.7"
 	   deprecation="on">
       <patternset>
 	<include name="worker/**" />
@@ -622,7 +622,7 @@ and try the 6 following exec tasks
     	includeAntRuntime="false"
 	     destdir="${build.classes}" 
 	     srcdir="${src.java.dir}"
-	     source="1.6"
+	     source="1.7"
 	     deprecation="on">
         <patternset>
           <include name="data/**" />
@@ -643,7 +643,7 @@ and try the 6 following exec tasks
     	includeAntRuntime="false"
 	     destdir="${build.classes}" 
 	     srcdir="${src.java.dir}"
-	     source="1.6"
+	     source="1.7"
 	     deprecation="on">
         <patternset>
 	  <include name="rpcd/**" />
@@ -688,7 +688,7 @@ and try the 6 following exec tasks
     	includeAntRuntime="false"
 	     destdir="${build.classes}" 
 	     srcdir="${src.java.dir}"
-	     source="1.6"
+	     source="1.7"
 	     deprecation="on">
         <patternset>
 	  <include name="rpcv/**" />
@@ -706,7 +706,7 @@ and try the 6 following exec tasks
     	includeAntRuntime="false"
 	     destdir="${build.classes}" 
 	     srcdir="${src.java.dir}"
-	     source="1.6"
+	     source="1.7"
 	     deprecation="on">
         <patternset>
 	  <include name="monitor/**" />
@@ -725,7 +725,7 @@ and try the 6 following exec tasks
     	includeAntRuntime="false"
 	   destdir="${build.classes}" 
 	   srcdir="${src.java.dir}"
-	   source="1.6"
+	   source="1.7"
 	   deprecation="on">
       <patternset>
 	<include name="EP/**" />
@@ -743,7 +743,7 @@ and try the 6 following exec tasks
     	includeAntRuntime="false"
 	   destdir="${build.classes}" 
 	   srcdir="${src.java.dir}"
-	   source="1.6"
+	   source="1.7"
 	   deprecation="on">
       <patternset>
         <include name="upgrade/**" />
