@@ -32,7 +32,7 @@ Deploying an XWHEP platform consists on
 -2-  Requirements : 
      ============
 
-   Java 1.6 or above (http://java.cun.com)
+   Java 1.7 or above (http://java.cun.com)
 
    Mysql             (http://www.mysql.com)
      Under Debian : apt-get install mysql-server
