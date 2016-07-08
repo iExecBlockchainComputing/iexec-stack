@@ -107,6 +107,7 @@
   <target name="prepare" depends="version">
     <property file="${build.dir}/build.conf"/>
 
+    <property name="install.dir" value="/opt" />
     <property name="installDir" value="${install.dir}/${ant.project.name}-${version}" />
 
     <property name="dist.dir" value="${build.dir}/dist/${ant.project.name}-${version}" />
@@ -144,10 +145,6 @@
     <property name="dist.dir.macosx.client" value="${dist.dir.macosx}/xwhep.client" />
     <property name="dist.dir.client" value="${dist.dir.installers}/xwhep.client/" />
 
-    <!-- MAKE THE DIRECTORIES IF NEEDED -->
-<!--
-    <mkdir dir="${installDir}"/>
--->
   </target>
 
   
