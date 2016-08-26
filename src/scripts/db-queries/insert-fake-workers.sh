@@ -133,7 +133,7 @@ for ((i=0;i<NBHOSTS;i++)) ; do
 
 	WORKER_UID=`uuidgen`
 	mysql $MYSQLOPTS -B -e "insert into hosts (uid,owneruid,accessrights,lastalive,version,osid,os,cputypeid,cputype)       \
-							values (\"$WORKER_UID\",\"$WORKER_OWNER_UID\",'1792', now(),'10.2.0-head', \
+							values (\"$WORKER_UID\",\"$WORKER_OWNER_UID\",'1877', now(),'10.2.0-head', \
 			               			(select osId from oses where osName = \"$OS\"),\"$OS\",    \
 			               			(select cpuTypeId from cputypes where cpuTypeName = \"$CPU\"),\"$CPU\"     \
 			               		)"

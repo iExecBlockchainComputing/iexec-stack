@@ -149,7 +149,7 @@ for ((i=0;i<NBJOBS;i++)) ; do
 
 	WORK_UID=`uuidgen`
 	mysql $MYSQLOPTS -B -e "insert into works (uid,owneruid,accessrights,appuid,arrivaldate,statusid,status)       \
-							values (\"$WORK_UID\",\"$JOB_OWNER_UID\",'1792', \"$APPTEST_UID\", now(), \
+							values (\"$WORK_UID\",\"$JOB_OWNER_UID\",'1877', \"$APPTEST_UID\", now(), \
 			               			(select statusid from statuses where statusName = \"$STATUS\"),\"$STATUS\"     \
 			               		)"
 done
