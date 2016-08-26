@@ -265,7 +265,7 @@ case "$OSTYPE" in
 esac
 
 
-VBREQUIREDVERSION="5.0"
+VBREQUIREDVERSION="5.1"
 
 VBVERSION="$("$VBMGT"  -v  |  cut  -d .  -f 1-2)"
 
@@ -1041,12 +1041,6 @@ END_OF_INSTALL_VARS
     
   fi
 
-  wait_for_other_virtualbox_management_to_finish  install
-  #---------------------------------------------------------------------------
-  debug_message  "install '$VMNAME' :  controlvm (${XWCPULOAD})"
-  #---------------------------------------------------------------------------
-  ( [ "$VERBOSE" ]  &&  set -x
-    "$VBMGT"  controlvm  "$VMNAME"  cpuexecutioncap  "$XWCPULOAD" )
   sleep  "$WAITDELAY"
 }
 
@@ -1233,6 +1227,13 @@ if [ "$START" = "TRUE" ]; then
     ( [ "$VERBOSE" ]  &&  { echo > /dev/stderr;  set -x; }
       "$VBHL"  --startvm  "$VMNAME" )
   fi
+
+  wait_for_other_virtualbox_management_to_finish  install
+  #---------------------------------------------------------------------------
+  info_message "start '$VMNAME' :  controlvm (${XWCPULOAD})"
+  #---------------------------------------------------------------------------
+  ( [ "$VERBOSE" ]  &&  set -x
+    "$VBMGT"  controlvm  "$VMNAME"  cpuexecutioncap  "$XWCPULOAD" )
 fi
 
 #
