@@ -133,14 +133,13 @@ public class AccessLogger {
 
 		logger = new Logger(this);
 
-		File rootFile = null;
 		try {
 			logPath = root;
 			server = s;
 			out = null;
 			logDate = Calendar.getInstance();
 			try {
-				rootFile = new File(root, DIRNAME);
+				final File rootFile = new File(root, DIRNAME);
 				XWTools.checkDir(rootFile);
 			} catch (final IOException ioe) {
 				logPath = null;
@@ -149,7 +148,6 @@ public class AccessLogger {
 			}
 			setInstance(this);
 		} finally {
-			rootFile = null;
 		}
 	}
 
