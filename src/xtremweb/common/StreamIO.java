@@ -52,7 +52,7 @@ import java.util.Vector;
  * @version RPCXW
  */
 
-public class StreamIO {
+public class StreamIO implements AutoCloseable {
 
 	private final Logger logger;
 
