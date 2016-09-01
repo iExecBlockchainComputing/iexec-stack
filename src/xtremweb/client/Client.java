@@ -362,13 +362,13 @@ public final class Client {
 		if (args.getOption(CommandLineOptions.OUT) != null) {
 			final String path = (String) args.getOption(CommandLineOptions.OUT);
 			fpath = new File(path);
-			if (fpath.isDirectory() == false){
+			if (!fpath.isDirectory()){
 				fpath = null;
 				fname = path;
 			}
 		}
 		final File fdata = new File(fpath,fname);
-
+		fpath = null;
 		logger.debug("Download uri = " + uri + " fdata = " + fdata);
 		commClient.downloadData(uri, fdata);
 		if (data.getMD5().compareTo(MD5.asHex(MD5.getHash(fdata))) != 0) {
@@ -376,7 +376,6 @@ public final class Client {
 			throw new IOException(uri.toString() + " MD5 differs");
 		}
 		logger.info("Downloaded to : " + fdata.getAbsolutePath());
-		fpath = null;
 	}
 
 	/**
@@ -400,26 +399,21 @@ public final class Client {
 		final String fname = url.getPath().replace('/', '_').replace(' ', '_');
 		final File fdata = new File(fname);
 
-		IOException ioe = null;
-		StreamIO io = null;
-		try {
+		try (final StreamIO io = 
+				new StreamIO(
+						null, 
+						new DataInputStream(url.openStream()),
+						false))
+			{
 			mileStone.println("Reading file " + fdata);
-			io = new StreamIO(null, new DataInputStream(url.openStream()),
-					false);
+			
 
 			io.readFileContent(fdata);
 			io.close();
 			mileStone.println("Read file " + fdata);
 		} catch (final IOException e) {
 			logger.exception(e);
-			ioe = e;
-		} finally {
-			if (io != null) {
-				io.close();
-			}
-			if (ioe != null) {
-				throw ioe;
-			}
+			throw (e);
 		}
 	}
 
@@ -1260,14 +1254,8 @@ public final class Client {
 		final File xmlFile = (File) args.getOption(CommandLineOptions.XML);
 
 		if (xmlFile != null) {
-			FileInputStream fis = null;
-			try {
-				fis = new FileInputStream(xmlFile);
-				app = (AppInterface) Table.newInterface(fis);
-			} finally {
-				fis.close();
-				fis = null;
-			}
+			final FileInputStream fis = new FileInputStream(xmlFile);
+			app = (AppInterface) Table.newInterface(fis);
 			if (app.getName() == null) {
 				throw new IOException("application name cannot be null");
 			}
@@ -1591,14 +1579,8 @@ public final class Client {
 		final File xmlFile = (File) args.getOption(CommandLineOptions.XML);
 
 		if (xmlFile != null) {
-			FileInputStream fis = null;
-			try {
-				fis = new FileInputStream(xmlFile);
-				data = (DataInterface) Table.newInterface(fis);
-			} finally {
-				fis.close();
-				fis = null;
-			}
+			final FileInputStream fis = new FileInputStream(xmlFile);
+			data = (DataInterface) Table.newInterface(fis);
 			if (data.getUID() == null) {
 				data.setUID(uid);
 			}
@@ -1949,17 +1931,10 @@ public final class Client {
 		final UID uid = new UID();
 		final File xmlFile = (File) args.getOption(CommandLineOptions.XML);
 		if (xmlFile != null) {
-			FileInputStream fis = null;
-			try {
-				fis = new FileInputStream(xmlFile);
+			try (FileInputStream fis = new FileInputStream(xmlFile)) {
 				group = (GroupInterface) Table.newInterface(fis);
 			} catch (final Exception e) {
 				throw new IOException(e.getMessage());
-			} finally {
-				if (fis != null) {
-					fis.close();
-				}
-				fis = null;
 			}
 			if (group.getUID() == null) {
 				group.setUID(uid);
@@ -2129,15 +2104,10 @@ public final class Client {
 		final File xmlFile = (File) args.getOption(CommandLineOptions.XML);
 
 		if (xmlFile != null) {
-			FileInputStream fis = null;
-			try {
-				fis = new FileInputStream(xmlFile);
+			try (FileInputStream fis = new FileInputStream(xmlFile)){
 				session = (SessionInterface) Table.newInterface(fis);
 			} catch (final Exception e) {
 				throw new IOException(e.getMessage());
-			} finally {
-				fis.close();
-				fis = null;
 			}
 			if (session.getUID() == null) {
 				session.setUID(uid);
@@ -2346,17 +2316,10 @@ public final class Client {
 
 		final File xmlFile = (File) args.getOption(CommandLineOptions.XML);
 		if (xmlFile != null) {
-			FileInputStream fis = null;
-			try {
-				fis = new FileInputStream(xmlFile);
+			try (FileInputStream fis = new FileInputStream(xmlFile)){
 				group = (UserGroupInterface) Table.newInterface(fis);
 			} catch (final Exception e) {
 				throw new IOException(e.getMessage());
-			} finally {
-				if (fis != null) {
-					fis.close();
-				}
-				fis = null;
 			}
 			if (group.getUID() == null) {
 				group.setUID(groupUID);
@@ -2554,17 +2517,10 @@ public final class Client {
 		UserInterface user = null;
 		final File xmlFile = (File) args.getOption(CommandLineOptions.XML);
 		if (xmlFile != null) {
-			FileInputStream fis = null;
-			try {
-				fis = new FileInputStream(xmlFile);
+			try (FileInputStream fis = new FileInputStream(xmlFile)){
 				user = (UserInterface) Table.newInterface(fis);
 			} catch (final Exception e) {
 				throw new IOException(e.getMessage());
-			} finally {
-				if (fis != null) {
-					fis.close();
-				}
-				fis = null;
 			}
 			if (user.getLogin() == null) {
 				throw new ParseException("user login can not be null", 0);
@@ -2858,17 +2814,10 @@ public final class Client {
 		final File xmlFile = (File) args.getOption(CommandLineOptions.XML);
 
 		if (xmlFile != null) {
-			FileInputStream fis = null;
-			try {
-				fis = new FileInputStream(xmlFile);
+			try (FileInputStream fis = new FileInputStream(xmlFile)) {
 				work = (WorkInterface) Table.newInterface(fis);
 			} catch (final Exception e) {
 				throw new IOException(e.getMessage());
-			} finally {
-				if (fis != null) {
-					fis.close();
-				}
-				fis = null;
 			}
 			if (work.getUID() == null) {
 				work.setUID(uid);
