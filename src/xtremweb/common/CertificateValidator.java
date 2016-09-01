@@ -102,24 +102,13 @@ public final class CertificateValidator {
 		/**
 		 *
 		 */
-		public CACertPath(X509Certificate c, File f) throws IOException,
-				CertificateException {
+		public CACertPath(X509Certificate c, File f) throws IOException, CertificateException {
 
-			FileInputStream certis = null;
-			CertPath certPath = null;
-			try {
-				certis = new FileInputStream(f);
+			try (FileInputStream certis = new FileInputStream(f)) {
 				mostTrustedCertParams = createParams(c);
-				certPath = certFactory.generateCertPath(certis, "PKCS7");
-				certPathList = (LinkedList<X509Certificate>) certPath
-						.getCertificates();
+				final CertPath certPath = certFactory.generateCertPath(certis, "PKCS7");
+				certPathList = (LinkedList<X509Certificate>) certPath.getCertificates();
 			} finally {
-				try {
-					certis.close();
-				} catch (final Exception e) {
-				}
-				certis = null;
-				certPath = null;
 			}
 		}
 
@@ -130,8 +119,7 @@ public final class CertificateValidator {
 		 *            contains the certificate path; it must not contain the
 		 *            most trusted cert CA
 		 */
-		public CACertPath(PKIXParameters p, CertPath cp)
-				throws NoSuchAlgorithmException {
+		public CACertPath(PKIXParameters p, CertPath cp) throws NoSuchAlgorithmException {
 
 			mostTrustedCertParams = p;
 			certPathList = (LinkedList<X509Certificate>) cp.getCertificates();
@@ -144,8 +132,7 @@ public final class CertificateValidator {
 		 *            contains the certificate path; it must not contain the
 		 *            most trusted cert CA
 		 */
-		public CACertPath(X509Certificate c, CertPath cp) throws IOException,
-				CertificateException {
+		public CACertPath(X509Certificate c, CertPath cp) throws IOException, CertificateException {
 
 			mostTrustedCertParams = createParams(c);
 			certPathList = (LinkedList<X509Certificate>) cp.getCertificates();
@@ -172,8 +159,7 @@ public final class CertificateValidator {
 		 *            contains the certificates list of the certificate path; it
 		 *            must not contain the most trusted cert CA
 		 */
-		public CACertPath(PKIXParameters p, LinkedList<X509Certificate> list)
-				throws CertificateException {
+		public CACertPath(PKIXParameters p, LinkedList<X509Certificate> list) throws CertificateException {
 
 			mostTrustedCertParams = p;
 			certPathList = list;
@@ -187,8 +173,7 @@ public final class CertificateValidator {
 		 *            contains the certificates of the path; it must contain the
 		 *            most trusted cert CA at last position
 		 */
-		public CACertPath(LinkedList<X509Certificate> list)
-				throws CertificateException {
+		public CACertPath(LinkedList<X509Certificate> list) throws CertificateException {
 
 			X509Certificate mostTrustedCert = null;
 			try {
@@ -199,29 +184,21 @@ public final class CertificateValidator {
 				mostTrustedCertParams = createParams(mostTrustedCert);
 				certPathList = list;
 				int numcert = 0;
-				for (final ListIterator<X509Certificate> certsIterator = list
-						.listIterator(); certsIterator.hasNext();) {
+				for (final ListIterator<X509Certificate> certsIterator = list.listIterator(); certsIterator
+						.hasNext();) {
 
-					X509Certificate theCert = certsIterator.next();
+					final X509Certificate theCert = certsIterator.next();
 
 					numcert++;
 
-					try {
-						logger.info("theCert   SubjectDN = "
-								+ theCert.getSubjectDN());
-						logger.info("theCert   IssuerDN  = "
-								+ theCert.getIssuerDN());
-					} finally {
-						theCert = null;
-					}
+					logger.info("theCert   SubjectDN = " + theCert.getSubjectDN());
+					logger.info("theCert   IssuerDN  = " + theCert.getIssuerDN());
 				}
 
 				logger.info(">>> CACertPath : Most Trusted");
 
-				logger.info("mostTrustedCert SubjectDN = "
-						+ mostTrustedCert.getSubjectDN());
-				logger.info("mostTrustedCert IssuerDN  = "
-						+ mostTrustedCert.getIssuerDN());
+				logger.info("mostTrustedCert SubjectDN = " + mostTrustedCert.getSubjectDN());
+				logger.info("mostTrustedCert IssuerDN  = " + mostTrustedCert.getIssuerDN());
 
 				logger.info("<<< CACertPath");
 			} catch (final Exception e) {
@@ -237,33 +214,25 @@ public final class CertificateValidator {
 		 * @param proxy
 		 *            contains public certificate from X50 proxy
 		 */
-		public CertPathValidatorResult validate(X509CertPath proxy)
-				throws CertPathValidatorException {
-			CertPathValidatorResult ret = null;
-			CertPath certPath = null;
+		public CertPathValidatorResult validate(X509CertPath proxy) throws CertPathValidatorException {
 
 			try {
 				final X509Certificate proxyFirst = proxy.getFirst();
 				final X509Certificate proxyLast = proxy.getLast();
 				final X509Certificate pathFirst = certPathList.getFirst();
 
-				if (proxyLast.getIssuerDN().toString()
-						.compareTo(pathFirst.getSubjectDN().toString()) != 0) {
+				if (proxyLast.getIssuerDN().toString().compareTo(pathFirst.getSubjectDN().toString()) != 0) {
 					throw new CertPathValidatorException(
-							pathFirst.getSubjectDN() + " is not the issuer of "
-									+ proxyLast.getIssuerDN());
+							pathFirst.getSubjectDN() + " is not the issuer of " + proxyLast.getIssuerDN());
 				}
-				logger.info(">> Validating proxy most trusted ("
-						+ proxyLast.getIssuerDN()
-						+ ") is issued by cert path least trusted "
-						+ pathFirst.getSubjectDN());
+				logger.info(">> Validating proxy most trusted (" + proxyLast.getIssuerDN()
+						+ ") is issued by cert path least trusted " + pathFirst.getSubjectDN());
 				logger.info(">> Validating MTC " + mostTrustedCertParams);
 
 				final int proxysize = proxy.size();
 				certPathList.add(0, proxyLast);
 
-				final ListIterator<X509Certificate> certsIterator = certPathList
-						.listIterator();
+				final ListIterator<X509Certificate> certsIterator = certPathList.listIterator();
 
 				while (certsIterator.hasNext()) {
 					final X509Certificate theCert = certsIterator.next();
@@ -280,14 +249,10 @@ public final class CertificateValidator {
 
 				}
 
-				certPath = certFactory.generateCertPath(certPathList);
-				ret = pathValidator.validate(certPath, mostTrustedCertParams);
-				return ret;
+				final CertPath certPath = certFactory.generateCertPath(certPathList);
+				return pathValidator.validate(certPath, mostTrustedCertParams);
 			} catch (final Exception e) {
 				throw new CertPathValidatorException(e);
-			} finally {
-				certPath = null;
-				ret = null;
 			}
 		}
 	}
@@ -405,8 +370,7 @@ public final class CertificateValidator {
 	 *                - if X509_CERT_DIR is not set or does no denote a
 	 *                directory of certificates
 	 */
-	public CertificateValidator() throws CertificateException, IOException,
-			NoSuchAlgorithmException {
+	public CertificateValidator() throws CertificateException, IOException, NoSuchAlgorithmException {
 
 		logger = new Logger(this);
 		logger.setLoggerLevel(LoggerLevel.INFO);
@@ -443,16 +407,9 @@ public final class CertificateValidator {
 	 * @exception CertPathValidatorException
 	 *                is thrown on validation error
 	 */
-	public void validate(String userCertFileName) throws IOException,
-			CertificateException, CertPathValidatorException {
-		File userCertFile = null;
+	public void validate(String userCertFileName) throws IOException, CertificateException, CertPathValidatorException {
 
-		try {
-			userCertFile = new File(userCertFileName);
-			validate(userCertFile);
-		} finally {
-			userCertFile = null;
-		}
+		validate(new File(userCertFileName));
 	}
 
 	/**
@@ -467,8 +424,7 @@ public final class CertificateValidator {
 	 * @exception CertPathValidatorException
 	 *                - on validation error
 	 */
-	public void validate(File userCertFile) throws IOException,
-			CertificateException, CertPathValidatorException {
+	public void validate(File userCertFile) throws IOException, CertificateException, CertPathValidatorException {
 		final Enumeration<CACertPath> listsEnum = caCertPaths.elements();
 		boolean validated = false;
 
@@ -477,20 +433,16 @@ public final class CertificateValidator {
 		final X509CertPath certsFromProxy = getCertsFromX509(userCertFile);
 
 		while (listsEnum.hasMoreElements() && !validated) {
-			CACertPath cacertpath = null;
 			try {
-				cacertpath = listsEnum.nextElement();
+				final CACertPath cacertpath = listsEnum.nextElement();
 				cacertpath.validate(certsFromProxy);
 				validated = true;
 			} catch (final CertPathValidatorException e) {
 				logger.info(e.toString());
-			} finally {
-				cacertpath = null;
 			}
 		}
 		if (!validated) {
-			throw new CertPathValidatorException(
-					"not validated through all CA cert paths");
+			throw new CertPathValidatorException("not validated through all CA cert paths");
 		}
 
 		logger.info("Validated");
@@ -509,8 +461,7 @@ public final class CertificateValidator {
 	 * @exception CertPathValidatorException
 	 *                is thrown on validation error
 	 */
-	X509CertPath getCertsFromX509(File certFile) throws IOException,
-			CertificateException {
+	X509CertPath getCertsFromX509(File certFile) throws IOException, CertificateException {
 
 		if (certFile == null) {
 			throw new IOException("file is null");
@@ -520,77 +471,51 @@ public final class CertificateValidator {
 		}
 
 		final X509CertPath ret = new X509CertPath();
-		FileInputStream inputstream = null;
-		BufferedInputStream bis = null;
 
-		try {
-			inputstream = new java.io.FileInputStream(certFile);
-			bis = new BufferedInputStream(inputstream);
-
-			final int i = 0;
+		try (FileInputStream inputstream = new java.io.FileInputStream(certFile);
+				BufferedInputStream bis = new BufferedInputStream(inputstream)) {
 
 			while (bis.available() > 0) {
-				X509Certificate theCert = null;
-				X509Certificate firstcert = null;
-				X509Certificate lastcert = null;
+
 				try {
-					theCert = (X509Certificate) certFactory
-							.generateCertificate(bis);
+					final X509Certificate theCert = (X509Certificate) certFactory.generateCertificate(bis);
 					logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> " + certFile);
 					logger.info("SubjectDN = " + theCert.getSubjectDN());
 					logger.info("IssuerDN  = " + theCert.getIssuerDN());
-					logger.info("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< ["
-							+ ret.size() + "]  " + certFile);
+					logger.info("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< [" + ret.size() + "]  " + certFile);
 
 					theCert.checkValidity();
 
 					if (ret.size() == 0) {
 						logger.info(">>>>>>>>>> add " + theCert.getSubjectDN());
 						ret.add(theCert);
-						theCert = null;
 						continue;
 					}
 
-					firstcert = ret.getFirst();
-					lastcert = ret.getLast();
+					final X509Certificate firstcert = ret.getFirst();
+					final X509Certificate lastcert = ret.getLast();
 
-					if (theCert.getIssuerDN().toString()
-							.compareTo(firstcert.getSubjectDN().toString()) == 0) {
+					if (theCert.getIssuerDN().toString().compareTo(firstcert.getSubjectDN().toString()) == 0) {
 						ret.addFirst(theCert);
-						logger.info(">>>>>>>>>> addFirst "
-								+ theCert.getSubjectDN() + " is issued by "
+						logger.info(">>>>>>>>>> addFirst " + theCert.getSubjectDN() + " is issued by "
 								+ firstcert.getSubjectDN());
 						continue;
 					}
 
-					if (theCert.getSubjectDN().toString()
-							.compareTo(lastcert.getIssuerDN().toString()) == 0) {
+					if (theCert.getSubjectDN().toString().compareTo(lastcert.getIssuerDN().toString()) == 0) {
 						ret.addLast(theCert);
-						logger.info(">>>>>>>>>> addLast  "
-								+ theCert.getSubjectDN() + " is issuer of "
+						logger.info(">>>>>>>>>> addLast  " + theCert.getSubjectDN() + " is issuer of "
 								+ lastcert.getSubjectDN());
 						continue;
 					}
 
-					throw new CertificateParsingException(theCert
-							.getSubjectDN().toString()
-							+ " is not in the X509 path ?!?!");
+					throw new CertificateParsingException(
+							theCert.getSubjectDN().toString() + " is not in the X509 path ?!?!");
 				} catch (final CertificateParsingException e) {
-				} finally {
-					theCert = null;
-					firstcert = null;
-					lastcert = null;
 				}
 			}
-		} finally {
-			try {
-				if (bis != null) {
-					bis.close();
-				}
-			} catch (final IOException ioe) {
-			}
-			inputstream = null;
-			bis = null;
+		} catch (IOException e) {
+			throw e;
 		}
 
 		return ret;
@@ -606,17 +531,9 @@ public final class CertificateValidator {
 	 *            trusted CA
 	 * @return a PKIXParameters for the most trusted CA
 	 */
-	public PKIXParameters createParams(String anchorPathName)
-			throws IOException, CertificateException {
-		File anchorFile = null;
-		PKIXParameters ret = null;
-		try {
-			anchorFile = new File(anchorPathName);
-			ret = createParams(anchorFile);
-		} finally {
-			anchorFile = null;
-		}
-		return ret;
+	public PKIXParameters createParams(String anchorPathName) throws IOException, CertificateException {
+		final File anchorFile = new File(anchorPathName);
+		return createParams(anchorFile);
 	}
 
 	/**
@@ -629,25 +546,15 @@ public final class CertificateValidator {
 	 * @see #createParams(String)
 	 * @return a PKIXParameters for the most trusted CA
 	 */
-	public PKIXParameters createParams(File anchorFile) throws IOException,
-			CertificateException {
-		X509Certificate anchorCert = null;
-		PKIXParameters ret = null;
-		FileInputStream certis = null;
-		File[] anchorFiles = null;
+	public PKIXParameters createParams(File anchorFile) throws IOException, CertificateException {
 
-		try {
-			certis = new FileInputStream(anchorFile);
-			anchorCert = (X509Certificate) certFactory
-					.generateCertificate(certis);
-			ret = createParams(anchorCert);
+		try (FileInputStream certis = new FileInputStream(anchorFile)) {
+			final X509Certificate anchorCert = (X509Certificate) certFactory.generateCertificate(certis);
+			final PKIXParameters ret = createParams(anchorCert);
+			ret.setRevocationEnabled(false);
+			return ret;
 		} finally {
-			certis = null;
-			anchorCert = null;
-			anchorFiles = null;
 		}
-		ret.setRevocationEnabled(false);
-		return ret;
 	}
 
 	/**
@@ -659,21 +566,15 @@ public final class CertificateValidator {
 	 * @see #createParams(String)
 	 * @return a PKIXParameters for the most trusted CA
 	 */
-	public PKIXParameters createParams(X509Certificate anchorCert)
-			throws IOException, CertificateException {
+	public PKIXParameters createParams(X509Certificate anchorCert) throws IOException, CertificateException {
 
-		TrustAnchor anchorTrust = null;
-		Set<TrustAnchor> anchorTrusts = null;
 		PKIXParameters ret = null;
 
 		try {
-			anchorTrust = new TrustAnchor(anchorCert, null);
-			anchorTrusts = Collections.singleton(anchorTrust);
+			final TrustAnchor anchorTrust = new TrustAnchor(anchorCert, null);
+			final Set<TrustAnchor> anchorTrusts = Collections.singleton(anchorTrust);
 			ret = new PKIXParameters(anchorTrusts);
 		} catch (final InvalidAlgorithmParameterException e) {
-		} finally {
-			anchorTrust = null;
-			anchorTrusts = null;
 		}
 		ret.setRevocationEnabled(false);
 		return ret;
@@ -723,25 +624,22 @@ public final class CertificateValidator {
 		Collection<X509Certificate> certs = null;
 		LinkedList<X509Certificate> certslist = null;
 		final Exception e = null;
-		File[] certFiles = null;
 		CACertPath validator = null;
 
 		try {
 			if (certFile.isDirectory()) {
-				certFiles = certFile.listFiles();
+				final File[] certFiles = certFile.listFiles();
 				ret = createPaths(certFiles);
 			} else {
 				validator = new CACertPath((X509Certificate) null, certFile);
 				ret.add(validator);
 			}
 		} catch (final CertificateException ce) {
-			certs = (Collection<X509Certificate>) (certFactory
-					.generateCertificates(certis));
+			certs = (Collection<X509Certificate>) (certFactory.generateCertificates(certis));
 			certslist = new LinkedList<X509Certificate>(certs);
 			validator = new CACertPath((X509Certificate) null, certslist);
 			ret.add(validator);
 		} finally {
-			certFiles = null;
 			if (certslist != null) {
 				certslist.clear();
 			}
@@ -762,15 +660,12 @@ public final class CertificateValidator {
 	 * 
 	 * @return a Vector of ProxyValidator
 	 */
-	public Vector<CACertPath> createPaths(File[] certs) throws IOException,
-			CertificateException {
+	public Vector<CACertPath> createPaths(File[] certs) throws IOException, CertificateException {
 		if (certs == null) {
 			throw new IOException("certs is null");
 		}
 
-		final CertificateException ce = null;
 		LinkedList<X509Certificate> list = null;
-		FileInputStream certis = null;
 		final Vector<LinkedList<X509Certificate>> lists = new Vector<LinkedList<X509Certificate>>();
 		final Vector<CACertPath> ret = new Vector<CACertPath>();
 		logger.info("certs.length = " + certs.length);
@@ -782,21 +677,15 @@ public final class CertificateValidator {
 			logger.info(">");
 
 			X509Certificate certFromFile = null;
-			try {
-				certis = new FileInputStream(certs[i]);
-				certFromFile = (X509Certificate) certFactory
-						.generateCertificate(certis);
+			try (FileInputStream certis = new FileInputStream(certs[i])) {
+
+				certFromFile = (X509Certificate) certFactory.generateCertificate(certis);
 
 				logger.info("> CertFromFile  " + certs[i]);
 				logger.info("> IssuerDN  = " + certFromFile.getIssuerDN());
 				logger.info("> SubjectDN = " + certFromFile.getSubjectDN());
 				logger.info("< CertFromFile  " + certs[i]);
 			} catch (final Exception e) {
-			} finally {
-				if (certis != null) {
-					certis.close();
-				}
-				certis = null;
 			}
 
 			if (certFromFile == null) {
@@ -806,8 +695,7 @@ public final class CertificateValidator {
 
 			if (lists.isEmpty()) {
 				list = new LinkedList<X509Certificate>();
-				logger.info("> add first new list "
-						+ certFromFile.getSubjectDN());
+				logger.info("> add first new list " + certFromFile.getSubjectDN());
 				list.add(certFromFile);
 				lists.add(list);
 				list = null;
@@ -816,77 +704,53 @@ public final class CertificateValidator {
 
 			boolean inserted = false;
 
-			final Enumeration<LinkedList<X509Certificate>> listsEnum = lists
-					.elements();
+			final Enumeration<LinkedList<X509Certificate>> listsEnum = lists.elements();
 			int numlist = 0;
 			while (listsEnum.hasMoreElements() && !inserted) {
 				try {
-					final LinkedList<X509Certificate> cacertsList = listsEnum
-							.nextElement();
+					final LinkedList<X509Certificate> cacertsList = listsEnum.nextElement();
 
 					logger.info(">>>");
-					logger.info(">>> Path #" + numlist++ + " contains "
-							+ cacertsList.size() + " certs");
+					logger.info(">>> Path #" + numlist++ + " contains " + cacertsList.size() + " certs");
 
 					if (cacertsList == null) {
 						continue;
 					}
 
-					X509Certificate firstcert = null;
-					X509Certificate lastcert = null;
-					try {
-						firstcert = cacertsList.getFirst();
-						lastcert = cacertsList.getLast();
+					final X509Certificate firstcert = cacertsList.getFirst();
+					final X509Certificate lastcert = cacertsList.getLast();
 
-						logger.info(">>> firstCert    IssuerDN  = "
-								+ firstcert.getIssuerDN());
-						logger.info(">>> firstCert    SubjectDN = "
+					logger.info(">>> firstCert    IssuerDN  = " + firstcert.getIssuerDN());
+					logger.info(">>> firstCert    SubjectDN = " + firstcert.getSubjectDN());
+					logger.info(">>> lastCert     IssuerDN  = " + lastcert.getIssuerDN());
+					logger.info(">>> lastCert     SubjectDN = " + lastcert.getSubjectDN());
+					logger.info(">>> certFromFile IssuerDN  = " + certFromFile.getIssuerDN());
+					logger.info(">>> certFromFile SubjectDN = " + certFromFile.getSubjectDN());
+
+					if (certFromFile.getSubjectDN().toString().compareTo(firstcert.getSubjectDN().toString()) == 0) {
+						logger.info(">>> certFromFile equals firstCert");
+						continue;
+					}
+
+					if (certFromFile.getSubjectDN().toString().compareTo(lastcert.getSubjectDN().toString()) == 0) {
+						logger.info(">>> certFromFile equals lastCert");
+						continue;
+					}
+
+					if (certFromFile.getIssuerDN().toString().compareTo(firstcert.getSubjectDN().toString()) == 0) {
+						cacertsList.addFirst(certFromFile);
+						logger.info(">>> addFirst " + certFromFile.getSubjectDN() + " is issued by "
 								+ firstcert.getSubjectDN());
-						logger.info(">>> lastCert     IssuerDN  = "
-								+ lastcert.getIssuerDN());
-						logger.info(">>> lastCert     SubjectDN = "
+						inserted = true;
+						break;
+					}
+
+					if (certFromFile.getSubjectDN().toString().compareTo(lastcert.getIssuerDN().toString()) == 0) {
+						cacertsList.addLast(certFromFile);
+						logger.info(">>> addLast  " + certFromFile.getSubjectDN() + " is issuer of "
 								+ lastcert.getSubjectDN());
-						logger.info(">>> certFromFile IssuerDN  = "
-								+ certFromFile.getIssuerDN());
-						logger.info(">>> certFromFile SubjectDN = "
-								+ certFromFile.getSubjectDN());
-
-						if (certFromFile.getSubjectDN().toString()
-								.compareTo(firstcert.getSubjectDN().toString()) == 0) {
-							logger.info(">>> certFromFile equals firstCert");
-							continue;
-						}
-
-						if (certFromFile.getSubjectDN().toString()
-								.compareTo(lastcert.getSubjectDN().toString()) == 0) {
-							logger.info(">>> certFromFile equals lastCert");
-							continue;
-						}
-
-						if (certFromFile.getIssuerDN().toString()
-								.compareTo(firstcert.getSubjectDN().toString()) == 0) {
-							cacertsList.addFirst(certFromFile);
-							logger.info(">>> addFirst "
-									+ certFromFile.getSubjectDN()
-									+ " is issued by "
-									+ firstcert.getSubjectDN());
-							inserted = true;
-							break;
-						}
-
-						if (certFromFile.getSubjectDN().toString()
-								.compareTo(lastcert.getIssuerDN().toString()) == 0) {
-							cacertsList.addLast(certFromFile);
-							logger.info(">>> addLast  "
-									+ certFromFile.getSubjectDN()
-									+ " is issuer of "
-									+ lastcert.getSubjectDN());
-							inserted = true;
-							break;
-						}
-					} finally {
-						firstcert = null;
-						lastcert = null;
+						inserted = true;
+						break;
 					}
 				} catch (final Exception e) {
 				}
@@ -895,8 +759,7 @@ public final class CertificateValidator {
 			if (!inserted) {
 				logger.info(">\n> no Cert Path found : " + certs[i]);
 				list = new LinkedList<X509Certificate>();
-				logger.info("> add another new list "
-						+ certFromFile.getSubjectDN() + "\n>");
+				logger.info("> add another new list " + certFromFile.getSubjectDN() + "\n>");
 				list.add(certFromFile);
 				lists.add(list);
 				list = null;
@@ -904,8 +767,7 @@ public final class CertificateValidator {
 			certFromFile = null;
 		}
 
-		Iterator<LinkedList<X509Certificate>> listsIterator = lists
-				.listIterator();
+		Iterator<LinkedList<X509Certificate>> listsIterator = lists.listIterator();
 
 		while (listsIterator.hasNext()) {
 
@@ -913,8 +775,7 @@ public final class CertificateValidator {
 			X509Certificate lastCert = null;
 
 			try {
-				final LinkedList<X509Certificate> cacertsList = listsIterator
-						.next();
+				final LinkedList<X509Certificate> cacertsList = listsIterator.next();
 				if (cacertsList == null) {
 					continue;
 				}
@@ -922,55 +783,39 @@ public final class CertificateValidator {
 				firstCert = cacertsList.getFirst();
 				lastCert = cacertsList.getLast();
 
-				final Iterator<LinkedList<X509Certificate>> listsIterator2 = lists
-						.listIterator();
+				final Iterator<LinkedList<X509Certificate>> listsIterator2 = lists.listIterator();
 
 				while (listsIterator2.hasNext()) {
-					final LinkedList<X509Certificate> cacertsList2 = listsIterator2
-							.next();
+					final LinkedList<X509Certificate> cacertsList2 = listsIterator2.next();
 
-					X509Certificate firstCert2 = null;
-					X509Certificate lastCert2 = null;
-					try {
-						firstCert2 = cacertsList2.getFirst();
-						lastCert2 = cacertsList2.getLast();
+					final X509Certificate firstCert2 = cacertsList2.getFirst();
+					final X509Certificate lastCert2 = cacertsList2.getLast();
 
-						logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-						logger.info("IssuerDN  = " + firstCert2.getIssuerDN());
-						logger.info("SubjectDN = " + firstCert2.getSubjectDN());
-						logger.info("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+					logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+					logger.info("IssuerDN  = " + firstCert2.getIssuerDN());
+					logger.info("SubjectDN = " + firstCert2.getSubjectDN());
+					logger.info("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
 
-						if (firstCert.getIssuerDN().toString()
-								.compareTo(firstCert2.getIssuerDN().toString()) == 0) {
-							continue;
-						}
+					if (firstCert.getIssuerDN().toString().compareTo(firstCert2.getIssuerDN().toString()) == 0) {
+						continue;
+					}
 
-						if (firstCert.getIssuerDN().toString()
-								.compareTo(lastCert2.getSubjectDN().toString()) == 0) {
-							logger.info("List add first "
-									+ lastCert2.getSubjectDN()
-									+ " is the issuer of "
-									+ firstCert.getSubjectDN());
+					if (firstCert.getIssuerDN().toString().compareTo(lastCert2.getSubjectDN().toString()) == 0) {
+						logger.info("List add first " + lastCert2.getSubjectDN() + " is the issuer of "
+								+ firstCert.getSubjectDN());
 
-							cacertsList.addAll(cacertsList2);
-							listsIterator2.remove();
+						cacertsList.addAll(cacertsList2);
+						listsIterator2.remove();
 
-							break;
-						}
-						if (firstCert2.getIssuerDN().toString()
-								.compareTo(lastCert.getSubjectDN().toString()) == 0) {
-							logger.info("List add last "
-									+ lastCert.getSubjectDN()
-									+ " is the issuer of "
-									+ firstCert2.getSubjectDN());
+						break;
+					}
+					if (firstCert2.getIssuerDN().toString().compareTo(lastCert.getSubjectDN().toString()) == 0) {
+						logger.info("List add last " + lastCert.getSubjectDN() + " is the issuer of "
+								+ firstCert2.getSubjectDN());
 
-							cacertsList2.addAll(cacertsList);
-							listsIterator.remove();
-							break;
-						}
-					} finally {
-						firstCert2 = null;
-						lastCert2 = null;
+						cacertsList2.addAll(cacertsList);
+						listsIterator.remove();
+						break;
 					}
 				}
 			} catch (final Exception e) {
@@ -987,8 +832,7 @@ public final class CertificateValidator {
 		while (listsIterator.hasNext()) {
 			logger.info(">");
 			try {
-				final LinkedList<X509Certificate> cacertsList = listsIterator
-						.next();
+				final LinkedList<X509Certificate> cacertsList = listsIterator.next();
 
 				if (cacertsList == null) {
 					continue;
