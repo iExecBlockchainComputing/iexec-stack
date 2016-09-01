@@ -125,7 +125,8 @@ public final class HTTPLauncher {
 
 					final File newJarFile = new File(libDir, XWTools.JARFILENAME + "-" + serverVersion);
 
-					if (!newJarFile.exists() && !serverVersion.toString().equals(CommonVersion.getCurrent().toString())) {
+					if (!newJarFile.exists()
+							&& !serverVersion.toString().equals(CommonVersion.getCurrent().toString())) {
 						logger.info("Server  version : " + serverVersion);
 						logger.info("**********  **********  **********");
 						logger.info("We must upgrade");
@@ -148,10 +149,8 @@ public final class HTTPLauncher {
 
 			if ((upgrade) && (url != null)) {
 				logger.info("Downloading xwhep JAR file");
-				StreamIO io = null;
-				try {
+				try (StreamIO io = new StreamIO(null, new DataInputStream(url.openStream()), false)) {
 					logger.debug("" + jarFile + ".exists() = " + jarFile.exists());
-					io = new StreamIO(null, new DataInputStream(url.openStream()), false);
 
 					io.readFileContent(jarFile);
 					io.close();
@@ -160,135 +159,129 @@ public final class HTTPLauncher {
 				} catch (final Exception e) {
 					logger.exception(e);
 					logger.warn("Can't download " + XWTools.JARFILENAME + "; using default : " + e.toString());
-				} finally {
-					try {
-						io.close();
-					} catch (final Exception e) {
+				}
+
+				Executor exec = null;
+				String tmpPath = null;
+				String jarFilePath = null;
+				String keystorePath = null;
+				String configPath = null;
+				String xwcp = null;
+				String javacp = System.getProperty("java.class.path");
+				String javaCmd = "java ";
+
+				try {
+					logger.debug("00 libDir = " + libDir.getCanonicalPath());
+					if (config.getProperty(XWPropertyDefs.XWCP) != null) {
+						libDir = new File(config.getProperty(XWPropertyDefs.XWCP));
+						if (libDir.isFile()) {
+							libDir = libDir.getParentFile();
+						}
 					}
-					io = null;
-				}
-			}
+					logger.config("libDir = " + libDir.getCanonicalPath());
 
-			Executor exec = null;
-			String tmpPath = null;
-			String jarFilePath = null;
-			String keystorePath = null;
-			String configPath = null;
-			String xwcp = null;
-			String javacp = System.getProperty("java.class.path");
-			String javaCmd = "java ";
-
-			try {
-				logger.debug("00 libDir = " + libDir.getCanonicalPath());
-				if (config.getProperty(XWPropertyDefs.XWCP) != null) {
-					libDir = new File(config.getProperty(XWPropertyDefs.XWCP));
-					if (libDir.isFile()) {
-						libDir = libDir.getParentFile();
+					if ((jarFile == null) || !jarFile.exists()) {
+						jarFile = new File(libDir, XWTools.JARFILENAME);
 					}
-				}
-				logger.config("libDir = " + libDir.getCanonicalPath());
 
-				if ((jarFile == null) || !jarFile.exists()) {
-					jarFile = new File(libDir, XWTools.JARFILENAME);
-				}
+					logger.config("jarFile = " + jarFile.getCanonicalPath());
+					Thread.sleep(SLEEPDELAY);
 
-				logger.config("jarFile = " + jarFile.getCanonicalPath());
-				Thread.sleep(SLEEPDELAY);
+					tmpPath = config.getProperty(XWPropertyDefs.TMPDIR);
+					jarFilePath = jarFile.getCanonicalPath();
+					keystorePath = config.getProperty(XWPropertyDefs.SSLKEYSTORE);
+					configPath = config.getProperty(XWPropertyDefs.CONFIGFILE);
+					xwcp = config.getProperty(XWPropertyDefs.XWCP);
+					if (tmpPath.endsWith("/") || tmpPath.endsWith("\\")) {
+						tmpPath = tmpPath.substring(0, tmpPath.length() - 1);
+					}
+					if (jarFilePath.endsWith("/") || jarFilePath.endsWith("\\")) {
+						jarFilePath = jarFilePath.substring(0, jarFilePath.length() - 1);
+					}
+					if (keystorePath.endsWith("/") || keystorePath.endsWith("\\")) {
+						keystorePath = keystorePath.substring(0, keystorePath.length() - 1);
+					}
+					if (configPath.endsWith("/") || configPath.endsWith("\\")) {
+						configPath = configPath.substring(0, configPath.length() - 1);
+					}
+					if (xwcp.endsWith("/") || xwcp.endsWith("\\")) {
+						xwcp = xwcp.substring(0, xwcp.length() - 1);
+					}
 
-				tmpPath = config.getProperty(XWPropertyDefs.TMPDIR);
-				jarFilePath = jarFile.getCanonicalPath();
-				keystorePath = config.getProperty(XWPropertyDefs.SSLKEYSTORE);
-				configPath = config.getProperty(XWPropertyDefs.CONFIGFILE);
-				xwcp = config.getProperty(XWPropertyDefs.XWCP);
-				if (tmpPath.endsWith("/") || tmpPath.endsWith("\\")) {
-					tmpPath = tmpPath.substring(0, tmpPath.length() - 1);
-				}
-				if (jarFilePath.endsWith("/") || jarFilePath.endsWith("\\")) {
-					jarFilePath = jarFilePath.substring(0, jarFilePath.length() - 1);
-				}
-				if (keystorePath.endsWith("/") || keystorePath.endsWith("\\")) {
-					keystorePath = keystorePath.substring(0, keystorePath.length() - 1);
-				}
-				if (configPath.endsWith("/") || configPath.endsWith("\\")) {
-					configPath = configPath.substring(0, configPath.length() - 1);
-				}
-				if (xwcp.endsWith("/") || xwcp.endsWith("\\")) {
-					xwcp = xwcp.substring(0, xwcp.length() - 1);
-				}
+					if (OSEnum.getOs().isWin32()) {
+						tmpPath = "\"" + tmpPath + "\"";
+						jarFilePath = "\"" + jarFilePath + "\"";
+						keystorePath = "\"" + keystorePath + "\"";
+						configPath = "\"" + configPath + "\"";
+						xwcp = "\"" + xwcp + "\"";
+					}
 
-				if (OSEnum.getOs().isWin32()) {
-					tmpPath = "\"" + tmpPath + "\"";
-					jarFilePath = "\"" + jarFilePath + "\"";
-					keystorePath = "\"" + keystorePath + "\"";
-					configPath = "\"" + configPath + "\"";
-					xwcp = "\"" + xwcp + "\"";
-				}
+					final String hwmem = System.getProperty(XWPropertyDefs.HWMEM.toString()) == "" ? ""
+							: " -D" + XWPropertyDefs.HWMEM + "=" + System.getProperty(XWPropertyDefs.HWMEM.toString());
+					final String javaOpts = " -Dxtremweb.cache=" + tmpPath + " -Djava.library.path=" + tmpPath + hwmem
+							+ " -Dxtremweb.cp=" + xwcp + " -Djavax.net.ssl.trustStore=" + keystorePath + " -cp "
+							+ jarFilePath + File.pathSeparator + (javacp != null ? javacp : "")
+							+ " xtremweb.worker.Worker " + " --xwconfig " + configPath;
 
-				final String hwmem = System.getProperty(XWPropertyDefs.HWMEM.toString()) == "" ? "" : " -D"
-						+ XWPropertyDefs.HWMEM + "=" + System.getProperty(XWPropertyDefs.HWMEM.toString());
-				final String javaOpts = " -Dxtremweb.cache=" + tmpPath + " -Djava.library.path=" + tmpPath
-						+ hwmem
-						+ " -Dxtremweb.cp=" + xwcp + " -Djavax.net.ssl.trustStore=" + keystorePath + " -cp "
-						+ jarFilePath + File.pathSeparator + (javacp != null ? javacp : "")
-						+ " xtremweb.worker.Worker " + " --xwconfig " + configPath;
+					if (OSEnum.getOs().isWin32()) {
+						javaCmd += " -Xrs ";
+					}
 
-				if (OSEnum.getOs().isWin32()) {
-					javaCmd += " -Xrs ";
-				}
+					final String serveurOpt = " -server ";
+					final String cmd = javaCmd + serveurOpt + javaOpts;
 
-				final String serveurOpt = " -server ";
-				final String cmd = javaCmd + serveurOpt + javaOpts;
-
-				logger.config("Executing " + cmd);
-				final FileInputStream in = null;
-				exec = new Executor(cmd, binDir.getCanonicalPath(), in, System.out, System.err, Long.parseLong(config
-						.getProperty(XWPropertyDefs.TIMEOUT)));
-				int rc = exec.startAndWait();
-				XWReturnCode returnCode = XWReturnCode.fromInt(rc);
-				logger.config("returnCode = " + returnCode + " (" + rc + ")");
-
-				if (returnCode == XWReturnCode.RESTART) {
-					continue;
-				}
-
-				if (returnCode != XWReturnCode.SUCCESS) {
-
-					final String cmd1 = javaCmd + javaOpts;
-
-					logger.config("Trying to launch the worker without \"" + serveurOpt + "\" java option : " + cmd1);
-					exec = new Executor(cmd1, binDir.getCanonicalPath(), in, System.out, System.err,
+					logger.config("Executing " + cmd);
+					final FileInputStream in = null;
+					exec = new Executor(cmd, binDir.getCanonicalPath(), in, System.out, System.err,
 							Long.parseLong(config.getProperty(XWPropertyDefs.TIMEOUT)));
-					rc = exec.startAndWait();
-					returnCode = XWReturnCode.fromInt(rc);
-				}
+					int rc = exec.startAndWait();
+					XWReturnCode returnCode = XWReturnCode.fromInt(rc);
+					logger.config("returnCode = " + returnCode + " (" + rc + ")");
 
-				if (returnCode == XWReturnCode.RESTART) {
-					continue;
-				}
-
-				if (returnCode != XWReturnCode.SUCCESS) {
-					XWTools.fatal("We can't launch the worker : return code = " + returnCode + " (" + rc + ")"
-							+ "\n(maybe URL launcher is not set properly or does not point to server version...)"
-							+ "\n(maybe config file is corrupted...)");
-				}
-			} catch (final Exception e) {
-				logger.exception(e);
-				logger.error(e.toString());
-			} finally {
-				if (exec != null) {
-					try {
-						logger.info("Stopping process");
-						exec.stop();
-					} catch (final Exception e) {
+					if (returnCode == XWReturnCode.RESTART) {
+						continue;
 					}
+
+					if (returnCode != XWReturnCode.SUCCESS) {
+
+						final String cmd1 = javaCmd + javaOpts;
+
+						logger.config(
+								"Trying to launch the worker without \"" + serveurOpt + "\" java option : " + cmd1);
+						exec = new Executor(cmd1, binDir.getCanonicalPath(), in, System.out, System.err,
+								Long.parseLong(config.getProperty(XWPropertyDefs.TIMEOUT)));
+						rc = exec.startAndWait();
+						returnCode = XWReturnCode.fromInt(rc);
+					}
+
+					if (returnCode == XWReturnCode.RESTART) {
+						continue;
+					}
+
+					if (returnCode != XWReturnCode.SUCCESS) {
+						XWTools.fatal("We can't launch the worker : return code = " + returnCode + " (" + rc + ")"
+								+ "\n(maybe URL launcher is not set properly or does not point to server version...)"
+								+ "\n(maybe config file is corrupted...)");
+					}
+				} catch (final Exception e) {
+					logger.exception(e);
+					logger.error(e.toString());
+				} finally {
+					if (exec != null) {
+						try {
+							logger.info("Stopping process");
+							exec.stop();
+						} catch (final Exception e) {
+						}
+					}
+					exec = null;
+					tmpPath = null;
+					jarFilePath = null;
+					keystorePath = null;
+					configPath = null;
+					xwcp = null;
+					javacp = null;
 				}
-				exec = null;
-				tmpPath = null;
-				jarFilePath = null;
-				keystorePath = null;
-				configPath = null;
-				xwcp = null;
-				javacp = null;
 			}
 		}
 	}
