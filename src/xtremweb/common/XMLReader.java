@@ -98,7 +98,6 @@ public class XMLReader {
 			if (!(saxe instanceof XMLEndParseException)) {
 				input.reset();
 				final XMLRPCResult theresult = new XMLRPCResult();
-				XWCommException xwce = null;
 				try {
 					final String dtd = null;
 					final SAXParser parser = SAXParserFactory.newInstance()
@@ -111,15 +110,13 @@ public class XMLReader {
 					throw new IOException(e.toString());
 				} catch (final SAXException e2) {
 					if (e2 instanceof XMLEndParseException) {
-						xwce = new XWCommException(theresult);
+						final XWCommException xwce = new XWCommException(theresult);
 						xwce.authentication();
 						xwce.authorization();
 						xwce.disk();
 					} else {
 						throw saxe;
 					}
-				} finally {
-					xwce = null;
 				}
 			}
 		} catch (final ParserConfigurationException e) {
