@@ -333,7 +333,7 @@ public abstract class Type extends XMLable {
 			return;
 		}
 
-		for (int a = 0; (attrs != null) && (a < attrs.getLength()); a++) {
+		for (int a = 0; a < attrs.getLength(); a++) {
 			final String attribute = attrs.getQName(a);
 			String value = attrs.getValue(a);
 
