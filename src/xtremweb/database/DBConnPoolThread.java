@@ -582,10 +582,8 @@ public class DBConnPoolThread extends Thread {
 	public synchronized <T extends Table> void update(T row,
 			String criteria, boolean pool) throws IOException {
 
-		String rowset = null;
-		String query = null;
 		try {
-			rowset = row.toString();
+			final String rowset = row.toString();
 			if (criteria == null) {
 				criteria = row.criteria();
 			}
@@ -594,7 +592,7 @@ public class DBConnPoolThread extends Thread {
 				throw new IOException("unable to get update criteria");
 			}
 
-			query = "UPDATE "
+			final String query = "UPDATE "
 					+ config.getProperty(XWPropertyDefs.DBNAME)
 					+ "." + row.tableName() + " SET " + rowset + " WHERE "
 					+ criteria;
@@ -610,9 +608,6 @@ public class DBConnPoolThread extends Thread {
 		} catch (final Exception e) {
 			logger.exception(e);
 			throw new IOException(e.toString());
-		} finally {
-			query = null;
-			rowset = null;
 		}
 	}
 
