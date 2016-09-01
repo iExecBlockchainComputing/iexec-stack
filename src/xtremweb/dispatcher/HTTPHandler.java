@@ -372,7 +372,7 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 	private FileItemFactory diskFactory;
 	private ServletFileUpload servletUpload;
 
-	public static final String NAME = ("HTTPHandler");
+	public static final String NAME = "HTTPHandler";
 	/**
 	 * This is the email address header in the certificate distinguish name.<br />
 	 * The certificate distinguish name looks like
@@ -694,7 +694,6 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 			String msg = String.format(DEFAULT_ANSWER_HEAD, client.getEMail() != null ? client.getEMail() : client.getLogin());
 			response.setContentType("text/html;charset=UTF-8");
 			writer.println(msg);
-			msg = null;
 
 			for (final IdRpc i : IdRpc.values()) {
 				writer.println("<li> <a href=\"" + baseUri + "/" + i + "\">"
@@ -705,7 +704,6 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 			writer.println(msg);
 			msg = String.format(DEFAULT_ANSWER_TAIL, baseUri);
 			writer.println(msg);
-			msg = null;
 		} catch (final Exception e) {
 			getLogger().exception(e);
 			mileStone("<error method='writeapi' msg='" + e.getMessage() + "' />");
@@ -1094,8 +1092,8 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 
 					try {
 						final DataInterface theData = DBInterface.getInstance().getData(command.getUser(), uid);
-						final DataTypeEnum dataType = (theData != null ? theData.getType() : null);
-						final Date lastModified     = (theData != null ? theData.getMTime() : null);
+						final DataTypeEnum dataType = theData != null ? theData.getType() : null;
+						final Date lastModified     = theData != null ? theData.getMTime() : null;
 						if (theData != null) {
 							if (lastModified != null) {
 								response.setHeader(LASTMODIFIEDLABEL,
@@ -1200,12 +1198,12 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 		}
 
 		final UserInterface admin =
-				(Dispatcher.getConfig().getProperty(XWPropertyDefs.ADMINLOGIN) == null ? 
+				Dispatcher.getConfig().getProperty(XWPropertyDefs.ADMINLOGIN) == null ? 
 						null:
 							DBInterface.getInstance().user(SQLRequest.MAINTABLEALIAS + "."
 									+ UserInterface.Columns.LOGIN.toString() + "='"
 									+ Dispatcher.getConfig().getProperty(XWPropertyDefs.ADMINLOGIN)
-									+ "'"));
+									+ "'");
 		if(admin == null) {
 			throw new IOException("can't insert new certified user");
 		}
@@ -1249,12 +1247,12 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 			}
 
 		 */
-		final String authNonce = (request.getParameter(XWPostParams.AUTH_NONCE.toString()) != null ?
-				request.getParameter(XWPostParams.AUTH_NONCE.toString()) :  (String)session.getAttribute(XWPostParams.AUTH_NONCE.toString()));
-		final String authEmail = (request.getParameter(XWPostParams.AUTH_EMAIL.toString()) != null ?
-				request.getParameter(XWPostParams.AUTH_EMAIL.toString()) :  (String)session.getAttribute(XWPostParams.AUTH_EMAIL.toString()));
-		final String authId = (request.getParameter(XWPostParams.AUTH_IDENTITY.toString()) != null ?
-				request.getParameter(XWPostParams.AUTH_IDENTITY.toString()) :  (String)session.getAttribute(XWPostParams.AUTH_IDENTITY.toString()));
+		final String authNonce = request.getParameter(XWPostParams.AUTH_NONCE.toString()) != null ?
+				request.getParameter(XWPostParams.AUTH_NONCE.toString()) :  (String)session.getAttribute(XWPostParams.AUTH_NONCE.toString());
+		final String authEmail = request.getParameter(XWPostParams.AUTH_EMAIL.toString()) != null ?
+				request.getParameter(XWPostParams.AUTH_EMAIL.toString()) :  (String)session.getAttribute(XWPostParams.AUTH_EMAIL.toString());
+		final String authId = request.getParameter(XWPostParams.AUTH_IDENTITY.toString()) != null ?
+				request.getParameter(XWPostParams.AUTH_IDENTITY.toString()) :  (String)session.getAttribute(XWPostParams.AUTH_IDENTITY.toString());
 
 		if ((authNonce == null) || (authEmail == null)) {
 			return null;
@@ -1272,12 +1270,12 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 				}
 
 				final UserInterface admin =
-						(Dispatcher.getConfig().getProperty(XWPropertyDefs.ADMINLOGIN) == null ? 
+						Dispatcher.getConfig().getProperty(XWPropertyDefs.ADMINLOGIN) == null ? 
 								null:
 									DBInterface.getInstance().user(SQLRequest.MAINTABLEALIAS + "."
 											+ UserInterface.Columns.LOGIN.toString() + "='"
 											+ Dispatcher.getConfig().getProperty(XWPropertyDefs.ADMINLOGIN)
-											+ "'"));
+											+ "'");
 				if(admin == null) {
 					throw new IOException("can't insert new OpenId user (cant't retrieve admin)");
 				}
@@ -1310,22 +1308,22 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 	 */
 	private UserInterface userFromOAuth(final HttpServletRequest request) throws IOException {
 		final UserInterface admin =
-				(Dispatcher.getConfig().getProperty(XWPropertyDefs.ADMINLOGIN) == null ? 
+				Dispatcher.getConfig().getProperty(XWPropertyDefs.ADMINLOGIN) == null ? 
 						null:
 							DBInterface.getInstance().user(SQLRequest.MAINTABLEALIAS + "."
 									+ UserInterface.Columns.LOGIN.toString() + "='"
 									+ Dispatcher.getConfig().getProperty(XWPropertyDefs.ADMINLOGIN)
-									+ "'"));
+									+ "'");
 
 		final HttpSession session = request.getSession(true); 
-		final String authNonce = (request.getParameter(XWPostParams.AUTH_NONCE.toString()) != null ?
-				request.getParameter(XWPostParams.AUTH_NONCE.toString()) :  (String)session.getAttribute(XWPostParams.AUTH_NONCE.toString()));
-		final String authState = (request.getParameter(XWPostParams.AUTH_STATE.toString()) != null ?
-				request.getParameter(XWPostParams.AUTH_STATE.toString()) :  (String)session.getAttribute(XWPostParams.AUTH_STATE.toString()));
-		final String authEmail = (request.getParameter(XWPostParams.AUTH_EMAIL.toString()) != null ?
-				request.getParameter(XWPostParams.AUTH_EMAIL.toString()) :  (String)session.getAttribute(XWPostParams.AUTH_EMAIL.toString()));
-		final String authId = (request.getParameter(XWPostParams.AUTH_IDENTITY.toString()) != null ?
-				request.getParameter(XWPostParams.AUTH_IDENTITY.toString()) :  (String)session.getAttribute(XWPostParams.AUTH_IDENTITY.toString()));
+		final String authNonce = request.getParameter(XWPostParams.AUTH_NONCE.toString()) != null ?
+				request.getParameter(XWPostParams.AUTH_NONCE.toString()) :  (String)session.getAttribute(XWPostParams.AUTH_NONCE.toString());
+		final String authState = request.getParameter(XWPostParams.AUTH_STATE.toString()) != null ?
+				request.getParameter(XWPostParams.AUTH_STATE.toString()) :  (String)session.getAttribute(XWPostParams.AUTH_STATE.toString());
+		final String authEmail = request.getParameter(XWPostParams.AUTH_EMAIL.toString()) != null ?
+				request.getParameter(XWPostParams.AUTH_EMAIL.toString()) :  (String)session.getAttribute(XWPostParams.AUTH_EMAIL.toString());
+		final String authId = request.getParameter(XWPostParams.AUTH_IDENTITY.toString()) != null ?
+				request.getParameter(XWPostParams.AUTH_IDENTITY.toString()) :  (String)session.getAttribute(XWPostParams.AUTH_IDENTITY.toString());
 
 		if ((authState == null) || (authEmail == null)) {
 			return null;
@@ -1436,7 +1434,7 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 				mileStone("<error method='uploadData' msg='no data upload' />");
 				mileStone("</uploadData>");
 				notifyAll();
-				throw new Exception("upload is null");
+				throw new IOException("upload is null");
 			}
 
 			dataUpload.write(dFile);
