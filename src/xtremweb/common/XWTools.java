@@ -77,8 +77,7 @@ public class XWTools {
 	/**
 	 * This defines the name of the stdout file
 	 */
-	public static final String STDOUT = "stdout"
-			+ DataTypeEnum.TEXT.getFileExtension();
+	public static final String STDOUT = "stdout" + DataTypeEnum.TEXT.getFileExtension();
 	/**
 	 * This defines the name of the stderr file
 	 */
@@ -86,8 +85,7 @@ public class XWTools {
 	/**
 	 * This defines the name of the stderr file
 	 */
-	public static final String STDERR = "stderr"
-			+ DataTypeEnum.TEXT.getFileExtension();
+	public static final String STDERR = "stderr" + DataTypeEnum.TEXT.getFileExtension();
 	/**
 	 * This defines buffer size for communications : 16Kb
 	 * 
@@ -133,15 +131,15 @@ public class XWTools {
 	 */
 	public static final long TWOGIGABYTES = 2 * ONEKILOBYTES * ONEMEGABYTES;
 	/**
-	 * This defines the maximum size of work disk space (30Gb).
-	 * This is in Mb (here 30 kilobytes of megabytes are 30 gigabytes)
+	 * This defines the maximum size of work disk space (30Gb). This is in Mb
+	 * (here 30 kilobytes of megabytes are 30 gigabytes)
 	 * 
 	 * @since 8.0.0
 	 */
 	public static final long MAXDISKSIZE = 30 * ONEKILOBYTES;
 	/**
-	 * This defines the maximum size of work RAM space (1Gb)
-	 * This is in Kb (here one megabytes of kilobytes are one gigabytes)
+	 * This defines the maximum size of work RAM space (1Gb) This is in Kb (here
+	 * one megabytes of kilobytes are one gigabytes)
 	 * 
 	 * @since 9.1.0
 	 */
@@ -149,8 +147,7 @@ public class XWTools {
 	/**
 	 * This helps to format date : the format is "yyyy-MM-dd HH:mm:ss"
 	 */
-	private static final SimpleDateFormat sqlDateFormat = new SimpleDateFormat(
-			"yyyy-MM-dd HH:mm:ss");
+	private static final SimpleDateFormat sqlDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	private static final SimpleDateFormat defaultDateFormat = new SimpleDateFormat();
 
 	/** This is used to mark buffered input stream */
@@ -160,6 +157,7 @@ public class XWTools {
 	 * @since 10.0.0
 	 */
 	public final static String PACKAGENAMEHEADER = "XWPKG_";
+
 	/**
 	 * This formats a date to String
 	 * 
@@ -299,10 +297,8 @@ public class XWTools {
 		}
 		try {
 			localhostName = java.net.InetAddress.getLocalHost().getHostName();
-			if (localhostName.compareTo(java.net.InetAddress.getLocalHost()
-					.getHostAddress()) == 0) {
-				localhostName = java.net.InetAddress.getLocalHost()
-						.getHostName();
+			if (localhostName.compareTo(java.net.InetAddress.getLocalHost().getHostAddress()) == 0) {
+				localhostName = java.net.InetAddress.getLocalHost().getHostName();
 			}
 		} catch (final IOException e) {
 			fatal(e.toString());
@@ -316,8 +312,7 @@ public class XWTools {
 	 * 
 	 * @throws UnknownHostException
 	 */
-	public static String getHostName(String hostname)
-			throws UnknownHostException {
+	public static String getHostName(String hostname) throws UnknownHostException {
 		String ret = "";
 
 		ret = java.net.InetAddress.getByName(hostname).getHostName();
@@ -346,8 +341,7 @@ public class XWTools {
 
 	public static void fatal(String s) {
 
-		final SimpleDateFormat logDateFormat = new SimpleDateFormat(
-				"[dd/MMM/yyyy:HH:mm:ss Z]", Locale.US);
+		final SimpleDateFormat logDateFormat = new SimpleDateFormat("[dd/MMM/yyyy:HH:mm:ss Z]", Locale.US);
 		logger.fatal(logDateFormat.format(new Date()) + " Fatal : " + s);
 	}
 
@@ -360,9 +354,7 @@ public class XWTools {
 	}
 
 	public static void fileCopy(File in, File out) throws IOException {
-		final FileInputStream fis = new FileInputStream(in);
-		final FileOutputStream fos = new FileOutputStream(out);
-		try {
+		try (FileInputStream fis = new FileInputStream(in); FileOutputStream fos = new FileOutputStream(out);) {
 			final byte[] buf = new byte[1024];
 			int i = 0;
 			while ((i = fis.read(buf)) != -1) {
@@ -370,13 +362,6 @@ public class XWTools {
 			}
 		} catch (final IOException e) {
 			throw e;
-		} finally {
-			if (fis != null) {
-				fis.close();
-			}
-			if (fos != null) {
-				fos.close();
-			}
 		}
 	}
 
@@ -384,8 +369,7 @@ public class XWTools {
 	 * This retreives an X.509 certificate from file
 	 */
 	public static X509Certificate certificateFromFile(String certFileName)
-			throws CertificateException, CertificateExpiredException,
-			FileNotFoundException, IOException {
+			throws CertificateException, CertificateExpiredException, FileNotFoundException, IOException {
 
 		return certificateFromFile(new File(certFileName));
 	}
@@ -394,13 +378,11 @@ public class XWTools {
 	 * This retreives an X.509 certificate from file
 	 */
 	public static X509Certificate certificateFromFile(File certFile)
-			throws CertificateException, CertificateExpiredException,
-			FileNotFoundException, IOException {
+			throws CertificateException, CertificateExpiredException, FileNotFoundException, IOException {
 
 		final FileInputStream inStream = new FileInputStream(certFile);
 		final CertificateFactory cf = CertificateFactory.getInstance("X.509");
-		final X509Certificate cert = (X509Certificate) cf
-				.generateCertificate(inStream);
+		final X509Certificate cert = (X509Certificate) cf.generateCertificate(inStream);
 		inStream.close();
 		return cert;
 	}
@@ -411,19 +393,12 @@ public class XWTools {
 	 * This checks X.509 validity
 	 */
 	public static X509Certificate checkCertificate(File certFile)
-			throws CertificateException, CertificateExpiredException,
-			FileNotFoundException, IOException {
+			throws CertificateException, CertificateExpiredException, FileNotFoundException, IOException {
 
-		FileInputStream inStream = null;
 		X509Certificate cert = null;
-		try {
-			inStream = new FileInputStream(certFile);
+		try (FileInputStream inStream = new FileInputStream(certFile)){
 			cert = checkCertificate(inStream);
 		} finally {
-			if (inStream != null) {
-				inStream.close();
-			}
-			inStream = null;
 		}
 		return cert;
 	}
@@ -432,8 +407,7 @@ public class XWTools {
 	 * This checks X.509 validity
 	 */
 	public static X509Certificate checkCertificate(InputStream in)
-			throws CertificateException, CertificateExpiredException,
-			FileNotFoundException, IOException {
+			throws CertificateException, CertificateExpiredException, FileNotFoundException, IOException {
 
 		if (certificateFactory == null) {
 			certificateFactory = CertificateFactory.getInstance("X.509");
@@ -451,8 +425,8 @@ public class XWTools {
 	/**
 	 * This compares two certificates
 	 */
-	public static boolean compareCertificates(X509Certificate key1,
-			X509Certificate key2) throws CertificateEncodingException {
+	public static boolean compareCertificates(X509Certificate key1, X509Certificate key2)
+			throws CertificateEncodingException {
 		if (Arrays.equals(key1.getEncoded(), key2.getEncoded())) {
 			return true;
 		}
@@ -502,7 +476,8 @@ public class XWTools {
 	 * 
 	 * If the parameter is not a directory, the file will be deleted. If the
 	 * directory does not exists, <code>checkDir</code> will be called on its
-	 * parent before creating it.</p>
+	 * parent before creating it.
+	 * </p>
 	 * 
 	 * @param dir
 	 *            the directory to create.
@@ -527,8 +502,7 @@ public class XWTools {
 			}
 		}
 		if ((!dir.exists()) && (!dir.mkdirs())) {
-			throw new IOException("can't create directory : "
-					+ dir.getCanonicalPath());
+			throw new IOException("can't create directory : " + dir.getCanonicalPath());
 		}
 	}
 
@@ -581,8 +555,7 @@ public class XWTools {
 	 * @return an hash table of String
 	 * @since XWHEP 1.0.0
 	 */
-	public static Map<String, String> hash(final String src, final String separator1,
-			final String separator2) {
+	public static Map<String, String> hash(final String src, final String separator1, final String separator2) {
 
 		final Hashtable<String, String> ret = new Hashtable<String, String>();
 
@@ -597,11 +570,9 @@ public class XWTools {
 
 		for (int i = 0; i < tuples.size(); i++) {
 
-			final Collection<String> tuple = split(
-					((Vector<String>) tuples).elementAt(i), separator2);
+			final Collection<String> tuple = split(((Vector<String>) tuples).elementAt(i), separator2);
 			if ((tuple != null) && (tuple.size() == 2)) {
-				ret.put(((Vector<String>) tuple).elementAt(0),
-						((Vector<String>) tuple).elementAt(1));
+				ret.put(((Vector<String>) tuple).elementAt(0), ((Vector<String>) tuple).elementAt(1));
 			}
 		}
 		return ret;
@@ -662,23 +633,16 @@ public class XWTools {
 		final String osName = System.getProperty("os.name");
 		try {
 			if (osName.startsWith("Mac OS")) {
-				final Class fileMgr = Class
-						.forName("com.apple.eio.FileManager");
-				final Method openURL = fileMgr.getDeclaredMethod("openURL",
-						new Class[] { String.class });
+				final Class fileMgr = Class.forName("com.apple.eio.FileManager");
+				final Method openURL = fileMgr.getDeclaredMethod("openURL", new Class[] { String.class });
 				openURL.invoke(null, new Object[] { url });
 			} else if (osName.startsWith("Windows")) {
-				Runtime.getRuntime().exec(
-						"rundll32 url.dll,FileProtocolHandler " + url);
+				Runtime.getRuntime().exec("rundll32 url.dll,FileProtocolHandler " + url);
 			} else {
-				final String[] browsers = { "firefox", "opera", "konqueror",
-						"epiphany", "mozilla", "netscape" };
+				final String[] browsers = { "firefox", "opera", "konqueror", "epiphany", "mozilla", "netscape" };
 				String browser = null;
-				for (int count = 0; (count < browsers.length)
-						&& (browser == null); count++) {
-					if (Runtime.getRuntime()
-							.exec(new String[] { "which", browsers[count] })
-							.waitFor() == 0) {
+				for (int count = 0; (count < browsers.length) && (browser == null); count++) {
+					if (Runtime.getRuntime().exec(new String[] { "which", browsers[count] }).waitFor() == 0) {
 						browser = browsers[count];
 					}
 				}
@@ -744,9 +708,8 @@ public class XWTools {
 	 */
 	public static int bytes2integer(byte bytes[]) {
 
-		return (((bytes[0] << 24) & 0xff000000)
-				+ ((bytes[1] << 16) & 0x00ff0000)
-				+ ((bytes[2] << 8) & 0x0000ff00) + (bytes[3] & 0x000000ff));
+		return (((bytes[0] << 24) & 0xff000000) + ((bytes[1] << 16) & 0x00ff0000) + ((bytes[2] << 8) & 0x0000ff00)
+				+ (bytes[3] & 0x000000ff));
 	}
 
 	/**
@@ -819,8 +782,7 @@ public class XWTools {
 		}
 		final StringBuilder hex = new StringBuilder(2 * raw.length);
 		for (final byte b : raw) {
-			hex.append(HEXES.charAt((b & 0xF0) >> 4)).append(
-					HEXES.charAt((b & 0x0F)));
+			hex.append(HEXES.charAt((b & 0xF0) >> 4)).append(HEXES.charAt((b & 0x0F)));
 		}
 		return hex.toString();
 	}
@@ -829,8 +791,7 @@ public class XWTools {
 		final int len = s.length();
 		final byte[] data = new byte[len / 2];
 		for (int i = 0; i < len; i += 2) {
-			data[i / 2] = (byte) ((Character.digit(s.charAt(i), 16) << 4) + Character
-					.digit(s.charAt(i + 1), 16));
+			data[i / 2] = (byte) ((Character.digit(s.charAt(i), 16) << 4) + Character.digit(s.charAt(i + 1), 16));
 		}
 		return data;
 	}
@@ -845,22 +806,19 @@ public class XWTools {
 				uid = new UID();
 			}
 
-			logger.info("uid " + uid + " " + uid.hashCode() + " "
-					+ (uid.hashCode() % 1000));
+			logger.info("uid " + uid + " " + uid.hashCode() + " " + (uid.hashCode() % 1000));
 			logger.info("uid " + uid + " " + createDir("/tmp", uid));
 			logger.info();
 
 			final UID uid2 = new UID(uid.toString());
 
-			logger.info("uid2 " + uid2 + " " + uid2.hashCode() + " "
-					+ (uid2.hashCode() % 1000));
+			logger.info("uid2 " + uid2 + " " + uid2.hashCode() + " " + (uid2.hashCode() % 1000));
 			logger.info("uid2 " + uid2 + " " + createDir("/tmp", uid2));
 			logger.info();
 
 			final UID uid3 = uid;
 
-			logger.info("uid3 " + uid3 + " " + uid3.hashCode() + " "
-					+ (uid3.hashCode() % 1000));
+			logger.info("uid3 " + uid3 + " " + uid3.hashCode() + " " + (uid3.hashCode() % 1000));
 			logger.info("uid3 " + uid3 + " " + createDir("/tmp", uid3));
 		} catch (final Exception e) {
 			logger.exception(e);
