@@ -429,7 +429,7 @@ var popupOpened = false;
  * @see myPop(buttonTitle, callback, false)
  */
 function myPop(buttonTitle, callback) { 
-	myPop(buttonTitle, callback, false)
+	myPop(buttonTitle, callback, false);
 }
 
 /**
@@ -1947,8 +1947,6 @@ function webWorkerGetWorkOnMessage(worker,event) {
 	console.log("Web Worker data cmd : " + data.cmd);
 	switch (data.cmd) {
 	case 'log' :
-		console.log(data.content);
-		break;
 	case 'error' :
 		console.log(data.content);
 		break;
@@ -2028,7 +2026,7 @@ function displayWork(xmlDoc)
     	var status = xmlDoc.getElementsByTagName("status").item(0).firstChild.nodeValue;
 	    var label = null;
 	    try {
-		    label = xmlDoc.getElementsByTagName("label").item(0).firstChild.nodeValue
+		    label = xmlDoc.getElementsByTagName("label").item(0).firstChild.nodeValue;
 		} catch(err) {
 		}
 	    var error_msg = null;
@@ -3323,7 +3321,7 @@ function uploadDataToServer() {
 	body += fileReader.result;
 
 
-	body += '\r\n'
+	body += '\r\n';
 	body += '--' + boundary + '\r\n' + 'Content-Disposition: form-data; name="submitBtn"\r\n\r\nUpload\r\n';
 	body += '--' + boundary + '--';
 	xmlHttpConnectionUpload.setRequestHeader('Content-length', body.length);
@@ -3893,9 +3891,11 @@ function getWorkersStateChanged()
 
 	workerDataTreemapLength = xmlDoc.getElementsByTagName(xmlTagName).length;
 
+	console.log("getWorkersStateChanged#workerDataTreemapLength = " + workerDataTreemapLength);
+
 	for (var i = 0; i < xmlDoc.getElementsByTagName(xmlTagName).length; i++) {
     	try {
-			// this is the UID of the application
+			// this is the UID of the worker
 			var uid = xmlDoc.getElementsByTagName(xmlTagName)[i].getAttribute("value");
 
 			var color = colors[(i % 2)];
