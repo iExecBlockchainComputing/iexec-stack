@@ -77,6 +77,7 @@ import xtremweb.archdep.ArchDepFactory;
 import xtremweb.communications.CommClient;
 import xtremweb.communications.Connection;
 import xtremweb.communications.URI;
+import xtremweb.communications.XWCommException;
 import xtremweb.security.PEMPrivateKey;
 import xtremweb.security.PEMPublicKey;
 import xtremweb.security.X509Proxy;
@@ -897,10 +898,6 @@ public final class XWConfigurator extends Properties {
 			setProperty(XWPropertyDefs.SSLKEYSTORE, "");
 		}
 
-		File proxyfile = null;
-		String subjectName = null;
-		String issuerName = null;
-		String loginName = null;
 
 		// worker don't use certificates
 		if (!XWRole.isClient()) {
@@ -913,17 +910,17 @@ public final class XWConfigurator extends Properties {
 		// X509USERPROXY overrides USERCERT, USERKEY, USERKEYPASSWORD
 		//
 		try {
-			proxyfile = getFile(XWPropertyDefs.X509USERPROXY);
+			final File proxyfile = getFile(XWPropertyDefs.X509USERPROXY);
 			if ((proxyfile != null) && (proxyfile.exists())) {
 				XWTools.checkCertificate(proxyfile);
 				x509Proxy = new X509Proxy(proxyfile);
 				_user.setCertificate(x509Proxy.getContent());
-				subjectName = x509Proxy.getSubjectName();
-				issuerName = x509Proxy.getIssuerName();
+				final String subjectName = x509Proxy.getSubjectName();
+				final String issuerName = x509Proxy.getIssuerName();
 
 				// a subject name may not necessarely be unic
 				// subject name associated to issuer name is necessarely unic!
-				loginName = subjectName + "_" + issuerName;
+				final String loginName = subjectName + "_" + issuerName;
 				_user.setLogin(loginName);
 				_user.setPassword(null);
 				setProperty(XWPropertyDefs.USERCERT, "");
@@ -936,33 +933,23 @@ public final class XWConfigurator extends Properties {
 		} catch (final Exception e) {
 			x509Proxy = null;
 			logger.fatal("X509 proxy error : " + e);
-		} finally {
-			subjectName = null;
-			issuerName = null;
-			loginName = null;
-			proxyfile = null;
 		}
 		try {
-			proxyfile = getFile(XWPropertyDefs.USERCERT);
+			final File proxyfile = getFile(XWPropertyDefs.USERCERT);
 			if ((proxyfile != null) && (proxyfile.exists())) {
 				publicKey = new PEMPublicKey();
 				publicKey.read(proxyfile);
-				subjectName = publicKey.getSubjectName();
-				issuerName = publicKey.getIssuerName();
+				final String subjectName = publicKey.getSubjectName();
+				final String issuerName = publicKey.getIssuerName();
 
 				// a subject name may not necessarely be unic
 				// subject name associated to issuer name is necessarely unic!
-				loginName = subjectName + "_" + issuerName;
+				final String loginName = subjectName + "_" + issuerName;
 				_user.setLogin(loginName);
 				_user.setPassword(null);
 			}
 		} catch (final Exception e) {
 			logger.fatal("User cert error : " + e);
-		} finally {
-			subjectName = null;
-			issuerName = null;
-			loginName = null;
-			proxyfile = null;
 		}
 
 		setChallenging(false);
