@@ -18,3 +18,4 @@ build/classes/data/
 build/classes/obj/
 build/classes/xwclasses.mf
 /target/
+.DS_Store
