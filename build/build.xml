@@ -427,6 +427,7 @@
 and try the following exec tasks
 (I have such a problem when compiling under amd64... I don't know why)
 -->
+<!--
     <javah class="xtremweb.archdep.PortMapper"
 	   classpath="${classpath}" 
 	   outputfile="${src.c.dir}/PortMapper.h" />
@@ -445,13 +446,12 @@ and try the following exec tasks
     <javah class="xtremweb.archdep.MacSaver" 
 	   classpath="${classpath}" 
 	   outputfile="${src.c.dir}/MacSaver.h" />
-    
+    -->
 <!--
  If, for any raison, javah task is not available comment these 6 previous javah tasks
 and try the 6 following exec tasks
 (I have such a problem when compiling under amd64... I don't know why)
 -->
-<!--
     <exec dir="${src.c.dir}" executable="javah" failonerror="true">
       <arg line="-classpath ${classpath} -o ${src.c.dir}/PortMapper.h xtremweb.archdep.PortMapper" />
 		</exec>
@@ -470,7 +470,6 @@ and try the 6 following exec tasks
     <exec dir="${src.c.dir}" executable="javah" failonerror="true">
       <arg line="-classpath ${classpath} -o ${src.c.dir}/MacSaver.h xtremweb.archdep.MacSaver" />
 		</exec>
--->
 
     <copy todir="${src.c.dir}"
           filtering="no" overwrite="yes">
