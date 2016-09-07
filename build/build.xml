@@ -423,9 +423,8 @@
   <target depends="prepare,archdep" name="jni">
     <!-- generate jni headers -->
 <!--
- If, for any reason, javah task is not available comment these 6 next lines
-and try the following exec tasks
-(I have such a problem when compiling under amd64... I don't know why)
+ javah task does not work with openjdk
+ :'(
 -->
 <!--
     <javah class="xtremweb.archdep.PortMapper"
@@ -448,9 +447,7 @@ and try the following exec tasks
 	   outputfile="${src.c.dir}/MacSaver.h" />
     -->
 <!--
- If, for any raison, javah task is not available comment these 6 previous javah tasks
-and try the 6 following exec tasks
-(I have such a problem when compiling under amd64... I don't know why)
+     use exec task, because javah task does not with openjdk...
 -->
     <exec dir="${src.c.dir}" executable="javah" failonerror="true">
       <arg line="-classpath ${classpath} -o ${src.c.dir}/PortMapper.h xtremweb.archdep.PortMapper" />
