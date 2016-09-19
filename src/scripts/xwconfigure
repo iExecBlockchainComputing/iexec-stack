@@ -76,7 +76,7 @@ XWSETUPDBSQL_VIEWS_LIST="$XWSETUPDBSQL_VIEWS_FOR_TABLES  \
                          $SQL_SCRIPTS_DIR/xwhep-core-tables-create-views-for-sessions-and-groups.sql   \
                          $SQL_SCRIPTS_DIR/xwhep-core-tables-create-views-for-relationships.sql         \
                          $SQL_SCRIPTS_DIR/xwhep-core-tables-create-views-for-offering-and-billing.sql  \
-                         $SQL_SCRIPTS_DIR/xwhep-core-tables-create-view-hosts-matching-works.sql"
+                         $SQL_SCRIPTS_DIR/xwhep-core-tables-create-views-hosts-matching-works.sql"
 XWCHECKDBSQLNAME=xwcheckdb
 XWUPDATEDBSQLNAME=xwupdatedb
 XWSETVERSIONSQL=$SQL_SCRIPTS_DIR/xwsetversion.sql
@@ -1156,7 +1156,7 @@ if [ "$DBVENDOR" = "mysql" ] ; then
 		for XWSETUPDBSQL_TRIGGERS in $XWSETUPDBSQL_TRIGGERS_LIST
 		do
 			if [ -r "$XWSETUPDBSQL_TRIGGERS" ]; then
-				echo "Creating DB triggers using $(basename "$XWSETUPDBSQL_TRIGGERS") ..."
+				echo "Creating DB triggers using $(basename ${XWSETUPDBSQL_TRIGGERS}) ..."
 				mysql $MYSQLOPTS "$DBNAME" < "$XWSETUPDBSQL_TRIGGERS"
 				if [ $? -ne 0 ] ; then
 					fatal "\"mysql $MYSQLOPTS < $XWSETUPDBSQL_TRIGGERS\" failed"
@@ -1188,7 +1188,7 @@ if [ "$DBVENDOR" = "mysql" ] ; then
 		for XWSETUPDBSQL_VIEWS in $XWSETUPDBSQL_VIEWS_LIST
 		do
 			if [ -r "$XWSETUPDBSQL_VIEWS" ]; then
-				echo "Creating DB views using $(basename "$XWSETUPDBSQL_VIEWS") ..."
+				echo "Creating DB views using $(basename ${XWSETUPDBSQL_VIEWS}) ..."
 				mysql $MYSQLOPTS "$DBNAME" < "$XWSETUPDBSQL_VIEWS"
 				if [ $? -ne 0 ] ; then
 					fatal "\"mysql $MYSQLOPTS < $XWSETUPDBSQL_VIEWS\" failed"
