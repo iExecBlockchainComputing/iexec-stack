@@ -7,7 +7,7 @@ Data driven volunteer cloud
 Quick start
 ===========
 
-Launch an Ubuntu16 instance and run the following commands (don't forget to set your own variables on xwconfigure.values) :
+To start your XWHEP server, launch an Ubuntu16 instance and run the following commands (don't forget to set your own variables on xwconfigure.values) :
 
     sudo apt-get -y update
     sudo apt-get -y upgrade
