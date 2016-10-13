@@ -64,3 +64,6 @@ Launch an Ubuntu16 instance and run the following commands (don't forget to set 
 Depending on your configuration, in your `conf/xtremweb.server.conf` file, you may need to :
 * remove or comment `LAUNCHERURL` variable .
 * change the `HTTPSPORT` value
+
+
+Finally you can access to https://YOUR_IP:HTTPSPORT
