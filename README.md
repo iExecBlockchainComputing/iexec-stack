@@ -60,3 +60,7 @@ Launch an Ubuntu16 instance and run the following commands (don't forget to set 
 
     ./bin/xtremweb.server console -DHOMEDIR=homedir/ -DLOGGERLEVEL=DEBUG
 
+
+Depending on your configuration, in your `conf/xtremweb.server.conf` file you may need to :
+* remove or comment `LAUNCHERURL` variable .
+* change the `HTTPSPORT` value
