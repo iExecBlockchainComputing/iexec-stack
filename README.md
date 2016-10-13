@@ -9,54 +9,54 @@ Quick start
 
 Launch an Ubuntu16 instance
 
-sudo apt-get -y update
-sudo apt-get -y upgrade
-sudo apt-get install -y openjdk-8-jdk mysql-client mysql-server git make ant gcc openvpn zip uuid
-sudo service mysql start
-git clone https://github.com/lodygens/xtremweb-hep.git
-cd xtremweb-hep/build/
-export JAVA_HOME="/usr/lib/jvm/java-8-openjdk-amd64"
-make clean && make
-cd dist/xwhep-10.4.0/
+    sudo apt-get -y update
+    sudo apt-get -y upgrade
+    sudo apt-get install -y openjdk-8-jdk mysql-client mysql-server git make ant gcc openvpn zip uuid
+    sudo service mysql start
+    git clone https://github.com/lodygens/xtremweb-hep.git
+    cd xtremweb-hep/build/
+    export JAVA_HOME="/usr/lib/jvm/java-8-openjdk-amd64"
+    make clean && make
+    cd dist/xwhep-10.4.0/
 
-cat << EOF > conf/xwconfigure.values
+    cat << EOF > conf/xwconfigure.values
 
-XWUSER='xwhep'
-DBVENDOR='mysql'
-DBENGINE='InnoDB'
-DBHOST=''
-DBADMINLOGIN='root'
-DBADMINPASSWORD='a_password'
-DBNAME='xtremweb'
-DBUSERLOGIN='xwuser'
-DBUSERPASSWORD='xwuserp'
-XWADMINLOGIN='admin'
-XWADMINPASSWORD='adminp'
-XWWORKERLOGIN='worker'
-XWWORKERPASSWORD='workerp'
-XWSERVER='your_IP'
-CERTCN='your_IP'
-CERTOU=''
-CERTO=''
-CERTL=''
-CERTC='fr'
-SSLKEYPASSPHRASE='your_passphrase'
-SSLKEYSERVERPASSWORD='serverp'
-SSLKEYWORKERPASSWORD='workerp'
-SSLKEYCLIENTPASSWORD='clientp'
-USERCERTDIR=''
-XWUPGRADEURL='http://your_IP/XWHEP/download/xtremweb.jar'
+    XWUSER='xwhep'
+    DBVENDOR='mysql'
+    DBENGINE='InnoDB'
+    DBHOST=''
+    DBADMINLOGIN='root'
+    DBADMINPASSWORD='a_password'
+    DBNAME='xtremweb'
+    DBUSERLOGIN='xwuser'
+    DBUSERPASSWORD='xwuserp'
+    XWADMINLOGIN='admin'
+    XWADMINPASSWORD='adminp'
+    XWWORKERLOGIN='worker'
+    XWWORKERPASSWORD='workerp'
+    XWSERVER='your_IP'
+    CERTCN='your_IP'
+    CERTOU=''
+    CERTO=''
+    CERTL=''
+    CERTC='fr'
+    SSLKEYPASSPHRASE='your_passphrase'
+    SSLKEYSERVERPASSWORD='serverp'
+    SSLKEYWORKERPASSWORD='workerp'
+    SSLKEYCLIENTPASSWORD='clientp'
+    USERCERTDIR=''
+    XWUPGRADEURL='http://your_IP/XWHEP/download/xtremweb.jar'
 
-EOF
+    EOF
 
 
-./bin/xwconfigure --yes
+    ./bin/xwconfigure --yes
 
-# You must retreive the content of /et/hostname
-# On EC2, it should be something like ip-172-xxx-yyy-zzz
-#
-# You must edit /etc/hosts and make the line like
-# 127.0.0.1 localhost ip-172-xxx-yyy-zzz
+    # You must retreive the content of /et/hostname
+    # On EC2, it should be something like ip-172-xxx-yyy-zzz
+    #
+    # You must edit /etc/hosts and make the line like
+    # 127.0.0.1 localhost ip-172-xxx-yyy-zzz
 
-./bin/xtremweb.server console -DHOMEDIR=homedir/ -DLOGGERLEVEL=DEBUG
+    ./bin/xtremweb.server console -DHOMEDIR=homedir/ -DLOGGERLEVEL=DEBUG
 
