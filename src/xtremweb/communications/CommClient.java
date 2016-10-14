@@ -147,7 +147,7 @@ public abstract class CommClient implements ClientAPI {
 	}
 
 	/**
-	 * This retreive this client port number
+	 * This retrieve this client port number
 	 * 
 	 * @since 5.9.0
 	 */
