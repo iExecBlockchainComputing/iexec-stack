@@ -3721,9 +3721,8 @@ public final class Client {
 			printXMLHeader();
 		}
 
-		try {
-			final BufferedReader reader = new BufferedReader(new FileReader(
-					macroFile));
+		try (final BufferedReader reader = new BufferedReader(new FileReader(
+					macroFile))) {
 			while (true) {
 				final IdRpc cmd = exec(reader);
 				if (cmd == null) {
