@@ -120,6 +120,7 @@ public final class HTTPLauncher {
 
 			try {
 				serverVersion = commClient().version();
+				logger.debug("Server version : " + serverVersion);
 
 				if (serverVersion != null) {
 
@@ -160,128 +161,131 @@ public final class HTTPLauncher {
 					logger.exception(e);
 					logger.warn("Can't download " + XWTools.JARFILENAME + "; using default : " + e.toString());
 				}
+			}
+			else {
+				logger.info("Not downloading xwhep JAR file");
+			}
 
-				Executor exec = null;
-				String tmpPath = null;
-				String jarFilePath = null;
-				String keystorePath = null;
-				String configPath = null;
-				String xwcp = null;
-				String javacp = System.getProperty("java.class.path");
-				String javaCmd = "java ";
+			Executor exec = null;
+			String tmpPath = null;
+			String jarFilePath = null;
+			String keystorePath = null;
+			String configPath = null;
+			String xwcp = null;
+			String javacp = System.getProperty("java.class.path");
+			String javaCmd = "java ";
 
-				try {
-					logger.debug("00 libDir = " + libDir.getCanonicalPath());
-					if (config.getProperty(XWPropertyDefs.XWCP) != null) {
-						libDir = new File(config.getProperty(XWPropertyDefs.XWCP));
-						if (libDir.isFile()) {
-							libDir = libDir.getParentFile();
-						}
+			try {
+				logger.debug("00 libDir = " + libDir.getCanonicalPath());
+				if (config.getProperty(XWPropertyDefs.XWCP) != null) {
+					libDir = new File(config.getProperty(XWPropertyDefs.XWCP));
+					if (libDir.isFile()) {
+						libDir = libDir.getParentFile();
 					}
-					logger.config("libDir = " + libDir.getCanonicalPath());
-
-					if ((jarFile == null) || !jarFile.exists()) {
-						jarFile = new File(libDir, XWTools.JARFILENAME);
-					}
-
-					logger.config("jarFile = " + jarFile.getCanonicalPath());
-					Thread.sleep(SLEEPDELAY);
-
-					tmpPath = config.getProperty(XWPropertyDefs.TMPDIR);
-					jarFilePath = jarFile.getCanonicalPath();
-					keystorePath = config.getProperty(XWPropertyDefs.SSLKEYSTORE);
-					configPath = config.getProperty(XWPropertyDefs.CONFIGFILE);
-					xwcp = config.getProperty(XWPropertyDefs.XWCP);
-					if (tmpPath.endsWith("/") || tmpPath.endsWith("\\")) {
-						tmpPath = tmpPath.substring(0, tmpPath.length() - 1);
-					}
-					if (jarFilePath.endsWith("/") || jarFilePath.endsWith("\\")) {
-						jarFilePath = jarFilePath.substring(0, jarFilePath.length() - 1);
-					}
-					if (keystorePath.endsWith("/") || keystorePath.endsWith("\\")) {
-						keystorePath = keystorePath.substring(0, keystorePath.length() - 1);
-					}
-					if (configPath.endsWith("/") || configPath.endsWith("\\")) {
-						configPath = configPath.substring(0, configPath.length() - 1);
-					}
-					if (xwcp.endsWith("/") || xwcp.endsWith("\\")) {
-						xwcp = xwcp.substring(0, xwcp.length() - 1);
-					}
-
-					if (OSEnum.getOs().isWin32()) {
-						tmpPath = "\"" + tmpPath + "\"";
-						jarFilePath = "\"" + jarFilePath + "\"";
-						keystorePath = "\"" + keystorePath + "\"";
-						configPath = "\"" + configPath + "\"";
-						xwcp = "\"" + xwcp + "\"";
-					}
-
-					final String hwmem = System.getProperty(XWPropertyDefs.HWMEM.toString()) == "" ? ""
-							: " -D" + XWPropertyDefs.HWMEM + "=" + System.getProperty(XWPropertyDefs.HWMEM.toString());
-					final String javaOpts = " -Dxtremweb.cache=" + tmpPath + " -Djava.library.path=" + tmpPath + hwmem
-							+ " -Dxtremweb.cp=" + xwcp + " -Djavax.net.ssl.trustStore=" + keystorePath + " -cp "
-							+ jarFilePath + File.pathSeparator + (javacp != null ? javacp : "")
-							+ " xtremweb.worker.Worker " + " --xwconfig " + configPath;
-
-					if (OSEnum.getOs().isWin32()) {
-						javaCmd += " -Xrs ";
-					}
-
-					final String serveurOpt = " -server ";
-					final String cmd = javaCmd + serveurOpt + javaOpts;
-
-					logger.config("Executing " + cmd);
-					final FileInputStream in = null;
-					exec = new Executor(cmd, binDir.getCanonicalPath(), in, System.out, System.err,
-							Long.parseLong(config.getProperty(XWPropertyDefs.TIMEOUT)));
-					int rc = exec.startAndWait();
-					XWReturnCode returnCode = XWReturnCode.fromInt(rc);
-					logger.config("returnCode = " + returnCode + " (" + rc + ")");
-
-					if (returnCode == XWReturnCode.RESTART) {
-						continue;
-					}
-
-					if (returnCode != XWReturnCode.SUCCESS) {
-
-						final String cmd1 = javaCmd + javaOpts;
-
-						logger.config(
-								"Trying to launch the worker without \"" + serveurOpt + "\" java option : " + cmd1);
-						exec = new Executor(cmd1, binDir.getCanonicalPath(), in, System.out, System.err,
-								Long.parseLong(config.getProperty(XWPropertyDefs.TIMEOUT)));
-						rc = exec.startAndWait();
-						returnCode = XWReturnCode.fromInt(rc);
-					}
-
-					if (returnCode == XWReturnCode.RESTART) {
-						continue;
-					}
-
-					if (returnCode != XWReturnCode.SUCCESS) {
-						XWTools.fatal("We can't launch the worker : return code = " + returnCode + " (" + rc + ")"
-								+ "\n(maybe URL launcher is not set properly or does not point to server version...)"
-								+ "\n(maybe config file is corrupted...)");
-					}
-				} catch (final Exception e) {
-					logger.exception(e);
-					logger.error(e.toString());
-				} finally {
-					if (exec != null) {
-						try {
-							logger.info("Stopping process");
-							exec.stop();
-						} catch (final Exception e) {
-						}
-					}
-					exec = null;
-					tmpPath = null;
-					jarFilePath = null;
-					keystorePath = null;
-					configPath = null;
-					xwcp = null;
-					javacp = null;
 				}
+				logger.config("libDir = " + libDir.getCanonicalPath());
+
+				if ((jarFile == null) || !jarFile.exists()) {
+					jarFile = new File(libDir, XWTools.JARFILENAME);
+				}
+
+				logger.config("jarFile = " + jarFile.getCanonicalPath());
+				Thread.sleep(SLEEPDELAY);
+
+				tmpPath = config.getProperty(XWPropertyDefs.TMPDIR);
+				jarFilePath = jarFile.getCanonicalPath();
+				keystorePath = config.getProperty(XWPropertyDefs.SSLKEYSTORE);
+				configPath = config.getProperty(XWPropertyDefs.CONFIGFILE);
+				xwcp = config.getProperty(XWPropertyDefs.XWCP);
+				if (tmpPath.endsWith("/") || tmpPath.endsWith("\\")) {
+					tmpPath = tmpPath.substring(0, tmpPath.length() - 1);
+				}
+				if (jarFilePath.endsWith("/") || jarFilePath.endsWith("\\")) {
+					jarFilePath = jarFilePath.substring(0, jarFilePath.length() - 1);
+				}
+				if (keystorePath.endsWith("/") || keystorePath.endsWith("\\")) {
+					keystorePath = keystorePath.substring(0, keystorePath.length() - 1);
+				}
+				if (configPath.endsWith("/") || configPath.endsWith("\\")) {
+					configPath = configPath.substring(0, configPath.length() - 1);
+				}
+				if (xwcp.endsWith("/") || xwcp.endsWith("\\")) {
+					xwcp = xwcp.substring(0, xwcp.length() - 1);
+				}
+
+				if (OSEnum.getOs().isWin32()) {
+					tmpPath = "\"" + tmpPath + "\"";
+					jarFilePath = "\"" + jarFilePath + "\"";
+					keystorePath = "\"" + keystorePath + "\"";
+					configPath = "\"" + configPath + "\"";
+					xwcp = "\"" + xwcp + "\"";
+				}
+
+				final String hwmem = System.getProperty(XWPropertyDefs.HWMEM.toString()) == "" ? ""
+						: " -D" + XWPropertyDefs.HWMEM + "=" + System.getProperty(XWPropertyDefs.HWMEM.toString());
+				final String javaOpts = " -Dxtremweb.cache=" + tmpPath + " -Djava.library.path=" + tmpPath + hwmem
+						+ " -Dxtremweb.cp=" + xwcp + " -Djavax.net.ssl.trustStore=" + keystorePath + " -cp "
+						+ jarFilePath + File.pathSeparator + (javacp != null ? javacp : "")
+						+ " xtremweb.worker.Worker " + " --xwconfig " + configPath;
+
+				if (OSEnum.getOs().isWin32()) {
+					javaCmd += " -Xrs ";
+				}
+
+				final String serveurOpt = " -server ";
+				final String cmd = javaCmd + serveurOpt + javaOpts;
+
+				logger.config("Executing " + cmd);
+				final FileInputStream in = null;
+				exec = new Executor(cmd, binDir.getCanonicalPath(), in, System.out, System.err,
+						Long.parseLong(config.getProperty(XWPropertyDefs.TIMEOUT)));
+				int rc = exec.startAndWait();
+				XWReturnCode returnCode = XWReturnCode.fromInt(rc);
+				logger.config("returnCode = " + returnCode + " (" + rc + ")");
+
+				if (returnCode == XWReturnCode.RESTART) {
+					continue;
+				}
+
+				if (returnCode != XWReturnCode.SUCCESS) {
+
+					final String cmd1 = javaCmd + javaOpts;
+
+					logger.config(
+							"Trying to launch the worker without \"" + serveurOpt + "\" java option : " + cmd1);
+					exec = new Executor(cmd1, binDir.getCanonicalPath(), in, System.out, System.err,
+							Long.parseLong(config.getProperty(XWPropertyDefs.TIMEOUT)));
+					rc = exec.startAndWait();
+					returnCode = XWReturnCode.fromInt(rc);
+				}
+
+				if (returnCode == XWReturnCode.RESTART) {
+					continue;
+				}
+
+				if (returnCode != XWReturnCode.SUCCESS) {
+					XWTools.fatal("We can't launch the worker : return code = " + returnCode + " (" + rc + ")"
+							+ "\n(maybe URL launcher is not set properly or does not point to server version...)"
+							+ "\n(maybe config file is corrupted...)");
+				}
+			} catch (final Exception e) {
+				logger.exception(e);
+				logger.error(e.toString());
+			} finally {
+				if (exec != null) {
+					try {
+						logger.info("Stopping process");
+						exec.stop();
+					} catch (final Exception e) {
+					}
+				}
+				exec = null;
+				tmpPath = null;
+				jarFilePath = null;
+				keystorePath = null;
+				configPath = null;
+				xwcp = null;
+				javacp = null;
 			}
 		}
 	}
