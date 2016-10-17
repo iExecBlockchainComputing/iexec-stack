@@ -1,3 +1,5 @@
+"use strict";
+
 /*
  *
  * Copyrights     : CNRS
@@ -41,6 +43,7 @@
  * This cancels background color
  * @param thediv is the div to reset background color to
  */
+
 function resetBgColor(thediv)
 {
   if (thediv) {
