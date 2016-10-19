@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -32,7 +32,8 @@ import xtremweb.common.UserInterface;
 import xtremweb.common.WorkInterface;
 
 /**
- * This is the abstract class that defines XtremWeb scheduler main methods set. <br />
+ * This is the abstract class that defines XtremWeb scheduler main methods set.
+ * <br />
  * Since XWHEP 5.8.0 this abstract class defines two responsabilities
  * <ul>
  * <li>retreive job from DB (this is the retreive() method)
@@ -49,18 +50,12 @@ public abstract class Scheduler {
 
 	/**
 	 * This retreives waiting jobs from DB
-	 * 
+	 *
 	 * @return null if no work available; a MobileWork otherwise
 	 * @since 5.8.0
 	 */
 	public abstract Collection<WorkInterface> retrieve() throws IOException;
 
-	/**
-	 * This does nothing
-	 * 
-	 * @since 5.8.0
-	 */
-	protected abstract void retreiveSavingTasks();
 
 	/**
 	 * This tries to find a job that matches the given host and host owner. The
@@ -69,7 +64,7 @@ public abstract class Scheduler {
 	 * <li>match the host definition (arch, OS etc)
 	 * <li>the host owner must have the right to execute the job
 	 * </ul>
-	 * 
+	 *
 	 * @param host
 	 *            is the worker definition
 	 * @param user
@@ -77,8 +72,7 @@ public abstract class Scheduler {
 	 * @return a Work matching host; null if no work matches this host -or no
 	 *         pending work- found
 	 */
-	public abstract WorkInterface select(HostInterface host, UserInterface user)
-			throws IOException;
+	public abstract WorkInterface select(HostInterface host, UserInterface user) throws IOException;
 
 	/**
 	 * @return the logger
@@ -91,7 +85,7 @@ public abstract class Scheduler {
 	 * @param logger
 	 *            the logger to set
 	 */
-	public void setLogger(Logger logger) {
+	public void setLogger(final Logger logger) {
 		this.logger = logger;
 	}
 
