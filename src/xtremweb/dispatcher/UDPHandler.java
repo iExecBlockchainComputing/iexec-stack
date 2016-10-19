@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -46,9 +46,9 @@ import xtremweb.communications.XMLRPCCommand;
 /**
  * This handles incoming communications through UDP<br>
  * This answers request from UDPClient
- * 
+ *
  * Created: August 2005
- * 
+ *
  * @see xtremweb.communications.UDPClient
  * @author Oleg Lodygensky
  * @version RPCXW
@@ -76,7 +76,7 @@ public class UDPHandler extends xtremweb.dispatcher.CommHandler {
 	 */
 	private BytePacket packetOut;
 
-	public static final String NAME = ("UDPHandler");
+	public static final String NAME = "UDPHandler";
 
 	/**
 	 * This is the default constructor which only calls super("UDPHandler")
@@ -88,14 +88,14 @@ public class UDPHandler extends xtremweb.dispatcher.CommHandler {
 	/**
 	 * This is the default constructor which only calls super("UDPHandler")
 	 */
-	public UDPHandler(XWConfigurator context) {
+	public UDPHandler(final XWConfigurator context) {
 		this(NAME, context);
 	}
 
 	/**
 	 * This is the default constructor which only calls super("UDPHandler")
 	 */
-	public UDPHandler(String n, XWConfigurator context) {
+	public UDPHandler(final String n, final XWConfigurator context) {
 		super(n, context);
 		packetIn = new BytePacket();
 		packetOut = new BytePacket();
@@ -105,48 +105,48 @@ public class UDPHandler extends xtremweb.dispatcher.CommHandler {
 
 	/**
 	 * This throws an exception since setSocket() is dedicated to TCP comms
-	 * 
+	 *
 	 * @see xtremweb.communications.CommHandler#setSocket(Socket)
 	 * @exception RemoteException
 	 *                is always thrown since this method is dedicated to TCP
 	 *                comms
 	 */
-	public void setSocket(SSLSocket s) throws RemoteException {
+	@Override
+	public void setSocket(final SSLSocket s) throws RemoteException {
 		throw new RemoteException("setSocket is not implemented for UDP comms");
 	}
 
 	/**
 	 * This throws an exception since setSocket() is dedicated to TCP comms
-	 * 
+	 *
 	 * @see xtremweb.communications.CommHandler#setSocket(Socket)
 	 * @exception RemoteException
 	 *                is always thrown since this method is dedicated to TCP
 	 *                comms
 	 */
-	public void setSocket(Socket s) throws RemoteException {
+	@Override
+	public void setSocket(final Socket s) throws RemoteException {
 		throw new RemoteException("setSocket is not implemented for UDP comms");
 	}
 
 	/**
 	 */
-	public void setPacket(DatagramSocket s, DatagramPacket p)
-			throws RemoteException {
+	@Override
+	public void setPacket(final DatagramSocket s, final DatagramPacket p) throws RemoteException {
 		serverPacket = p;
 		packetIn.setData(p.getData());
 		serverSocket = s;
 
-		final boolean net = getConfig().getBoolean(
-				XWPropertyDefs.OPTIMIZENETWORK);
+		final boolean net = getConfig().getBoolean(XWPropertyDefs.OPTIMIZENETWORK);
 		// mac os x don't like that :(
-		if ((net == true) && (OSEnum.getOs().isMacosx() == false)) {
+		if (net && !OSEnum.getOs().isMacosx()) {
 			try {
 				serverSocket.setTrafficClass(0x08); // maximize throughput
 			} catch (final Exception e) {
 				warn(e.toString());
 			}
 		}
-		final InetSocketAddress socket = (InetSocketAddress) (serverPacket
-				.getSocketAddress());
+		final InetSocketAddress socket = (InetSocketAddress) (serverPacket.getSocketAddress());
 		setRemoteName(socket.getHostName());
 		setRemoteIP(socket.getAddress().getHostAddress());
 		setRemotePort(socket.getPort());
@@ -158,14 +158,14 @@ public class UDPHandler extends xtremweb.dispatcher.CommHandler {
 	 *                is always thrown since this method is dedicated to UDP
 	 *                comms
 	 */
-	public void setPacket(DatagramChannel c, SocketAddress r, BytePacket p)
-			throws RemoteException {
+	@Override
+	public void setPacket(final DatagramChannel c, final SocketAddress r, final BytePacket p) throws RemoteException {
 		throw new RemoteException("UDPHandler#setPacket() UDP can't set packet");
 	}
 
 	/**
 	 * This first packs the packet, then sends it
-	 * 
+	 *
 	 * @see xtremweb.common.BytePacket#pack()
 	 */
 	protected synchronized void send() throws RemoteException {
@@ -190,6 +190,7 @@ public class UDPHandler extends xtremweb.dispatcher.CommHandler {
 	/**
 	 * @see xtremweb.communications.CommHandler#close()
 	 */
+	@Override
 	public void close() {
 		info("UDPHandler#close() does nothing (this is normal)");
 	}
@@ -198,7 +199,7 @@ public class UDPHandler extends xtremweb.dispatcher.CommHandler {
 	 * This sends the object
 	 */
 	@Override
-	protected void write(XMLable obj) throws IOException {
+	protected void write(final XMLable obj) throws IOException {
 		try {
 			packetOut.putObject(obj);
 			send();
@@ -210,12 +211,12 @@ public class UDPHandler extends xtremweb.dispatcher.CommHandler {
 
 	/**
 	 * This writes a file to socket
-	 * 
+	 *
 	 * @param f
 	 *            is the file to send
 	 */
 	@Override
-	public void writeFile(File f) throws IOException {
+	public void writeFile(final File f) throws IOException {
 		getLogger().error("UDP does not implement writeFile");
 		throw new IOException("UDP does not implement writeFile");
 	}
@@ -223,12 +224,12 @@ public class UDPHandler extends xtremweb.dispatcher.CommHandler {
 	/**
 	 * This reads a file from socket This is typically needed after a
 	 * workRequest to get stdin and/or dirin files
-	 * 
+	 *
 	 * @param f
 	 *            is the file to store received bytes
 	 */
 	@Override
-	public void readFile(File f) throws IOException {
+	public void readFile(final File f) throws IOException {
 		getLogger().error("UDP does not implement readFile");
 		throw new IOException("UDP does not implement readFile");
 	}
@@ -236,7 +237,7 @@ public class UDPHandler extends xtremweb.dispatcher.CommHandler {
 	/**
 	 * This is the main loop; this is called by java.lang.Thread#start() This
 	 * executes one command form communication channel and exists
-	 * 
+	 *
 	 * @see CommHandler#run(XMLRPCCommand)
 	 */
 	@Override
