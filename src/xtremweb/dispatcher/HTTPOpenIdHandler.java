@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -64,17 +64,18 @@ import xtremweb.communications.XWPostParams;
 
 /**
  * This handles HTTP request to /openid/
- * 
+ *
  * Created: 12 decembre 2012
- * 
+ *
  * @author Oleg Lodygensky
  * @since XWHEP 8.2.0
- * 
- * @deprecated since 10.0.0 OAuth should be preferred (see {@link HTTPOAuthHandler} )
+ *
+ * @deprecated since 10.0.0 OAuth should be preferred (see
+ *             {@link HTTPOAuthHandler} )
  */
 
-public class HTTPOpenIdHandler extends Thread implements
-org.eclipse.jetty.server.Handler {
+@Deprecated
+public class HTTPOpenIdHandler extends Thread implements org.eclipse.jetty.server.Handler {
 
 	private Logger logger;
 
@@ -83,6 +84,7 @@ org.eclipse.jetty.server.Handler {
 
 	/**
 	 * This contains the gap while a login is valid
+	 *
 	 * @see xtremweb.common.XWPropertyDefs#LOGINTIMEOUT
 	 */
 	long loginTimeout = 0;
@@ -96,10 +98,8 @@ org.eclipse.jetty.server.Handler {
 	public static final String OP_GOOGLE = "Google";
 	public static final String OP_YAHOO = "Yahoo";
 
-
 	public static final String GOOGLE_ADDR = "www.google.com";
 	public static final String YAHOO_ADDR = "www.yahoo.com";
-
 
 	public static final String OPENID_NONCE_PARAMETER = "openid.response_nonce";
 	/**
@@ -132,20 +132,20 @@ org.eclipse.jetty.server.Handler {
 	 */
 	public HTTPOpenIdHandler() {
 		super("HTTPOpenIdHandler");
-		if(instance != null) {
+		if (instance != null) {
 			return;
 		}
 		loginTimeout = Dispatcher.getConfig().getInt(XWPropertyDefs.LOGINTIMEOUT) * 1000;
 		logger = new Logger(this);
 		manager = new OpenIdManager();
 		try {
-			localRootUrl = new URL(Connection.HTTPSSLSCHEME + "://" + XWTools.getLocalHostName()
-					+ ":" + Dispatcher.getConfig().getPort(Connection.HTTPSPORT));
-		} catch (MalformedURLException e) {
+			localRootUrl = new URL(Connection.HTTPSSLSCHEME + "://" + XWTools.getLocalHostName() + ":"
+					+ Dispatcher.getConfig().getPort(Connection.HTTPSPORT));
+		} catch (final MalformedURLException e) {
 			XWTools.fatal(e.getMessage());
 		}
 		manager.setRealm(localRootUrl.toString());
-		//		final String returnto = localRootUrl + HTTPHandler.PATH;
+		// final String returnto = localRootUrl + HTTPHandler.PATH;
 		final String returnto = localRootUrl + handlerPath;
 		logger.debug("Return to = " + returnto);
 		manager.setReturnTo(returnto);
@@ -154,11 +154,11 @@ org.eclipse.jetty.server.Handler {
 
 	/**
 	 * This constructor call the default constructor and sets the logger level
-	 * 
+	 *
 	 * @param l
 	 *            is the logger level
 	 */
-	public HTTPOpenIdHandler(LoggerLevel l) {
+	public HTTPOpenIdHandler(final LoggerLevel l) {
 		this();
 		logger.setLoggerLevel(l);
 	}
@@ -167,13 +167,15 @@ org.eclipse.jetty.server.Handler {
 	 * This does nothing and must be overridden by any HTTP handler This is
 	 * inherited from org.mortbay.jetty.Handler
 	 */
-	public void setServer(Server server) {
+	@Override
+	public void setServer(final Server server) {
 	}
 
 	/**
 	 * This does nothing and must be overridden by any HTTP handler This is
 	 * inherited from org.mortbay.jetty.Handler
 	 */
+	@Override
 	public Server getServer() {
 		return null;
 	}
@@ -181,9 +183,10 @@ org.eclipse.jetty.server.Handler {
 	/**
 	 * This does nothing and must be overridden by any HTTP handler This is
 	 * inherited from org.mortbay.component.LifeCycle
-	 * 
+	 *
 	 * @return true
 	 */
+	@Override
 	public boolean isFailed() {
 		return true;
 	}
@@ -191,9 +194,10 @@ org.eclipse.jetty.server.Handler {
 	/**
 	 * This does nothing and must be overridden by any HTTP handler This is
 	 * inherited from org.mortbay.component.LifeCycle
-	 * 
+	 *
 	 * @return false
 	 */
+	@Override
 	public boolean isRunning() {
 		return false;
 	}
@@ -201,9 +205,10 @@ org.eclipse.jetty.server.Handler {
 	/**
 	 * This does nothing and must be overridden by any HTTP handler This is
 	 * inherited from org.mortbay.component.LifeCycle
-	 * 
+	 *
 	 * @return false
 	 */
+	@Override
 	public boolean isStarted() {
 		return false;
 	}
@@ -211,9 +216,10 @@ org.eclipse.jetty.server.Handler {
 	/**
 	 * This does nothing and must be overridden by any HTTP handler This is
 	 * inherited from org.mortbay.component.LifeCycle
-	 * 
+	 *
 	 * @return false
 	 */
+	@Override
 	public boolean isStarting() {
 		return false;
 	}
@@ -221,9 +227,10 @@ org.eclipse.jetty.server.Handler {
 	/**
 	 * This does nothing and must be overridden by any HTTP handler This is
 	 * inherited from org.mortbay.component.LifeCycle
-	 * 
+	 *
 	 * @return true
 	 */
+	@Override
 	public boolean isStopped() {
 		return true;
 	}
@@ -231,18 +238,21 @@ org.eclipse.jetty.server.Handler {
 	/**
 	 * This does nothing and must be overridden by any HTTP handler This is
 	 * inherited from org.mortbay.component.LifeCycle
-	 * 
+	 *
 	 * @return false
 	 */
+	@Override
 	public boolean isStopping() {
 		return false;
 	}
 
-
-	public void removeLifeCycleListener(Listener l) {
+	@Override
+	public void removeLifeCycleListener(final Listener l) {
 
 	}
-	public void addLifeCycleListener(Listener l) {
+
+	@Override
+	public void addLifeCycleListener(final Listener l) {
 
 	}
 
@@ -264,14 +274,12 @@ org.eclipse.jetty.server.Handler {
 	/**
 	 * This handles incoming connections. This is inherited from
 	 * org.mortbay.jetty.Handler.
-	 * 
+	 *
 	 * @see xtremweb.communications.XWPostParams
 	 */
-	public void handle(String target,
-			Request baseRequest,
-			HttpServletRequest _request,
-			HttpServletResponse _response) throws IOException,
-			ServletException {
+	@Override
+	public void handle(final String target, final Request baseRequest, final HttpServletRequest _request,
+			final HttpServletResponse _response) throws IOException, ServletException {
 
 		logger.debug("new connection");
 		request = _request;
@@ -281,28 +289,21 @@ org.eclipse.jetty.server.Handler {
 		try {
 			logger.debug("Handling path info      = " + path);
 			logger.debug("Handling target         = " + target);
-			logger.debug("Handling request        = "
-					+ request.getContentLength() + " "
-					+ request.getContentType());
-			logger.debug("Handling parameter size = "
-					+ request.getParameterMap().size());
-			logger.debug("Handling query string   = "
-					+ request.getQueryString());
-			logger.debug("Handling method         = "
-					+ request.getMethod());
+			logger.debug("Handling request        = " + request.getContentLength() + " " + request.getContentType());
+			logger.debug("Handling parameter size = " + request.getParameterMap().size());
+			logger.debug("Handling query string   = " + request.getQueryString());
+			logger.debug("Handling method         = " + request.getMethod());
 
 			remoteName = request.getRemoteHost();
 			remoteIP = request.getRemoteAddr();
 			remotePort = request.getRemotePort();
 
-			for (final Enumeration<String> e = request.getParameterNames(); e
-					.hasMoreElements();) {
-				String pname = e.nextElement();
+			for (final Enumeration<String> e = request.getParameterNames(); e.hasMoreElements();) {
+				final String pname = e.nextElement();
 				logger.debug("parameter name " + pname);
 				logger.debug("parameter value " + request.getParameter(pname));
 			}
-			for (final Enumeration<String> e = request.getHeaderNames(); e
-					.hasMoreElements();) {
+			for (final Enumeration<String> e = request.getHeaderNames(); e.hasMoreElements();) {
 				logger.debug("header " + e.nextElement());
 			}
 
@@ -312,27 +313,29 @@ org.eclipse.jetty.server.Handler {
 		} catch (final Exception e) {
 			response.setContentType("text/html");
 			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-			response.getWriter().println("<html><head><title>OpenId delegation error</title></head><body><h1>OpenId delegation error</h1><p>Error message: " + e.getMessage() + "</p><p>Please contact the administrator of this XtremWeb-HEP server</p></body></html>");
+			response.getWriter().println(
+					"<html><head><title>OpenId delegation error</title></head><body><h1>OpenId delegation error</h1><p>Error message: "
+							+ e.getMessage()
+							+ "</p><p>Please contact the administrator of this XtremWeb-HEP server</p></body></html>");
 			logger.exception(e);
 		}
 
 		baseRequest.setHandled(true);
 		response.getWriter().flush();
-		request  = null;
+		request = null;
 		response = null;
 	}
 
 	/**
 	 * This handles XMLHTTPRequest
 	 */
-	private void openidRequest(Request baseRequest) throws IOException {
-		String op = request.getParameter(XWPostParams.AUTH_OPERATOR.toString());
-		if (op==null) {
-			final Authentication auth =  getAuthentication(baseRequest);
-			final String url = localRootUrl + "?" + XWPostParams.AUTH_NONCE 
-					+ "=" + baseRequest.getParameter(OPENID_NONCE_PARAMETER)
-					+ "&" + XWPostParams.AUTH_EMAIL + "=" + auth.getEmail()
-					+ "&" + XWPostParams.AUTH_IDENTITY + "=" + auth.getIdentity();
+	private void openidRequest(final Request baseRequest) throws IOException {
+		final String op = request.getParameter(XWPostParams.AUTH_OPERATOR.toString());
+		if (op == null) {
+			final Authentication auth = getAuthentication(baseRequest);
+			final String url = localRootUrl + "?" + XWPostParams.AUTH_NONCE + "="
+					+ baseRequest.getParameter(OPENID_NONCE_PARAMETER) + "&" + XWPostParams.AUTH_EMAIL + "="
+					+ auth.getEmail() + "&" + XWPostParams.AUTH_IDENTITY + "=" + auth.getIdentity();
 			response.sendRedirect(url);
 			return;
 		}
@@ -345,20 +348,21 @@ org.eclipse.jetty.server.Handler {
 			session.setAttribute(ATTR_ALIAS, endpoint.getAlias());
 			final String url = manager.getAuthenticationUrl(endpoint, association);
 			response.sendRedirect(url);
-		}
-		else {
+		} else {
 			throw new IOException("Unsupported OP: " + op);
 		}
 	}
 
 	/**
 	 * This retrieves authentication from openid server response
-	 * @param baseRequest is the HTTP request
+	 *
+	 * @param baseRequest
+	 *            is the HTTP request
 	 * @return the authentication if found; null otherwise
 	 */
-	private Authentication getAuthentication(Request baseRequest) throws OpenIdException {
+	private Authentication getAuthentication(final Request baseRequest) throws OpenIdException {
 		final HttpSession session = baseRequest.getSession(false);
-		if(session == null) {
+		if (session == null) {
 			throw new OpenIdException("session not found");
 		}
 		// check sign on result from Google or Yahoo:
@@ -370,8 +374,9 @@ org.eclipse.jetty.server.Handler {
 		return authentication;
 	}
 
-	private void showAuthentication(PrintWriter pw, Authentication auth) {
-		pw.print("<html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" /><title>Test JOpenID</title></head><body><h1>You have successfully signed on!</h1>");
+	private void showAuthentication(final PrintWriter pw, final Authentication auth) {
+		pw.print(
+				"<html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" /><title>Test JOpenID</title></head><body><h1>You have successfully signed on!</h1>");
 		pw.print("<p>Identity: " + auth.getIdentity() + "</p>");
 		pw.print("<p>Email: " + auth.getEmail() + "</p>");
 		pw.print("<p>Full name: " + auth.getFullname() + "</p>");
@@ -384,114 +389,128 @@ org.eclipse.jetty.server.Handler {
 	}
 
 	/**
-	 * This checks if nonce is unic and valid
-	 * If so, the nonce is revalidated for a new delay
+	 * This checks if nonce is unic and valid If so, the nonce is revalidated
+	 * for a new delay
+	 *
 	 * @see #loginTimeout
 	 * @param nonce
-	 * @throws OpenIdException if nonce is not valid, already exists or if its survival time reached
+	 * @throws OpenIdException
+	 *             if nonce is not valid, already exists or if its survival time
+	 *             reached
 	 */
-	private void checkNonce(String nonce) throws OpenIdException {
+	private void checkNonce(final String nonce) throws OpenIdException {
 		// check response_nonce to prevent replay-attack:
-		if (nonce==null || nonce.length()<20)
+		if ((nonce == null) || (nonce.length() < 20)) {
 			throw new OpenIdException("invalid nonce");
+		}
 		// make sure the time of server is correct:
-		long nonceTime = getNonceTime(nonce);
-		long diff = Math.abs(System.currentTimeMillis() - nonceTime);
-		if (diff > loginTimeout)
+		final long nonceTime = getNonceTime(nonce);
+		final long diff = Math.abs(System.currentTimeMillis() - nonceTime);
+		if (diff > loginTimeout) {
 			throw new OpenIdException("bad nonce time");
-		if (isNonceExist(nonce))
+		}
+		if (isNonceExist(nonce)) {
 			throw new OpenIdException("unknown noce");
+		}
 		storeNonce(nonce, nonceTime + loginTimeout);
 	}
 
 	/**
 	 * This checks if nonce exists and is valid
+	 *
 	 * @param nonce
-	 * @throws OpenIdException if nonce is not valid, does not exist or its survival time reached
+	 * @throws OpenIdException
+	 *             if nonce is not valid, does not exist or its survival time
+	 *             reached
 	 */
-	public void verifyNonce(String nonce) throws OpenIdException {
+	public void verifyNonce(final String nonce) throws OpenIdException {
 		// check response_nonce to prevent replay-attack:
-		if (nonce==null || nonce.length()<20)
+		if ((nonce == null) || (nonce.length() < 20)) {
 			throw new OpenIdException("invalid nonce");
+		}
 		// make sure the time of server is correct:
-		long nonceTime = getNonceTime(nonce);
-		long diff = Math.abs(System.currentTimeMillis() - nonceTime);
-		if (diff > loginTimeout)
+		final long nonceTime = getNonceTime(nonce);
+		final long diff = Math.abs(System.currentTimeMillis() - nonceTime);
+		if (diff > loginTimeout) {
 			throw new OpenIdException("bad nonce time");
-		if (isNonceExist(nonce) == false)
+		}
+		if (isNonceExist(nonce) == false) {
 			throw new OpenIdException("unknown noce");
+		}
 	}
 
 	// simulate a database that store all nonce:
-	private Set<String> nonceDb = new HashSet<String>();
+	private final Set<String> nonceDb = new HashSet<String>();
 
 	// check if nonce is exist in database:
-	boolean isNonceExist(String nonce) {
+	boolean isNonceExist(final String nonce) {
 		return nonceDb.contains(nonce);
 	}
 
 	// store nonce in database:
-	void storeNonce(String nonce, long expires) {
+	void storeNonce(final String nonce, final long expires) {
 		nonceDb.add(nonce);
 		logger.debug("storeNonce(" + nonce + "," + expires + ") = " + nonceDb.contains(nonce));
 	}
 
-	long getNonceTime(String nonce) {
+	long getNonceTime(final String nonce) {
 		try {
-			return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
-			.parse(nonce.substring(0, 19) + "+0000")
-			.getTime();
-		}
-		catch(ParseException e) {
+			return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").parse(nonce.substring(0, 19) + "+0000").getTime();
+		} catch (final ParseException e) {
 			throw new OpenIdException("Bad nonce time.");
 		}
 	}
 
 	/**
 	 * This retrieves CA paths for the given host
-	 * @param host is the host name
-	 * @param sav if true, public key is stored to local FS
+	 *
+	 * @param host
+	 *            is the host name
+	 * @param sav
+	 *            if true, public key is stored to local FS
 	 * @return an array of certificates
-	 * @throws IOException 
-	 * @throws UnknownHostException 
-	 * @throws CertificateEncodingException 
+	 * @throws IOException
+	 * @throws UnknownHostException
+	 * @throws CertificateEncodingException
 	 */
-	public static final X509Certificate[] retrieveCertificates(String host, boolean sav) 
-			throws UnknownHostException, IOException, CertificateEncodingException  {
-		int port = 443;
+	public static final X509Certificate[] retrieveCertificates(final String host, final boolean sav)
+			throws UnknownHostException, IOException, CertificateEncodingException {
+		final int port = 443;
 
-		SocketFactory factory = SSLSocketFactory.getDefault();
-		SSLSocket socket = (SSLSocket) factory.createSocket(host, port);
+		final SocketFactory factory = SSLSocketFactory.getDefault();
+		final SSLSocket socket = (SSLSocket) factory.createSocket(host, port);
 
 		socket.startHandshake();
 
-		X509Certificate[] certs = (X509Certificate[])socket.getSession().getPeerCertificates();
-		Logger logger = new Logger(HTTPOpenIdHandler.class);
+		final X509Certificate[] certs = (X509Certificate[]) socket.getSession().getPeerCertificates();
+		final Logger logger = new Logger(HTTPOpenIdHandler.class);
 		logger.info(host + " : certs retrieved = " + certs.length);
 		int i = 0;
-		for (X509Certificate cert : certs) {
+		for (final X509Certificate cert : certs) {
 			PrintStream out = System.out;
 			logger.info("CN        = " + cert.getSubjectX500Principal().getName());
 			logger.info("Issuer CN = " + cert.getIssuerX500Principal().getName());
-			if(sav) {
+			if (sav) {
 				logger.info("Saving to " + host + "_" + i + ".pem");
 				out = new PrintStream(new File(host + "_" + i++ + ".pem"));
 			}
-			out.println("-----BEGIN CERTIFICATE-----");  
+			out.println("-----BEGIN CERTIFICATE-----");
 			out.println(new sun.misc.BASE64Encoder().encode(cert.getEncoded()));
-			out.println("-----END CERTIFICATE-----");  
-			if(sav) {
+			out.println("-----END CERTIFICATE-----");
+			if (sav) {
 				out.close();
 			}
 		}
 		return certs;
 	}
+
 	/**
 	 * This inserts all known CA certificates to the provided keystore
-	 * 
+	 *
 	 * @param store
 	 *            is the keystore to add certificate to
-	 * @return this returns null, if parameter is null; else this returns the keystore filled with some new entries
+	 * @return this returns null, if parameter is null; else this returns the
+	 *         keystore filled with some new entries
 	 * @since 8.0.2
 	 */
 	public static KeyStore setCACertificateEntries(final KeyStore store) {
@@ -500,25 +519,23 @@ org.eclipse.jetty.server.Handler {
 		}
 		final Logger logger = new Logger();
 		try {
-			final X509Certificate [] gcerts = retrieveCertificates(HTTPOpenIdHandler.GOOGLE_ADDR, false);
-			for(int i = 0; i < gcerts.length; i++) {
+			final X509Certificate[] gcerts = retrieveCertificates(HTTPOpenIdHandler.GOOGLE_ADDR, false);
+			for (int i = 0; i < gcerts.length; i++) {
 				final X509Certificate cert = gcerts[i];
 				try {
 					final String alias = cert.getSubjectDN().toString();
-					logger.finest("KeyStore set entry= " + alias
-							+ "; KeyStore.size = " + store.size());
+					logger.finest("KeyStore set entry= " + alias + "; KeyStore.size = " + store.size());
 					store.setCertificateEntry(alias, cert);
 				} catch (final Exception e) {
 					logger.exception("Can't add new entry to keystore", e);
 				}
 			}
-			final X509Certificate [] ycerts = retrieveCertificates(HTTPOpenIdHandler.YAHOO_ADDR, false);
-			for(int i = 0; i < ycerts.length; i++) {
+			final X509Certificate[] ycerts = retrieveCertificates(HTTPOpenIdHandler.YAHOO_ADDR, false);
+			for (int i = 0; i < ycerts.length; i++) {
 				final X509Certificate cert = ycerts[i];
 				try {
 					final String alias = cert.getSubjectDN().toString();
-					logger.finest("KeyStore set entry= " + alias
-							+ "; KeyStore.size = " + store.size());
+					logger.finest("KeyStore set entry= " + alias + "; KeyStore.size = " + store.size());
 					store.setCertificateEntry(alias, cert);
 				} catch (final Exception e) {
 					logger.exception("Can't add new entry to keystore", e);
@@ -529,19 +546,21 @@ org.eclipse.jetty.server.Handler {
 		}
 		return store;
 	}
+
 	/**
 	 * This is for testing only
+	 *
 	 * @param args
 	 * @throws Exception
 	 */
-	public static void main(String[] args) throws Exception {
+	public static void main(final String[] args) throws Exception {
 		int i = 0;
-		boolean sav = (args.length <= 0 ? false : (args[0].compareToIgnoreCase("--sav") == 0));
-		if(sav) {
+		final boolean sav = (args.length <= 0 ? false : (args[0].compareToIgnoreCase("--sav") == 0));
+		if (sav) {
 			i = 1;
 		}
 		for (; i < args.length; i++) {
-			HTTPOpenIdHandler.retrieveCertificates(args[i], sav);    		
+			HTTPOpenIdHandler.retrieveCertificates(args[i], sav);
 		}
 	}
 }
