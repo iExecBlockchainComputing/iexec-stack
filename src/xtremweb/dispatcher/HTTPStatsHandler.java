@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -55,17 +55,17 @@ import xtremweb.common.XMLable;
 import xtremweb.common.XWConfigurator;
 
 /**
- * This handles HTTP request to /stats/ 
- * 
+ * This handles HTTP request to /stats/
+ *
  * Created: August 2005
- * 
+ *
  * @author Oleg Lodygensky
  * @version RPCXW
  */
 
 public class HTTPStatsHandler extends xtremweb.dispatcher.CommHandler {
 
-	private Logger logger;
+	private final Logger logger;
 
 	private HttpServletRequest request;
 	private HttpServletResponse response;
@@ -73,8 +73,7 @@ public class HTTPStatsHandler extends xtremweb.dispatcher.CommHandler {
 	private static String RES_SERVERSTATSHTML = "data/serverstats.html";
 
 	private static final Version CURRENTVERSION = CommonVersion.getCurrent();
-	private static final String CURRENTVERSIONSTRING = CURRENTVERSION
-			.toString();
+	private static final String CURRENTVERSIONSTRING = CURRENTVERSION.toString();
 
 	/** this tag is replaced by the current version in misc/server.html */
 	private final String TAGVERSION = "@XWVERSION@";
@@ -94,53 +93,53 @@ public class HTTPStatsHandler extends xtremweb.dispatcher.CommHandler {
 	/**
 	 * This is the default constructor which only calls super(NAME)
 	 */
-	public HTTPStatsHandler(XWConfigurator c) {
+	public HTTPStatsHandler(final XWConfigurator c) {
 		this(NAME, c);
 	}
 
 	/**
-	 * 
+	 *
 	 */
-	public HTTPStatsHandler(String n, XWConfigurator c) {
+	public HTTPStatsHandler(final String n, final XWConfigurator c) {
 		super(n, c);
 		logger = new Logger(this);
 	}
 
 	/**
 	 * This constructor call the previous constructor
-	 * 
+	 *
 	 * @param socket
 	 *            is not used
 	 * @see xtremweb.dispatcher.HTTPHandler#HTTPHandler(XWConfigurator)
 	 */
-	public HTTPStatsHandler(SSLSocket socket, XWConfigurator c)
-			throws RemoteException {
+	public HTTPStatsHandler(final SSLSocket socket, final XWConfigurator c) throws RemoteException {
 		this(c);
 	}
 
 	/**
 	 * This does nothing
 	 */
-	public void setSocket(Socket s) throws RemoteException {
+	@Override
+	public void setSocket(final Socket s) throws RemoteException {
 	}
 
 	/**
 	 * This does nothing
 	 */
-	public void setSocket(SSLSocket s) throws RemoteException {
+	@Override
+	public void setSocket(final SSLSocket s) throws RemoteException {
 	}
 
 	/**
 	 * This throws an exception since setPacket() is dedicated to UDP comms
-	 * 
+	 *
 	 * @exception RemoteException
 	 *                is always thrown since this method is dedicated to UDP
 	 *                comms
 	 */
-	public void setPacket(DatagramSocket s, DatagramPacket p)
-			throws RemoteException {
-		throw new RemoteException(
-				"HTTPHandler#setPacket() TCP can't set packet");
+	@Override
+	public void setPacket(final DatagramSocket s, final DatagramPacket p) throws RemoteException {
+		throw new RemoteException("HTTPHandler#setPacket() TCP can't set packet");
 	}
 
 	/**
@@ -149,10 +148,9 @@ public class HTTPStatsHandler extends xtremweb.dispatcher.CommHandler {
 	 *                is always thrown since this method is dedicated to UDP
 	 *                comms
 	 */
-	public void setPacket(DatagramChannel c, SocketAddress r, BytePacket p)
-			throws RemoteException {
-		throw new RemoteException(
-				"HTTPHandler#setPacket() TCP can't set packet");
+	@Override
+	public void setPacket(final DatagramChannel c, final SocketAddress r, final BytePacket p) throws RemoteException {
+		throw new RemoteException("HTTPHandler#setPacket() TCP can't set packet");
 	}
 
 	/**
@@ -160,7 +158,7 @@ public class HTTPStatsHandler extends xtremweb.dispatcher.CommHandler {
 	 * inherited from org.mortbay.jetty.Handler
 	 */
 	@Override
-	public void setServer(Server server) {
+	public void setServer(final Server server) {
 	}
 
 	/**
@@ -175,7 +173,7 @@ public class HTTPStatsHandler extends xtremweb.dispatcher.CommHandler {
 	/**
 	 * This does nothing and must be overidden by any HTTP handler This is
 	 * inherited from org.mortbay.component.LifeCycle
-	 * 
+	 *
 	 * @return true
 	 */
 	@Override
@@ -186,7 +184,7 @@ public class HTTPStatsHandler extends xtremweb.dispatcher.CommHandler {
 	/**
 	 * This does nothing and must be overidden by any HTTP handler This is
 	 * inherited from org.mortbay.component.LifeCycle
-	 * 
+	 *
 	 * @return false
 	 */
 	@Override
@@ -197,7 +195,7 @@ public class HTTPStatsHandler extends xtremweb.dispatcher.CommHandler {
 	/**
 	 * This does nothing and must be overidden by any HTTP handler This is
 	 * inherited from org.mortbay.component.LifeCycle
-	 * 
+	 *
 	 * @return false
 	 */
 	@Override
@@ -208,7 +206,7 @@ public class HTTPStatsHandler extends xtremweb.dispatcher.CommHandler {
 	/**
 	 * This does nothing and must be overidden by any HTTP handler This is
 	 * inherited from org.mortbay.component.LifeCycle
-	 * 
+	 *
 	 * @return false
 	 */
 	@Override
@@ -219,7 +217,7 @@ public class HTTPStatsHandler extends xtremweb.dispatcher.CommHandler {
 	/**
 	 * This does nothing and must be overidden by any HTTP handler This is
 	 * inherited from org.mortbay.component.LifeCycle
-	 * 
+	 *
 	 * @return true
 	 */
 	@Override
@@ -230,7 +228,7 @@ public class HTTPStatsHandler extends xtremweb.dispatcher.CommHandler {
 	/**
 	 * This does nothing and must be overidden by any HTTP handler This is
 	 * inherited from org.mortbay.component.LifeCycle
-	 * 
+	 *
 	 * @return false
 	 */
 	@Override
@@ -250,46 +248,42 @@ public class HTTPStatsHandler extends xtremweb.dispatcher.CommHandler {
 	 * This writes parameter to output channel
 	 */
 	@Override
-	protected synchronized void write(XMLable answer) throws IOException {
+	protected synchronized void write(final XMLable answer) throws IOException {
 	}
 
 	/**
 	 * This writes parameter to output channel
 	 */
-	protected synchronized <T extends Table> void writeRows(T row)
-			throws IOException {
+	protected synchronized <T extends Table> void writeRows(final T row) throws IOException {
 	}
 
 	/**
 	 * This write file content to output stream
-	 * 
+	 *
 	 * @param f
 	 *            is the file to write
 	 */
 	@Override
-	public synchronized void writeFile(File f) throws IOException {
+	public synchronized void writeFile(final File f) throws IOException {
 	}
 
 	/**
 	 * This is not implemented and always throws an IOException
 	 */
 	@Override
-	public void readFile(File f) throws IOException {
+	public void readFile(final File f) throws IOException {
 		throw new IOException("HTTPHandler#readFile not implemented");
 	}
-
 
 	/**
 	 * This handles incoming connections. This is inherited from
 	 * org.mortbay.jetty.Handler.
-	 * 
+	 *
 	 * @see xtremweb.communications.XWPostParams
 	 */
-	public void handle(String target,
-            Request baseRequest,
-            HttpServletRequest _request,
-            HttpServletResponse _response) throws IOException,
-			ServletException {
+	@Override
+	public void handle(final String target, final Request baseRequest, final HttpServletRequest _request,
+			final HttpServletResponse _response) throws IOException, ServletException {
 
 		logger.debug("new connection");
 
@@ -299,16 +293,11 @@ public class HTTPStatsHandler extends xtremweb.dispatcher.CommHandler {
 		final String path = request.getPathInfo();
 		try {
 			logger.debug("Handling target         = " + target);
-			logger.debug("Handling request        = "
-					+ request.getContentLength() + " "
-					+ request.getContentType());
-			logger.debug("Handling parameter size = "
-					+ request.getParameterMap().size());
-			logger.debug("Handling query string   = "
-					+ request.getQueryString());
+			logger.debug("Handling request        = " + request.getContentLength() + " " + request.getContentType());
+			logger.debug("Handling parameter size = " + request.getParameterMap().size());
+			logger.debug("Handling query string   = " + request.getQueryString());
 			logger.debug("Handling path info      = " + path);
-			logger.debug("Handling method         = "
-					+ request.getMethod());
+			logger.debug("Handling method         = " + request.getMethod());
 
 			logger.debug("new connection " + path);
 			response.setContentType("text/html");
@@ -316,8 +305,7 @@ public class HTTPStatsHandler extends xtremweb.dispatcher.CommHandler {
 
 			InputStream reader = null;
 
-			reader = getClass().getClassLoader()
-					.getResourceAsStream(RES_SERVERSTATSHTML);
+			reader = getClass().getClassLoader().getResourceAsStream(RES_SERVERSTATSHTML);
 
 			if ((reader != null) && (reader.available() > 0)) {
 				String content = new String();
@@ -341,12 +329,11 @@ public class HTTPStatsHandler extends xtremweb.dispatcher.CommHandler {
 		response.getWriter().flush();
 	}
 
-
 	/**
 	 * This uploads a data to server<br />
 	 * Data must be defined on server side (i.e. sendData() must be called
 	 * first)
-	 * 
+	 *
 	 * @param client
 	 *            is the caller attributes
 	 * @param uid
@@ -354,7 +341,7 @@ public class HTTPStatsHandler extends xtremweb.dispatcher.CommHandler {
 	 * @see #sendData(UserInterface, DataInterface)
 	 */
 	@Override
-	public synchronized long uploadData(UserInterface client, UID uid)
+	public synchronized long uploadData(final UserInterface client, final UID uid)
 			throws IOException, InvalidKeyException, AccessControlException {
 		return 0L;
 	}
@@ -362,6 +349,7 @@ public class HTTPStatsHandler extends xtremweb.dispatcher.CommHandler {
 	/**
 	 * This cleans and closes communications
 	 */
+	@Override
 	public void close() {
 
 		mileStone("<close>");
