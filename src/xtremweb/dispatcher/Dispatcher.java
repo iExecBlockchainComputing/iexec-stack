@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -57,7 +57,7 @@ import xtremweb.security.X509ProxyValidator;
 
 public class Dispatcher {
 
-	private Logger logger;
+	private final Logger logger;
 
 	/**
 	 * The TaskSet and TaskManager
@@ -65,28 +65,28 @@ public class Dispatcher {
 	private static TaskSet tset;
 
 	/**
-	 *  Database Interface
+	 * Database Interface
 	 */
 	private static DBInterface db;
 
 	/** Scheduling policy */
-	private  static Scheduler scheduler;
+	private static Scheduler scheduler;
 
 	/**
 	 * This aims to validate an X509 certificate against certificate paths
-	 * 
+	 *
 	 * @since 7.0.0
 	 */
-	private  static X509ProxyValidator proxyValidator;
+	private static X509ProxyValidator proxyValidator;
 	/**
 	 * This aims to challenge client connections
-	 * 
+	 *
 	 * @since 7.5.0
 	 */
 	private static PEMPublicKeyValidator certValidator;
 
 	/** Timer */
-	private  static Timer timer;
+	private static Timer timer;
 
 	/**
 	 * This stores and tests the command line parameters
@@ -95,13 +95,14 @@ public class Dispatcher {
 	/**
 	 * Config as read from config file
 	 */
-	private  static XWConfigurator config;
+	private static XWConfigurator config;
 
 	/**
 	 * This is the default constructor
 	 */
-	public Dispatcher(String a[]) {
+	public Dispatcher(final String a[]) {
 		final String[] argv = a.clone();
+		logger = new Logger(this);
 		try {
 			args = new CommandLineParser(argv);
 		} catch (final Exception e) {
@@ -115,13 +116,12 @@ public class Dispatcher {
 		} catch (final Exception e) {
 			logger.fatal("can retreive config file");
 		}
-		logger = new Logger(this);
 	}
 
 	/**
 	 * Main function
 	 */
-	public static void main(String args[]) {
+	public static void main(final String args[]) {
 
 		try {
 			new Dispatcher(args).go();
@@ -141,8 +141,8 @@ public class Dispatcher {
 
 		tset = new HashTaskSet();
 		try {
-			setScheduler((Scheduler) (Class.forName(getConfig()
-					.getProperty(XWPropertyDefs.SCHEDULERCLASS)).newInstance()));
+			setScheduler(
+					(Scheduler) (Class.forName(getConfig().getProperty(XWPropertyDefs.SCHEDULERCLASS)).newInstance()));
 		} catch (final Exception e) {
 			logger.exception(e);
 			logger.fatal(e.toString());
@@ -181,8 +181,7 @@ public class Dispatcher {
 		try {
 
 			@SuppressWarnings("unused")
-			final AccessLogger accessLogger = new AccessLogger(
-					getConfig().getFile(XWPropertyDefs.HOMEDIR),
+			final AccessLogger accessLogger = new AccessLogger(getConfig().getFile(XWPropertyDefs.HOMEDIR),
 					XWTools.getLocalHostName());
 
 			final TCPServer tcpServer = new TCPServer();
@@ -193,7 +192,8 @@ public class Dispatcher {
 
 			if (getConfig().http()) {
 				final HTTPServer httpServer = new HTTPServer();
-				//				httpServer.initComm(getConfig(), new HTTPHandler(getConfig()));
+				// httpServer.initComm(getConfig(), new
+				// HTTPHandler(getConfig()));
 
 				// Handler needs HTTP session to handle openid call returns
 				final SessionHandler main_sessionHandler = new SessionHandler();
@@ -224,13 +224,11 @@ public class Dispatcher {
 			logger.fatal("Dispatcher main(): " + e);
 		}
 
-		final Collection<String> services = XWTools.split(getConfig()
-				.getProperty(XWPropertyDefs.SERVICES));
+		final Collection<String> services = XWTools.split(getConfig().getProperty(XWPropertyDefs.SERVICES));
 		if (services != null) {
-			for(Iterator<String> iter = services.iterator();
-					iter.hasNext();) {
+			for (final Iterator<String> iter = services.iterator(); iter.hasNext();) {
 				try {
-					String s = iter.next();
+					final String s = iter.next();
 					logger.debug(s);
 					db.insertService(s);
 				} catch (final Exception e) {
@@ -240,21 +238,13 @@ public class Dispatcher {
 			}
 		}
 
-		logger.info("XWHEP Dispatcher("
-				+ CommonVersion.getCurrent().full() + ") started ["
-				+ new Date() + "]");
-		logger.info("DB vendor  = "
-				+ getConfig().getProperty(XWPropertyDefs.DBVENDOR));
-		logger.info("mileStone  = "
-				+ getConfig().getProperty(XWPropertyDefs.MILESTONES));
-		logger.info("Time out   = "
-				+ getConfig().getProperty(XWPropertyDefs.TIMEOUT));
-		logger.info("Disk opt'd = "
-				+ getConfig().getProperty(XWPropertyDefs.OPTIMIZEDISK));
-		logger.info("Net  opt'd = "
-				+ getConfig().getProperty(XWPropertyDefs.OPTIMIZENETWORK));
-		logger.info("NIO        = "
-				+ getConfig().getProperty(XWPropertyDefs.JAVANIO));
+		logger.info("XWHEP Dispatcher(" + CommonVersion.getCurrent().full() + ") started [" + new Date() + "]");
+		logger.info("DB vendor  = " + getConfig().getProperty(XWPropertyDefs.DBVENDOR));
+		logger.info("mileStone  = " + getConfig().getProperty(XWPropertyDefs.MILESTONES));
+		logger.info("Time out   = " + getConfig().getProperty(XWPropertyDefs.TIMEOUT));
+		logger.info("Disk opt'd = " + getConfig().getProperty(XWPropertyDefs.OPTIMIZEDISK));
+		logger.info("Net  opt'd = " + getConfig().getProperty(XWPropertyDefs.OPTIMIZENETWORK));
+		logger.info("NIO        = " + getConfig().getProperty(XWPropertyDefs.JAVANIO));
 		getConfig().dump(System.out, "XWHEP Dispatcher started ");
 	}
 
@@ -276,9 +266,10 @@ public class Dispatcher {
 	}
 
 	/**
-	 * @param config the config to set
+	 * @param config
+	 *            the config to set
 	 */
-	public static void setConfig(XWConfigurator config) {
+	public static void setConfig(final XWConfigurator config) {
 		Dispatcher.config = config;
 	}
 
@@ -290,9 +281,10 @@ public class Dispatcher {
 	}
 
 	/**
-	 * @param scheduler the scheduler to set
+	 * @param scheduler
+	 *            the scheduler to set
 	 */
-	public static void setScheduler(Scheduler scheduler) {
+	public static void setScheduler(final Scheduler scheduler) {
 		Dispatcher.scheduler = scheduler;
 	}
 
@@ -304,9 +296,10 @@ public class Dispatcher {
 	}
 
 	/**
-	 * @param proxyValidator the proxyValidator to set
+	 * @param proxyValidator
+	 *            the proxyValidator to set
 	 */
-	public static void setProxyValidator(X509ProxyValidator proxyValidator) {
+	public static void setProxyValidator(final X509ProxyValidator proxyValidator) {
 		Dispatcher.proxyValidator = proxyValidator;
 	}
 }
