@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -36,7 +36,7 @@ import xtremweb.database.SQLRequestWorkRequest;
 
 /**
  * This is a simple scheduler
- * 
+ *
  * @author Gille Fedak
  */
 
@@ -56,7 +56,7 @@ public class SimpleScheduler extends Scheduler {
 
 	/**
 	 * This retrieves waiting jobs from DB in FIFO mode
-	 * 
+	 *
 	 * @return null if no work available; a vector of works otherwise
 	 * @since 5.8.0
 	 * @see DBInterface#works(StatusEnum)
@@ -67,15 +67,8 @@ public class SimpleScheduler extends Scheduler {
 	}
 
 	/**
-	 * This does nothing
-	 */
-	@Override
-	protected void retreiveSavingTasks() {
-	}
-
-	/**
 	 * Get the first task that is pending
-	 * 
+	 *
 	 * @param host
 	 *            is the worker definition
 	 * @param user
@@ -86,8 +79,7 @@ public class SimpleScheduler extends Scheduler {
 	 *                is thrown on error
 	 */
 	@Override
-	public synchronized WorkInterface select(HostInterface host,
-			UserInterface user) throws IOException {
+	public synchronized WorkInterface select(final HostInterface host, final UserInterface user) throws IOException {
 		final DBInterface db = DBInterface.getInstance();
 
 		if (host == null) {
@@ -95,8 +87,7 @@ public class SimpleScheduler extends Scheduler {
 		}
 		getMileStone().println("<select>");
 
-		WorkInterface theWork = new WorkInterface(new SQLRequestWorkRequest(
-				host, user));
+		WorkInterface theWork = new WorkInterface(new SQLRequestWorkRequest(host, user));
 		theWork = db.select(theWork);
 
 		if (theWork == null) {
@@ -130,7 +121,7 @@ public class SimpleScheduler extends Scheduler {
 	 * @param mileStone
 	 *            the mileStone to set
 	 */
-	public final void setMileStone(MileStone mileStone) {
+	public final void setMileStone(final MileStone mileStone) {
 		this.mileStone = mileStone;
 	}
 }
