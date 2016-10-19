@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -46,13 +46,13 @@ import xtremweb.database.SQLRequestWorkRequest;
  * helps to broadcast as well as to use the WorkInterface#expextedhost field.
  * This also helps to check whether the identity (user definition) under which
  * the worker is running, has the right to execute the job.
- * 
+ *
  * A private worker can execute public, group and private jobs of the worker
  * owner itself.<br />
  * A group worker belongs to an user group and can execute public and group jobs
  * of the worker owner group.<br />
  * A public worker can execute public jobs only.
- * 
+ *
  * @see xtremweb.common.WorkInterface
  * @since RPCXW
  */
@@ -71,7 +71,7 @@ public class MatchingScheduler extends SimpleScheduler {
 	 * SQLRequestWorkRequest. This first updates work, otherwise scheduler may
 	 * return the same work several times. Then this can safelly update a vector
 	 * of rows
-	 * 
+	 *
 	 * @param host
 	 *            is the requesting worker identifier
 	 * @param user
@@ -83,8 +83,7 @@ public class MatchingScheduler extends SimpleScheduler {
 	 * @see SQLRequestWorkRequest
 	 */
 	@Override
-	public synchronized WorkInterface select(final HostInterface host,
-			final UserInterface user) throws IOException {
+	public synchronized WorkInterface select(final HostInterface host, final UserInterface user) throws IOException {
 
 		if ((host == null) || (user == null)) {
 			notify();
@@ -96,15 +95,13 @@ public class MatchingScheduler extends SimpleScheduler {
 		IOException ioe = null;
 		WorkInterface theWork = null;
 		TaskInterface theTask = null;
-		UserInterface theWorkOwner = null;
 
-		final Collection<Table> rows = new Vector<Table>();
 		final DBInterface db = DBInterface.getInstance();
 
 		try {
+			final Collection<Table> rows = new Vector<Table>();
 			String criterias = null;
-			final SQLRequestWorkRequest workRequest = new SQLRequestWorkRequest(
-					host, user);
+			final SQLRequestWorkRequest workRequest = new SQLRequestWorkRequest(host, user);
 			final WorkInterface workSelection = new WorkInterface(workRequest);
 
 			final URI jobId = host.getJobId();
@@ -113,14 +110,12 @@ public class MatchingScheduler extends SimpleScheduler {
 			if (jobId != null) {
 				final UID uid = jobId.getUID();
 				if (uid != null) {
-					criterias = SQLRequest.MAINTABLEALIAS + "."
-							+ TableColumns.UID + "='" + uid + "'";
+					criterias = SQLRequest.MAINTABLEALIAS + "." + TableColumns.UID + "='" + uid + "'";
 				}
 			} else if (batchId != null) {
 				final UID uid = batchId.getUID();
 				if (uid != null) {
-					criterias = SQLRequest.MAINTABLEALIAS + "."
-							+ WorkInterface.Columns.GROUPUID + "='" + uid + "'";
+					criterias = SQLRequest.MAINTABLEALIAS + "." + WorkInterface.Columns.GROUPUID + "='" + uid + "'";
 				}
 			}
 
@@ -132,7 +127,7 @@ public class MatchingScheduler extends SimpleScheduler {
 				final UID theAppUID = theWork.getApplication();
 				final UID theWorkOwnerUID = theWork.getOwner();
 				final AppInterface theApp = db.app(user, theAppUID);
-				theWorkOwner = db.user(theWorkOwnerUID);
+				final UserInterface theWorkOwner = db.user(theWorkOwnerUID);
 				theApp.decPendingJobs();
 				theApp.incRunningJobs();
 				theWorkOwner.decPendingJobs();
@@ -172,15 +167,13 @@ public class MatchingScheduler extends SimpleScheduler {
 				db.update(theTask);
 			}
 		} finally {
-			theWorkOwner = null;
 			theTask = null;
 
 			notify();
 
 			if (ioe != null) {
 				theWork = null;
-				getMileStone().println(
-						"<error msg=" + ioe.toString() + " /></select>");
+				getMileStone().println("<error msg=" + ioe.toString() + " /></select>");
 				throw ioe;
 			}
 		}
