@@ -63,8 +63,7 @@ import xtremweb.communications.XWPostParams;
  * @since 9.1.1
  */
 
-public class HTTPOAuthHandler extends Thread implements
-		org.eclipse.jetty.server.Handler {
+public class HTTPOAuthHandler extends Thread implements org.eclipse.jetty.server.Handler {
 
 	public class OAuthException extends Exception {
 
@@ -114,7 +113,7 @@ public class HTTPOAuthHandler extends Thread implements
 
 		/**
 		 * This retrieves the operator class from scribe library
-		 * 
+		 *
 		 * @return the operator class
 		 */
 		public abstract Class getScribeClass();
@@ -128,7 +127,7 @@ public class HTTPOAuthHandler extends Thread implements
 
 		/**
 		 * This retrieves the String representing the application ID
-		 * 
+		 *
 		 * @return the application identifier
 		 */
 		public String getAppId() {
@@ -144,7 +143,7 @@ public class HTTPOAuthHandler extends Thread implements
 
 		/**
 		 * This retrieves the String representing the application key
-		 * 
+		 *
 		 * @return the application identifier
 		 */
 		public String getAppKey() {
@@ -160,7 +159,7 @@ public class HTTPOAuthHandler extends Thread implements
 
 		/**
 		 * This retrieves the service scope
-		 * 
+		 *
 		 * @return the application identifier
 		 */
 		public String getScope() {
@@ -169,7 +168,7 @@ public class HTTPOAuthHandler extends Thread implements
 
 		/**
 		 * This retrieves the operator from its name
-		 * 
+		 *
 		 * @return the operator
 		 */
 		public static Operator fromString(final String opname) {
@@ -178,8 +177,7 @@ public class HTTPOAuthHandler extends Thread implements
 					return o;
 				}
 			}
-			throw new IndexOutOfBoundsException("unvalid Operator value "
-					+ opname);
+			throw new IndexOutOfBoundsException("unvalid Operator value " + opname);
 		}
 	}
 
@@ -243,7 +241,6 @@ public class HTTPOAuthHandler extends Thread implements
 	/** this contains this server URL */
 	private URL localRootUrl;
 
-
 	private static HTTPOAuthHandler instance;
 
 	/**
@@ -263,36 +260,27 @@ public class HTTPOAuthHandler extends Thread implements
 		}
 		logger = new Logger(this);
 		try {
-			localRootUrl = new URL(Connection.HTTPSSLSCHEME + "://"
-					+ XWTools.getLocalHostName() + ":"
+			localRootUrl = new URL(Connection.HTTPSSLSCHEME + "://" + XWTools.getLocalHostName() + ":"
 					+ Dispatcher.getConfig().getPort(Connection.HTTPSPORT));
 		} catch (final MalformedURLException e) {
 			XWTools.fatal(e.getMessage());
 		}
 		instance = this;
 
-		Operator.FACEBOOK.setAppId(Dispatcher.getConfig().getProperty(
-				XWPropertyDefs.FACEBOOKAPPID));
-		Operator.FACEBOOK.setAppKey(Dispatcher.getConfig().getProperty(
-				XWPropertyDefs.FACEBOOKAPPKEY));
+		Operator.FACEBOOK.setAppId(Dispatcher.getConfig().getProperty(XWPropertyDefs.FACEBOOKAPPID));
+		Operator.FACEBOOK.setAppKey(Dispatcher.getConfig().getProperty(XWPropertyDefs.FACEBOOKAPPKEY));
 		Operator.GOOGLE.setScope(FACEBOOK_SCOPE);
 
-		Operator.GOOGLE.setAppId(Dispatcher.getConfig().getProperty(
-				XWPropertyDefs.GOOGLEAPPID));
-		Operator.GOOGLE.setAppKey(Dispatcher.getConfig().getProperty(
-				XWPropertyDefs.GOOGLEAPPKEY));
+		Operator.GOOGLE.setAppId(Dispatcher.getConfig().getProperty(XWPropertyDefs.GOOGLEAPPID));
+		Operator.GOOGLE.setAppKey(Dispatcher.getConfig().getProperty(XWPropertyDefs.GOOGLEAPPKEY));
 		Operator.GOOGLE.setScope(GOOGLE_SCOPE);
 
-		Operator.TWITTER.setAppId(Dispatcher.getConfig().getProperty(
-				XWPropertyDefs.TWITTERAPPID));
-		Operator.TWITTER.setAppKey(Dispatcher.getConfig().getProperty(
-				XWPropertyDefs.TWITTERAPPKEY));
+		Operator.TWITTER.setAppId(Dispatcher.getConfig().getProperty(XWPropertyDefs.TWITTERAPPID));
+		Operator.TWITTER.setAppKey(Dispatcher.getConfig().getProperty(XWPropertyDefs.TWITTERAPPKEY));
 		Operator.TWITTER.setScope(TWITTER_SCOPE);
 
-		Operator.YAHOO.setAppId(Dispatcher.getConfig().getProperty(
-				XWPropertyDefs.YAHOOAPPID));
-		Operator.YAHOO.setAppKey(Dispatcher.getConfig().getProperty(
-				XWPropertyDefs.YAHOOAPPKEY));
+		Operator.YAHOO.setAppId(Dispatcher.getConfig().getProperty(XWPropertyDefs.YAHOOAPPID));
+		Operator.YAHOO.setAppKey(Dispatcher.getConfig().getProperty(XWPropertyDefs.YAHOOAPPKEY));
 		Operator.YAHOO.setScope(YAHOO_SCOPE);
 
 		for (final Operator op : Operator.values()) {
@@ -308,7 +296,7 @@ public class HTTPOAuthHandler extends Thread implements
 	 * @param l
 	 *            is the logger level
 	 */
-	public HTTPOAuthHandler(LoggerLevel l) {
+	public HTTPOAuthHandler(final LoggerLevel l) {
 		this();
 		logger.setLoggerLevel(l);
 	}
@@ -317,13 +305,15 @@ public class HTTPOAuthHandler extends Thread implements
 	 * This does nothing and must be overridden by any HTTP handler This is
 	 * inherited from org.mortbay.jetty.Handler
 	 */
-	public void setServer(Server server) {
+	@Override
+	public void setServer(final Server server) {
 	}
 
 	/**
 	 * This does nothing and must be overridden by any HTTP handler This is
 	 * inherited from org.mortbay.jetty.Handler
 	 */
+	@Override
 	public Server getServer() {
 		return null;
 	}
@@ -334,6 +324,7 @@ public class HTTPOAuthHandler extends Thread implements
 	 *
 	 * @return true
 	 */
+	@Override
 	public boolean isFailed() {
 		return true;
 	}
@@ -344,6 +335,7 @@ public class HTTPOAuthHandler extends Thread implements
 	 *
 	 * @return false
 	 */
+	@Override
 	public boolean isRunning() {
 		return false;
 	}
@@ -354,6 +346,7 @@ public class HTTPOAuthHandler extends Thread implements
 	 *
 	 * @return false
 	 */
+	@Override
 	public boolean isStarted() {
 		return false;
 	}
@@ -364,6 +357,7 @@ public class HTTPOAuthHandler extends Thread implements
 	 *
 	 * @return false
 	 */
+	@Override
 	public boolean isStarting() {
 		return false;
 	}
@@ -374,6 +368,7 @@ public class HTTPOAuthHandler extends Thread implements
 	 *
 	 * @return true
 	 */
+	@Override
 	public boolean isStopped() {
 		return true;
 	}
@@ -384,15 +379,18 @@ public class HTTPOAuthHandler extends Thread implements
 	 *
 	 * @return false
 	 */
+	@Override
 	public boolean isStopping() {
 		return false;
 	}
 
-	public void removeLifeCycleListener(Listener l) {
+	@Override
+	public void removeLifeCycleListener(final Listener l) {
 
 	}
 
-	public void addLifeCycleListener(Listener l) {
+	@Override
+	public void addLifeCycleListener(final Listener l) {
 
 	}
 
@@ -417,9 +415,9 @@ public class HTTPOAuthHandler extends Thread implements
 	 *
 	 * @see xtremweb.communications.XWPostParams
 	 */
-	public void handle(String target, Request baseRequest,
-			final HttpServletRequest request, final HttpServletResponse response)
-			throws IOException, ServletException {
+	@Override
+	public void handle(final String target, final Request baseRequest, final HttpServletRequest request,
+			final HttpServletResponse response) throws IOException, ServletException {
 
 		logger.debug("new connection");
 
@@ -427,27 +425,21 @@ public class HTTPOAuthHandler extends Thread implements
 		try {
 			logger.debug("Handling path info      = " + path);
 			logger.debug("Handling target         = " + target);
-			logger.debug("Handling request        = "
-					+ request.getContentLength() + " "
-					+ request.getContentType());
-			logger.debug("Handling parameter size = "
-					+ request.getParameterMap().size());
-			logger.debug("Handling query string   = "
-					+ request.getQueryString());
+			logger.debug("Handling request        = " + request.getContentLength() + " " + request.getContentType());
+			logger.debug("Handling parameter size = " + request.getParameterMap().size());
+			logger.debug("Handling query string   = " + request.getQueryString());
 			logger.debug("Handling method         = " + request.getMethod());
 
 			remoteName = request.getRemoteHost();
 			remoteIP = request.getRemoteAddr();
 			remotePort = request.getRemotePort();
 
-			for (final Enumeration<String> e = request.getParameterNames(); e
-					.hasMoreElements();) {
+			for (final Enumeration<String> e = request.getParameterNames(); e.hasMoreElements();) {
 				final String pname = e.nextElement();
 				logger.debug("parameter name " + pname);
 				logger.debug("parameter value " + request.getParameter(pname));
 			}
-			for (final Enumeration<String> e = request.getHeaderNames(); e
-					.hasMoreElements();) {
+			for (final Enumeration<String> e = request.getHeaderNames(); e.hasMoreElements();) {
 				logger.debug("header " + e.nextElement());
 			}
 
@@ -465,22 +457,17 @@ public class HTTPOAuthHandler extends Thread implements
 	/**
 	 * This handles XMLHTTPRequest
 	 */
-	private void oauthRequest(final HttpServletRequest request,
-			final HttpServletResponse response) throws IOException,
-			OAuthException {
+	private void oauthRequest(final HttpServletRequest request, final HttpServletResponse response)
+			throws IOException, OAuthException {
 
-		final String op = request.getParameter(XWPostParams.AUTH_OPERATOR
-				.toString());
+		final String op = request.getParameter(XWPostParams.AUTH_OPERATOR.toString());
 		if (op == null) {
 			final String state = request.getParameter(XWPostParams.AUTH_STATE.toString());
 			checkState(state);
 			final Authentication auth = getAuthentication(request);
-			final String url = localRootUrl + "?" + XWPostParams.AUTH_STATE
-					+ "=" + state
-					+ request.getParameter(XWPostParams.AUTH_STATE.toString())
-					+ "&" + XWPostParams.AUTH_EMAIL + "=" + auth.getEmail()
-					+ "&" + XWPostParams.AUTH_IDENTITY + "="
-					+ auth.getIdentity();
+			final String url = localRootUrl + "?" + XWPostParams.AUTH_STATE + "=" + state
+					+ request.getParameter(XWPostParams.AUTH_STATE.toString()) + "&" + XWPostParams.AUTH_EMAIL + "="
+					+ auth.getEmail() + "&" + XWPostParams.AUTH_IDENTITY + "=" + auth.getIdentity();
 			response.sendRedirect(url);
 			return;
 		}
@@ -496,16 +483,15 @@ public class HTTPOAuthHandler extends Thread implements
 
 	/**
 	 * This handles XMLHTTPRequest for Google delegation
-	 * 
+	 *
 	 * @param request
 	 *            is the HTTP request
 	 * @param operator
 	 *            is the OAuth operator (google, facebook etc.)
 	 * @since 9.1.1
 	 */
-	private void oauthRequestForOPerator(final HttpServletRequest request,
-			final Operator operator, final HttpServletResponse response)
-			throws IOException, OAuthException {
+	private void oauthRequestForOPerator(final HttpServletRequest request, final Operator operator,
+			final HttpServletResponse response) throws IOException, OAuthException {
 		if (operator == null) {
 			throw new OAuthException("operator is null");
 		}
@@ -517,20 +503,18 @@ public class HTTPOAuthHandler extends Thread implements
 
 		final HttpSession session = request.getSession(true);
 		session.setAttribute(XWPostParams.AUTH_STATE.toString(), newState);
-		session.setAttribute(XWPostParams.AUTH_OPERATOR.toString(),
-				operator.toString());
+		session.setAttribute(XWPostParams.AUTH_OPERATOR.toString(), operator.toString());
 
 		response.sendRedirect(oauthUrl);
 	}
 
 	/**
 	 * This generates a new state (a random string) and stores it in stateDb
-	 * 
+	 *
 	 * @return the new generated state
 	 */
 	private String newState(final Operator op) {
-		final MD5 md5 = new MD5(op.getAppId() + System.currentTimeMillis()
-				+ Math.random());
+		final MD5 md5 = new MD5(op.getAppId() + System.currentTimeMillis() + Math.random());
 		final String ret = md5.asHex();
 		storeState(ret);
 		return ret;
@@ -538,30 +522,26 @@ public class HTTPOAuthHandler extends Thread implements
 
 	/**
 	 * This retrieves authentication from openid server response
-	 * 
+	 *
 	 * @param request
 	 *            is the HTTP request
 	 * @return the authentication if found; null otherwise
 	 */
-	private Authentication getAuthentication(final HttpServletRequest request)
-			throws OAuthException {
+	private Authentication getAuthentication(final HttpServletRequest request) throws OAuthException {
 		final HttpSession session = request.getSession(false);
 
 		String email = request.getParameter(XWPostParams.AUTH_EMAIL.toString());
 		String id = request.getParameter(XWPostParams.AUTH_IDENTITY.toString());
 
 		if ((email == null) && (session != null)) {
-			email = (String) session.getAttribute(XWPostParams.AUTH_EMAIL
-					.toString());
+			email = (String) session.getAttribute(XWPostParams.AUTH_EMAIL.toString());
 		}
 		if ((id == null) && (session != null)) {
-			id = (String) session.getAttribute(XWPostParams.AUTH_IDENTITY
-					.toString());
+			id = (String) session.getAttribute(XWPostParams.AUTH_IDENTITY.toString());
 		}
 
 		if ((email == null) || (id == null)) {
-			throw new OAuthException(
-					"can't retrieve authentication informations");
+			throw new OAuthException("can't retrieve authentication informations");
 		}
 		final Authentication authentication = new Authentication();
 		authentication.setEmail(email);
@@ -576,18 +556,20 @@ public class HTTPOAuthHandler extends Thread implements
 
 	/**
 	 * This tests if state exist in database:
-	 * 
+	 *
 	 * @param state
-	 * @throws OAuthException is thrown if provided state does not exist
+	 * @throws OAuthException
+	 *             is thrown if provided state does not exist
 	 */
 	void checkState(final String state) throws OAuthException {
-		if(stateDb.contains(state) == false) {
+		if (stateDb.contains(state) == false) {
 			throw new OAuthException("invalid state");
 		}
 	}
+
 	/**
 	 * This tests if state exist in database:
-	 * 
+	 *
 	 * @param state
 	 * @return true if state exists
 	 */
@@ -597,12 +579,12 @@ public class HTTPOAuthHandler extends Thread implements
 
 	/**
 	 * This stores state in database, if not already stored
-	 * 
+	 *
 	 * @param state
 	 *            is the state to store
 	 */
 	void storeState(final String state) {
-		if(stateDb.contains(state) == false) {
+		if (stateDb.contains(state) == false) {
 			stateDb.add(state);
 		}
 	}
@@ -623,14 +605,12 @@ public class HTTPOAuthHandler extends Thread implements
 		final Logger logger = new Logger();
 		try {
 			final X509Certificate[] gcerts = HTTPOpenIdHandler
-					.retrieveCertificates(
-							HTTPOAuthHandler.FACEBOOK_SERVER_ADDR, false);
+					.retrieveCertificates(HTTPOAuthHandler.FACEBOOK_SERVER_ADDR, false);
 			for (int i = 0; i < gcerts.length; i++) {
 				final X509Certificate cert = gcerts[i];
 				try {
 					final String alias = cert.getSubjectDN().toString();
-					logger.finest("KeyStore set entry= " + alias
-							+ "; KeyStore.size = " + store.size());
+					logger.finest("KeyStore set entry= " + alias + "; KeyStore.size = " + store.size());
 					store.setCertificateEntry(alias, cert);
 				} catch (final Exception e) {
 					logger.exception("Can't add new entry to keystore", e);
@@ -644,14 +624,13 @@ public class HTTPOAuthHandler extends Thread implements
 
 	/**
 	 * This is for testing only
-	 * 
+	 *
 	 * @param args
 	 * @throws Exception
 	 */
-	public static void main(String[] args) throws Exception {
+	public static void main(final String[] args) throws Exception {
 		int i = 0;
-		final boolean sav = (args.length <= 0 ? false : (args[0]
-				.compareToIgnoreCase("--sav") == 0));
+		final boolean sav = (args.length <= 0 ? false : (args[0].compareToIgnoreCase("--sav") == 0));
 		if (sav) {
 			i = 1;
 		}
