@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -60,9 +60,9 @@ import xtremweb.security.PEMPublicKeyValidator;
 /**
  * This handles incoming communications through TCP<br>
  * This answers request from TCPClient
- * 
+ *
  * Created: August 2005
- * 
+ *
  * @see xtremweb.communications.TCPClient
  * @author Oleg Lodygensky
  * @version RPCXW
@@ -75,7 +75,7 @@ public class TCPHandler extends xtremweb.dispatcher.CommHandler {
 	private StreamIO io;
 	private XMLWriter writer;
 
-	public static final String NAME = ("TCPHandler");
+	public static final String NAME = "TCPHandler";
 
 	/**
 	 * This is the default constructor which only calls super(NAME)
@@ -89,7 +89,7 @@ public class TCPHandler extends xtremweb.dispatcher.CommHandler {
 	/**
 	 * This is the default constructor which only calls super(NAME)
 	 */
-	public TCPHandler(String n, XWConfigurator context) {
+	public TCPHandler(final String n, final XWConfigurator context) {
 		super(n, context);
 		socket = null;
 		sslSocket = null;
@@ -98,7 +98,7 @@ public class TCPHandler extends xtremweb.dispatcher.CommHandler {
 	/**
 	 * This is the default constructor which only calls super(NAME)
 	 */
-	public TCPHandler(XWConfigurator context) {
+	public TCPHandler(final XWConfigurator context) {
 		this(NAME + Math.random(), context);
 	}
 
@@ -114,13 +114,13 @@ public class TCPHandler extends xtremweb.dispatcher.CommHandler {
 	/**
 	 * @see xtremweb.communications.CommHandler#setSocket(Socket)
 	 */
-	public synchronized void setSocket(SSLSocket s) throws RemoteException {
+	@Override
+	public synchronized void setSocket(final SSLSocket s) throws RemoteException {
 		if (s == null) {
 			throw new RemoteException("setSocket_ssl() s is null???");
 		}
 		if (sslSocket != null) {
-			throw new RemoteException(
-					"setSocket_ssl() sslSocket is not null???");
+			throw new RemoteException("setSocket_ssl() sslSocket is not null???");
 		}
 		sslSocket = s;
 		socket = null;
@@ -131,7 +131,8 @@ public class TCPHandler extends xtremweb.dispatcher.CommHandler {
 	/**
 	 * @see xtremweb.communications.CommHandler#setSocket(Socket)
 	 */
-	public synchronized void setSocket(Socket s) throws RemoteException {
+	@Override
+	public synchronized void setSocket(final Socket s) throws RemoteException {
 		if (s == null) {
 			notifyAll();
 			throw new RemoteException("setSocket() s is null???");
@@ -149,7 +150,7 @@ public class TCPHandler extends xtremweb.dispatcher.CommHandler {
 	/**
 	 * @see xtremweb.communications.CommHandler#setSocket(Socket)
 	 */
-	private void paramSocket(Socket s) throws RemoteException {
+	private void paramSocket(final Socket s) throws RemoteException {
 
 		setRemoteName(s.getInetAddress().getHostName());
 		setRemoteIP(s.getInetAddress().getHostAddress());
@@ -164,8 +165,7 @@ public class TCPHandler extends xtremweb.dispatcher.CommHandler {
 			logger.exception(e);
 		}
 
-		final boolean net = Boolean.parseBoolean(config
-				.getProperty(XWPropertyDefs.OPTIMIZENETWORK));
+		final boolean net = Boolean.parseBoolean(config.getProperty(XWPropertyDefs.OPTIMIZENETWORK));
 		if ((net) && !OSEnum.getOs().isMacosx()) {
 			try {
 				s.setSoLinger(false, 0); // don't wait on close
@@ -180,13 +180,13 @@ public class TCPHandler extends xtremweb.dispatcher.CommHandler {
 
 	/**
 	 * This throws an exception since setPacket() is dedicated to UDP comms
-	 * 
+	 *
 	 * @exception RemoteException
 	 *                is always thrown since this method is dedicated to UDP
 	 *                comms
 	 */
-	public void setPacket(DatagramSocket s, DatagramPacket p)
-			throws RemoteException {
+	@Override
+	public void setPacket(final DatagramSocket s, final DatagramPacket p) throws RemoteException {
 		throw new RemoteException("TCPHandler#setPacket() TCP can't set packet");
 	}
 
@@ -196,8 +196,8 @@ public class TCPHandler extends xtremweb.dispatcher.CommHandler {
 	 *                is always thrown since this method is dedicated to UDP
 	 *                comms
 	 */
-	public void setPacket(DatagramChannel c, SocketAddress r, BytePacket p)
-			throws RemoteException {
+	@Override
+	public void setPacket(final DatagramChannel c, final SocketAddress r, final BytePacket p) throws RemoteException {
 		throw new RemoteException("TCPHandler#setPacket() TCP can't set packet");
 	}
 
@@ -205,7 +205,7 @@ public class TCPHandler extends xtremweb.dispatcher.CommHandler {
 	 * This writes an object to output channel
 	 */
 	@Override
-	protected void write(XMLable cmd) throws IOException {
+	protected void write(final XMLable cmd) throws IOException {
 		IOException ioe = null;
 		final Logger logger = getLogger();
 
@@ -229,13 +229,13 @@ public class TCPHandler extends xtremweb.dispatcher.CommHandler {
 
 	/**
 	 * This writes a file to output channel
-	 * 
+	 *
 	 * @see xtremweb.common.StreamIO#writeFile(File)
 	 * @param f
 	 *            is the file to send
 	 */
 	@Override
-	public synchronized void writeFile(File f) throws IOException {
+	public synchronized void writeFile(final File f) throws IOException {
 		try {
 			mileStone("<writeFile file='" + f + "'>");
 			io.writeFile(f);
@@ -247,12 +247,12 @@ public class TCPHandler extends xtremweb.dispatcher.CommHandler {
 	/**
 	 * This reads a file from socket This is typically needed after a
 	 * workRequest to get stdin and/or dirin files
-	 * 
+	 *
 	 * @param f
 	 *            is the file to store received bytes
 	 */
 	@Override
-	public synchronized void readFile(File f) throws IOException {
+	public synchronized void readFile(final File f) throws IOException {
 		IOException ioe = null;
 		final Logger logger = getLogger();
 		try {
@@ -261,8 +261,7 @@ public class TCPHandler extends xtremweb.dispatcher.CommHandler {
 		} catch (final Exception e) {
 			logger.exception(e);
 			String str = e.getMessage();
-			mileStone("<error method='readFile' msg='" + e.getMessage()
-					+ "' />");
+			mileStone("<error method='readFile' msg='" + e.getMessage() + "' />");
 			ioe = new IOException(str);
 			str = null;
 		} finally {
@@ -294,16 +293,14 @@ public class TCPHandler extends xtremweb.dispatcher.CommHandler {
 	/**
 	 * This is the main loop; this is called by java.lang.Thread#start() This
 	 * executes one command form communication channel and exists
-	 * 
+	 *
 	 * @see CommHandler#run(XMLRPCCommand)
 	 */
 	@Override
 	public void run() {
 
-		XMLRPCCommand cmd = null;
-
-		final boolean nio = Boolean.parseBoolean(getConfig().getProperty(
-				XWPropertyDefs.JAVANIO));
+		XMLRPCCommand cmd;
+		final boolean nio = Boolean.parseBoolean(getConfig().getProperty(XWPropertyDefs.JAVANIO));
 
 		while (true) {
 
@@ -315,10 +312,8 @@ public class TCPHandler extends xtremweb.dispatcher.CommHandler {
 				if (theSocket == null) {
 					theSocket = socket;
 				}
-				final DataOutputStream os = new DataOutputStream(
-						theSocket.getOutputStream());
-				final DataInputStream is = new DataInputStream(
-						theSocket.getInputStream());
+				final DataOutputStream os = new DataOutputStream(theSocket.getOutputStream());
+				final DataInputStream is = new DataInputStream(theSocket.getInputStream());
 				io = new StreamIO(os, is, theSocket.getSendBufferSize(), nio);
 				writer = new XMLWriter(os);
 
@@ -334,20 +329,15 @@ public class TCPHandler extends xtremweb.dispatcher.CommHandler {
 
 					if (challenging) {
 						X500Principal principal = null;
-						String subjectName = null;
-						String issuerName = null;
-						String random = null;
 						final UID newuid = new UID();
 						UserInterface user = null;
 						X509Certificate cert = null;
 
 						try {
 							try {
-								final BufferedInputStream input = new BufferedInputStream(
-										is);
+								final BufferedInputStream input = new BufferedInputStream(is);
 								input.mark(255);
-								final ObjectInputStream ois = new ObjectInputStream(
-										input);
+								final ObjectInputStream ois = new ObjectInputStream(input);
 								cert = (X509Certificate) ois.readObject();
 								//
 								// first authenticate, to read all from client
@@ -355,8 +345,7 @@ public class TCPHandler extends xtremweb.dispatcher.CommHandler {
 								//
 								PEMPublicKeyValidator.authenticate(cert, is);
 								if (Dispatcher.getConfig().getAdminUid() == null) {
-									throw new AccessControlException(
-											"Server config error : admin.uid is not set");
+									throw new AccessControlException("Server config error : admin.uid is not set");
 								}
 								if (Dispatcher.getProxyValidator() == null) {
 									throw new AccessControlException(
@@ -364,25 +353,18 @@ public class TCPHandler extends xtremweb.dispatcher.CommHandler {
 								}
 								Dispatcher.getProxyValidator().validate(cert);
 							} catch (final Exception e) {
-								throw new AccessControlException(
-										"Certificate challenge error : "
-												+ e.getMessage());
+								throw new AccessControlException("Certificate challenge error : " + e.getMessage());
 							}
-							getLogger().debug(
-									"cert.getIssuerX500Principal().getName() "
-											+ cert.getIssuerX500Principal()
-													.getName());
+							getLogger().debug("cert.getIssuerX500Principal().getName() "
+									+ cert.getIssuerX500Principal().getName());
 
 							principal = cert.getSubjectX500Principal();
-							subjectName = principal.getName();
+							final String subjectName = principal.getName();
 							principal = cert.getIssuerX500Principal();
-							issuerName = principal.getName();
-							final String loginName = subjectName + "_"
-									+ issuerName;
-							subjectName = null;
-							issuerName = null;
+							final String issuerName = principal.getName();
+							final String loginName = subjectName + "_" + issuerName;
 							principal = null;
-							random = loginName + Math.random();
+							final String random = loginName + Math.random();
 							final byte[] strb = random.getBytes();
 							final MD5 md5 = new MD5(strb);
 							final String md5hex = md5.asHex();
@@ -396,18 +378,14 @@ public class TCPHandler extends xtremweb.dispatcher.CommHandler {
 								user = db.user(client.getUID());
 							}
 							if (user == null) {
-								user = db.user(UserInterface.Columns.LOGIN
-										.toString()
-										+ "= '"
-										+ client.getLogin()
-										+ "'");
+								user = db
+										.user(UserInterface.Columns.LOGIN.toString() + "= '" + client.getLogin() + "'");
 							}
 							if (user == null) {
 								client.setUID(newuid);
 								client.setLogin(loginName);
 								client.setPassword(md5hex);
-								client.setOwner(Dispatcher.getConfig()
-										.getAdminUid());
+								client.setOwner(Dispatcher.getConfig().getAdminUid());
 								client.setRights(UserRightEnum.STANDARD_USER);
 								//
 								// this inserts user in DB
@@ -421,9 +399,6 @@ public class TCPHandler extends xtremweb.dispatcher.CommHandler {
 							user = null;
 							cert = null;
 							principal = null;
-							subjectName = null;
-							issuerName = null;
-							random = null;
 						}
 					}
 					// next will close the communication channel
@@ -436,12 +411,9 @@ public class TCPHandler extends xtremweb.dispatcher.CommHandler {
 				} while (cmd != null);
 
 			} catch (final Exception e) {
-				getLogger().debug(
-						remoteAddresse() + " end of communication : "
-								+ e.getMessage());
+				getLogger().debug(remoteAddresse() + " end of communication : " + e.getMessage());
 			} finally {
 				close();
-				cmd = null;
 				this.socket = null;
 				this.sslSocket = null;
 				theSocket = null;
@@ -453,6 +425,7 @@ public class TCPHandler extends xtremweb.dispatcher.CommHandler {
 	/**
 	 * This cleans and closes communications
 	 */
+	@Override
 	public void close() {
 		try {
 			mileStone("<close>");
