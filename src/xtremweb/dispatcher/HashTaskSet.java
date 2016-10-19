@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -30,20 +30,20 @@ import java.util.Vector;
 
 import xtremweb.common.AppInterface;
 import xtremweb.common.HostInterface;
+import xtremweb.common.StatusEnum;
 import xtremweb.common.Table;
 import xtremweb.common.TaskInterface;
 import xtremweb.common.UID;
 import xtremweb.common.UserInterface;
 import xtremweb.common.WorkInterface;
 import xtremweb.common.XWPropertyDefs;
-import xtremweb.common.StatusEnum;
 import xtremweb.common.XWTools;
 
 /**
  * HashTaskSet.java
- * 
+ *
  * Created: Wed Aug 23 14:17:05 2000
- * 
+ *
  * @author Gilles Fedak
  * @version %I% %G%
  */
@@ -70,8 +70,7 @@ public class HashTaskSet extends TaskSet {
 				return;
 			}
 
-			for (final Iterator<WorkInterface> worksEnum = works.iterator(); worksEnum
-					.hasNext();) {
+			for (final Iterator<WorkInterface> worksEnum = works.iterator(); worksEnum.hasNext();) {
 
 				try {
 					final WorkInterface theWork = worksEnum.next();
@@ -81,10 +80,9 @@ public class HashTaskSet extends TaskSet {
 
 					theWork.setPending();
 
-					final Collection<TaskInterface>tasks = db.tasks(theWork);
+					final Collection<TaskInterface> tasks = db.tasks(theWork);
 					if (tasks != null) {
-						for (final Iterator<TaskInterface> tasksEnum = tasks.iterator(); 
-								tasksEnum.hasNext();) {
+						for (final Iterator<TaskInterface> tasksEnum = tasks.iterator(); tasksEnum.hasNext();) {
 							final TaskInterface theTask = tasksEnum.next();
 
 							theTask.setError();
@@ -119,20 +117,18 @@ public class HashTaskSet extends TaskSet {
 				return;
 			}
 
-			final int delay = (int) (System.currentTimeMillis() - theTask
-					.getLastAlive().getTime());
+			final int delay = (int) (System.currentTimeMillis() - theTask.getLastAlive().getTime());
 
-			int aliveTimeOut = Integer.parseInt(Dispatcher.getConfig()
-					.getProperty(XWPropertyDefs.ALIVETIMEOUT.toString()));
+			int aliveTimeOut = Integer
+					.parseInt(Dispatcher.getConfig().getProperty(XWPropertyDefs.ALIVETIMEOUT.toString()));
 			aliveTimeOut *= 1000;
 
-			if ((theTask.isRunning() || theTask.isDataRequest() || theTask
-					.isResultRequest()) && (delay > aliveTimeOut)) {
+			if ((theTask.isRunning() || theTask.isDataRequest() || theTask.isResultRequest())
+					&& (delay > aliveTimeOut)) {
 
 				final WorkInterface theWork = db.work(theTask.getWork());
 				if (theWork == null) {
-					getLogger().warn("No work found for task ; deleting "
-							+ theTask.getUID());
+					getLogger().warn("No work found for task ; deleting " + theTask.getUID());
 					theTask.delete();
 					return;
 				}
@@ -182,24 +178,24 @@ public class HashTaskSet extends TaskSet {
 				db.update(rows);
 			}
 		} catch (final Exception e) {
-			getLogger().exception(
-					"detecAbortedTasks_unitary : can't set tasks lost", e);
+			getLogger().exception("detecAbortedTasks_unitary : can't set tasks lost", e);
 		}
 	}
 
 	/**
 	 * This are the status we must monitor to detect lost tasks
+	 *
 	 * @since 8.2.0
 	 */
 	private enum abortedStatus {
-		RUNNING(StatusEnum.RUNNING),
-		DATAREQUEST(StatusEnum.DATAREQUEST),
-		RESULTREQUEST(StatusEnum.RESULTREQUEST);
+		RUNNING(StatusEnum.RUNNING), DATAREQUEST(StatusEnum.DATAREQUEST), RESULTREQUEST(StatusEnum.RESULTREQUEST);
 
 		private final StatusEnum status;
-		private abortedStatus(StatusEnum s) {
+
+		private abortedStatus(final StatusEnum s) {
 			status = s;
 		}
+
 		public StatusEnum getStatus() {
 			return status;
 		}
@@ -208,21 +204,19 @@ public class HashTaskSet extends TaskSet {
 	/**
 	 * This retrieves RUNNING or DATAREQUEST or RESULTREQUEST tasks and calls
 	 * detectAbortedTask(Task) for each
-	 * 
+	 *
 	 * @see #detectAbortedTask(TaskInterface)
 	 */
 	@Override
 	protected void detectAbortedTasks() {
 		final DBInterface db = DBInterface.getInstance();
-		for (abortedStatus s : abortedStatus.values()) {
+		for (final abortedStatus s : abortedStatus.values()) {
 
 			try {
 				final Collection<TaskInterface> tasks = db.tasks(s.getStatus());
-				getLogger().debug("detectAbortedTasks " + s  + " = "
-						+ (tasks == null ? "null" : tasks.size()));
+				getLogger().debug("detectAbortedTasks " + s + " = " + (tasks == null ? "null" : tasks.size()));
 				if (tasks != null) {
-					for (final Iterator<TaskInterface> enumeration = tasks.iterator(); enumeration
-							.hasNext();) {
+					for (final Iterator<TaskInterface> enumeration = tasks.iterator(); enumeration.hasNext();) {
 						final TaskInterface theTask = enumeration.next();
 						if (theTask == null) {
 							continue;
@@ -244,12 +238,11 @@ public class HashTaskSet extends TaskSet {
 
 		String s = "";
 		try {
-			final Collection<WorkInterface > works = DBInterface.getInstance().works();
+			final Collection<WorkInterface> works = DBInterface.getInstance().works();
 			if (works == null) {
 				return null;
 			}
-			for (final Iterator<WorkInterface > enumeration = works.iterator(); enumeration
-					.hasNext();) {
+			for (final Iterator<WorkInterface> enumeration = works.iterator(); enumeration.hasNext();) {
 				final WorkInterface theWork = enumeration.next();
 				s += theWork.toString() + "\n";
 			}
