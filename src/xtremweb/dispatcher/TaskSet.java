@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -33,6 +33,12 @@ import xtremweb.common.XWPropertyDefs;
 
 public abstract class TaskSet extends Thread {
 	private Logger logger;
+	/**
+	 * This stores the tasks set status
+	 *
+	 * @see #isReady()
+	 */
+	private boolean ready = false;
 
 	/**
 	 *
@@ -45,19 +51,12 @@ public abstract class TaskSet extends Thread {
 	/**
 	 * This tells whether the task set is ready The taskset is ready when tasks
 	 * have been read from DB, ckecked and up to dated to a corret status
-	 * 
+	 *
 	 * @return true if tasks set is ready
 	 */
 	public boolean isReady() {
 		return ready;
 	}
-
-	/**
-	 * This stores the tasks set status
-	 * 
-	 * @see #isReady()
-	 */
-	private boolean ready = false;
 
 	/**
 	 * This retreives WAITING jobs from DB, creates a Task iin DB and set their
@@ -75,14 +74,13 @@ public abstract class TaskSet extends Thread {
 	/**
 	 * This is the main method. This is an infinite loop that detects aborted
 	 * tasks and retreive WAITING jobs The loop then sleeps for ALIVE seconds
-	 * 
+	 *
 	 * @see xtremweb.common.XWPropertyDefs#ALIVEPERIOD
 	 */
 	@Override
 	public void run() {
 		try {
-			int timeout = Integer.parseInt(Dispatcher.getConfig().getProperty(
-					XWPropertyDefs.ALIVEPERIOD));
+			int timeout = Integer.parseInt(Dispatcher.getConfig().getProperty(XWPropertyDefs.ALIVEPERIOD));
 			timeout *= 1000;
 
 			while (true) {
@@ -108,7 +106,7 @@ public abstract class TaskSet extends Thread {
 	 * @param logger
 	 *            the logger to set
 	 */
-	public void setLogger(Logger logger) {
+	public void setLogger(final Logger logger) {
 		this.logger = logger;
 	}
 }
