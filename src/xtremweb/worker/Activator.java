@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -37,9 +37,9 @@ import xtremweb.common.XWConfigurator;
  * config file with the key <CODE>activator.class</CODE>. <BR>
  * If the activator object implements the <CODE>Runable</CODE> interface, the
  * worker will launch a new thread to run it.
- * 
+ *
  * @author Samuel Heriard.
- * 
+ *
  */
 
 public abstract class Activator {
@@ -81,7 +81,7 @@ public abstract class Activator {
 	 * @param config
 	 *            the config to set
 	 */
-	public void setConfig(XWConfigurator config) {
+	public void setConfig(final XWConfigurator config) {
 		this.config = config;
 	}
 
@@ -110,7 +110,7 @@ public abstract class Activator {
 	/**
 	 * The <CODE>initialize</CODE> method is invoked after the instantiation of
 	 * the <CODE>Activator</CODE> object.
-	 * 
+	 *
 	 * @param c
 	 *            a <CODE>Properties</CODE> object that can be used to configure
 	 *            the activator. For now the global config of the worker is
@@ -119,20 +119,20 @@ public abstract class Activator {
 	 *                is thrown on initialization error, depending on the
 	 *                Acivator implementation
 	 */
-	public void initialize(XWConfigurator c) {
+	public void initialize(final XWConfigurator c) {
 		config = c;
 	}
 
 	/**
 	 * This sets this activator parameters.
 	 */
-	public void setParams(String p) {
+	public void setParams(final String p) {
 		params = p;
 	}
 
 	/**
 	 * This returns this activator parameters.
-	 * 
+	 *
 	 * @return a String containing this activator parameters
 	 */
 	public String getParams() {
@@ -141,7 +141,7 @@ public abstract class Activator {
 
 	/**
 	 * This does nothing
-	 * 
+	 *
 	 * @see CpuActivator#raz ()
 	 */
 	public void raz() {
@@ -149,12 +149,12 @@ public abstract class Activator {
 
 	/**
 	 * Change the activity mask
-	 * 
+	 *
 	 * @param mask
 	 *            new activity mask
 	 */
 
-	protected void setMask(int mask) {
+	protected void setMask(final int mask) {
 		activityMask = mask;
 	}
 
@@ -166,40 +166,40 @@ public abstract class Activator {
 		return activityMask;
 	}
 
-	public final int getMask(int filter) {
+	public final int getMask(final int filter) {
 		return filter & getMask();
 	}
 
 	/**
 	 * Check if activity is allowed.
-	 * 
+	 *
 	 * @param mask
 	 *            : mask of activity to test
 	 * @return true if all the activities specified are allowed
 	 */
-	public final boolean allowed(int mask) {
+	public final boolean allowed(final int mask) {
 		return ((~getMask() & mask) == 0);
 	}
 
 	/**
 	 * Check if activity is allowed.
-	 * 
+	 *
 	 * @param mask
 	 *            : mask of activity to test
 	 * @return true if one of the activities specified is allowed
 	 */
-	public final boolean anyAllowed(int mask) {
+	public final boolean anyAllowed(final int mask) {
 		return (getMask(mask) != 0);
 	}
 
 	/**
 	 * wait for a bit in the activity mask to become 0
-	 * 
+	 *
 	 * @param filter
 	 *            : watch only bits not nul in <CODE>filter</CODE>
 	 * @return : the mask of watched bits that have changed
 	 */
-	public int waitForSuspend(int filter) throws InterruptedException {
+	public int waitForSuspend(final int filter) throws InterruptedException {
 		final int inactive = ~getMask() & filter;
 		if (inactive != 0) {
 			return 0;
@@ -210,13 +210,13 @@ public abstract class Activator {
 
 	/**
 	 * wait for a bit in the activity mask to be 1
-	 * 
+	 *
 	 * @param filter
 	 *            watch only bits not nul in <CODE>filter</CODE>
 	 * @return the mask of watched bits that have changed (0 if an activity is
 	 *         already allowed)
 	 */
-	public int waitForAllow(int filter) throws InterruptedException {
+	public int waitForAllow(final int filter) throws InterruptedException {
 		final int active = getMask() & filter;
 		if (active != 0) {
 			return 0;
@@ -227,19 +227,19 @@ public abstract class Activator {
 
 	/**
 	 * Wait for any change in activity mask.
-	 * 
+	 *
 	 * This method wait for the activator object to be notified until the
 	 * activityMask changes.
-	 * 
+	 *
 	 * Subclasses can either override this method or let it unchanged and
 	 * implement a <CODE>run</CODE> method to modify the activity mask and
 	 * notify itself in a separate thread.
-	 * 
+	 *
 	 * @param mask
 	 *            set the event to wait for
 	 * @return : the mask of watched bits that have changed
 	 */
-	public int waitForEvent(int mask) throws InterruptedException {
+	public int waitForEvent(final int mask) throws InterruptedException {
 		final int oldm = getMask(mask);
 		int newm = oldm;
 
