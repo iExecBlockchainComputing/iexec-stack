@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -24,7 +24,6 @@
 package xtremweb.worker;
 
 import java.io.IOException;
-import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -36,40 +35,37 @@ import org.eclipse.jetty.server.Server;
 
 import xtremweb.common.Logger;
 import xtremweb.common.LoggerLevel;
-import xtremweb.common.Table;
-import xtremweb.common.UID;
-import xtremweb.communications.CommClient;
-import xtremweb.security.XWAccessRights;
 
 /**
  * This handles incoming communications through HTTP. This class aims to help
  * the worker owner to configure its worker. This owner can configure its worker
  * via a web browser.<br />
- * 
+ *
  * Created: Octobre 2007
- * 
+ *
  * @author Oleg Lodygensky
  * @version XWHEP 1.0.0
  */
 
-public class HTTPSharedDataHandler extends Thread implements
-		Handler {
+public class HTTPSharedDataHandler extends Thread implements Handler {
 
 	public static final String PATH = "/shareddata";
 
-	private Logger logger;
+	private final Logger logger;
 
 	private HttpServletRequest request;
 	private HttpServletResponse response;
 
 	/**
-	 *  This is the HTML parameter to set this worker shared package name
-	 * @since 10.0.0 
+	 * This is the HTML parameter to set this worker shared package name
+	 *
+	 * @since 10.0.0
 	 */
 	private final static String DATAPACKAGENAME = "datapackagename";
-	/** 
+	/**
 	 * This is the HTML parameter to set the shared package path
-	 * @since 10.0.0 
+	 *
+	 * @since 10.0.0
 	 */
 	private final static String DATAPACKAGEPATH = "datapackagepath";
 	/**
@@ -95,11 +91,11 @@ public class HTTPSharedDataHandler extends Thread implements
 
 	/**
 	 * This constructor call the default constructor and sets the logger level
-	 * 
+	 *
 	 * @param l
 	 *            is the logger level
 	 */
-	public HTTPSharedDataHandler(LoggerLevel l) {
+	public HTTPSharedDataHandler(final LoggerLevel l) {
 		this();
 		logger.setLoggerLevel(l);
 	}
@@ -108,13 +104,15 @@ public class HTTPSharedDataHandler extends Thread implements
 	 * This does nothing and must be overridden by any HTTP handler This is
 	 * inherited from org.mortbay.jetty.Handler
 	 */
-	public void setServer(Server server) {
+	@Override
+	public void setServer(final Server server) {
 	}
 
 	/**
 	 * This does nothing and must be overridden by any HTTP handler This is
 	 * inherited from org.mortbay.jetty.Handler
 	 */
+	@Override
 	public Server getServer() {
 		return null;
 	}
@@ -122,9 +120,10 @@ public class HTTPSharedDataHandler extends Thread implements
 	/**
 	 * This does nothing and must be overridden by any HTTP handler This is
 	 * inherited from org.mortbay.component.LifeCycle
-	 * 
+	 *
 	 * @return true
 	 */
+	@Override
 	public boolean isFailed() {
 		return true;
 	}
@@ -132,9 +131,10 @@ public class HTTPSharedDataHandler extends Thread implements
 	/**
 	 * This does nothing and must be overridden by any HTTP handler This is
 	 * inherited from org.mortbay.component.LifeCycle
-	 * 
+	 *
 	 * @return false
 	 */
+	@Override
 	public boolean isRunning() {
 		return false;
 	}
@@ -142,9 +142,10 @@ public class HTTPSharedDataHandler extends Thread implements
 	/**
 	 * This does nothing and must be overridden by any HTTP handler This is
 	 * inherited from org.mortbay.component.LifeCycle
-	 * 
+	 *
 	 * @return false
 	 */
+	@Override
 	public boolean isStarted() {
 		return false;
 	}
@@ -152,9 +153,10 @@ public class HTTPSharedDataHandler extends Thread implements
 	/**
 	 * This does nothing and must be overridden by any HTTP handler This is
 	 * inherited from org.mortbay.component.LifeCycle
-	 * 
+	 *
 	 * @return false
 	 */
+	@Override
 	public boolean isStarting() {
 		return false;
 	}
@@ -162,9 +164,10 @@ public class HTTPSharedDataHandler extends Thread implements
 	/**
 	 * This does nothing and must be overridden by any HTTP handler This is
 	 * inherited from org.mortbay.component.LifeCycle
-	 * 
+	 *
 	 * @return true
 	 */
+	@Override
 	public boolean isStopped() {
 		return true;
 	}
@@ -172,9 +175,10 @@ public class HTTPSharedDataHandler extends Thread implements
 	/**
 	 * This does nothing and must be overridden by any HTTP handler This is
 	 * inherited from org.mortbay.component.LifeCycle
-	 * 
+	 *
 	 * @return false
 	 */
+	@Override
 	public boolean isStopping() {
 		return false;
 	}
@@ -194,24 +198,25 @@ public class HTTPSharedDataHandler extends Thread implements
 		logger.debug("close");
 	}
 
-	public void removeLifeCycleListener(Listener l) {
-		
+	@Override
+	public void removeLifeCycleListener(final Listener l) {
+
 	}
-	public void addLifeCycleListener(Listener l) {
-		
+
+	@Override
+	public void addLifeCycleListener(final Listener l) {
+
 	}
 
 	/**
 	 * This handles incoming connections. This is inherited from
 	 * org.mortbay.jetty.Handler.
-	 * 
+	 *
 	 * @see xtremweb.communications.XWPostParams
 	 */
-	public void handle(String target,
-            Request baseRequest,
-            HttpServletRequest _request,
-            HttpServletResponse _response) throws IOException,
-			ServletException {
+	@Override
+	public void handle(final String target, final Request baseRequest, final HttpServletRequest _request,
+			final HttpServletResponse _response) throws IOException, ServletException {
 
 		request = _request;
 		response = _response;
@@ -219,16 +224,11 @@ public class HTTPSharedDataHandler extends Thread implements
 		final String path = request.getPathInfo();
 		try {
 			logger.debug("Handling target         = " + target);
-			logger.debug("Handling request        = "
-					+ request.getContentLength() + " "
-					+ request.getContentType());
-			logger.debug("Handling parameter size = "
-					+ request.getParameterMap().size());
-			logger.debug("Handling query string   = "
-					+ request.getQueryString());
+			logger.debug("Handling request        = " + request.getContentLength() + " " + request.getContentType());
+			logger.debug("Handling parameter size = " + request.getParameterMap().size());
+			logger.debug("Handling query string   = " + request.getQueryString());
 			logger.debug("Handling path info      = " + path);
-			logger.debug("Handling method         = "
-					+ request.getMethod());
+			logger.debug("Handling method         = " + request.getMethod());
 
 			logger.info("HTTPSharedHandler new connection " + path);
 
