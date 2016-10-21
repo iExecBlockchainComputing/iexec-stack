@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -44,7 +44,7 @@ public class TracesConfig {
 	 * @param hostName
 	 *            the hostName to set
 	 */
-	public void setHostName(String hostName) {
+	public void setHostName(final String hostName) {
 		this.hostName = hostName;
 	}
 
@@ -59,7 +59,7 @@ public class TracesConfig {
 	 * @param timeZone
 	 *            the timeZone to set
 	 */
-	public void setTimeZone(String timeZone) {
+	public void setTimeZone(final String timeZone) {
 		this.timeZone = timeZone;
 	}
 
@@ -74,7 +74,7 @@ public class TracesConfig {
 	 * @param ipAddr
 	 *            the ipAddr to set
 	 */
-	public void setIpAddr(String ipAddr) {
+	public void setIpAddr(final String ipAddr) {
 		this.ipAddr = ipAddr;
 	}
 
@@ -89,7 +89,7 @@ public class TracesConfig {
 	 * @param hwAddr
 	 *            the hwAddr to set
 	 */
-	public void setHwAddr(String hwAddr) {
+	public void setHwAddr(final String hwAddr) {
 		this.hwAddr = hwAddr;
 	}
 
@@ -104,7 +104,7 @@ public class TracesConfig {
 	 * @param version
 	 *            the version to set
 	 */
-	public void setVersion(String version) {
+	public void setVersion(final String version) {
 		this.version = version;
 	}
 
@@ -119,7 +119,7 @@ public class TracesConfig {
 	 * @param resultDelay
 	 *            the resultDelay to set
 	 */
-	public void setResultDelay(int resultDelay) {
+	public void setResultDelay(final int resultDelay) {
 		this.resultDelay = resultDelay;
 	}
 
@@ -134,7 +134,7 @@ public class TracesConfig {
 	 * @param sendResultDelay
 	 *            the sendResultDelay to set
 	 */
-	public void setSendResultDelay(int sendResultDelay) {
+	public void setSendResultDelay(final int sendResultDelay) {
 		this.sendResultDelay = sendResultDelay;
 	}
 
