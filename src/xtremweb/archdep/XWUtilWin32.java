@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -24,14 +24,14 @@
 package xtremweb.archdep;
 
 //  XWUtilWin32.java
-//  
+//
 //  Created: Tue Apr 16 2002
 
 /**
  * <p>
  * Win32 implementation of <code>XWUtil</code>
  * </p>
- * 
+ *
  * @author Samuel h&eacute;riard
  */
 public class XWUtilWin32 extends XWUtilImpl {

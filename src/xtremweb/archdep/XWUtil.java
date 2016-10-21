@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -23,7 +23,7 @@
 
 package xtremweb.archdep;
 
-//java side for native functions 
+//java side for native functions
 //actual C code is in XWUtil.c
 //some deprecated functions remain...
 
@@ -31,7 +31,7 @@ public interface XWUtil {
 
 	/**
 	 * This tells whether a process is running or not
-	 * 
+	 *
 	 * @param pid
 	 *            is the process id
 	 * @return true is process is running false otherwise
@@ -40,7 +40,7 @@ public interface XWUtil {
 
 	/**
 	 * This determines the process id
-	 * 
+	 *
 	 * @return an integer containing the process id
 	 */
 	int getPid();
@@ -57,34 +57,35 @@ public interface XWUtil {
 
 	/**
 	 * This determines the main processor speed in MHz
-	 * 
+	 *
 	 * @return the main processor speed in Mhz
 	 */
 	int getSpeedProc();
 
 	/**
 	 * This determines the main processor model
-	 * 
+	 *
 	 * @return a String containing the main processor model name
 	 */
 	String getProcModel();
 
 	/**
 	 * This determines the total memory size
-	 * 
+	 *
 	 * @return the total memory size in kB
 	 */
 	long getTotalMem();
 
 	/**
 	 * This determines the total memory swap size
-	 * 
+	 *
 	 * @return the total memory swap size in kB
 	 */
 	long getTotalSwap();
+
 	/**
 	 * This determines this host cpu load
-	 * 
+	 *
 	 * @return an integer containing the percentage of cpu load for this host
 	 *         100 on error
 	 */
@@ -92,7 +93,7 @@ public interface XWUtil {
 
 	/**
 	 * This determines this process cpu load
-	 * 
+	 *
 	 * @return an integer containing the percentage of cpu load for this process
 	 *         0 on error
 	 */

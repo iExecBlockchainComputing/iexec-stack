@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -32,48 +32,53 @@ public class XWUtilDummy implements XWUtil {
 	/**
 	 * This does nothing
 	 */
+	@Override
 	public void raz() {
 	}
 
 	/**
 	 * This does nothing
-	 * 
+	 *
 	 * @return false
 	 */
-	public boolean isRunning(int pid) {
+	@Override
+	public boolean isRunning(final int pid) {
 		return false;
 	}
 
 	/**
 	 * This does nothing
-	 * 
+	 *
 	 * @return 0
 	 */
+	@Override
 	public int getPid() {
 		return 0;
 	}
 
 	/**
 	 * This does nothing
-	 * 
+	 *
 	 * @return 0
 	 */
+	@Override
 	public int getUid() {
 		return 0;
 	}
 
 	/**
 	 * This does nothing
-	 * 
+	 *
 	 * @return 0
 	 */
+	@Override
 	public int getGid() {
 		return 0;
 	}
 
 	/**
 	 * This does nothing
-	 * 
+	 *
 	 * @return 1
 	 */
 	public int getNumProc() {
@@ -82,54 +87,60 @@ public class XWUtilDummy implements XWUtil {
 
 	/**
 	 * This does nothing
-	 * 
+	 *
 	 * @return 0
 	 */
+	@Override
 	public int getSpeedProc() {
 		return 0;
 	}
 
 	/**
 	 * This does nothing
-	 * 
+	 *
 	 * @return null
 	 */
+	@Override
 	public String getProcModel() {
 		return null;
 	}
 
 	/**
 	 * This does nothing
-	 * 
+	 *
 	 * @return 0
 	 */
+	@Override
 	public long getTotalMem() {
 		return 0;
 	}
 
 	/**
 	 * This does nothing
-	 * 
+	 *
 	 * @return 0
 	 */
+	@Override
 	public long getTotalSwap() {
 		return 0;
 	}
 
 	/**
 	 * This does nothing
-	 * 
+	 *
 	 * @return 100
 	 */
+	@Override
 	public int getCpuLoad() {
 		return 100;
 	}
 
 	/**
 	 * This does nothing
-	 * 
+	 *
 	 * @return 0
 	 */
+	@Override
 	public int getProcessLoad() {
 		return 0;
 	}

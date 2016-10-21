@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -33,7 +33,7 @@ import xtremweb.common.Logger;
 //
 //  XWUtilLinux.java
 //  Samuel Heriard
-//  
+//
 //  Linux impl. of XWUtil
 
 public class XWUtilSolaris extends XWUtilDummy {
@@ -61,8 +61,7 @@ public class XWUtilSolaris extends XWUtilDummy {
 		}
 
 		try {
-			workProcess = machine.exec("/usr/sbin/psrinfo -v > "
-					+ tempFile.getCanonicalPath());
+			workProcess = machine.exec("/usr/sbin/psrinfo -v > " + tempFile.getCanonicalPath());
 		} catch (final IOException e) {
 			logger.error("XWUtilSolaris : cannot spawn a new process" + e);
 			return -1;
@@ -71,14 +70,12 @@ public class XWUtilSolaris extends XWUtilDummy {
 		try {
 			processReturnCode = workProcess.waitFor();
 		} catch (final InterruptedException e) {
-			logger.error("ThreadLaunch in executeNativeJob: cannot wait for the end of the job ?!?"
-							+ e);
+			logger.error("ThreadLaunch in executeNativeJob: cannot wait for the end of the job ?!?" + e);
 			return -1;
 		}
 
 		try {
-			final BufferedReader bufferFile = new BufferedReader(
-					new FileReader(tempFile));
+			final BufferedReader bufferFile = new BufferedReader(new FileReader(tempFile));
 			String l = "";
 
 			while ((l != null) && (valStr == null)) {
@@ -87,8 +84,7 @@ public class XWUtilSolaris extends XWUtilDummy {
 				final String operates = new String("operates at ");
 				final int idx = l.indexOf(operates);
 				if (idx != -1) {
-					valStr = l.substring(idx + operates.length() + 1,
-							l.indexOf("MHz") - 1);
+					valStr = l.substring(idx + operates.length() + 1, l.indexOf("MHz") - 1);
 					break;
 				}
 				l = bufferFile.readLine();
@@ -111,4 +107,3 @@ public class XWUtilSolaris extends XWUtilDummy {
 	}
 
 }
-

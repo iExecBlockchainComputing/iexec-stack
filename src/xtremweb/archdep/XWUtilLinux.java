@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -35,7 +35,7 @@ import xtremweb.common.LoggerLevel;
 
 /**
  * XWUtilLinux.java Samuel Heriard
- * 
+ *
  * Linux impl. of XWUtil
  */
 public class XWUtilLinux extends XWUtilImpl {
@@ -49,7 +49,7 @@ public class XWUtilLinux extends XWUtilImpl {
 	private long totalPidUserOld = 0;
 
 	private Vector pids = null;
-	private Logger logger;
+	private final Logger logger;
 
 	public XWUtilLinux() {
 		logger = new Logger(this);
@@ -58,7 +58,7 @@ public class XWUtilLinux extends XWUtilImpl {
 
 	/**
 	 * This retrieves family PIDs
-	 * 
+	 *
 	 */
 	@Override
 	public void raz() {
@@ -71,7 +71,7 @@ public class XWUtilLinux extends XWUtilImpl {
 	/**
 	 * This retrieves the CPU loads : user, nice, sys, idle and total loads
 	 * Param : $1 is the CPU number
-	 * 
+	 *
 	 */
 	private void cpuLoads() {
 
@@ -83,8 +83,7 @@ public class XWUtilLinux extends XWUtilImpl {
 		}
 
 		try {
-			final BufferedReader bufferFile = new BufferedReader(
-					new FileReader(procStats));
+			final BufferedReader bufferFile = new BufferedReader(new FileReader(procStats));
 			String line = "";
 
 			line = bufferFile.readLine();
@@ -95,8 +94,7 @@ public class XWUtilLinux extends XWUtilImpl {
 
 			if (line.indexOf("cpu") == 0) {
 
-				final StringTokenizer tokenizer = new StringTokenizer(line,
-						"\t ");
+				final StringTokenizer tokenizer = new StringTokenizer(line, "\t ");
 
 				tokenizer.nextToken();
 
@@ -113,8 +111,7 @@ public class XWUtilLinux extends XWUtilImpl {
 					machineSys = new Long(tokenizer.nextToken()).longValue();
 					machineIdle = new Long(tokenizer.nextToken()).longValue();
 
-					machineTotal = machineUser + machineNice + machineSys
-							+ machineIdle;
+					machineTotal = machineUser + machineNice + machineSys + machineIdle;
 
 					machineUserOld = machineUserTmp;
 					machineNiceOld = machineNiceTmp;
@@ -141,7 +138,7 @@ public class XWUtilLinux extends XWUtilImpl {
 
 	/**
 	 * This retrieves this machine average cpu load percentage
-	 * 
+	 *
 	 * @return the average cpu load percentage (0 <= ret <= 100)
 	 */
 	@Override
@@ -161,18 +158,17 @@ public class XWUtilLinux extends XWUtilImpl {
 	/**
 	 * This retrieves the process group ID of the provided process which is set
 	 * by default to the PPID See : man getpgrp
-	 * 
+	 *
 	 * @param pid
 	 *            is the process PID
 	 * @return -1 on error
 	 */
-	private int getProcessGroup(int pid) {
+	private int getProcessGroup(final int pid) {
 
 		final File procStat = new File("/proc/" + pid + "/stat");
 
 		if (!procStat.exists()) {
-			logger.error("can't get process group from /proc/" + pid
-					+ "/stat");
+			logger.error("can't get process group from /proc/" + pid + "/stat");
 			return -1;
 		}
 
@@ -193,8 +189,7 @@ public class XWUtilLinux extends XWUtilImpl {
 
 			final StringTokenizer tokenizer = new StringTokenizer(line, "\t ");
 
-			final int thisChildPid = new Integer(tokenizer.nextToken())
-					.intValue();
+			final int thisChildPid = new Integer(tokenizer.nextToken()).intValue();
 
 			for (int j = 0; j < 3; j++) {
 				tokenizer.nextToken();
@@ -219,12 +214,12 @@ public class XWUtilLinux extends XWUtilImpl {
 	 * This retrieves the children PID of this process including this process
 	 * PID itself. It is based on process groud ID which is set by defautl to
 	 * the PPID See : man getpgrp
-	 * 
+	 *
 	 * @param parent
 	 *            is the process PID
 	 * @see #getProcessGroup (int)
 	 */
-	private Vector getProcessFamily(int parent) {
+	private Vector getProcessFamily(final int parent) {
 
 		Vector ret = new Vector();
 		final File dir = new File("/proc/");
@@ -259,18 +254,15 @@ public class XWUtilLinux extends XWUtilImpl {
 					line = bufferFile.readLine();
 				} catch (final Throwable b) {
 					b.printStackTrace();
-					logger.error("XWUtilLinux::getProcessFamily () 00 : "
-							+ b);
+					logger.error("XWUtilLinux::getProcessFamily () 00 : " + b);
 					return null;
 				}
 
 				bufferFile.close();
 
-				final StringTokenizer tokenizer = new StringTokenizer(line,
-						"\t ");
+				final StringTokenizer tokenizer = new StringTokenizer(line, "\t ");
 
-				final int thisChildPid = new Integer(tokenizer.nextToken())
-						.intValue();
+				final int thisChildPid = new Integer(tokenizer.nextToken()).intValue();
 
 				try {
 					final int thisChildGid = getProcessGroup(thisChildPid);
@@ -280,8 +272,7 @@ public class XWUtilLinux extends XWUtilImpl {
 					}
 				} catch (final Throwable e) {
 					e.printStackTrace();
-					logger.error("XWUtilLinux::getProcessFamily () 01 : "
-							+ e);
+					logger.error("XWUtilLinux::getProcessFamily () 01 : " + e);
 					return null;
 				}
 			} catch (final Throwable e) {
@@ -297,15 +288,14 @@ public class XWUtilLinux extends XWUtilImpl {
 	/**
 	 * This retrieves the CPU load in user mode for the given PID Param : $1 is
 	 * the PID
-	 * 
+	 *
 	 */
-	private int processUser(int pid) {
+	private int processUser(final int pid) {
 
 		final File procStats = new File("/proc/" + pid + "/stat");
 
 		if (!procStats.exists()) {
-			logger.error("can't get process user from /proc/" + pid
-					+ "/stat");
+			logger.error("can't get process user from /proc/" + pid + "/stat");
 			return 0;
 		}
 
@@ -347,7 +337,7 @@ public class XWUtilLinux extends XWUtilImpl {
 
 	/**
 	 * This retrieves this process cpu load average, including all its children
-	 * 
+	 *
 	 * @return the average cpu load percentage (0 <= ret <= 100)
 	 */
 	@Override
@@ -385,7 +375,6 @@ public class XWUtilLinux extends XWUtilImpl {
 		return pidPercentage;
 	}
 
-
 	/**
 	 * in MHz
 	 */
@@ -400,8 +389,7 @@ public class XWUtilLinux extends XWUtilImpl {
 		}
 
 		try {
-			final BufferedReader bufferFile = new BufferedReader(
-					new FileReader(procInterrupts));
+			final BufferedReader bufferFile = new BufferedReader(new FileReader(procInterrupts));
 			String l = "";
 
 			while ((l != null) && (valStr == null)) {
@@ -437,8 +425,7 @@ public class XWUtilLinux extends XWUtilImpl {
 		}
 
 		try {
-			final BufferedReader bufferFile = new BufferedReader(
-					new FileReader(procInterrupts));
+			final BufferedReader bufferFile = new BufferedReader(new FileReader(procInterrupts));
 			String l = "";
 
 			while ((l != null) && (valStr == null)) {
@@ -477,8 +464,7 @@ public class XWUtilLinux extends XWUtilImpl {
 		}
 
 		try {
-			final BufferedReader bufferFile = new BufferedReader(
-					new FileReader(procInterrupts));
+			final BufferedReader bufferFile = new BufferedReader(new FileReader(procInterrupts));
 			String l = "";
 
 			while ((l != null) && (valStr == null)) {
@@ -517,8 +503,7 @@ public class XWUtilLinux extends XWUtilImpl {
 		}
 
 		try {
-			final BufferedReader bufferFile = new BufferedReader(
-					new FileReader(procInterrupts));
+			final BufferedReader bufferFile = new BufferedReader(new FileReader(procInterrupts));
 			String l = "";
 
 			while ((l != null) && (valStr == null)) {
@@ -547,7 +532,7 @@ public class XWUtilLinux extends XWUtilImpl {
 	 * This is the standard main () method args[0] may contain a PID to
 	 * calculate its user CPU usage
 	 */
-	public static void main(String[] args) {
+	public static void main(final String[] args) {
 
 		final XWUtilLinux cpu = new XWUtilLinux();
 
@@ -556,14 +541,11 @@ public class XWUtilLinux extends XWUtilImpl {
 			final int cpuLoad = cpu.getCpuLoad();
 			if (args.length > 0) {
 				try {
-					cpu.pids = cpu.getProcessFamily(new Integer(args[0])
-							.intValue());
+					cpu.pids = cpu.getProcessFamily(new Integer(args[0]).intValue());
 					final int processLoad = cpu.getProcessLoad();
 					System.out.print("%CPU = " + cpuLoad);
-					System.out.print("  %CPU [" + args[0] + "] = "
-							+ processLoad);
-					System.out.println("  allocated = "
-							+ (cpuLoad - processLoad));
+					System.out.print("  %CPU [" + args[0] + "] = " + processLoad);
+					System.out.println("  allocated = " + (cpuLoad - processLoad));
 				} catch (final Exception e) {
 					e.printStackTrace();
 				}
