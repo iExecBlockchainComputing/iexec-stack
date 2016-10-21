@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -25,14 +25,14 @@ package xtremweb.archdep;
 
 /**
  * ArchDepException.java Exceptions thrown by ArchDepFactory
- * 
+ *
  * Created : Mon Mar 25 2002.
- * 
+ *
  * @author Samuel Heriard
  */
 
 public class ArchDepException extends Exception {
-	ArchDepException(String msg) {
+	ArchDepException(final String msg) {
 		super(msg);
 	}
 
