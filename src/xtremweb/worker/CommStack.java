@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -59,7 +59,7 @@ public class CommStack extends CommQueue {
 	}
 
 	@Override
-	public void sendResult(Work w) {
+	public void sendResult(final Work w) {
 		size++;
 		poolQueue.push(new CommEvent(IdRpc.UPLOADDATA, w));
 	}
@@ -68,15 +68,14 @@ public class CommStack extends CommQueue {
 	 * @since 8.3.0
 	 */
 	@Override
-	public void sendWork(Work w) {
+	public void sendWork(final Work w) {
 		size++;
 		poolQueue.push(new CommEvent(IdRpc.SENDWORK, w));
 	}
 
 	@Override
 	public CommEvent getCommEvent() {
-		if ((poolQueue.isEmpty())
-				|| (commEventInProgress.size() > MAX_COMMEVENT_INPROGRESS)) {
+		if ((poolQueue.isEmpty()) || (commEventInProgress.size() > MAX_COMMEVENT_INPROGRESS)) {
 			return null;
 		}
 
@@ -87,7 +86,7 @@ public class CommStack extends CommQueue {
 	}
 
 	@Override
-	public void removeCommEvent(CommEvent ce) {
+	public void removeCommEvent(final CommEvent ce) {
 		commEventInProgress.remove(ce);
 	}
 
@@ -97,7 +96,7 @@ public class CommStack extends CommQueue {
 	}
 
 	@Override
-	public int size(int type) {
+	public int size(final int type) {
 		return size;
 	}
 
