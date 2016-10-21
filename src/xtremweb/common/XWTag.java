@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -30,143 +30,143 @@ public enum XWTag {
 	APP {
 		/**
 		 * This creates a new interface
-		 * 
+		 *
 		 * @param attrs
 		 *            contains the attributes found from the XML description
 		 * @since 8.2.2
 		 */
 		@Override
-		public Table newInterface(Attributes attrs) {
+		public Table newInterface(final Attributes attrs) {
 			return new AppInterface(attrs);
 		}
 	},
 	DATA {
 		/**
 		 * This creates a new interface
-		 * 
+		 *
 		 * @param attrs
 		 *            contains the attributes found from the XML description
 		 * @since 8.2.2
 		 */
 		@Override
-		public Table newInterface(Attributes attrs) {
+		public Table newInterface(final Attributes attrs) {
 			return new DataInterface(attrs);
 		}
 	},
 	GROUP {
 		/**
 		 * This creates a new interface
-		 * 
+		 *
 		 * @param attrs
 		 *            contains the attributes found from the XML description
 		 * @since 8.2.2
 		 */
 		@Override
-		public Table newInterface(Attributes attrs) {
+		public Table newInterface(final Attributes attrs) {
 			return new GroupInterface(attrs);
 		}
 	},
 	HOST {
 		/**
 		 * This creates a new interface
-		 * 
+		 *
 		 * @param attrs
 		 *            contains the attributes found from the XML description
 		 * @since 8.2.2
 		 */
 		@Override
-		public Table newInterface(Attributes attrs) {
+		public Table newInterface(final Attributes attrs) {
 			return new HostInterface(attrs);
 		}
 	},
 	JOB {
 		/**
 		 * This creates a new interface
-		 * 
+		 *
 		 * @param attrs
 		 *            contains the attributes found from the XML description
 		 * @since 8.2.2
 		 */
 		@Override
-		public Table newInterface(Attributes attrs) {
+		public Table newInterface(final Attributes attrs) {
 			return null;
 		}
 	},
 	SESSION {
 		/**
 		 * This creates a new interface
-		 * 
+		 *
 		 * @param attrs
 		 *            contains the attributes found from the XML description
 		 * @since 8.2.2
 		 */
 		@Override
-		public Table newInterface(Attributes attrs) {
+		public Table newInterface(final Attributes attrs) {
 			return new SessionInterface(attrs);
 		}
 	},
 	TASK {
 		/**
 		 * This creates a new interface
-		 * 
+		 *
 		 * @param attrs
 		 *            contains the attributes found from the XML description
 		 * @since 8.2.2
 		 */
 		@Override
-		public Table newInterface(Attributes attrs) {
+		public Table newInterface(final Attributes attrs) {
 			return new TaskInterface(attrs);
 		}
 	},
 	TRACE {
 		/**
 		 * This creates a new interface
-		 * 
+		 *
 		 * @param attrs
 		 *            contains the attributes found from the XML description
 		 * @since 8.2.2
 		 */
 		@Override
-		public Table newInterface(Attributes attrs) {
+		public Table newInterface(final Attributes attrs) {
 			return new TraceInterface(attrs);
 		}
 	},
 	USERGROUP {
 		/**
 		 * This creates a new interface
-		 * 
+		 *
 		 * @param attrs
 		 *            contains the attributes found from the XML description
 		 * @since 8.2.2
 		 */
 		@Override
-		public Table newInterface(Attributes attrs) {
+		public Table newInterface(final Attributes attrs) {
 			return new UserGroupInterface(attrs);
 		}
 	},
 	USER {
 		/**
 		 * This creates a new interface
-		 * 
+		 *
 		 * @param attrs
 		 *            contains the attributes found from the XML description
 		 * @since 8.2.2
 		 */
 		@Override
-		public Table newInterface(Attributes attrs) {
+		public Table newInterface(final Attributes attrs) {
 			return new UserInterface(attrs);
 		}
 	},
 	WORK {
 		/**
 		 * This creates a new interface
-		 * 
+		 *
 		 * @param attrs
 		 *            contains the attributes found from the XML description
 		 * @since 8.2.2
 		 */
 		@Override
-		public Table newInterface(Attributes attrs) {
+		public Table newInterface(final Attributes attrs) {
 			return new WorkInterface(attrs);
 		}
 	};
@@ -176,7 +176,7 @@ public enum XWTag {
 
 	/**
 	 * This creates a new interface for the given tag
-	 * 
+	 *
 	 * @param attrs
 	 *            contains the attributes found from the XML description
 	 * @since 8.2.2
@@ -185,12 +185,12 @@ public enum XWTag {
 
 	/**
 	 * This retrieves an XWTag from its integer value
-	 * 
+	 *
 	 * @param v
 	 *            is the integer value of the XWTag
 	 * @return an XWTag
 	 */
-	public static XWTag fromInt(int v) throws IndexOutOfBoundsException {
+	public static XWTag fromInt(final int v) throws IndexOutOfBoundsException {
 		for (final XWTag i : XWTag.values()) {
 			if (i.ordinal() == v) {
 				return i;
@@ -199,10 +199,9 @@ public enum XWTag {
 		throw new IndexOutOfBoundsException("unvalid XWTag value " + v);
 	}
 
-	public static void main(String[] argv) {
+	public static void main(final String[] argv) {
 		for (final XWTag i : XWTag.values()) {
-			System.out.println(i.toString() + " = " + i.ordinal()
-					+ " valueOf() = " + XWTag.valueOf(i.toString()));
+			System.out.println(i.toString() + " = " + i.ordinal() + " valueOf() = " + XWTag.valueOf(i.toString()));
 		}
 	}
 
