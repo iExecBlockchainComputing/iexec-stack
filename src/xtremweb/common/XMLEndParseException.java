@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -30,7 +30,7 @@ import org.xml.sax.SAXException;
  */
 public class XMLEndParseException extends SAXException {
 
-	public XMLEndParseException(String message) {
+	public XMLEndParseException(final String message) {
 		super(message);
 	}
 
