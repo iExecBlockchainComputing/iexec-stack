@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -29,7 +29,7 @@ import java.io.OutputStream;
 /**
  * Copyright (c) 2001, 2002 by Pensamos Digital, All Rights Reserved.
  * <p>
- * 
+ *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Library General Public License as published by the Free
  * Software Foundation; either version 2.1 of the License, or (at your option)
@@ -45,7 +45,7 @@ import java.io.OutputStream;
  * 675 Mass Ave, Cambridge, MA 02139, USA.
  * <p>
  * This OutputStream discards all data written to it.
- * 
+ *
  * @author Tim Macinta (twm@alum.mit.edu)
  **/
 
@@ -73,21 +73,21 @@ public class NullOutputStream extends OutputStream {
 	}
 
 	@Override
-	public void write(byte[] b) throws IOException {
+	public void write(final byte[] b) throws IOException {
 		if (this.closed) {
 			throwClosed();
 		}
 	}
 
 	@Override
-	public void write(byte[] b, int offset, int len) throws IOException {
+	public void write(final byte[] b, final int offset, final int len) throws IOException {
 		if (this.closed) {
 			throwClosed();
 		}
 	}
 
 	@Override
-	public void write(int b) throws IOException {
+	public void write(final int b) throws IOException {
 		if (this.closed) {
 			throwClosed();
 		}
