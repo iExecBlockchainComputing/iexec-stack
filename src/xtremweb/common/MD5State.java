@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -24,7 +24,8 @@
 package xtremweb.common;
 
 /**
- * Fast implementation of RSA's MD5 hash generator in Java JDK Beta-2 or higher<br>
+ * Fast implementation of RSA's MD5 hash generator in Java JDK Beta-2 or higher
+ * <br>
  * Originally written by Santeri Paavolainen, Helsinki Finland 1996 <br>
  * (c) Santeri Paavolainen, Helsinki Finland 1996 <br>
  * Some changes Copyright (c) 2002 Timothy W Macinta <br>
@@ -52,7 +53,7 @@ package xtremweb.common;
  * package only because it came without a package. I was not the the original
  * author of the code, although I did optimize it (substantially) and fix some
  * bugs.
- * 
+ *
  * @author Santeri Paavolainen <sjpaavol@cc.helsinki.fi>
  * @author Timothy W Macinta (twm@alum.mit.edu) (optimizations and bug fixes)
  **/
@@ -87,7 +88,7 @@ class MD5State {
 	}
 
 	/** Create this State as a copy of another state */
-	public MD5State(MD5State from) {
+	public MD5State(final MD5State from) {
 		this();
 
 		int i;
