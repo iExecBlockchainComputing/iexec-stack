@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -42,7 +42,7 @@ import xtremweb.communications.XWCommException;
 /**
  * Created: 20 janvier 2010<br />
  * This reads an object XML description from input stream
- * 
+ *
  * @author Oleg Lodygensky
  * @since 5.8.0
  */
@@ -56,11 +56,10 @@ public class XMLReader {
 	/**
 	 * This default constructor
 	 */
-	public XMLReader(XMLable o) {
+	public XMLReader(final XMLable o) {
 		LoggerLevel logLevel = LoggerLevel.DEBUG;
 		try {
-			logLevel = LoggerLevel.valueOf(System
-					.getProperty(XWPropertyDefs.LOGGERLEVEL.toString()));
+			logLevel = LoggerLevel.valueOf(System.getProperty(XWPropertyDefs.LOGGERLEVEL.toString()));
 		} catch (final Exception e) {
 		}
 		logger = new Logger(logLevel);
@@ -71,7 +70,7 @@ public class XMLReader {
 	/**
 	 * This reads this object definition from an XML stream. This first set
 	 * version to null : version should be read from input stream.
-	 * 
+	 *
 	 * @param in
 	 *            is the input stream to get XML definition
 	 * @throws IOException
@@ -81,16 +80,14 @@ public class XMLReader {
 	 * @throws InvalidKeyException
 	 *             on authentication or authorization error
 	 */
-	public void read(InputStream in) throws SAXException, IOException,
-			InvalidKeyException {
+	public void read(final InputStream in) throws SAXException, IOException, InvalidKeyException {
 
 		final BufferedInputStream input = new BufferedInputStream(in);
 
 		try {
 			input.mark(XWTools.BUFFEREND);
 			final String dtd = null;
-			final SAXParser parser = SAXParserFactory.newInstance()
-					.newSAXParser();
+			final SAXParser parser = SAXParserFactory.newInstance().newSAXParser();
 			final DescriptionHandler handler = new DescriptionHandler(dtd);
 			parser.parse(input, handler);
 		} catch (final SAXException saxe) {
@@ -100,10 +97,8 @@ public class XMLReader {
 				final XMLRPCResult theresult = new XMLRPCResult();
 				try {
 					final String dtd = null;
-					final SAXParser parser = SAXParserFactory.newInstance()
-							.newSAXParser();
-					final DescriptionHandler handler = new DescriptionHandler(
-							dtd);
+					final SAXParser parser = SAXParserFactory.newInstance().newSAXParser();
+					final DescriptionHandler handler = new DescriptionHandler(dtd);
 					parser.parse(input, handler);
 				} catch (final ParserConfigurationException e) {
 					logger.exception(e);
@@ -125,25 +120,24 @@ public class XMLReader {
 	}
 
 	/*********************************************************************
-	 ** 
+	 **
 	 ** This class extends the XML DefaultHandler
-	 ** 
+	 **
 	 *********************************************************************/
 	private class DescriptionHandler extends DefaultHandler {
 		private final String dtd;
 
-		DescriptionHandler(String dtd) {
+		DescriptionHandler(final String dtd) {
 			this.dtd = dtd;
 		}
 
 		/**
 		 * This method decodes XML elements value
-		 * 
+		 *
 		 * @since 9.0.0
 		 */
 		@Override
-		public void characters(char[] ch, int start, int length)
-				throws SAXException {
+		public void characters(final char[] ch, final int start, final int length) throws SAXException {
 			xmlObject.characters(ch, start, length);
 		}
 
@@ -151,19 +145,18 @@ public class XMLReader {
 		 * This method decodes XML open tags
 		 */
 		@Override
-		public void startElement(String uri, String tag, String qname,
-				Attributes attrs) throws SAXException {
+		public void startElement(final String uri, final String tag, final String qname, final Attributes attrs)
+				throws SAXException {
 			xmlObject.xmlElementStart(uri, tag, qname, attrs);
 		}
 
 		/**
 		 * This method decodes XML close tags
-		 * 
+		 *
 		 * @since 9.0.0
 		 */
 		@Override
-		public void endElement(String uri, String tag, String qname)
-				throws SAXException {
+		public void endElement(final String uri, final String tag, final String qname) throws SAXException {
 			xmlObject.xmlElementStop(uri, tag, qname);
 		}
 	}

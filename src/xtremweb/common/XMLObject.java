@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -69,7 +69,7 @@ public abstract class XMLObject extends XMLable {
 	 * @param value
 	 *            the value to set
 	 */
-	public void setValue(Object value) {
+	public void setValue(final Object value) {
 		this.value = value;
 	}
 
@@ -84,7 +84,7 @@ public abstract class XMLObject extends XMLable {
 	 * @param empty
 	 *            the empty to set
 	 */
-	public void setEmpty(boolean empty) {
+	public void setEmpty(final boolean empty) {
 		this.empty = empty;
 	}
 
@@ -97,7 +97,7 @@ public abstract class XMLObject extends XMLable {
 
 	/**
 	 * This is called by the GC; this calls clear();
-	 * 
+	 *
 	 * @since 5.8.0
 	 * @see #clear()
 	 */
@@ -108,7 +108,7 @@ public abstract class XMLObject extends XMLable {
 
 	/**
 	 * This clears this hashtable
-	 * 
+	 *
 	 * @since 5.8.0
 	 */
 	@Override
@@ -128,17 +128,17 @@ public abstract class XMLObject extends XMLable {
 
 	/**
 	 * This calls XMLable(String, int)
-	 * 
+	 *
 	 * @see XMLable#XMLable(String, int)
 	 */
-	protected XMLObject(String tag, int last) {
+	protected XMLObject(final String tag, final int last) {
 		super(tag, last);
 		empty = true;
 	}
 
 	/**
 	 */
-	protected XMLObject(Object v) {
+	protected XMLObject(final Object v) {
 		super("XMLOBJECT", 1);
 
 		value = v;
@@ -151,13 +151,13 @@ public abstract class XMLObject extends XMLable {
 	/**
 	 * This constructs a new object from XML attributes received from input
 	 * stream
-	 * 
+	 *
 	 * @param input
 	 *            is the input stream
 	 * @throws IOException
 	 *             on XML error
 	 */
-	protected XMLObject(DataInputStream input) throws IOException, SAXException {
+	protected XMLObject(final DataInputStream input) throws IOException, SAXException {
 		final XMLReader reader = new XMLReader(this);
 		try {
 			reader.read(input);
@@ -170,14 +170,14 @@ public abstract class XMLObject extends XMLable {
 	/**
 	 * This constructs a new object from XML attributes
 	 */
-	protected XMLObject(Attributes attrs) throws IOException {
+	protected XMLObject(final Attributes attrs) throws IOException {
 		this();
 		fromXml(attrs);
 	}
 
 	/**
 	 * This serializes this object to a String as an XML object<br />
-	 * 
+	 *
 	 * @return a String containing this object definition as XML
 	 * @see #fromXml(Attributes)
 	 */
@@ -186,11 +186,9 @@ public abstract class XMLObject extends XMLable {
 
 		String ret = new String("<" + getXMLTag() + " ");
 		if (empty) {
-			ret += XMLTYPE + "=\"" + type.getName() + "\" " + XMLVALUE + "=\""
-					+ value.toString() + "\" />";
+			ret += XMLTYPE + "=\"" + type.getName() + "\" " + XMLVALUE + "=\"" + value.toString() + "\" />";
 		} else {
-			ret += XMLTYPE + "=\"" + type.getName() + "\">"
-					+ ((XMLObject) value).toXml() + "</" + getXMLTag() + ">";
+			ret += XMLTYPE + "=\"" + type.getName() + "\">" + ((XMLObject) value).toXml() + "</" + getXMLTag() + ">";
 		}
 
 		return ret;
@@ -198,12 +196,12 @@ public abstract class XMLObject extends XMLable {
 
 	/**
 	 * This always throws an exception since XMLObject has no attributes
-	 * 
+	 *
 	 * @param attrs
 	 *            contains attributes XML representation
 	 */
 	@Override
-	public void fromXml(Attributes attrs) {
+	public void fromXml(final Attributes attrs) {
 
 		final Logger logger = getLogger();
 		try {
@@ -214,8 +212,7 @@ public abstract class XMLObject extends XMLable {
 				if (attribute.compareToIgnoreCase(XMLTYPE) == 0) {
 					type = Class.forName(v);
 				} else if (attribute.compareToIgnoreCase(XMLVALUE) == 0) {
-					final Constructor constructor = type
-							.getConstructor(String.class);
+					final Constructor constructor = type.getConstructor(String.class);
 					if (constructor != null) {
 						final Object[] args = new Object[1];
 						args[0] = v;
@@ -230,8 +227,7 @@ public abstract class XMLObject extends XMLable {
 					}
 
 					if (value == null) {
-						logger.warn("constructor not found : " + type
-								+ "(String)");
+						logger.warn("constructor not found : " + type + "(String)");
 					}
 				}
 			}
