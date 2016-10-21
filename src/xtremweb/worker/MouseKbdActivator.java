@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -24,7 +24,7 @@
 package xtremweb.worker;
 
 //  MouseKbdActivator.java
-//  
+//
 //  Created by heriard on Wed Apr 3 2002.
 
 import xtremweb.archdep.ArchDepFactory;
@@ -33,9 +33,9 @@ import xtremweb.archdep.XWInterrupts;
 /**
  * <CODE>MouseKbdActivator</CODE> activator for that monitors keyboard and mouse
  * activity. This activator use XWInterrupts to monitor activity.
- * 
+ *
  * @author Samuel Heriard
- * 
+ *
  */
 
 public class MouseKbdActivator extends PollingActivator {
@@ -58,9 +58,7 @@ public class MouseKbdActivator extends PollingActivator {
 		if (remains <= 0) {
 			remains = 60000;
 		}
-		getLogger().debug(
-				"MouseKbdActivator " + initialized + getActivationDelay() + " "
-						+ remains);
+		getLogger().debug("MouseKbdActivator " + initialized + getActivationDelay() + " " + remains);
 	}
 
 	/** return true if the user is active */
@@ -75,17 +73,14 @@ public class MouseKbdActivator extends PollingActivator {
 		if (Worker.getConfig().hasKeyboard()) {
 			newKey = irq.readKey();
 			differ = differ || (newKey != lastKey);
-			getLogger().debug(
-					"isactive() key " + newKey + " " + lastKey + " " + differ);
+			getLogger().debug("isactive() key " + newKey + " " + lastKey + " " + differ);
 			lastKey = newKey;
 		}
 
 		if (Worker.getConfig().hasMouse()) {
 			newMouse = irq.readMouse();
 			differ = differ || (newMouse != lastMouse);
-			getLogger().debug(
-					"isactive() mouse " + newMouse + " " + lastMouse + " "
-							+ differ);
+			getLogger().debug("isactive() mouse " + newMouse + " " + lastMouse + " " + differ);
 			lastMouse = newMouse;
 		}
 
@@ -95,7 +90,7 @@ public class MouseKbdActivator extends PollingActivator {
 	/**
 	 * This tells whether the worker can start computing, accordingly to the
 	 * local activation policy
-	 * 
+	 *
 	 * @return true if the work can start computing
 	 */
 	@Override
@@ -115,7 +110,7 @@ public class MouseKbdActivator extends PollingActivator {
 	/**
 	 * This tells whether the worker must stop computing, accordingly to the
 	 * local activation policy
-	 * 
+	 *
 	 * @return true if the work must stop computing
 	 */
 	@Override
