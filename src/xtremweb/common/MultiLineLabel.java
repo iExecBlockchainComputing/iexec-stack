@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -45,31 +45,31 @@ public final class MultiLineLabel extends JTextArea {
 	/**
 	 * Creates a label that can have multiple lines and that has the default
 	 * width.
-	 * 
+	 *
 	 * @param s
 	 *            the <tt>String</tt> to display in the label
 	 */
-	public MultiLineLabel(String s) {
+	public MultiLineLabel(final String s) {
 		setText(s);
 	}
 
 	/**
 	 * Creates a label with new lines inserted after the specified number of
 	 * pixels have been filled on each line.
-	 * 
+	 *
 	 * @param s
 	 *            the <tt>String</tt> to display in the label
 	 * @param pixels
 	 *            the pixel limit for each line.
 	 */
-	public MultiLineLabel(String s, int pixels) {
+	public MultiLineLabel(final String s, final int pixels) {
 		setText(s, pixels);
 	}
 
 	/**
 	 * Creates a label that can have multiple lines and that sets the number of
 	 * rows and columns for the JTextArea.
-	 * 
+	 *
 	 * @param s
 	 *            the <tt>String</tt> to display in the label
 	 * @param pixels
@@ -79,38 +79,38 @@ public final class MultiLineLabel extends JTextArea {
 	 * @param cols
 	 *            the number of columns to include in the label
 	 */
-	public MultiLineLabel(String s, int pixels, int rows, int cols) {
+	public MultiLineLabel(final String s, final int pixels, final int rows, final int cols) {
 		super(rows, cols);
 		setText(s, pixels);
 	}
 
 	/**
 	 * Change the text before passing it up to the super setText.
-	 * 
+	 *
 	 * @param s
 	 *            the <tt>String</tt> to display in the label
 	 * @param pixels
 	 *            the pixel limit for each line.
 	 */
-	public void setText(String s, int pixels) {
+	public void setText(final String s, final int pixels) {
 		super.setText(createSizedString(s, pixels));
 	}
 
 	/**
 	 * Change the text before passing it up to the super setText.
-	 * 
+	 *
 	 * @param s
 	 *            the <tt>String</tt> to display in the label
 	 */
 	@Override
-	public void setText(String s) {
+	public void setText(final String s) {
 		super.setText(createSizedString(s, DEFAULT_LABEL_WIDTH));
 	}
 
 	/**
 	 * Tells the look and feel to reset some of the values for this component so
 	 * that it doesn't use JTextArea's default values.
-	 * 
+	 *
 	 * DO NOT CALL THIS METHOD YOURSELF!
 	 */
 	@Override
@@ -120,21 +120,20 @@ public final class MultiLineLabel extends JTextArea {
 		setHighlighter(null);
 		setEditable(false);
 		LookAndFeel.installBorder(this, "Label.border");
-		LookAndFeel.installColorsAndFont(this, "Label.background",
-				"Label.foreground", "Label.font");
+		LookAndFeel.installColorsAndFont(this, "Label.background", "Label.foreground", "Label.font");
 	}
 
 	/**
 	 * Convert the input string to a string with newlines at the closest word to
 	 * the number of pixels specified in the 'pixels' parameter.
-	 * 
+	 *
 	 * @param message
 	 *            the <tt>String</tt> to display in the label
 	 * @param pixels
 	 *            the pixel width on each line before inserting a new line
 	 *            character.
 	 */
-	private String createSizedString(String message, int pixels) {
+	private String createSizedString(final String message, final int pixels) {
 		String nstr = new String();
 
 		if (message == null) {
