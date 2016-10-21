@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -48,7 +48,7 @@ public class Version extends XMLable {
 		setXMLTag("Version");
 	}
 
-	public Version(String v) {
+	public Version(final String v) {
 		this();
 
 		StringTokenizer sk = new StringTokenizer(v, "-");
@@ -70,7 +70,7 @@ public class Version extends XMLable {
 	/**
 	 * This calls this() and fromStrings(ver,br,bu)
 	 */
-	public Version(String ver, String br, String bu) {
+	public Version(final String ver, final String br, final String bu) {
 		this();
 		fromStrings(ver, br, bu);
 	}
@@ -78,13 +78,13 @@ public class Version extends XMLable {
 	/**
 	 * This constructs a new object from XML attributes received from input
 	 * stream
-	 * 
+	 *
 	 * @param input
 	 *            is the input stream
 	 * @throws IOException
 	 *             on XML error
 	 */
-	public Version(DataInputStream input) throws IOException, SAXException {
+	public Version(final DataInputStream input) throws IOException, SAXException {
 		this();
 		final XMLReader reader = new XMLReader(this);
 		try {
@@ -97,7 +97,7 @@ public class Version extends XMLable {
 
 	/**
 	 * This retreives version, branch and build from parameters
-	 * 
+	 *
 	 * @param ver
 	 *            is the version
 	 * @param br
@@ -105,7 +105,7 @@ public class Version extends XMLable {
 	 * @param bu
 	 *            is the build
 	 */
-	public void fromStrings(String ver, String br, String bu) {
+	public void fromStrings(final String ver, final String br, final String bu) {
 		version = ver;
 		branch = br;
 		build = bu;
@@ -138,7 +138,7 @@ public class Version extends XMLable {
 		return intVersion;
 	}
 
-	public boolean lesserThan(Version v) {
+	public boolean lesserThan(final Version v) {
 		final int iv[] = v.intVersion();
 		for (int i = 0; i < intVersion.length; i++) {
 			if (intVersion[i] < iv[i]) {
@@ -151,7 +151,7 @@ public class Version extends XMLable {
 		return false;
 	}
 
-	public boolean greaterThan(Version v) {
+	public boolean greaterThan(final Version v) {
 		final int iv[] = v.intVersion();
 		for (int i = 0; i < intVersion.length; i++) {
 			if (intVersion[i] < iv[i]) {
@@ -166,7 +166,7 @@ public class Version extends XMLable {
 
 	/**
 	 * This returns a string representation of this object,
-	 * 
+	 *
 	 * @return a string if this version
 	 */
 	@Override
@@ -176,23 +176,23 @@ public class Version extends XMLable {
 
 	/**
 	 * This calls toString()
-	 * 
+	 *
 	 * @param csv
 	 *            is not used
 	 */
 	@Override
-	public String toString(boolean csv) {
+	public String toString(final boolean csv) {
 		return toString();
 	}
 
 	/**
 	 * This is called by XML parser to decode XML elements
-	 * 
+	 *
 	 * @see XMLReader#read(InputStream)
 	 */
 	@Override
-	public void xmlElementStart(String uri, String tag, String qname,
-			Attributes attrs) throws SAXException {
+	public void xmlElementStart(final String uri, final String tag, final String qname, final Attributes attrs)
+			throws SAXException {
 
 		try {
 			super.xmlElementStart(uri, tag, qname, attrs);
@@ -211,7 +211,7 @@ public class Version extends XMLable {
 
 	/**
 	 * This writes this object to a String as an XML object<br />
-	 * 
+	 *
 	 * @return a String containing this object definition as XML
 	 * @see #fromXml(Attributes)
 	 */
@@ -228,7 +228,7 @@ public class Version extends XMLable {
 
 	/**
 	 * This reterives attributes from XML representation<br />
-	 * 
+	 *
 	 * @param attrs
 	 *            contains attributes XML representation
 	 * @throws IOException
@@ -236,7 +236,7 @@ public class Version extends XMLable {
 	 * @see #toXml()
 	 */
 	@Override
-	public void fromXml(Attributes attrs) {
+	public void fromXml(final Attributes attrs) {
 
 		if (attrs == null) {
 			return;
@@ -250,10 +250,10 @@ public class Version extends XMLable {
 
 	/**
 	 * This writes the current version to stdout
-	 * 
+	 *
 	 * @since 8.0.1
 	 */
-	public static void main(String argv[]) {
+	public static void main(final String argv[]) {
 		new CommonVersion();
 		System.out.println(CommonVersion.getCurrent().full());
 	}
