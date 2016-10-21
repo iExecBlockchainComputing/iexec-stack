@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -55,11 +55,11 @@ public final class JarResources {
 	/**
 	 * creates a JarResources. It extracts all resources from a Jar into an
 	 * internal hashtable, keyed by resource names.
-	 * 
+	 *
 	 * @param jarFileName
 	 *            a jar or zip file
 	 */
-	public JarResources(String jarFileName) {
+	public JarResources(final String jarFileName) {
 		this.jarFileName = jarFileName;
 		logger = new Logger(this);
 		init();
@@ -67,11 +67,11 @@ public final class JarResources {
 
 	/**
 	 * Extracts a jar resource as a blob.
-	 * 
+	 *
 	 * @param name
 	 *            a resource name.
 	 */
-	public byte[] getResource(String name) {
+	public byte[] getResource(final String name) {
 		return (byte[]) htJarContents.get(name);
 	}
 
@@ -84,8 +84,7 @@ public final class JarResources {
 		try {
 			// gets the main class name
 			final JarFile jf = new JarFile(jarFileName);
-			mainClassName = jf.getManifest().getMainAttributes()
-					.getValue("Main-Class");
+			mainClassName = jf.getManifest().getMainAttributes().getValue("Main-Class");
 
 			// extracts just sizes only.
 			final ZipFile zf = new ZipFile(jarFileName);
@@ -109,8 +108,7 @@ public final class JarResources {
 					continue;
 				}
 
-				logger.debug("ze.getName()=" + ze.getName() + ","
-						+ "getSize()=" + ze.getSize());
+				logger.debug("ze.getName()=" + ze.getName() + "," + "getSize()=" + ze.getSize());
 
 				int size = (int) ze.getSize();
 				// -1 means unknown size.
@@ -132,8 +130,7 @@ public final class JarResources {
 				// add to internal resource hashtable
 				htJarContents.put(ze.getName(), b);
 
-				logger.debug(ze.getName() + "  rb=" + rb + ",size=" + size
-						+ ",csize=" + ze.getCompressedSize());
+				logger.debug(ze.getName() + "  rb=" + rb + ",size=" + size + ",csize=" + ze.getCompressedSize());
 			}
 		} catch (final NullPointerException e) {
 			logger.debug("done.");
@@ -146,11 +143,11 @@ public final class JarResources {
 
 	/**
 	 * Dumps a zip entry into a string.
-	 * 
+	 *
 	 * @param ze
 	 *            a ZipEntry
 	 */
-	private String dumpZipEntry(ZipEntry ze) {
+	private String dumpZipEntry(final ZipEntry ze) {
 		String sb = new String();
 		if (ze.isDirectory()) {
 			sb += "d ";
