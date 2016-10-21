@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -93,10 +93,10 @@ import xtremweb.common.XWPropertyDefs;
  * **AND** every week end, full day
  * </ul>
  * </ul>
- * 
+ *
  * @see java.util.Calendar
  * @see xtremweb.common.XWConfigurator#refresh(boolean)
- * 
+ *
  */
 
 public class DateActivator extends PollingActivator {
@@ -163,35 +163,34 @@ public class DateActivator extends PollingActivator {
 		/**
 		 * This sets firstDay
 		 */
-		public void setFirstDay(int v) {
+		public void setFirstDay(final int v) {
 			firstDay = v;
 		}
 
 		/**
 		 * This sets lastDay
 		 */
-		public void setLastDay(int v) {
+		public void setLastDay(final int v) {
 			lastDay = v;
 		}
 
 		/**
 		 * This sets firstHour
 		 */
-		public void setFirstHour(int v) {
+		public void setFirstHour(final int v) {
 			firstHour = v;
 		}
 
 		/**
 		 * This sets lastHour
 		 */
-		public void setLastHour(int v) {
+		public void setLastHour(final int v) {
 			lastHour = v;
 		}
 
 		@Override
 		public String toString() {
-			return "" + firstDay + "-" + lastDay + " " + firstHour + "-"
-					+ lastHour;
+			return "" + firstDay + "-" + lastDay + " " + firstHour + "-" + lastHour;
 		}
 	}
 
@@ -239,8 +238,7 @@ public class DateActivator extends PollingActivator {
 		days.put(new Integer(Calendar.SUNDAY), new Integer(Calendar.SUNDAY));
 		days.put(new Integer(Calendar.MONDAY), new Integer(Calendar.MONDAY));
 		days.put(new Integer(Calendar.TUESDAY), new Integer(Calendar.TUESDAY));
-		days.put(new Integer(Calendar.WEDNESDAY), new Integer(
-				Calendar.WEDNESDAY));
+		days.put(new Integer(Calendar.WEDNESDAY), new Integer(Calendar.WEDNESDAY));
 		days.put(new Integer(Calendar.THURSDAY), new Integer(Calendar.THURSDAY));
 		days.put(new Integer(Calendar.FRIDAY), new Integer(Calendar.FRIDAY));
 		days.put(new Integer(Calendar.SATURDAY), new Integer(Calendar.SATURDAY));
@@ -262,7 +260,7 @@ public class DateActivator extends PollingActivator {
 
 	/**
 	 * This initializes the activator accordingly to the config file
-	 * 
+	 *
 	 * @param c
 	 *            is the Properties read from file
 	 * @see PollingActivator#initialize(XWConfigurator)
@@ -271,7 +269,7 @@ public class DateActivator extends PollingActivator {
 	 *                is thrown on gap definition error
 	 */
 	@Override
-	public void initialize(XWConfigurator c) {
+	public void initialize(final XWConfigurator c) {
 
 		super.initialize(c);
 
@@ -289,13 +287,13 @@ public class DateActivator extends PollingActivator {
 	/**
 	 * This sets this activator parameters and retreives activation gaps. If p
 	 * is not a valid parameter, this keeps the old params
-	 * 
+	 *
 	 * @param p
 	 *            is this activator parameters string
 	 * @see #parse()
 	 */
 	@Override
-	public void setParams(String p) {
+	public void setParams(final String p) {
 		final String oldp = getParams();
 		try {
 			super.setParams(p);
@@ -316,16 +314,16 @@ public class DateActivator extends PollingActivator {
 
 	/**
 	 * This parses a String to get activation gaps
-	 * 
+	 *
 	 * @see #setParams(String)
 	 */
-	public void parse(String p) {
+	public void parse(final String p) {
 		setParams(p);
 	}
 
 	/**
 	 * This parses a String to get acitvation gaps.
-	 * 
+	 *
 	 * @param gaps
 	 *            defines the intervalles
 	 * @exception ParseException
@@ -338,14 +336,12 @@ public class DateActivator extends PollingActivator {
 			return;
 		}
 
-		final StringTokenizer severalChoices = new StringTokenizer(getParams(),
-				",;");
+		final StringTokenizer severalChoices = new StringTokenizer(getParams(), ",;");
 		while (severalChoices.hasMoreTokens()) {
 
 			final String aChoice = severalChoices.nextToken();
 
-			final StringTokenizer tokenizer = new StringTokenizer(aChoice,
-					"\t ");
+			final StringTokenizer tokenizer = new StringTokenizer(aChoice, "\t ");
 			final Object[][] tab = new Object[2][2];
 
 			tab[0][0] = null;
@@ -387,8 +383,7 @@ public class DateActivator extends PollingActivator {
 						aGap.setFirstDay(MIN_DAY);
 						aGap.setLastDay(MAX_DAY);
 					} else {
-						aGap.setFirstDay(((Integer) days.get(tab[0][0]))
-								.intValue());
+						aGap.setFirstDay(((Integer) days.get(tab[0][0])).intValue());
 					}
 				} catch (final ClassCastException cce) {
 					aGap.setFirstDay(((Integer) days.get(tab[0][0])).intValue());
@@ -403,8 +398,7 @@ public class DateActivator extends PollingActivator {
 						aGap.setFirstDay(MIN_DAY);
 						aGap.setLastDay(MAX_DAY);
 					} else {
-						aGap.setLastDay(((Integer) days.get(tab[0][1]))
-								.intValue());
+						aGap.setLastDay(((Integer) days.get(tab[0][1])).intValue());
 					}
 				} catch (final ClassCastException cce) {
 					aGap.setLastDay(((Integer) days.get(tab[0][1])).intValue());
@@ -468,7 +462,7 @@ public class DateActivator extends PollingActivator {
 
 	/**
 	 * This detect this host activity
-	 * 
+	 *
 	 * @see xtremweb.common.XWConfigurator#cpuLoad
 	 * @return 0 if can run now; a long integer representing the time to wait
 	 *         before being allowed to compute
@@ -494,11 +488,9 @@ public class DateActivator extends PollingActivator {
 				logger.info("[" + aGap + "] This day(" + curDay + ") applies");
 				minimum = 0;
 			} else {
-				logger.info("[" + aGap + "] This day(" + curDay
-						+ ") does not apply; " + diffDay + " days left");
+				logger.info("[" + aGap + "] This day(" + curDay + ") does not apply; " + diffDay + " days left");
 				final long timing = diffDay * 24 * 60 * 60 * 1000;
-				logger.debug("[" + aGap + "] timing = " + timing
-						+ " (minimum = " + minimum + ")");
+				logger.debug("[" + aGap + "] timing = " + timing + " (minimum = " + minimum + ")");
 				minimum = (minimum < timing ? minimum : timing);
 			}
 
@@ -513,22 +505,18 @@ public class DateActivator extends PollingActivator {
 			boolean test = false;
 
 			if (aGap.firstHour() <= aGap.lastHour()) {
-				test = ((aGap.firstHour() <= curHour) && (curHour <= aGap
-						.lastHour()));
+				test = ((aGap.firstHour() <= curHour) && (curHour <= aGap.lastHour()));
 			} else {
-				test = ((aGap.firstHour() <= curHour) || (curHour <= aGap
-						.lastHour()));
+				test = ((aGap.firstHour() <= curHour) || (curHour <= aGap.lastHour()));
 			}
 
 			if (test) {
 				logger.info("[" + aGap + "] This hour(" + curHour + ") applies");
 			} else {
-				logger.info("[" + aGap + "] This hour(" + curHour
-						+ ") does not apply; " + diffHour + ":" + minutesLeft
+				logger.info("[" + aGap + "] This hour(" + curHour + ") does not apply; " + diffHour + ":" + minutesLeft
 						+ " left");
 				final long timing = ((diffHour * 60) + minutesLeft) * 60 * 1000;
-				logger.debug("[" + aGap + "] timing = " + timing
-						+ " (minimum = " + minimum + ")");
+				logger.debug("[" + aGap + "] timing = " + timing + " (minimum = " + minimum + ")");
 				minimum = (minimum < timing ? timing : minimum);
 			}
 		}
@@ -539,7 +527,7 @@ public class DateActivator extends PollingActivator {
 	/**
 	 * This tells whether the worker can start computing, accordingly to the
 	 * local activation policy
-	 * 
+	 *
 	 * @return true if the work can start computing
 	 */
 	@Override
@@ -556,7 +544,7 @@ public class DateActivator extends PollingActivator {
 	/**
 	 * This tells whether the worker must stop computing, accordingly to the
 	 * local activation policy
-	 * 
+	 *
 	 * @return true if the work must stop computing
 	 */
 	@Override
@@ -576,23 +564,21 @@ public class DateActivator extends PollingActivator {
 		while (theIterator.hasNext()) {
 			final Gap aGap = theIterator.next();
 
-			getLogger().info(
-					"[" + i++ + "] fd " + aGap.firstDay() + " ld "
-							+ aGap.lastDay() + " fh " + aGap.firstHour()
-							+ " lh " + aGap.lastHour());
+			getLogger().info("[" + i++ + "] fd " + aGap.firstDay() + " ld " + aGap.lastDay() + " fh " + aGap.firstHour()
+					+ " lh " + aGap.lastHour());
 		}
 	}
 
 	/**
 	 * This parses command line options to retreive config file This is for test
 	 * pruposes only
-	 * 
+	 *
 	 * @param args
 	 *            is an array containing the command line options
 	 * @see #parse(String)
 	 * @see #main(String[])
 	 */
-	private void parse(String[] args) throws ParseException {
+	private void parse(final String[] args) throws ParseException {
 
 		int argc = 0;
 		if (args[0].compareTo("--xwconfig") == 0) {
@@ -605,7 +591,7 @@ public class DateActivator extends PollingActivator {
 	/**
 	 * This is the standard main method for testing this class
 	 */
-	public static void main(String[] args) {
+	public static void main(final String[] args) {
 
 		final DateActivator c = new DateActivator();
 		final Logger logger = new Logger();
