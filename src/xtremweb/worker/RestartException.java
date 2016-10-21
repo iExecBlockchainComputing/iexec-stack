@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -25,9 +25,9 @@ package xtremweb.worker;
 
 /**
  * RestartException.java An exception causing all threads to shutdown
- * 
+ *
  * Created: Sun Mar 25 18:49:43 2001
- * 
+ *
  * @author Gilles Fedak
  */
 
@@ -37,7 +37,7 @@ public class RestartException extends Exception {
 		super();
 	}
 
-	public RestartException(String s) {
+	public RestartException(final String s) {
 		super(s);
 	}
 
