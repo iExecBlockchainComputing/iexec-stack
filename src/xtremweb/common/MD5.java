@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -79,7 +79,7 @@ import java.io.InputStream;
  * should be named "MD5.so" and on Windows it should be named "MD5.dll". The
  * code will attempt to locate the library in the following locations in the
  * order given:
- * 
+ *
  * <ol>
  * <li>The path specified by the system property
  * "com.twmacinta.util.MD5.NATIVE_LIB_FILE" (be sure to include "MD5.so" or
@@ -90,7 +90,7 @@ import java.io.InputStream;
  * <li>Within the "lib/" directory.
  * <li>Within the current directory.
  * </ol>
- * 
+ *
  * <p>
  * If the library is not found, the code will fall back to the default (slower)
  * Java code.
@@ -113,7 +113,7 @@ import java.io.InputStream;
  * <p>
  * The second option is to call com.twmacinta.util.MD5.initNativeLibrary(true)
  * before any MD5 objects are constructed.
- * 
+ *
  * @author Santeri Paavolainen <sjpaavol@cc.helsinki.fi>
  * @author Timothy W Macinta (twm@alum.mit.edu) (optimizations and bug fixes)
  */
@@ -134,10 +134,9 @@ public final class MD5 {
 	/**
 	 * Padding for Final()
 	 */
-	private static byte padding[] = { (byte) MAGIC_NUMBER, 0, 0, 0, 0, 0, 0, 0,
-			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+	private static byte padding[] = { (byte) MAGIC_NUMBER, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+			0, 0, 0, 0, 0, 0, 0 };
 
 	private static final int HEX_FF = 0xff;
 	private static final int HUIT = 8;
@@ -169,92 +168,58 @@ public final class MD5 {
 
 	/**
 	 * Initialize class, and update hash with ob.toString()
-	 * 
+	 *
 	 * @param ob
 	 *            Object, ob.toString() is used to update hash after
 	 *            initialization
 	 */
-	public MD5(Object ob) {
+	public MD5(final Object ob) {
 		this();
 		update(ob.toString());
 	}
 
-	private void decode(byte buffer[], int shift, int[] out) {
+	private void decode(final byte buffer[], final int shift, final int[] out) {
 
 		int outIdx = 0;
 		int buffIdx = 0;
 
-		out[outIdx++] = (buffer[shift + buffIdx++] & HEX_FF)
-				| ((buffer[shift + buffIdx++] & HEX_FF) << HUIT)
-				| ((buffer[shift + buffIdx++] & HEX_FF) << SEIZE)
-				| ((buffer[shift + buffIdx++]) << VINGT_QUATRE);
-		out[outIdx++] = (buffer[shift + buffIdx++] & HEX_FF)
-				| ((buffer[shift + buffIdx++] & HEX_FF) << HUIT)
-				| ((buffer[shift + buffIdx++] & HEX_FF) << SEIZE)
-				| ((buffer[shift + buffIdx++]) << VINGT_QUATRE);
-		out[outIdx++] = (buffer[shift + buffIdx++] & HEX_FF)
-				| ((buffer[shift + buffIdx++] & HEX_FF) << HUIT)
-				| ((buffer[shift + buffIdx++] & HEX_FF) << SEIZE)
-				| ((buffer[shift + buffIdx++]) << VINGT_QUATRE);
-		out[outIdx++] = (buffer[shift + buffIdx++] & HEX_FF)
-				| ((buffer[shift + buffIdx++] & HEX_FF) << HUIT)
-				| ((buffer[shift + buffIdx++] & HEX_FF) << SEIZE)
-				| ((buffer[shift + buffIdx++]) << VINGT_QUATRE);
-		out[outIdx++] = (buffer[shift + buffIdx++] & HEX_FF)
-				| ((buffer[shift + buffIdx++] & HEX_FF) << HUIT)
-				| ((buffer[shift + buffIdx++] & HEX_FF) << SEIZE)
-				| ((buffer[shift + buffIdx++]) << VINGT_QUATRE);
-		out[outIdx++] = (buffer[shift + buffIdx++] & HEX_FF)
-				| ((buffer[shift + buffIdx++] & HEX_FF) << HUIT)
-				| ((buffer[shift + buffIdx++] & HEX_FF) << SEIZE)
-				| ((buffer[shift + buffIdx++]) << VINGT_QUATRE);
-		out[outIdx++] = (buffer[shift + buffIdx++] & HEX_FF)
-				| ((buffer[shift + buffIdx++] & HEX_FF) << HUIT)
-				| ((buffer[shift + buffIdx++] & HEX_FF) << SEIZE)
-				| ((buffer[shift + buffIdx++]) << VINGT_QUATRE);
-		out[outIdx++] = (buffer[shift + buffIdx++] & HEX_FF)
-				| ((buffer[shift + buffIdx++] & HEX_FF) << HUIT)
-				| ((buffer[shift + buffIdx++] & HEX_FF) << SEIZE)
-				| ((buffer[shift + buffIdx++]) << VINGT_QUATRE);
-		out[outIdx++] = (buffer[shift + buffIdx++] & HEX_FF)
-				| ((buffer[shift + buffIdx++] & HEX_FF) << HUIT)
-				| ((buffer[shift + buffIdx++] & HEX_FF) << SEIZE)
-				| ((buffer[shift + buffIdx++]) << VINGT_QUATRE);
-		out[outIdx++] = (buffer[shift + buffIdx++] & HEX_FF)
-				| ((buffer[shift + buffIdx++] & HEX_FF) << HUIT)
-				| ((buffer[shift + buffIdx++] & HEX_FF) << SEIZE)
-				| ((buffer[shift + buffIdx++]) << VINGT_QUATRE);
-		out[outIdx++] = (buffer[shift + buffIdx++] & HEX_FF)
-				| ((buffer[shift + buffIdx++] & HEX_FF) << HUIT)
-				| ((buffer[shift + buffIdx++] & HEX_FF) << SEIZE)
-				| ((buffer[shift + buffIdx++]) << VINGT_QUATRE);
-		out[outIdx++] = (buffer[shift + buffIdx++] & HEX_FF)
-				| ((buffer[shift + buffIdx++] & HEX_FF) << HUIT)
-				| ((buffer[shift + buffIdx++] & HEX_FF) << SEIZE)
-				| ((buffer[shift + buffIdx++]) << VINGT_QUATRE);
-		out[outIdx++] = (buffer[shift + buffIdx++] & HEX_FF)
-				| ((buffer[shift + buffIdx++] & HEX_FF) << HUIT)
-				| ((buffer[shift + buffIdx++] & HEX_FF) << SEIZE)
-				| ((buffer[shift + buffIdx++]) << VINGT_QUATRE);
-		out[outIdx++] = (buffer[shift + buffIdx++] & HEX_FF)
-				| ((buffer[shift + buffIdx++] & HEX_FF) << HUIT)
-				| ((buffer[shift + buffIdx++] & HEX_FF) << SEIZE)
-				| ((buffer[shift + buffIdx++]) << VINGT_QUATRE);
-		out[outIdx++] = (buffer[shift + buffIdx++] & HEX_FF)
-				| ((buffer[shift + buffIdx++] & HEX_FF) << HUIT)
-				| ((buffer[shift + buffIdx++] & HEX_FF) << SEIZE)
-				| ((buffer[shift + buffIdx++]) << VINGT_QUATRE);
-		out[outIdx++] = (buffer[shift + buffIdx++] & HEX_FF)
-				| ((buffer[shift + buffIdx++] & HEX_FF) << HUIT)
-				| ((buffer[shift + buffIdx++] & HEX_FF) << SEIZE)
-				| ((buffer[shift + buffIdx++]) << VINGT_QUATRE);
+		out[outIdx++] = (buffer[shift + buffIdx++] & HEX_FF) | ((buffer[shift + buffIdx++] & HEX_FF) << HUIT)
+				| ((buffer[shift + buffIdx++] & HEX_FF) << SEIZE) | ((buffer[shift + buffIdx++]) << VINGT_QUATRE);
+		out[outIdx++] = (buffer[shift + buffIdx++] & HEX_FF) | ((buffer[shift + buffIdx++] & HEX_FF) << HUIT)
+				| ((buffer[shift + buffIdx++] & HEX_FF) << SEIZE) | ((buffer[shift + buffIdx++]) << VINGT_QUATRE);
+		out[outIdx++] = (buffer[shift + buffIdx++] & HEX_FF) | ((buffer[shift + buffIdx++] & HEX_FF) << HUIT)
+				| ((buffer[shift + buffIdx++] & HEX_FF) << SEIZE) | ((buffer[shift + buffIdx++]) << VINGT_QUATRE);
+		out[outIdx++] = (buffer[shift + buffIdx++] & HEX_FF) | ((buffer[shift + buffIdx++] & HEX_FF) << HUIT)
+				| ((buffer[shift + buffIdx++] & HEX_FF) << SEIZE) | ((buffer[shift + buffIdx++]) << VINGT_QUATRE);
+		out[outIdx++] = (buffer[shift + buffIdx++] & HEX_FF) | ((buffer[shift + buffIdx++] & HEX_FF) << HUIT)
+				| ((buffer[shift + buffIdx++] & HEX_FF) << SEIZE) | ((buffer[shift + buffIdx++]) << VINGT_QUATRE);
+		out[outIdx++] = (buffer[shift + buffIdx++] & HEX_FF) | ((buffer[shift + buffIdx++] & HEX_FF) << HUIT)
+				| ((buffer[shift + buffIdx++] & HEX_FF) << SEIZE) | ((buffer[shift + buffIdx++]) << VINGT_QUATRE);
+		out[outIdx++] = (buffer[shift + buffIdx++] & HEX_FF) | ((buffer[shift + buffIdx++] & HEX_FF) << HUIT)
+				| ((buffer[shift + buffIdx++] & HEX_FF) << SEIZE) | ((buffer[shift + buffIdx++]) << VINGT_QUATRE);
+		out[outIdx++] = (buffer[shift + buffIdx++] & HEX_FF) | ((buffer[shift + buffIdx++] & HEX_FF) << HUIT)
+				| ((buffer[shift + buffIdx++] & HEX_FF) << SEIZE) | ((buffer[shift + buffIdx++]) << VINGT_QUATRE);
+		out[outIdx++] = (buffer[shift + buffIdx++] & HEX_FF) | ((buffer[shift + buffIdx++] & HEX_FF) << HUIT)
+				| ((buffer[shift + buffIdx++] & HEX_FF) << SEIZE) | ((buffer[shift + buffIdx++]) << VINGT_QUATRE);
+		out[outIdx++] = (buffer[shift + buffIdx++] & HEX_FF) | ((buffer[shift + buffIdx++] & HEX_FF) << HUIT)
+				| ((buffer[shift + buffIdx++] & HEX_FF) << SEIZE) | ((buffer[shift + buffIdx++]) << VINGT_QUATRE);
+		out[outIdx++] = (buffer[shift + buffIdx++] & HEX_FF) | ((buffer[shift + buffIdx++] & HEX_FF) << HUIT)
+				| ((buffer[shift + buffIdx++] & HEX_FF) << SEIZE) | ((buffer[shift + buffIdx++]) << VINGT_QUATRE);
+		out[outIdx++] = (buffer[shift + buffIdx++] & HEX_FF) | ((buffer[shift + buffIdx++] & HEX_FF) << HUIT)
+				| ((buffer[shift + buffIdx++] & HEX_FF) << SEIZE) | ((buffer[shift + buffIdx++]) << VINGT_QUATRE);
+		out[outIdx++] = (buffer[shift + buffIdx++] & HEX_FF) | ((buffer[shift + buffIdx++] & HEX_FF) << HUIT)
+				| ((buffer[shift + buffIdx++] & HEX_FF) << SEIZE) | ((buffer[shift + buffIdx++]) << VINGT_QUATRE);
+		out[outIdx++] = (buffer[shift + buffIdx++] & HEX_FF) | ((buffer[shift + buffIdx++] & HEX_FF) << HUIT)
+				| ((buffer[shift + buffIdx++] & HEX_FF) << SEIZE) | ((buffer[shift + buffIdx++]) << VINGT_QUATRE);
+		out[outIdx++] = (buffer[shift + buffIdx++] & HEX_FF) | ((buffer[shift + buffIdx++] & HEX_FF) << HUIT)
+				| ((buffer[shift + buffIdx++] & HEX_FF) << SEIZE) | ((buffer[shift + buffIdx++]) << VINGT_QUATRE);
+		out[outIdx++] = (buffer[shift + buffIdx++] & HEX_FF) | ((buffer[shift + buffIdx++] & HEX_FF) << HUIT)
+				| ((buffer[shift + buffIdx++] & HEX_FF) << SEIZE) | ((buffer[shift + buffIdx++]) << VINGT_QUATRE);
 	}
 
-	private native void Transform_native(int[] state, byte buffer[], int shift,
-			int length);
+	private native void Transform_native(int[] state, byte buffer[], int shift, int length);
 
-	private void Transform(MD5State state, byte buffer[], int shift,
-			int[] decodeBuf) {
+	private void Transform(final MD5State state, final byte buffer[], final int shift, final int[] decodeBuf) {
 		int a = state.state[0];
 		int b = state.state[1];
 		int c = state.state[2];
@@ -420,7 +385,7 @@ public final class MD5 {
 	/**
 	 * Updates hash with the bytebuffer given (using at maximum length bytes
 	 * from that buffer)
-	 * 
+	 *
 	 * @param stat
 	 *            Which state is updated
 	 * @param buffer
@@ -431,7 +396,7 @@ public final class MD5 {
 	 *            Use at maximum `length' bytes (absolute maximum is
 	 *            buffer.length)
 	 */
-	public void update(MD5State stat, byte buffer[], int offset, int length) {
+	public void update(final MD5State stat, final byte buffer[], final int offset, int length) {
 		int index, partlen, i, start;
 		finals = null;
 
@@ -460,8 +425,7 @@ public final class MD5 {
 					}
 					Transform_native(stat.state, stat.buffer, 0, 64);
 				}
-				Transform_native(stat.state, buffer, partlen + offset, length
-						- partlen);
+				Transform_native(stat.state, buffer, partlen + offset, length - partlen);
 				i = partlen + (((length - partlen) / 64) * 64);
 			} else {
 
@@ -503,31 +467,31 @@ public final class MD5 {
 	 * Plain update, updates this object
 	 */
 
-	public void update(byte buffer[], int offset, int length) {
+	public void update(final byte buffer[], final int offset, final int length) {
 		update(this.state, buffer, offset, length);
 	}
 
-	public void update(byte buffer[], int length) {
+	public void update(final byte buffer[], final int length) {
 		update(this.state, buffer, 0, length);
 	}
 
 	/**
 	 * Updates hash with given array of bytes
-	 * 
+	 *
 	 * @param buffer
 	 *            Array of bytes to use for updating the hash
 	 */
-	public void update(byte buffer[]) {
+	public void update(final byte buffer[]) {
 		update(buffer, 0, buffer.length);
 	}
 
 	/**
 	 * Updates hash with a single byte
-	 * 
+	 *
 	 * @param b
 	 *            Single byte to update the hash
 	 */
-	public void update(byte b) {
+	public void update(final byte b) {
 		final byte buffer[] = new byte[1];
 		buffer[0] = b;
 
@@ -545,11 +509,11 @@ public final class MD5 {
 	 * character sets is desired, use the overloaded version of the Update()
 	 * method which takes a string and a character encoding. <br />
 	 * Since XWHEP-8.2.1: charset forced to UTF-8 (see {@link XWTools#UTF8})
-	 * 
+	 *
 	 * @param s
 	 *            String to be update to hash (is used as s.getBytes())
 	 */
-	public final void update(String s) {
+	public final void update(final String s) {
 		final byte chars[] = s.getBytes(XWTools.UTF8);
 		update(chars, chars.length);
 	}
@@ -557,7 +521,7 @@ public final class MD5 {
 	/**
 	 * Update buffer with given string using the given encoding. If the given
 	 * encoding is null, the encoding "ISO8859_1" is used.
-	 * 
+	 *
 	 * @param s
 	 *            String to be update to hash (is used as
 	 *            s.getBytes(charset_name))
@@ -567,8 +531,7 @@ public final class MD5 {
 	 * @exception java.io.UnsupportedEncodingException
 	 *                If the named charset is not supported.
 	 */
-	public void update(String s, String charset_name)
-			throws java.io.UnsupportedEncodingException {
+	public void update(final String s, String charset_name) throws java.io.UnsupportedEncodingException {
 		if (charset_name == null) {
 			charset_name = "ISO8859_1";
 		}
@@ -578,16 +541,16 @@ public final class MD5 {
 
 	/**
 	 * Update buffer with a single integer (only & 0xff part is used, as a byte)
-	 * 
+	 *
 	 * @param i
 	 *            Integer value, which is then converted to byte as i & 0xff
 	 */
 
-	public void update(int i) {
+	public void update(final int i) {
 		update((byte) (i & 0xff));
 	}
 
-	private byte[] encode(int input[], int len) {
+	private byte[] encode(final int input[], final int len) {
 		int i, j;
 		byte out[];
 
@@ -607,7 +570,7 @@ public final class MD5 {
 	 * Returns array of bytes (16 bytes) representing hash as of the current
 	 * state of this object. Note: getting a hash does not invalidate the hash
 	 * object, it only creates a copy of the real state which is finalized.
-	 * 
+	 *
 	 * @return Array of 16 bytes, the hash of all updated bytes
 	 */
 	public synchronized byte[] Final() {
@@ -618,8 +581,7 @@ public final class MD5 {
 		if (finals == null) {
 			fin = new MD5State(state);
 
-			final int[] count_ints = { (int) (fin.count << 3),
-					(int) (fin.count >> 29) };
+			final int[] count_ints = { (int) (fin.count << 3), (int) (fin.count >> 29) };
 			bits = encode(count_ints, 8);
 
 			index = (int) (fin.count & 0x3f);
@@ -637,18 +599,18 @@ public final class MD5 {
 		return bits;
 	}
 
-	private static final char[] HEX_CHARS = { '0', '1', '2', '3', '4', '5',
-			'6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', };
+	private static final char[] HEX_CHARS = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e',
+			'f', };
 
 	/**
 	 * Turns array of bytes into string representing each byte as unsigned hex
 	 * number.
-	 * 
+	 *
 	 * @param hash
 	 *            Array of bytes to convert to hex-string
 	 * @return Generated hex string
 	 */
-	public static String asHex(byte hash[]) {
+	public static String asHex(final byte hash[]) {
 		final char buf[] = new char[hash.length * 2];
 		for (int i = 0, x = 0; i < hash.length; i++) {
 			buf[x++] = HEX_CHARS[(hash[i] >>> 4) & 0xf];
@@ -659,15 +621,14 @@ public final class MD5 {
 
 	/**
 	 * Returns 32-character hex representation of this objects hash
-	 * 
+	 *
 	 * @return String of this object's hash
 	 */
 	public String asHex() {
 		return asHex(this.Final());
 	}
 
-	public static synchronized final void initNativeLibrary(
-			boolean disallow_lib_loading) {
+	public static synchronized final void initNativeLibrary(final boolean disallow_lib_loading) {
 		if (disallow_lib_loading) {
 			nativeLibInitPending = false;
 		} else {
@@ -688,8 +649,7 @@ public final class MD5 {
 
 			// don't try to load if the right property is set
 
-			String prop = System
-					.getProperty("com.twmacinta.util.MD5.NO_NATIVE_LIB");
+			String prop = System.getProperty("com.twmacinta.util.MD5.NO_NATIVE_LIB");
 			if (prop != null) {
 				prop = prop.trim();
 				if (prop.equalsIgnoreCase("true") || prop.equals("1")) {
@@ -726,30 +686,22 @@ public final class MD5 {
 
 			// fill in settings for Linux on x86
 
-			if (os_name.equals("linux")
-					&& (os_arch.equals("x86") || os_arch.equals("i386")
-							|| os_arch.equals("i486") || os_arch.equals("i586") || os_arch
-							.equals("i686"))) {
-				arch_lib_path = new File(new File(new File("lib"), "arch"),
-						"linux_x86");
+			if (os_name.equals("linux") && (os_arch.equals("x86") || os_arch.equals("i386") || os_arch.equals("i486")
+					|| os_arch.equals("i586") || os_arch.equals("i686"))) {
+				arch_lib_path = new File(new File(new File("lib"), "arch"), "linux_x86");
 				arch_libfile_suffix = ".so";
 
 				// fill in settings for Windows on x86
 
-			} else if (os_name.startsWith("windows ")
-					&& (os_arch.equals("x86") || os_arch.equals("i386")
-							|| os_arch.equals("i486") || os_arch.equals("i586") || os_arch
-							.equals("i686"))) {
-				arch_lib_path = new File(new File(new File("lib"), "arch"),
-						"win32_x86");
+			} else if (os_name.startsWith("windows ") && (os_arch.equals("x86") || os_arch.equals("i386")
+					|| os_arch.equals("i486") || os_arch.equals("i586") || os_arch.equals("i686"))) {
+				arch_lib_path = new File(new File(new File("lib"), "arch"), "win32_x86");
 				arch_libfile_suffix = ".dll";
 
 				// fill in settings Mac OS X on PPC
 
-			} else if (os_name.startsWith("mac os x")
-					&& (os_arch.equals("ppc"))) {
-				arch_lib_path = new File(new File(new File("lib"), "arch"),
-						"darwin_ppc");
+			} else if (os_name.startsWith("mac os x") && (os_arch.equals("ppc"))) {
+				arch_lib_path = new File(new File(new File("lib"), "arch"), "darwin_ppc");
 				arch_libfile_suffix = ".jnilib";
 
 				// default to .so files with no architecture specific
@@ -802,7 +754,7 @@ public final class MD5 {
 	/**
 	 * Calculates and returns the hash of the contents of the given file.
 	 **/
-	public static byte[] getHash(File f) throws IOException {
+	public static byte[] getHash(final File f) throws IOException {
 		if (!f.exists()) {
 			throw new FileNotFoundException(f.toString());
 		}
@@ -840,7 +792,7 @@ public final class MD5 {
 	 *         16 bytes in length and their lengths and all of their bytes are
 	 *         equal.
 	 **/
-	public static boolean hashesEqual(byte[] hash1, byte[] hash2) {
+	public static boolean hashesEqual(final byte[] hash1, final byte[] hash2) {
 		if (hash1 == null) {
 			return hash2 == null;
 		}
