@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -27,10 +27,10 @@ import xtremweb.communications.Connection;
 
 /**
  * Created: Decembre 2006<br />
- * 
+ *
  * This enumerates available command line options. This is used by
  * CommandLineParser.
- * 
+ *
  * @see xtremweb.common.CommandLineParser
  * @author <a href="mailto:lodygens a lal.in2p3.fr">Oleg Lodygensky</a>
  * @since 1.9.0
@@ -57,7 +57,7 @@ public enum CommandLineOptions {
 	},
 	/**
 	 * Get work according to status
-	 * 
+	 *
 	 * @since 8.2.0
 	 */
 	STATUS {
@@ -74,8 +74,7 @@ public enum CommandLineOptions {
 	MACRO {
 		@Override
 		public String help() {
-			return this.toString()
-					+ " <macro file name> : provide a macro file (a text file)";
+			return this.toString() + " <macro file name> : provide a macro file (a text file)";
 		}
 	},
 	/**
@@ -85,8 +84,7 @@ public enum CommandLineOptions {
 	XML {
 		@Override
 		public String help() {
-			return this.toString()
-					+ " <macro file name> : provide a macro file (an XML file)";
+			return this.toString() + " <macro file name> : provide a macro file (an XML file)";
 		}
 	},
 	/**
@@ -114,8 +112,7 @@ public enum CommandLineOptions {
 	FORMAT {
 		@Override
 		public String help() {
-			return this.toString()
-					+ " [short | xml | csv | html] : to specify output format (default = short)";
+			return this.toString() + " [short | xml | csv | html] : to specify output format (default = short)";
 		}
 	},
 	/**
@@ -155,8 +152,7 @@ public enum CommandLineOptions {
 	CERT {
 		@Override
 		public String help() {
-			return this.toString()
-					+ " <URI | file name> : to provide an X.509 proxy for a job";
+			return this.toString() + " <URI | file name> : to provide an X.509 proxy for a job";
 		}
 	},
 	/**
@@ -166,32 +162,33 @@ public enum CommandLineOptions {
 	EXPECTEDHOST {
 		@Override
 		public String help() {
-			return this.toString()
-					+ " <UID> : to specify the worker to run the job";
+			return this.toString() + " <UID> : to specify the worker to run the job";
 		}
 	},
 	/**
-	 * This for data driven scheduling. This defines the work to execute on data event. <br />
+	 * This for data driven scheduling. This defines the work to execute on data
+	 * event. <br />
 	 * Parameter : an uid
+	 *
 	 * @since 10.0.0
 	 */
 	EXPECTEDWORK {
 		@Override
 		public String help() {
-			return this.toString()
-					+ " <UID> : to specify the work to launch on data event";
+			return this.toString() + " <UID> : to specify the work to launch on data event";
 		}
 	},
 	/**
-	 * This for data driven scheduling. This defines the package this data belongs to. <br />
+	 * This for data driven scheduling. This defines the package this data
+	 * belongs to. <br />
 	 * Parameter : a text
+	 *
 	 * @since 10.0.0
 	 */
 	PACKAGE {
 		@Override
 		public String help() {
-			return this.toString()
-					+ " <text> : to specify the package this data belongs to";
+			return this.toString() + " <text> : to specify the package this data belongs to";
 		}
 	},
 	/**
@@ -212,8 +209,7 @@ public enum CommandLineOptions {
 	STDIN {
 		@Override
 		public String help() {
-			return this.toString()
-					+ " [URI | UID | file name ] : to provide job stdin";
+			return this.toString() + " [URI | UID | file name ] : to provide job stdin";
 		}
 	},
 	/**
@@ -223,8 +219,7 @@ public enum CommandLineOptions {
 	CONFIG {
 		@Override
 		public String help() {
-			return this.toString()
-					+ " <config file name> : to provide a config file";
+			return this.toString() + " <config file name> : to provide a config file";
 		}
 	},
 	/**
@@ -243,8 +238,7 @@ public enum CommandLineOptions {
 	UPDATEWORKERS {
 		@Override
 		public String help() {
-			return this.toString()
-					+ " [uids list] [on | off] : enable/disable workers";
+			return this.toString() + " [uids list] [on | off] : enable/disable workers";
 		}
 	},
 	/**
@@ -258,7 +252,7 @@ public enum CommandLineOptions {
 	},
 	/**
 	 * This option tells to NOT compress data to be sent
-	 * 
+	 *
 	 * @since 8.1.1
 	 */
 	DONTZIP {
@@ -316,14 +310,13 @@ public enum CommandLineOptions {
 	},
 	/**
 	 * This option set the wallclocktime for a job
-	 * 
+	 *
 	 * @since 8.2.0
 	 */
 	WALLCLOCKTIME {
 		@Override
 		public String help() {
-			return this.toString()
-					+ " <anInteger >: to set the work wallclocktime";
+			return this.toString() + " <anInteger >: to set the work wallclocktime";
 		}
 	},
 	/**
@@ -332,15 +325,14 @@ public enum CommandLineOptions {
 	SHELL {
 		@Override
 		public String help() {
-			return this.toString()
-					+ " <portNumber> : to create an XWHEP proxy (default port "
+			return this.toString() + " <portNumber> : to create an XWHEP proxy (default port "
 					+ +Connection.XMLRPCPORT.defaultPortValue() + ")";
 		}
 	},
 	/**
 	 * This option tells the client to act as a SmartSockets proxy. <br />
 	 * Parameter : (optional) the SmartSockets hub address
-	 * 
+	 *
 	 * @since 8.0.0
 	 */
 	SMARTSOCKETSPROXY {
@@ -352,7 +344,7 @@ public enum CommandLineOptions {
 	/**
 	 * This option defines the amount of expected replica for a work. <br />
 	 * Parameter : the amount of expected replica
-	 * 
+	 *
 	 * @since 10.0.0
 	 */
 	REPLICA {
@@ -362,9 +354,10 @@ public enum CommandLineOptions {
 		}
 	},
 	/**
-	 * This option defines the size of the replica set (how many replica in parallel). <br />
+	 * This option defines the size of the replica set (how many replica in
+	 * parallel). <br />
 	 * Parameter : the size of the replica set
-	 * 
+	 *
 	 * @since 10.0.0
 	 */
 	REPLICASIZE {
@@ -388,27 +381,25 @@ public enum CommandLineOptions {
 	 * proxies for the server like job to be reachable on worker side. This is
 	 * also used to create proxies on client side listening these ports and
 	 * forwarding to SmartSockets.
-	 * 
+	 *
 	 * @since 8.0.0
 	 */
 	LISTENPORT {
 		@Override
 		public String help() {
-			return this.toString()
-					+ " <portNumber> : to set the local port to listen to";
+			return this.toString() + " <portNumber> : to set the local port to listen to";
 		}
 	},
 	/**
 	 * This option sets the ports to forward to. This is used to create a
 	 * SmartSocket end point on client side using xwproxy script
-	 * 
+	 *
 	 * @since 8.1.0
 	 */
 	FORWARDPORT {
 		@Override
 		public String help() {
-			return this.toString()
-					+ " <portNumber : to set the local port to forward to";
+			return this.toString() + " <portNumber : to set the local port to forward to";
 		}
 	},
 	/**
@@ -416,14 +407,13 @@ public enum CommandLineOptions {
 	 * local port. This helps a job running on XWHEP worker side to connect to a
 	 * server like application running on XWHEP client side. e.g.
 	 * "Saddr1, port1; Saddr2, port2"
-	 * 
+	 *
 	 * @since 8.0.0
 	 */
 	FORWARDADDRESSES {
 		@Override
 		public String help() {
-			return this.toString()
-					+ " <smartSocketAddr> : to set the SmartSockets address to forward to";
+			return this.toString() + " <smartSocketAddr> : to set the SmartSockets address to forward to";
 		}
 	},
 	/**
@@ -441,22 +431,21 @@ public enum CommandLineOptions {
 
 	/**
 	 * This retrieves help
-	 * 
+	 *
 	 * @since 8.3.0
 	 * @return a string containing the help
 	 */
 	public abstract String help();
 
-	public static String help(CommandLineOptions i) {
+	public static String help(final CommandLineOptions i) {
 		return i.help();
 	}
 
 	public String usage() {
-		return CommandLineParser.PREFIX + this.toString().toLowerCase()
-				+ help();
+		return CommandLineParser.PREFIX + this.toString().toLowerCase() + help();
 	}
 
-	public static void main(String[] argv) {
+	public static void main(final String[] argv) {
 		for (final CommandLineOptions i : CommandLineOptions.values()) {
 			System.out.println(i.help());
 		}
