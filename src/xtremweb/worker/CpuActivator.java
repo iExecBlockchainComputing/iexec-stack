@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -35,9 +35,9 @@ import xtremweb.common.XWConfigurator;
 
 /**
  * <CODE>CpuActivator</CODE> monitors CPU activity
- * 
+ *
  * @author Oleg Lodygensky
- * 
+ *
  */
 
 public class CpuActivator extends PollingActivator {
@@ -63,12 +63,12 @@ public class CpuActivator extends PollingActivator {
 
 	/**
 	 * This initializes the activator accordingly to the config file
-	 * 
+	 *
 	 * @param config
 	 *            is the Properties read from file
 	 */
 	@Override
-	public void initialize(XWConfigurator config) {
+	public void initialize(final XWConfigurator config) {
 
 		super.initialize(config);
 
@@ -78,7 +78,7 @@ public class CpuActivator extends PollingActivator {
 
 	/**
 	 * This resets all
-	 * 
+	 *
 	 * @see xtremweb.archdep.XWUtilLinux#raz()
 	 */
 	@Override
@@ -88,7 +88,7 @@ public class CpuActivator extends PollingActivator {
 
 	/**
 	 * This detect this host activity
-	 * 
+	 *
 	 * @see xtremweb.common.XWConfigurator#cpuLoad
 	 * @return true if the machine is loaded and XWWorker should top computing
 	 */
@@ -122,12 +122,10 @@ public class CpuActivator extends PollingActivator {
 
 		if (ret != lastState) {
 			getLogger().debug(
-					"  %CPU(host) " + cpuLoad + "  %CPU(worker) = "
-							+ processLoad + "  %CPU(others) = " + others);
+					"  %CPU(host) " + cpuLoad + "  %CPU(worker) = " + processLoad + "  %CPU(others) = " + others);
 
-			getLogger().debug(
-					"Cpu " + (ret == false ? "not" : "") + " available : "
-							+ Worker.getConfig().cpuLoad() + " > " + others);
+			getLogger().debug("Cpu " + (ret == false ? "not" : "") + " available : " + Worker.getConfig().cpuLoad()
+					+ " > " + others);
 
 			lastState = ret;
 		}
@@ -140,7 +138,7 @@ public class CpuActivator extends PollingActivator {
 	/**
 	 * This tells whether the worker can start computing, accordingly to the
 	 * local activation policy
-	 * 
+	 *
 	 * @return true if the work can start computing
 	 */
 	@Override
@@ -160,7 +158,7 @@ public class CpuActivator extends PollingActivator {
 	/**
 	 * This tells whether the worker must stop computing, accordingly to the
 	 * local activation policy
-	 * 
+	 *
 	 * @return true if the work must stop computing
 	 */
 	@Override
