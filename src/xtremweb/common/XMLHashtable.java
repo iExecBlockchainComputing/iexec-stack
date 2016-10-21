@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -48,7 +48,7 @@ import org.xml.sax.SAXException;
 
 /**
  * This class (un)marshall hashtable This contents tuples (key, value)
- * 
+ *
  * This may content :
  * <ul>
  * <li>any object that a constructor like object(String) (e.g Integer objects
@@ -63,7 +63,7 @@ public final class XMLHashtable extends XMLValue {
 
 	/**
 	 * This is the size columns index
-	 * 
+	 *
 	 * @see xtremweb.common.XMLable#columns
 	 */
 	private final int SIZE = 0;
@@ -75,13 +75,13 @@ public final class XMLHashtable extends XMLValue {
 	 * This count nested elements since this hashtable may content hashtables
 	 * and vectors as elements. This is incremented on each new hashtable or
 	 * vector, and decremented on each vector or hashtable endings.<br />
-	 * 
+	 *
 	 * This is needed since SAX API reads input sequentially
 	 */
 	private int nested = 0;
 	/**
 	 * This is the tuples index
-	 * 
+	 *
 	 * @see #tuples
 	 */
 	private int currentIndex;
@@ -92,7 +92,7 @@ public final class XMLHashtable extends XMLValue {
 
 	/**
 	 * This is called by the GC; this calls clear();
-	 * 
+	 *
 	 * @since 5.8.0
 	 * @see #clear()
 	 */
@@ -104,7 +104,7 @@ public final class XMLHashtable extends XMLValue {
 
 	/**
 	 * This clears this hashtable
-	 * 
+	 *
 	 * @since 5.8.0
 	 */
 	@Override
@@ -123,7 +123,7 @@ public final class XMLHashtable extends XMLValue {
 	}
 
 	/**
-     */
+	 */
 	public XMLHashtable() {
 		this((Hashtable) null);
 	}
@@ -132,7 +132,7 @@ public final class XMLHashtable extends XMLValue {
 	 * @param h
 	 *            is the hashtable to (un)marshal
 	 */
-	public XMLHashtable(Hashtable h) {
+	public XMLHashtable(final Hashtable h) {
 		super(THISTAG, 0);
 		size = 0;
 
@@ -173,26 +173,26 @@ public final class XMLHashtable extends XMLValue {
 	/**
 	 * This constructs a new object from XML attributes received from an input
 	 * string
-	 * 
+	 *
 	 * @param input
 	 *            is the input string
 	 * @throws IOException
 	 *             on XML error
 	 */
-	public XMLHashtable(String input) throws IOException, SAXException {
+	public XMLHashtable(final String input) throws IOException, SAXException {
 		this(StreamIO.stream(input));
 	}
 
 	/**
 	 * This constructs a new object from XML attributes received from input
 	 * stream
-	 * 
+	 *
 	 * @param input
 	 *            is the input stream
 	 * @throws IOException
 	 *             on XML error
 	 */
-	public XMLHashtable(DataInputStream input) throws IOException, SAXException {
+	public XMLHashtable(final DataInputStream input) throws IOException, SAXException {
 		this(new Hashtable());
 		setEmpty(false);
 		final XMLReader reader = new XMLReader(this);
@@ -206,13 +206,13 @@ public final class XMLHashtable extends XMLValue {
 	/**
 	 * This constructs a new object from XML attributes received from input
 	 * stream
-	 * 
+	 *
 	 * @param attrs
 	 *            contains attributes read from XML description
 	 * @throws IOException
 	 *             on XML error
 	 */
-	public XMLHashtable(Attributes attrs) {
+	public XMLHashtable(final Attributes attrs) {
 		this(new Hashtable());
 		setEmpty(false);
 		fromXml(attrs);
@@ -228,15 +228,14 @@ public final class XMLHashtable extends XMLValue {
 
 	/**
 	 * This serializes this object to a String as an XML object<br />
-	 * 
+	 *
 	 * @return a String containing this object definition as XML
 	 * @see #fromXml(Attributes)
 	 */
 	@Override
 	public String toXml() {
 
-		String ret = "<" + getXMLTag() + " " + getColumnLabel(SIZE) + "=\""
-				+ size + "\" >";
+		String ret = "<" + getXMLTag() + " " + getColumnLabel(SIZE) + "=\"" + size + "\" >";
 
 		for (int i = 0; i < size; i++) {
 			ret += tuples[i].toXml();
@@ -248,15 +247,14 @@ public final class XMLHashtable extends XMLValue {
 
 	/**
 	 * This writes this object XML representation to output stream
-	 * 
+	 *
 	 * @param o
 	 *            is the output stream to write to
 	 */
 	@Override
-	public void toXml(DataOutputStream o) throws IOException {
+	public void toXml(final DataOutputStream o) throws IOException {
 
-		String ret = "<" + getXMLTag() + " " + getColumnLabel(SIZE) + "=\""
-				+ size + "\" >";
+		String ret = "<" + getXMLTag() + " " + getColumnLabel(SIZE) + "=\"" + size + "\" >";
 		byte[] strb = ret.getBytes(XWTools.UTF8);
 		o.write(strb);
 		strb = null;
@@ -272,12 +270,12 @@ public final class XMLHashtable extends XMLValue {
 
 	/**
 	 * This
-	 * 
+	 *
 	 * @param attrs
 	 *            contains attributes XML representation
 	 */
 	@Override
-	public void fromXml(Attributes attrs) {
+	public void fromXml(final Attributes attrs) {
 
 		if (attrs == null) {
 			return;
@@ -289,9 +287,7 @@ public final class XMLHashtable extends XMLValue {
 			final String attribute = attrs.getQName(a);
 			final String value = attrs.getValue(a);
 
-			getLogger().finest(
-					"     attribute #" + a + ": name=\"" + attribute + "\""
-							+ ", value=\"" + value + "\"");
+			getLogger().finest("     attribute #" + a + ": name=\"" + attribute + "\"" + ", value=\"" + value + "\"");
 
 			if (attribute.compareToIgnoreCase(getColumnLabel(SIZE)) == 0) {
 				size = new Integer(value).intValue();
@@ -306,13 +302,13 @@ public final class XMLHashtable extends XMLValue {
 	/**
 	 * This is called to decode XML elements. This increments nested on each
 	 * "<XMLHashtable>" or "<XMLVector>"
-	 * 
+	 *
 	 * @see #nested
 	 * @see XMLReader#read(InputStream)
 	 */
 	@Override
-	public void xmlElementStart(String uri, String tag, String qname,
-			Attributes attrs) throws SAXException {
+	public void xmlElementStart(final String uri, final String tag, final String qname, final Attributes attrs)
+			throws SAXException {
 
 		try {
 			super.xmlElementStart(uri, tag, qname, attrs);
@@ -321,8 +317,8 @@ public final class XMLHashtable extends XMLValue {
 		}
 
 		final Logger logger = getLogger();
-		logger.finest("xmlElementStart (" + qname + ") " + "size = " + size
-				+ "  currentIndex = " + currentIndex + "  nested = " + nested);
+		logger.finest("xmlElementStart (" + qname + ") " + "size = " + size + "  currentIndex = " + currentIndex
+				+ "  nested = " + nested);
 
 		if ((size == 0) && (qname.compareToIgnoreCase(getXMLTag()) == 0)) {
 			logger.finest("" + qname + ".fromXml(attrs)");
@@ -340,16 +336,14 @@ public final class XMLHashtable extends XMLValue {
 			}
 
 			if (tuples[currentIndex] == null) {
-				logger.finest("tuples[" + currentIndex + "]  = new XMLtuple("
-						+ qname + ")");
+				logger.finest("tuples[" + currentIndex + "]  = new XMLtuple(" + qname + ")");
 				tuples[currentIndex] = new XMLtuple(attrs);
 			}
 
 			//
 			// XMLtuple manages XMLKey and XMLValue
 			//
-			logger.finest("tuples[" + currentIndex + "].xmlElementStart("
-					+ qname + ")");
+			logger.finest("tuples[" + currentIndex + "].xmlElementStart(" + qname + ")");
 			tuples[currentIndex].xmlElementStart(uri, tag, qname, attrs);
 		}
 	}
@@ -358,14 +352,13 @@ public final class XMLHashtable extends XMLValue {
 	 * This decrements nested on each "</XMLHashtable>" or "</XMLVector>".<br />
 	 * This increment currentIndex is nested is 0; otherwise this calls
 	 * tuples[currentIndex].xmlElementStop()
-	 * 
+	 *
 	 * @see #nested
 	 * @see #currentIndex
 	 * @see xtremweb.common.XMLObject#xmlElementStop(String, String, String)
 	 */
 	@Override
-	public void xmlElementStop(String uri, String tag, String qname)
-			throws SAXException {
+	public void xmlElementStop(final String uri, final String tag, final String qname) throws SAXException {
 
 		if (currentIndex < size) {
 			tuples[currentIndex].xmlElementStop(uri, tag, qname);
@@ -383,17 +376,15 @@ public final class XMLHashtable extends XMLValue {
 			}
 		}
 
-		getLogger().finest(
-				"xmlElementStop (" + qname + ") " + "size = " + size
-						+ "  currentIndex = " + currentIndex + "  nested = "
-						+ nested);
+		getLogger().finest("xmlElementStop (" + qname + ") " + "size = " + size + "  currentIndex = " + currentIndex
+				+ "  nested = " + nested);
 
 		super.xmlElementStop(uri, tag, qname);
 	}
 
 	/**
 	 * This retreives this object String representation
-	 * 
+	 *
 	 * @return this object XML String representation
 	 */
 	@Override
@@ -403,7 +394,7 @@ public final class XMLHashtable extends XMLValue {
 
 	/**
 	 * This retreives this content
-	 * 
+	 *
 	 * @return an hashtable
 	 */
 	@Override
@@ -413,7 +404,7 @@ public final class XMLHashtable extends XMLValue {
 
 	/**
 	 * This retreives this content
-	 * 
+	 *
 	 * @return an hashtable
 	 */
 	public Hashtable getHashtable() {
@@ -439,7 +430,7 @@ public final class XMLHashtable extends XMLValue {
 	 * <br />
 	 * The dummy or read representation is finally dumped
 	 */
-	public static void main(String[] argv) {
+	public static void main(final String[] argv) {
 		try {
 			final Collection v = new Vector();
 			v.add(new String("a string in vector"));
@@ -459,8 +450,7 @@ public final class XMLHashtable extends XMLValue {
 			XMLHashtable xmlh = new XMLHashtable(h);
 
 			if (argv.length == 1) {
-				xmlh = new XMLHashtable(new DataInputStream(
-						new FileInputStream(argv[0])));
+				xmlh = new XMLHashtable(new DataInputStream(new FileInputStream(argv[0])));
 			}
 
 			System.out.println(xmlh.toXml());
@@ -478,9 +468,7 @@ public final class XMLHashtable extends XMLValue {
 					continue;
 				}
 
-				xmlh.getLogger().debug(
-						"(" + k.toString() + "," + ret.get(k) + ") "
-								+ ret.get(k).getClass());
+				xmlh.getLogger().debug("(" + k.toString() + "," + ret.get(k) + ") " + ret.get(k).getClass());
 			}
 			myenum = null;
 		} catch (final Exception e) {
