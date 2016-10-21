@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -41,13 +41,13 @@ import java.util.zip.ZipOutputStream;
 
 /**
  * Zipper.java This class zip/unzip files
- * 
+ *
  * If the same object is used to unzip and then zip, it may be configured so
  * that only new or modified files are zipped. (used by the worker to improve
  * bandwidth usage)
- * 
+ *
  * Created: 5 octobre 2002
- * 
+ *
  * @author Oleg Lodygensky
  */
 
@@ -62,7 +62,7 @@ public class Zipper {
 	 * This sets the logger level. This also sets the logger levels checkboxes
 	 * menu item.
 	 */
-	public void setLoggerLevel(LoggerLevel l) {
+	public void setLoggerLevel(final LoggerLevel l) {
 		logger.setLoggerLevel(l);
 	}
 
@@ -101,37 +101,37 @@ public class Zipper {
 
 	/**
 	 * This is the default constructor.
-	 * 
+	 *
 	 * @param l
 	 *            is the log level
 	 */
-	public Zipper(LoggerLevel l) {
+	public Zipper(final LoggerLevel l) {
 		this();
 		logger.setLoggerLevel(l);
 	}
 
 	/**
 	 * This is a constructor.
-	 * 
+	 *
 	 * @param fn
 	 *            is the filename to be used
 	 * @param l
 	 *            is the output level
 	 */
-	public Zipper(String fn, LoggerLevel l) {
+	public Zipper(final String fn, final LoggerLevel l) {
 		this(l);
 		fileName = fn;
 	}
 
-	public void setFileName(String fn) {
+	public void setFileName(final String fn) {
 		if (fn == null) {
 			return;
 		}
 
 		fileName = fn;
 
-		if (!fileName.startsWith(File.separator) && !fileName.startsWith(".")
-				&& (fileName.charAt(1) != ':')) {// win32 specific
+		if (!fileName.startsWith(File.separator) && !fileName.startsWith(".") && (fileName.charAt(1) != ':')) {// win32
+																												// specific
 
 			fileName = "." + File.separator + fileName;
 		}
@@ -144,7 +144,7 @@ public class Zipper {
 
 	/**
 	 * This sets the file list
-	 * 
+	 *
 	 * @see #filesList
 	 */
 	public void resetFilesList() {
@@ -153,20 +153,20 @@ public class Zipper {
 
 	/**
 	 * This sets the file list
-	 * 
+	 *
 	 * @see #filesList
 	 */
-	public void setFilesList(Map fl) {
+	public void setFilesList(final Map fl) {
 		filesList = fl;
 	}
 
 	/**
 	 * This sets the file list from the provided file If file is a directory the
 	 * full content is put into filesLis
-	 * 
+	 *
 	 * @see #filesList
 	 */
-	public void setFilesList(File root) {
+	public void setFilesList(final File root) {
 
 		if (!root.exists()) {
 			return;
@@ -193,7 +193,7 @@ public class Zipper {
 		return filesList;
 	}
 
-	public void setCreation(boolean r) {
+	public void setCreation(final boolean r) {
 		creation = r;
 	}
 
@@ -203,11 +203,11 @@ public class Zipper {
 
 	/**
 	 * This tests whether file needs to be compressed in zip file
-	 * 
+	 *
 	 * @param file
 	 *            is the file name to be included
 	 */
-	private boolean generate(String dir, String file) {
+	private boolean generate(final String dir, final String file) {
 		if (creation) {
 			return true;
 		}
@@ -217,18 +217,17 @@ public class Zipper {
 		if (!filesList.containsKey(file)) {
 			return true;
 		}
-		return (((Long) filesList.get(file)).longValue() < (new File(dir
-				+ File.separator + file)).lastModified());
+		return (((Long) filesList.get(file)).longValue() < (new File(dir + File.separator + file)).lastModified());
 	}
 
 	/**
 	 * This unzip file which file name has been provided. 27 avril 2006 : this
 	 * uses ZipFile; some troubles have been reported which are (hopefully)
 	 * solved with unzipNew()
-	 * 
+	 *
 	 * @param outDir
 	 *            is the directory to explode zip file to
-	 * 
+	 *
 	 *            Since RPCXW : this may represent a non zipped file (see zip
 	 *            ()) if there was a single 'little' file to zip
 	 * @return true if correctly unzipped, false otherwise
@@ -238,7 +237,7 @@ public class Zipper {
 	 * @exception NullPointerException
 	 *                is thrown if this fileName is not set
 	 */
-	public boolean unzip(String outDir) throws IOException {
+	public boolean unzip(final String outDir) throws IOException {
 
 		if (fileName == null) {
 			throw new IOException("file name not set");
@@ -273,8 +272,7 @@ public class Zipper {
 			// because a file name contained a french accentuation
 			// :(
 			if (in == null) {
-				logger.finest("Unzipping " + fileName + " : " + entry.getName()
-						+ " is not unzipped ...");
+				logger.finest("Unzipping " + fileName + " : " + entry.getName() + " is not unzipped ...");
 				continue;
 			}
 
@@ -306,10 +304,10 @@ public class Zipper {
 	 * This unzip file which file name has been provided.<br />
 	 * 27 avril 2006 : this uses ZipInputStream since some troubles have been
 	 * reported with unzip().
-	 * 
+	 *
 	 * @param outDir
 	 *            is the directory to explode zip file to
-	 * 
+	 *
 	 *            Since RPCXW : this may represent a non zipped file (see zip
 	 *            ()) if there was a single 'little' file to zip
 	 * @return true if correctly unzipped, false otherwise
@@ -319,7 +317,7 @@ public class Zipper {
 	 * @exception NullPointerException
 	 *                is thrown if this fileName is not set
 	 */
-	private boolean unzipNew(String outDir) throws IOException {
+	private boolean unzipNew(final String outDir) throws IOException {
 
 		boolean ret = false;
 
@@ -362,8 +360,7 @@ public class Zipper {
 				}
 				fos = new FileOutputStream(f);
 			} catch (final Exception e) {
-				logger.info("Unzipping " + fileName + " : " + entry.getName()
-						+ " is not unzipped ...");
+				logger.info("Unzipping " + fileName + " : " + entry.getName() + " is not unzipped ...");
 				continue;
 			}
 
@@ -384,10 +381,10 @@ public class Zipper {
 
 	/**
 	 * This calls zip(inputs, true)
-	 * 
+	 *
 	 * @see #zip(String[], boolean)
 	 */
-	public boolean zip(String[] inputs) throws IOException {
+	public boolean zip(final String[] inputs) throws IOException {
 		return zip(inputs, true);
 	}
 
@@ -395,12 +392,12 @@ public class Zipper {
 	 * This zip files/directories provided as arguments. Accordingly to
 	 * filesList, some files may not be zipped if they have previously been
 	 * extracted from this zip file and not modified.
-	 * 
+	 *
 	 * If optimize is true we may not zip at all if inputs has only one file and
 	 * if this file size is less than util.LONGFILESIZE, since zipping would
 	 * then only be waste of CPU time. In such a case this.getFileName() returns
 	 * the name of the unic file.
-	 * 
+	 *
 	 * @param inputs
 	 *            is the directories/files list to compress
 	 * @param optimize
@@ -410,7 +407,7 @@ public class Zipper {
 	 * @since RPCXW
 	 * @see #filesList
 	 */
-	public boolean zip(String[] inputs, boolean optimize) throws IOException {
+	public boolean zip(final String[] inputs, final boolean optimize) throws IOException {
 
 		if ((optimize) && (inputs.length == 1)) {
 			logger.finest("Zipper     inputs[0] = " + inputs[0]);
@@ -418,8 +415,7 @@ public class Zipper {
 			if (!inputFile.isDirectory()) {
 				if (inputFile.length() < XWTools.LONGFILESIZE) {
 					fileName = inputs[0];
-					logger.finest("not necessary to zip = " + fileName + " ("
-							+ inputFile.length() + ")");
+					logger.finest("not necessary to zip = " + fileName + " (" + inputFile.length() + ")");
 					return false;
 				}
 			} else {
@@ -432,10 +428,8 @@ public class Zipper {
 
 				case 1:
 					final File f2 = new File(inputFile, files[0]);
-					if (!f2.isDirectory()
-							&& (f2.length() < XWTools.LONGFILESIZE)) {
-						fileName = inputFile.getCanonicalPath()
-								+ File.separator + files[0];
+					if (!f2.isDirectory() && (f2.length() < XWTools.LONGFILESIZE)) {
+						fileName = inputFile.getCanonicalPath() + File.separator + files[0];
 
 						logger.finest("not necessary to zip file = " + fileName);
 						return false;
@@ -449,8 +443,7 @@ public class Zipper {
 
 		try {
 			logger.debug("zipping to " + fileName);
-			final ZipOutputStream zipFile = new ZipOutputStream(
-					new FileOutputStream(new File(fileName)));
+			final ZipOutputStream zipFile = new ZipOutputStream(new FileOutputStream(new File(fileName)));
 
 			for (int i = 0; i < inputs.length; i++) {
 				logger.finest("*** " + inputs[i]);
@@ -471,18 +464,18 @@ public class Zipper {
 	}
 
 	/**
-	 * This zip file/directory provided as argument. This is recursivly called.<BR>
+	 * This zip file/directory provided as argument. This is recursivly called.
+	 * <BR>
 	 * Zipping is done using <CODE>filesList</CODE> to test whether input has to
 	 * be compressed or not.
-	 * 
+	 *
 	 * @param zipfile
 	 *            is the file to add entry to
 	 * @param input
 	 *            is the current entry to add to zip file
 	 * @return true if something has been zipped, false otherwise
 	 */
-	private boolean zip(ZipOutputStream zipfile, String input)
-			throws IOException {
+	private boolean zip(final ZipOutputStream zipfile, final String input) throws IOException {
 
 		if ((input == null) || (input.length() == 0)) {
 			return false;
@@ -521,8 +514,7 @@ public class Zipper {
 			if (entryName.startsWith("/") || (entryName.indexOf("../") > 0)) {
 				final int lastslash = entryName.lastIndexOf('/');
 				if (lastslash < 0) {
-					logger.warn("Invalid entry name " + entryName
-							+ "; ignoring");
+					logger.warn("Invalid entry name " + entryName + "; ignoring");
 					return false;
 				}
 				try {
@@ -532,8 +524,7 @@ public class Zipper {
 					return false;
 				}
 				final String header = entryName.substring(0, lastslash);
-				logger.warn("Invalid entry name " + entryName
-						+ "; removing header '" + header + "'");
+				logger.warn("Invalid entry name " + entryName + "; removing header '" + header + "'");
 			}
 			logger.finest("Zipping put entry " + entryName);
 			zipfile.putNextEntry(new ZipEntry(entryName + "/"));
@@ -564,15 +555,13 @@ public class Zipper {
 					entryName = withoutScratch + "/" + tmpFiles[loop];
 				}
 
-				logger.finest("Zipping scratch = " + scratch
-						+ " withoutScratch = " + withoutScratch
-						+ " entryName = " + entryName);
+				logger.finest("Zipping scratch = " + scratch + " withoutScratch = " + withoutScratch + " entryName = "
+						+ entryName);
 
 				if (entryName.startsWith("/") || (entryName.indexOf("../") > 0)) {
 					final int lastslash = entryName.lastIndexOf('/');
 					if (lastslash < 0) {
-						logger.warn("Invalid entry name " + entryName
-								+ "; ignoring");
+						logger.warn("Invalid entry name " + entryName + "; ignoring");
 						return false;
 					}
 					String header = entryName.substring(0, lastslash);
@@ -582,8 +571,7 @@ public class Zipper {
 						logger.exception(e);
 						return false;
 					}
-					logger.warn("Invalid entry name " + entryName
-							+ "; removing header '" + header + "'");
+					logger.warn("Invalid entry name " + entryName + "; removing header '" + header + "'");
 					header = null;
 				}
 
@@ -591,13 +579,11 @@ public class Zipper {
 
 				if (inputFile.isDirectory()) {
 					fileIn = new File(input + "/" + tmpFiles[loop]);
-					logger.finest("Zipping directory : " + entryName + "("
-							+ input + "/" + tmpFiles[loop] + ", "
+					logger.finest("Zipping directory : " + entryName + "(" + input + "/" + tmpFiles[loop] + ", "
 							+ fileIn.length() + ")");
 				} else {
 					fileIn = new File(tmpFiles[loop]);
-					logger.finest("Zipping file : " + entryName + "("
-							+ tmpFiles[loop] + ", " + fileIn.length() + ")");
+					logger.finest("Zipping file : " + entryName + "(" + tmpFiles[loop] + ", " + fileIn.length() + ")");
 				}
 
 				logger.finest("Zipping put entry " + entryName);
@@ -623,8 +609,7 @@ public class Zipper {
 				atleastone = true;
 
 			} else {
-				logger.finest("Zipping is skipping : " + input + "/"
-						+ tmpFiles[loop]);
+				logger.finest("Zipping is skipping : " + input + "/" + tmpFiles[loop]);
 			}
 
 		}
@@ -636,7 +621,7 @@ public class Zipper {
 	/**
 	 * This tests whether the provided argument is a zip file
 	 */
-	public static boolean test(String fileName) throws IOException {
+	public static boolean test(final String fileName) throws IOException {
 
 		final File testDir = new File(System.getProperty("java.io.tmpdir"),
 				"XWHEP.Zipper.Test." + System.currentTimeMillis());
@@ -652,7 +637,7 @@ public class Zipper {
 	/**
 	 * This main method is for test purposes only
 	 */
-	public static void main(String[] argv) {
+	public static void main(final String[] argv) {
 		try {
 			Zipper.test(argv[0]);
 		} catch (final Exception e) {
