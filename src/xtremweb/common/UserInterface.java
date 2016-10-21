@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -43,7 +43,7 @@ import xtremweb.security.XWAccessRights;
 /**
  * Created: Feb 19th, 2002<br />
  * This class describes a row of the works SQL table.
- * 
+ *
  * @author <a href="mailto:lodygens /at\ .in2p3.fr>Oleg Lodygensky</a>
  * @version %I%, %G%
  */
@@ -53,7 +53,7 @@ public final class UserInterface extends Table {
 	/**
 	 * This is the database table name This was stored in
 	 * xtremweb.dispatcher.User
-	 * 
+	 *
 	 * @since 9.0.0
 	 */
 	public static final String TABLENAME = ("users");
@@ -78,7 +78,7 @@ public final class UserInterface extends Table {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @returnan UID representing the column value
@@ -86,21 +86,21 @@ public final class UserInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public UID fromString(String v) {
+			public UID fromString(final String v) {
 				return new UID(v);
 			}
 		},
 		/**
 		 * This is the column index of the X.509 certificate itself (begin with
 		 * "-----BEGIN CERTIFICATE-----")
-		 * 
+		 *
 		 * @see X509Proxy#BEGINCERT
 		 */
 		CERTIFICATE {
 			/**
 			 * This creates an object from String representation for this column
 			 * value This cleans the parameter to ensure SQL compliance
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return a Boolean representing the column value
@@ -112,33 +112,29 @@ public final class UserInterface extends Table {
 				String val = v;
 				val = val.replaceAll(X509Proxy.BEGINCERT, X509Proxy.BEGINCERT_);
 				val = val.replaceAll(X509Proxy.ENDCERT, X509Proxy.ENDCERT_);
-				val = val.replaceAll(X509Proxy.BEGINPRIVATEKEY,
-						X509Proxy.BEGINPRIVATEKEY_);
-				val = val.replaceAll(X509Proxy.ENDPRIVATEKEY,
-						X509Proxy.ENDPRIVATEKEY_);
+				val = val.replaceAll(X509Proxy.BEGINPRIVATEKEY, X509Proxy.BEGINPRIVATEKEY_);
+				val = val.replaceAll(X509Proxy.ENDPRIVATEKEY, X509Proxy.ENDPRIVATEKEY_);
 
 				val = val.replaceAll("\\s", "\n");
 
 				val = val.replaceAll(X509Proxy.BEGINCERT_, X509Proxy.BEGINCERT);
 				val = val.replaceAll(X509Proxy.ENDCERT_, X509Proxy.ENDCERT);
-				val = val.replaceAll(X509Proxy.BEGINPRIVATEKEY_,
-						X509Proxy.BEGINPRIVATEKEY);
-				val = val.replaceAll(X509Proxy.ENDPRIVATEKEY_,
-						X509Proxy.ENDPRIVATEKEY);
+				val = val.replaceAll(X509Proxy.BEGINPRIVATEKEY_, X509Proxy.BEGINPRIVATEKEY);
+				val = val.replaceAll(X509Proxy.ENDPRIVATEKEY_, X509Proxy.ENDPRIVATEKEY);
 				return val;
 			}
 		},
 		/**
 		 * This column tells whether the client is using a private/public keys
 		 * pair
-		 * 
+		 *
 		 * @since 7.5.0
 		 */
 		CHALLENGING {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return a Boolean representing the column value
@@ -146,7 +142,7 @@ public final class UserInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public Boolean fromString(String v) throws URISyntaxException {
+			public Boolean fromString(final String v) throws URISyntaxException {
 				return new Boolean(v);
 			}
 		},
@@ -157,7 +153,7 @@ public final class UserInterface extends Table {
 			/**
 			 * This creates an object from String representation for this column
 			 * value This cleans the parameter to ensure SQL compliance
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return a Boolean representing the column value
@@ -177,7 +173,7 @@ public final class UserInterface extends Table {
 			/**
 			 * This creates an object from String representation for this column
 			 * value This cleans the parameter to ensure SQL compliance
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return a Boolean representing the column value
@@ -197,7 +193,7 @@ public final class UserInterface extends Table {
 			/**
 			 * This creates an object from String representation for this column
 			 * value This cleans the parameter to ensure SQL compliance
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return a Boolean representing the column value
@@ -217,7 +213,7 @@ public final class UserInterface extends Table {
 			/**
 			 * This creates an object from String representation for this column
 			 * value This cleans the parameter to ensure SQL compliance
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return a Boolean representing the column value
@@ -237,7 +233,7 @@ public final class UserInterface extends Table {
 			/**
 			 * This creates an object from String representation for this column
 			 * value This cleans the parameter to ensure SQL compliance
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return a Boolean representing the column value
@@ -257,7 +253,7 @@ public final class UserInterface extends Table {
 			/**
 			 * This creates an object from String representation for this column
 			 * value This cleans the parameter to ensure SQL compliance
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return a Boolean representing the column value
@@ -278,7 +274,7 @@ public final class UserInterface extends Table {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return an Integer representing the column value
@@ -286,21 +282,21 @@ public final class UserInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public Integer fromString(String v) {
+			public Integer fromString(final String v) {
 				return Integer.valueOf(v);
 			}
 		},
 		/**
 		 * This is the column index of the pending job counter; this is updated
 		 * on job submission
-		 * 
+		 *
 		 * @since 7.0.0
 		 */
 		PENDINGJOBS {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return an Integer representing the column value
@@ -308,21 +304,21 @@ public final class UserInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public Integer fromString(String v) {
+			public Integer fromString(final String v) {
 				return Integer.valueOf(v);
 			}
 		},
 		/**
 		 * This is the column index of the running job counter this is updated
 		 * on succesfull worker request
-		 * 
+		 *
 		 * @since 7.0.0
 		 */
 		RUNNINGJOBS {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return an Integer representing the column value
@@ -330,21 +326,21 @@ public final class UserInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public Integer fromString(String v) {
+			public Integer fromString(final String v) {
 				return Integer.valueOf(v);
 			}
 		},
 		/**
 		 * This is the column index of the error job counter; this is updated on
 		 * job error
-		 * 
+		 *
 		 * @since 7.0.0
 		 */
 		ERRORJOBS {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return an Integer representing the column value
@@ -352,21 +348,21 @@ public final class UserInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public Integer fromString(String v) {
+			public Integer fromString(final String v) {
 				return Integer.valueOf(v);
 			}
 		},
 		/**
 		 * This is the average execution time; this is calculated as finished
 		 * jobs return
-		 * 
+		 *
 		 * @since 7.0.0
 		 */
 		USEDCPUTIME {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return an Integer representing the column value
@@ -374,7 +370,7 @@ public final class UserInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public Long fromString(String v) {
+			public Long fromString(final String v) {
 				return new Long(v);
 			}
 		},
@@ -385,7 +381,7 @@ public final class UserInterface extends Table {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return an Integer representing the column value
@@ -393,14 +389,14 @@ public final class UserInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public UserRightEnum fromString(String v) {
+			public UserRightEnum fromString(final String v) {
 				return UserRightEnum.valueOf(v);
 			}
 		};
 		/**
 		 * This is the index based on ordinal so that the first value is
 		 * TableColumns + 1
-		 * 
+		 *
 		 * @see xtremweb.common#TableColumns
 		 * @see Enum#ordinal()
 		 * @since 8.2.0
@@ -410,7 +406,7 @@ public final class UserInterface extends Table {
 		/**
 		 * This constructor sets the ord member as ord = this.ordinal +
 		 * TableColumns.SIZE
-		 * 
+		 *
 		 * @since 8.2.0
 		 */
 		Columns() {
@@ -419,49 +415,50 @@ public final class UserInterface extends Table {
 
 		/**
 		 * This retrieves the index based ordinal
-		 * 
+		 *
 		 * @return the index based ordinal
 		 * @since 8.2.0
 		 */
+		@Override
 		public int getOrdinal() {
 			return ord;
 		}
 
 		/**
 		 * This creates a new object from String for the given column
-		 * 
+		 *
 		 * @param v
 		 *            the String representation
 		 * @return v
 		 * @throws Exception
 		 *             is thrown on instantiation error
 		 */
-		public Object fromString(String v) throws Exception {
+		@Override
+		public Object fromString(final String v) throws Exception {
 			return v;
 		}
 
 		/**
 		 * This creates a new object from SQL result set
-		 * 
+		 *
 		 * @param rs
 		 *            is the SQL result set
 		 * @return the object representing the column
 		 * @throws Exception
 		 *             is thrown on instantiation error
 		 */
-		public final Object fromResultSet(ResultSet rs) throws Exception {
+		public final Object fromResultSet(final ResultSet rs) throws Exception {
 			return this.fromString(rs.getString(this.toString()));
 		}
 
 		/**
 		 * This retrieves an Columns from its integer value
-		 * 
+		 *
 		 * @param v
 		 *            is the integer value of the Columns
 		 * @return an Columns
 		 */
-		public static XWBaseColumn fromInt(int v)
-				throws IndexOutOfBoundsException {
+		public static XWBaseColumn fromInt(final int v) throws IndexOutOfBoundsException {
 			try {
 				return TableColumns.fromInt(v);
 			} catch (final Exception e) {
@@ -485,13 +482,13 @@ public final class UserInterface extends Table {
 	 * version. If this version is null, this version is prior to 5.8.0. Before
 	 * 5.8.0, OWNERUID and ACCESSRIGHTS did not exist. Then this returns null
 	 * for these two values.
-	 * 
+	 *
 	 * @param i
 	 *            is an ordinal of an Columns
 	 * @since 5.8.0
 	 */
 	@Override
-	public String getColumnLabel(int i) throws IndexOutOfBoundsException {
+	public String getColumnLabel(final int i) throws IndexOutOfBoundsException {
 		try {
 			return TableColumns.fromInt(i).toString();
 		} catch (final Exception e) {
@@ -510,18 +507,17 @@ public final class UserInterface extends Table {
 
 		setRights(UserRightEnum.NONE);
 		setAccessRights(XWAccessRights.DEFAULT);
-		setShortIndexes(new int[] { TableColumns.UID.getOrdinal(),
-				Columns.LOGIN.getOrdinal() });
+		setShortIndexes(new int[] { TableColumns.UID.getOrdinal(), Columns.LOGIN.getOrdinal() });
 	}
 
 	/**
 	 * This is a copy constructor
-	 * 
+	 *
 	 * @param src
 	 *            is the UserInterface to duplicate
 	 * @throws IOException
 	 */
-	public UserInterface(UserInterface src) throws IOException {
+	public UserInterface(final UserInterface src) throws IOException {
 		this();
 		setUID(src.getUID());
 		setOwner(src.getOwner());
@@ -544,24 +540,24 @@ public final class UserInterface extends Table {
 
 	/**
 	 * This constructs a new object providing its primary key value
-	 * 
+	 *
 	 * @param uid
 	 *            is this new object UID
 	 */
-	public UserInterface(UID uid) {
+	public UserInterface(final UID uid) {
 		this();
 		setUID(uid);
 	}
 
 	/**
 	 * This constructs a new object providing its user login and password
-	 * 
+	 *
 	 * @param l
 	 *            is the login
 	 * @param p
 	 *            is the password
 	 */
-	public UserInterface(String l, String p) {
+	public UserInterface(final String l, final String p) {
 		this();
 		setLogin(l);
 		setPassword(p);
@@ -569,46 +565,46 @@ public final class UserInterface extends Table {
 
 	/**
 	 * This constructs a new object from XML attributes
-	 * 
+	 *
 	 * @param attrs
 	 *            contains attributes XML representation
 	 * @see Table#fromXml(Attributes)
 	 * @throws IOException
 	 *             on XML error
 	 */
-	public UserInterface(Attributes attrs) {
+	public UserInterface(final Attributes attrs) {
 		this();
 		super.fromXml(attrs);
 	}
 
 	/**
 	 * This calls this(StreamIO.stream(input));
-	 * 
+	 *
 	 * @param input
 	 *            is a String containing an XML representation
 	 */
-	public UserInterface(String input) throws IOException, SAXException {
+	public UserInterface(final String input) throws IOException, SAXException {
 		this(StreamIO.stream(input));
 	}
 
 	/**
 	 * This constructs a new object from an XML file
-	 * 
+	 *
 	 * @param f
 	 *            is the XML file
 	 * @see #UserInterface(InputStream)
 	 */
-	public UserInterface(File f) throws IOException, SAXException {
+	public UserInterface(final File f) throws IOException, SAXException {
 		this(new FileInputStream(f));
 	}
 
 	/**
 	 * This creates a new object that will be retrieved with a complex SQL
 	 * request
-	 * 
+	 *
 	 * @since 5.8.0
 	 */
-	public UserInterface(SQLRequest r) {
+	public UserInterface(final SQLRequest r) {
 		this();
 		setRequest(r);
 	}
@@ -616,14 +612,14 @@ public final class UserInterface extends Table {
 	/**
 	 * This constructs a new object from XML attributes received from input
 	 * stream
-	 * 
+	 *
 	 * @param input
 	 *            is the input stream
 	 * @see XMLReader#read(InputStream)
 	 * @throws IOException
 	 *             on XML error
 	 */
-	public UserInterface(InputStream input) throws IOException, SAXException {
+	public UserInterface(final InputStream input) throws IOException, SAXException {
 		this();
 		final XMLReader reader = new XMLReader(this);
 		try {
@@ -635,32 +631,31 @@ public final class UserInterface extends Table {
 
 	/**
 	 * This constructs an object from DB
-	 * 
+	 *
 	 * @param rs
 	 *            is an SQL request result
 	 * @exception IOException
 	 */
-	public UserInterface(ResultSet rs) throws IOException {
+	public UserInterface(final ResultSet rs) throws IOException {
 		this();
 		fill(rs);
 	}
 
 	/**
 	 * This fills columns from DB
-	 * 
+	 *
 	 * @since 9.0.0
 	 * @param rs
 	 *            is the SQL data set
 	 * @throws IOException
 	 */
 	@Override
-	public void fill(ResultSet rs) throws IOException {
+	public void fill(final ResultSet rs) throws IOException {
 
 		try {
 			setUID((UID) TableColumns.UID.fromResultSet(rs));
 			setOwner((UID) TableColumns.OWNERUID.fromResultSet(rs));
-			setAccessRights((XWAccessRights) TableColumns.ACCESSRIGHTS
-					.fromResultSet(rs));
+			setAccessRights((XWAccessRights) TableColumns.ACCESSRIGHTS.fromResultSet(rs));
 		} catch (final Exception e) {
 			getLogger().exception(e);
 			throw new IOException(e.toString());
@@ -732,7 +727,7 @@ public final class UserInterface extends Table {
 	 * row in DB
 	 */
 	@Override
-	public void updateInterface(Table useritf) throws IOException {
+	public void updateInterface(final Table useritf) throws IOException {
 
 		final UserInterface itf = (UserInterface) useritf;
 
@@ -776,7 +771,7 @@ public final class UserInterface extends Table {
 	/**
 	 * This gets the user rights<br />
 	 * If not set, this attr is forced to 0
-	 * 
+	 *
 	 * @return user rights or UserRights.NONE if not set
 	 */
 	public UserRightEnum getRights() {
@@ -790,7 +785,7 @@ public final class UserInterface extends Table {
 
 	/**
 	 * This gets an attribute
-	 * 
+	 *
 	 * @return this attribute, or null if not set
 	 * @exception IOException
 	 *                is thrown is attribute is not well formed
@@ -806,7 +801,7 @@ public final class UserInterface extends Table {
 	/**
 	 * This gets the amount of already executed jobs for this user<br />
 	 * If not set, this attr is forced to 0
-	 * 
+	 *
 	 * @return the attribute, or 0 is not set
 	 */
 	public int getNbJobs() {
@@ -821,7 +816,7 @@ public final class UserInterface extends Table {
 	/**
 	 * This gets the amount of pending jobs for this user<br />
 	 * If not set, this attr is forced to 0
-	 * 
+	 *
 	 * @return the attribute, or 0 is not set
 	 * @since 7.0.0
 	 */
@@ -837,7 +832,7 @@ public final class UserInterface extends Table {
 	/**
 	 * This gets the amount of running jobs for this user<br />
 	 * If not set, this attr is forced to 0
-	 * 
+	 *
 	 * @return the attribute, or 0 is not set
 	 * @since 7.0.0
 	 */
@@ -853,7 +848,7 @@ public final class UserInterface extends Table {
 	/**
 	 * This gets the amount of erroneus jobs for this user<br />
 	 * If not set, this attr is forced to 0
-	 * 
+	 *
 	 * @return the attribute, or 0 is not set
 	 * @since 7.0.0
 	 */
@@ -868,7 +863,7 @@ public final class UserInterface extends Table {
 
 	/**
 	 * This get the average execution time; if not set it is forced to 0
-	 * 
+	 *
 	 * @return exec average time or 0 if not set
 	 * @since 7.0.0
 	 */
@@ -883,7 +878,7 @@ public final class UserInterface extends Table {
 
 	/**
 	 * This gets an attribute
-	 * 
+	 *
 	 * @return this attribute, or null if not set
 	 */
 	public String getFirstName() {
@@ -896,7 +891,7 @@ public final class UserInterface extends Table {
 
 	/**
 	 * This gets an attribute
-	 * 
+	 *
 	 * @return this attribute, or null if not set
 	 */
 	public String getLastName() {
@@ -909,7 +904,7 @@ public final class UserInterface extends Table {
 
 	/**
 	 * This gets an attribute
-	 * 
+	 *
 	 * @return this attribute, or null if not set
 	 */
 	public String getEMail() {
@@ -922,7 +917,7 @@ public final class UserInterface extends Table {
 
 	/**
 	 * This retrieves the certificate URI
-	 * 
+	 *
 	 * @return this attribute, or null if not set
 	 */
 	public String getCertificate() {
@@ -931,7 +926,7 @@ public final class UserInterface extends Table {
 
 	/**
 	 * This gets an attribute
-	 * 
+	 *
 	 * @return this attribute, or null if not set
 	 */
 	public String getLogin() {
@@ -944,7 +939,7 @@ public final class UserInterface extends Table {
 
 	/**
 	 * This gets an attribute
-	 * 
+	 *
 	 * @return this attribute, or null if not set
 	 */
 	public String getPassword() {
@@ -957,7 +952,7 @@ public final class UserInterface extends Table {
 
 	/**
 	 * This gets an attribute
-	 * 
+	 *
 	 * @return this attribute, or null if not set
 	 */
 	public String getCountry() {
@@ -970,7 +965,7 @@ public final class UserInterface extends Table {
 
 	/**
 	 * This gets an attribute. This attr is forced to false if not set
-	 * 
+	 *
 	 * @return this attribute
 	 * @since 7.5.0
 	 */
@@ -987,7 +982,7 @@ public final class UserInterface extends Table {
 	/**
 	 * This sets parameter value; this is called from
 	 * TableInterface#fromXml(Attributes)
-	 * 
+	 *
 	 * @param attribute
 	 *            is the name of the attribute to set
 	 * @param v
@@ -996,8 +991,7 @@ public final class UserInterface extends Table {
 	 * @see Table#fromXml(Attributes)
 	 */
 	@Override
-	public final boolean setValue(String attribute, Object v)
-			throws IllegalArgumentException {
+	public final boolean setValue(final String attribute, final Object v) throws IllegalArgumentException {
 		final String A = attribute.toUpperCase();
 		try {
 			return setValue(TableColumns.valueOf(A), v);
@@ -1008,17 +1002,17 @@ public final class UserInterface extends Table {
 
 	/**
 	 * This sets the rights
-	 * 
+	 *
 	 * @return true is value has changed
 	 * @see xtremweb.common.UserRightEnum
 	 */
-	public boolean setRights(UserRightEnum r) {
+	public boolean setRights(final UserRightEnum r) {
 		return setValue(Columns.RIGHTS, r);
 	}
 
 	/**
 	 * This sets amount of executed jobs
-	 * 
+	 *
 	 * @return true is value has changed
 	 */
 	public boolean setNbJobs(int v) {
@@ -1033,11 +1027,11 @@ public final class UserInterface extends Table {
 
 	/**
 	 * This sets amount of pending jobs
-	 * 
+	 *
 	 * @return true is value has changed
 	 * @since 7.0.0
 	 */
-	public boolean setPendingJobs(int v) {
+	public boolean setPendingJobs(final int v) {
 		Integer i = null;
 		if (v < 0) {
 			i = new Integer(0);
@@ -1051,11 +1045,11 @@ public final class UserInterface extends Table {
 
 	/**
 	 * This sets amount of running jobs
-	 * 
+	 *
 	 * @return true is value has changed
 	 * @since 7.0.0
 	 */
-	public boolean setRunningJobs(int v) {
+	public boolean setRunningJobs(final int v) {
 		Integer i = null;
 		if (v < 0) {
 			i = new Integer(0);
@@ -1069,11 +1063,11 @@ public final class UserInterface extends Table {
 
 	/**
 	 * This sets amount of erroneus jobs
-	 * 
+	 *
 	 * @return true is value has changed
 	 * @since 7.0.0
 	 */
-	public boolean setErrorJobs(int v) {
+	public boolean setErrorJobs(final int v) {
 		return setValue(Columns.ERRORJOBS, Integer.valueOf(v < 0 ? 0 : v));
 	}
 
@@ -1081,17 +1075,17 @@ public final class UserInterface extends Table {
 	 * @return true if value has changed, false otherwise
 	 * @since 7.0.0
 	 */
-	public boolean setUsedcputime(long v) {
+	public boolean setUsedcputime(final long v) {
 		return setValue(Columns.USEDCPUTIME, Long.valueOf(v < 0 ? 0 : v));
 	}
 
 	/**
 	 * This updates total used CPU time for this user and increments NbJobs
-	 * 
+	 *
 	 * @param v
 	 *            is the last execution time
 	 */
-	public void incUsedcputime(long v) {
+	public void incUsedcputime(final long v) {
 		long old = getUsedcputime();
 
 		long w = v;
@@ -1108,7 +1102,7 @@ public final class UserInterface extends Table {
 
 	/**
 	 * This increments the amount of executed jobs for this application
-	 * 
+	 *
 	 * @since 7.0.0
 	 */
 	public void incNbJobs() {
@@ -1117,7 +1111,7 @@ public final class UserInterface extends Table {
 
 	/**
 	 * This increments the amount of pending jobs for this application
-	 * 
+	 *
 	 * @since 7.0.0
 	 */
 	public void incPendingJobs() {
@@ -1126,7 +1120,7 @@ public final class UserInterface extends Table {
 
 	/**
 	 * This increments the amount of running jobs for this application
-	 * 
+	 *
 	 * @since 7.0.0
 	 */
 	public void incRunningJobs() {
@@ -1135,7 +1129,7 @@ public final class UserInterface extends Table {
 
 	/**
 	 * This increments the amount of erroneus jobs for this application
-	 * 
+	 *
 	 * @since 7.0.0
 	 */
 	public void incErrorJobs() {
@@ -1144,7 +1138,7 @@ public final class UserInterface extends Table {
 
 	/**
 	 * This decrements the amount of pending jobs for this application
-	 * 
+	 *
 	 * @since 7.0.0
 	 */
 	public void decPendingJobs() {
@@ -1153,7 +1147,7 @@ public final class UserInterface extends Table {
 
 	/**
 	 * This decrements the amount of running jobs for this application
-	 * 
+	 *
 	 * @since 7.0.0
 	 */
 	public void decRunningJobs() {
@@ -1162,43 +1156,43 @@ public final class UserInterface extends Table {
 
 	/**
 	 * This sets the group
-	 * 
+	 *
 	 * @return true is value has changed
 	 */
-	public boolean setGroup(UID v) {
+	public boolean setGroup(final UID v) {
 		return setValue(Columns.USERGROUPUID, v);
 	}
 
 	/**
 	 * This sets first name
-	 * 
+	 *
 	 * @return true is value has changed
 	 */
-	public boolean setFirstName(String v) {
+	public boolean setFirstName(final String v) {
 		return setValue(Columns.FNAME, (v == null ? null : v));
 	}
 
 	/**
 	 * This sets last name
-	 * 
+	 *
 	 * @return true is value has changed
 	 */
-	public boolean setLastName(String v) {
+	public boolean setLastName(final String v) {
 		return setValue(Columns.LNAME, (v == null ? null : v));
 	}
 
 	/**
 	 * This set the certificate URI
-	 * 
+	 *
 	 * @return true if value has changed, false otherwise
 	 */
-	public boolean setCertificate(String v) {
+	public boolean setCertificate(final String v) {
 		return setValue(Columns.CERTIFICATE, v);
 	}
 
 	/**
 	 * This sets the login
-	 * 
+	 *
 	 * @return true is value has changed
 	 */
 	public boolean setLogin(String v) {
@@ -1211,28 +1205,28 @@ public final class UserInterface extends Table {
 
 	/**
 	 * This sets password
-	 * 
+	 *
 	 * @return true is value has changed
 	 */
-	public boolean setPassword(String v) {
+	public boolean setPassword(final String v) {
 		return setValue(Columns.PASSWORD, (v == null ? null : v));
 	}
 
 	/**
 	 * This sets email
-	 * 
+	 *
 	 * @return true is value has changed
 	 */
-	public boolean setEMail(String v) {
+	public boolean setEMail(final String v) {
 		return setValue(Columns.EMAIL, (v == null ? null : v));
 	}
 
 	/**
 	 * This sets the country
-	 * 
+	 *
 	 * @return true is value has changed
 	 */
-	public boolean setCountry(String v) {
+	public boolean setCountry(final String v) {
 		return setValue(Columns.COUNTRY, (v == null ? null : v));
 	}
 
@@ -1240,7 +1234,7 @@ public final class UserInterface extends Table {
 	 * @return true if value has changed, false otherwise
 	 * @since 7.5.0
 	 */
-	public boolean setChallenging(boolean v) {
+	public boolean setChallenging(final boolean v) {
 		Boolean b = new Boolean(v);
 		final boolean ret = setValue(Columns.CHALLENGING, b);
 		b = null;
@@ -1267,7 +1261,7 @@ public final class UserInterface extends Table {
 	 * description and dumps it. <br />
 	 * Usage : java -cp xtremweb.jar xtremweb.common.UserInterface [xmlFile]
 	 */
-	public static void main(String[] argv) {
+	public static void main(final String[] argv) {
 		try {
 			final UserInterface itf = new UserInterface();
 			itf.setUID(UID.getMyUid());
@@ -1280,8 +1274,7 @@ public final class UserInterface extends Table {
 				}
 			}
 			if (itf.getCertificate() != null) {
-				final ByteArrayInputStream is = new ByteArrayInputStream(itf
-						.getCertificate().getBytes(XWTools.UTF8));
+				final ByteArrayInputStream is = new ByteArrayInputStream(itf.getCertificate().getBytes(XWTools.UTF8));
 				try {
 					XWTools.checkCertificate(is);
 				} catch (final Exception e) {
@@ -1294,8 +1287,8 @@ public final class UserInterface extends Table {
 			writer.write(itf);
 		} catch (final Exception e) {
 			final Logger logger = new Logger();
-			logger.exception("Usage : java -cp " + XWTools.JARFILENAME
-					+ " xtremweb.common.UserInterface [anXMLDescriptionFile]",
+			logger.exception(
+					"Usage : java -cp " + XWTools.JARFILENAME + " xtremweb.common.UserInterface [anXMLDescriptionFile]",
 					e);
 		}
 	}
