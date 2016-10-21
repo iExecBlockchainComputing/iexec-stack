@@ -2,7 +2,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -27,7 +27,6 @@ import java.io.DataOutputStream;
 import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -64,7 +63,7 @@ import xtremweb.communications.URI;
  * reconstructed as : <code>
  *   <anObject2 />
  * </code>
- * 
+ *
  * @author Oleg Lodygensky (lodygens lal.in2p3.fr)
  * @since XWHEP 1.0.0
  */
@@ -84,7 +83,7 @@ public final class Cache extends XMLable {
 		private Table itf;
 		/**
 		 * This is the file where the content is stored, if any
-		 * 
+		 *
 		 * @since 8.0.0
 		 */
 		private File content;
@@ -104,7 +103,7 @@ public final class Cache extends XMLable {
 		/**
 		 * This constructs a new entry. This associates a new URI to a
 		 * TableInterface
-		 * 
+		 *
 		 * @exception IOException
 		 *                is thrown if no UID is defined in parameter
 		 */
@@ -121,7 +120,7 @@ public final class Cache extends XMLable {
 
 		/**
 		 * This constructs a new entry.
-		 * 
+		 *
 		 * @param ti
 		 *            defines this entry object
 		 * @param u
@@ -129,7 +128,7 @@ public final class Cache extends XMLable {
 		 * @exception IOException
 		 *                is thrown if no UID is defined in parameter
 		 */
-		public CacheEntry(Table ti, URI u) throws IOException {
+		public CacheEntry(final Table ti, final URI u) throws IOException {
 			this();
 			itf = ti;
 			uri = u;
@@ -138,14 +137,13 @@ public final class Cache extends XMLable {
 		/**
 		 * This constructs a new object from XML attributes received from input
 		 * stream
-		 * 
+		 *
 		 * @param input
 		 *            is the input stream
 		 * @throws IOException
 		 *             on XML error
 		 */
-		public CacheEntry(final DataInputStream input) throws IOException,
-		SAXException {
+		public CacheEntry(final DataInputStream input) throws IOException, SAXException {
 			this();
 			final XMLReader reader = new XMLReader(this);
 			try {
@@ -157,16 +155,14 @@ public final class Cache extends XMLable {
 
 		/**
 		 * This locks this entry
-		 * 
+		 *
 		 * @since 7.0.0
 		 */
-		public synchronized void lock() throws FileNotFoundException,
-		IOException {
+		public synchronized void lock() throws IOException {
 			final Logger logger = getLogger();
-			logger.finest("CacheEntre#locking "
-					+ Thread.currentThread().getName() + " " + uri);
+			logger.finest("CacheEntre#locking " + Thread.currentThread().getName() + " " + uri);
 			try {
-				while (locked == true) {
+				while (locked) {
 					try {
 						logger.finest("CacheEntre#locking : waiting");
 						wait();
@@ -176,8 +172,7 @@ public final class Cache extends XMLable {
 
 				locked = true;
 
-				logger.finest("CacheEntre#locked  "
-						+ Thread.currentThread().getName() + " " + uri);
+				logger.finest("CacheEntre#locked  " + Thread.currentThread().getName() + " " + uri);
 			} finally {
 				notify();
 			}
@@ -185,17 +180,15 @@ public final class Cache extends XMLable {
 
 		/**
 		 * This unlocks this entry
-		 * 
+		 *
 		 * @since 7.0.0
 		 */
 		public synchronized void unlock() throws IOException {
 			try {
 				final Logger logger = getLogger();
-				logger.finest("CacheEntre#unlocking "
-						+ Thread.currentThread().getName() + " " + uri);
+				logger.finest("CacheEntre#unlocking " + Thread.currentThread().getName() + " " + uri);
 				locked = false;
-				logger.finest("CacheEntre#unlocked  "
-						+ Thread.currentThread().getName() + " " + uri);
+				logger.finest("CacheEntre#unlocked  " + Thread.currentThread().getName() + " " + uri);
 			} finally {
 				notify();
 			}
@@ -204,7 +197,7 @@ public final class Cache extends XMLable {
 		/**
 		 * This sets last access date
 		 */
-		synchronized public void setLastAccess() {
+		public synchronized void setLastAccess() {
 			lastAccess = null;
 			lastAccess = new Date();
 		}
@@ -212,13 +205,13 @@ public final class Cache extends XMLable {
 		/**
 		 * This retrieves last access date
 		 */
-		synchronized public Date lastAccess() {
+		public synchronized Date lastAccess() {
 			return lastAccess;
 		}
 
 		/**
 		 * This retrieves this object attributes
-		 * 
+		 *
 		 * @param attrs
 		 *            contains attributes XML representation
 		 */
@@ -233,8 +226,7 @@ public final class Cache extends XMLable {
 				final String attribute = attrs.getQName(a);
 				final String value = attrs.getValue(a);
 				getLogger().finest(
-						"Cache  ##  attribute #" + a + ": name=\"" + attribute
-						+ "\"" + ", value=\"" + value + "\"");
+						"Cache  ##  attribute #" + a + ": name=\"" + attribute + "\"" + ", value=\"" + value + "\"");
 
 				setLastAccess();
 			}
@@ -242,33 +234,33 @@ public final class Cache extends XMLable {
 
 		/**
 		 * This serializes this object to a String as an XML object<br />
-		 * 
+		 *
 		 * @return a String containing this object definition as XML
 		 * @see #fromXml(Attributes)
 		 */
 		@Override
 		public String toXml() {
 
-			String ret = new String("<" + THISTAG + ">");
+			final StringBuilder ret = new StringBuilder("<" + THISTAG + ">");
 			if (uri != null) {
-				ret += uri.toXml();
+				ret.append(uri.toXml());
 			}
 			if (itf != null) {
-				ret += itf.toXml();
+				ret.append(itf.toXml());
 			}
-			ret += "</" + THISTAG + ">";
+			ret.append("</" + THISTAG + ">");
 
-			return ret;
+			return ret.toString();
 		}
 
 		/**
 		 * This is called to decode XML elements
-		 * 
+		 *
 		 * @see XMLReader#read(InputStream)
 		 */
 		@Override
-		public void xmlElementStart(final String uri, final String tag, final String qname,
-				final Attributes attrs) throws SAXException {
+		public void xmlElementStart(final String uri, final String tag, final String qname, final Attributes attrs)
+				throws SAXException {
 
 			try {
 				super.xmlElementStart(uri, tag, qname, attrs);
@@ -297,15 +289,13 @@ public final class Cache extends XMLable {
 
 		/**
 		 * This does nothing.
-		 * 
+		 *
 		 * @see XMLReader#read(InputStream)
 		 */
 		@Override
-		public void xmlElementStop(final String uri, final String tag, final String qname)
-				throws SAXException {
+		public void xmlElementStop(final String uri, final String tag, final String qname) throws SAXException {
 
-			getLogger()
-			.finest("     xmlElementStop()  qname=\"" + qname + "\"");
+			getLogger().finest("     xmlElementStop()  qname=\"" + qname + "\"");
 
 			if (uri == null) {
 				throw new SAXException("URI was not defined");
@@ -318,7 +308,7 @@ public final class Cache extends XMLable {
 
 		/**
 		 * This retrieves this entry UID
-		 * 
+		 *
 		 * @return this entry UID
 		 */
 		public UID getUID() {
@@ -331,7 +321,7 @@ public final class Cache extends XMLable {
 
 		/**
 		 * This retrieves this entry URI
-		 * 
+		 *
 		 * @return this entry URI
 		 */
 		public URI getURI() {
@@ -340,7 +330,7 @@ public final class Cache extends XMLable {
 
 		/**
 		 * This retrieves this entry UID
-		 * 
+		 *
 		 * @return this entry TableInterface
 		 */
 		public Table getInterface() {
@@ -361,7 +351,7 @@ public final class Cache extends XMLable {
 
 		/**
 		 * This retrieves String representation
-		 * 
+		 *
 		 * @return this object String representation
 		 * @see xtremweb.common.Table#toString(boolean)
 		 */
@@ -378,7 +368,7 @@ public final class Cache extends XMLable {
 
 		/**
 		 * This retrieves the content path
-		 * 
+		 *
 		 * @see #content
 		 * @since 8.0.0
 		 */
@@ -388,7 +378,7 @@ public final class Cache extends XMLable {
 
 		/**
 		 * This sets the content path
-		 * 
+		 *
 		 * @see #content
 		 * @param c
 		 *            is the new content path
@@ -400,14 +390,13 @@ public final class Cache extends XMLable {
 
 		/**
 		 * This sets the default content path calculated from UID
-		 * 
+		 *
 		 * @see #content
 		 * @since 8.0.0
 		 */
 		public File setContent() throws IOException {
 			final UID uid = getUID();
-			this.content = new File(XWTools.createDir(contentDir, uid),
-					uid.toString());
+			this.content = new File(XWTools.createDir(contentDir, uid), uid.toString());
 			return this.content;
 		}
 	}
@@ -418,21 +407,16 @@ public final class Cache extends XMLable {
 	public static final String THISTAG = "XWCache";
 
 	/**
-	 * This is the cache SIZE
-	 */
-	private final int size = 0;
-	/**
 	 * This is the size column index
 	 */
 	private static final int SIZE = 0;
 	/**
 	 * This is max entries the cache can content Default 10K entries This may
 	 * also be set from config file, if any
-	 * 
+	 *
 	 * @see XWPropertyDefs#CACHESIZE
 	 */
-	private int maxCacheSize = Integer.parseInt(XWPropertyDefs.CACHESIZE
-			.defaultValue());
+	private int maxCacheSize = Integer.parseInt(XWPropertyDefs.CACHESIZE.defaultValue());
 	/**
 	 * This stores objects using UID as keys
 	 */
@@ -444,13 +428,11 @@ public final class Cache extends XMLable {
 	/**
 	 * This is the cache file name
 	 */
-	public static final String CACHENAME = "XWHEP." + XWRole.getMyRole()
-			+ ".cache";
+	public static final String CACHENAME = "XWHEP." + XWRole.getMyRole() + ".cache";
 	/**
 	 * This is the cache file name
 	 */
-	public static final String CONTENTDIRNAME = "XWHEP." + XWRole.getMyRole()
-			+ ".cache.contents";
+	public static final String CONTENTDIRNAME = "XWHEP." + XWRole.getMyRole() + ".cache.contents";
 	/**
 	 * This is the cache file
 	 */
@@ -465,14 +447,14 @@ public final class Cache extends XMLable {
 	private StreamIO streamer;
 	/**
 	 * This is the least recently used cache entry
-	 * 
+	 *
 	 * @since 5.8.0
 	 */
 	private CacheEntry leastRecentlyUsedEntry;
 
 	/**
 	 * This constructs a new cache and retrieves stored values from disk
-	 * 
+	 *
 	 * @see #read()
 	 */
 	public Cache() {
@@ -490,8 +472,7 @@ public final class Cache extends XMLable {
 			contentDir = null;
 		}
 		streamer = null;
-		maxCacheSize = Integer
-				.parseInt(XWPropertyDefs.CACHESIZE.defaultValue());
+		maxCacheSize = Integer.parseInt(XWPropertyDefs.CACHESIZE.defaultValue());
 
 		leastRecentlyUsedEntry = null;
 
@@ -515,7 +496,7 @@ public final class Cache extends XMLable {
 
 	/**
 	 * This constructs a new cache and retrieves stored values from disk
-	 * 
+	 *
 	 * @param c
 	 *            is the configuration as read from config file
 	 * @see #read()
@@ -541,7 +522,7 @@ public final class Cache extends XMLable {
 	/**
 	 * This constructs a new object from XML attributes received from input
 	 * stream
-	 * 
+	 *
 	 * @param input
 	 *            is the input stream
 	 * @throws IOException
@@ -564,8 +545,7 @@ public final class Cache extends XMLable {
 	protected void flush() {
 		try {
 			getLogger().finest("XWCache flush");
-			if ((cacheFile != null) && (streamer != null)
-					&& (cacheFile.exists())) {
+			if ((cacheFile != null) && (streamer != null) && (cacheFile.exists())) {
 
 				streamer.writeBytes("</" + THISTAG + ">");
 				streamer.close();
@@ -606,7 +586,7 @@ public final class Cache extends XMLable {
 
 	/**
 	 * This retrieves this object attributes
-	 * 
+	 *
 	 * @param attrs
 	 *            contains attributes XML representation
 	 */
@@ -620,23 +600,20 @@ public final class Cache extends XMLable {
 		for (int a = 0; a < attrs.getLength(); a++) {
 			final String attribute = attrs.getQName(a);
 			final String value = attrs.getValue(a);
-			getLogger().finest(
-					"     attribute #" + a + ": name=\"" + attribute + "\""
-							+ ", value=\"" + value + "\"");
+			getLogger().finest("     attribute #" + a + ": name=\"" + attribute + "\"" + ", value=\"" + value + "\"");
 		}
 	}
 
 	/**
 	 * This serializes this object to a String as an XML object<br />
-	 * 
+	 *
 	 * @return a String containing this object definition as XML
 	 * @see #fromXml(Attributes)
 	 */
 	@Override
 	public String toXml() {
 
-		String ret = new String("<" + THISTAG + " " + "SIZE=\"" + cache.size()
-				+ "\" >");
+		String ret = new String("<" + THISTAG + " " + "SIZE=\"" + cache.size() + "\" >");
 		for (final CacheEntry entry : cache.values()) {
 			try {
 				ret += entry.toXml();
@@ -652,15 +629,14 @@ public final class Cache extends XMLable {
 
 	/**
 	 * This writes this object XML representation to output stream
-	 * 
+	 *
 	 * @param o
 	 *            is the output stream to write to
 	 */
 	@Override
 	public void toXml(final DataOutputStream o) throws IOException {
 
-		final String str1 = new String("<" + THISTAG + " " + "SIZE=\"" + cache.size()
-				+ "\" >");
+		final String str1 = new String("<" + THISTAG + " " + "SIZE=\"" + cache.size() + "\" >");
 
 		final byte[] strb1 = str1.getBytes(XWTools.UTF8);
 		o.write(strb1);
@@ -686,12 +662,12 @@ public final class Cache extends XMLable {
 
 	/**
 	 * This is called to decode XML elements
-	 * 
+	 *
 	 * @see XMLReader#read(InputStream)
 	 */
 	@Override
-	public void xmlElementStart(final String uri, final String tag, final String qname,
-			final Attributes attrs) throws SAXException {
+	public void xmlElementStart(final String uri, final String tag, final String qname, final Attributes attrs)
+			throws SAXException {
 
 		try {
 			super.xmlElementStart(uri, tag, qname, attrs);
@@ -713,12 +689,11 @@ public final class Cache extends XMLable {
 
 	/**
 	 * This does nothing.
-	 * 
+	 *
 	 * @see XMLReader#read(InputStream)
 	 */
 	@Override
-	public void xmlElementStop(final String saxuri, final String tag, final String qname)
-			throws SAXException {
+	public void xmlElementStop(final String saxuri, final String tag, final String qname) throws SAXException {
 
 		getLogger().finest("     xmlElementStop()  qname=\"" + qname + "\"");
 
@@ -728,8 +703,7 @@ public final class Cache extends XMLable {
 
 			final URI uri = currentEntry.getURI();
 			cache.remove(uri);
-			System.out
-			.println(">>>>>>>>>>>>>>>>>>>>>>>>>>> Cache : should be tested");
+			System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>> Cache : should be tested");
 			put(currentEntry);
 			currentEntry = null;
 		}
@@ -743,7 +717,7 @@ public final class Cache extends XMLable {
 	/**
 	 * This retrieves this cache content from cache file. This rewrites cache to
 	 * file to remove duplicated and unecessary entries
-	 * 
+	 *
 	 * @see #streamer
 	 */
 	protected void read() {
@@ -766,8 +740,7 @@ public final class Cache extends XMLable {
 					if (streamer != null) {
 						streamer.close();
 					}
-					logger.finest("XWHEP Cache : " + cache.size()
-							+ " objects cached");
+					logger.finest("XWHEP Cache : " + cache.size() + " objects cached");
 				}
 			} catch (final IOException e) {
 				logger.exception(e);
@@ -794,10 +767,8 @@ public final class Cache extends XMLable {
 					streamer = new StreamIO(output, null, 10240, config.nio());
 				}
 
-				String header = new String("<" + THISTAG + " " + "SIZE=\""
-						+ size + "\" >");
+				final String header = new String("<" + THISTAG + " " + "SIZE=\"" + cache.size() + "\" >");
 				streamer.writeBytes(header);
-				header = null;
 				for (final CacheEntry entry : cache.values()) {
 					try {
 						write(entry);
@@ -813,7 +784,7 @@ public final class Cache extends XMLable {
 
 	/**
 	 * This appends the argument to cache file
-	 * 
+	 *
 	 * @param entry
 	 *            is the object to write
 	 */
@@ -832,14 +803,14 @@ public final class Cache extends XMLable {
 	 * This adds/updates a new entry to cache and appends it to cache file. This
 	 * creates an new URI for this TableInterface. If cache size > maxCacheSize,
 	 * this first calls removeLeastRecentlyUsedEntry()
-	 * 
+	 *
 	 * @param itf
 	 *            is the interface to cache
 	 * @see #write(CacheEntry)
 	 * @see #removeLeastRecentlyUsedEntry()
 	 */
 	public void add(final Table itf, final URI uri) throws IOException {
-		if((itf == null) || (uri == null)) {
+		if ((itf == null) || (uri == null)) {
 			return;
 		}
 		if (cache.size() > maxCacheSize) {
@@ -860,7 +831,7 @@ public final class Cache extends XMLable {
 	 * uri is not an XtremWeb one (http etc.), this creates a new empty
 	 * DataInterface. If cache size > maxCacheSize, this first calls
 	 * removeLeast()
-	 * 
+	 *
 	 * @param uri
 	 *            is the uri to cache
 	 * @see #write(CacheEntry)
@@ -904,7 +875,7 @@ public final class Cache extends XMLable {
 
 	/**
 	 * This retrieves an app form cache by its name
-	 * 
+	 *
 	 * @param name
 	 *            is the name of the app to retrieve
 	 * @return the app or null on error
@@ -926,7 +897,7 @@ public final class Cache extends XMLable {
 
 	/**
 	 * This retrieves an usergroup form cache by its label
-	 * 
+	 *
 	 * @param label
 	 *            is the label of the usergroup to retrieve
 	 * @return the usergroup or null on error
@@ -948,7 +919,7 @@ public final class Cache extends XMLable {
 
 	/**
 	 * This reterives a user form cache by its login
-	 * 
+	 *
 	 * @param login
 	 *            is the login of the user to retrieve
 	 * @return the user or null on error
@@ -970,7 +941,7 @@ public final class Cache extends XMLable {
 
 	/**
 	 * This locks an entry. The entry must be already cached.
-	 * 
+	 *
 	 * @since 7.0.0
 	 * @see CacheEntry#lock()
 	 */
@@ -994,7 +965,7 @@ public final class Cache extends XMLable {
 
 	/**
 	 * This unlocks an entry. The entry must be already cached.
-	 * 
+	 *
 	 * @since 7.0.0
 	 * @see CacheEntry#unlock()
 	 */
@@ -1018,7 +989,7 @@ public final class Cache extends XMLable {
 	/**
 	 * This set content file for the given UID. The object must be already
 	 * cached.
-	 * 
+	 *
 	 * @since 8.0.0
 	 * @exception IOException
 	 *                is thrown on IO error or of entry cache does not exist
@@ -1026,8 +997,7 @@ public final class Cache extends XMLable {
 	public void setContentFile(final URI uri, final File c) throws IOException {
 		final CacheEntry entry = cache.get(uri);
 		if (entry == null) {
-			throw new IOException(
-					"Cache#setContentFile : can't retrieve cache entry " + uri);
+			throw new IOException("Cache#setContentFile : can't retrieve cache entry " + uri);
 		}
 		entry.setContent(c);
 	}
@@ -1035,7 +1005,7 @@ public final class Cache extends XMLable {
 	/**
 	 * This retrieves content file for the given UID The object must be already
 	 * cached
-	 * 
+	 *
 	 * @return a File where to store content for the cached object, null
 	 *         otherwise
 	 */
@@ -1049,8 +1019,7 @@ public final class Cache extends XMLable {
 
 		final CacheEntry entry = cache.get(uri);
 		if (entry == null) {
-			logger.warn("Cache#getContentFile : can't retrieve cache entry "
-					+ uri);
+			logger.warn("Cache#getContentFile : can't retrieve cache entry " + uri);
 			return null;
 		}
 
@@ -1064,7 +1033,7 @@ public final class Cache extends XMLable {
 
 	/**
 	 * This updates entry date access and calls setLeastRecentlyUsedEntry(entry)
-	 * 
+	 *
 	 * @param entry
 	 *            is the entry to update date access
 	 * @see #setLeastRecentlyUsedEntry(CacheEntry)
@@ -1081,7 +1050,7 @@ public final class Cache extends XMLable {
 	/**
 	 * This sets the least recently used element. This updates
 	 * leastRecentlyUsedEntry accordingly to entry date access
-	 * 
+	 *
 	 * @param entry
 	 *            is the element to date last date access
 	 * @see #leastRecentlyUsedEntry
@@ -1104,7 +1073,7 @@ public final class Cache extends XMLable {
 	/**
 	 * This retrieves the least recently used element from cache and stores it
 	 * in leastRecentlyUsedEntry
-	 * 
+	 *
 	 * @since 5.8.0
 	 */
 	protected void retrieveLeastRecentlyUsedEntry() throws IOException {
@@ -1118,7 +1087,7 @@ public final class Cache extends XMLable {
 	/**
 	 * This removes the least recently used element from cache. Then, this
 	 * retrieves the new least recently used element from cache
-	 * 
+	 *
 	 * @since 5.8.0
 	 */
 	protected void removeLeastRecentlyUsedEntry() throws IOException {
@@ -1127,15 +1096,14 @@ public final class Cache extends XMLable {
 		}
 
 		final CacheEntry entry = leastRecentlyUsedEntry;
-		getLogger().finest(
-				"removeLeastRecentlyUsedEntry() removing " + entry.getURI());
+		getLogger().finest("removeLeastRecentlyUsedEntry() removing " + entry.getURI());
 		leastRecentlyUsedEntry = null;
 		remove(entry);
 	}
 
 	/**
 	 * This calls remove(entry.getUID())
-	 * 
+	 *
 	 * @param entry
 	 *            is the entry to remove
 	 * @exception IOException
@@ -1151,7 +1119,7 @@ public final class Cache extends XMLable {
 	/**
 	 * This removes an entry from cache given its URI If uri to remove is
 	 * leastRecentlyUsedEntry one, this calls retrieveLeastRecentlyUsedEntry()
-	 * 
+	 *
 	 * @param uri
 	 *            is the URI of the entry to remove
 	 * @exception IOException
@@ -1177,8 +1145,7 @@ public final class Cache extends XMLable {
 			f.delete();
 		}
 
-		if ((leastRecentlyUsedEntry == null)
-				|| (leastRecentlyUsedEntry.getURI().equals(uri))) {
+		if ((leastRecentlyUsedEntry == null) || (leastRecentlyUsedEntry.getURI().equals(uri))) {
 			retrieveLeastRecentlyUsedEntry();
 		}
 
@@ -1209,7 +1176,7 @@ public final class Cache extends XMLable {
 
 	/**
 	 * This retrieves String representation
-	 * 
+	 *
 	 * @return this object String representation
 	 * @see xtremweb.common.Table#toString(boolean)
 	 */
@@ -1231,13 +1198,12 @@ public final class Cache extends XMLable {
 	/**
 	 * This is for testing only
 	 */
-	public static void main(String[] argv) {
+	public static void main(final String[] argv) {
 
 		try {
 
 			if (argv.length < 1) {
-				System.out.println("Usage : java -cp " + XWTools.JARFILENAME
-						+ " <configFile> [anXmlDefinition]");
+				System.out.println("Usage : java -cp " + XWTools.JARFILENAME + " <configFile> [anXmlDefinition]");
 				System.exit(1);
 			}
 
