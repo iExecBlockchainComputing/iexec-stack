@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -57,16 +57,16 @@ public class BoxPanel extends JPanel {
 	/**
 	 * Creates a <tt>BoxPanel</tt> with a <tt>BoxLayout</tt> that uses the
 	 * specified orientation.
-	 * 
+	 *
 	 * @param orientation
 	 *            the orientation to use for the layout, which should be either
 	 *            BoxPanel.X_AXIS or BoxPanel.Y_AXIS
-	 * 
+	 *
 	 * @throws IllegalArgumentException
 	 *             if the <tt>orientation</tt> is not a valid <tt>BoxPanel</tt>
 	 *             orientation
 	 */
-	public BoxPanel(int orientation) {
+	public BoxPanel(final int orientation) {
 		if ((orientation != X_AXIS) && (orientation != Y_AXIS)) {
 			throw new IllegalArgumentException("Illegal BoxPanel orientation");
 		}
@@ -75,16 +75,16 @@ public class BoxPanel extends JPanel {
 
 	/**
 	 * Sets the orientation that the panel uses for laying out components.
-	 * 
+	 *
 	 * @param orientation
 	 *            the orientation to use for the layout, which should be either
 	 *            BoxPanel.X_AXIS or BoxPanel.Y_AXIS
-	 * 
+	 *
 	 * @throws IllegalArgumentException
 	 *             if the <tt>orientation</tt> is not a valid <tt>BoxPanel</tt>
 	 *             orientation
 	 */
-	public void setOrientation(int orientation) {
+	public void setOrientation(final int orientation) {
 		if ((orientation != X_AXIS) && (orientation != Y_AXIS)) {
 			throw new IllegalArgumentException("Illegal BoxPanel orientation");
 		}
