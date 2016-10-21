@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -25,9 +25,9 @@ package xtremweb.common;
 
 /**
  * LoggerLevel.java
- * 
+ *
  * Created: 15 avril 2008
- * 
+ *
  * @author <a href="mailto:lodygens /at\ .in2p3.fr>Oleg Lodygensky</a>
  * @since XWHEP-1.0.24
  * @version %I%, %G%
@@ -37,7 +37,7 @@ public enum LoggerLevel {
 
 	FINEST, DEBUG, CONFIG, INFO, WARN, ERROR, FATAL;
 
-	public static LoggerLevel fromInt(int v) throws IndexOutOfBoundsException {
+	public static LoggerLevel fromInt(final int v) throws IndexOutOfBoundsException {
 		for (final LoggerLevel i : LoggerLevel.values()) {
 			if (i.ordinal() == v) {
 				return i;
