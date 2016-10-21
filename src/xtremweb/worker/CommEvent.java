@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -39,11 +39,11 @@ public class CommEvent {
 	private final IdRpc rpc;
 	private Work work = null;
 
-	public CommEvent(IdRpc ct) {
+	public CommEvent(final IdRpc ct) {
 		rpc = ct;
 	}
 
-	public CommEvent(IdRpc ct, Work w) {
+	public CommEvent(final IdRpc ct, final Work w) {
 		rpc = ct;
 		work = w;
 	}
