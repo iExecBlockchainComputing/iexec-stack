@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -45,8 +45,7 @@ import javax.swing.border.Border;
 
 public class AboutWindow {
 
-	private static final Component HORIZONTAL_SEPARATOR = Box
-			.createRigidArea(new Dimension(6, 0));
+	private static final Component HORIZONTAL_SEPARATOR = Box.createRigidArea(new Dimension(6, 0));
 
 	/**
 	 * Constant handle to the <tt>JDialog</tt> that contains about information.
@@ -85,11 +84,9 @@ public class AboutWindow {
 		topPanel.add(HORIZONTAL_SEPARATOR);
 		final String version = CommonVersion.getCurrent().full();
 		final String labelStart = new String("XWHEP");
-		final String labelEnd = new String(
-				"Copyright (c) CNRS - http://www.cnrs.fr");
+		final String labelEnd = new String("Copyright (c) CNRS - http://www.cnrs.fr");
 		final String labelAddress = new String("http://www.cnrs.fr");
-		final String fullLabel = labelStart + " " + version + "\n"
-				+ labelAddress + "\n" + labelEnd;
+		final String fullLabel = labelStart + " " + version + "\n" + labelAddress + "\n" + labelEnd;
 		final MultiLineLabel label = new MultiLineLabel(fullLabel);
 		label.setFont(new Font("Sans Serif", Font.PLAIN, 11));
 		label.setForeground(Color.black);
@@ -109,7 +106,8 @@ public class AboutWindow {
 		theDialog.setSize(theDialogDimension);
 
 		final ActionListener closeDialogListener = new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+			@Override
+			public void actionPerformed(final ActionEvent e) {
 				theDialog.setVisible(false);
 			}
 		};
@@ -120,8 +118,7 @@ public class AboutWindow {
 
 		final ActionListener[] listeners = { closeDialogListener };
 
-		final ButtonRow buttons = new ButtonRow(buttonKeys, buttonTips,
-				listeners);
+		final ButtonRow buttons = new ButtonRow(buttonKeys, buttonTips, listeners);
 
 		theMainPanel.add(topPanel);
 		theMainPanel.add(buttons);
@@ -133,15 +130,11 @@ public class AboutWindow {
 	 * Displays the "About" dialog window to the user.
 	 */
 	public void showDialog() {
-		final Dimension screenSize = Toolkit.getDefaultToolkit()
-				.getScreenSize();
-		final int appWidth = Math.min(screenSize.width,
-				theDialogDimension.width);
+		final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		final int appWidth = Math.min(screenSize.width, theDialogDimension.width);
 
-		final int appHeight = Math.min(screenSize.height - 40,
-				theDialogDimension.height);
-		theDialog.setLocation((screenSize.width - appWidth) / 2,
-				(screenSize.height - appHeight) / 2);
+		final int appHeight = Math.min(screenSize.height - 40, theDialogDimension.height);
+		theDialog.setLocation((screenSize.width - appWidth) / 2, (screenSize.height - appHeight) / 2);
 
 		theDialog.setVisible(true);
 	}
