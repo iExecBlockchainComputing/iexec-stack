@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -49,14 +49,14 @@ package xtremweb.archdep;
  * <p>
  * <code>xtremweb.services.rpc.rpc#udp(byte[])</code> uses this interface
  * </p>
- * 
+ *
  * @see xtremweb.archdep.ArchDepFactory
  * @see xtremweb.services.rpc.rpc#udp(byte[])
  */
 public interface PortMapperItf {
 	/**
 	 * This retreives the RPC TCP port
-	 * 
+	 *
 	 * @param prog
 	 *            is the RPC prog number
 	 * @param version
@@ -66,7 +66,7 @@ public interface PortMapperItf {
 
 	/**
 	 * This retreives the RPC UDP port
-	 * 
+	 *
 	 * @param prog
 	 *            is the RPC prog number
 	 * @param version

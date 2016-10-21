@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -25,29 +25,31 @@ package xtremweb.archdep;
 
 //
 //  PortMapperImpl.java
-//  
+//
 //  Generic implementation of PortMapper
 //  all methods are native.
 
 public class PortMapper implements PortMapperItf {
 	/**
 	 * This retreives the RPC TCP port
-	 * 
+	 *
 	 * @param prog
 	 *            is the RPC prog number
 	 * @param version
 	 *            is the RPC prog version number
 	 */
+	@Override
 	public native int gettcpport(int prog, int version);
 
 	/**
 	 * This retreives the RPC UDP port
-	 * 
+	 *
 	 * @param prog
 	 *            is the RPC prog number
 	 * @param version
 	 *            is the RPC prog version number
 	 */
+	@Override
 	public native int getudpport(int prog, int version);
 
 	/**
