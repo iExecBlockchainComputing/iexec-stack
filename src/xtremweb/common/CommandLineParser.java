@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -34,7 +34,7 @@ import xtremweb.communications.URI;
 
 /**
  * Created: August 30th, 2005<br />
- * 
+ *
  * @see xtremweb.common.CommandLineOptions
  * @see xtremweb.communications.IdRpc
  * @author <a href="mailto:lodygens a lal.in2p3.fr">Oleg Lodygensky</a>
@@ -48,18 +48,18 @@ public final class CommandLineParser {
 	/**
 	 * This is the command line option prefix
 	 */
-	public final static String PREFIX = "--xw";
+	public static final String PREFIX = "--xw";
 	/**
 	 * This stores parameters This depends on the command; it can be empty,
 	 * contains one or more values
-	 * 
+	 *
 	 * @see #command
 	 */
 	private final Object[] commandParams;
 	/**
 	 * This stores optionnal parameters This depends on the command; it can be
 	 * empty, contains one or more values
-	 * 
+	 *
 	 * @see #command
 	 */
 	private final Object[] optionnalParameters;
@@ -71,7 +71,7 @@ public final class CommandLineParser {
 
 	/**
 	 * This converts command from a String.
-	 * 
+	 *
 	 * @param s
 	 *            is the value to convert
 	 * @return the command represented by the parameter
@@ -86,13 +86,12 @@ public final class CommandLineParser {
 
 	/**
 	 * This converts command line option from a String.
-	 * 
+	 *
 	 * @param s
 	 *            is the value to convert
 	 * @return the command line option represented by the parameter
 	 */
-	public CommandLineOptions option(final String s)
-			throws IllegalArgumentException {
+	public CommandLineOptions option(final String s) throws IllegalArgumentException {
 		String argument = s;
 		if (argument.toLowerCase().startsWith(PREFIX)) {
 			argument = argument.toUpperCase().substring(PREFIX.length());
@@ -102,13 +101,13 @@ public final class CommandLineParser {
 
 	/**
 	 * This sets an option providing its parameter
-	 * 
+	 *
 	 * @param opt
 	 *            is the option to set param for
 	 * @param o
 	 *            is the option param
 	 */
-	public void setOption(CommandLineOptions opt, Object o) {
+	public void setOption(final CommandLineOptions opt, final Object o) {
 		logger.config("setOption " + opt + ":" + o);
 		final int i = opt.ordinal();
 		if (opt != CommandLineOptions.ENV) {
@@ -118,28 +117,26 @@ public final class CommandLineParser {
 		if (optionnalParameters[i] == null) {
 			optionnalParameters[i] = new Vector();
 		}
-		Vector v = (Vector) optionnalParameters[i];
+		final Vector v = (Vector) optionnalParameters[i];
 		v.add(o);
-		v = null;
 	}
 
 	/**
 	 * This retrieves an option parameter
-	 * 
+	 *
 	 * @param opt
 	 *            is the option to retrieve param for
 	 * @return the option parameter
-	 * @throws ArrayIndexOutOfBoundsException
+	 * @throws IndexOutOfBoundsException
 	 *             if the option has no param
 	 */
-	public Object getOption(CommandLineOptions opt)
-			throws ArrayIndexOutOfBoundsException {
+	public Object getOption(final CommandLineOptions opt) throws IndexOutOfBoundsException {
 		return optionnalParameters[opt.ordinal()];
 	}
 
 	/**
 	 * This retrieves the list of option parameters
-	 * 
+	 *
 	 * @return the list of option parameters
 	 */
 	public Object[] getOptions() {
@@ -148,7 +145,7 @@ public final class CommandLineParser {
 
 	/**
 	 * This tries to convert the parameter to URI or UID
-	 * 
+	 *
 	 * @return an UID if param represents an UID; an URI if param represents an
 	 *         URI; param itself otherwise
 	 */
@@ -196,9 +193,9 @@ public final class CommandLineParser {
 		return param;
 	}
 
-	/** 
+	/**
 	 */
-	public static void usageHeader(String header) {
+	public static void usageHeader(final String header) {
 		final Logger l = new Logger();
 		if (header != null) {
 			l.info(header);
@@ -208,7 +205,7 @@ public final class CommandLineParser {
 	/**
 	 * This prints usage
 	 */
-	public static void usage(String header) {
+	public static void usage(final String header) {
 		final Logger l = new Logger();
 		usageHeader(header);
 		l.info("Available commands:");
@@ -223,13 +220,13 @@ public final class CommandLineParser {
 
 	/**
 	 * This prints usage for a given command
-	 * 
+	 *
 	 * @param header
 	 *            is a String
 	 * @param i
 	 *            is the command to print usage for
 	 */
-	public static void usage(String header, IdRpc i) {
+	public static void usage(final String header, final IdRpc i) {
 		usageHeader(header);
 		final Logger l = new Logger();
 		l.info("\t" + i.helpClient());
@@ -237,13 +234,13 @@ public final class CommandLineParser {
 
 	/**
 	 * This prints usage for a given command
-	 * 
+	 *
 	 * @param header
 	 *            is a String
 	 * @param i
 	 *            is the command to print usage for
 	 */
-	public static void usage(String header, CommandLineOptions i) {
+	public static void usage(final String header, final CommandLineOptions i) {
 		usageHeader(header);
 		final Logger l = new Logger();
 		l.info("\t" + i.usage());
@@ -259,7 +256,7 @@ public final class CommandLineParser {
 	/**
 	 * This retrieves the commandParams
 	 */
-	public Object commandParams(IdRpc c) {
+	public Object commandParams(final IdRpc c) {
 		return commandParams[c.ordinal()];
 	}
 
@@ -280,10 +277,10 @@ public final class CommandLineParser {
 	 * This does nothing if commandParams is already set <blockquote> (i.e. if
 	 * setAction() has been called) </blockquote>
 	 * </p>
-	 * 
+	 *
 	 * @see #setAction(int, Object)
 	 */
-	private void setCommandParams(Vector v) {
+	private void setCommandParams(final Vector v) {
 		if (command == IdRpc.NULL) {
 			return;
 		}
@@ -294,25 +291,23 @@ public final class CommandLineParser {
 
 	/**
 	 * This sets action with no commandParams
-	 * 
+	 *
 	 * @param c
 	 *            the action to perform in this instance
 	 * @see #setAction(int, Object)
 	 */
-	private void setAction(IdRpc i) throws ParseException,
-			IndexOutOfBoundsException {
+	private void setAction(final IdRpc i) throws ParseException, IndexOutOfBoundsException {
 		logger.config("setAction " + i);
 		setAction(i, null);
 	}
 
 	/**
 	 * This sets action and its commandParams
-	 * 
+	 *
 	 * @see #commandParams
 	 * @see #command
 	 */
-	private void setAction(IdRpc i, Object obj) throws ParseException,
-			IndexOutOfBoundsException {
+	private void setAction(final IdRpc i, final Object obj) throws ParseException, IndexOutOfBoundsException {
 
 		if (command != IdRpc.NULL) {
 			throw new ParseException("can't define two simultaneous actions", 0);
@@ -358,12 +353,12 @@ public final class CommandLineParser {
 
 	/**
 	 * This tells if output format is SHORT
-	 * 
+	 *
 	 * @since 7.0.0
 	 */
 	public boolean shortFormat() {
 		try {
-			return ((OutputFormat) getOption(CommandLineOptions.FORMAT) == OutputFormat.SHORT);
+			return (OutputFormat) getOption(CommandLineOptions.FORMAT) == OutputFormat.SHORT;
 		} catch (final Exception e) {
 			logger.exception(e);
 			return false;
@@ -375,7 +370,7 @@ public final class CommandLineParser {
 	 */
 	public boolean text() {
 		try {
-			return ((OutputFormat) getOption(CommandLineOptions.FORMAT) == OutputFormat.TEXT);
+			return (OutputFormat) getOption(CommandLineOptions.FORMAT) == OutputFormat.TEXT;
 		} catch (final Exception e) {
 			return false;
 		}
@@ -386,7 +381,7 @@ public final class CommandLineParser {
 	 */
 	public boolean csv() {
 		try {
-			return ((OutputFormat) getOption(CommandLineOptions.FORMAT) == OutputFormat.CSV);
+			return (OutputFormat) getOption(CommandLineOptions.FORMAT) == OutputFormat.CSV;
 		} catch (final Exception e) {
 			return false;
 		}
@@ -397,7 +392,7 @@ public final class CommandLineParser {
 	 */
 	public boolean xml() {
 		try {
-			return ((OutputFormat) getOption(CommandLineOptions.FORMAT) == OutputFormat.XML);
+			return (OutputFormat) getOption(CommandLineOptions.FORMAT) == OutputFormat.XML;
 		} catch (final Exception e) {
 			return false;
 		}
@@ -408,7 +403,7 @@ public final class CommandLineParser {
 	 */
 	public boolean html() {
 		try {
-			return ((OutputFormat) getOption(CommandLineOptions.FORMAT) == OutputFormat.HTML);
+			return (OutputFormat) getOption(CommandLineOptions.FORMAT) == OutputFormat.HTML;
 		} catch (final Exception e) {
 			return false;
 		}
@@ -419,7 +414,7 @@ public final class CommandLineParser {
 	 */
 	public void verbose() {
 
-		if (isVerbose() == false) {
+		if (!isVerbose()) {
 			return;
 		}
 
@@ -427,8 +422,8 @@ public final class CommandLineParser {
 			logger.info("request    = " + command);
 			if (commandParams[command.ordinal()] instanceof Vector) {
 				int i = 0;
-				for (final Enumeration e = ((Vector) commandParams[command
-						.ordinal()]).elements(); e.hasMoreElements();) {
+				for (final Enumeration e = ((Vector) commandParams[command.ordinal()]).elements(); e
+						.hasMoreElements();) {
 					logger.info("\tparameter[" + i++ + "] = " + e.nextElement());
 				}
 			} else {
@@ -438,11 +433,11 @@ public final class CommandLineParser {
 		}
 	}
 
-	public static String optionText(IdRpc c) {
+	public static String optionText(final IdRpc c) {
 		return PREFIX + c.toString().toLowerCase();
 	}
 
-	public static String optionText(CommandLineOptions c) {
+	public static String optionText(final CommandLineOptions c) {
 		return PREFIX + c.toString().toLowerCase();
 	}
 
@@ -460,12 +455,11 @@ public final class CommandLineParser {
 
 	/**
 	 * This constructor parses arguments
-	 * 
+	 *
 	 * @param args
 	 *            is an array of String ocntaining the command line arguments
 	 */
-	public CommandLineParser(final String[] args)
-			throws IllegalArgumentException, ParseException {
+	public CommandLineParser(final String[] args) throws IllegalArgumentException, ParseException {
 
 		this();
 
@@ -544,27 +538,23 @@ public final class CommandLineParser {
 						break;
 					case FORMAT:
 						try {
-							setOption(opt, OutputFormat.valueOf(args[++i]
-									.toUpperCase()));
+							setOption(opt, OutputFormat.valueOf(args[++i].toUpperCase()));
 						} catch (final Exception ef) {
 							logger.debug("Forcing format to SHORT : " + ef);
-							setOption(CommandLineOptions.FORMAT,
-									OutputFormat.SHORT);
+							setOption(CommandLineOptions.FORMAT, OutputFormat.SHORT);
 							i--;
 						}
 						break;
 					case STATUS:
 						try {
-							setOption(opt,
-									StatusEnum.valueOf(args[++i].toUpperCase()));
+							setOption(opt, StatusEnum.valueOf(args[++i].toUpperCase()));
 						} catch (final Exception e) {
 							logger.exception(e);
 						}
 						break;
 					case CONFIG:
 						try {
-							final XWConfigurator config = new XWConfigurator(
-									args[++i], false);
+							final XWConfigurator config = new XWConfigurator(args[++i], false);
 							setOption(opt, config);
 							logger.setLoggerLevel(config.getLoggerLevel());
 							break;
@@ -595,13 +585,12 @@ public final class CommandLineParser {
 			} else {
 				setCommandParams(params);
 			}
-		} catch (final ArrayIndexOutOfBoundsException e) {
-			throw new IllegalArgumentException("invalid argument :"
-					+ e.getMessage());
+		} catch (final IndexOutOfBoundsException e) {
+			throw new IllegalArgumentException("invalid argument :" + e.getMessage());
 		}
 	}
 
-	public static void main(String[] argv) {
+	public static void main(final String[] argv) {
 		IdRpc.main(argv);
 		CommandLineOptions.main(argv);
 	}
