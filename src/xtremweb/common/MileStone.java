@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -33,11 +33,10 @@ public class MileStone {
 
 	private long lastTime, firstTime;
 
-	public static String toString(String c, String m, UID u, long t,
-			long first, long last) {
+	public static String toString(final String c, final String m, final UID u, final long t, final long first,
+			final long last) {
 
-		return new String(c + ";" + m + ";" + t
-				+ (u == null ? "" : ";" + u.toString()));
+		return new String(c + ";" + m + ";" + t + (u == null ? "" : ";" + u.toString()));
 	}
 
 	/**
@@ -56,11 +55,11 @@ public class MileStone {
 
 	/**
 	 * This constructs a new instance
-	 * 
+	 *
 	 * @param cl
 	 *            is the class for this instance
 	 */
-	public MileStone(Class cl) {
+	public MileStone(final Class cl) {
 
 		className = cl.getName();
 
@@ -77,12 +76,12 @@ public class MileStone {
 	/**
 	 * This constructs a new instance and sets classes attribute<br />
 	 * If classes is already set, this does nothing
-	 * 
+	 *
 	 * @param v
 	 *            is a Vector of String containing class names to feed classes
 	 * @see #classes
 	 */
-	public MileStone(Collection<String> v) {
+	public MileStone(final Collection<String> v) {
 
 		if (classes != null) {
 			return;
@@ -95,7 +94,7 @@ public class MileStone {
 
 	/**
 	 * This retrieves stamp flag
-	 * 
+	 *
 	 * @return true if time slicing, false otherwise
 	 */
 	public boolean print() {
@@ -111,19 +110,19 @@ public class MileStone {
 
 	/**
 	 * This prints out a mile stone, if class name matches classes
-	 * 
+	 *
 	 * @param msg
 	 *            is the string to print
 	 * @see #className
 	 * @see #classes
 	 */
-	public void println(String msg) {
+	public void println(final String msg) {
 		println(msg, null);
 	}
 
 	/**
 	 * This prints out a mile stone, if class name matches classes
-	 * 
+	 *
 	 * @param msg
 	 *            is the string to print
 	 * @param uid
@@ -131,13 +130,12 @@ public class MileStone {
 	 * @see #className
 	 * @see #classes
 	 */
-	public void println(String msg, UID uid) {
+	public void println(final String msg, final UID uid) {
 		if (print == false) {
 			return;
 		}
 		final long t = System.currentTimeMillis();
-		System.out
-				.println(toString(className, msg, uid, t, firstTime, lastTime));
+		System.out.println(toString(className, msg, uid, t, firstTime, lastTime));
 		lastTime = t;
 	}
 }
