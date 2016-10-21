@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -29,14 +29,14 @@ import java.util.Map;
 /**
  * A simple class loader capable of loading from multiple sources, such as local
  * files or a URL.
- * 
+ *
  * This class is derived from an article by Chuck McManis
  * http://www.javaworld.com/javaworld/jw-10-1996/indepth.src.html with large
  * modifications.
- * 
+ *
  * Note that this has been updated to use the non-deprecated version of
  * defineClass() -- JDM.
- * 
+ *
  * @author Jack Harich - 8/18/97
  * @author John D. Mitchell - 99.03.04
  */
@@ -59,19 +59,17 @@ public abstract class MultiClassLoader extends ClassLoader {
 	 * the class resolved before it is returned to them.
 	 */
 	@Override
-	public Class loadClass(String className) throws ClassNotFoundException {
+	public Class loadClass(final String className) throws ClassNotFoundException {
 		return (loadClass(className, true));
 	}
 
 	// ---------- Abstract Implementation ---------------------
 	@Override
-	public synchronized Class loadClass(String className, boolean resolveIt)
-			throws ClassNotFoundException {
+	public synchronized Class loadClass(final String className, final boolean resolveIt) throws ClassNotFoundException {
 
 		Class result;
 		byte[] classBytes;
-		monitor(">> MultiClassLoader.loadClass(" + className + ", " + resolveIt
-				+ ")");
+		monitor(">> MultiClassLoader.loadClass(" + className + ", " + resolveIt + ")");
 
 		// ----- Check our local cache of classes
 		result = classes.get(className);
@@ -125,14 +123,14 @@ public abstract class MultiClassLoader extends ClassLoader {
 	 * different packages in the same retrival directory. In the above example
 	 * the char would be '_'.
 	 */
-	public void setClassNameReplacementChar(char replacement) {
+	public void setClassNameReplacementChar(final char replacement) {
 		classNameReplacementChar = replacement;
 	}
 
 	// ---------- Protected Methods ---------------------------
 	protected abstract byte[] loadClassBytes(String className);
 
-	protected String formatClassName(String className) {
+	protected String formatClassName(final String className) {
 		if (classNameReplacementChar == '\u0000') {
 			// '/' is used to map the package to the path
 			return className.replace('.', '/') + ".class";
@@ -142,14 +140,14 @@ public abstract class MultiClassLoader extends ClassLoader {
 		}
 	}
 
-	protected void monitor(String text) {
+	protected void monitor(final String text) {
 		if (monitorOn) {
 			print(text);
 		}
 	}
 
 	// --- Std
-	protected static void print(String text) {
+	protected static void print(final String text) {
 		System.out.println(text);
 	}
 
