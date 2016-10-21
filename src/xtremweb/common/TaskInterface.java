@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -56,7 +56,7 @@ public final class TaskInterface extends xtremweb.common.Table {
 	/**
 	 * This is the database table name This was stored in
 	 * xtremweb.dispatcher.Task
-	 * 
+	 *
 	 * @since 9.0.0
 	 */
 	public static final String TABLENAME = ("tasks");
@@ -78,7 +78,7 @@ public final class TaskInterface extends xtremweb.common.Table {
 			 * This creates a new UID from string
 			 */
 			@Override
-			public UID fromString(String v) {
+			public UID fromString(final String v) {
 				return new UID(v);
 			}
 		},
@@ -90,7 +90,7 @@ public final class TaskInterface extends xtremweb.common.Table {
 			 * This creates a new UID from string
 			 */
 			@Override
-			public UID fromString(String v) {
+			public UID fromString(final String v) {
 				return new UID(v);
 			}
 		},
@@ -102,7 +102,7 @@ public final class TaskInterface extends xtremweb.common.Table {
 			 * This creates a new UID from string
 			 */
 			@Override
-			public StatusEnum fromString(String v) {
+			public StatusEnum fromString(final String v) {
 				return StatusEnum.valueOf(v);
 			}
 		},
@@ -111,7 +111,7 @@ public final class TaskInterface extends xtremweb.common.Table {
 		 */
 		INSERTIONDATE {
 			@Override
-			public Date fromString(String v) {
+			public Date fromString(final String v) {
 				return XWTools.getSQLDateTime(v);
 			}
 		},
@@ -120,7 +120,7 @@ public final class TaskInterface extends xtremweb.common.Table {
 		 */
 		STARTDATE {
 			@Override
-			public Date fromString(String v) {
+			public Date fromString(final String v) {
 				return XWTools.getSQLDateTime(v);
 			}
 		},
@@ -129,7 +129,7 @@ public final class TaskInterface extends xtremweb.common.Table {
 		 */
 		LASTSTARTDATE {
 			@Override
-			public Date fromString(String v) {
+			public Date fromString(final String v) {
 				return XWTools.getSQLDateTime(v);
 			}
 		},
@@ -138,7 +138,7 @@ public final class TaskInterface extends xtremweb.common.Table {
 		 */
 		ALIVECOUNT {
 			@Override
-			public Integer fromString(String v) {
+			public Integer fromString(final String v) {
 				return new Integer(v);
 			}
 		},
@@ -147,7 +147,7 @@ public final class TaskInterface extends xtremweb.common.Table {
 		 */
 		LASTALIVE {
 			@Override
-			public Date fromString(String v) {
+			public Date fromString(final String v) {
 				return XWTools.getSQLDateTime(v);
 			}
 		},
@@ -156,7 +156,7 @@ public final class TaskInterface extends xtremweb.common.Table {
 		 */
 		REMOVALDATE {
 			@Override
-			public Date fromString(String v) {
+			public Date fromString(final String v) {
 				return XWTools.getSQLDateTime(v);
 			}
 		},
@@ -165,7 +165,7 @@ public final class TaskInterface extends xtremweb.common.Table {
 		 */
 		DURATION {
 			@Override
-			public Long fromString(String v) {
+			public Long fromString(final String v) {
 				return new Long(v);
 			}
 		};
@@ -173,7 +173,7 @@ public final class TaskInterface extends xtremweb.common.Table {
 		/**
 		 * This is the index based on ordinal so that the first value is
 		 * TableColumns + 1
-		 * 
+		 *
 		 * @see xtremweb.common#TableColumns
 		 * @see Enum#ordinal()
 		 * @since 8.2.0
@@ -183,7 +183,7 @@ public final class TaskInterface extends xtremweb.common.Table {
 		/**
 		 * This constructor sets the ord member as ord = this.ordinal +
 		 * TableColumns.SIZE
-		 * 
+		 *
 		 * @since 8.2.0
 		 */
 		Columns() {
@@ -192,49 +192,50 @@ public final class TaskInterface extends xtremweb.common.Table {
 
 		/**
 		 * This retrieves the index based ordinal
-		 * 
+		 *
 		 * @return the index based ordinal
 		 * @since 8.2.0
 		 */
+		@Override
 		public int getOrdinal() {
 			return ord;
 		}
 
 		/**
 		 * This creates a new object from String for the given column
-		 * 
+		 *
 		 * @param v
 		 *            the String representation
 		 * @return the object representing the column
 		 * @throws Exception
 		 *             is thrown on instantiation error
 		 */
-		public Object fromString(String v) throws Exception {
+		@Override
+		public Object fromString(final String v) throws Exception {
 			throw new IOException("fromString() not implemented : " + this);
 		}
 
 		/**
 		 * This creates a new object from SQL result set
-		 * 
+		 *
 		 * @param rs
 		 *            is the SQL result set
 		 * @return the object representing the column
 		 * @throws Exception
 		 *             is thrown on instantiation error
 		 */
-		public final Object fromResultSet(ResultSet rs) throws Exception {
+		public final Object fromResultSet(final ResultSet rs) throws Exception {
 			return this.fromString(rs.getString(this.toString()));
 		}
 
 		/**
 		 * This retrieves an Columns from its integer value
-		 * 
+		 *
 		 * @param v
 		 *            is the integer value of the Columns
 		 * @return an Columns
 		 */
-		public static XWBaseColumn fromInt(int v)
-				throws IndexOutOfBoundsException {
+		public static XWBaseColumn fromInt(final int v) throws IndexOutOfBoundsException {
 			try {
 				return TableColumns.fromInt(v);
 			} catch (final Exception e) {
@@ -258,7 +259,7 @@ public final class TaskInterface extends xtremweb.common.Table {
 	 * version. If this version is null, this version is prior to 5.8.0. Before
 	 * 5.8.0, OWNERUID and ACCESSRIGHTS did not exist. Then this returns null
 	 * for these two values.
-	 * 
+	 *
 	 * @param i
 	 *            is an ordinal of an Columns
 	 * @since 5.8.0
@@ -266,7 +267,7 @@ public final class TaskInterface extends xtremweb.common.Table {
 	 *         || (c == ACCESSRIGHTS.ordinal()))); column label otherwise
 	 */
 	@Override
-	public String getColumnLabel(int i) throws IndexOutOfBoundsException {
+	public String getColumnLabel(final int i) throws IndexOutOfBoundsException {
 		try {
 			return TableColumns.fromInt(i).toString();
 		} catch (final Exception e) {
@@ -284,23 +285,23 @@ public final class TaskInterface extends xtremweb.common.Table {
 		setAttributeLength(ENUMSIZE);
 		setStatus(StatusEnum.UNAVAILABLE);
 		setAccessRights(XWAccessRights.DEFAULT);
-		setShortIndexes(new int[] { TableColumns.UID.getOrdinal(),
-				Columns.WORKUID.getOrdinal(), Columns.STATUS.getOrdinal() });
+		setShortIndexes(
+				new int[] { TableColumns.UID.getOrdinal(), Columns.WORKUID.getOrdinal(), Columns.STATUS.getOrdinal() });
 	}
 
 	/**
 	 * This constructor reads its definition from a String provided as argument
 	 * where each field is separated by a '\t' character.
-	 * 
+	 *
 	 * Such a String has typically been created with an SQL command like : $>
 	 * mysql -e "select * from tasks" > aTextFile
-	 * 
-	 * 
+	 *
+	 *
 	 * @param data
 	 *            is a String containing this object definition where each field
 	 *            is separated by a tab, a space or a comma character
 	 */
-	public TaskInterface(String data) {
+	public TaskInterface(final String data) {
 
 		this();
 
@@ -314,32 +315,31 @@ public final class TaskInterface extends xtremweb.common.Table {
 
 	/**
 	 * This constructs an object from DB
-	 * 
+	 *
 	 * @param rs
 	 *            is an SQL request result
 	 * @exception IOException
 	 */
-	public TaskInterface(ResultSet rs) throws IOException {
+	public TaskInterface(final ResultSet rs) throws IOException {
 		this();
 		fill(rs);
 	}
 
 	/**
 	 * This fills columns from DB
-	 * 
+	 *
 	 * @since 9.0.0
 	 * @param rs
 	 *            is the SQL data set
 	 * @throws IOException
 	 */
 	@Override
-	public void fill(ResultSet rs) throws IOException {
+	public void fill(final ResultSet rs) throws IOException {
 
 		try {
 			setUID((UID) TableColumns.UID.fromResultSet(rs));
 			setOwner((UID) TableColumns.OWNERUID.fromResultSet(rs));
-			setAccessRights((XWAccessRights) TableColumns.ACCESSRIGHTS
-					.fromResultSet(rs));
+			setAccessRights((XWAccessRights) TableColumns.ACCESSRIGHTS.fromResultSet(rs));
 			setWork((UID) Columns.WORKUID.fromResultSet(rs));
 		} catch (final Exception e) {
 			throw new IOException(e.toString());
@@ -385,22 +385,22 @@ public final class TaskInterface extends xtremweb.common.Table {
 
 	/**
 	 * This constructs a new object from an XML file
-	 * 
+	 *
 	 * @param f
 	 *            is the XML file
 	 * @see #TaskInterface(InputStream)
 	 */
-	public TaskInterface(File f) throws IOException, SAXException {
+	public TaskInterface(final File f) throws IOException, SAXException {
 		this(new FileInputStream(f));
 	}
 
 	/**
 	 * This creates an object that will be retrieve with the complex SQL request
-	 * 
+	 *
 	 * @see xtremweb.common.TaskInterface#TaskInterface(ResultSet)
 	 * @since 9.0.0
 	 */
-	public TaskInterface(SQLRequest r) throws IOException {
+	public TaskInterface(final SQLRequest r) throws IOException {
 		this();
 		setRequest(r);
 	}
@@ -408,14 +408,14 @@ public final class TaskInterface extends xtremweb.common.Table {
 	/**
 	 * This constructs a new object from XML attributes received from input
 	 * stream
-	 * 
+	 *
 	 * @param input
 	 *            is the input stream
 	 * @see XMLReader#read(InputStream)
 	 * @throws IOException
 	 *             on XML error
 	 */
-	public TaskInterface(InputStream input) throws IOException, SAXException {
+	public TaskInterface(final InputStream input) throws IOException, SAXException {
 		this();
 		final XMLReader reader = new XMLReader(this);
 		try {
@@ -428,21 +428,21 @@ public final class TaskInterface extends xtremweb.common.Table {
 	/**
 	 * This constructs a new object from XML attributes received from input
 	 * stream
-	 * 
+	 *
 	 * @param attrs
 	 *            contains attributes XML representation
 	 * @see Table#fromXml(Attributes)
 	 * @throws IOException
 	 *             on XML error
 	 */
-	public TaskInterface(Attributes attrs) {
+	public TaskInterface(final Attributes attrs) {
 		this();
 		super.fromXml(attrs);
 	}
 
 	/**
 	 * This is the constructor; it inserts new task into DB
-	 * 
+	 *
 	 * @param w
 	 *            is the work the task is created for
 	 */
@@ -485,7 +485,7 @@ public final class TaskInterface extends xtremweb.common.Table {
 
 	/**
 	 * This sets parameter
-	 * 
+	 *
 	 * @return true if value has changed, false otherwise
 	 */
 	public boolean incAliveCount() {
@@ -505,7 +505,7 @@ public final class TaskInterface extends xtremweb.common.Table {
 	/**
 	 * This retrieves the job duration<br />
 	 * If this attr is not set, it os forced to 0
-	 * 
+	 *
 	 * @return this attribute or 0 if not set
 	 */
 	public long getDuration() {
@@ -519,7 +519,7 @@ public final class TaskInterface extends xtremweb.common.Table {
 
 	/**
 	 * This returns XWStatus.fromInt(getValue(Columns.STATUSID))
-	 * 
+	 *
 	 * @return the status
 	 */
 	public StatusEnum getStatus() {
@@ -534,7 +534,7 @@ public final class TaskInterface extends xtremweb.common.Table {
 	/**
 	 * This reterives the alive counter<br />
 	 * If this attr is not set, it os forced to 0
-	 * 
+	 *
 	 * @return this attribute or 0 if not set
 	 */
 	public int getAliveCount() {
@@ -548,7 +548,7 @@ public final class TaskInterface extends xtremweb.common.Table {
 
 	/**
 	 * This gets an attribute
-	 * 
+	 *
 	 * @return this attribute, or null if not set
 	 * @exception IOException
 	 *                is thrown is attribute is not well formed
@@ -563,7 +563,7 @@ public final class TaskInterface extends xtremweb.common.Table {
 
 	/**
 	 * This retrieves the referenced work
-	 * 
+	 *
 	 * @return this attribute, or null if not set
 	 * @exception IOException
 	 *                is thrown is attribute is not well formed
@@ -575,7 +575,7 @@ public final class TaskInterface extends xtremweb.common.Table {
 
 	/**
 	 * This gets an attribute
-	 * 
+	 *
 	 * @return this attribute, or null if not set
 	 */
 	public Date getInsertionDate() {
@@ -584,7 +584,7 @@ public final class TaskInterface extends xtremweb.common.Table {
 
 	/**
 	 * This gets an attribute
-	 * 
+	 *
 	 * @return this attribute, or null if not set
 	 */
 	public Date getStartDate() {
@@ -593,7 +593,7 @@ public final class TaskInterface extends xtremweb.common.Table {
 
 	/**
 	 * This gets an attribute
-	 * 
+	 *
 	 * @return this attribute, or null if not set
 	 */
 	public Date getLastStartDate() {
@@ -602,7 +602,7 @@ public final class TaskInterface extends xtremweb.common.Table {
 
 	/**
 	 * This gets an attribute
-	 * 
+	 *
 	 * @return this attribute, or null if not set
 	 */
 	public Date getLastAlive() {
@@ -611,7 +611,7 @@ public final class TaskInterface extends xtremweb.common.Table {
 
 	/**
 	 * This gets an attribute
-	 * 
+	 *
 	 * @return this attribute, or null if not set
 	 */
 	public Date getRemovalDate() {
@@ -621,7 +621,7 @@ public final class TaskInterface extends xtremweb.common.Table {
 	/**
 	 * This sets parameter value; this is called from
 	 * TableInterface#fromXml(Attributes)
-	 * 
+	 *
 	 * @param attribute
 	 *            is the name of the attribute to set
 	 * @param v
@@ -630,8 +630,7 @@ public final class TaskInterface extends xtremweb.common.Table {
 	 * @see Table#fromXml(Attributes)
 	 */
 	@Override
-	public final boolean setValue(String attribute, Object v)
-			throws IllegalArgumentException {
+	public final boolean setValue(final String attribute, final Object v) throws IllegalArgumentException {
 		final String A = attribute.toUpperCase();
 		try {
 			return setValue(TableColumns.valueOf(A), v);
@@ -642,10 +641,10 @@ public final class TaskInterface extends xtremweb.common.Table {
 
 	/**
 	 * This sets the duration
-	 * 
+	 *
 	 * @return true if value has changed
 	 */
-	public boolean setDuration(long v) {
+	public boolean setDuration(final long v) {
 		Long i = new Long(v);
 		final boolean ret = setValue(Columns.DURATION, i);
 		i = null;
@@ -654,24 +653,23 @@ public final class TaskInterface extends xtremweb.common.Table {
 
 	/**
 	 * This calls setStatusId(v.ordinal())
-	 * 
+	 *
 	 * @return true if value has changed, false otherwise
 	 */
-	public final boolean setStatus(final StatusEnum v)
-			throws ArrayIndexOutOfBoundsException {
+	public final boolean setStatus(final StatusEnum v) throws ArrayIndexOutOfBoundsException {
 		return setValue(Columns.STATUS, v);
 	}
 
 	/**
 	 * This tests task status
-	 * 
+	 *
 	 * @param v
 	 *            the value to test; must be one of the values defined in
 	 *            XWStatus.java.
 	 * @return a boolean.
 	 * @see xtremweb.common.StatusEnum
 	 */
-	public boolean testStatus(StatusEnum v) {
+	public boolean testStatus(final StatusEnum v) {
 		try {
 			return (getStatus() == v);
 		} catch (final Exception e) {
@@ -688,7 +686,7 @@ public final class TaskInterface extends xtremweb.common.Table {
 
 	/**
 	 * This tests whether task is running on a worker.
-	 * 
+	 *
 	 * @return a boolean.
 	 */
 	public boolean isRunning() {
@@ -704,7 +702,7 @@ public final class TaskInterface extends xtremweb.common.Table {
 
 	/**
 	 * This tests whether task is pending for a worker.
-	 * 
+	 *
 	 * @return a boolean.
 	 */
 	public boolean isPending() {
@@ -720,7 +718,7 @@ public final class TaskInterface extends xtremweb.common.Table {
 
 	/**
 	 * This tests whether task is completed by worker.
-	 * 
+	 *
 	 * @return a boolean.
 	 */
 	public boolean isCompleted() {
@@ -729,7 +727,7 @@ public final class TaskInterface extends xtremweb.common.Table {
 
 	/**
 	 * This marks this work as still waiting for result
-	 * 
+	 *
 	 * @since 7.5.0
 	 */
 	public void setDataRequest() {
@@ -738,7 +736,7 @@ public final class TaskInterface extends xtremweb.common.Table {
 
 	/**
 	 * This marks this work as waiting for intermediate results
-	 * 
+	 *
 	 * @since 8.2.0
 	 */
 	public void setResultRequest() {
@@ -747,7 +745,7 @@ public final class TaskInterface extends xtremweb.common.Table {
 
 	/**
 	 * This tests if this work is still waiting for result
-	 * 
+	 *
 	 * @since 7.5.0
 	 */
 	public boolean isDataRequest() {
@@ -756,7 +754,7 @@ public final class TaskInterface extends xtremweb.common.Table {
 
 	/**
 	 * This tests if this work is waiting for intermediate results
-	 * 
+	 *
 	 * @since 8.2.0
 	 */
 	public boolean isResultRequest() {
@@ -772,14 +770,14 @@ public final class TaskInterface extends xtremweb.common.Table {
 
 	/**
 	 * This tests whether task generated any error
-	 * 
+	 *
 	 * @return a boolean.
 	 */
 	public boolean isError() {
 		return testStatus(StatusEnum.ERROR);
 	}
 
-	public boolean setAliveCount(int v) {
+	public boolean setAliveCount(final int v) {
 		Integer i = new Integer(v);
 		final boolean ret = setValue(Columns.ALIVECOUNT, i);
 		i = null;
@@ -789,51 +787,51 @@ public final class TaskInterface extends xtremweb.common.Table {
 	/**
 	 * This sets the worker that runs this task
 	 */
-	public boolean setHost(UID v) {
+	public boolean setHost(final UID v) {
 		return setValue(Columns.HOSTUID, v);
 	}
 
 	/**
 	 * This sets the referenced work
-	 * 
+	 *
 	 * @since 8.0.0
 	 */
-	public boolean setWork(UID v) {
+	public boolean setWork(final UID v) {
 		return setValue(Columns.WORKUID, v);
 	}
 
 	/**
 	 * This sets the date when this task has been created
 	 */
-	public boolean setInsertionDate(Date v) {
+	public boolean setInsertionDate(final Date v) {
 		return setValue(Columns.INSERTIONDATE, v);
 	}
 
 	/**
 	 * This sets the starting date of the first run
 	 */
-	public boolean setStartDate(Date v) {
+	public boolean setStartDate(final Date v) {
 		return setValue(Columns.STARTDATE, v);
 	}
 
 	/**
 	 * This sets the starting date of the last run
 	 */
-	public boolean setLastStartDate(Date v) {
+	public boolean setLastStartDate(final Date v) {
 		return setValue(Columns.LASTSTARTDATE, v);
 	}
 
 	/**
 	 * This sets the last alive signal date of the current run
 	 */
-	public boolean setLastAlive(Date v) {
+	public boolean setLastAlive(final Date v) {
 		return setValue(Columns.LASTALIVE, v);
 	}
 
 	/**
 	 * This sets the removal date
 	 */
-	public boolean setRemovalDate(Date v) {
+	public boolean setRemovalDate(final Date v) {
 		return setValue(Columns.REMOVALDATE, v);
 	}
 
@@ -856,11 +854,11 @@ public final class TaskInterface extends xtremweb.common.Table {
 
 	/**
 	 * Assign a task to a worker
-	 * 
+	 *
 	 * @param worker
 	 *            is the worker UID
 	 */
-	public void setRunningBy(UID worker) throws IOException {
+	public void setRunningBy(final UID worker) throws IOException {
 
 		java.util.Date newDate = new java.util.Date(System.currentTimeMillis());
 
@@ -883,7 +881,7 @@ public final class TaskInterface extends xtremweb.common.Table {
 	 * Update due to alive signal Since RPC-V : we must ckeck the task is not
 	 * running on another worker; in such a case, the current worker we are
 	 * computing the alive signal for, has to be asked to stop computing.
-	 * 
+	 *
 	 * @param worker
 	 *            is the worker UID
 	 * @return true on success(since RPC-V); which covers two cases: 1) the
@@ -894,7 +892,7 @@ public final class TaskInterface extends xtremweb.common.Table {
 	 *         expected one! the signalling worker has to be asked to stop
 	 *         computing
 	 */
-	public boolean setAlive(UID worker) throws IOException {
+	public boolean setAlive(final UID worker) throws IOException {
 
 		if ((isRunning() == false) || (getHost() == null)) {
 			setRunningBy(worker);
@@ -918,7 +916,7 @@ public final class TaskInterface extends xtremweb.common.Table {
 	 * description and dumps it. <br />
 	 * Usage : java -cp xtremweb.jar xtremweb.common.TaskInterface [xmlFile]
 	 */
-	public static void main(String[] argv) {
+	public static void main(final String[] argv) {
 		try {
 			final TaskInterface itf = new TaskInterface();
 			itf.setUID(UID.getMyUid());
@@ -932,8 +930,8 @@ public final class TaskInterface extends xtremweb.common.Table {
 			writer.write(itf);
 		} catch (final Exception e) {
 			final Logger logger = new Logger();
-			logger.exception("Usage : java -cp " + XWTools.JARFILENAME
-					+ " xtremweb.common.TaskInterface [anXMLDescriptionFile]",
+			logger.exception(
+					"Usage : java -cp " + XWTools.JARFILENAME + " xtremweb.common.TaskInterface [anXMLDescriptionFile]",
 					e);
 		}
 	}
