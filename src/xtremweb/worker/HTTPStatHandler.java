@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -39,11 +39,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.httpclient.HttpConnection;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.util.component.Container.Listener;
 import org.xml.sax.SAXException;
 
 import xtremweb.common.AppInterface;
@@ -60,27 +58,28 @@ import xtremweb.communications.CommClient;
  * This handles incoming communications through HTTP. This class aims to help
  * the worker owner to configure its worker. This owner can configure its worker
  * via a web browser.<br />
- * 
+ *
  * Created: Octobre 2007
- * 
+ *
  * @author Oleg Lodygensky
  * @version XWHEP 1.0.0
  */
 
-public class HTTPStatHandler extends Thread implements
-		Handler {
+public class HTTPStatHandler extends Thread implements Handler {
 
-	private Logger logger;
+	private final Logger logger;
 
 	public static final String PATH = "/";
 
 	private HttpServletRequest request;
 	private HttpServletResponse response;
-	private Hashtable activators;
-	private Hashtable activatorHelps;
-	private Hashtable activatorParams;
+	private final Hashtable activators;
+	private final Hashtable activatorHelps;
+	private final Hashtable activatorParams;
 
-	/** This is the default project : by default the worker accepts any project */
+	/**
+	 * This is the default project : by default the worker accepts any project
+	 */
 	private final static String DEFAULTPROJECT = "any";
 	/** This is an HTML form input name */
 	private final static String MAXJOBS = "maxJobs";
@@ -133,12 +132,14 @@ public class HTTPStatHandler extends Thread implements
 
 	private String projectLabel;
 
+	@Override
+	public void removeLifeCycleListener(final Listener l) {
 
-	public void removeLifeCycleListener(Listener l) {
-		
 	}
-	public void addLifeCycleListener(Listener l) {
-		
+
+	@Override
+	public void addLifeCycleListener(final Listener l) {
+
 	}
 
 	/**
@@ -154,8 +155,7 @@ public class HTTPStatHandler extends Thread implements
 		activators.put("crontab", "xtremweb.worker.DateActivator");
 
 		activatorHelps.put("always", "This fully enables computation");
-		activatorHelps.put("crontab",
-				"This enables computation according to schedule gaps");
+		activatorHelps.put("crontab", "This enables computation according to schedule gaps");
 
 		activatorParams.put("always", new Boolean(false));
 		activatorParams.put("crontab", new Boolean(true));
@@ -164,11 +164,11 @@ public class HTTPStatHandler extends Thread implements
 
 	/**
 	 * This constructor call the default constructor and sets the logger level
-	 * 
+	 *
 	 * @param l
 	 *            is the logger level
 	 */
-	public HTTPStatHandler(LoggerLevel l) {
+	public HTTPStatHandler(final LoggerLevel l) {
 		this();
 		logger.setLoggerLevel(l);
 	}
@@ -177,13 +177,15 @@ public class HTTPStatHandler extends Thread implements
 	 * This does nothing and must be overidden by any HTTP handler This is
 	 * inherited from org.mortbay.jetty.Handler
 	 */
-	public void setServer(Server server) {
+	@Override
+	public void setServer(final Server server) {
 	}
 
 	/**
 	 * This does nothing and must be overidden by any HTTP handler This is
 	 * inherited from org.mortbay.jetty.Handler
 	 */
+	@Override
 	public Server getServer() {
 		return null;
 	}
@@ -191,9 +193,10 @@ public class HTTPStatHandler extends Thread implements
 	/**
 	 * This does nothing and must be overidden by any HTTP handler This is
 	 * inherited from org.mortbay.component.LifeCycle
-	 * 
+	 *
 	 * @return true
 	 */
+	@Override
 	public boolean isFailed() {
 		return true;
 	}
@@ -201,9 +204,10 @@ public class HTTPStatHandler extends Thread implements
 	/**
 	 * This does nothing and must be overidden by any HTTP handler This is
 	 * inherited from org.mortbay.component.LifeCycle
-	 * 
+	 *
 	 * @return false
 	 */
+	@Override
 	public boolean isRunning() {
 		return false;
 	}
@@ -211,9 +215,10 @@ public class HTTPStatHandler extends Thread implements
 	/**
 	 * This does nothing and must be overidden by any HTTP handler This is
 	 * inherited from org.mortbay.component.LifeCycle
-	 * 
+	 *
 	 * @return false
 	 */
+	@Override
 	public boolean isStarted() {
 		return false;
 	}
@@ -221,9 +226,10 @@ public class HTTPStatHandler extends Thread implements
 	/**
 	 * This does nothing and must be overidden by any HTTP handler This is
 	 * inherited from org.mortbay.component.LifeCycle
-	 * 
+	 *
 	 * @return false
 	 */
+	@Override
 	public boolean isStarting() {
 		return false;
 	}
@@ -231,9 +237,10 @@ public class HTTPStatHandler extends Thread implements
 	/**
 	 * This does nothing and must be overidden by any HTTP handler This is
 	 * inherited from org.mortbay.component.LifeCycle
-	 * 
+	 *
 	 * @return true
 	 */
+	@Override
 	public boolean isStopped() {
 		return true;
 	}
@@ -241,9 +248,10 @@ public class HTTPStatHandler extends Thread implements
 	/**
 	 * This does nothing and must be overidden by any HTTP handler This is
 	 * inherited from org.mortbay.component.LifeCycle
-	 * 
+	 *
 	 * @return false
 	 */
+	@Override
 	public boolean isStopping() {
 		return false;
 	}
@@ -267,14 +275,12 @@ public class HTTPStatHandler extends Thread implements
 	/**
 	 * This handles incoming connections. This is inherited from
 	 * org.mortbay.jetty.Handler.
-	 * 
+	 *
 	 * @see xtremweb.communications.XWPostParams
 	 */
-	public void handle(String target,
-            Request baseRequest,
-            HttpServletRequest _request,
-            HttpServletResponse _response) throws IOException,
-			ServletException {
+	@Override
+	public void handle(final String target, final Request baseRequest, final HttpServletRequest _request,
+			final HttpServletResponse _response) throws IOException, ServletException {
 
 		request = _request;
 		response = _response;
@@ -320,8 +326,7 @@ public class HTTPStatHandler extends Thread implements
 
 			final String param = ((String[]) paramsMap.get(GETHOST))[0];
 			System.out.println("param = " + GETHOST);
-			response.getWriter().println(
-					"<?xml version='1.0' encoding='ISO-8859-1'?>");
+			response.getWriter().println("<?xml version='1.0' encoding='ISO-8859-1'?>");
 			response.getWriter().println("<worker>");
 			response.getWriter().println(Worker.getConfig().getHost().toXml());
 			response.getWriter().println("</worker>");
@@ -333,12 +338,8 @@ public class HTTPStatHandler extends Thread implements
 		try {
 			final String param = ((String[]) paramsMap.get(GETAVAILABILITY))[0];
 			logger.debug("param = " + GETAVAILABILITY);
-			response.getWriter().println(
-					""
-							+ ThreadLaunch.getInstance().available()
-							+ " : the local activation policy "
-							+ (ThreadLaunch.getInstance().available() ? "allows"
-									: "does not allow") + " computation");
+			response.getWriter().println("" + ThreadLaunch.getInstance().available() + " : the local activation policy "
+					+ (ThreadLaunch.getInstance().available() ? "allows" : "does not allow") + " computation");
 			return;
 		} catch (final NullPointerException e) {
 		}
@@ -361,16 +362,14 @@ public class HTTPStatHandler extends Thread implements
 		try {
 			final String param = ((String[]) paramsMap.get(GETACTIVATORPARAMS))[0];
 			logger.debug("param = " + GETACTIVATORPARAMS);
-			final String actParams = ThreadLaunch.getInstance().getActivator()
-					.getParams();
+			final String actParams = ThreadLaunch.getInstance().getActivator().getParams();
 			response.getWriter().println(actParams != null ? actParams : "");
 			return;
 		} catch (final NullPointerException e) {
 		}
 
 		try {
-			final String activator = ((String[]) paramsMap
-					.get(ACTIVATORSELECTOR))[0];
+			final String activator = ((String[]) paramsMap.get(ACTIVATORSELECTOR))[0];
 			final String actParams = ((String[]) paramsMap.get(ACTIVATORPARAMS))[0];
 			logger.debug("activator = " + activator);
 			logger.debug("params = " + actParams);
@@ -432,12 +431,11 @@ public class HTTPStatHandler extends Thread implements
 	private void exit() throws IOException {
 		response.setContentType("text/html");
 		response.setStatus(HttpServletResponse.SC_OK);
-		response.getWriter()
-				.println(
-						"<div style='left:30%;top:10%;font-size:26px; width:50%;height:25%;vertical-align:middle;text-align:center;'>"
-								+ "<p>XWHEP Worker has been stopped</p>"
-								+ "<p style='font-size:14px'><i>It will restart on next reboot (if installed)</i></p>"
-								+ "</div>");
+		response.getWriter().println(
+				"<div style='left:30%;top:10%;font-size:26px; width:50%;height:25%;vertical-align:middle;text-align:center;'>"
+						+ "<p>XWHEP Worker has been stopped</p>"
+						+ "<p style='font-size:14px'><i>It will restart on next reboot (if installed)</i></p>"
+						+ "</div>");
 		response.getWriter().flush();
 		logger.fatal("HTTPStatHandler : exit on user request");
 	}
@@ -451,8 +449,7 @@ public class HTTPStatHandler extends Thread implements
 		response.setStatus(HttpServletResponse.SC_OK);
 
 		final String resname = "data/worker.html";
-		final InputStream ls = getClass().getClassLoader().getResourceAsStream(
-				resname);
+		final InputStream ls = getClass().getClassLoader().getResourceAsStream(resname);
 		if ((ls != null) && (ls.available() > 0)) {
 			String content = new String();
 			final byte[] buf = new byte[10240];
@@ -472,12 +469,9 @@ public class HTTPStatHandler extends Thread implements
 	private void workerLevel() throws IOException {
 		if (Worker.getConfig().getUser().getRights().higherThan(UserRightEnum.NONE)) {
 			final boolean groupWorker = (Worker.getConfig().getUser().getGroup() != null);
-			logger.debug(Worker.getConfig().getUser().getRights().toString()
-					+ " .higherOrEquals("
-					+ UserRightEnum.WORKER_USER
-					+ ") = "
-					+ Worker.getConfig().getUser().getRights().higherOrEquals(
-							UserRightEnum.WORKER_USER));
+			logger.debug(Worker.getConfig().getUser().getRights().toString() + " .higherOrEquals("
+					+ UserRightEnum.WORKER_USER + ") = "
+					+ Worker.getConfig().getUser().getRights().higherOrEquals(UserRightEnum.WORKER_USER));
 			final boolean workerUser = Worker.getConfig().getUser().getRights()
 					.higherOrEquals(UserRightEnum.WORKER_USER);
 			String confinement = "Public";
@@ -487,9 +481,7 @@ public class HTTPStatHandler extends Thread implements
 			if (workerUser == false) {
 				confinement = "Private";
 			}
-			response.getWriter().println(
-					confinement + " Worker : this worker runs " + confinement
-							+ " Jobs");
+			response.getWriter().println(confinement + " Worker : this worker runs " + confinement + " Jobs");
 		} else {
 			response.getWriter().println("Unknwon Worker level");
 		}
@@ -497,12 +489,11 @@ public class HTTPStatHandler extends Thread implements
 
 	/**
 	 * This retreives the name of the current application
-	 * 
+	 *
 	 * @throws AccessControlException
 	 * @throws InvalidKeyException
 	 */
-	private void currentApplication() throws IOException,
-			ClassNotFoundException, SAXException, URISyntaxException,
+	private void currentApplication() throws IOException, ClassNotFoundException, SAXException, URISyntaxException,
 			InvalidKeyException, AccessControlException {
 		final Vector runs = ThreadLaunch.getInstance().runningWorks();
 		if (runs.size() <= 0) {
@@ -523,8 +514,7 @@ public class HTTPStatHandler extends Thread implements
 					continue;
 				}
 
-				final AppInterface app = (AppInterface) commClient.get(work
-						.getApplication());
+				final AppInterface app = (AppInterface) commClient.get(work.getApplication());
 
 				response.getWriter().println(app.getName());
 			}
@@ -538,10 +528,8 @@ public class HTTPStatHandler extends Thread implements
 
 		final Enumeration theEnum = activators.keys();
 
-		response.getWriter().println(
-				"<select name='" + ACTIVATORSELECTOR + "' id='"
-						+ ACTIVATORSELECTOR
-						+ "'  onchange='showActHelp(this.form, 170)'>");
+		response.getWriter().println("<select name='" + ACTIVATORSELECTOR + "' id='" + ACTIVATORSELECTOR
+				+ "'  onchange='showActHelp(this.form, 170)'>");
 
 		final String currAct = ThreadLaunch.getInstance().getActivatorName();
 
@@ -550,8 +538,7 @@ public class HTTPStatHandler extends Thread implements
 			final String actClassName = (String) activators.get(act);
 			response.getWriter().print("<option value='" + actClassName + "'");
 
-			final boolean testAct = ((currAct != null) && (currAct
-					.compareToIgnoreCase(actClassName) == 0));
+			final boolean testAct = ((currAct != null) && (currAct.compareToIgnoreCase(actClassName) == 0));
 
 			if (testAct) {
 				response.getWriter().print(" selected='selected'");
@@ -565,8 +552,7 @@ public class HTTPStatHandler extends Thread implements
 	/**
 	 * This set activator with its policy
 	 */
-	private void setActivator(String activator, String actParams)
-			throws IOException {
+	private void setActivator(final String activator, final String actParams) throws IOException {
 
 		if (activator != null) {
 			try {
@@ -586,7 +572,7 @@ public class HTTPStatHandler extends Thread implements
 
 	/**
 	 * This displays projects
-	 * 
+	 *
 	 * @throws URISyntaxException
 	 * @throws SAXException
 	 * @throws AccessControlException
@@ -595,14 +581,11 @@ public class HTTPStatHandler extends Thread implements
 	 * @throws InstantiationException
 	 * @throws ClassNotFoundException
 	 */
-	private void projects() throws IOException, InvalidKeyException,
-			AccessControlException, SAXException, URISyntaxException,
-			ClassNotFoundException, InstantiationException,
-			IllegalAccessException {
+	private void projects() throws IOException, InvalidKeyException, AccessControlException, SAXException,
+			URISyntaxException, ClassNotFoundException, InstantiationException, IllegalAccessException {
 
 		final boolean groupWorker = (Worker.getConfig().getUser().getGroup() != null);
-		final boolean workerUser = Worker.getConfig().getUser().getRights()
-				.higherOrEquals(UserRightEnum.WORKER_USER);
+		final boolean workerUser = Worker.getConfig().getUser().getRights().higherOrEquals(UserRightEnum.WORKER_USER);
 
 		if (groupWorker == false) {
 			if (workerUser) {
@@ -635,13 +618,11 @@ public class HTTPStatHandler extends Thread implements
 				continue;
 			}
 
-			System.out.println("host project "
-					+ Worker.getConfig().getHost().getProject());
+			System.out.println("host project " + Worker.getConfig().getHost().getProject());
 			System.out.println("group label  " + group.getLabel());
 			if (projectLabel == null) {
 				if ((Worker.getConfig().getHost().getProject() != null)
-						&& (Worker.getConfig().getHost().getProject()
-								.compareToIgnoreCase(group.getLabel()) == 0)) {
+						&& (Worker.getConfig().getHost().getProject().compareToIgnoreCase(group.getLabel()) == 0)) {
 					projectLabel = group.getLabel();
 				}
 			}
@@ -656,7 +637,7 @@ public class HTTPStatHandler extends Thread implements
 	/**
 	 * This sets the max number of jobs
 	 */
-	private void groupJobsOnly(String p) {
+	private void groupJobsOnly(final String p) {
 		logger.debug("groupJobsOnly " + p);
 	}
 
@@ -671,8 +652,7 @@ public class HTTPStatHandler extends Thread implements
 			} else {
 				for (final Iterator it = runs.iterator(); it.hasNext();) {
 
-					final CommClient commClient = Worker.getConfig()
-							.defaultCommClient();
+					final CommClient commClient = Worker.getConfig().defaultCommClient();
 					CommClient.setConfig(Worker.getConfig());
 
 					final Work work = (Work) it.next();
@@ -680,8 +660,7 @@ public class HTTPStatHandler extends Thread implements
 						continue;
 					}
 
-					final AppInterface app = (AppInterface) commClient.get(work
-							.getApplication());
+					final AppInterface app = (AppInterface) commClient.get(work.getApplication());
 					response.getWriter().println(" " + app.getName() + "; ");
 				}
 			}
@@ -696,7 +675,7 @@ public class HTTPStatHandler extends Thread implements
 	/**
 	 * This sets the max number of jobs
 	 */
-	private void setMaxRun(int max) {
+	private void setMaxRun(final int max) {
 		Worker.getConfig().setProperty(XWPropertyDefs.COMPUTINGJOBS, "" + max);
 		Worker.getConfig().store();
 	}
@@ -706,8 +685,7 @@ public class HTTPStatHandler extends Thread implements
 	 */
 	private void getMaxRun() {
 		try {
-			response.getWriter().println(
-					"" + Worker.getConfig().getInt(XWPropertyDefs.COMPUTINGJOBS));
+			response.getWriter().println("" + Worker.getConfig().getInt(XWPropertyDefs.COMPUTINGJOBS));
 		} catch (final Exception e) {
 		}
 	}
