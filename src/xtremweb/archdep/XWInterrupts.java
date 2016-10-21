@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -35,7 +35,7 @@ package xtremweb.archdep;
  * <p>
  * <code>xtremweb.worker.MouseKbdActivator</code> uses this intereface
  * </p>
- * 
+ *
  * @see xtremweb.archdep.ArchDepFactory
  * @see xtremweb.worker.MouseKbdActivator
  */
@@ -43,7 +43,7 @@ package xtremweb.archdep;
 public interface XWInterrupts {
 	/**
 	 * This initializes IRQ counter
-	 * 
+	 *
 	 * @return true on success false otherwise
 	 */
 	boolean initialize();

@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -39,7 +39,7 @@ import java.io.FileReader;
  * <p>
  * This implementation directly parse <code>/proc/interrupts</code>
  * </p>
- * 
+ *
  * @author Gilles Fedak
  * @version %I% %G%
  */
@@ -48,25 +48,25 @@ public class XWInterruptsLinux implements XWInterrupts {
 
 	/**
 	 * This does nothing since there is no initialization need here.
-	 * 
+	 *
 	 * @return always true
 	 */
+	@Override
 	public boolean initialize() {
 		return true;
 	}
 
 	/** Read /proc/interrupts to get the number binded to keyboard */
+	@Override
 	public int readKey() {
 
 		try {
-			final BufferedReader bufferFile = new BufferedReader(
-					new FileReader("/proc/interrupts"));
+			final BufferedReader bufferFile = new BufferedReader(new FileReader("/proc/interrupts"));
 			String l = "";
 
 			while (l != null) {
 				if ((l.toLowerCase().indexOf("keyboard") > -1)
-						|| ((l.toLowerCase().indexOf(" 1:") > -1) && (l
-								.toLowerCase().indexOf("i8042") > -1))) {
+						|| ((l.toLowerCase().indexOf(" 1:") > -1) && (l.toLowerCase().indexOf("i8042") > -1))) {
 					l = l.substring(l.indexOf(':') + 1, l.length());
 					l = l.trim();
 					l = l.substring(0, l.indexOf(' '));
@@ -87,10 +87,10 @@ public class XWInterruptsLinux implements XWInterrupts {
 	}
 
 	/** Read /proc/interrupts to get the number binded to mouse */
+	@Override
 	public int readMouse() {
 		try {
-			final BufferedReader bufferFile = new BufferedReader(
-					new FileReader("/proc/interrupts"));
+			final BufferedReader bufferFile = new BufferedReader(new FileReader("/proc/interrupts"));
 			String l = "";
 
 			while (l != null) {
