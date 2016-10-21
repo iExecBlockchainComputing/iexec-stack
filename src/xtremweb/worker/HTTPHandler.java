@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -50,9 +50,9 @@ import xtremweb.communications.IdRpc;
 /**
  * This handles incoming communications through HTTP.<br>
  * This answers request from HTTPClient as well as any web browser
- * 
+ *
  * Created: Octobre 2007
- * 
+ *
  * @see xtremweb.communications.TCPClient
  * @author Oleg Lodygensky
  * @version RPCXW
@@ -64,8 +64,8 @@ public class HTTPHandler extends xtremweb.worker.CommHandler {
 	private HttpServletRequest request;
 	private HttpServletResponse response;
 
-	private IdRpc idRpc;
-	private UserInterface user;
+	private final IdRpc idRpc;
+	private final UserInterface user;
 
 	/**
 	 * This is the default constructor which only calls super("HTTPHandler")
@@ -79,7 +79,7 @@ public class HTTPHandler extends xtremweb.worker.CommHandler {
 	/**
 	 * This is the default constructor which only calls super("HTTPHandler")
 	 */
-	public HTTPHandler(String n) {
+	public HTTPHandler(final String n) {
 		super(n);
 		user = null;
 		idRpc = null;
@@ -87,38 +87,39 @@ public class HTTPHandler extends xtremweb.worker.CommHandler {
 
 	/**
 	 * This constructor call the default constructor
-	 * 
+	 *
 	 * @param socket
 	 *            is not used
 	 * @see #HTTPHandler()
 	 */
-	public HTTPHandler(SSLSocket socket) throws RemoteException {
+	public HTTPHandler(final SSLSocket socket) throws RemoteException {
 		this();
 	}
 
 	/**
 	 * This does nothing
 	 */
-	public void setSocket(SSLSocket s) throws RemoteException {
+	@Override
+	public void setSocket(final SSLSocket s) throws RemoteException {
 	}
 
 	/**
 	 * This does nothing
 	 */
-	public void setSocket(Socket s) throws RemoteException {
+	@Override
+	public void setSocket(final Socket s) throws RemoteException {
 	}
 
 	/**
 	 * This throws an exception since setPacket() is dedicated to UDP comms
-	 * 
+	 *
 	 * @exception RemoteException
 	 *                is always thrown since this method is dedicated to UDP
 	 *                comms
 	 */
-	public void setPacket(DatagramSocket s, DatagramPacket p)
-			throws RemoteException {
-		throw new RemoteException(
-				"HTTPHandler#setPacket() HTTP can't set packet");
+	@Override
+	public void setPacket(final DatagramSocket s, final DatagramPacket p) throws RemoteException {
+		throw new RemoteException("HTTPHandler#setPacket() HTTP can't set packet");
 	}
 
 	/**
@@ -127,10 +128,9 @@ public class HTTPHandler extends xtremweb.worker.CommHandler {
 	 *                is always thrown since this method is dedicated to UDP
 	 *                comms
 	 */
-	public void setPacket(DatagramChannel c, SocketAddress r, BytePacket p)
-			throws RemoteException {
-		throw new RemoteException(
-				"HTTPHandler#setPacket() HTTP can't set packet");
+	@Override
+	public void setPacket(final DatagramChannel c, final SocketAddress r, final BytePacket p) throws RemoteException {
+		throw new RemoteException("HTTPHandler#setPacket() HTTP can't set packet");
 	}
 
 	/**
@@ -138,7 +138,7 @@ public class HTTPHandler extends xtremweb.worker.CommHandler {
 	 * inherited from org.mortbay.jetty.Handler
 	 */
 	@Override
-	public void setServer(Server server) {
+	public void setServer(final Server server) {
 	}
 
 	/**
@@ -153,7 +153,7 @@ public class HTTPHandler extends xtremweb.worker.CommHandler {
 	/**
 	 * This does nothing and must be overidden by any HTTP handler This is
 	 * inherited from org.mortbay.component.LifeCycle
-	 * 
+	 *
 	 * @return true
 	 */
 	@Override
@@ -164,7 +164,7 @@ public class HTTPHandler extends xtremweb.worker.CommHandler {
 	/**
 	 * This does nothing and must be overidden by any HTTP handler This is
 	 * inherited from org.mortbay.component.LifeCycle
-	 * 
+	 *
 	 * @return false
 	 */
 	@Override
@@ -175,7 +175,7 @@ public class HTTPHandler extends xtremweb.worker.CommHandler {
 	/**
 	 * This does nothing and must be overidden by any HTTP handler This is
 	 * inherited from org.mortbay.component.LifeCycle
-	 * 
+	 *
 	 * @return false
 	 */
 	@Override
@@ -186,7 +186,7 @@ public class HTTPHandler extends xtremweb.worker.CommHandler {
 	/**
 	 * This does nothing and must be overidden by any HTTP handler This is
 	 * inherited from org.mortbay.component.LifeCycle
-	 * 
+	 *
 	 * @return false
 	 */
 	@Override
@@ -197,7 +197,7 @@ public class HTTPHandler extends xtremweb.worker.CommHandler {
 	/**
 	 * This does nothing and must be overidden by any HTTP handler This is
 	 * inherited from org.mortbay.component.LifeCycle
-	 * 
+	 *
 	 * @return true
 	 */
 	@Override
@@ -208,7 +208,7 @@ public class HTTPHandler extends xtremweb.worker.CommHandler {
 	/**
 	 * This does nothing and must be overidden by any HTTP handler This is
 	 * inherited from org.mortbay.component.LifeCycle
-	 * 
+	 *
 	 * @return false
 	 */
 	@Override
@@ -225,10 +225,10 @@ public class HTTPHandler extends xtremweb.worker.CommHandler {
 	}
 
 	/**
-     *
-     */
+	 *
+	 */
 	@Override
-	protected void write(XMLable cmd) {
+	protected void write(final XMLable cmd) {
 		final Logger logger = getLogger();
 		try {
 			if (response == null) {
@@ -249,7 +249,7 @@ public class HTTPHandler extends xtremweb.worker.CommHandler {
 	 * This is not implemented and always throws an IOException
 	 */
 	@Override
-	public void writeFile(File f) throws IOException {
+	public void writeFile(final File f) throws IOException {
 		throw new IOException("HTTPHandler#writeFile not implemented");
 	}
 
@@ -257,7 +257,7 @@ public class HTTPHandler extends xtremweb.worker.CommHandler {
 	 * This is not implemented and always throws an IOException
 	 */
 	@Override
-	public void readFile(File f) throws IOException {
+	public void readFile(final File f) throws IOException {
 		throw new IOException("HTTPHandler#readFile not implemented");
 	}
 
@@ -265,14 +265,12 @@ public class HTTPHandler extends xtremweb.worker.CommHandler {
 	 * This handles incoming connections. This is inherited from
 	 * org.mortbay.jetty.Handler. <br />
 	 * This expects a POST parameter : XWPostParams.COMMAND
-	 * 
+	 *
 	 * @see xtremweb.communications.XWPostParams
 	 */
-	public void handle(String target,
-            Request baseRequest,
-            HttpServletRequest _request,
-            HttpServletResponse _response) throws IOException,
-			ServletException {
+	@Override
+	public void handle(final String target, final Request baseRequest, final HttpServletRequest _request,
+			final HttpServletResponse _response) throws IOException, ServletException {
 	}
 
 	/**
@@ -280,11 +278,12 @@ public class HTTPHandler extends xtremweb.worker.CommHandler {
 	 */
 	@Override
 	public void run() {
-	} 
+	}
 
 	/**
 	 * This cleans and closes communications
 	 */
+	@Override
 	public void close() {
 		getLogger().debug("close");
 		io.close();
