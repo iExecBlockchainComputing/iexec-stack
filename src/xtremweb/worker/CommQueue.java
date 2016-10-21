@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -41,7 +41,9 @@ import xtremweb.common.Logger;
 abstract public class CommQueue {
 
 	private Logger logger;
-	/** This defines maximum number of simultaneous messages. Default value is 2 */
+	/**
+	 * This defines maximum number of simultaneous messages. Default value is 2
+	 */
 	public static final int MAX_COMMEVENT_INPROGRESS = 2;
 
 	/** This insert a work request in message queue */
@@ -52,21 +54,21 @@ abstract public class CommQueue {
 
 	/**
 	 * This inserts a send work in message queue
-	 * 
+	 *
 	 * @since 8.3.0
 	 */
 	abstract public void sendWork(Work w);
 
 	/**
 	 * This retreives the next message from queue
-	 * 
+	 *
 	 * @return the next available message, or null if none
 	 */
 	abstract public CommEvent getCommEvent();
 
 	/**
 	 * This removes the message from queue
-	 * 
+	 *
 	 * @param ce
 	 *            is the message to remove
 	 */
@@ -74,14 +76,14 @@ abstract public class CommQueue {
 
 	/**
 	 * This returns the number of events in queue
-	 * 
+	 *
 	 * @return the number of events in queue
 	 */
 	abstract public int size();
 
 	/**
 	 * This returns the number of events of the given type in queue
-	 * 
+	 *
 	 * @param type
 	 *            is the type of the event
 	 * @return the number of events of the given type in queue
@@ -99,7 +101,7 @@ abstract public class CommQueue {
 	 * @param logger
 	 *            the logger to set
 	 */
-	public void setLogger(Logger logger) {
+	public void setLogger(final Logger logger) {
 		this.logger = logger;
 	}
 
