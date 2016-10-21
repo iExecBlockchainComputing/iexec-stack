@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -57,10 +57,10 @@ public final class HostInterface extends Table {
 	/**
 	 * This is the database table name This was stored in
 	 * xtremweb.dispatcher.Host
-	 * 
+	 *
 	 * @since 9.0.0
 	 */
-	public static final String TABLENAME = ("hosts");
+	public static final String TABLENAME = "hosts";
 
 	/**
 	 * This is the XML tag
@@ -77,14 +77,14 @@ public final class HostInterface extends Table {
 		 * the worker will receive this job in priority, if available, and
 		 * according to the match making - CPU, OS... This is has a higher
 		 * priority than batchid
-		 * 
+		 *
 		 * @since 7.2.0
 		 */
 		JOBID {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return an URI representing the column value
@@ -92,7 +92,7 @@ public final class HostInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public URI fromString(String v) throws URISyntaxException {
+			public URI fromString(final String v) throws URISyntaxException {
 				return new URI(v);
 			}
 		},
@@ -101,14 +101,14 @@ public final class HostInterface extends Table {
 		 * set, the worker will receive a job from this group in priority, if
 		 * any, and according to the match making - CPU, OS... This is has a
 		 * lower priority than jobid
-		 * 
+		 *
 		 * @since 7.2.0
 		 */
 		BATCHID {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return an URI representing the column value
@@ -116,7 +116,7 @@ public final class HostInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public URI fromString(String v) throws URISyntaxException {
+			public URI fromString(final String v) throws URISyntaxException {
 				return new URI(v);
 			}
 		},
@@ -126,14 +126,14 @@ public final class HostInterface extends Table {
 		NAME,
 		/**
 		 * This is the column index of the percentage of CPU uable by the worker
-		 * 
+		 *
 		 * @since 8.0.0
 		 */
 		CPULOAD {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return an Integer representing the column value
@@ -141,7 +141,7 @@ public final class HostInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public Integer fromString(String v) {
+			public Integer fromString(final String v) {
 				return Integer.valueOf(v);
 			}
 		},
@@ -152,7 +152,7 @@ public final class HostInterface extends Table {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return an Integer representing the column value
@@ -160,14 +160,14 @@ public final class HostInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public Integer fromString(String v) {
+			public Integer fromString(final String v) {
 				return Integer.valueOf(v);
 			}
 		},
 		/**
 		 * This is the column index of the IP address as provided by worker
 		 * itself This may be a NATed IP address
-		 * 
+		 *
 		 * @since 2.0.0
 		 */
 		NATEDIPADDR,
@@ -186,14 +186,14 @@ public final class HostInterface extends Table {
 		TIMEZONE,
 		/**
 		 * This is the column index of the average ping to server
-		 * 
+		 *
 		 * @since 2.0.0
 		 */
 		AVGPING {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return an Integer representing the column value
@@ -201,20 +201,20 @@ public final class HostInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public Integer fromString(String v) {
+			public Integer fromString(final String v) {
 				return Integer.valueOf(v);
 			}
 		},
 		/**
 		 * This is the column index of the ping amount to server
-		 * 
+		 *
 		 * @since 2.0.0
 		 */
 		NBPING {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return an Integer representing the column value
@@ -222,20 +222,20 @@ public final class HostInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public Integer fromString(String v) {
+			public Integer fromString(final String v) {
 				return Integer.valueOf(v);
 			}
 		},
 		/**
 		 * This is the column index of the upload bandwidth usage (in Mb/s)
-		 * 
+		 *
 		 * @since 2.0.0
 		 */
 		UPLOADBANDWIDTH {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return a Float representing the column value
@@ -243,20 +243,20 @@ public final class HostInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public Float fromString(String v) {
+			public Float fromString(final String v) {
 				return new Float(v);
 			}
 		},
 		/**
 		 * This is the column index of the download bandwidth usage (in Mb/s)
-		 * 
+		 *
 		 * @since 2.0.0
 		 */
 		DOWNLOADBANDWIDTH {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return a Float representing the column value
@@ -264,7 +264,7 @@ public final class HostInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public Float fromString(String v) {
+			public Float fromString(final String v) {
 				return new Float(v);
 			}
 		},
@@ -275,7 +275,7 @@ public final class HostInterface extends Table {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return an XWOses representing the column value
@@ -283,32 +283,32 @@ public final class HostInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public OSEnum fromString(String v) {
+			public OSEnum fromString(final String v) {
 				return OSEnum.valueOf(v.trim());
 			}
 		},
 		/**
 		 * OS version
-		 * 
+		 *
 		 * @since XWHEP 6.0.0
 		 */
 		OSVERSION,
 		/**
 		 * Java version
-		 * 
+		 *
 		 * @since XWHEP 6.0.0
 		 */
 		JAVAVERSION,
 		/**
 		 * Java data model (32 or 64 bits)
-		 * 
+		 *
 		 * @since XWHEP 6.0.0
 		 */
 		JAVADATAMODEL {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return an Integer representing the column value
@@ -316,20 +316,20 @@ public final class HostInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public Integer fromString(String v) {
+			public Integer fromString(final String v) {
 				return Integer.valueOf(v);
 			}
 		},
 		/**
 		 * This is the column index of the pool work size
-		 * 
+		 *
 		 * @since 7.0.0
 		 */
 		POOLWORKSIZE {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return an Integer representing the column value
@@ -337,7 +337,7 @@ public final class HostInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public Integer fromString(String v) {
+			public Integer fromString(final String v) {
 				return Integer.valueOf(v);
 			}
 		},
@@ -348,7 +348,7 @@ public final class HostInterface extends Table {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return an XWCPUs representing the column value
@@ -356,7 +356,7 @@ public final class HostInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public CPUEnum fromString(String v) {
+			public CPUEnum fromString(final String v) {
 				return CPUEnum.valueOf(v.trim());
 			}
 		},
@@ -367,7 +367,7 @@ public final class HostInterface extends Table {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return an Integer representing the column value
@@ -375,7 +375,7 @@ public final class HostInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public Integer fromString(String v) {
+			public Integer fromString(final String v) {
 				return Integer.valueOf(v);
 			}
 		},
@@ -390,7 +390,7 @@ public final class HostInterface extends Table {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return an Integer representing the column value
@@ -398,7 +398,7 @@ public final class HostInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public Integer fromString(String v) {
+			public Integer fromString(final String v) {
 				return new Integer(v);
 			}
 		},
@@ -409,7 +409,7 @@ public final class HostInterface extends Table {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return a Long representing the column value
@@ -417,20 +417,21 @@ public final class HostInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public Long fromString(String v) {
+			public Long fromString(final String v) {
 				return new Long(v);
 			}
 		},
 		/**
-		 * This is the column index of the total available memory, according to the resource owner policy.
-		 * This is in Kb.
+		 * This is the column index of the total available memory, according to
+		 * the resource owner policy. This is in Kb.
+		 *
 		 * @since 9.1.0
 		 */
 		AVAILABLEMEM {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return a Long representing the column value
@@ -438,7 +439,7 @@ public final class HostInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public Integer fromString(String v) {
+			public Integer fromString(final String v) {
 				return new Integer(v);
 			}
 		},
@@ -449,7 +450,7 @@ public final class HostInterface extends Table {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return a Long representing the column value
@@ -457,18 +458,19 @@ public final class HostInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public Long fromString(String v) {
+			public Long fromString(final String v) {
 				return new Long(v);
 			}
 		},
 		/**
-		 * This is the column index of the tmp partition total space. This is in Mb
+		 * This is the column index of the tmp partition total space. This is in
+		 * Mb
 		 */
 		TOTALTMP {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return a Long representing the column value
@@ -476,18 +478,19 @@ public final class HostInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public Long fromString(String v) {
+			public Long fromString(final String v) {
 				return new Long(v);
 			}
 		},
 		/**
-		 * This is the column index of the free space in tmp partition. This is in Mb
+		 * This is the column index of the free space in tmp partition. This is
+		 * in Mb
 		 */
 		FREETMP {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return a Long representing the column value
@@ -495,7 +498,7 @@ public final class HostInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public Long fromString(String v) {
+			public Long fromString(final String v) {
 				return new Long(v);
 			}
 		},
@@ -512,7 +515,7 @@ public final class HostInterface extends Table {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return a Date representing the column value
@@ -520,7 +523,7 @@ public final class HostInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public Date fromString(String v) {
+			public Date fromString(final String v) {
 				return XWTools.getSQLDateTime(v);
 			}
 		},
@@ -532,7 +535,7 @@ public final class HostInterface extends Table {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return a Boolean representing the column value
@@ -540,21 +543,21 @@ public final class HostInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public Boolean fromString(String v) {
+			public Boolean fromString(final String v) {
 				return new Boolean(v);
 			}
 		},
 		/**
 		 * This flag tells whether this host accepts to run jobs that listen for
 		 * incoming connections
-		 * 
+		 *
 		 * @since 8.0.0
 		 */
 		INCOMINGCONNECTIONS {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return a Boolean representing the column value
@@ -562,7 +565,7 @@ public final class HostInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public Boolean fromString(String v) {
+			public Boolean fromString(final String v) {
 				return new Boolean(v);
 			}
 		},
@@ -575,7 +578,7 @@ public final class HostInterface extends Table {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return a Boolean representing the column value
@@ -583,7 +586,7 @@ public final class HostInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public Boolean fromString(String v) {
+			public Boolean fromString(final String v) {
 				return new Boolean(v);
 			}
 		},
@@ -596,7 +599,7 @@ public final class HostInterface extends Table {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return a Boolean representing the column value
@@ -604,20 +607,20 @@ public final class HostInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public Boolean fromString(String v) {
+			public Boolean fromString(final String v) {
 				return new Boolean(v);
 			}
 		},
 		/**
 		 * This is the column index of the service grid identifier, if any
-		 * 
+		 *
 		 * @since 7.0.0
 		 */
 		SGID {
 			/**
 			 * This creates an object from String representation for this column
 			 * value This cleans the parameter to ensure SQL compliance
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return a Boolean representing the column value
@@ -637,7 +640,7 @@ public final class HostInterface extends Table {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return an Integer representing the column value
@@ -645,7 +648,7 @@ public final class HostInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public Integer fromString(String v) {
+			public Integer fromString(final String v) {
 				return Integer.valueOf(v);
 			}
 		},
@@ -657,7 +660,7 @@ public final class HostInterface extends Table {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return a Boolean representing the column value
@@ -665,7 +668,7 @@ public final class HostInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public Boolean fromString(String v) {
+			public Boolean fromString(final String v) {
 				return new Boolean(v);
 			}
 		},
@@ -676,7 +679,7 @@ public final class HostInterface extends Table {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return an Integer representing the column value
@@ -684,7 +687,7 @@ public final class HostInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public Integer fromString(String v) {
+			public Integer fromString(final String v) {
 				return Integer.valueOf(v);
 			}
 		},
@@ -695,7 +698,7 @@ public final class HostInterface extends Table {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return an Integer representing the column value
@@ -703,7 +706,7 @@ public final class HostInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public Integer fromString(String v) {
+			public Integer fromString(final String v) {
 				return Integer.valueOf(v);
 			}
 		},
@@ -715,7 +718,7 @@ public final class HostInterface extends Table {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return a Boolean representing the column value
@@ -723,26 +726,26 @@ public final class HostInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public Boolean fromString(String v) {
+			public Boolean fromString(final String v) {
 				return new Boolean(v);
 			}
 		},
 		/**
 		 * comma separated list of shared application types
-		 * 
+		 *
 		 * @see AppTypeEnum
 		 * @since 8.0.0 (FG)
 		 */
 		SHAREDAPPS,
 		/**
 		 * comma separated list of shared data URIs
-		 * 
+		 *
 		 * @since 8.0.0 (FG)
 		 */
 		SHAREDDATAS,
 		/**
 		 * comma separated list of shared packages names
-		 * 
+		 *
 		 * @since 8.0.0 (FG)
 		 */
 		SHAREDPACKAGES,
@@ -753,14 +756,14 @@ public final class HostInterface extends Table {
 		/**
 		 * This is the column index of the pending job counter; this is updated
 		 * on job submission
-		 * 
+		 *
 		 * @since 7.0.0
 		 */
 		PENDINGJOBS {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return an Integer representing the column value
@@ -768,21 +771,21 @@ public final class HostInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public Integer fromString(String v) {
+			public Integer fromString(final String v) {
 				return Integer.valueOf(v);
 			}
 		},
 		/**
 		 * This is the column index of the running job counter this is updated
 		 * on successfully worker request
-		 * 
+		 *
 		 * @since 7.0.0
 		 */
 		RUNNINGJOBS {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return an Integer representing the column value
@@ -790,21 +793,21 @@ public final class HostInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public Integer fromString(String v) {
+			public Integer fromString(final String v) {
 				return Integer.valueOf(v);
 			}
 		},
 		/**
 		 * This is the column index of the error job counter; this is updated on
 		 * job error
-		 * 
+		 *
 		 * @since 7.0.0
 		 */
 		ERRORJOBS {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return an Integer representing the column value
@@ -812,7 +815,7 @@ public final class HostInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public Integer fromString(String v) {
+			public Integer fromString(final String v) {
 				return Integer.valueOf(v);
 			}
 		},
@@ -823,7 +826,7 @@ public final class HostInterface extends Table {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return an Integer representing the column value
@@ -831,14 +834,14 @@ public final class HostInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public Integer fromString(String v) {
+			public Integer fromString(final String v) {
 				return Integer.valueOf(v);
 			}
 		};
 		/**
 		 * This is the index based on ordinal so that the first value is
 		 * TableColumns + 1
-		 * 
+		 *
 		 * @see xtremweb.common#TableColumns
 		 * @see Enum#ordinal()
 		 * @since 8.2.0
@@ -848,7 +851,7 @@ public final class HostInterface extends Table {
 		/**
 		 * This constructor sets the ord member as ord = this.ordinal +
 		 * TableColumns.SIZE
-		 * 
+		 *
 		 * @since 8.2.0
 		 */
 		Columns() {
@@ -857,49 +860,50 @@ public final class HostInterface extends Table {
 
 		/**
 		 * This retrieves the index based ordinal
-		 * 
+		 *
 		 * @return the index based ordinal
 		 * @since 8.2.0
 		 */
+		@Override
 		public int getOrdinal() {
 			return ord;
 		}
 
 		/**
 		 * This creates a new object from String for the given column
-		 * 
+		 *
 		 * @param v
 		 *            the String representation
 		 * @return v
 		 * @throws Exception
 		 *             is thrown on instantiation error
 		 */
-		public Object fromString(String v) throws Exception {
+		@Override
+		public Object fromString(final String v) throws Exception {
 			return v;
 		}
 
 		/**
 		 * This creates a new object from SQL result set
-		 * 
+		 *
 		 * @param rs
 		 *            is the SQL result set
 		 * @return the object representing the column
 		 * @throws Exception
 		 *             is thrown on instantiation error
 		 */
-		public final Object fromResultSet(ResultSet rs) throws Exception {
+		public final Object fromResultSet(final ResultSet rs) throws Exception {
 			return this.fromString(rs.getString(this.toString()));
 		}
 
 		/**
 		 * This retrieves an Columns from its integer value
-		 * 
+		 *
 		 * @param v
 		 *            is the integer value of the Columns
 		 * @return an Columns
 		 */
-		public static XWBaseColumn fromInt(int v)
-				throws IndexOutOfBoundsException {
+		public static XWBaseColumn fromInt(final int v) throws IndexOutOfBoundsException {
 			try {
 				return TableColumns.fromInt(v);
 			} catch (final Exception e) {
@@ -923,7 +927,7 @@ public final class HostInterface extends Table {
 	 * version. If this version is null, this version is prior to 5.8.0. Before
 	 * 5.8.0, ACCESSRIGHTS did not exist. Then this returns null for this
 	 * column.
-	 * 
+	 *
 	 * @param i
 	 *            is an ordinal of an Columns
 	 * @since 5.8.0
@@ -931,7 +935,7 @@ public final class HostInterface extends Table {
 	 *         ACCESSRIGHTS.ordinal())); column label otherwise
 	 */
 	@Override
-	public String getColumnLabel(int i) throws IndexOutOfBoundsException {
+	public String getColumnLabel(final int i) throws IndexOutOfBoundsException {
 		try {
 			return TableColumns.fromInt(i).toString();
 		} catch (final Exception e) {
@@ -957,44 +961,40 @@ public final class HostInterface extends Table {
 		setAccessRights(XWAccessRights.DEFAULT);
 		setOsVersion(XWPropertyDefs.OSVERSION.defaultValue());
 		setJavaVersion(XWPropertyDefs.JAVAVERSION.defaultValue());
-		setJavaDataModel(Integer.parseInt(XWPropertyDefs.JAVADATAMODEL
-				.defaultValue()));
-		setShortIndexes(new int[] { TableColumns.UID.getOrdinal(),
-				Columns.NAME.getOrdinal() });
+		setJavaDataModel(Integer.parseInt(XWPropertyDefs.JAVADATAMODEL.defaultValue()));
+		setShortIndexes(new int[] { TableColumns.UID.getOrdinal(), Columns.NAME.getOrdinal() });
 	}
 
 	/**
 	 * This constructs an object from DB
-	 * 
+	 *
 	 * @param rs
 	 *            is an SQL request result
 	 * @exception IOException
 	 */
-	public HostInterface(ResultSet rs) throws IOException {
+	public HostInterface(final ResultSet rs) throws IOException {
 		this();
 		fill(rs);
 	}
 
 	/**
 	 * This fills columns from DB
-	 * 
+	 *
 	 * @since 9.0.0
 	 * @param rs
 	 *            is the SQL data set
 	 * @throws IOException
 	 */
 	@Override
-	public void fill(ResultSet rs) throws IOException {
+	public void fill(final ResultSet rs) throws IOException {
 
 		try {
 			setUID((UID) TableColumns.UID.fromResultSet(rs));
 			setOwner((UID) TableColumns.OWNERUID.fromResultSet(rs));
-			setAccessRights((XWAccessRights) TableColumns.ACCESSRIGHTS
-					.fromResultSet(rs));
+			setAccessRights((XWAccessRights) TableColumns.ACCESSRIGHTS.fromResultSet(rs));
 
 			try {
-				setNbConnections((Integer) Columns.NBCONNECTIONS
-						.fromResultSet(rs));
+				setNbConnections((Integer) Columns.NBCONNECTIONS.fromResultSet(rs));
 			} catch (final Exception e) {
 			}
 			try {
@@ -1010,8 +1010,7 @@ public final class HostInterface extends Table {
 			} catch (final Exception e) {
 			}
 			try {
-				setPoolWorkSize((Integer) Columns.POOLWORKSIZE
-						.fromResultSet(rs));
+				setPoolWorkSize((Integer) Columns.POOLWORKSIZE.fromResultSet(rs));
 			} catch (final Exception e) {
 			}
 			try {
@@ -1120,8 +1119,7 @@ public final class HostInterface extends Table {
 			} catch (final Exception e) {
 			}
 			try {
-				setSharedPackages((String) Columns.SHAREDPACKAGES
-						.fromResultSet(rs));
+				setSharedPackages((String) Columns.SHAREDPACKAGES.fromResultSet(rs));
 			} catch (final Exception e) {
 			}
 			try {
@@ -1129,8 +1127,7 @@ public final class HostInterface extends Table {
 			} catch (final Exception e) {
 			}
 			try {
-				setJavaDataModel((Integer) Columns.JAVADATAMODEL
-						.fromResultSet(rs));
+				setJavaDataModel((Integer) Columns.JAVADATAMODEL.fromResultSet(rs));
 			} catch (final Exception e) {
 			}
 			try {
@@ -1146,14 +1143,12 @@ public final class HostInterface extends Table {
 			} catch (final Exception e) {
 			}
 			try {
-				setUploadBandwidth((Float) Columns.UPLOADBANDWIDTH
-						.fromResultSet(rs));
+				setUploadBandwidth((Float) Columns.UPLOADBANDWIDTH.fromResultSet(rs));
 			} catch (final Exception e) {
 				setUploadBandwidth(0);
 			}
 			try {
-				setDownloadBandwidth((Float) Columns.DOWNLOADBANDWIDTH
-						.fromResultSet(rs));
+				setDownloadBandwidth((Float) Columns.DOWNLOADBANDWIDTH.fromResultSet(rs));
 			} catch (final Exception e) {
 				setDownloadBandwidth(0);
 			}
@@ -1173,8 +1168,7 @@ public final class HostInterface extends Table {
 				setAvailable(false);
 			}
 			try {
-				setIncomingConnections((Boolean) Columns.INCOMINGCONNECTIONS
-						.fromResultSet(rs));
+				setIncomingConnections((Boolean) Columns.INCOMINGCONNECTIONS.fromResultSet(rs));
 			} catch (final Exception e) {
 				setIncomingConnections(false);
 			}
@@ -1205,14 +1199,14 @@ public final class HostInterface extends Table {
 
 	/**
 	 * This constructs a new object from XML attributes
-	 * 
+	 *
 	 * @param attrs
 	 *            contains attributes XML representation
 	 * @see Table#fromXml(Attributes)
 	 * @throws IOException
 	 *             on XML error
 	 */
-	public HostInterface(Attributes attrs) {
+	public HostInterface(final Attributes attrs) {
 		this();
 		super.fromXml(attrs);
 	}
@@ -1220,48 +1214,48 @@ public final class HostInterface extends Table {
 	/**
 	 * This creates a new object that will be retrieved with the given SQL
 	 * request
-	 * 
+	 *
 	 * @param r
 	 *            is the SQL request to retrieve host
 	 * @since 9.0.0
 	 */
-	public HostInterface(SQLRequest r) {
+	public HostInterface(final SQLRequest r) {
 		this();
 		setRequest(r);
 	}
 
 	/**
 	 * This calls this(StreamIO.stream(input));
-	 * 
+	 *
 	 * @param input
 	 *            is a String containing an XML representation
 	 */
-	public HostInterface(String input) throws IOException, SAXException {
+	public HostInterface(final String input) throws IOException, SAXException {
 		this(StreamIO.stream(input));
 	}
 
 	/**
 	 * This constructs a new object from an XML file
-	 * 
+	 *
 	 * @param f
 	 *            is the XML file
 	 * @see #HostInterface(InputStream)
 	 */
-	public HostInterface(File f) throws IOException, SAXException {
+	public HostInterface(final File f) throws IOException, SAXException {
 		this(new FileInputStream(f));
 	}
 
 	/**
 	 * This constructs a new object from XML attributes received from input
 	 * stream
-	 * 
+	 *
 	 * @param input
 	 *            is the input stream
 	 * @see XMLReader#read(InputStream)
 	 * @throws IOException
 	 *             on XML error
 	 */
-	public HostInterface(InputStream input) throws IOException, SAXException {
+	public HostInterface(final InputStream input) throws IOException, SAXException {
 		this();
 		final XMLReader reader = new XMLReader(this);
 		try {
@@ -1275,7 +1269,7 @@ public final class HostInterface extends Table {
 	 * This updates this object from interface.
 	 */
 	@Override
-	public void updateInterface(Table hitf) throws IOException {
+	public void updateInterface(final Table hitf) throws IOException {
 		final HostInterface itf = (HostInterface) hitf;
 		if (itf.getAccessRights() != null) {
 			setAccessRights(itf.getAccessRights());
@@ -1351,7 +1345,7 @@ public final class HostInterface extends Table {
 
 	/**
 	 * This retrieves the job URI this worker expects, if any
-	 * 
+	 *
 	 * @return the value of the attribute, or null if not set
 	 * @since 7.2.0
 	 */
@@ -1361,7 +1355,7 @@ public final class HostInterface extends Table {
 
 	/**
 	 * This retrieves the group job URI this worker expects, if any
-	 * 
+	 *
 	 * @return the value of the attribute, or null if not set
 	 * @since 7.2.0
 	 */
@@ -1371,7 +1365,7 @@ public final class HostInterface extends Table {
 
 	/**
 	 * This gets an attribute
-	 * 
+	 *
 	 * @return the value of the attribute, or null if not set
 	 */
 	public Date getLastAlive() {
@@ -1380,7 +1374,7 @@ public final class HostInterface extends Table {
 
 	/**
 	 * This retrieves the upload bandwidth usage
-	 * 
+	 *
 	 * @return the value of the attribute
 	 * @since 2.0.0
 	 */
@@ -1395,7 +1389,7 @@ public final class HostInterface extends Table {
 
 	/**
 	 * This retrieves the download bandwidth usage
-	 * 
+	 *
 	 * @return the value of the attribute
 	 * @since 2.0.0
 	 */
@@ -1412,7 +1406,7 @@ public final class HostInterface extends Table {
 	 * This tests whether this host is eligible for computing. A host is
 	 * deactivated if it has sent a job as ERROR. This can also be (de)activated
 	 * on client request. If this attribute is not set it is forced to true.
-	 * 
+	 *
 	 * @return true if active, false otherwise
 	 */
 	public boolean isActive() {
@@ -1427,7 +1421,7 @@ public final class HostInterface extends Table {
 	/**
 	 * This tests whether this host accept binary application This attribute is
 	 * forced to false if not set.
-	 * 
+	 *
 	 * @return true if binary accepted , false otherwise
 	 */
 	public boolean acceptBin() {
@@ -1442,7 +1436,7 @@ public final class HostInterface extends Table {
 	/**
 	 * This retrieves this host local policy. This is set on alive signal. If
 	 * this attribute is not set it is forced to false
-	 * 
+	 *
 	 * @return true if available, false otherwise
 	 */
 	public boolean isAvailable() {
@@ -1457,14 +1451,13 @@ public final class HostInterface extends Table {
 	/**
 	 * This tells whether this host accepts to run jobs that listen for incoming
 	 * connections. If this attribute is not set it is forced to false
-	 * 
+	 *
 	 * @return true if this host accept incoming connections, false otherwise
 	 * @since 8.0.0
 	 */
 	public boolean incomingConnections() {
 		try {
-			return ((Boolean) getValue(Columns.INCOMINGCONNECTIONS))
-					.booleanValue();
+			return ((Boolean) getValue(Columns.INCOMINGCONNECTIONS)).booleanValue();
 		} catch (final Exception e) {
 		}
 		setIncomingConnections(false);
@@ -1474,7 +1467,7 @@ public final class HostInterface extends Table {
 	/**
 	 * This test if this host is a pilot job (run on a SG resource). If this
 	 * attribute is not set it is forced to false
-	 * 
+	 *
 	 * @return true if this host is pilot job, false otherwise
 	 */
 	public boolean isPilotJob() {
@@ -1489,7 +1482,7 @@ public final class HostInterface extends Table {
 	/**
 	 * This tests if this host collects traces. If this attribute is not set it
 	 * is forced to false
-	 * 
+	 *
 	 * @return true if collecting traces, false otherwise
 	 */
 	public boolean isTracing() {
@@ -1504,7 +1497,7 @@ public final class HostInterface extends Table {
 	/**
 	 * This retrieves the amount of computed jobs. If this attribute is not set
 	 * it is forced to 0.
-	 * 
+	 *
 	 * @return the value of this attribute
 	 */
 	public int getNbJobs() {
@@ -1519,7 +1512,7 @@ public final class HostInterface extends Table {
 	/**
 	 * This gets the amount of pending jobs for this user. If this attribute is
 	 * not set it is forced to 0.
-	 * 
+	 *
 	 * @return the value of this attribute
 	 * @since 7.0.0
 	 */
@@ -1535,7 +1528,7 @@ public final class HostInterface extends Table {
 	/**
 	 * This gets the amount of running jobs on this host. If this attribute is
 	 * not set it is forced to 0.
-	 * 
+	 *
 	 * @return the value of this attribute
 	 * @since 7.0.0
 	 */
@@ -1551,7 +1544,7 @@ public final class HostInterface extends Table {
 	/**
 	 * This gets the amount of error jobs for this host. If this attribute is
 	 * not set it is forced to 0.
-	 * 
+	 *
 	 * @return the value of this attribute
 	 * @since 7.0.0
 	 */
@@ -1567,7 +1560,7 @@ public final class HostInterface extends Table {
 	/**
 	 * This retrieves the timeout. If this attribute is not set it is forced to
 	 * its default value.
-	 * 
+	 *
 	 * @return the value of this attribute
 	 * @see XWPropertyDefs#TIMEOUT
 	 */
@@ -1582,7 +1575,7 @@ public final class HostInterface extends Table {
 
 	/**
 	 * This tells whether the worker tries to pool as fast as possible
-	 * 
+	 *
 	 * @return true is timeout is 0, false otherwise
 	 */
 	public boolean isRealTime() {
@@ -1592,7 +1585,7 @@ public final class HostInterface extends Table {
 	/**
 	 * This retrieves the time shift. If this attribute is not set it is forced
 	 * to 0.
-	 * 
+	 *
 	 * @return the value of this attribute
 	 */
 	public int getTimeShift() {
@@ -1607,7 +1600,7 @@ public final class HostInterface extends Table {
 	/**
 	 * This get the average execution time. If this attribute is not set it is
 	 * forced to 0.
-	 * 
+	 *
 	 * @return the value of this attribute
 	 */
 	public int getAvgExecTime() {
@@ -1622,7 +1615,7 @@ public final class HostInterface extends Table {
 	/**
 	 * This retrieves the percentage of CPU usable by the worker If this
 	 * attribute is not set it is forced to its default value.
-	 * 
+	 *
 	 * @return the value of this attribute
 	 * @see XWPropertyDefs#CPULOAD
 	 * @since 8.0.0
@@ -1640,7 +1633,7 @@ public final class HostInterface extends Table {
 	/**
 	 * This retrieves the amount of connections for this host. If this attribute
 	 * is not set it is reseted to 0.
-	 * 
+	 *
 	 * @return the value of this attribute
 	 */
 	public int getNbConnections() {
@@ -1655,7 +1648,7 @@ public final class HostInterface extends Table {
 	/**
 	 * This retrieves the amount of ping. If this attribute is not set it is
 	 * reseted to 0.
-	 * 
+	 *
 	 * @return the value of this attribute
 	 * @since 2.0.0
 	 */
@@ -1671,7 +1664,7 @@ public final class HostInterface extends Table {
 	/**
 	 * This retrieves the ping average. If this attribute is not set it is
 	 * reseted to 0.
-	 * 
+	 *
 	 * @return the value of this attribute
 	 * @since 2.0.0
 	 */
@@ -1687,7 +1680,7 @@ public final class HostInterface extends Table {
 	/**
 	 * This gets the amount of simultaneous jobs. If this attribute is not set
 	 * it is reseted to 1
-	 * 
+	 *
 	 * @return the value of this attribute
 	 * @since 7.0.0
 	 */
@@ -1703,7 +1696,7 @@ public final class HostInterface extends Table {
 	/**
 	 * This retrieves the amount of cores (not only CPU, but cores) If this
 	 * attribute is not set it is reseted to 1
-	 * 
+	 *
 	 * @return the value of this attribute
 	 */
 	public int getCpuNb() {
@@ -1717,8 +1710,8 @@ public final class HostInterface extends Table {
 
 	/**
 	 * This retrieves CPU speed in MHz If this attribute is not set it is
-	 * reseted to 0
-	 * This is in Mhz
+	 * reseted to 0 This is in Mhz
+	 *
 	 * @return the value of this attribute
 	 */
 	public int getCpuSpeed() {
@@ -1732,9 +1725,8 @@ public final class HostInterface extends Table {
 
 	/**
 	 * This retrieves the total amount of RAM. If this attribute is not set it
-	 * is reseted to 0.
-	 * This is in Kb.
-	 * 
+	 * is reseted to 0. This is in Kb.
+	 *
 	 * @return the total amount of RAM in Kb
 	 */
 	public long getTotalMem() {
@@ -1747,9 +1739,10 @@ public final class HostInterface extends Table {
 	}
 
 	/**
-	 * This retrieves the total amount of available RAM, according to the resource owner policy.
-	 * If this attribute is not set it is reseted to 0.
+	 * This retrieves the total amount of available RAM, according to the
+	 * resource owner policy. If this attribute is not set it is reseted to 0.
 	 * This is in Kb.
+	 *
 	 * @since 9.1.0
 	 * @return the total amount of RAM in Kb
 	 */
@@ -1763,9 +1756,9 @@ public final class HostInterface extends Table {
 	}
 
 	/**
-	 * This retrieves the amount of swap space. If this attribute is
-	 * not set it is reseted to 0. This is in Mb
-	 * 
+	 * This retrieves the amount of swap space. If this attribute is not set it
+	 * is reseted to 0. This is in Mb
+	 *
 	 * @return the total amount of swap in Mb
 	 */
 	public long getTotalSwap() {
@@ -1780,7 +1773,7 @@ public final class HostInterface extends Table {
 	/**
 	 * This gets the total space in temporary disk. If this attribute is not set
 	 * it is reseted to 0. This is in Mb
-	 * 
+	 *
 	 * @return the total disk space in Mb
 	 * @since 7.0.0
 	 */
@@ -1796,7 +1789,7 @@ public final class HostInterface extends Table {
 	/**
 	 * This retrieves the free space in temporary disk. If this attribute is not
 	 * set it is reseted to 0. This is in Mb
-	 * 
+	 *
 	 * @return the total amount of free disk space in Mb
 	 * @since 7.0.0
 	 */
@@ -1811,12 +1804,12 @@ public final class HostInterface extends Table {
 
 	/**
 	 * This retrieves the host name
-	 * 
+	 *
 	 * @return this attribute, or null if not set
 	 */
 	public String getName() {
 		try {
-			return ((String) getValue(Columns.NAME));
+			return (String) getValue(Columns.NAME);
 		} catch (final Exception e) {
 		}
 		return null;
@@ -1825,13 +1818,13 @@ public final class HostInterface extends Table {
 	/**
 	 * This retrieves the IP address as provided by worker itself. This may be a
 	 * NATed IP
-	 * 
+	 *
 	 * @return this attribute, or null if not set
 	 * @since 2.0.0
 	 */
 	public String getNatedIPAddr() {
 		try {
-			return ((String) getValue(Columns.NATEDIPADDR));
+			return (String) getValue(Columns.NATEDIPADDR);
 		} catch (final Exception e) {
 		}
 		return null;
@@ -1841,13 +1834,13 @@ public final class HostInterface extends Table {
 	 * This retrieves the IP address obtained at connection time. This is set by
 	 * server at connection time. This is the public IP address. This may be
 	 * different from NATed IP.
-	 * 
+	 *
 	 * @return the public IP address, or null if not set
 	 * @since 2.0.0
 	 */
 	public String getIPAddr() {
 		try {
-			return ((String) getValue(Columns.IPADDR));
+			return (String) getValue(Columns.IPADDR);
 		} catch (final Exception e) {
 		}
 		return null;
@@ -1855,12 +1848,12 @@ public final class HostInterface extends Table {
 
 	/**
 	 * This retrieves the MAC addresss
-	 * 
+	 *
 	 * @return this attribute, or null if not set
 	 */
 	public String getHWAddr() {
 		try {
-			return ((String) getValue(Columns.HWADDR));
+			return (String) getValue(Columns.HWADDR);
 		} catch (final Exception e) {
 		}
 		return null;
@@ -1868,12 +1861,12 @@ public final class HostInterface extends Table {
 
 	/**
 	 * This retrieves the time zone
-	 * 
+	 *
 	 * @return this attribute, or null if not set
 	 */
 	public String getTimeZone() {
 		try {
-			return ((String) getValue(Columns.TIMEZONE));
+			return (String) getValue(Columns.TIMEZONE);
 		} catch (final Exception e) {
 		}
 		return null;
@@ -1881,7 +1874,7 @@ public final class HostInterface extends Table {
 
 	/**
 	 * This retrieves the operating system
-	 * 
+	 *
 	 * @return this attribute, or null if not set
 	 */
 	public OSEnum getOs() {
@@ -1890,7 +1883,7 @@ public final class HostInterface extends Table {
 
 	/**
 	 * This retrieves the operating system version
-	 * 
+	 *
 	 * @return this attribute, or null if not set
 	 * @since 6.0.0
 	 */
@@ -1900,7 +1893,7 @@ public final class HostInterface extends Table {
 
 	/**
 	 * This retrieves the java version
-	 * 
+	 *
 	 * @return this attribute, or null if not set
 	 * @since 6.0.0
 	 */
@@ -1910,7 +1903,7 @@ public final class HostInterface extends Table {
 
 	/**
 	 * This retrieves the java data model (32 or 64 bits)
-	 * 
+	 *
 	 * @return this attribute, or null if not set
 	 * @since 6.0.0
 	 */
@@ -1920,7 +1913,7 @@ public final class HostInterface extends Table {
 
 	/**
 	 * This retrieves the CPU
-	 * 
+	 *
 	 * @return this attribute, or null if not set
 	 */
 	public CPUEnum getCpu() {
@@ -1929,12 +1922,12 @@ public final class HostInterface extends Table {
 
 	/**
 	 * This retrieves the CPU model
-	 * 
+	 *
 	 * @return this attribute, or null if not set
 	 */
 	public String getCpuModel() {
 		try {
-			return ((String) getValue(Columns.CPUMODEL));
+			return (String) getValue(Columns.CPUMODEL);
 		} catch (final Exception e) {
 		}
 		return null;
@@ -1942,12 +1935,12 @@ public final class HostInterface extends Table {
 
 	/**
 	 * This retrieves the XWHEP middleware version
-	 * 
+	 *
 	 * @return this attribute, or null if not set
 	 */
 	public String getVersion() {
 		try {
-			return ((String) getValue(Columns.VERSION));
+			return (String) getValue(Columns.VERSION);
 		} catch (final Exception e) {
 		}
 		return null;
@@ -1955,13 +1948,13 @@ public final class HostInterface extends Table {
 
 	/**
 	 * This retrieves shared applications
-	 * 
+	 *
 	 * @return this attribute, or null if not set
 	 * @since 8.0.0
 	 */
 	public String getSharedApps() {
 		try {
-			return ((String) getValue(Columns.SHAREDAPPS));
+			return (String) getValue(Columns.SHAREDAPPS);
 		} catch (final Exception e) {
 		}
 		return null;
@@ -1969,13 +1962,13 @@ public final class HostInterface extends Table {
 
 	/**
 	 * This retrieves shared data
-	 * 
+	 *
 	 * @return this attribute, or null if not set
 	 * @since 8.0.0
 	 */
 	public String getSharedDatas() {
 		try {
-			return ((String) getValue(Columns.SHAREDDATAS));
+			return (String) getValue(Columns.SHAREDDATAS);
 		} catch (final Exception e) {
 		}
 		return null;
@@ -1983,13 +1976,13 @@ public final class HostInterface extends Table {
 
 	/**
 	 * This retrieves shared packages
-	 * 
+	 *
 	 * @return this attribute, or null if not set
 	 * @since 8.0.0
 	 */
 	public String getSharedPackages() {
 		try {
-			return ((String) getValue(Columns.SHAREDPACKAGES));
+			return (String) getValue(Columns.SHAREDPACKAGES);
 		} catch (final Exception e) {
 		}
 		return null;
@@ -1998,12 +1991,12 @@ public final class HostInterface extends Table {
 	/**
 	 * This retrieves project, if any. Project being the group of users this
 	 * host works exclusively for.
-	 * 
+	 *
 	 * @return this attribute, or null if not set
 	 */
 	public String getProject() {
 		try {
-			return ((String) getValue(Columns.PROJECT));
+			return (String) getValue(Columns.PROJECT);
 		} catch (final Exception e) {
 		}
 		return null;
@@ -2012,7 +2005,7 @@ public final class HostInterface extends Table {
 	/**
 	 * This sets parameter value; this is called from
 	 * TableInterface#fromXml(Attributes)
-	 * 
+	 *
 	 * @param attribute
 	 *            is the name of the attribute to set
 	 * @param v
@@ -2021,50 +2014,49 @@ public final class HostInterface extends Table {
 	 * @see Table#fromXml(Attributes)
 	 */
 	@Override
-	public final boolean setValue(String attribute, Object v)
-			throws IllegalArgumentException {
-		final String A = attribute.toUpperCase();
+	public final boolean setValue(final String attribute, final Object v) throws IllegalArgumentException {
+		final String uppercaseAttr = attribute.toUpperCase();
 		try {
-			return setValue(TableColumns.valueOf(A), v);
+			return setValue(TableColumns.valueOf(uppercaseAttr), v);
 		} catch (final Exception e) {
-			return setValue(Columns.valueOf(A), v);
+			return setValue(Columns.valueOf(uppercaseAttr), v);
 		}
 	}
 
 	/**
 	 * This sets the URI of the job id
-	 * 
+	 *
 	 * @return true if value has changed, false otherwise
 	 * @since 7.2.0
 	 */
-	public boolean setJobId(URI v) {
+	public boolean setJobId(final URI v) {
 		return setValue(Columns.JOBID, v);
 	}
 
 	/**
 	 * This sets the URI of the group job id
-	 * 
+	 *
 	 * @return true if value has changed, false otherwise
 	 * @since 7.2.0
 	 */
-	public boolean setBatchId(URI v) {
+	public boolean setBatchId(final URI v) {
 		return setValue(Columns.BATCHID, v);
 	}
 
 	/**
 	 * This sets the percentage of CPU usable by the worker
-	 * 
+	 *
 	 * @return true if value has changed, false otherwise
 	 * @since 8.0.0
 	 */
-	public boolean setCpuLoad(int v) {
+	public boolean setCpuLoad(final int v) {
 		return setValue(Columns.CPULOAD, Integer.valueOf(v));
 	}
 
 	/**
 	 * @return true if value has changed, false otherwise
 	 */
-	public boolean setNbConnections(int v) {
+	public boolean setNbConnections(final int v) {
 		return setValue(Columns.NBCONNECTIONS, Integer.valueOf(v));
 	}
 
@@ -2072,7 +2064,7 @@ public final class HostInterface extends Table {
 	 * @return true if value has changed, false otherwise
 	 * @since 2.0.0
 	 */
-	public boolean setNbPing(int v) {
+	public boolean setNbPing(final int v) {
 		return setValue(Columns.NBPING, Integer.valueOf(v));
 	}
 
@@ -2080,18 +2072,18 @@ public final class HostInterface extends Table {
 	 * @return true if value has changed, false otherwise
 	 * @since 2.0.0
 	 */
-	public boolean setAvgPing(int v) {
+	public boolean setAvgPing(final int v) {
 		return setValue(Columns.AVGPING, Integer.valueOf(v));
 	}
 
 	/**
 	 * This increments NbPing and recalculates avg ping
-	 * 
+	 *
 	 * @param v
 	 *            is the last ping
 	 * @since 2.0.0
 	 */
-	public void incAvgPing(int v) {
+	public void incAvgPing(final int v) {
 
 		int nbpings = getNbPing();
 		int avg = getAvgPing();
@@ -2116,15 +2108,14 @@ public final class HostInterface extends Table {
 	/**
 	 * This calculates the upload bandwidth usage in Mb/s, providing the
 	 * transfert delay
-	 * 
+	 *
 	 * @param transfert
 	 *            is the delay needed to upload data content
 	 * @param size
 	 *            is the transfert size in bytes
 	 * @since 2.0.0
 	 */
-	public void setUploadBandwidth(long transfert, long size)
-			throws IOException {
+	public void setUploadBandwidth(final long transfert, final long size) throws IOException {
 		final long s = size / (1024 * 1024);
 		final float b = s / transfert;
 		setUploadBandwidth(b);
@@ -2132,26 +2123,25 @@ public final class HostInterface extends Table {
 
 	/**
 	 * This sets this data upload bandwidth usage (in Mb/s)
-	 * 
+	 *
 	 * @return true is value has changed
 	 * @since 2.0.0
 	 */
-	public boolean setUploadBandwidth(float v) {
+	public boolean setUploadBandwidth(final float v) {
 		return setValue(Columns.UPLOADBANDWIDTH, Float.valueOf(v));
 	}
 
 	/**
 	 * This calculates the download bandwidth usage in Mb/s, providing the
 	 * transfer delay
-	 * 
+	 *
 	 * @param transfert
 	 *            is the delay needed to download data content
 	 * @param size
 	 *            is the transfer size in bytes
 	 * @since 2.0.0
 	 */
-	public void setDownloadBandwidth(long transfert, long size)
-			throws IOException {
+	public void setDownloadBandwidth(final long transfert, final long size) throws IOException {
 		final long s = size / (1024 * 1024);
 		final float b = s / transfert;
 		setDownloadBandwidth(b);
@@ -2159,54 +2149,54 @@ public final class HostInterface extends Table {
 
 	/**
 	 * This sets this data download bandwidth usage (in Mb/s)
-	 * 
+	 *
 	 * @return true is value has changed
 	 * @since 2.0.0
 	 */
-	public boolean setDownloadBandwidth(float v) {
+	public boolean setDownloadBandwidth(final float v) {
 		return setValue(Columns.DOWNLOADBANDWIDTH, Float.valueOf(v));
 	}
 
 	/**
 	 * @return true if value has changed, false otherwise
 	 */
-	public boolean setNbJobs(int v) {
+	public boolean setNbJobs(final int v) {
 		return setValue(Columns.NBJOBS, Integer.valueOf(v < 0 ? 0 : v));
 	}
 
 	/**
 	 * This sets amount of pending jobs
-	 * 
+	 *
 	 * @return true is value has changed
 	 * @since 7.0.0
 	 */
-	public boolean setPendingJobs(int v) {
+	public boolean setPendingJobs(final int v) {
 		return setValue(Columns.PENDINGJOBS, Integer.valueOf(v < 0 ? 0 : v));
 	}
 
 	/**
 	 * This sets amout of running jobs
-	 * 
+	 *
 	 * @return true is value has changed
 	 * @since 7.0.0
 	 */
-	public boolean setRunningJobs(int v) {
+	public boolean setRunningJobs(final int v) {
 		return setValue(Columns.RUNNINGJOBS, Integer.valueOf(v < 0 ? 0 : v));
 	}
 
 	/**
 	 * This sets amount of erroneus jobs
-	 * 
+	 *
 	 * @return true is value has changed
 	 * @since 7.0.0
 	 */
-	public boolean setErrorJobs(int v) {
+	public boolean setErrorJobs(final int v) {
 		return setValue(Columns.ERRORJOBS, Integer.valueOf(v < 0 ? 0 : v));
 	}
 
 	/**
 	 * This increments the amount of executed jobs for this application
-	 * 
+	 *
 	 * @since 7.0.0
 	 */
 	public void incNbJobs() {
@@ -2215,7 +2205,7 @@ public final class HostInterface extends Table {
 
 	/**
 	 * This increments the amount of pending jobs for this application
-	 * 
+	 *
 	 * @since 7.0.0
 	 */
 	public void incPendingJobs() {
@@ -2224,7 +2214,7 @@ public final class HostInterface extends Table {
 
 	/**
 	 * This increments the amount of running jobs for this application
-	 * 
+	 *
 	 * @since 7.0.0
 	 */
 	public void incRunningJobs() {
@@ -2233,7 +2223,7 @@ public final class HostInterface extends Table {
 
 	/**
 	 * This increments the amount of erroneus jobs for this application
-	 * 
+	 *
 	 * @since 7.0.0
 	 */
 	public void incErrorJobs() {
@@ -2242,7 +2232,7 @@ public final class HostInterface extends Table {
 
 	/**
 	 * This decrements the amount of pending jobs for this application
-	 * 
+	 *
 	 * @since 7.0.0
 	 */
 	public void decPendingJobs() {
@@ -2251,7 +2241,7 @@ public final class HostInterface extends Table {
 
 	/**
 	 * This decrements the amount of running jobs for this application
-	 * 
+	 *
 	 * @since 7.0.0
 	 */
 	public void decRunningJobs() {
@@ -2261,27 +2251,25 @@ public final class HostInterface extends Table {
 	/**
 	 * @return true if value has changed, false otherwise
 	 */
-	public boolean setTimeOut(int v) {
-		Integer i = Integer.valueOf(v);
+	public boolean setTimeOut(final int v) {
+		final Integer i = Integer.valueOf(v);
 		final boolean ret = setValue(Columns.TIMEOUT, i);
-		i = null;
 		return ret;
 	}
 
 	/**
 	 * @return true if value has changed, false otherwise
 	 */
-	public boolean setTimeShift(int v) {
-		Integer i = Integer.valueOf(v);
+	public boolean setTimeShift(final int v) {
+		final Integer i = Integer.valueOf(v);
 		final boolean ret = setValue(Columns.TIMESHIFT, i);
-		i = null;
 		return ret;
 	}
 
 	/**
 	 * @return true if value has changed, false otherwise
 	 */
-	public boolean setAvgExecTime(int v) {
+	public boolean setAvgExecTime(final int v) {
 		Integer i = null;
 		if (v < 0) {
 			i = new Integer(0);
@@ -2295,11 +2283,11 @@ public final class HostInterface extends Table {
 
 	/**
 	 * This increments NbJobs and recalculates avg exec time
-	 * 
+	 *
 	 * @param v
 	 *            is the last execution time
 	 */
-	public void incAvgExecTime(int v) {
+	public void incAvgExecTime(final int v) {
 		int nbJobs = getNbJobs();
 		int avg = getAvgExecTime();
 
@@ -2321,45 +2309,52 @@ public final class HostInterface extends Table {
 
 	/**
 	 * This set the amount of simultaneous jobs
-	 * 
+	 *
 	 * @return true if value has changed, false otherwise
 	 * @since 7.0.0
 	 */
-	public boolean setPoolWorkSize(int v) {
+	public boolean setPoolWorkSize(final int v) {
 		return setValue(Columns.POOLWORKSIZE, Integer.valueOf(v));
 	}
 
 	/**
 	 * @return true if value has changed, false otherwise
 	 */
-	public boolean setCpuNb(int v) {
+	public boolean setCpuNb(final int v) {
 		return setValue(Columns.CPUNB, Integer.valueOf(v));
 	}
 
 	/**
 	 * This sets this host CPU speed
-	 * @param v is the CPU speed in MHz
+	 *
+	 * @param v
+	 *            is the CPU speed in MHz
 	 * @return true if value has changed, false otherwise
 	 */
-	public boolean setCpuSpeed(int v) {
+	public boolean setCpuSpeed(final int v) {
 		return setValue(Columns.CPUSPEED, Integer.valueOf(v));
 	}
 
 	/**
 	 * This sets the amount of RAM
-	 * @param v is the total amount of RAM in Kb
+	 *
+	 * @param v
+	 *            is the total amount of RAM in Kb
 	 * @return true if value has changed, false otherwise
 	 */
 	public boolean setTotalMem(final long v) {
 		return setValue(Columns.TOTALMEM, Long.valueOf(v));
 	}
+
 	/**
-	 * This sets the minimal amount of available RAM this host give to a job, in Kb.
-	 * This must comply to resource owner policy.
-	 * Provided value must be positive and can not exceed XWPropertyDefs.MAXRAMSPACE.
-	 * If(v > XWPropertyDefs.MAXDISKSPACE) v is forced to XWPropertyDefs.MAXDISKSPACE.
+	 * This sets the minimal amount of available RAM this host give to a job, in
+	 * Kb. This must comply to resource owner policy. Provided value must be
+	 * positive and can not exceed XWPropertyDefs.MAXRAMSPACE. If(v >
+	 * XWPropertyDefs.MAXDISKSPACE) v is forced to XWPropertyDefs.MAXDISKSPACE.
 	 * If(v < 0) v is forced to 0.
-	 * @param v is the minimal amount of RAM this work needs in Kb.
+	 *
+	 * @param v
+	 *            is the minimal amount of RAM this work needs in Kb.
 	 * @return true if value has changed, false otherwise
 	 * @see XWPropertyDefs#MAXRAMSPACE
 	 * @since 9.1.0
@@ -2368,90 +2363,94 @@ public final class HostInterface extends Table {
 		try {
 			final String sysValueStr = System.getProperty(XWPropertyDefs.MAXRAMSPACE.toString());
 			final String maxValueStr = sysValueStr == null ? XWPropertyDefs.MAXRAMSPACE.defaultValue() : sysValueStr;
-			final long maxValue = Long.valueOf(maxValueStr); 
+			final long maxValue = Long.parseLong(maxValueStr);
 			final long value = v > maxValue ? maxValue : v;
 			return setValue(Columns.AVAILABLEMEM, Long.valueOf(value < 0 ? 0 : value));
-		} catch(Exception e) {
+		} catch (final Exception e) {
 			return setValue(Columns.AVAILABLEMEM, Long.valueOf(v));
 		}
 	}
 
 	/**
-	 * @param v is in Mb
+	 * @param v
+	 *            is in Mb
 	 * @return true if value has changed, false otherwise
 	 */
-	public boolean setTotalSwap(long v) {
+	public boolean setTotalSwap(final long v) {
 		return setValue(Columns.TOTALSWAP, Long.valueOf(v));
 	}
 
 	/**
 	 * This sets total space in tmp disk partition
-	 * @param v is in Mb
+	 *
+	 * @param v
+	 *            is in Mb
 	 * @return true if value has changed, false otherwise
 	 * @since 7.0.0
 	 */
-	public boolean setTotalTmp(long v) {
+	public boolean setTotalTmp(final long v) {
 		return setValue(Columns.TOTALTMP, Long.valueOf(v));
 	}
 
 	/**
 	 * This sets free space in tmp disk partition
-	 * 
-	 * @param v is in Mb
+	 *
+	 * @param v
+	 *            is in Mb
 	 * @return true if value has changed, false otherwise
 	 * @since 7.0.0
 	 */
-	public boolean setFreeTmp(long v) {
+	public boolean setFreeTmp(final long v) {
 		return setValue(Columns.FREETMP, Long.valueOf(v));
 	}
 
 	/**
 	 * @return true if value has changed, false otherwise
 	 */
-	public boolean setName(String v) {
-		return setValue(Columns.NAME, (v == null ? null : v));
+	public boolean setName(final String v) {
+		return setValue(Columns.NAME, v == null ? null : v);
 	}
 
 	/**
 	 * This retrieves the IP address as provided by worker itself. This may be a
 	 * NATed IP
-	 * 
+	 *
 	 * @return true if value has changed, false otherwise
 	 * @since 2.0.0
 	 */
-	public boolean setNatedIPAddr(String v) {
-		return setValue(Columns.NATEDIPADDR, (v == null ? null : v));
+	public boolean setNatedIPAddr(final String v) {
+		return setValue(Columns.NATEDIPADDR, v == null ? null : v);
 	}
 
 	/**
 	 * This retrieves the IP address obtained at connexion time. This is set by
 	 * server at connexion time. This may be different from NATed IP.
-	 * 
+	 *
 	 * @return the expected parameter
 	 * @since 2.0.0
 	 */
-	public boolean setIPAddr(String v) {
-		return setValue(Columns.IPADDR, (v == null ? null : v));
+	public boolean setIPAddr(final String v) {
+		return setValue(Columns.IPADDR, v == null ? null : v);
 	}
 
 	/**
 	 * @return true if value has changed, false otherwise
 	 */
-	public boolean setHWAddr(String v) {
-		return setValue(Columns.HWADDR, (v == null ? null : v));
+	public boolean setHWAddr(final String v) {
+		return setValue(Columns.HWADDR, v == null ? null : v);
 	}
 
 	/**
 	 * @return true if value has changed, false otherwise
 	 */
-	public boolean setTimeZone(String v) {
-		return setValue(Columns.TIMEZONE, (v == null ? null : v));
+	public boolean setTimeZone(final String v) {
+		return setValue(Columns.TIMEZONE, v == null ? null : v);
 	}
 
 	/**
 	 * @return true if value has changed, false otherwise
 	 */
-	public boolean setOs(OSEnum v) {
+	public boolean setOs(final OSEnum v) {
 		return setValue(Columns.OS, v);
 	}
 
@@ -2459,7 +2458,7 @@ public final class HostInterface extends Table {
 	 * @return true if value has changed, false otherwise
 	 * @since 6.0.0
 	 */
-	public boolean setOsVersion(String v) {
+	public boolean setOsVersion(final String v) {
 		return setValue(Columns.OSVERSION, v);
 	}
 
@@ -2467,7 +2466,7 @@ public final class HostInterface extends Table {
 	 * @return true if value has changed, false otherwise
 	 * @since 6.0.0
 	 */
-	public boolean setJavaVersion(String v) {
+	public boolean setJavaVersion(final String v) {
 		return setValue(Columns.JAVAVERSION, v);
 	}
 
@@ -2475,72 +2474,72 @@ public final class HostInterface extends Table {
 	 * @return true if value has changed, false otherwise
 	 * @since 6.0.0
 	 */
-	public boolean setJavaDataModel(int v) {
+	public boolean setJavaDataModel(final int v) {
 		return setValue(Columns.JAVADATAMODEL, v);
 	}
 
 	/**
 	 * @return true if value has changed, false otherwise
 	 */
-	public boolean setCpu(CPUEnum v) {
+	public boolean setCpu(final CPUEnum v) {
 		return setValue(Columns.CPUTYPE, v);
 	}
 
 	/**
 	 * @return true if value has changed, false otherwise
 	 */
-	public boolean setCpuModel(String v) {
-		return setValue(Columns.CPUMODEL, (v == null ? null : v));
+	public boolean setCpuModel(final String v) {
+		return setValue(Columns.CPUMODEL, v == null ? null : v);
 	}
 
 	/**
 	 * @return true if value has changed, false otherwise
 	 */
-	public boolean setVersion(String v) {
-		return setValue(Columns.VERSION, (v == null ? null : v));
+	public boolean setVersion(final String v) {
+		return setValue(Columns.VERSION, v == null ? null : v);
 	}
 
 	/**
 	 * This sets this host Shared applications
-	 * 
+	 *
 	 * @return true if value has changed, false otherwise
 	 * @since 8.0.0 (FG)
 	 */
-	public boolean setSharedApps(String v) {
-		return setValue(Columns.SHAREDAPPS, (v == null ? null : v));
+	public boolean setSharedApps(final String v) {
+		return setValue(Columns.SHAREDAPPS, v == null ? null : v);
 	}
 
 	/**
 	 * This sets this host shared data
-	 * 
+	 *
 	 * @return true if value has changed, false otherwise
 	 * @since 8.0.0 (FG)
 	 */
-	public boolean setSharedDatas(String v) {
-		return setValue(Columns.SHAREDDATAS, (v == null ? null : v));
+	public boolean setSharedDatas(final String v) {
+		return setValue(Columns.SHAREDDATAS, v == null ? null : v);
 	}
 
 	/**
 	 * This sets this host shared packages
-	 * 
+	 *
 	 * @return true if value has changed, false otherwise
 	 * @since 8.0.0 (FG)
 	 */
-	public boolean setSharedPackages(String v) {
-		return setValue(Columns.SHAREDPACKAGES, (v == null ? null : v));
+	public boolean setSharedPackages(final String v) {
+		return setValue(Columns.SHAREDPACKAGES, v == null ? null : v);
 	}
 
 	/**
 	 * @return true if value has changed, false otherwise
 	 */
-	public boolean setProject(String v) {
-		return setValue(Columns.PROJECT, (v == null ? null : v));
+	public boolean setProject(final String v) {
+		return setValue(Columns.PROJECT, v == null ? null : v);
 	}
 
 	/**
 	 * @return true if value has changed, false otherwise
 	 */
-	public boolean setLastAlive(Date v) {
+	public boolean setLastAlive(final Date v) {
 		return setValue(Columns.LASTALIVE, v);
 	}
 
@@ -2548,29 +2547,29 @@ public final class HostInterface extends Table {
 	 * This sets this host as(in)active; i.e. an active host is selectable for
 	 * jobs. A host is inactivated if it has sent a job as ERROR. This can also
 	 * be(in)activated on client request.
-	 * 
+	 *
 	 * @return true if this is attribute value has changed
 	 */
-	public boolean setActive(boolean v) {
+	public boolean setActive(final boolean v) {
 		return setValue(Columns.ACTIVE, Boolean.valueOf(v));
 	}
 
 	/**
 	 * This sets this host as able to accept binary application
-	 * 
+	 *
 	 * @return true if this is attribute value has changed
 	 */
-	public boolean setAcceptBin(boolean v) {
+	public boolean setAcceptBin(final boolean v) {
 		return setValue(Columns.ACCEPTBIN, Boolean.valueOf(v));
 	}
 
 	/**
 	 * This sets this host as(un)available accordingly to its local policy This
 	 * is set on alive signal.
-	 * 
+	 *
 	 * @return true if this is attribute value has changed
 	 */
-	public boolean setAvailable(boolean v) {
+	public boolean setAvailable(final boolean v) {
 		return setValue(Columns.AVAILABLE, Boolean.valueOf(v));
 	}
 
@@ -2584,36 +2583,36 @@ public final class HostInterface extends Table {
 	/**
 	 * This sets this host capability to run jobs that listen for incoming
 	 * connections
-	 * 
+	 *
 	 * @return true if this is attribute value has changed
 	 * @since 8.0.0
 	 */
-	public boolean setIncomingConnections(boolean v) {
+	public boolean setIncomingConnections(final boolean v) {
 		return setValue(Columns.INCOMINGCONNECTIONS, Boolean.valueOf(v));
 	}
 
 	/**
 	 * This sets this host as a pilot job
-	 * 
+	 *
 	 * @return true if this is attribute value has changed
 	 */
-	public boolean setPilotJob(boolean v) {
+	public boolean setPilotJob(final boolean v) {
 		return setValue(Columns.PILOTJOB, Boolean.valueOf(v));
 	}
 
 	/**
 	 * This set the service grid identifier
-	 * 
+	 *
 	 * @return true if value has changed, false otherwise
 	 * @since 7.0.0
 	 */
-	public boolean setSgId(String v) {
+	public boolean setSgId(final String v) {
 		return setValue(Columns.SGID, v);
 	}
 
 	/**
 	 * This retrieves the service grid id
-	 * 
+	 *
 	 * @return the service grid identifier, or null if not set
 	 * @since 7.0.0
 	 */
@@ -2624,7 +2623,7 @@ public final class HostInterface extends Table {
 	/**
 	 * @return true if value has changed, false otherwise
 	 */
-	public boolean setTracing(boolean v) {
+	public boolean setTracing(final boolean v) {
 		return setValue(Columns.TRACES, Boolean.valueOf(v));
 	}
 
@@ -2635,7 +2634,7 @@ public final class HostInterface extends Table {
 	 * dumps it. <br />
 	 * Usage : java -cp xtremweb.jar xtremweb.common.HostInterface [xmlFile]
 	 */
-	public static void main(String[] argv) {
+	public static void main(final String[] argv) {
 		try {
 			final HostInterface itf = new HostInterface();
 			itf.setUID(UID.getMyUid());
@@ -2652,8 +2651,8 @@ public final class HostInterface extends Table {
 			writer.write(itf);
 		} catch (final Exception e) {
 			final Logger logger = new Logger();
-			logger.exception("Usage : java -cp " + XWTools.JARFILENAME
-					+ " xtremweb.common.HostInterface [anXMLDescriptionFile]",
+			logger.exception(
+					"Usage : java -cp " + XWTools.JARFILENAME + " xtremweb.common.HostInterface [anXMLDescriptionFile]",
 					e);
 		}
 	}
