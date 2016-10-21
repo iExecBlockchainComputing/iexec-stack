@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -46,7 +46,7 @@ public class TracerState {
 	 * @param cpuUser
 	 *            the cpuUser to set
 	 */
-	public void setCpuUser(int cpuUser) {
+	public void setCpuUser(final int cpuUser) {
 		this.cpuUser = cpuUser;
 	}
 
@@ -61,7 +61,7 @@ public class TracerState {
 	 * @param cpuNice
 	 *            the cpuNice to set
 	 */
-	public void setCpuNice(int cpuNice) {
+	public void setCpuNice(final int cpuNice) {
 		this.cpuNice = cpuNice;
 	}
 
@@ -76,7 +76,7 @@ public class TracerState {
 	 * @param cpuSystem
 	 *            the cpuSystem to set
 	 */
-	public void setCpuSystem(int cpuSystem) {
+	public void setCpuSystem(final int cpuSystem) {
 		this.cpuSystem = cpuSystem;
 	}
 
@@ -91,7 +91,7 @@ public class TracerState {
 	 * @param cpuIdle
 	 *            the cpuIdle to set
 	 */
-	public void setCpuIdle(int cpuIdle) {
+	public void setCpuIdle(final int cpuIdle) {
 		this.cpuIdle = cpuIdle;
 	}
 
@@ -106,7 +106,7 @@ public class TracerState {
 	 * @param cpuAidle
 	 *            the cpuAidle to set
 	 */
-	public void setCpuAidle(int cpuAidle) {
+	public void setCpuAidle(final int cpuAidle) {
 		this.cpuAidle = cpuAidle;
 	}
 
@@ -121,7 +121,7 @@ public class TracerState {
 	 * @param loadOne
 	 *            the loadOne to set
 	 */
-	public void setLoadOne(short loadOne) {
+	public void setLoadOne(final short loadOne) {
 		this.loadOne = loadOne;
 	}
 
@@ -136,7 +136,7 @@ public class TracerState {
 	 * @param loadFive
 	 *            the loadFive to set
 	 */
-	public void setLoadFive(short loadFive) {
+	public void setLoadFive(final short loadFive) {
 		this.loadFive = loadFive;
 	}
 
@@ -151,7 +151,7 @@ public class TracerState {
 	 * @param loadFifteen
 	 *            the loadFifteen to set
 	 */
-	public void setLoadFifteen(short loadFifteen) {
+	public void setLoadFifteen(final short loadFifteen) {
 		this.loadFifteen = loadFifteen;
 	}
 
@@ -166,7 +166,7 @@ public class TracerState {
 	 * @param procRun
 	 *            the procRun to set
 	 */
-	public void setProcRun(short procRun) {
+	public void setProcRun(final short procRun) {
 		this.procRun = procRun;
 	}
 
@@ -181,7 +181,7 @@ public class TracerState {
 	 * @param procTotal
 	 *            the procTotal to set
 	 */
-	public void setProcTotal(short procTotal) {
+	public void setProcTotal(final short procTotal) {
 		this.procTotal = procTotal;
 	}
 
@@ -196,7 +196,7 @@ public class TracerState {
 	 * @param memFree
 	 *            the memFree to set
 	 */
-	public void setMemFree(int memFree) {
+	public void setMemFree(final int memFree) {
 		this.memFree = memFree;
 	}
 
@@ -211,7 +211,7 @@ public class TracerState {
 	 * @param memShared
 	 *            the memShared to set
 	 */
-	public void setMemShared(int memShared) {
+	public void setMemShared(final int memShared) {
 		this.memShared = memShared;
 	}
 
@@ -226,7 +226,7 @@ public class TracerState {
 	 * @param memBuffers
 	 *            the memBuffers to set
 	 */
-	public void setMemBuffers(int memBuffers) {
+	public void setMemBuffers(final int memBuffers) {
 		this.memBuffers = memBuffers;
 	}
 
@@ -241,7 +241,7 @@ public class TracerState {
 	 * @param memCached
 	 *            the memCached to set
 	 */
-	public void setMemCached(int memCached) {
+	public void setMemCached(final int memCached) {
 		this.memCached = memCached;
 	}
 
@@ -256,7 +256,7 @@ public class TracerState {
 	 * @param swapFree
 	 *            the swapFree to set
 	 */
-	public void setSwapFree(int swapFree) {
+	public void setSwapFree(final int swapFree) {
 		this.swapFree = swapFree;
 	}
 
@@ -271,7 +271,7 @@ public class TracerState {
 	 * @param time
 	 *            the time to set
 	 */
-	public void setTime(int time) {
+	public void setTime(final int time) {
 		this.time = time;
 	}
 
