@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -35,17 +35,17 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
 import xtremweb.database.DBConnPoolThread;
-import xtremweb.security.XWAccessRightsValidator;
 import xtremweb.security.XWAccessRights;
+import xtremweb.security.XWAccessRightsValidator;
 
 /**
  * This class was formerly the TableInterface one, until 8.x. TableInterface
  * class has been renamed to Table since 9.0.0 Table derives from Type since
  * 9.0.0. Interface tables implements columns as defined in TableColumns.
- * 
+ *
  * <br />
  * Created: June 26th, 2003<br />
- * 
+ *
  * @author <a href="mailto:lodygens /at\ .in2p3.fr>Oleg Lodygensky</a>
  * @since v1r2-rc3(RPC-V)
  */
@@ -54,9 +54,10 @@ public abstract class Table extends Type {
 
 	/**
 	 * This grants access
+	 *
 	 * @since 9.0.7
 	 */
-	private XWAccessRightsValidator accessValidator;
+	private final XWAccessRightsValidator accessValidator;
 
 	/**
 	 * This default constructor sets all attributes to null
@@ -68,14 +69,14 @@ public abstract class Table extends Type {
 
 	/**
 	 * This constructor sets the table name as provided
-	 * 
+	 *
 	 * @param n
 	 *            is this tag name
 	 * @param t
 	 *            is this table name
 	 * @see #Table()
 	 */
-	public Table(String n, String t) {
+	public Table(final String n, final String t) {
 		this();
 		tagName = n;
 		if (tagName != null) {
@@ -86,7 +87,7 @@ public abstract class Table extends Type {
 
 	/**
 	 * This sets the access rights
-	 * 
+	 *
 	 * @return true is value has changed
 	 */
 	public final boolean setAccessRights(final XWAccessRights v) {
@@ -95,7 +96,7 @@ public abstract class Table extends Type {
 
 	/**
 	 * This retrieves this data access rights
-	 * 
+	 *
 	 * @return this attribute
 	 */
 	public final XWAccessRights getAccessRights() {
@@ -109,16 +110,16 @@ public abstract class Table extends Type {
 
 	/**
 	 * This sets the UID
-	 * 
+	 *
 	 * @return true if UID has changed, false otherwise
 	 */
-	public final boolean setUID(UID v) {
+	public final boolean setUID(final UID v) {
 		return setValue(TableColumns.UID, v);
 	}
 
 	/**
 	 * This retrieves the UID, if already set
-	 * 
+	 *
 	 * @return this attribute
 	 * @exception IOException
 	 *                is thrown is attribute is nor set, neither well formed
@@ -133,7 +134,7 @@ public abstract class Table extends Type {
 
 	/**
 	 * This sets the owner UID
-	 * 
+	 *
 	 * @param v
 	 *            is the owner uid
 	 * @return true if value has changed, false otherwise
@@ -145,7 +146,7 @@ public abstract class Table extends Type {
 	/**
 	 * This retrieves this object owner UID // public abstract UID getOwner()
 	 * throws IOException;
-	 * 
+	 *
 	 * @return this owner UID
 	 */
 	public final UID getOwner() {
@@ -154,7 +155,7 @@ public abstract class Table extends Type {
 
 	/**
 	 * This sets the error message
-	 * 
+	 *
 	 * @return true if value has changed, false otherwise
 	 * @since 9.0.0
 	 */
@@ -164,7 +165,7 @@ public abstract class Table extends Type {
 
 	/**
 	 * This retrieves the error message
-	 * 
+	 *
 	 * @return the error message
 	 * @since 9.0.0
 	 */
@@ -175,7 +176,7 @@ public abstract class Table extends Type {
 	/**
 	 * This retrieves the last modification date Please note that this field is
 	 * automatically set by mysql; there is no way to set this field.
-	 * 
+	 *
 	 * @return the last modification date
 	 * @since 9.0.0
 	 */
@@ -185,7 +186,7 @@ public abstract class Table extends Type {
 
 	/**
 	 * This should test access rights ; this should be overriden
-	 * 
+	 *
 	 * @param user
 	 *            is the user who try to read
 	 * @param ownerGroup
@@ -200,7 +201,7 @@ public abstract class Table extends Type {
 
 	/**
 	 * This should test access rights ; this should be overriden
-	 * 
+	 *
 	 * @param user
 	 *            is the user who try to read
 	 * @param ownerGroup
@@ -215,7 +216,7 @@ public abstract class Table extends Type {
 
 	/**
 	 * This should test access rights ; this should be overridden
-	 * 
+	 *
 	 * @param user
 	 *            is the user who try to read
 	 * @param ownerGroup
@@ -230,21 +231,20 @@ public abstract class Table extends Type {
 
 	/**
 	 * This constructs a new XMLRPCCommand object
-	 * 
+	 *
 	 * @param io
 	 *            is stream handler to read XML representation from
 	 * @throws AccessControlException
 	 * @throws InvalidKeyException
 	 */
 	public static Table newInterface(final StreamIO io)
-			throws ClassNotFoundException, IOException, InvalidKeyException,
-			AccessControlException {
+			throws ClassNotFoundException, IOException, InvalidKeyException, AccessControlException {
 		return newInterface(io.input());
 	}
 
 	/**
 	 * This reads a new XMLRPCCommand object from input stream
-	 * 
+	 *
 	 * @param in
 	 *            is the input stream
 	 * @param itf
@@ -257,7 +257,7 @@ public abstract class Table extends Type {
 	 *             on XML exception error
 	 * @return the read interface
 	 */
-	private static Table readInterface(BufferedInputStream input, Table itf)
+	private static Table readInterface(final BufferedInputStream input, final Table itf)
 			throws InvalidKeyException, SAXException, IOException {
 		final XMLReader reader = new XMLReader(itf);
 		reader.read(input);
@@ -267,7 +267,7 @@ public abstract class Table extends Type {
 	/**
 	 * This constructs a new XMLRPCCommand object. This first checks the opening
 	 * tag and then instanciate the right object accordingly to the opening tag.
-	 * 
+	 *
 	 * @param in
 	 *            is the input stream to read interface from
 	 * @throws IOException
@@ -275,8 +275,7 @@ public abstract class Table extends Type {
 	 * @throws InvalidKeyException
 	 *             on authentication or authorization error
 	 */
-	public static Table newInterface(InputStream in) throws IOException,
-			InvalidKeyException {
+	public static Table newInterface(final InputStream in) throws IOException, InvalidKeyException {
 
 		final BufferedInputStream input = new BufferedInputStream(in);
 		input.mark(XWTools.BUFFEREND);
@@ -350,40 +349,38 @@ public abstract class Table extends Type {
 		} catch (final SAXException e) {
 		}
 
-		throw new IOException(
-				"Unable to create new Interface from input stream");
+		throw new IOException("Unable to create new Interface from input stream");
 	}
 
 	/**
 	 * This constructs a new XMLRPCCommand object. This first checks the opening
 	 * tag and then instantiate the right object accordingly
-	 * 
+	 *
 	 * @see AppInterface#AppInterface(Attributes)
 	 * @see DataInterface#DataInterface(Attributes) etc.
 	 */
-	public static Table newInterface(String uri, String xmltag, String qname,
-			Attributes attrs) throws ClassNotFoundException {
+	public static Table newInterface(final String uri, final String xmltag, final String qname, final Attributes attrs)
+			throws ClassNotFoundException {
 
 		try {
 			final XWTag tag = XWTag.valueOf(qname.toUpperCase());
 			return tag.newInterface(attrs);
 		} catch (final Exception e) {
-			throw new ClassNotFoundException("newInterface : unknwon tag "
-					+ qname, e);
+			throw new ClassNotFoundException("newInterface : unknwon tag " + qname, e);
 		}
 	}
 
 	/**
 	 * This sets this objects attributes from provided interface This does not
 	 * insert/update this object into DB
-	 * 
+	 *
 	 * @since 9.0.0
 	 */
 	public abstract void updateInterface(Table t) throws IOException;
 
 	/**
 	 * This calls update(true)
-	 * 
+	 *
 	 * @see #update(boolean)
 	 */
 	public void update() throws IOException {
@@ -392,12 +389,12 @@ public abstract class Table extends Type {
 
 	/**
 	 * This updates this object in the database table, if needed
-	 * 
+	 *
 	 * @param pool
 	 *            uses pool mode if true; execute query immediately if false
 	 * @since 8.0.0
 	 */
-	public void update(boolean pool) throws IOException {
+	public void update(final boolean pool) throws IOException {
 
 		if (isDirty() == false) {
 			return;
@@ -414,7 +411,7 @@ public abstract class Table extends Type {
 
 	/**
 	 * This reads from DB
-	 * 
+	 *
 	 * @see xtremweb.common.Table#criteria()
 	 * @exception IOException
 	 *                is thrown on error
@@ -432,7 +429,7 @@ public abstract class Table extends Type {
 	/**
 	 * This inserts this object in DB and re-reads it immediately so that we
 	 * have the correct primary key (which is auto-increment)
-	 * 
+	 *
 	 * @see #select()
 	 * @see xtremweb.common.Table#valuesToString()
 	 * @see #tagName
@@ -446,7 +443,7 @@ public abstract class Table extends Type {
 
 	/**
 	 * This copy row in history table and deletes row
-	 * 
+	 *
 	 * @see xtremweb.common.Table#criteria()
 	 * @see #tagName
 	 */
@@ -456,7 +453,7 @@ public abstract class Table extends Type {
 
 	/**
 	 * This aims to retreive rows for the "SELECT" SQL statement.
-	 * 
+	 *
 	 * @return DEFAULTSELECTIONROW
 	 * @since 5.8.0
 	 */
@@ -475,20 +472,17 @@ public abstract class Table extends Type {
 	 * argv[0] must contain an XML representation.<br />
 	 * The object is finally dumped
 	 */
-	public static void main(String[] argv) {
+	public static void main(final String[] argv) {
 		try {
-			final Table itf = Table.newInterface(new ByteArrayInputStream(
-					argv[0].getBytes(XWTools.UTF8)));
+			final Table itf = Table.newInterface(new ByteArrayInputStream(argv[0].getBytes(XWTools.UTF8)));
 			if (itf.getUID() == null) {
 				itf.setUID(UID.getMyUid());
 			}
-			System.out.println(itf.openXmlRootElement() + itf.toXml()
-					+ itf.closeXmlRootElement());
+			System.out.println(itf.openXmlRootElement() + itf.toXml() + itf.closeXmlRootElement());
 		} catch (final Exception e) {
 			final Logger logger = new Logger();
 			logger.exception("Usage : java -cp " + XWTools.JARFILENAME
-					+ " xtremweb.common.TableInterface [anXMLDescriptionFile]",
-					e);
+					+ " xtremweb.common.TableInterface [anXMLDescriptionFile]", e);
 		}
 	}
 }
