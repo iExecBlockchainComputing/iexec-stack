@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -32,11 +32,11 @@ import java.util.List;
  ** NewClassLoader provides a minimalistic ClassLoader which shows how to load a
  * class which resides in a .class file. <br>
  * <br>
- ** 
+ **
  ** @author Gilles Fedak
- ** 
+ **
  ** @version %I% %G%
- ** 
+ **
  **/
 
 public class NewClassLoader extends MultiClassLoader {
@@ -48,12 +48,12 @@ public class NewClassLoader extends MultiClassLoader {
 		paths = new ArrayList<String>();
 	}
 
-	public void addClassPath(String path) {
+	public void addClassPath(final String path) {
 		paths.add(path);
 
 	}
 
-	public void removeClassPath(String path) {
+	public void removeClassPath(final String path) {
 		for (int i = 0; i < paths.size(); i++) {
 			final String p = paths.get(i);
 			if (p.equals(path)) {
@@ -63,7 +63,7 @@ public class NewClassLoader extends MultiClassLoader {
 		}
 	}
 
-	protected byte[] getClassFromAddedClassPaths(String className) {
+	protected byte[] getClassFromAddedClassPaths(final String className) {
 
 		byte result[] = null;
 		final byte block[] = null;
@@ -102,10 +102,9 @@ public class NewClassLoader extends MultiClassLoader {
 	}
 
 	@Override
-	protected byte[] loadClassBytes(String className) {
+	protected byte[] loadClassBytes(final String className) {
 
 		return (getClassFromAddedClassPaths(className));
 	}
 
 } // End of Class NewClassLoader.
-
