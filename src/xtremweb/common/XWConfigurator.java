@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -23,7 +23,7 @@
 
 package xtremweb.common;
 
-/** 
+/**
  * XWConfigurator.java
  * Worker, Client and Server Config
  *
@@ -77,7 +77,6 @@ import xtremweb.archdep.ArchDepFactory;
 import xtremweb.communications.CommClient;
 import xtremweb.communications.Connection;
 import xtremweb.communications.URI;
-import xtremweb.communications.XWCommException;
 import xtremweb.security.PEMPrivateKey;
 import xtremweb.security.PEMPublicKey;
 import xtremweb.security.X509Proxy;
@@ -92,7 +91,7 @@ public final class XWConfigurator extends Properties {
 	/**
 	 * This contains worker volunteer applications. This contains application
 	 * types.
-	 * 
+	 *
 	 * @see AppTypeEnum
 	 * @since 8.0.0 (FG)
 	 */
@@ -114,20 +113,20 @@ public final class XWConfigurator extends Properties {
 		return configFile;
 	}
 
-	public void setConfigFile(File c) {
+	public void setConfigFile(final File c) {
 		configFile = c;
 	}
 
 	/**
 	 * This is the launch date
-	 * 
+	 *
 	 * @since XWHEP 1.0.0
 	 */
 	private final Date upTime;
 
 	/**
 	 * This retrieves the launch date
-	 * 
+	 *
 	 * @return the up time date
 	 * @since XWHEP 1.0.0
 	 */
@@ -137,14 +136,14 @@ public final class XWConfigurator extends Properties {
 
 	/**
 	 * This is the current dispatcher index
-	 * 
+	 *
 	 * @since v1r2-rc1(RPC-V)
 	 */
 	private int currentDispatcher;
 
 	/**
 	 * This is the current data server index
-	 * 
+	 *
 	 * @since XWHEP 1.0.0
 	 */
 	private int currentDataServer;
@@ -157,7 +156,7 @@ public final class XWConfigurator extends Properties {
 	 * <li>client : timeout to check a result
 	 * </ul>
 	 * This is set to 10ms
-	 * 
+	 *
 	 * @since RPCXW
 	 */
 	public static final int MINTIMEOUT = 10;
@@ -168,7 +167,7 @@ public final class XWConfigurator extends Properties {
 	 * <li>worker : timeout to request a new work
 	 * </ul>
 	 * This is set to 5mn
-	 * 
+	 *
 	 * @since XWHEP
 	 */
 	public static final int MAXTIMEOUT = 300000;
@@ -176,7 +175,7 @@ public final class XWConfigurator extends Properties {
 	 * This vector contains a set of XtremWeb server adresses. This is used for
 	 * replication; this list contains dispatchers read from conf file and
 	 * provided by server at connections time.
-	 * 
+	 *
 	 * @since v1r2-rc1(RPC-V)
 	 */
 	private Collection<String> dispatchers;
@@ -184,7 +183,7 @@ public final class XWConfigurator extends Properties {
 	 * This is the max number of dispatchers the worker may know. This is used
 	 * for replication; this list contains dispatchers read from conf file and
 	 * provided by server at connections time.
-	 * 
+	 *
 	 * @since v1r2-rc1(RPC-V)
 	 */
 	private final int MAXDISPATCHERS = 50;
@@ -193,7 +192,7 @@ public final class XWConfigurator extends Properties {
 	 * This vector contains a set of XtremWeb server adresses. This is used for
 	 * replication; this list contains dataServers read from conf file and
 	 * provided by server at connections time.
-	 * 
+	 *
 	 * @since v1r2-rc1(RPC-V)
 	 */
 	private Collection<String> dataServers;
@@ -201,14 +200,14 @@ public final class XWConfigurator extends Properties {
 	 * This is the max number of dataServers the worker may know. This is used
 	 * for replication; this list contains dataServers read from conf file and
 	 * provided by server at connections time.
-	 * 
+	 *
 	 * @since v1r2-rc1(RPC-V)
 	 */
 	private final int MAXDATASERVERS = 50;
 
 	/**
 	 * This is the amount of jobs this worker has already computed
-	 * 
+	 *
 	 * @since RPCXW
 	 */
 	private int nbJobs;
@@ -222,7 +221,7 @@ public final class XWConfigurator extends Properties {
 
 	/**
 	 * This increments nbjobs
-	 * 
+	 *
 	 * @return the nbJobs
 	 */
 	public int incNbJobs() {
@@ -232,7 +231,7 @@ public final class XWConfigurator extends Properties {
 	/**
 	 * This is the maximum jobs this worker will compute before dying This is
 	 * expecially usefull to deploy workers over Grids
-	 * 
+	 *
 	 * @since RPCXW
 	 */
 	public boolean stopComputing() {
@@ -244,7 +243,7 @@ public final class XWConfigurator extends Properties {
 	 * This returns the max timeout to wait between two work requests. This is
 	 * only used by the worker like this (src/common/CommManager.java) :
 	 * nullWorkTimeOut = (nullWorkTimeOut * 2) % config.maxTimeout()
-	 * 
+	 *
 	 * @see #realTime()
 	 * @see #MINTIMEOUT
 	 * @see #MAXTIMEOUT
@@ -267,7 +266,7 @@ public final class XWConfigurator extends Properties {
 
 	/**
 	 * This test whether we try "real time"
-	 * 
+	 *
 	 * @since RPCXW
 	 */
 	public boolean realTime() {
@@ -294,7 +293,6 @@ public final class XWConfigurator extends Properties {
 		return _adminuid;
 	}
 
-
 	/** This is the host identification */
 	private HostInterface _host;
 
@@ -312,7 +310,7 @@ public final class XWConfigurator extends Properties {
 	 * @param _user
 	 *            the _user to set
 	 */
-	public void setUser(UserInterface _user) {
+	public void setUser(final UserInterface _user) {
 		this._user = _user;
 	}
 
@@ -346,7 +344,7 @@ public final class XWConfigurator extends Properties {
 		return keyStoreFile;
 	}
 
-	public void setKeyStoreFile(File keyStoreFile) {
+	public void setKeyStoreFile(final File keyStoreFile) {
 		this.keyStoreFile = keyStoreFile;
 	}
 
@@ -359,13 +357,13 @@ public final class XWConfigurator extends Properties {
 		return keyManagerFactory;
 	}
 
-	public void setKeyManagerFactory(KeyManagerFactory keyManagerFactory) {
+	public void setKeyManagerFactory(final KeyManagerFactory keyManagerFactory) {
 		this.keyManagerFactory = keyManagerFactory;
 	}
 
 	/**
 	 * This is the keystore
-	 * 
+	 *
 	 * @since 8.0.2
 	 */
 	private KeyStore keyStore;
@@ -374,19 +372,19 @@ public final class XWConfigurator extends Properties {
 		return keyStore;
 	}
 
-	public void setKeyStore(KeyStore keyStore) {
+	public void setKeyStore(final KeyStore keyStore) {
 		this.keyStore = keyStore;
 	}
 
 	/**
 	 * This is the user X509 proxy
-	 * 
+	 *
 	 * @since 7.0.0
 	 */
 	private X509Proxy x509Proxy;
 	/**
 	 * This is the user X509 private key
-	 * 
+	 *
 	 * @since 7.4.1
 	 */
 	private PEMPrivateKey privateKey;
@@ -400,7 +398,7 @@ public final class XWConfigurator extends Properties {
 
 	/**
 	 * This is the user X509 public key
-	 * 
+	 *
 	 * @since 7.5.0
 	 */
 	private PEMPublicKey publicKey;
@@ -421,7 +419,7 @@ public final class XWConfigurator extends Properties {
 		return challenging;
 	}
 
-	public void setChallenging(boolean v) {
+	public void setChallenging(final boolean v) {
 		challenging = v;
 	}
 
@@ -445,7 +443,7 @@ public final class XWConfigurator extends Properties {
 	private boolean loadLibraries;
 	/**
 	 * This contains this process environment variables
-	 * 
+	 *
 	 * @since 8.0.1
 	 */
 	private String[] baseEnvVars;
@@ -459,7 +457,7 @@ public final class XWConfigurator extends Properties {
 
 	/**
 	 * Use java NIO ?
-	 * 
+	 *
 	 * @since XWHEP 1.0.0
 	 */
 	public boolean nio() {
@@ -468,7 +466,7 @@ public final class XWConfigurator extends Properties {
 
 	/**
 	 * Start HTTP server ?
-	 * 
+	 *
 	 * @since XWHEP 1.0.0
 	 */
 	public boolean http() {
@@ -485,7 +483,7 @@ public final class XWConfigurator extends Properties {
 	/**
 	 * This return the name of the SQL file needed to create DB This is
 	 * typically used with hsqldb to create tables at boot
-	 * 
+	 *
 	 * @since XWHEP 4.0.0
 	 */
 	public String sqlFile() {
@@ -494,7 +492,7 @@ public final class XWConfigurator extends Properties {
 
 	/**
 	 * This return the limit of returned rows by SELECT SQL statement
-	 * 
+	 *
 	 * @since XWHEP 5.8.0
 	 * @see xtremweb.common.XWPropertyDefs#DBREQUESTLIMIT
 	 */
@@ -504,18 +502,18 @@ public final class XWConfigurator extends Properties {
 
 	/**
 	 * This sets sql request limit (how many rows an SQL SELECT could returns)
-	 * 
+	 *
 	 * @since 5.8.0
 	 */
-	public void setRequestLimit(int l) {
+	public void setRequestLimit(final int l) {
 		setProperty(XWPropertyDefs.DBREQUESTLIMIT, "" + l);
 	}
+
 	/**
 	 * This returns true if we use HSQLDB:MEMORY
 	 */
 	public boolean dbmem() {
-		return getProperty(XWPropertyDefs.DBENGINE).compareToIgnoreCase(
-				XWDBs.MEMENGINE) == 0;
+		return getProperty(XWPropertyDefs.DBENGINE).compareToIgnoreCase(XWDBs.MEMENGINE) == 0;
 	}
 
 	/**
@@ -523,7 +521,7 @@ public final class XWConfigurator extends Properties {
 	 * understood as follow : IF this.cpuLoad > XWWorkerEffectiveCpuLoad THEN
 	 * the worker stop computing because the cpu is expected for other processes
 	 * than XWWorker
-	 * 
+	 *
 	 * XWWorker can not load cpu more than this.cpuLoad if the cpu is expected
 	 * by its owner
 	 */
@@ -534,12 +532,10 @@ public final class XWConfigurator extends Properties {
 	public LoggerLevel getLoggerLevel() {
 
 		try {
-			return LoggerLevel.valueOf(getProperty(XWPropertyDefs.LOGGERLEVEL)
-					.toUpperCase());
+			return LoggerLevel.valueOf(getProperty(XWPropertyDefs.LOGGERLEVEL).toUpperCase());
 		} catch (final Exception e) {
 			setProperty(XWPropertyDefs.LOGGERLEVEL);
-			return LoggerLevel.valueOf(XWPropertyDefs.LOGGERLEVEL
-					.defaultValue());
+			return LoggerLevel.valueOf(XWPropertyDefs.LOGGERLEVEL.defaultValue());
 		}
 	}
 
@@ -564,19 +560,18 @@ public final class XWConfigurator extends Properties {
 			_host.setName(XWTools.getLocalHostName());
 			_user = new UserInterface();
 
-			Runtime.getRuntime().addShutdownHook(
-					new Thread(XWRole.getMyRole().toString() + "Cleaner") {
-						@Override
-						public void run() {
-							try {
-								if (XWRole.getMyRole() == XWRole.WORKER) {
-									XWTools.deleteDir(getCacheDir());
-									XWTools.deleteDir(getTmpDir());
-								}
-							} catch (final IOException e) {
-							}
+			Runtime.getRuntime().addShutdownHook(new Thread(XWRole.getMyRole().toString() + "Cleaner") {
+				@Override
+				public void run() {
+					try {
+						if (XWRole.getMyRole() == XWRole.WORKER) {
+							XWTools.deleteDir(getCacheDir());
+							XWTools.deleteDir(getTmpDir());
 						}
-					});
+					} catch (final IOException e) {
+					}
+				}
+			});
 		} catch (final Exception e) {
 		}
 	}
@@ -594,13 +589,13 @@ public final class XWConfigurator extends Properties {
 	 * <ol>
 	 * <li>the file included in the JAR file
 	 * </ol>
-	 * 
+	 *
 	 * @param cfn
 	 *            is the name of the config file, or null if none
 	 * @param firstTime
 	 *            is used to know whether the worker has upgrade
 	 */
-	public XWConfigurator(String cfn, boolean firstTime) {
+	public XWConfigurator(final String cfn, final boolean firstTime) {
 
 		this();
 
@@ -611,30 +606,25 @@ public final class XWConfigurator extends Properties {
 		if (configFileName != null) {
 			configFile = new File(configFileName);
 			try {
-				setProperty(XWPropertyDefs.CONFIGFILE,
-						configFile.getAbsolutePath());
+				setProperty(XWPropertyDefs.CONFIGFILE, configFile.getAbsolutePath());
 			} catch (final Exception e) {
-				setProperty(XWPropertyDefs.CONFIGFILE, configFile.toString()
-						.trim());
+				setProperty(XWPropertyDefs.CONFIGFILE, configFile.toString().trim());
 			}
 		}
 
 		if ((configFile == null) || (!configFile.exists())) {
 
-			final String fname = "xtremweb."
-					+ XWRole.getMyRole().toString().toLowerCase() + ".conf";
+			final String fname = "xtremweb." + XWRole.getMyRole().toString().toLowerCase() + ".conf";
 			final String[] stdLoc = {
-					getProperty(XWPropertyDefs.USERHOMEDIR) + File.separator
-					+ ".xtremweb" + File.separator + fname,
-					getProperty(XWPropertyDefs.USERHOMEDIR) + File.separator
-					+ ".xtremweb" + File.separator + "config.defaults",
+					getProperty(XWPropertyDefs.USERHOMEDIR) + File.separator + ".xtremweb" + File.separator + fname,
+					getProperty(XWPropertyDefs.USERHOMEDIR) + File.separator + ".xtremweb" + File.separator
+							+ "config.defaults",
 					"/etc/" + fname, getProperty(XWPropertyDefs.CONFIGFILE) };
 			for (int i = 0; i < stdLoc.length; i++) {
 				try {
 					configFile = new File(stdLoc[i]);
 					if (configFile.exists()) {
-						setProperty(XWPropertyDefs.CONFIGFILE,
-								configFile.getCanonicalPath());
+						setProperty(XWPropertyDefs.CONFIGFILE, configFile.getCanonicalPath());
 						break;
 					}
 				} catch (final Exception e) {
@@ -693,8 +683,7 @@ public final class XWConfigurator extends Properties {
 		int i = 0;
 		while (envit.hasNext()) {
 			Map.Entry<String, String> entry = envit.next();
-			baseEnvVars[i++] = new String(entry.getKey() + "="
-					+ entry.getValue());
+			baseEnvVars[i++] = new String(entry.getKey() + "=" + entry.getValue());
 			entry = null;
 		}
 		envit = null;
@@ -704,11 +693,11 @@ public final class XWConfigurator extends Properties {
 
 	/**
 	 * This sets the loadLibraries member attribute
-	 * 
+	 *
 	 * @param a
 	 *            tells to load libraries or not; must be false for the client
 	 */
-	public void loadLibrary(boolean a) {
+	public void loadLibrary(final boolean a) {
 		loadLibraries = a;
 	}
 
@@ -717,12 +706,12 @@ public final class XWConfigurator extends Properties {
 	 * object This sets some default values if not defined in the config file.
 	 * If using a X509 certificate, the user login is set to : subjectName + "_"
 	 * + issuerName;
-	 * 
+	 *
 	 * @param firstTime
 	 *            is used to know whether the worker has upgrade
 	 */
-	private void refresh(boolean firstTime) throws IOException,
-	CertificateException, CertificateExpiredException {
+	private void refresh(final boolean firstTime)
+			throws IOException, CertificateException, CertificateExpiredException {
 
 		// parse all properties from config file
 		// we must be case insensitive
@@ -731,13 +720,11 @@ public final class XWConfigurator extends Properties {
 		while (names.hasMoreElements()) {
 			final String pname = names.nextElement();
 			try {
-				setProperty(XWPropertyDefs.valueOf(pname.toUpperCase()),
-						getProperty(pname), false);
+				setProperty(XWPropertyDefs.valueOf(pname.toUpperCase()), getProperty(pname), false);
 			} catch (final Exception e) {
 				try {
 					// this is for backward compatibility
-					setProperty(XWPropertyDefs.fromString(pname),
-							getProperty(pname), false);
+					setProperty(XWPropertyDefs.fromString(pname), getProperty(pname), false);
 				} catch (final Exception e2) {
 					logger.exception(e);
 				}
@@ -752,13 +739,11 @@ public final class XWConfigurator extends Properties {
 		for (final XWPropertyDefs p : XWPropertyDefs.values()) {
 			if (p == XWPropertyDefs.XWCP) {
 				try {
-					setProperty(XWPropertyDefs.XWCP, configFile.getParentFile()
-							.getParentFile().getCanonicalPath()
-							+ File.separator + "lib");
+					setProperty(XWPropertyDefs.XWCP,
+							configFile.getParentFile().getParentFile().getCanonicalPath() + File.separator + "lib");
 				} catch (final Exception e) {
-					setProperty(XWPropertyDefs.XWCP, configFile.getParentFile()
-							.getParentFile().getPath()
-							+ File.separator + "lib");
+					setProperty(XWPropertyDefs.XWCP,
+							configFile.getParentFile().getParentFile().getPath() + File.separator + "lib");
 				}
 			}
 
@@ -793,8 +778,7 @@ public final class XWConfigurator extends Properties {
 
 		logger.setLoggerLevel(getLoggerLevel());
 
-		XWRole.setRole(XWRole.valueOf(getProperty(XWPropertyDefs.ROLE)
-				.toUpperCase()));
+		XWRole.setRole(XWRole.valueOf(getProperty(XWPropertyDefs.ROLE).toUpperCase()));
 
 		//
 		// 2 nov 2011 : we don't want any device at all
@@ -845,18 +829,12 @@ public final class XWConfigurator extends Properties {
 		}
 
 		if ((keyStoreFile == null) || !keyStoreFile.exists()) {
-			logger.warn(XWPropertyDefs.SSLKEYSTORE.toString() + " ("
-					+ keyStoreFile + ") does not exist");
+			logger.warn(XWPropertyDefs.SSLKEYSTORE.toString() + " (" + keyStoreFile + ") does not exist");
 
 			try {
-				keyStoreFile = new File("xwhep"
-						+ XWRole.getMyRole().toString().toLowerCase() + ".keys");
-				setProperty(XWPropertyDefs.SSLKEYSTORE,
-						keyStoreFile.getCanonicalPath());
-				extractResource(
-						"data/xwhep"
-								+ XWRole.getMyRole().toString().toLowerCase()
-								+ ".keys", keyStoreFile);
+				keyStoreFile = new File("xwhep" + XWRole.getMyRole().toString().toLowerCase() + ".keys");
+				setProperty(XWPropertyDefs.SSLKEYSTORE, keyStoreFile.getCanonicalPath());
+				extractResource("data/xwhep" + XWRole.getMyRole().toString().toLowerCase() + ".keys", keyStoreFile);
 			} catch (final Exception e) {
 				logger.exception(e);
 				keyStoreFile = null;
@@ -871,11 +849,9 @@ public final class XWConfigurator extends Properties {
 			try {
 				logger.finest("keystore password = " + passWord);
 				keyStore = KeyStore.getInstance("JKS");
-				keyStore.load(new FileInputStream(keyStoreFile),
-						(passWord == null ? null : passWord.toCharArray()));
+				keyStore.load(new FileInputStream(keyStoreFile), (passWord == null ? null : passWord.toCharArray()));
 				keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
-				keyManagerFactory.init(keyStore, (passPhrase == null ? null
-						: passPhrase.toCharArray()));
+				keyManagerFactory.init(keyStore, (passPhrase == null ? null : passPhrase.toCharArray()));
 			} catch (final IOException e) {
 				logger.exception("Can't open keystore", e);
 				throw e;
@@ -892,12 +868,10 @@ public final class XWConfigurator extends Properties {
 		}
 
 		if ((keyStore != null) && (keyStoreFile != null)) {
-			setProperty(XWPropertyDefs.SSLKEYSTORE,
-					keyStoreFile.getCanonicalPath());
+			setProperty(XWPropertyDefs.SSLKEYSTORE, keyStoreFile.getCanonicalPath());
 		} else {
 			setProperty(XWPropertyDefs.SSLKEYSTORE, "");
 		}
-
 
 		// worker don't use certificates
 		if (!XWRole.isClient()) {
@@ -965,15 +939,13 @@ public final class XWConfigurator extends Properties {
 				if (userkeyfile.exists()) {
 					privateKey = new PEMPrivateKey();
 					privateKey.read(userkeyfile, userkeypassword);
-					privateKey.setKeyntries(keyStore,
-							publicKey.getCertificate(), userkeypassword);
+					privateKey.setKeyntries(keyStore, publicKey.getCertificate(), userkeypassword);
 					logger.config("KeyStore.size = " + keyStore.size());
 					setChallenging(true);
 					_user.setChallenging(true);
 					_user.setPassword(null);
 				} else {
-					logger.fatal("Can't retrieve private key file : "
-							+ userkeyfile);
+					logger.fatal("Can't retrieve private key file : " + userkeyfile);
 				}
 			}
 		} catch (final Exception e) {
@@ -1013,8 +985,7 @@ public final class XWConfigurator extends Properties {
 					uid = new UID(uidStr);
 				}
 			} catch (final IllegalArgumentException e) {
-				logger.exception(
-						"UID format error ; reseting to " + UID.getMyUid(), e);
+				logger.exception("UID format error ; reseting to " + UID.getMyUid(), e);
 				uid = UID.getMyUid();
 			}
 			if (getBoolean(XWPropertyDefs.FORCENEWUID)) {
@@ -1039,29 +1010,24 @@ public final class XWConfigurator extends Properties {
 
 		if (!isAlone() && firstTime) {
 			if (XWRole.isWorker()) {
-				throw new IOException(
-						"Another instance of the worker is already running");
+				throw new IOException("Another instance of the worker is already running");
 			} else {
 				setProperty(XWPropertyDefs.ALONE);
 			}
 		}
 		if (getProperty(XWPropertyDefs.CACHEDIR) == null) {
-			setProperty(XWPropertyDefs.CACHEDIR, getCacheDir()
-					.getCanonicalPath());
+			setProperty(XWPropertyDefs.CACHEDIR, getCacheDir().getCanonicalPath());
 		}
 
 		try {
-			binCachedPath = getCacheDir().getCanonicalPath() + File.separator
-					+ "bin";
+			binCachedPath = getCacheDir().getCanonicalPath() + File.separator + "bin";
 			XWTools.checkDir(binCachedPath);
 		} catch (final Exception e) {
-			setProperty(XWPropertyDefs.TMPDIR,
-					System.getProperty(XWPropertyDefs.JAVATMPDIR));
+			setProperty(XWPropertyDefs.TMPDIR, System.getProperty(XWPropertyDefs.JAVATMPDIR));
 			setTmpDir(System.getProperty(XWPropertyDefs.JAVATMPDIR));
 		}
 		try {
-			binCachedPath = getCacheDir().getCanonicalPath() + File.separator
-					+ "bin";
+			binCachedPath = getCacheDir().getCanonicalPath() + File.separator + "bin";
 			XWTools.checkDir(binCachedPath);
 		} catch (final Exception e) {
 			logger.error("Can't set binCachePath" + e.toString());
@@ -1079,8 +1045,7 @@ public final class XWConfigurator extends Properties {
 		}
 		setProperty(XWPropertyDefs.TIMEOUT, "" + getInt(XWPropertyDefs.TIMEOUT));
 
-		setProperty(XWPropertyDefs.NOOPTIMEOUT, ""
-				+ getInt(XWPropertyDefs.NOOPTIMEOUT));
+		setProperty(XWPropertyDefs.NOOPTIMEOUT, "" + getInt(XWPropertyDefs.NOOPTIMEOUT));
 
 		nbJobs = 0;
 
@@ -1091,10 +1056,8 @@ public final class XWConfigurator extends Properties {
 			}
 		} catch (final Exception e) {
 			logger.exception("Comm layer definition error ", e);
-			setProperty(XWPropertyDefs.COMMLAYER,
-					getProperty(XWPropertyDefs.COMMLAYER));
-			logger.warn("Comm layer set to '"
-					+ getProperty(XWPropertyDefs.COMMLAYER) + "'");
+			setProperty(XWPropertyDefs.COMMLAYER, getProperty(XWPropertyDefs.COMMLAYER));
+			logger.warn("Comm layer set to '" + getProperty(XWPropertyDefs.COMMLAYER) + "'");
 		}
 
 		String classes = getProperty(XWPropertyDefs.MILESTONES);
@@ -1108,8 +1071,7 @@ public final class XWConfigurator extends Properties {
 			ip = InetAddress.getLocalHost().getHostAddress();
 		} catch (final Exception e) {
 			try {
-				ip = java.net.InetAddress.getByName("localhost")
-						.getHostAddress();
+				ip = java.net.InetAddress.getByName("localhost").getHostAddress();
 			} catch (final Exception e2) {
 				throw new IOException("can't determine IP address: " + e2);
 			}
@@ -1196,8 +1158,7 @@ public final class XWConfigurator extends Properties {
 			logger.fatal("can't load xwutil library");
 		}
 
-		String localAppsProperty = getProperty(XWPropertyDefs.SHAREDAPPS)
-				.toUpperCase();
+		String localAppsProperty = getProperty(XWPropertyDefs.SHAREDAPPS).toUpperCase();
 		String localAppNames = new String();
 
 		logger.debug("localAppsProperty = " + localAppsProperty);
@@ -1219,8 +1180,7 @@ public final class XWConfigurator extends Properties {
 							localAppNames += apptype + " ";
 						}
 					} catch (final Exception e) {
-						logger.exception("Invalid application type : "
-								+ apptype, e);
+						logger.exception("Invalid application type : " + apptype, e);
 						enumapps.remove();
 					}
 				}
@@ -1241,16 +1201,13 @@ public final class XWConfigurator extends Properties {
 			_host.setSharedDatas(localDatasProperty.trim());
 		}
 		final String localDatasPathProperty = getProperty(XWPropertyDefs.SHAREDDATASPATH);
-		if((localDatasProperty != null) && (localDatasPathProperty != null)) {
+		if ((localDatasProperty != null) && (localDatasPathProperty != null)) {
 			setDataPackagesDir(localDatasProperty, localDatasProperty);
 		}
 
 		if (!(new File(getProperty(XWPropertyDefs.SANDBOXPATH))).exists()) {
-			logger.warn("Not Using Sandboxing \""
-					+ getProperty(XWPropertyDefs.SANDBOXPATH)
-					+ "\" : file not found. "
-					+ "Please check config file variable \""
-					+ XWPropertyDefs.SANDBOXPATH + "\". Default is : "
+			logger.warn("Not Using Sandboxing \"" + getProperty(XWPropertyDefs.SANDBOXPATH) + "\" : file not found. "
+					+ "Please check config file variable \"" + XWPropertyDefs.SANDBOXPATH + "\". Default is : "
 					+ getProperty(XWPropertyDefs.SANDBOXPATH));
 			remove(XWPropertyDefs.SANDBOXPATH.toString());
 		}
@@ -1276,8 +1233,7 @@ public final class XWConfigurator extends Properties {
 			if (actDate == null) {
 				setProperty(XWPropertyDefs.ACTIVATIONDATE, "* 19-7");
 			}
-			logger.config(XWPropertyDefs.ACTIVATIONDATE.toString() + "= "
-					+ getProperty(XWPropertyDefs.ACTIVATIONDATE));
+			logger.config(XWPropertyDefs.ACTIVATIONDATE.toString() + "= " + getProperty(XWPropertyDefs.ACTIVATIONDATE));
 
 			if (act.compareTo("xtremweb.worker.CpuActivator") == 0) {
 				if (OSEnum.getOs().isWin32()) {
@@ -1287,8 +1243,7 @@ public final class XWConfigurator extends Properties {
 				} else {
 					act = new String("xtremweb.worker.AlwaysActive");
 				}
-				logger.warn("xtremweb.worker.CpuActivator is not avaible;"
-						+ " sorry for inconveniences");
+				logger.warn("xtremweb.worker.CpuActivator is not avaible;" + " sorry for inconveniences");
 			}
 		}
 
@@ -1312,10 +1267,10 @@ public final class XWConfigurator extends Properties {
 			try {
 				if (SystemTray.isSupported()) {
 					final SystemTray tray = SystemTray.getSystemTray();
-					final Image image = Toolkit.getDefaultToolkit().getImage(
-							iconPath);
+					final Image image = Toolkit.getDefaultToolkit().getImage(iconPath);
 					final ActionListener listener = new ActionListener() {
-						public void actionPerformed(ActionEvent ae) {
+						@Override
+						public void actionPerformed(final ActionEvent ae) {
 							final JMenuItem src = (JMenuItem) ae.getSource();
 						}
 					};
@@ -1323,8 +1278,7 @@ public final class XWConfigurator extends Properties {
 					final MenuItem defaultItem = new MenuItem("Exit");
 					defaultItem.addActionListener(listener);
 					popup.add(defaultItem);
-					trayIcon = new TrayIcon(image, "XtremWeb-HEP "
-							+ XWRole.getMyRole(), popup);
+					trayIcon = new TrayIcon(image, "XtremWeb-HEP " + XWRole.getMyRole(), popup);
 					trayIcon.addActionListener(listener);
 					try {
 						tray.add(trayIcon);
@@ -1355,15 +1309,14 @@ public final class XWConfigurator extends Properties {
 
 	/**
 	 * This retrieve the communication client for the default scheme
-	 * 
+	 *
 	 * @return the default communication client
 	 * @exception IOException
 	 *                is thrown if cache directory can not be created
 	 * @throws InstantiationException
 	 *             if the class referred by the scheme can not be instantiated
 	 */
-	public CommClient defaultCommClient() throws IOException,
-	InstantiationException {
+	public CommClient defaultCommClient() throws IOException, InstantiationException {
 
 		CommClient.setConfig(this);
 		final CommClient ret = CommClient.getClient(Connection.xwScheme());
@@ -1372,15 +1325,14 @@ public final class XWConfigurator extends Properties {
 
 	/**
 	 * This retrieve the communication client for the default scheme
-	 * 
+	 *
 	 * @return the default communication client
 	 * @exception IOException
 	 *                is thrown if cache directory can not be created
 	 * @throws InstantiationException
 	 *             if the class referred by the scheme can not be instantiated
 	 */
-	public CommClient getCommClient(URI uri) throws IOException,
-	InstantiationException {
+	public CommClient getCommClient(final URI uri) throws IOException, InstantiationException {
 
 		CommClient.setConfig(this);
 		final CommClient ret = CommClient.getClient(uri);
@@ -1389,27 +1341,25 @@ public final class XWConfigurator extends Properties {
 
 	/**
 	 * This calls extractResource(resName, new File(fileName))
-	 * 
+	 *
 	 * @see #extractResource(String, File)
 	 */
-	public File extractResource(String resName, String fileName)
-			throws IOException {
+	public File extractResource(final String resName, final String fileName) throws IOException {
 		return extractResource(resName, new File(fileName));
 	}
 
 	/**
 	 * This extracts a resource from JAR file
-	 * 
+	 *
 	 * @param resName
 	 *            is the resource name to extract
 	 * @param file
 	 *            is the file to store extracted resource
 	 * @return the file where the resources is stored on local file system
 	 */
-	public File extractResource(String resName, File file) throws IOException {
+	public File extractResource(final String resName, final File file) throws IOException {
 
-		final InputStream ls = getClass().getClassLoader().getResourceAsStream(
-				resName);
+		final InputStream ls = getClass().getClassLoader().getResourceAsStream(resName);
 
 		if (ls == null) {
 			throw new IOException(resName + " not found");
@@ -1423,21 +1373,18 @@ public final class XWConfigurator extends Properties {
 		}
 		ls.close();
 		lf.close();
-		logger.debug("extractResource " + resName + " saved to "
-				+ ret.getAbsolutePath());
+		logger.debug("extractResource " + resName + " saved to " + ret.getAbsolutePath());
 		return ret;
 	}
 
 	/**
 	 * This set the default temp dir
-	 * 
+	 *
 	 * @since 7.0.0
 	 */
 	public void setTmpDir() throws IOException {
-		final File dir = new File(getProperty(XWPropertyDefs.TMPDIR), "XW."
-				+ XWRole.getMyRole().toString() + "."
-				+ UID.getMyUid().toString() + "."
-				+ ((Vector<String>) dispatchers).elementAt(currentDispatcher));
+		final File dir = new File(getProperty(XWPropertyDefs.TMPDIR), "XW." + XWRole.getMyRole().toString() + "."
+				+ UID.getMyUid().toString() + "." + ((Vector<String>) dispatchers).elementAt(currentDispatcher));
 
 		setTmpDir(dir);
 	}
@@ -1445,8 +1392,10 @@ public final class XWConfigurator extends Properties {
 	public void setTmpDir(final String dir) throws IOException {
 		setTmpDir(new File(dir));
 	}
+
 	/**
 	 * This sets and eventually creates the temporary directory
+	 *
 	 * @param dir
 	 * @throws IOException
 	 */
@@ -1463,55 +1412,69 @@ public final class XWConfigurator extends Properties {
 	 * This retrieves the default temp dir
 	 */
 	public File getTmpDir() {
-		return new File(getProperty(XWPropertyDefs.TMPDIR)); 
+		return new File(getProperty(XWPropertyDefs.TMPDIR));
 	}
 
 	/**
-	 * This sets and eventually creates a package directory for the given package name
-	 * @param pkgNames contains a comma separated data package names 
-	 * @param pkgPaths contains a comma separated data package paths 
+	 * This sets and eventually creates a package directory for the given
+	 * package name
+	 *
+	 * @param pkgNames
+	 *            contains a comma separated data package names
+	 * @param pkgPaths
+	 *            contains a comma separated data package paths
 	 * @throws IOException
 	 * @since 10.0.0
 	 */
 	public void setDataPackagesDir(final String pkgNames, final String pkgPaths) throws IOException {
 		final Collection<String> names = XWTools.split(pkgNames, ",");
 		final Collection<String> paths = XWTools.split(pkgPaths, ",");
-		if((names == null) || (paths == null)) {
+		if ((names == null) || (paths == null)) {
 			return;
 		}
 		final Iterator<String> namesIterator = names.iterator();
 		final Iterator<String> pathsIterator = paths.iterator();
-		for(; namesIterator.hasNext();) {
+		for (; namesIterator.hasNext();) {
 			final String name = namesIterator.next();
 			final String path = pathsIterator.next();
-			if((name == null) || (path == null)) {
+			if ((name == null) || (path == null)) {
 				continue;
 			}
 			setDataPackageDir(name, path);
 		}
 	}
+
 	/**
-	 * This sets and eventually creates a package directory for the given package name
-	 * @param pkgName is the package name
-	 * @param path is the package path
+	 * This sets and eventually creates a package directory for the given
+	 * package name
+	 *
+	 * @param pkgName
+	 *            is the package name
+	 * @param path
+	 *            is the package path
 	 * @throws IOException
 	 * @since 10.0.0
 	 */
 	public void setDataPackageDir(final String pkgName, final String path) throws IOException {
-		final File fdir = (path == null || path.length() < 1) ? null : new File(path); 
+		final File fdir = ((path == null) || (path.length() < 1)) ? null : new File(path);
 		setDataPackageDir(pkgName, fdir);
 	}
+
 	/**
-	 * This sets and eventually creates a package directory for the given package name
-	 * To avoid property conflict, the name of the package is automatically prefixed by XWTools#PACKAGENAMEHEADER 
-	 * @param pkgName is the package name
-	 * @param dir is the package directory
+	 * This sets and eventually creates a package directory for the given
+	 * package name To avoid property conflict, the name of the package is
+	 * automatically prefixed by XWTools#PACKAGENAMEHEADER
+	 *
+	 * @param pkgName
+	 *            is the package name
+	 * @param dir
+	 *            is the package directory
 	 * @throws IOException
 	 * @since 10.0.0
 	 * @see XWTools#PACKAGENAMEHEADER
 	 */
 	public void setDataPackageDir(final String pkgName, final File dir) throws IOException {
-		if(dir != null) {
+		if (dir != null) {
 			XWTools.checkDir(dir);
 			dir.deleteOnExit();
 		}
@@ -1520,9 +1483,12 @@ public final class XWConfigurator extends Properties {
 	}
 
 	/**
-	 * This resets and eventually creates a package directory
-	 * To avoid property conflict, the name of the package is automatically prefixed by XWTools#PACKAGENAMEHEADER 
-	 * @param pkgName is the package name
+	 * This resets and eventually creates a package directory To avoid property
+	 * conflict, the name of the package is automatically prefixed by
+	 * XWTools#PACKAGENAMEHEADER
+	 *
+	 * @param pkgName
+	 *            is the package name
 	 * @throws IOException
 	 * @since 10.0.0
 	 * @see XWTools#PACKAGENAMEHEADER
@@ -1533,24 +1499,26 @@ public final class XWConfigurator extends Properties {
 
 	/**
 	 * This retrieves a package directory, if any
-	 * @param pkgName is the package name
+	 *
+	 * @param pkgName
+	 *            is the package name
 	 * @throws IOException
 	 * @since 10.0.0
 	 * @return the package directory if set; the default tmp dir otherwise
 	 */
 	public File getDataPackageDir(final String pkgName) {
 		final String path = getProperty(XWTools.PACKAGENAMEHEADER + pkgName);
-		if((path == null) || (path.length() < 1)) {
+		if ((path == null) || (path.length() < 1)) {
 			logger.debug("getDataPackageDir : return tmpdir " + getTmpDir());
 			return getTmpDir();
 		}
 		logger.debug("getDataPackageDir (" + pkgName + ") : " + path);
-		return new File(path); 
+		return new File(path);
 	}
 
 	/**
 	 * This retrieves the default cache dir; it is created if necessary
-	 * 
+	 *
 	 * @exception IOException
 	 *                is thrown if cache directory can not be created
 	 */
@@ -1573,11 +1541,11 @@ public final class XWConfigurator extends Properties {
 
 	/**
 	 * This calls getProperty(prop.toString())
-	 * 
+	 *
 	 * @param prop
 	 *            - the property to retrieve the value for
 	 */
-	public String getProperty(XWPropertyDefs prop) {
+	public String getProperty(final XWPropertyDefs prop) {
 		if (prop == null) {
 			return null;
 		}
@@ -1590,24 +1558,24 @@ public final class XWConfigurator extends Properties {
 
 	/**
 	 * This sets a property to its default value
-	 * 
+	 *
 	 * @param prop
 	 *            - the property to set
 	 */
-	public void setProperty(XWPropertyDefs prop) {
+	public void setProperty(final XWPropertyDefs prop) {
 		setProperty(prop.toString(), prop.defaultValue());
 	}
 
 	/**
 	 * This set a property to the given value. If uid is null this sets this
 	 * property to empty string.
-	 * 
+	 *
 	 * @param prop
 	 *            - the property to set
 	 * @param uid
 	 *            - the value to set the property to
 	 */
-	public void setProperty(XWPropertyDefs prop, UID uid) {
+	public void setProperty(final XWPropertyDefs prop, final UID uid) {
 		setProperty(prop.toString(), (uid != null ? uid.toString() : ""));
 	}
 
@@ -1615,13 +1583,13 @@ public final class XWConfigurator extends Properties {
 	 * This set a property to the given value. If value is null, this sets the
 	 * property to its default value. If default value is null, this sets this
 	 * property to empty string.
-	 * 
+	 *
 	 * @param prop
 	 *            - the property to set
 	 * @param val
 	 *            - the value to set the property to
 	 */
-	public void setProperty(XWPropertyDefs prop, String val) {
+	public void setProperty(final XWPropertyDefs prop, final String val) {
 		setProperty(prop, val, true);
 	}
 
@@ -1629,7 +1597,7 @@ public final class XWConfigurator extends Properties {
 	 * This set a property to the given value. If value is null, this sets the
 	 * property to its default value. If default value is null, this sets this
 	 * property to empty string.
-	 * 
+	 *
 	 * @param prop
 	 *            is the property to set
 	 * @param val
@@ -1637,7 +1605,7 @@ public final class XWConfigurator extends Properties {
 	 * @param sys
 	 *            tells to set System property
 	 */
-	public void setProperty(XWPropertyDefs prop, String val, boolean sys) {
+	public void setProperty(final XWPropertyDefs prop, final String val, final boolean sys) {
 		String v = val;
 		if (v == null) {
 			v = prop.defaultValue();
@@ -1649,13 +1617,12 @@ public final class XWConfigurator extends Properties {
 		if (sys == true) {
 			System.setProperty(prop.toString(), getProperty(prop));
 		}
-		logger.config("setProperty(" + prop.toString() + ", " + v + ") = "
-				+ getProperty(prop));
+		logger.config("setProperty(" + prop.toString() + ", " + v + ") = " + getProperty(prop));
 		v = null;
 	}
 
 	/**
-	 * 
+	 *
 	 * @since 7.3.0
 	 */
 	public XWRole getRole() {
@@ -1671,13 +1638,13 @@ public final class XWConfigurator extends Properties {
 
 	/**
 	 * This retrieves a port value
-	 * 
+	 *
 	 * @param port
 	 * @return the port value as defined by a property; default port value if
 	 *         property not set
 	 * @see xtremweb.communications.Connection#defaultPortValue()
 	 */
-	public int getPort(Connection port) {
+	public int getPort(final Connection port) {
 		final String s = getProperty(port.toString());
 		final int defaultp = port.defaultPortValue();
 
@@ -1698,14 +1665,14 @@ public final class XWConfigurator extends Properties {
 
 	/**
 	 * This retrieves a key as integer
-	 * 
+	 *
 	 * @param key
 	 *            is the key to retrieve
 	 * @return the integer value of the key as defined by property; default
 	 *         value if property not set
 	 * @see XWPropertyDefs#defaultValue()
 	 */
-	public int getInt(XWPropertyDefs key) {
+	public int getInt(final XWPropertyDefs key) {
 		final String defval = key.defaultValue();
 		String s = getProperty(key);
 		if (s == null) {
@@ -1714,15 +1681,14 @@ public final class XWConfigurator extends Properties {
 		try {
 			return Integer.parseInt(s);
 		} catch (final NumberFormatException e) {
-			logger.warn("Invalid int number for property " + key + " (" + s
-					+ ") returning -1");
+			logger.warn("Invalid int number for property " + key + " (" + s + ") returning -1");
 			return -1;
 		}
 	}
 
 	/**
 	 * This retrieves a key as long
-	 * 
+	 *
 	 * @param key
 	 *            is the key to retrieve
 	 * @return the long value of the key as defined by property; default value
@@ -1730,7 +1696,7 @@ public final class XWConfigurator extends Properties {
 	 * @see XWPropertyDefs#defaultValue()
 	 * @since 8.2.0
 	 */
-	public long getLong(XWPropertyDefs key) {
+	public long getLong(final XWPropertyDefs key) {
 		final String defval = key.defaultValue();
 		String s = getProperty(key);
 		if (s == null) {
@@ -1739,20 +1705,19 @@ public final class XWConfigurator extends Properties {
 		try {
 			return Long.parseLong(s);
 		} catch (final NumberFormatException e) {
-			logger.warn("Invalid int number for property " + key + " (" + s
-					+ ") returning -1");
+			logger.warn("Invalid int number for property " + key + " (" + s + ") returning -1");
 			return -1;
 		}
 	}
 
 	/**
 	 * This retrieves a key as a boolean.
-	 * 
+	 *
 	 * @param key
 	 *            contains the property name
 	 * @return the boolean value of the key
 	 */
-	public boolean getBoolean(XWPropertyDefs key) {
+	public boolean getBoolean(final XWPropertyDefs key) {
 		final String value = getProperty(key);
 		final boolean defaultb = Boolean.parseBoolean(key.defaultValue());
 
@@ -1764,8 +1729,7 @@ public final class XWConfigurator extends Properties {
 		try {
 			ret = new Boolean(value);
 		} catch (final Exception e) {
-			logger.warn("not a boolean : " + key + "=" + value
-					+ " set to default (" + defaultb + ")");
+			logger.warn("not a boolean : " + key + "=" + value + " set to default (" + defaultb + ")");
 			ret = new Boolean(defaultb);
 		}
 		return ret.booleanValue();
@@ -1773,12 +1737,12 @@ public final class XWConfigurator extends Properties {
 
 	/**
 	 * This retrieves the file represented by the given property.
-	 * 
+	 *
 	 * @param key
 	 *            contains the property name
 	 * @return null if the key value is null or empty
 	 */
-	public File getFile(XWPropertyDefs key) throws IOException {
+	public File getFile(final XWPropertyDefs key) throws IOException {
 		final String s = getProperty(key);
 
 		if ((s == null) || (s.length() == 0)) {
@@ -1789,12 +1753,12 @@ public final class XWConfigurator extends Properties {
 
 	/**
 	 * This retrieves the absolute path represented by the given property.
-	 * 
+	 *
 	 * @param key
 	 *            contains the property name
 	 * @return null if the key value is null or empty
 	 */
-	public String getPath(XWPropertyDefs key) throws IOException {
+	public String getPath(final XWPropertyDefs key) throws IOException {
 		final File f = getFile(key);
 		if (f != null) {
 			return f.getCanonicalPath();
@@ -1804,7 +1768,7 @@ public final class XWConfigurator extends Properties {
 
 	/**
 	 * Check whether another worker is already running
-	 * 
+	 *
 	 * @return false if an other worker with the same parameters is running
 	 */
 	public boolean isAlone() throws IOException {
@@ -1820,8 +1784,7 @@ public final class XWConfigurator extends Properties {
 		}
 		final File pid = new File(dir, "pid");
 		if (pid.exists()) {
-			final BufferedReader pidf = new BufferedReader(new FileReader(
-					pid));
+			final BufferedReader pidf = new BufferedReader(new FileReader(pid));
 			try {
 				final String line = pidf.readLine();
 				if (line != null) {
@@ -1834,8 +1797,7 @@ public final class XWConfigurator extends Properties {
 				}
 			} catch (final NumberFormatException e) {
 				logger.warn("ignoring corrupted pid file : " + pid);
-			}
-			finally {
+			} finally {
 				pidf.close();
 			}
 			pid.delete();
@@ -1849,7 +1811,7 @@ public final class XWConfigurator extends Properties {
 
 	/**
 	 * This returns the server list
-	 * 
+	 *
 	 * @return a Collection of known dispatchers
 	 * @since v1r2-rc1(RPC-V)
 	 */
@@ -1859,7 +1821,7 @@ public final class XWConfigurator extends Properties {
 
 	/**
 	 * This returns the data server list
-	 * 
+	 *
 	 * @return a Collection of known data servers
 	 * @since XWHEP 1.0.0
 	 */
@@ -1869,7 +1831,7 @@ public final class XWConfigurator extends Properties {
 
 	/**
 	 * This retrieves the current dispatcher
-	 * 
+	 *
 	 * @return a String containing current server name
 	 * @since v1r2-rc1(RPC-V)
 	 */
@@ -1879,7 +1841,7 @@ public final class XWConfigurator extends Properties {
 
 	/**
 	 * This retrieves the current data server
-	 * 
+	 *
 	 * @return a String containing current server name
 	 * @since v1r2-rc1(RPC-V)
 	 */
@@ -1889,14 +1851,14 @@ public final class XWConfigurator extends Properties {
 
 	/**
 	 * This determines the current dispatcher
-	 * 
+	 *
 	 * @param srv
 	 *            is a String containing server name to make current one
 	 * @return an integer containing current server index; -1 if the server is
 	 *         not known
 	 * @since v1r2-rc1(RPC-V)
 	 */
-	public synchronized int setCurrentDispatcher(String srv) throws IOException {
+	public synchronized int setCurrentDispatcher(final String srv) throws IOException {
 		final String hn = XWTools.getHostName(srv);
 		currentDispatcher = ((Vector<String>) dispatchers).indexOf(hn);
 		if (currentDispatcher == -1) {
@@ -1908,14 +1870,14 @@ public final class XWConfigurator extends Properties {
 
 	/**
 	 * This determines the current data server
-	 * 
+	 *
 	 * @param srv
 	 *            is a String containing server name to make current one
 	 * @return an integer containing current server index; -1 if the server is
 	 *         not known
 	 * @since XWHEP 1.0.0
 	 */
-	public synchronized int setCurrentDataServer(String srv) throws IOException {
+	public synchronized int setCurrentDataServer(final String srv) throws IOException {
 		final String hn = XWTools.getHostName(srv);
 		currentDataServer = ((Vector<String>) dataServers).indexOf(hn);
 		if (currentDataServer == -1) {
@@ -1927,7 +1889,7 @@ public final class XWConfigurator extends Properties {
 
 	/**
 	 * This returns the next available server name
-	 * 
+	 *
 	 * @return a String containing the next available server name
 	 * @since v1r2-rc1(RPC-V)
 	 */
@@ -1938,7 +1900,7 @@ public final class XWConfigurator extends Properties {
 
 	/**
 	 * This increments the dispatcher
-	 * 
+	 *
 	 * @since v1r2-rc1(RPC-V)
 	 */
 	private synchronized void nextDispatcher() {
@@ -1948,7 +1910,7 @@ public final class XWConfigurator extends Properties {
 
 	/**
 	 * This returns the next available dispatcher
-	 * 
+	 *
 	 * @return a String containing the next available dispatcher
 	 * @since v1r2-rc1(RPC-V)
 	 */
@@ -1959,7 +1921,7 @@ public final class XWConfigurator extends Properties {
 
 	/**
 	 * This increments the data server
-	 * 
+	 *
 	 * @since XWHEP 1.0.0
 	 */
 	private synchronized void nextDataServer() {
@@ -1969,17 +1931,16 @@ public final class XWConfigurator extends Properties {
 
 	/**
 	 * This adds a server to server list, if not already present
-	 * 
+	 *
 	 * @param srv
 	 *            is a String containing a new server name
 	 * @return true if new server inserted, false if server name already known
 	 * @since XWHEP 1.0.0
 	 */
-	public synchronized boolean addServer(final Collection<String> v,
-			final String srv) throws IOException {
+	public synchronized boolean addServer(final Collection<String> v, final String srv) throws IOException {
 
 		boolean ret = false;
-		if((v == null) || (srv == null)) {
+		if ((v == null) || (srv == null)) {
 			return false;
 		}
 		final String hn = XWTools.getHostName(srv);
@@ -1994,19 +1955,19 @@ public final class XWConfigurator extends Properties {
 
 	/**
 	 * This adds a server to server list, if not already present
-	 * 
+	 *
 	 * @param srv
 	 *            is a String containing a new server name
 	 * @return true if new server inserted, false if server name already known
 	 * @since XWHEP 1.0.0
 	 */
-	public boolean addDispatcher(String srv) throws IOException {
+	public boolean addDispatcher(final String srv) throws IOException {
 		return addServer(dispatchers, srv);
 	}
 
 	/**
 	 * This adds a server to server list, if not already present
-	 * 
+	 *
 	 * @param srv
 	 *            is a String containing a new server name
 	 * @return true if new server inserted, false if server name already known
@@ -2018,16 +1979,15 @@ public final class XWConfigurator extends Properties {
 
 	/**
 	 * This adds some server to list, if not already present
-	 * 
+	 *
 	 * @param srv
 	 *            is a String array containing new server names
 	 * @return true if at least one new server inserted, false otherwise
 	 * @since v1r2-rc1(RPC-V)
 	 */
-	private boolean addServers(final Collection<String> v,
-			final Collection<String> srv) throws IOException {
+	private boolean addServers(final Collection<String> v, final Collection<String> srv) throws IOException {
 
-		if(srv == null) {
+		if (srv == null) {
 			return false;
 		}
 
@@ -2045,36 +2005,35 @@ public final class XWConfigurator extends Properties {
 
 	/**
 	 * This adds some dispatchers to dispatchers list, if not already present
-	 * 
+	 *
 	 * @param srv
 	 *            is a String array containing new server names
 	 * @return true if at least one new server inserted, false otherwise
 	 * @since v1r2-rc1(RPC-V)
 	 */
-	public boolean addDispatchers(Collection<String> srv) throws IOException {
+	public boolean addDispatchers(final Collection<String> srv) throws IOException {
 		return addServers(dispatchers, srv);
 	}
 
 	/**
 	 * This adds some data servers to list, if not already present
-	 * 
+	 *
 	 * @param srv
 	 *            is a String array containing new server names
 	 * @return true if at least one new server inserted, false otherwise
 	 * @since XWHEP 1.0.0
 	 */
-	public boolean addDataServers(Collection<String> srv) throws IOException {
+	public boolean addDataServers(final Collection<String> srv) throws IOException {
 		return addServers(dataServers, srv);
 	}
 
 	/**
 	 * This print dispatchers to a string
-	 * 
+	 *
 	 * @return a String containing server names in(tag:name) pair
 	 * @since v1r2-rc1(RPC-V)
 	 */
-	protected synchronized String serversToString(
-			final Collection<String> servers) {
+	protected synchronized String serversToString(final Collection<String> servers) {
 
 		String ret = new String("");
 
@@ -2092,34 +2051,32 @@ public final class XWConfigurator extends Properties {
 
 	/**
 	 * This print dispatchers to a string
-	 * 
+	 *
 	 * @return a String containing server names in(tag:name) pair
 	 * @since v1r2-rc1(RPC-V)
 	 */
 	public String dispatchersToString() {
 
-		return "" + XWPropertyDefs.DISPATCHERS.toString() + "="
-				+ serversToString(dispatchers);
+		return "" + XWPropertyDefs.DISPATCHERS.toString() + "=" + serversToString(dispatchers);
 	}
 
 	/**
 	 * This print dispatchers to a string
-	 * 
+	 *
 	 * @return a String containing server names in(tag:name) pair
 	 * @since v1r2-rc1(RPC-V)
 	 */
 	public String dataServersToString() {
 
-		return "" + XWPropertyDefs.DISPATCHERS.toString() + "="
-				+ serversToString(dataServers);
+		return "" + XWPropertyDefs.DISPATCHERS.toString() + "=" + serversToString(dataServers);
 	}
 
 	/**
 	 * This retrieves a set of servers.
-	 * 
+	 *
 	 * @since XWHEP 1.0.0
 	 */
-	private Collection<String> getServerNames(XWPropertyDefs property) {
+	private Collection<String> getServerNames(final XWPropertyDefs property) {
 
 		final Collection<String> ret = XWTools.split(getProperty(property));
 		if (ret == null) {
@@ -2140,7 +2097,7 @@ public final class XWConfigurator extends Properties {
 
 	/**
 	 * This determines dispatchers file
-	 * 
+	 *
 	 * @since v1r2-rc1(RPC-V)
 	 */
 	private synchronized File dispatchersFile() {
@@ -2149,7 +2106,7 @@ public final class XWConfigurator extends Properties {
 
 	/**
 	 * This determines dispatchers file
-	 * 
+	 *
 	 * @since XWHEP 1.0.0
 	 */
 	private synchronized File dataServersFile() {
@@ -2158,10 +2115,10 @@ public final class XWConfigurator extends Properties {
 
 	/**
 	 * This writes server list to disk
-	 * 
+	 *
 	 * @since XWHEP 1.0.0
 	 */
-	private synchronized void saveServers(File server, String servers) {
+	private synchronized void saveServers(final File server, final String servers) {
 
 		if (server.exists()) {
 			server.delete();
@@ -2180,7 +2137,7 @@ public final class XWConfigurator extends Properties {
 
 	/**
 	 * This writes dispatcher list to disk
-	 * 
+	 *
 	 * @since v1r2-rc1(RPC-V)
 	 */
 	public void saveDispatchers() {
@@ -2189,7 +2146,7 @@ public final class XWConfigurator extends Properties {
 
 	/**
 	 * This writes dispatcher list to disk
-	 * 
+	 *
 	 * @since XWHEP 1.0.0
 	 */
 	public void saveDataServers() {
@@ -2198,18 +2155,16 @@ public final class XWConfigurator extends Properties {
 
 	/**
 	 * This read server list from disk
-	 * 
+	 *
 	 * @since XWHEP 1.0.0
 	 */
-	private void retrieveServers(Collection<String> v, File file) {
+	private void retrieveServers(final Collection<String> v, final File file) {
 
 		try {
-			final BufferedReader bufferFile = new BufferedReader(
-					new FileReader(file));
+			final BufferedReader bufferFile = new BufferedReader(new FileReader(file));
 			final String l = bufferFile.readLine();
 
-			final Collection<String> newSrv = XWTools.split(l.substring(
-					l.indexOf(new String("=")) + 1).trim());
+			final Collection<String> newSrv = XWTools.split(l.substring(l.indexOf(new String("=")) + 1).trim());
 			bufferFile.close();
 			if (newSrv == null) {
 				return;
@@ -2221,7 +2176,7 @@ public final class XWConfigurator extends Properties {
 
 	/**
 	 * This read dispatcher list from disk
-	 * 
+	 *
 	 * @since XWHEP 1.0.0
 	 */
 	public void retrieveDispatchers() {
@@ -2230,7 +2185,7 @@ public final class XWConfigurator extends Properties {
 
 	/**
 	 * This read data server list from disk
-	 * 
+	 *
 	 * @since XWHEP 1.0.0
 	 */
 	public void retrieveDataServers() {
@@ -2239,35 +2194,33 @@ public final class XWConfigurator extends Properties {
 
 	/**
 	 * This writes properites This insert a header containing the storage date
-	 * 
+	 *
 	 * @see #store(String)
 	 */
 	public void store() {
-		store("# XWHEP configuration file\n" + "# XWHEP version : "
-				+ CommonVersion.getCurrent().full() + "\n" + "# Saved on "
-				+ new Date());
+		store("# XWHEP configuration file\n" + "# XWHEP version : " + CommonVersion.getCurrent().full() + "\n"
+				+ "# Saved on " + new Date());
 	}
 
 	/**
 	 * This writes properites
-	 * 
+	 *
 	 * @param header
 	 *            is written at the beginning to the file
 	 */
-	public void store(String header) {
+	public void store(final String header) {
 		store(header, configFile);
 	}
 
 	/**
 	 * This writes properites
-	 * 
+	 *
 	 * @param header
 	 *            is written at the beginning to the file
 	 */
-	public void store(String header, File out) {
+	public void store(final String header, final File out) {
 		if (getBoolean(XWPropertyDefs.FORCENEWUID)) {
-			logger.config("Don't write config ; FORCENEWUID == "
-					+ getBoolean(XWPropertyDefs.FORCENEWUID));
+			logger.config("Don't write config ; FORCENEWUID == " + getBoolean(XWPropertyDefs.FORCENEWUID));
 			return;
 		}
 		try {
@@ -2279,15 +2232,14 @@ public final class XWConfigurator extends Properties {
 
 	/**
 	 * This checks directory trees; this aims to switch between users
-	 * 
+	 *
 	 * @see xtremweb.client.gui.MainFrame#processLoginAs()
 	 */
 	public void check() {
 		try {
 			XWTools.checkDir(getCacheDir());
 			XWTools.checkDir(getTmpDir());
-			binCachedPath = getCacheDir().getCanonicalPath() + File.separator
-					+ "bin";
+			binCachedPath = getCacheDir().getCanonicalPath() + File.separator + "bin";
 			XWTools.checkDir(binCachedPath);
 		} catch (final Exception e) {
 			logger.exception(e);
@@ -2304,8 +2256,7 @@ public final class XWConfigurator extends Properties {
 
 			XWTools.checkDir(getCacheDir());
 			XWTools.checkDir(getTmpDir());
-			binCachedPath = getCacheDir().getCanonicalPath() + File.separator
-					+ "bin";
+			binCachedPath = getCacheDir().getCanonicalPath() + File.separator + "bin";
 			XWTools.checkDir(binCachedPath);
 		} catch (final Exception e) {
 			logger.exception(e);
@@ -2315,7 +2266,7 @@ public final class XWConfigurator extends Properties {
 	/**
 	 * This writes properties
 	 */
-	public void dump(PrintStream out, String header) {
+	public void dump(final PrintStream out, final String header) {
 		if (header != null) {
 			out.println(header + " " + new java.util.Date().toString());
 		}
@@ -2325,65 +2276,44 @@ public final class XWConfigurator extends Properties {
 		out.println("XWRole           : " + XWRole.getMyRole().toString());
 		out.println("Started on       : " + upTime());
 		if (XWRole.isDispatcher()) {
-			out.println("Scheduler        : "
-					+ getProperty(XWPropertyDefs.SCHEDULERCLASS));
+			out.println("Scheduler        : " + getProperty(XWPropertyDefs.SCHEDULERCLASS));
 		}
 		if (XWRole.isWorker()) {
-			out.println("Project          : "
-					+ getProperty(XWPropertyDefs.PROJECT));
+			out.println("Project          : " + getProperty(XWPropertyDefs.PROJECT));
 		}
-		out.println("SmartSockets hub : "
-				+ getProperty(XWPropertyDefs.SMARTSOCKETSHUBADDR));
-		out.println("Server HTTP      : "
-				+ getProperty(XWPropertyDefs.STARTSERVERHTTP));
-		out.println("Alive            : "
-				+ getProperty(XWPropertyDefs.ALIVEPERIOD));
-		out.println("Alive time out   : "
-				+ getProperty(XWPropertyDefs.ALIVETIMEOUT));
+		out.println("SmartSockets hub : " + getProperty(XWPropertyDefs.SMARTSOCKETSHUBADDR));
+		out.println("Server HTTP      : " + getProperty(XWPropertyDefs.STARTSERVERHTTP));
+		out.println("Alive            : " + getProperty(XWPropertyDefs.ALIVEPERIOD));
+		out.println("Alive time out   : " + getProperty(XWPropertyDefs.ALIVETIMEOUT));
 		if (XWRole.isWorker()) {
-			out.println("IncomingConnections : "
-					+ getProperty(XWPropertyDefs.INCOMINGCONNECTIONS));
-			out.println("Activator        : "
-					+ getProperty(XWPropertyDefs.ACTIVATORCLASS));
-			out.println("Activation       : "
-					+ getProperty(XWPropertyDefs.ACTIVATIONDATE));
+			out.println("IncomingConnections : " + getProperty(XWPropertyDefs.INCOMINGCONNECTIONS));
+			out.println("Activator        : " + getProperty(XWPropertyDefs.ACTIVATORCLASS));
+			out.println("Activation       : " + getProperty(XWPropertyDefs.ACTIVATIONDATE));
 			out.println("workPool size    : " + workPoolSize);
-			out.println("Noop Time out    : "
-					+ getProperty(XWPropertyDefs.NOOPTIMEOUT));
-			out.println("Max jobs         : "
-					+ getProperty(XWPropertyDefs.COMPUTINGJOBS));
-			out.println("Runtime.exec()   : "
-					+ getProperty(XWPropertyDefs.JAVARUNTIME));
-			out.println("Multiple instances : "
-					+ getProperty(XWPropertyDefs.INSTANCES));
+			out.println("Noop Time out    : " + getProperty(XWPropertyDefs.NOOPTIMEOUT));
+			out.println("Max jobs         : " + getProperty(XWPropertyDefs.COMPUTINGJOBS));
+			out.println("Runtime.exec()   : " + getProperty(XWPropertyDefs.JAVARUNTIME));
+			out.println("Multiple instances : " + getProperty(XWPropertyDefs.INSTANCES));
 		}
-		out.println("Polling time out : "
-				+ Long.parseLong(getProperty(XWPropertyDefs.TIMEOUT)));
-		out.println("Optimize zip     : "
-				+ getBoolean(XWPropertyDefs.OPTIMIZEZIP));
-		out.println("Optimize network : "
-				+ getBoolean(XWPropertyDefs.OPTIMIZENETWORK));
+		out.println("Polling time out : " + Long.parseLong(getProperty(XWPropertyDefs.TIMEOUT)));
+		out.println("Optimize zip     : " + getBoolean(XWPropertyDefs.OPTIMIZEZIP));
+		out.println("Optimize network : " + getBoolean(XWPropertyDefs.OPTIMIZENETWORK));
 
 		out.println("NIO              : " + getBoolean(XWPropertyDefs.JAVANIO));
-		out.println("Comm layer       : "
-				+ getProperty(XWPropertyDefs.COMMLAYER));
+		out.println("Comm layer       : " + getProperty(XWPropertyDefs.COMMLAYER));
 		out.println("Socket time out  : " + getInt(XWPropertyDefs.SOTIMEOUT));
 		out.println("Socket retries   : " + getInt(XWPropertyDefs.SORETRIES));
-		out.println("Max connections  : "
-				+ getInt(XWPropertyDefs.MAXCONNECTIONS));
+		out.println("Max connections  : " + getInt(XWPropertyDefs.MAXCONNECTIONS));
 		out.println("TCP port         : " + getPort(Connection.TCPPORT));
 		out.println("UDP port         : " + getPort(Connection.UDPPORT));
 		if (XWRole.isWorker()) {
-			out.println("HTPP worker port : "
-					+ getPort(Connection.HTTPWORKERPORT));
+			out.println("HTPP worker port : " + getPort(Connection.HTTPWORKERPORT));
 		}
 		out.println("HTPP  port       : " + getPort(Connection.HTTPPORT));
 		out.println("HTPPS port       : " + getPort(Connection.HTTPSPORT));
-		out.println("Sun RPC interposition port : "
-				+ getPort(Connection.SUNRPCPORT));
+		out.println("Sun RPC interposition port : " + getPort(Connection.SUNRPCPORT));
 		out.println("Sandbox path : " + getProperty(XWPropertyDefs.SANDBOXPATH));
-		out.println("Sandbox launch args : "
-				+ getProperty(XWPropertyDefs.SANDBOXSTARTARGS));
+		out.println("Sandbox launch args : " + getProperty(XWPropertyDefs.SANDBOXSTARTARGS));
 		out.println("Host " + _host.toXml());
 	}
 
@@ -2398,7 +2328,7 @@ public final class XWConfigurator extends Properties {
 	 * @param hasKeyboard
 	 *            the hasKeyboard to set
 	 */
-	public void setHasKeyboard(boolean hasKeyboard) {
+	public void setHasKeyboard(final boolean hasKeyboard) {
 		this.hasKeyboard = hasKeyboard;
 	}
 
@@ -2413,17 +2343,17 @@ public final class XWConfigurator extends Properties {
 	 * @param hasMouse
 	 *            the hasMouse to set
 	 */
-	public void setHasMouse(boolean hasMouse) {
+	public void setHasMouse(final boolean hasMouse) {
 		this.hasMouse = hasMouse;
 	}
 
 	/**
 	 * This is for debug purposes only
-	 * 
+	 *
 	 * @param args
 	 *            is the array containing command line options
 	 */
-	public static void main(String[] args) {
+	public static void main(final String[] args) {
 		new XWConfigurator(args[0], true);
 	}
 }
