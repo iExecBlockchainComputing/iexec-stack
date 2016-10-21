@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -25,7 +25,7 @@ package xtremweb.worker;
 
 /**
  *  AlwaysActive.java<br />
- *  This activator never suspends the worker; the worker is alays allowed to compute<br /> 
+ *  This activator never suspends the worker; the worker is alays allowed to compute<br />
  *  Created on Fri Mar 22 2002.<br />
  *
  * @author heriard
@@ -41,14 +41,14 @@ public class AlwaysActive extends Activator {
 	}
 
 	@Override
-	public void initialize(XWConfigurator c) {
+	public void initialize(final XWConfigurator c) {
 		super.initialize(c);
 		setMask(ALL_ACTIVITY);
 	}
 
 	/**
 	 * This returns null
-	 * 
+	 *
 	 * @return always null
 	 */
 	@Override
@@ -59,7 +59,7 @@ public class AlwaysActive extends Activator {
 	/**
 	 * This waits for ever since this class is the <b>AlwaysActive</b> activator
 	 * ;)
-	 * 
+	 *
 	 * @param filter
 	 *            not used
 	 * @return never
@@ -68,7 +68,7 @@ public class AlwaysActive extends Activator {
 	 *                is never thrown
 	 */
 	@Override
-	public final int waitForSuspend(int filter) throws InterruptedException {
+	public final int waitForSuspend(final int filter) throws InterruptedException {
 
 		while (true) {
 			getMileStone().println("waitForSuspend");
@@ -86,7 +86,7 @@ public class AlwaysActive extends Activator {
 	/**
 	 * This waits nothing and returns immediatly since this class is the
 	 * <b>AlwaysActive</b> activator ;)
-	 * 
+	 *
 	 * @param filter
 	 *            is not used
 	 * @return always 0
@@ -95,7 +95,7 @@ public class AlwaysActive extends Activator {
 	 *                is never thrown
 	 */
 	@Override
-	public final int waitForAllow(int filter) throws InterruptedException {
+	public final int waitForAllow(final int filter) throws InterruptedException {
 		getMileStone().println("waitForAllow");
 		return 0;
 	}
