@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -162,7 +162,7 @@ public enum UserRightEnum {
 	/**
 	 * This denotes virtualized worker user rights. This aims to allow access
 	 * objects that has the sticky bit.
-	 * 
+	 *
 	 * @since 8.0.0
 	 * @see xtremweb.security.XWAccessRights#STICKYBIT
 	 */
@@ -205,69 +205,69 @@ public enum UserRightEnum {
 
 	/**
 	 * This tests whether this is higher than the provided parameter
-	 * 
+	 *
 	 * @param c
 	 *            is the value to compare
 	 * @return true if this is higher than the parameter, false otherwise
 	 */
-	public boolean higherThan(UserRightEnum c) {
+	public boolean higherThan(final UserRightEnum c) {
 		return this.ordinal() > c.ordinal();
 	}
 
 	/**
 	 * This tests whether this is higher or equal than the provided parameter
-	 * 
+	 *
 	 * @param c
 	 *            is the value to compare
 	 * @return true if this is higher or equal than the parameter, false
 	 *         otherwise
 	 */
-	public boolean higherOrEquals(UserRightEnum c) {
+	public boolean higherOrEquals(final UserRightEnum c) {
 		return this.ordinal() >= c.ordinal();
 	}
 
 	/**
 	 * This tests whether this is lower than the provided parameter
-	 * 
+	 *
 	 * @param c
 	 *            is the value to compare
 	 * @return true if this is lower than the parameter, false otherwise
 	 */
-	public boolean lowerThan(UserRightEnum c) {
+	public boolean lowerThan(final UserRightEnum c) {
 		return this.ordinal() < c.ordinal();
 	}
 
 	/**
 	 * This tests whether this is lower or equal than the provided parameter
-	 * 
+	 *
 	 * @param c
 	 *            is the value to compare
 	 * @return true if this is lower or equal than the parameter, false
 	 *         otherwise
 	 */
-	public boolean lowerOrEquals(UserRightEnum c) {
+	public boolean lowerOrEquals(final UserRightEnum c) {
 		return this.ordinal() <= c.ordinal();
 	}
 
 	/**
 	 * This tests whether this equals the provided parameter
-	 * 
+	 *
 	 * @param c
 	 *            is the value to compare
 	 * @return true if this equals the parameter, false otherwise
 	 */
-	public boolean doesEqual(UserRightEnum c) {
+	public boolean doesEqual(final UserRightEnum c) {
 		return this.ordinal() == c.ordinal();
 	}
 
 	/**
 	 * This retrieves an Columns from its integer value
-	 * 
+	 *
 	 * @param v
 	 *            is the integer value of the Columns
 	 * @return an Columns
 	 */
-	public static UserRightEnum fromInt(int v) throws IndexOutOfBoundsException {
+	public static UserRightEnum fromInt(final int v) throws IndexOutOfBoundsException {
 		for (final UserRightEnum c : UserRightEnum.values()) {
 			if (c.ordinal() == v) {
 				return c;
@@ -276,7 +276,7 @@ public enum UserRightEnum {
 		throw new IndexOutOfBoundsException("unvalid status " + v);
 	}
 
-	public static void main(String[] argv) {
+	public static void main(final String[] argv) {
 		for (final UserRightEnum r : UserRightEnum.values()) {
 			System.out.println(r.toString() + " = " + r.ordinal());
 		}
