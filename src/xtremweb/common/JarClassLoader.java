@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -35,7 +35,7 @@ public class JarClassLoader extends java.net.URLClassLoader {
 
 	private final URL url;
 
-	public JarClassLoader(URL url) {
+	public JarClassLoader(final URL url) {
 		super(new URL[] { url });
 		this.url = url;
 	}
@@ -47,16 +47,14 @@ public class JarClassLoader extends java.net.URLClassLoader {
 		return attr != null ? attr.getValue(Attributes.Name.MAIN_CLASS) : null;
 	}
 
-	public void invokeClass(String name, String[] args)
-			throws ClassNotFoundException, NoSuchMethodException,
-			InvocationTargetException {
+	public void invokeClass(final String name, final String[] args)
+			throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException {
 
 		final Class c = loadClass(name);
 		final Method m = c.getMethod("main", new Class[] { args.getClass() });
 		m.setAccessible(true);
 		final int mods = m.getModifiers();
-		if ((m.getReturnType() != void.class) || !Modifier.isStatic(mods)
-				|| !Modifier.isPublic(mods)) {
+		if ((m.getReturnType() != void.class) || !Modifier.isStatic(mods) || !Modifier.isPublic(mods)) {
 			throw new NoSuchMethodException("main");
 		}
 		try {
@@ -66,7 +64,7 @@ public class JarClassLoader extends java.net.URLClassLoader {
 		}
 	}
 
-	public static void main(String[] args) {
+	public static void main(final String[] args) {
 		try {
 			final JarClassLoader loader = new JarClassLoader(new URL(args[0]));
 			final String[] theargs = new String[args.length - 2];
@@ -74,8 +72,7 @@ public class JarClassLoader extends java.net.URLClassLoader {
 			loader.invokeClass(args[1], theargs);
 		} catch (final Exception e) {
 			e.printStackTrace();
-			System.out
-					.println("Usage : JarClassLoader URL className arg [arg, arg ...]");
+			System.out.println("Usage : JarClassLoader URL className arg [arg, arg ...]");
 		}
 	}
 }
