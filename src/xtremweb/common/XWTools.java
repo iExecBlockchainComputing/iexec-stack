@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -50,11 +50,11 @@ import java.util.StringTokenizer;
 import java.util.Vector;
 
 /**
- * 
+ *
  * Some utilities
- * 
+ *
  * Created: Thu Jun 29 17:47:11 2000
- * 
+ *
  * @author Gilles Fedak
  * @version %I% %G%
  */
@@ -88,7 +88,7 @@ public class XWTools {
 	public static final String STDERR = "stderr" + DataTypeEnum.TEXT.getFileExtension();
 	/**
 	 * This defines buffer size for communications : 16Kb
-	 * 
+	 *
 	 * @see StreamIO#DEFLENGTH
 	 * @see ByteStack#DEFLENGTH
 	 * @see BytePacket#BUFFERLENGTH
@@ -98,7 +98,7 @@ public class XWTools {
 	/**
 	 * This defines file size limit over which file is considered as huge :
 	 * 250Kb
-	 * 
+	 *
 	 * @see Zipper#zip(String[], boolean)
 	 * @see StreamIO#file2array(File)
 	 */
@@ -109,20 +109,20 @@ public class XWTools {
 	 * ensures that client do not block a socket for too long since the server
 	 * has a limited amount of simultaneous connections. Otherwise DoS attack
 	 * would be too easy.
-	 * 
+	 *
 	 * @since 7.4.0
 	 * @see XWPropertyDefs#MAXCONNECTIONS
 	 */
 	public static final int MAXMESSAGES = 2000;
 	/**
 	 * This is the 1024
-	 * 
+	 *
 	 * @since 9.1.0
 	 */
 	public static final long ONEKILOBYTES = 1024;
 	/**
 	 * This is the 1024*1024
-	 * 
+	 *
 	 * @since 9.1.0
 	 */
 	public static final long ONEMEGABYTES = ONEKILOBYTES * ONEKILOBYTES;
@@ -133,14 +133,14 @@ public class XWTools {
 	/**
 	 * This defines the maximum size of work disk space (30Gb). This is in Mb
 	 * (here 30 kilobytes of megabytes are 30 gigabytes)
-	 * 
+	 *
 	 * @since 8.0.0
 	 */
 	public static final long MAXDISKSIZE = 30 * ONEKILOBYTES;
 	/**
 	 * This defines the maximum size of work RAM space (1Gb) This is in Kb (here
 	 * one megabytes of kilobytes are one gigabytes)
-	 * 
+	 *
 	 * @since 9.1.0
 	 */
 	public static final long MAXRAMSIZE = ONEMEGABYTES;
@@ -160,13 +160,13 @@ public class XWTools {
 
 	/**
 	 * This formats a date to String
-	 * 
+	 *
 	 * @param d
 	 *            is the date to format
 	 * @return a String containing formatted date
 	 * @see #sqlDateFormat
 	 */
-	public static String getSQLDateTime(java.util.Date d) {
+	public static String getSQLDateTime(final java.util.Date d) {
 
 		String ret = null;
 
@@ -183,13 +183,13 @@ public class XWTools {
 
 	/**
 	 * This retreived a date from String
-	 * 
+	 *
 	 * @param d
 	 *            is the string containing the date
 	 * @return a Date as represented in provided formatted string
 	 * @see #sqlDateFormat
 	 */
-	public static java.util.Date getSQLDateTime(String d) {
+	public static java.util.Date getSQLDateTime(final String d) {
 
 		if (d == null) {
 			return null;
@@ -212,7 +212,7 @@ public class XWTools {
 
 	/**
 	 * This contains locked ports
-	 * 
+	 *
 	 * @since 8.0.0
 	 * @see #lockPort(int)
 	 * @see #releasePort(int)
@@ -225,7 +225,7 @@ public class XWTools {
 	 * Apache mina project Found at
 	 * http://stackoverflow.com/questions/434718/sockets
 	 * -discover-port-availability-using-java.
-	 * 
+	 *
 	 * @param port
 	 *            the port to check for availability
 	 * @return true if port is availabel, false otherwise
@@ -233,7 +233,7 @@ public class XWTools {
 	 * @see #lockedPorts
 	 * @see #releasePort(int)
 	 */
-	public static synchronized boolean lockPort(int port) {
+	public static synchronized boolean lockPort(final int port) {
 		ServerSocket ss = null;
 		DatagramSocket ds = null;
 		final Integer key = new Integer(port);
@@ -272,14 +272,14 @@ public class XWTools {
 	 * coming from the Apache mina project Found at
 	 * http://stackoverflow.com/questions
 	 * /434718/sockets-discover-port-availability-using-java
-	 * 
+	 *
 	 * @param port
 	 *            the port to check for availability
 	 * @since 8.0.0
 	 * @see #lockedPorts
 	 * @see #lockPort(int)
 	 */
-	public static void releasePort(int port) {
+	public static void releasePort(final int port) {
 		lockedPorts.remove(new Integer(port));
 	}
 
@@ -287,7 +287,7 @@ public class XWTools {
 
 	/**
 	 * This retreives local host name. This calls getHostName("localhost")
-	 * 
+	 *
 	 * @see #getHostName(String)
 	 * @return local host name
 	 */
@@ -309,10 +309,10 @@ public class XWTools {
 
 	/**
 	 * This retreives a host name. correct misconfiguered /etc/hosts.
-	 * 
+	 *
 	 * @throws UnknownHostException
 	 */
-	public static String getHostName(String hostname) throws UnknownHostException {
+	public static String getHostName(final String hostname) throws UnknownHostException {
 		String ret = "";
 
 		ret = java.net.InetAddress.getByName(hostname).getHostName();
@@ -324,7 +324,7 @@ public class XWTools {
 		return ret;
 	}
 
-	public static boolean searchInArray(Object a[], Object b) {
+	public static boolean searchInArray(final Object a[], final Object b) {
 		int i = 0;
 		boolean found = false;
 		boolean complete = false;
@@ -339,7 +339,7 @@ public class XWTools {
 		return (found);
 	}
 
-	public static void fatal(String s) {
+	public static void fatal(final String s) {
 
 		final SimpleDateFormat logDateFormat = new SimpleDateFormat("[dd/MMM/yyyy:HH:mm:ss Z]", Locale.US);
 		logger.fatal(logDateFormat.format(new Date()) + " Fatal : " + s);
@@ -348,12 +348,12 @@ public class XWTools {
 	/**
 	 * Restart error: cause the programm to exit and restart
 	 */
-	public static void restart(String s) {
+	public static void restart(final String s) {
 		logger.info("restarting : " + s);
 		System.exit(XWReturnCode.RESTART.ordinal());
 	}
 
-	public static void fileCopy(File in, File out) throws IOException {
+	public static void fileCopy(final File in, final File out) throws IOException {
 		try (FileInputStream fis = new FileInputStream(in); FileOutputStream fos = new FileOutputStream(out);) {
 			final byte[] buf = new byte[1024];
 			int i = 0;
@@ -368,7 +368,7 @@ public class XWTools {
 	/**
 	 * This retreives an X.509 certificate from file
 	 */
-	public static X509Certificate certificateFromFile(String certFileName)
+	public static X509Certificate certificateFromFile(final String certFileName)
 			throws CertificateException, CertificateExpiredException, FileNotFoundException, IOException {
 
 		return certificateFromFile(new File(certFileName));
@@ -377,7 +377,7 @@ public class XWTools {
 	/**
 	 * This retreives an X.509 certificate from file
 	 */
-	public static X509Certificate certificateFromFile(File certFile)
+	public static X509Certificate certificateFromFile(final File certFile)
 			throws CertificateException, CertificateExpiredException, FileNotFoundException, IOException {
 
 		final FileInputStream inStream = new FileInputStream(certFile);
@@ -392,11 +392,11 @@ public class XWTools {
 	/**
 	 * This checks X.509 validity
 	 */
-	public static X509Certificate checkCertificate(File certFile)
+	public static X509Certificate checkCertificate(final File certFile)
 			throws CertificateException, CertificateExpiredException, FileNotFoundException, IOException {
 
 		X509Certificate cert = null;
-		try (FileInputStream inStream = new FileInputStream(certFile)){
+		try (FileInputStream inStream = new FileInputStream(certFile)) {
 			cert = checkCertificate(inStream);
 		} finally {
 		}
@@ -406,7 +406,7 @@ public class XWTools {
 	/**
 	 * This checks X.509 validity
 	 */
-	public static X509Certificate checkCertificate(InputStream in)
+	public static X509Certificate checkCertificate(final InputStream in)
 			throws CertificateException, CertificateExpiredException, FileNotFoundException, IOException {
 
 		if (certificateFactory == null) {
@@ -425,7 +425,7 @@ public class XWTools {
 	/**
 	 * This compares two certificates
 	 */
-	public static boolean compareCertificates(X509Certificate key1, X509Certificate key2)
+	public static boolean compareCertificates(final X509Certificate key1, final X509Certificate key2)
 			throws CertificateEncodingException {
 		if (Arrays.equals(key1.getEncoded(), key2.getEncoded())) {
 			return true;
@@ -437,7 +437,7 @@ public class XWTools {
 	 * This creates a subdir from UID. This defines up to 1000 sub directories
 	 * name "0" to "999". This has been introduced to solve file system
 	 * limitations.
-	 * 
+	 *
 	 * @param parent
 	 *            is the parent directory of the new sub directory to create
 	 * @param uid
@@ -445,7 +445,7 @@ public class XWTools {
 	 * @return the subdir name
 	 * @since 1.3
 	 */
-	public static File createDir(String parent, UID uid) throws IOException {
+	public static File createDir(final String parent, final UID uid) throws IOException {
 
 		final File fparent = new File(parent);
 		return createDir(fparent, uid);
@@ -455,7 +455,7 @@ public class XWTools {
 	 * This creates a subdir from UID. This defines up to 1000 sub directories
 	 * name "0" to "999". This has been introduced to solve file system
 	 * limitations.
-	 * 
+	 *
 	 * @param parent
 	 *            is the parent directory of the new sub directory to create
 	 * @param uid
@@ -463,7 +463,7 @@ public class XWTools {
 	 * @return the subdir name
 	 * @since 1.3
 	 */
-	public static File createDir(File parent, UID uid) throws IOException {
+	public static File createDir(final File parent, final UID uid) throws IOException {
 
 		final String dirName = new Integer(uid.hashCode() % 1000).toString();
 		final File dir = new File(parent, dirName);
@@ -473,12 +473,12 @@ public class XWTools {
 
 	/**
 	 * This ensures that a directory exists.
-	 * 
+	 *
 	 * If the parameter is not a directory, the file will be deleted. If the
 	 * directory does not exists, <code>checkDir</code> will be called on its
 	 * parent before creating it.
 	 * </p>
-	 * 
+	 *
 	 * @param dir
 	 *            the directory to create.
 	 * @exception IOException
@@ -513,7 +513,7 @@ public class XWTools {
 	/**
 	 * This delete a full directory
 	 */
-	static public boolean deleteDir(File path) throws IOException {
+	static public boolean deleteDir(final File path) throws IOException {
 		if ((path == null) || (path.exists() == false)) {
 			return false;
 		}
@@ -534,18 +534,18 @@ public class XWTools {
 
 	/**
 	 * This calls hash(src, ",", ":")
-	 * 
+	 *
 	 * @see #hash(String,String,String)
 	 * @since XWHEP 1.0.0
 	 */
-	public static Map<String, String> hash(String src) {
+	public static Map<String, String> hash(final String src) {
 		return hash(src, ",", ":");
 	}
 
 	/**
 	 * This converts a string into an hash table of strings accordingly to
 	 * separators.
-	 * 
+	 *
 	 * @param src
 	 *            is the String to split
 	 * @param separator1
@@ -581,7 +581,7 @@ public class XWTools {
 	/**
 	 * This converts a string into an array of strings accordingly to a
 	 * separator.
-	 * 
+	 *
 	 * @param src
 	 *            is the String to split
 	 * @param separator
@@ -608,7 +608,7 @@ public class XWTools {
 	/**
 	 * This converts a string into an array of strings accordingly to a
 	 * separator.
-	 * 
+	 *
 	 * @param src
 	 *            is the String to split
 	 * @return an array of String
@@ -620,12 +620,12 @@ public class XWTools {
 
 	/**
 	 * This aims to launch a browser
-	 * 
+	 *
 	 * Bare Bones Browser Launch Version 1.5 (December 10, 2005) By Dem Pilafian
 	 * Supports: Mac OS X, GNU/Linux, Unix, Windows XP Example Usage: String url
 	 * = "http://www.centerkey.com/"; BareBonesBrowserLaunch.openURL(url);
 	 * Public Domain Software -- Free to Use as You Like
-	 * 
+	 *
 	 * @param url
 	 *            is the URL to display
 	 */
@@ -676,13 +676,13 @@ public class XWTools {
 
 	/**
 	 * This converts an array of 4 bytes to an integer
-	 * 
+	 *
 	 * @param datas
 	 *            is a 4 elements array
 	 * @param len
 	 *            is the number of bytes to use in datas
 	 */
-	public static int[] bytes2integers(byte datas[], int len) {
+	public static int[] bytes2integers(final byte datas[], final int len) {
 
 		final int nbint = len / SIZEOFINTEGER;
 		final int[] integers = new int[nbint + 1];
@@ -702,11 +702,11 @@ public class XWTools {
 
 	/**
 	 * This converts an array of 4 bytes to an integer
-	 * 
+	 *
 	 * @param bytes
 	 *            [] is a 4 elements array
 	 */
-	public static int bytes2integer(byte bytes[]) {
+	public static int bytes2integer(final byte bytes[]) {
 
 		return (((bytes[0] << 24) & 0xff000000) + ((bytes[1] << 16) & 0x00ff0000) + ((bytes[2] << 8) & 0x0000ff00)
 				+ (bytes[3] & 0x000000ff));
@@ -714,12 +714,12 @@ public class XWTools {
 
 	/**
 	 * This converts a long to an array of 4 bytes
-	 * 
+	 *
 	 * @param data
 	 *            is the long to convert
 	 * @return a byte array with height elements
 	 */
-	public static byte[] long2bytes(long data) {
+	public static byte[] long2bytes(final long data) {
 
 		final byte bytes[] = new byte[SIZEOFLONG];
 		bytes[0] = (byte) ((data & 0xff00000000000000L) >> 56);
@@ -736,12 +736,12 @@ public class XWTools {
 
 	/**
 	 * This converts an integer to an array of 4 bytes
-	 * 
+	 *
 	 * @param data
 	 *            is the integer to convert
 	 * @return a byte array with four elements
 	 */
-	public static byte[] integer2bytes(int data) {
+	public static byte[] integer2bytes(final int data) {
 
 		final byte bytes[] = new byte[SIZEOFINTEGER];
 
@@ -755,12 +755,12 @@ public class XWTools {
 
 	/**
 	 * This converts a short to an array of 4 bytes
-	 * 
+	 *
 	 * @param data
 	 *            is the short to convert
 	 * @return a byte array with two elements
 	 */
-	public static byte[] short2bytes(short data) {
+	public static byte[] short2bytes(final short data) {
 
 		final byte bytes[] = new byte[SIZEOFSHORT];
 
@@ -770,13 +770,13 @@ public class XWTools {
 		return bytes;
 	}
 
-	public static String intToHexString(int value) {
+	public static String intToHexString(final int value) {
 		return "0x" + Integer.toHexString(value);
 	}
 
 	static final String HEXES = "0123456789ABCDEF";
 
-	public static String byteArrayToHexString(byte[] raw) {
+	public static String byteArrayToHexString(final byte[] raw) {
 		if (raw == null) {
 			return null;
 		}
@@ -787,7 +787,7 @@ public class XWTools {
 		return hex.toString();
 	}
 
-	public static byte[] hexStringToByteArray(String s) {
+	public static byte[] hexStringToByteArray(final String s) {
 		final int len = s.length();
 		final byte[] data = new byte[len / 2];
 		for (int i = 0; i < len; i += 2) {
@@ -796,7 +796,7 @@ public class XWTools {
 		return data;
 	}
 
-	public static void main(String[] argv) {
+	public static void main(final String[] argv) {
 		try {
 			UID uid = null;
 
