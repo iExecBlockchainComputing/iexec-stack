@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -43,7 +43,7 @@ import xtremweb.communications.URI;
  * labels (i.e. users UID to users login etc.).<br />
  * This is a read only class : this class cannot be used to modify works, apps
  * etc.<br />
- * 
+ *
  * This derives from xtremweb.common.TableInterface to uniform code so that it
  * can be used where a TableInterface is expected even if objects of this class
  * donot transit through the network.<br />
@@ -59,7 +59,7 @@ import xtremweb.communications.URI;
  * users.uid AND works.app = apps.uid AND tasks.host = hosts.uid;<br />
  * <br />
  * Created: 23 avril 2006<br />
- * 
+ *
  * @author <a href="mailto:lodygens /at\ .in2p3.fr>Oleg Lodygensky</a>
  */
 public class JobInterface extends Table {
@@ -124,7 +124,7 @@ public class JobInterface extends Table {
 		LABEL,
 		/**
 		 * This is the column index of the status
-		 * 
+		 *
 		 * @see StatusEnum
 		 */
 		STATUS {
@@ -132,7 +132,7 @@ public class JobInterface extends Table {
 			 * This creates a new UID from string
 			 */
 			@Override
-			public StatusEnum fromString(String v) {
+			public StatusEnum fromString(final String v) {
 				return StatusEnum.valueOf(v);
 			}
 		},
@@ -141,7 +141,7 @@ public class JobInterface extends Table {
 		 */
 		RESULTURI {
 			@Override
-			public URI fromString(String v) throws URISyntaxException {
+			public URI fromString(final String v) throws URISyntaxException {
 				return new URI(v);
 			}
 		},
@@ -152,7 +152,7 @@ public class JobInterface extends Table {
 			/**
 			 * This creates an object from String representation for this column
 			 * value This cleans the parameter to ensure SQL compliance
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return a Boolean representing the column value
@@ -170,7 +170,7 @@ public class JobInterface extends Table {
 		 */
 		ARRIVALDATE {
 			@Override
-			public Date fromString(String v) {
+			public Date fromString(final String v) {
 				return XWTools.getSQLDateTime(v);
 			}
 		},
@@ -179,7 +179,7 @@ public class JobInterface extends Table {
 		 */
 		COMPLETEDDATE {
 			@Override
-			public Date fromString(String v) {
+			public Date fromString(final String v) {
 				return XWTools.getSQLDateTime(v);
 			}
 		},
@@ -188,7 +188,7 @@ public class JobInterface extends Table {
 		 */
 		RETURNCODE {
 			@Override
-			public Integer fromString(String v) {
+			public Integer fromString(final String v) {
 				return Integer.valueOf(v);
 			}
 		},
@@ -199,7 +199,7 @@ public class JobInterface extends Table {
 			/**
 			 * This creates an object from String representation for this column
 			 * value This cleans the parameter to ensure SQL compliance
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return a Boolean representing the column value
@@ -220,7 +220,7 @@ public class JobInterface extends Table {
 		/**
 		 * This is the index based on ordinal so that the first value is
 		 * TableColumns + 1
-		 * 
+		 *
 		 * @see xtremweb.common#TableColumns
 		 * @see Enum#ordinal()
 		 * @since 8.2.0
@@ -230,7 +230,7 @@ public class JobInterface extends Table {
 		/**
 		 * This constructor sets the ord member as ord = this.ordinal +
 		 * TableColumns.SIZE
-		 * 
+		 *
 		 * @since 8.2.0
 		 */
 		Columns() {
@@ -239,49 +239,50 @@ public class JobInterface extends Table {
 
 		/**
 		 * This retrieves the index based ordinal
-		 * 
+		 *
 		 * @return the index based ordinal
 		 * @since 8.2.0
 		 */
+		@Override
 		public int getOrdinal() {
 			return ord;
 		}
 
 		/**
 		 * This creates a new object from String for the given column
-		 * 
+		 *
 		 * @param v
 		 *            the String representation
 		 * @return v
 		 * @throws Exception
 		 *             is thrown on instantiation error
 		 */
-		public Object fromString(String v) throws Exception {
+		@Override
+		public Object fromString(final String v) throws Exception {
 			return v;
 		}
 
 		/**
 		 * This creates a new object from SQL result set
-		 * 
+		 *
 		 * @param rs
 		 *            is the SQL result set
 		 * @return the object representing the column
 		 * @throws Exception
 		 *             is thrown on instantiation error
 		 */
-		public final Object fromResultSet(ResultSet rs) throws Exception {
+		public final Object fromResultSet(final ResultSet rs) throws Exception {
 			return this.fromString(rs.getString(this.toString()));
 		}
 
 		/**
 		 * This retrieves an Columns from its integer value
-		 * 
+		 *
 		 * @param v
 		 *            is the integer value of the Columns
 		 * @return an Columns
 		 */
-		public static XWBaseColumn fromInt(int v)
-				throws IndexOutOfBoundsException {
+		public static XWBaseColumn fromInt(final int v) throws IndexOutOfBoundsException {
 			try {
 				return TableColumns.fromInt(v);
 			} catch (final Exception e) {
@@ -296,7 +297,7 @@ public class JobInterface extends Table {
 
 		/**
 		 * This retrieves this enumeration string representation
-		 * 
+		 *
 		 * @return a array containing this enum string representation
 		 */
 		public static String[] getLabels() {
@@ -325,9 +326,8 @@ public class JobInterface extends Table {
 		setAttributeLength(ENUMSIZE);
 
 		setColumns(Columns.getLabels());
-		setShortIndexes(new int[] { TableColumns.UID.getOrdinal(),
-				Columns.USERLOGIN.getOrdinal(), Columns.APPNAME.getOrdinal(),
-				Columns.STATUS.getOrdinal() });
+		setShortIndexes(new int[] { TableColumns.UID.getOrdinal(), Columns.USERLOGIN.getOrdinal(),
+				Columns.APPNAME.getOrdinal(), Columns.STATUS.getOrdinal() });
 		app = null;
 		group = null;
 		host = null;
@@ -338,7 +338,7 @@ public class JobInterface extends Table {
 
 	/**
 	 * This construcs a new job
-	 * 
+	 *
 	 * @param w
 	 *            is the WorkInterface of the job
 	 * @param a
@@ -351,9 +351,8 @@ public class JobInterface extends Table {
 	 *            is the HostInterface of the job or null is host is not defined
 	 *            (host has been removed from server)
 	 */
-	public JobInterface(WorkInterface w, GroupInterface g, SessionInterface s,
-			AppInterface a, UserInterface u, HostInterface h)
-			throws IOException {
+	public JobInterface(final WorkInterface w, final GroupInterface g, final SessionInterface s, final AppInterface a,
+			final UserInterface u, final HostInterface h) throws IOException {
 
 		this();
 
@@ -367,25 +366,25 @@ public class JobInterface extends Table {
 
 	/**
 	 * This calls this(StreamIO.stream(input));
-	 * 
+	 *
 	 * @param input
 	 *            is a String containing an XML representation
 	 */
-	public JobInterface(String input) throws IOException, SAXException {
+	public JobInterface(final String input) throws IOException, SAXException {
 		this(StreamIO.stream(input));
 	}
 
 	/**
 	 * This constructs a new object from input stream providing XML
 	 * representation
-	 * 
+	 *
 	 * @param input
 	 *            is the input stream
 	 * @see XMLReader#read(InputStream)
 	 * @throws IOException
 	 *             on XML error
 	 */
-	public JobInterface(InputStream input) throws IOException, SAXException {
+	public JobInterface(final InputStream input) throws IOException, SAXException {
 		this();
 		final XMLReader reader = new XMLReader(this);
 		try {
@@ -398,14 +397,14 @@ public class JobInterface extends Table {
 	/**
 	 * This constructs a new object from XML attributes received from input
 	 * stream
-	 * 
+	 *
 	 * @param attrs
 	 *            contains attributes XML representation
 	 * @see Table#fromXml(Attributes)
 	 * @throws IOException
 	 *             on XML error
 	 */
-	public JobInterface(Attributes attrs) throws IOException {
+	public JobInterface(final Attributes attrs) throws IOException {
 		this();
 		super.fromXml(attrs);
 	}
@@ -419,7 +418,7 @@ public class JobInterface extends Table {
 
 	/**
 	 * This gets the group name
-	 * 
+	 *
 	 * @return this attribute, or null if not set
 	 * @since 3.2.0
 	 */
@@ -432,7 +431,7 @@ public class JobInterface extends Table {
 
 	/**
 	 * This gets the session name
-	 * 
+	 *
 	 * @return this attribute, or null if not set
 	 * @since 3.2.0
 	 */
@@ -445,7 +444,7 @@ public class JobInterface extends Table {
 
 	/**
 	 * This gets the expected host name
-	 * 
+	 *
 	 * @return this attribute, or null if not set
 	 * @since RPCXW
 	 */
@@ -458,7 +457,7 @@ public class JobInterface extends Table {
 
 	/**
 	 * This gets this work application UID
-	 * 
+	 *
 	 * @return this work application UID
 	 * @exception IOException
 	 *                is thrown is attribute is nor set, neither well formed
@@ -470,7 +469,7 @@ public class JobInterface extends Table {
 	/**
 	 * This gets the job name as defined by user at submission time. <br>
 	 * Label is optional
-	 * 
+	 *
 	 * @return this attribute, or null if not set
 	 */
 	public String getLabel() {
@@ -479,7 +478,7 @@ public class JobInterface extends Table {
 
 	/**
 	 * This gets user login
-	 * 
+	 *
 	 * @return this attribute, or null if not set
 	 * @exception IOException
 	 *                is thrown is attribute is nor set, neither well formed
@@ -490,7 +489,7 @@ public class JobInterface extends Table {
 
 	/**
 	 * This gets an attribute
-	 * 
+	 *
 	 * @exception IOException
 	 *                is thrown if attribute is not set
 	 * @return this attribute
@@ -501,7 +500,7 @@ public class JobInterface extends Table {
 
 	/**
 	 * This retrieves the URI where to get result
-	 * 
+	 *
 	 * @return this attribute, or null if not set
 	 */
 	public URI getResult() {
@@ -510,7 +509,7 @@ public class JobInterface extends Table {
 
 	/**
 	 * This retrieves the URI of the X509 user proxy
-	 * 
+	 *
 	 * @return this attribute, or null if not set
 	 */
 	public URI getUserProxy() {
@@ -519,7 +518,7 @@ public class JobInterface extends Table {
 
 	/**
 	 * This gets an attribute
-	 * 
+	 *
 	 * @return job return code, 0 on error
 	 */
 	public int getReturnCode() {
@@ -528,7 +527,7 @@ public class JobInterface extends Table {
 
 	/**
 	 * This gets an attribute
-	 * 
+	 *
 	 * @return this attribute, or null if not set
 	 */
 	public String getCmdLine() {
@@ -537,7 +536,7 @@ public class JobInterface extends Table {
 
 	/**
 	 * This gets an attribute
-	 * 
+	 *
 	 * @return this attribute, or null if not set
 	 */
 	public Date getArrivalDate() {
@@ -546,7 +545,7 @@ public class JobInterface extends Table {
 
 	/**
 	 * This gets an attribute
-	 * 
+	 *
 	 * @return this attribute, or null if not set
 	 */
 	public Date getCompletedDate() {
@@ -556,7 +555,7 @@ public class JobInterface extends Table {
 	/**
 	 * This sets parameter value; this is called from
 	 * TableInterface#fromXml(Attributes)
-	 * 
+	 *
 	 * @param attribute
 	 *            is the name of the attribute to set
 	 * @param v
@@ -565,8 +564,7 @@ public class JobInterface extends Table {
 	 * @see Table#fromXml(Attributes)
 	 */
 	@Override
-	public final boolean setValue(String attribute, Object v)
-			throws IllegalArgumentException {
+	public final boolean setValue(final String attribute, final Object v) throws IllegalArgumentException {
 		final String A = attribute.toUpperCase();
 		try {
 			return setValue(TableColumns.valueOf(A), v);
@@ -576,13 +574,13 @@ public class JobInterface extends Table {
 	}
 
 	@Override
-	public void fill(ResultSet rs) throws IOException {
+	public void fill(final ResultSet rs) throws IOException {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void updateInterface(Table t) throws IOException {
+	public void updateInterface(final Table t) throws IOException {
 		// TODO Auto-generated method stub
 
 	}
