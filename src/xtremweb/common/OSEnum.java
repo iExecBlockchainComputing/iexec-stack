@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -25,11 +25,11 @@ package xtremweb.common;
 
 /**
  * Formerly XWOses.java<br />
- * 
+ *
  * This defines XtremWeb compatible OSes<br />
- * 
+ *
  * Created: 29 janvier 2007
- * 
+ *
  * @author <a href="mailto: lodygens *a**t* lal.in2p3.fr">Oleg Lodygensky</a>
  * @version %I% %G%
  */
@@ -43,11 +43,11 @@ public enum OSEnum {
 
 	/**
 	 * This retrieves an OS from its ordinal value
-	 * 
+	 *
 	 * @exception IllegalArgumentException
 	 *                is thrown if v is not a valid ordinal value
 	 */
-	public static OSEnum fromInt(int v) throws IllegalArgumentException {
+	public static OSEnum fromInt(final int v) throws IllegalArgumentException {
 		for (final OSEnum i : OSEnum.values()) {
 			if (i.ordinal() == v) {
 				return i;
@@ -59,7 +59,7 @@ public enum OSEnum {
 	/**
 	 * This retrieves the OS name If this OS is not supported by XtremWeb, this
 	 * forces the program to immediately stop
-	 * 
+	 *
 	 * @see #getOsName(String)
 	 */
 	public static String getOsName() {
@@ -74,17 +74,15 @@ public enum OSEnum {
 	/**
 	 * This forces os name to predefined values to avoid confusion Example :
 	 * "Windows 2000" and "Windows XP" are summarized as "win32"
-	 * 
+	 *
 	 * @param osName
 	 *            the OS name
 	 * @exception ClassNotFound
 	 *                exception is thrown if osName is not supported by XtremWeb
 	 */
-	public static String getOsName(String osName)
-			throws IllegalArgumentException {
+	public static String getOsName(final String osName) throws IllegalArgumentException {
 
-		if ((osName.toUpperCase().indexOf("WINDOWS") != -1)
-				|| (osName.compareToIgnoreCase(WIN32.toString()) == 0)) {
+		if ((osName.toUpperCase().indexOf("WINDOWS") != -1) || (osName.compareToIgnoreCase(WIN32.toString()) == 0)) {
 			return WIN32.toString();
 		}
 		if (osName.compareToIgnoreCase(LINUX.toString()) == 0) {
@@ -96,8 +94,7 @@ public enum OSEnum {
 		if (osName.compareToIgnoreCase(JAVA.toString()) == 0) {
 			return JAVA.toString();
 		}
-		if ((osName.compareToIgnoreCase(MACOSX.toString()) == 0)
-				|| (osName.compareToIgnoreCase("mac os x") == 0)) {
+		if ((osName.compareToIgnoreCase(MACOSX.toString()) == 0) || (osName.compareToIgnoreCase("mac os x") == 0)) {
 			return MACOSX.toString();
 		}
 
@@ -106,7 +103,7 @@ public enum OSEnum {
 
 	/**
 	 * This retreives this host OS name
-	 * 
+	 *
 	 * @see #getOs(String)
 	 */
 	public static OSEnum getOs() {
@@ -121,13 +118,13 @@ public enum OSEnum {
 	/**
 	 * This forces os name to predefined values to avoid confusion Example :
 	 * "Windows 2000" and "Windows XP" are summarized as "win32"
-	 * 
+	 *
 	 * @param osName
 	 *            the OS name
 	 * @exception ClassNotFound
 	 *                exception is thrown if osName is not supported by XtremWeb
 	 */
-	public static OSEnum getOs(String osName) throws IllegalArgumentException {
+	public static OSEnum getOs(final String osName) throws IllegalArgumentException {
 
 		return valueOf(getOsName(osName));
 	}
@@ -170,7 +167,7 @@ public enum OSEnum {
 	/**
 	 * This array stores default sandbox pathnames Defaults are Sun xVM
 	 * VirtualBox paths
-	 * 
+	 *
 	 * @since 6.0.0
 	 */
 	public static final String[] sandboxes = { null, // NONE
@@ -184,7 +181,7 @@ public enum OSEnum {
 
 	/**
 	 * This retrieves the default sandbox pathname
-	 * 
+	 *
 	 * @see #getOs(String)
 	 */
 	public static String getSandboxPath() {
@@ -197,7 +194,7 @@ public enum OSEnum {
 
 	/**
 	 * This array stores path to xtremweb.jar
-	 * 
+	 *
 	 * @since 6.0.0
 	 */
 	public static final String[] classpathes = { null, // NONE
@@ -211,7 +208,7 @@ public enum OSEnum {
 
 	/**
 	 * This retrieves the default sandbox pathname
-	 * 
+	 *
 	 * @see #getOs(String)
 	 */
 	public static String getClassPath() {
@@ -224,7 +221,7 @@ public enum OSEnum {
 
 	/**
 	 * This retrieves this enum string representation
-	 * 
+	 *
 	 * @return a array containing this enum string representation
 	 */
 	public static String[] getLabels() {
@@ -235,7 +232,7 @@ public enum OSEnum {
 		return labels;
 	}
 
-	public static void main(String[] argv) {
+	public static void main(final String[] argv) {
 		for (final OSEnum i : OSEnum.values()) {
 			System.out.println(i.toString());
 		}
