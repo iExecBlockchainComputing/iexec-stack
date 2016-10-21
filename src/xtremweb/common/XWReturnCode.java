@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -72,7 +72,7 @@ public enum XWReturnCode {
 	/**
 	 * This defines the authorization error return code This means that the user
 	 * doesn't have access to the requested object
-	 * 
+	 *
 	 * @since 7.5.0
 	 */
 	AUTHORIZATION,
@@ -92,14 +92,14 @@ public enum XWReturnCode {
 	/**
 	 * This defines the object not found error return code This means there's no
 	 * such an object on server side
-	 * 
+	 *
 	 * @since 5.8.0
 	 */
 	NOTFOUND,
 	/**
 	 * This defines the wall clock time error return code This means the job has
 	 * reached its wall clock time
-	 * 
+	 *
 	 * @since 8.2.0
 	 */
 	WALLCLOCKTIME,
@@ -110,12 +110,12 @@ public enum XWReturnCode {
 
 	/**
 	 * This retreives an Columns from its integer value
-	 * 
+	 *
 	 * @param v
 	 *            is the integer value of the Columns
 	 * @return an Columns
 	 */
-	public static XWReturnCode fromInt(int v) {
+	public static XWReturnCode fromInt(final int v) {
 		for (final XWReturnCode c : XWReturnCode.values()) {
 			if (c.ordinal() == v) {
 				return c;
