@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -29,7 +29,7 @@ import java.util.Vector;
 
 /**
  * Created: Sept 20th, 2005<br />
- * 
+ *
  * This class implements a stack (FILO buffer)<br />
  * Objects that can be converted as bytes array can also be managed<br />
  * This is especially used by UDPClient/UDPHanlder to create/read UDP packets
@@ -37,7 +37,7 @@ import java.util.Vector;
  * Method names use "put" and "get" instead of (respectively) "push" and "pop"
  * so that we can easily switch between ByteStack and BytePacket
  * </p>
- * 
+ *
  * @see xtremweb.communications.UDPClient
  * @see xtremweb.dispatcher.UDPHandler
  * @author Oleg Lodygensky
@@ -49,7 +49,7 @@ public final class ByteStack {
 	private final Logger logger;
 	/**
 	 * This is the buffer length
-	 * 
+	 *
 	 * @see xtremweb.common.XWTools#PACKETSIZE
 	 */
 	private static final int DEFLENGTH = XWTools.PACKETSIZE;
@@ -64,7 +64,7 @@ public final class ByteStack {
 
 	/**
 	 * This constructs the buffer
-	 * 
+	 *
 	 * @see #reset()
 	 */
 	public ByteStack() {
@@ -75,30 +75,30 @@ public final class ByteStack {
 
 	/**
 	 * This constructs the buffer
-	 * 
+	 *
 	 * @param l
 	 *            is the logger level
 	 * @see #reset()
 	 */
-	public ByteStack(LoggerLevel l) {
+	public ByteStack(final LoggerLevel l) {
 		this();
 		setLoggerLevel(l);
 	}
 
 	/**
 	 * This sets the logger level
-	 * 
+	 *
 	 * @param l
 	 *            is the logger level
 	 */
-	public void setLoggerLevel(LoggerLevel l) {
+	public void setLoggerLevel(final LoggerLevel l) {
 		logger.setLoggerLevel(l);
 	}
 
 	/**
 	 * <h3>Note</h3> the top of stack is kept for an integer to store the cursor
 	 * value so that we can restore the cursor when receiving packet
-	 * 
+	 *
 	 * @see #pack()
 	 */
 	public void reset() {
@@ -106,10 +106,10 @@ public final class ByteStack {
 	}
 
 	/**
-	 * This stores the cursor to top of stack <h3>
-	 * This must be called before sending packet so that the receiver can first
-	 * extract the cursor</h3>
-	 * 
+	 * This stores the cursor to top of stack
+	 * <h3>This must be called before sending packet so that the receiver can
+	 * first extract the cursor</h3>
+	 *
 	 * @see #reset()
 	 */
 	public void pack() {
@@ -133,7 +133,7 @@ public final class ByteStack {
 
 	/**
 	 * This sets this stack buffer and reads the cursor from top of stack
-	 * 
+	 *
 	 * @see #reset()
 	 * @see #pack()
 	 */
@@ -144,14 +144,13 @@ public final class ByteStack {
 
 	/**
 	 * This pushes an UserInterface and an integer to packet
-	 * 
+	 *
 	 * @param user
 	 *            is the UserInterface to push
 	 * @param code
 	 *            is the IdRpc code to push
 	 */
-	public void putUserInterface(UserInterface user, int code)
-			throws RemoteException {
+	public void putUserInterface(final UserInterface user, final int code) throws RemoteException {
 		putObject(user);
 		putInt(code);
 	}
@@ -159,7 +158,7 @@ public final class ByteStack {
 	/**
 	 * This pushes an UserInterface and an integer to packet and an optionnal
 	 * parameter
-	 * 
+	 *
 	 * @param user
 	 *            is the UserInterface to push
 	 * @param code
@@ -167,8 +166,7 @@ public final class ByteStack {
 	 * @param obj
 	 *            is an optionnal object to push
 	 */
-	public void putUserInterface(UserInterface user, int code, XMLable obj)
-			throws RemoteException {
+	public void putUserInterface(final UserInterface user, final int code, final XMLable obj) throws RemoteException {
 		if (obj != null) {
 			putObject(obj);
 		}
@@ -178,7 +176,7 @@ public final class ByteStack {
 	/**
 	 * This pushes an UserInterface and an integer to packet and an optionnal
 	 * parameter
-	 * 
+	 *
 	 * @param user
 	 *            is the UserInterface to push
 	 * @param code
@@ -186,8 +184,7 @@ public final class ByteStack {
 	 * @param uid
 	 *            is an optionnal object to push
 	 */
-	public void putUserInterface(UserInterface user, int code, UID uid)
-			throws RemoteException {
+	public void putUserInterface(final UserInterface user, final int code, final UID uid) throws RemoteException {
 		if (uid != null) {
 			putUID(uid);
 		}
@@ -197,7 +194,7 @@ public final class ByteStack {
 	/**
 	 * This sends the IrRpc code, the UserInterface that identifies the client
 	 * and an optionnal UID
-	 * 
+	 *
 	 * @param code
 	 *            is the IdRpc code to send
 	 * @param str
@@ -205,8 +202,7 @@ public final class ByteStack {
 	 * @see xtremweb.common.ByteStack#putUID(UID)
 	 * @see #buffer
 	 */
-	public void putUserInterface(UserInterface user, int code, String str)
-			throws RemoteException {
+	public void putUserInterface(final UserInterface user, final int code, final String str) throws RemoteException {
 		if (str != null) {
 			putString(str);
 		}
@@ -215,13 +211,13 @@ public final class ByteStack {
 
 	/**
 	 * This pushes a byte
-	 * 
+	 *
 	 * @param v
 	 *            is the byte to insert
 	 * @exception Exception
 	 *                is thrown on I/O error
 	 */
-	public void putByte(byte v) throws RemoteException {
+	public void putByte(final byte v) throws RemoteException {
 		try {
 			buffer[cursor++] = v;
 		} catch (final Exception e) {
@@ -231,7 +227,7 @@ public final class ByteStack {
 
 	/**
 	 * This pops a byte
-	 * 
+	 *
 	 * @return the extracted byte
 	 * @exception Exception
 	 *                is thrown on I/O error
@@ -246,13 +242,13 @@ public final class ByteStack {
 
 	/**
 	 * This pushes an integer
-	 * 
+	 *
 	 * @param v
 	 *            is the integer to insert
 	 * @exception Exception
 	 *                is thrown on I/O error
 	 */
-	public void putInt(int v) throws RemoteException {
+	public void putInt(final int v) throws RemoteException {
 		try {
 			final byte[] bint = XWTools.integer2bytes(v);
 			for (int i = 0; i < XWTools.SIZEOFINTEGER; i++) {
@@ -265,7 +261,7 @@ public final class ByteStack {
 
 	/**
 	 * This posp an integer
-	 * 
+	 *
 	 * @return the extracted integer
 	 * @exception Exception
 	 *                is thrown on I/O error
@@ -283,26 +279,26 @@ public final class ByteStack {
 
 	/**
 	 * This pushes the UTF-8 representation of the given String
-	 * 
+	 *
 	 * @param v
 	 *            is the String to insert
 	 * @exception Exception
 	 *                is thrown on on I/O error
 	 */
-	public void putString(String v) throws RemoteException {
+	public void putString(final String v) throws RemoteException {
 		putArray(v.getBytes(XWTools.UTF8));
 	}
 
 	/**
 	 * This pops a String
-	 * 
+	 *
 	 * @return the extracted String
 	 * @exception Exception
 	 *                is thrown on on I/O error
 	 */
 	public String getString() throws RemoteException {
 		final byte[] b = getArray();
-		String str = new String();
+		String str = "";
 		if (b != null) {
 			str = new String(b);
 		}
@@ -314,14 +310,14 @@ public final class ByteStack {
 	 * This first putes the array content itself if any, then the array size as
 	 * an integer<br />
 	 * If v is null a single 0 is only inserted
-	 * 
+	 *
 	 * @param barray
 	 *            is the array to insert
 	 * @exception Exception
 	 *                is thrown on I/O error or if the provided file does not
 	 *                exist
 	 */
-	public void putArray(byte[] barray) throws RemoteException {
+	public void putArray(final byte[] barray) throws RemoteException {
 		try {
 			if (barray == null) {
 				putInt(0);
@@ -344,7 +340,7 @@ public final class ByteStack {
 	/**
 	 * This pops a byte array <br />
 	 * This first gets the array size, then the array content itself, if any
-	 * 
+	 *
 	 * @return a byte array, of null if the read array size is 0
 	 * @exception Exception
 	 *                is thrown on I/O error or if the provided file does not
@@ -373,13 +369,13 @@ public final class ByteStack {
 	 * This pushes a Vector; this first writes vector size following by vector
 	 * datas, if any<br />
 	 * If v is null, this writes a single 0
-	 * 
+	 *
 	 * @param v
 	 *            is the Vector to send
 	 * @exception RemoteException
 	 *                is thrown on I/O error
 	 */
-	public void putVector(Vector v) throws RemoteException {
+	public void putVector(final Vector v) throws RemoteException {
 
 		if (v == null) {
 			putInt(0);
@@ -398,7 +394,7 @@ public final class ByteStack {
 	 * any<br />
 	 * This tries to store received objects as UID into Vector; if received
 	 * objects are not UID, they are stored as String into returned Vector
-	 * 
+	 *
 	 * @return a Vector of UID, or a Vector of String, or an empty Vector
 	 * @exception RemoteException
 	 *                is thrown on I/O error
@@ -425,15 +421,15 @@ public final class ByteStack {
 
 	/**
 	 * This pushes an XML object representation as String
-	 * 
+	 *
 	 * @param o
 	 *            is the object to insert
 	 * @exception Exception
 	 *                is thrown on I/O error
 	 */
-	public void putObject(XMLable o) throws RemoteException {
+	public void putObject(final XMLable o) throws RemoteException {
 		if (o == null) {
-			putString(new String());
+			putString("");
 		} else {
 			putString(o.toXml());
 		}
@@ -441,20 +437,20 @@ public final class ByteStack {
 
 	/**
 	 * This pushes an UID String representation
-	 * 
+	 *
 	 * @param uid
 	 *            is the UID to write
 	 * @exception RemoteException
 	 *                is thrown on I/O error
 	 * @see #getUID()
 	 */
-	public void putUID(UID uid) throws RemoteException {
+	public void putUID(final UID uid) throws RemoteException {
 		putString(uid.toString());
 	}
 
 	/**
 	 * This pops an UID String representation
-	 * 
+	 *
 	 * @exception RemoteException
 	 *                is thrown on I/O error
 	 * @exception RemoteException
@@ -470,7 +466,7 @@ public final class ByteStack {
 	 * This is the standard main method<br />
 	 * This is for debug purposes only
 	 */
-	public static void main(String[] args) {
+	public static void main(final String[] args) {
 		try {
 			final ByteStack b0 = new ByteStack(LoggerLevel.DEBUG);
 			final ByteStack b1 = new ByteStack(LoggerLevel.DEBUG);

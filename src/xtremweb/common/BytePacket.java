@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -33,10 +33,10 @@ import xtremweb.communications.XMLRPCCommand;
 
 /**
  * Created: Oct, 2005<br />
- * 
+ *
  * This class implements a FIFO buffer<br />
  * This is used by NIOClient/NIOHanlder to create/read non blocking TCP packets
- * 
+ *
  * @author Oleg Lodygensky
  * @version RPCXW-v7
  */
@@ -47,7 +47,7 @@ public final class BytePacket {
 
 	/**
 	 * This is the buffer length
-	 * 
+	 *
 	 * @see xtremweb.common.XWTools#PACKETSIZE
 	 */
 	public static final int BUFFERLENGTH = XWTools.PACKETSIZE;
@@ -58,7 +58,7 @@ public final class BytePacket {
 
 	/**
 	 * This constructs the buffer
-	 * 
+	 *
 	 * @see #setData(byte [])
 	 */
 	public BytePacket() {
@@ -69,7 +69,7 @@ public final class BytePacket {
 
 	/**
 	 * This must be called when receiving packet
-	 * 
+	 *
 	 * @see #pack()
 	 */
 	public void reset() {
@@ -78,7 +78,7 @@ public final class BytePacket {
 
 	/**
 	 * This must be called before sending packet
-	 * 
+	 *
 	 * @see #reset()
 	 */
 	public void pack() {
@@ -102,39 +102,38 @@ public final class BytePacket {
 	/**
 	 * This sets this stack buffer
 	 */
-	public void setData(byte[] v) {
+	public void setData(final byte[] v) {
 		buffer = ByteBuffer.wrap(v);
 		buffer.order(ByteOrder.BIG_ENDIAN);
 	}
 
 	/**
 	 * This pushes an UserInterface and an integer to packet
-	 * 
+	 *
 	 * @param user
 	 *            is the UserInterface to push
 	 * @param code
 	 *            is the IdRpc code to push
 	 */
-	public void putUserInterface(UserInterface user, int code)
-			throws RemoteException {
+	public void putUserInterface(final UserInterface user, final int code) throws RemoteException {
 		putInt(code);
 		putObject(user);
 	}
 
 	/**
 	 * This pushes an XMLRPCCommand to packet
-	 * 
+	 *
 	 * @param cmd
 	 *            is the XMLRPCCcommand to put
 	 */
-	public void putXMLRPCCommand(XMLRPCCommand cmd) throws RemoteException {
+	public void putXMLRPCCommand(final XMLRPCCommand cmd) throws RemoteException {
 		putObject(cmd);
 	}
 
 	/**
 	 * This pushes an UserInterface and an integer to packet and an optionnal
 	 * parameter
-	 * 
+	 *
 	 * @param user
 	 *            is the UserInterface to push
 	 * @param code
@@ -142,8 +141,7 @@ public final class BytePacket {
 	 * @param obj
 	 *            is an optionnal object to push
 	 */
-	public void putUserInterface(UserInterface user, int code, XMLable obj)
-			throws RemoteException {
+	public void putUserInterface(final UserInterface user, final int code, final XMLable obj) throws RemoteException {
 		putUserInterface(user, code);
 		if (obj != null) {
 			putObject(obj);
@@ -153,7 +151,7 @@ public final class BytePacket {
 	/**
 	 * This pushes an UserInterface and an integer to packet and an optionnal
 	 * parameter
-	 * 
+	 *
 	 * @param user
 	 *            is the UserInterface to push
 	 * @param code
@@ -161,8 +159,7 @@ public final class BytePacket {
 	 * @param uid
 	 *            is an optionnal object to push
 	 */
-	public void putUserInterface(UserInterface user, int code, UID uid)
-			throws RemoteException {
+	public void putUserInterface(final UserInterface user, final int code, final UID uid) throws RemoteException {
 		putUserInterface(user, code);
 		if (uid != null) {
 			putUID(uid);
@@ -172,7 +169,7 @@ public final class BytePacket {
 	/**
 	 * This sends the IrRpc code, the UserInterface that identifies the client
 	 * and an optionnal UID
-	 * 
+	 *
 	 * @param code
 	 *            is the IdRpc code to send
 	 * @param str
@@ -180,8 +177,7 @@ public final class BytePacket {
 	 * @see xtremweb.common.ByteStack#putUID(UID)
 	 * @see #buffer
 	 */
-	public void putUserInterface(UserInterface user, int code, String str)
-			throws RemoteException {
+	public void putUserInterface(final UserInterface user, final int code, final String str) throws RemoteException {
 		putUserInterface(user, code);
 		if (str != null) {
 			putString(str);
@@ -190,13 +186,13 @@ public final class BytePacket {
 
 	/**
 	 * This puts a byte
-	 * 
+	 *
 	 * @param v
 	 *            is the byte to insert
 	 * @exception Exception
 	 *                is thrown on I/O error
 	 */
-	public void putByte(byte v) throws RemoteException {
+	public void putByte(final byte v) throws RemoteException {
 		try {
 			buffer.put(v);
 		} catch (final Exception e) {
@@ -206,7 +202,7 @@ public final class BytePacket {
 
 	/**
 	 * This gets a byte
-	 * 
+	 *
 	 * @return the extracted byte
 	 * @exception Exception
 	 *                is thrown on I/O error
@@ -221,13 +217,13 @@ public final class BytePacket {
 
 	/**
 	 * This puts an integer
-	 * 
+	 *
 	 * @param v
 	 *            is the integer to insert
 	 * @exception Exception
 	 *                is thrown on I/O error
 	 */
-	public void putInt(int v) throws RemoteException {
+	public void putInt(final int v) throws RemoteException {
 		try {
 			buffer.putInt(v);
 		} catch (final Exception e) {
@@ -237,15 +233,14 @@ public final class BytePacket {
 
 	/**
 	 * This posp an integer
-	 * 
+	 *
 	 * @return the extracted integer
 	 * @exception Exception
 	 *                is thrown on I/O error
 	 */
 	public int getInt() throws RemoteException {
 		try {
-			final int res = buffer.getInt();
-			return res;
+			return buffer.getInt();
 		} catch (final Exception e) {
 			throw new RemoteException(e.toString());
 		}
@@ -253,13 +248,13 @@ public final class BytePacket {
 
 	/**
 	 * This puts the UTF-8 representation of the given String
-	 * 
+	 *
 	 * @param v
 	 *            is the String to insert
 	 * @exception RemoteException
 	 *                is thrown error (buffer overflow...)
 	 */
-	public void putString(String v) throws RemoteException {
+	public void putString(final String v) throws RemoteException {
 		try {
 			putArray(v.getBytes(XWTools.UTF8));
 		} catch (final Exception e) {
@@ -269,14 +264,14 @@ public final class BytePacket {
 
 	/**
 	 * This gets a String
-	 * 
+	 *
 	 * @return the extracted String
 	 * @exception Exception
 	 *                is thrown on on I/O error
 	 */
 	public String getString() throws RemoteException {
 		final byte[] b = getArray();
-		String str = new String();
+		String str = "";
 		if (b != null) {
 			str = new String(b);
 		}
@@ -289,13 +284,13 @@ public final class BytePacket {
 	 * This first puts the array content itself if any, then the array size as
 	 * an integer<br />
 	 * If v is null a single 0 is only inserted
-	 * 
+	 *
 	 * @param barray
 	 *            is the array to insert
 	 * @exception Exception
 	 *                is thrown on error or if the array is too large
 	 */
-	public void putArray(byte[] barray) throws RemoteException {
+	public void putArray(final byte[] barray) throws RemoteException {
 		try {
 			if (barray == null) {
 				putInt(0);
@@ -305,8 +300,7 @@ public final class BytePacket {
 			final int length = barray.length;
 
 			if (length >= (buffer.remaining() - XWTools.SIZEOFLONG)) {
-				logger.error("BytePacket#putArray length = " + length + "("
-						+ buffer.remaining() + ")");
+				logger.error("BytePacket#putArray length = " + length + "(" + buffer.remaining() + ")");
 				throw new RemoteException("array too large!!!");
 			}
 
@@ -320,7 +314,7 @@ public final class BytePacket {
 	/**
 	 * This gets a byte array <br />
 	 * This first gets the array size, then the array content itself, if any
-	 * 
+	 *
 	 * @return a byte array, of null if the read array size is 0
 	 * @exception Exception
 	 *                is thrown on I/O error or if the provided file does not
@@ -348,21 +342,21 @@ public final class BytePacket {
 	 * send a subset of the vector elements only.<br />
 	 * This first writes vector size following by vector datas, if any<br />
 	 * If v is null, this writes a single 0
-	 * 
+	 *
 	 * @see #BUFFERLENGTH
 	 * @param v
 	 *            is the Vector to send
 	 * @exception RemoteException
 	 *                is thrown on I/O error
 	 */
-	public void putVector(Vector v) throws RemoteException {
+	public void putVector(final Vector v) throws RemoteException {
 
 		if (v == null) {
 			putInt(0);
 			return;
 		}
 
-		String str = new String();
+		String str = "";
 		int nbElem;
 		for (nbElem = 0; nbElem < v.size(); nbElem++) {
 			str = str.concat(v.elementAt(nbElem).toString());
@@ -371,8 +365,8 @@ public final class BytePacket {
 				if (nbElem < 0) {
 					nbElem = 0;
 				}
-				logger.warn("BytePacket#putVector puts only " + nbElem + " ("
-						+ str.length() + ", " + buffer.remaining() + ")");
+				logger.warn("BytePacket#putVector puts only " + nbElem + " (" + str.length() + ", " + buffer.remaining()
+						+ ")");
 				break;
 			}
 		}
@@ -388,7 +382,7 @@ public final class BytePacket {
 	 * any<br />
 	 * This tries to store received objects as UID into Vector; if received
 	 * objects are not UID, they are stored as String into returned Vector
-	 * 
+	 *
 	 * @return a Vector of UID, or a Vector of String, or an empty Vector
 	 * @exception RemoteException
 	 *                is thrown on I/O error
@@ -415,15 +409,15 @@ public final class BytePacket {
 
 	/**
 	 * This puts an XML object representation as String
-	 * 
+	 *
 	 * @param o
 	 *            is the object to insert
 	 * @exception Exception
 	 *                is thrown on I/O error
 	 */
-	public void putObject(XMLable o) throws RemoteException {
+	public void putObject(final XMLable o) throws RemoteException {
 		if (o == null) {
-			putString(new String());
+			putString("");
 		} else {
 			putString(o.toXml());
 		}
@@ -431,20 +425,20 @@ public final class BytePacket {
 
 	/**
 	 * This puts an UID String representation
-	 * 
+	 *
 	 * @param uid
 	 *            is the UID to write
 	 * @exception RemoteException
 	 *                is thrown on I/O error
 	 * @see #getUID()
 	 */
-	public void putUID(UID uid) throws RemoteException {
+	public void putUID(final UID uid) throws RemoteException {
 		putString(uid.toString());
 	}
 
 	/**
 	 * This gets an UID String representation
-	 * 
+	 *
 	 * @exception RemoteException
 	 *                is thrown on I/O error
 	 * @exception RemoteException
@@ -460,7 +454,7 @@ public final class BytePacket {
 	 * This is the standard main method<br />
 	 * This is for debug purposes only
 	 */
-	public static void main(String[] args) {
+	public static void main(final String[] args) {
 		try {
 			final BytePacket b0 = new BytePacket();
 			final BytePacket b1 = new BytePacket();
