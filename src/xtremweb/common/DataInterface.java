@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -36,16 +36,15 @@ import java.util.Date;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
-import xtremweb.common.AppInterface.Columns;
 import xtremweb.communications.URI;
 import xtremweb.database.SQLRequest;
 import xtremweb.security.XWAccessRights;
 
 /**
  * DataInterface.java
- * 
+ *
  * Created: 19 juillet 2006
- * 
+ *
  * @author <a href="mailto:lodygens /at\ .in2p3.fr>Oleg Lodygensky</a>
  * @version %I%, %G%
  */
@@ -55,15 +54,15 @@ public final class DataInterface extends Table {
 	/**
 	 * This is the database table name This was stored in
 	 * xtremweb.dispatcher.Data
-	 * 
+	 *
 	 * @since 9.0.0
 	 */
-	public static final String TABLENAME = ("datas");
+	public static final String TABLENAME = "datas";
 
 	/**
 	 * This is the XML tag
 	 */
-	public static final String THISTAG = ("data");
+	public static final String THISTAG = "data";
 
 	/**
 	 * This enumerates this interface columns
@@ -77,7 +76,7 @@ public final class DataInterface extends Table {
 			/**
 			 * This creates an object from String representation for this column
 			 * value This cleans the parameter to ensure SQL compliance
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return a Boolean representing the column value
@@ -97,7 +96,7 @@ public final class DataInterface extends Table {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return an Integer representing the column value
@@ -105,7 +104,7 @@ public final class DataInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public Integer fromString(String v) {
+			public Integer fromString(final String v) {
 				return new Integer(v);
 			}
 		},
@@ -116,7 +115,7 @@ public final class DataInterface extends Table {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return a Date representing the column value
@@ -124,21 +123,21 @@ public final class DataInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public Date fromString(String v) {
+			public Date fromString(final String v) {
 				return XWTools.getSQLDateTime(v);
 			}
 		},
 		/**
 		 * This is the column index of the OS version; this is a foreign key to
 		 * "executables" table
-		 * 
+		 *
 		 * @since 9.0.0
 		 */
 		OSVERSION {
 			/**
 			 * This creates an object from String representation for this column
 			 * value This cleans the parameter to ensure SQL compliance
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return a Boolean representing the column value
@@ -153,14 +152,14 @@ public final class DataInterface extends Table {
 		},
 		/**
 		 * This is the column index of the status
-		 * 
+		 *
 		 * @see StatusEnum
 		 */
 		STATUS {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return an XWStatus representing the column value
@@ -168,20 +167,20 @@ public final class DataInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public StatusEnum fromString(String v) {
+			public StatusEnum fromString(final String v) {
 				return StatusEnum.valueOf(v.toUpperCase());
 			}
 		},
 		/**
 		 * This is the column index of the data type
-		 * 
+		 *
 		 * @see xtremweb.common.DataType
 		 */
 		TYPE {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return a DataType representing the column value
@@ -189,7 +188,7 @@ public final class DataInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public DataTypeEnum fromString(String v) {
+			public DataTypeEnum fromString(final String v) {
 				return DataTypeEnum.valueOf(v.toUpperCase());
 			}
 		},
@@ -200,7 +199,7 @@ public final class DataInterface extends Table {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return an XWCPUs representing the column value
@@ -208,7 +207,7 @@ public final class DataInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public CPUEnum fromString(String v) {
+			public CPUEnum fromString(final String v) {
 				return CPUEnum.valueOf(v.toUpperCase());
 			}
 		},
@@ -219,7 +218,7 @@ public final class DataInterface extends Table {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return an XWOses representing the column value
@@ -227,7 +226,7 @@ public final class DataInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public OSEnum fromString(String v) {
+			public OSEnum fromString(final String v) {
 				return OSEnum.valueOf(v.toUpperCase());
 			}
 		},
@@ -238,7 +237,7 @@ public final class DataInterface extends Table {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return a Long representing the column value
@@ -246,7 +245,7 @@ public final class DataInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public Long fromString(String v) {
+			public Long fromString(final String v) {
 				return new Long(v);
 			}
 		},
@@ -261,7 +260,7 @@ public final class DataInterface extends Table {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return an URI representing the column value
@@ -269,7 +268,7 @@ public final class DataInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public URI fromString(String v) throws URISyntaxException {
+			public URI fromString(final String v) throws URISyntaxException {
 				return new URI(v);
 			}
 		},
@@ -281,7 +280,7 @@ public final class DataInterface extends Table {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return a Boolean representing the column value
@@ -289,12 +288,14 @@ public final class DataInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public Boolean fromString(String v) throws URISyntaxException {
+			public Boolean fromString(final String v) throws URISyntaxException {
 				return new Boolean(v);
 			}
 		},
 		/**
-		 * This is the column index of the referenced work UID for data driven scheduling
+		 * This is the column index of the referenced work UID for data driven
+		 * scheduling
+		 *
 		 * @since 10.0.0
 		 */
 		WORKUID {
@@ -302,15 +303,14 @@ public final class DataInterface extends Table {
 			 * This creates a new UID from string
 			 */
 			@Override
-			public UID fromString(String v) {
+			public UID fromString(final String v) {
 				return new UID(v);
 			}
 		},
 		/**
-		 * This is the column index of the package.
-		 * This is optional.
-		 * This is used by the scheduler.
-		 * This must match worker SHAREDDATAS.
+		 * This is the column index of the package. This is optional. This is
+		 * used by the scheduler. This must match worker SHAREDDATAS.
+		 *
 		 * @see xtremweb.database.SQLRequestWorkRequest
 		 * @see HostInterface.Columns#SHAREDDATAS
 		 * @since 10.0.0
@@ -324,7 +324,7 @@ public final class DataInterface extends Table {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return a Boolean representing the column value
@@ -332,7 +332,7 @@ public final class DataInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public Boolean fromString(String v) throws URISyntaxException {
+			public Boolean fromString(final String v) throws URISyntaxException {
 				return new Boolean(v);
 			}
 		};
@@ -340,7 +340,7 @@ public final class DataInterface extends Table {
 		/**
 		 * This is the index based on ordinal so that the first value is
 		 * TableColumns + 1
-		 * 
+		 *
 		 * @see xtremweb.common#TableColumns
 		 * @see Enum#ordinal()
 		 * @since 8.2.0
@@ -350,7 +350,7 @@ public final class DataInterface extends Table {
 		/**
 		 * This constructor sets the ord member as ord = this.ordinal +
 		 * TableColumns.SIZE
-		 * 
+		 *
 		 * @since 8.2.0
 		 */
 		Columns() {
@@ -359,49 +359,50 @@ public final class DataInterface extends Table {
 
 		/**
 		 * This retrieves the index based ordinal
-		 * 
+		 *
 		 * @return the index based ordinal
 		 * @since 8.2.0
 		 */
+		@Override
 		public int getOrdinal() {
 			return ord;
 		}
 
 		/**
 		 * This creates a new object from String for the given column
-		 * 
+		 *
 		 * @param v
 		 *            the String representation
 		 * @return v
 		 * @throws Exception
 		 *             is thrown on instantiation error
 		 */
-		public Object fromString(String v) throws Exception {
+		@Override
+		public Object fromString(final String v) throws Exception {
 			return v;
 		}
 
 		/**
 		 * This creates a new object from SQL restul set
-		 * 
+		 *
 		 * @param rs
 		 *            is the SQL result set
 		 * @return the object representing the column
 		 * @throws Exception
 		 *             is thrown on instantiation error
 		 */
-		public final Object fromResultSet(ResultSet rs) throws Exception {
+		public final Object fromResultSet(final ResultSet rs) throws Exception {
 			return this.fromString(rs.getString(this.toString()));
 		}
 
 		/**
 		 * This retrieves an Columns from its integer value
-		 * 
+		 *
 		 * @param v
 		 *            is the integer value of the Columns
 		 * @return an Columns
 		 */
-		public static XWBaseColumn fromInt(int v)
-				throws IndexOutOfBoundsException {
+		public static XWBaseColumn fromInt(final int v) throws IndexOutOfBoundsException {
 			try {
 				return TableColumns.fromInt(v);
 			} catch (final Exception e) {
@@ -424,7 +425,7 @@ public final class DataInterface extends Table {
 	 * This retrieves column label from enum Columns. This takes cares of this
 	 * version. Version 5.8.0 introduces no change in data definition so this
 	 * works as it used to in prior versions
-	 * 
+	 *
 	 * @param i
 	 *            is an ordinal of an Columns
 	 * @since 5.8.0
@@ -432,7 +433,7 @@ public final class DataInterface extends Table {
 	 *         introduces no change in data definition
 	 */
 	@Override
-	public String getColumnLabel(int i) throws IndexOutOfBoundsException {
+	public String getColumnLabel(final int i) throws IndexOutOfBoundsException {
 		try {
 			return TableColumns.fromInt(i).toString();
 		} catch (final Exception e) {
@@ -452,17 +453,17 @@ public final class DataInterface extends Table {
 		setSendToClient(false);
 		setStatus(StatusEnum.NONE);
 		setAccessRights(XWAccessRights.DEFAULT);
-		setShortIndexes(new int[] { TableColumns.UID.getOrdinal(),
-				Columns.NAME.getOrdinal(), Columns.STATUS.getOrdinal() });
+		setShortIndexes(
+				new int[] { TableColumns.UID.getOrdinal(), Columns.NAME.getOrdinal(), Columns.STATUS.getOrdinal() });
 	}
 
 	/**
 	 * This constructs a new object providing its primary key value
-	 * 
+	 *
 	 * @param uid
 	 *            is this new object UID
 	 */
-	public DataInterface(UID uid) throws IOException {
+	public DataInterface(final UID uid) throws IOException {
 		this();
 		setUID(uid);
 	}
@@ -470,42 +471,41 @@ public final class DataInterface extends Table {
 	/**
 	 * This creates a new object that will be retreived with a complex SQL
 	 * request
-	 * 
+	 *
 	 * @since 5.8.0
 	 */
-	public DataInterface(SQLRequest r) {
+	public DataInterface(final SQLRequest r) {
 		this();
 		setRequest(r);
 	}
 
 	/**
 	 * This constructs an object from DB
-	 * 
+	 *
 	 * @param rs
 	 *            is an SQL request result
 	 * @exception IOException
 	 */
-	public DataInterface(ResultSet rs) throws IOException {
+	public DataInterface(final ResultSet rs) throws IOException {
 		this();
 		fill(rs);
 	}
 
 	/**
 	 * This fills columns from DB
-	 * 
+	 *
 	 * @since 9.0.0
 	 * @param rs
 	 *            is the SQL data set
 	 * @throws IOException
 	 */
 	@Override
-	public void fill(ResultSet rs) throws IOException {
+	public void fill(final ResultSet rs) throws IOException {
 
 		try {
 			setUID((UID) TableColumns.UID.fromResultSet(rs));
 			setOwner((UID) TableColumns.OWNERUID.fromResultSet(rs));
-			setAccessRights((XWAccessRights) TableColumns.ACCESSRIGHTS
-					.fromResultSet(rs));
+			setAccessRights((XWAccessRights) TableColumns.ACCESSRIGHTS.fromResultSet(rs));
 
 			try {
 				setURI((URI) Columns.URI.fromResultSet(rs));
@@ -516,8 +516,7 @@ public final class DataInterface extends Table {
 			} catch (final Exception e) {
 			}
 			try {
-				setPackage((String) Columns.PACKAGE
-						.fromResultSet(rs));
+				setPackage((String) Columns.PACKAGE.fromResultSet(rs));
 			} catch (final Exception e) {
 			}
 			try {
@@ -558,8 +557,7 @@ public final class DataInterface extends Table {
 			} catch (final Exception e) {
 			}
 			try {
-				setSendToClient((Boolean) Columns.SENDTOCLIENT
-						.fromResultSet(rs));
+				setSendToClient((Boolean) Columns.SENDTOCLIENT.fromResultSet(rs));
 			} catch (final Exception e) {
 			}
 			try {
@@ -573,36 +571,36 @@ public final class DataInterface extends Table {
 
 	/**
 	 * This calls this(StreamIO.stream(input))
-	 * 
+	 *
 	 * @param input
 	 *            is a String containing an XML representation
 	 */
-	public DataInterface(String input) throws IOException, SAXException {
+	public DataInterface(final String input) throws IOException, SAXException {
 		this(StreamIO.stream(input));
 	}
 
 	/**
 	 * This constructs a new object from an XML file
-	 * 
+	 *
 	 * @param f
 	 *            is the XML file
 	 * @see #DataInterface(InputStream)
 	 */
-	public DataInterface(File f) throws IOException, SAXException {
+	public DataInterface(final File f) throws IOException, SAXException {
 		this(new FileInputStream(f));
 	}
 
 	/**
 	 * This constructs a new object from XML attributes received from input
 	 * stream
-	 * 
+	 *
 	 * @param input
 	 *            is the input stream
 	 * @see XMLReader#read(InputStream)
 	 * @throws SAXException
 	 *             on XML error
 	 */
-	public DataInterface(InputStream input) throws IOException, SAXException {
+	public DataInterface(final InputStream input) throws IOException, SAXException {
 		this();
 		final XMLReader reader = new XMLReader(this);
 		try {
@@ -614,14 +612,14 @@ public final class DataInterface extends Table {
 
 	/**
 	 * This constructs a new object from XML attributes
-	 * 
+	 *
 	 * @param attrs
 	 *            contains attributes XML representation
 	 * @see Table#fromXml(Attributes)
 	 * @throws IOException
 	 *             on XML error
 	 */
-	public DataInterface(Attributes attrs) {
+	public DataInterface(final Attributes attrs) {
 		this();
 		super.fromXml(attrs);
 	}
@@ -630,11 +628,11 @@ public final class DataInterface extends Table {
 	 * This sets this objects attributes from provided interface This does not
 	 * insert/update this object into DB Updated attributes: access rights;
 	 * name; type; cpu; os; status; size; md5
-	 * 
+	 *
 	 * @since 9.0.0
 	 */
 	@Override
-	public void updateInterface(Table dataitf) throws IOException {
+	public void updateInterface(final Table dataitf) throws IOException {
 
 		final DataInterface itf = (DataInterface) dataitf;
 
@@ -657,21 +655,21 @@ public final class DataInterface extends Table {
 	 * STATUS is replaced by STATUSID and TYPE by DATATYPEID. If shortOutput is
 	 * true, they are converted to more human readable formats (enumeration
 	 * labels)
-	 * 
+	 *
 	 * @since 9.0.0
 	 */
 	@Override
-	public String toString(boolean csv, boolean shortOutput, boolean hex) {
+	public String toString(final boolean csv, final boolean shortOutput, final boolean hex) {
 
 		try {
 			int max = getMaxAttribute();
-			final boolean shortDescription = ((shortIndexes != null) && (shortOutput));
+			final boolean shortDescription = (shortIndexes != null) && (shortOutput);
 
 			if (shortDescription) {
 				max = shortIndexes.length;
 			}
 
-			String ret = "";
+			final StringBuilder ret = new StringBuilder();
 			for (int i = FIRST_ATTRIBUTE; i < max; i++) {
 
 				final int index = getIndex(i, shortOutput);
@@ -680,7 +678,7 @@ public final class DataInterface extends Table {
 				}
 
 				if (index != FIRST_ATTRIBUTE) {
-					ret += ",";
+					ret.append(",");
 				}
 
 				final Object value = getValueAt(index);
@@ -692,34 +690,32 @@ public final class DataInterface extends Table {
 							theValue = ((XWAccessRights) value).toHexString();
 						}
 						if (csv) {
-							ret += " " + theValue;
+							ret.append(" " + theValue);
 						} else {
-							ret += " " + getColumnLabel(index) + "=" + theValue;
+							ret.append(" " + getColumnLabel(index) + "=" + theValue);
 						}
 					} else if (value.getClass() != java.util.Date.class) {
 						if (csv) {
-							ret += " " + QUOTE + value.toString() + QUOTE;
+							ret.append(" " + QUOTE + value.toString() + QUOTE);
 						} else {
-							ret += " " + getColumnLabel(index) + "=" + QUOTE
-									+ value.toString() + QUOTE;
+							ret.append(" " + getColumnLabel(index) + "=" + QUOTE + value.toString() + QUOTE);
 						}
 					} else {
 						final java.util.Date date = (java.util.Date) value;
 						if (csv) {
-							ret += " " + QUOTE + XWTools.getSQLDateTime(date)
-									+ QUOTE;
+							ret.append(" " + QUOTE + XWTools.getSQLDateTime(date) + QUOTE);
 						} else {
-							ret += " " + getColumnLabel(index) + "=" + QUOTE
-									+ XWTools.getSQLDateTime(date) + QUOTE;
+							ret.append(
+									" " + getColumnLabel(index) + "=" + QUOTE + XWTools.getSQLDateTime(date) + QUOTE);
 						}
 					}
 				} else if (!csv) {
-					ret += " " + getColumnLabel(index) + "=" + NULLVALUE;
+					ret.append(" " + getColumnLabel(index) + "=" + NULLVALUE);
 				} else {
-					ret += NULLVALUE;
+					ret.append(NULLVALUE);
 				}
 			}
-			return ret;
+			return ret.toString();
 		} catch (final Exception e) {
 			getLogger().exception(e);
 		}
@@ -729,7 +725,7 @@ public final class DataInterface extends Table {
 
 	/**
 	 * This retrieves the URI
-	 * 
+	 *
 	 * @return this attribute, or null if not set
 	 */
 	public URI getURI() {
@@ -738,7 +734,7 @@ public final class DataInterface extends Table {
 
 	/**
 	 * This retrieves the work reference for data driven scheduling
-	 * 
+	 *
 	 * @return this attribute, or null if not set
 	 * @exception IOException
 	 *                is thrown is attribute is not well formed
@@ -750,13 +746,13 @@ public final class DataInterface extends Table {
 
 	/**
 	 * This retrieves the data package
-	 * 
+	 *
 	 * @return this attribute, or null if not set
 	 * @since 10.0.0
 	 */
 	public String getPackage() {
 		try {
-			return ((String) getValue(Columns.PACKAGE));
+			return (String) getValue(Columns.PACKAGE);
 		} catch (final Exception e) {
 		}
 		return null;
@@ -764,7 +760,7 @@ public final class DataInterface extends Table {
 
 	/**
 	 * This retrieves the creation date
-	 * 
+	 *
 	 * @return this attribute
 	 * @exception IOException
 	 *                is thrown is attribute is nor set, neither well formed
@@ -773,14 +769,13 @@ public final class DataInterface extends Table {
 		try {
 			return (java.util.Date) getValue(Columns.INSERTIONDATE);
 		} catch (final Exception e) {
-			throw new IOException(
-					"DataInterface#getOwner() : attribute not set");
+			throw new IOException("DataInterface#getOwner() : attribute not set");
 		}
 	}
 
 	/**
 	 * This retrieves the number of links to this data
-	 * 
+	 *
 	 * @return this attribute
 	 */
 	public int getLinks() {
@@ -794,7 +789,7 @@ public final class DataInterface extends Table {
 
 	/**
 	 * This retrieves this data size in bytes
-	 * 
+	 *
 	 * @return this attribute
 	 */
 	public Long getSize() {
@@ -808,7 +803,7 @@ public final class DataInterface extends Table {
 
 	/**
 	 * This retrieves this data type
-	 * 
+	 *
 	 * @return this attribute
 	 */
 	public DataTypeEnum getType() {
@@ -823,7 +818,7 @@ public final class DataInterface extends Table {
 
 	/**
 	 * This retrieves this data CPU type
-	 * 
+	 *
 	 * @return this attribute or -1 if not set
 	 */
 	public CPUEnum getCpu() {
@@ -836,7 +831,7 @@ public final class DataInterface extends Table {
 
 	/**
 	 * This retrieves this data OS type
-	 * 
+	 *
 	 * @return this attribute or -1 if not set
 	 */
 	public OSEnum getOs() {
@@ -849,12 +844,12 @@ public final class DataInterface extends Table {
 
 	/**
 	 * This retrieves the name
-	 * 
+	 *
 	 * @return this attribute or null if not set
 	 */
 	public String getName() {
 		try {
-			return ((String) getValue(Columns.NAME));
+			return (String) getValue(Columns.NAME);
 		} catch (final Exception e) {
 		}
 		return null;
@@ -862,12 +857,12 @@ public final class DataInterface extends Table {
 
 	/**
 	 * This retrieves the MD5
-	 * 
+	 *
 	 * @return this attribute or null if not set
 	 */
 	public String getMD5() {
 		try {
-			return ((String) getValue(Columns.MD5));
+			return (String) getValue(Columns.MD5);
 		} catch (final Exception e) {
 		}
 		return null;
@@ -876,7 +871,7 @@ public final class DataInterface extends Table {
 	/**
 	 * This retrieves whether this data is replicated. This attr is forced to
 	 * true, if not set
-	 * 
+	 *
 	 * @return this attribute
 	 */
 	public boolean isReplicated() {
@@ -891,7 +886,7 @@ public final class DataInterface extends Table {
 
 	/**
 	 * This gets an attribute. This attr is forced to false if not set
-	 * 
+	 *
 	 * @return this attribute
 	 */
 	public boolean isSendToClient() {
@@ -907,7 +902,7 @@ public final class DataInterface extends Table {
 	/**
 	 * This sets parameter value; this is called from
 	 * TableInterface#fromXml(Attributes)
-	 * 
+	 *
 	 * @param attribute
 	 *            is the name of the attribute to set
 	 * @param v
@@ -916,84 +911,82 @@ public final class DataInterface extends Table {
 	 * @see Table#fromXml(Attributes)
 	 */
 	@Override
-	public final boolean setValue(String attribute, Object v)
-			throws IllegalArgumentException {
-		final String A = attribute.toUpperCase();
+	public final boolean setValue(final String attribute, final Object v) throws IllegalArgumentException {
+		final String uppercaseAttr = attribute.toUpperCase();
 		try {
-			return setValue(TableColumns.valueOf(A), v);
+			return setValue(TableColumns.valueOf(uppercaseAttr), v);
 		} catch (final Exception e) {
-			return setValue(Columns.valueOf(A), v);
+			return setValue(Columns.valueOf(uppercaseAttr), v);
 		}
 	}
 
 	/**
 	 * This set the URI where to get the stdin
-	 * 
+	 *
 	 * @return true if value has changed, false otherwise
 	 */
-	public boolean setURI(URI v) {
+	public boolean setURI(final URI v) {
 		return setValue(Columns.URI, v);
 	}
 
 	/**
 	 * This sets the referenced work for data driven scheduling
-	 * 
+	 *
 	 * @since 10.0.0
 	 */
-	public boolean setWork(UID v) {
+	public boolean setWork(final UID v) {
 		return setValue(Columns.WORKUID, v);
 	}
 
 	/**
 	 * This sets the data package
+	 *
 	 * @return true if value has changed, false otherwise
 	 * @since 10.0.0
 	 */
-	public boolean setPackage(String v) {
+	public boolean setPackage(final String v) {
 		return setValue(Columns.PACKAGE, v);
 	}
 
 	/**
 	 * This sets the name
-	 * 
+	 *
 	 * @return true is value has changed
 	 */
-	public boolean setName(String v) {
-		return setValue(Columns.NAME, (v == null ? null : v));
+	public boolean setName(final String v) {
+		return setValue(Columns.NAME, v == null ? null : v);
 	}
 
 	/**
 	 * This sets the MD5
-	 * 
+	 *
 	 * @return true is value has changed
 	 */
-	public boolean setMD5(String v) {
-		return setValue(Columns.MD5, (v == null ? null : v));
+	public boolean setMD5(final String v) {
+		return setValue(Columns.MD5, v == null ? null : v);
 	}
 
 	/**
 	 * @return true if value has changed, false otherwise
 	 */
-	public boolean setSendToClient(boolean v) {
-		Boolean b = new Boolean(v);
+	public boolean setSendToClient(final boolean v) {
+		final Boolean b = new Boolean(v);
 		final boolean ret = setValue(Columns.SENDTOCLIENT, b);
-		b = null;
 		return ret;
 	}
 
 	/**
 	 * @return true if value has changed, false otherwise
 	 */
-	public boolean setReplicated(boolean v) {
-		Boolean b = new Boolean(v);
+	public boolean setReplicated(final boolean v) {
+		final Boolean b = new Boolean(v);
 		final boolean ret = setValue(Columns.REPLICATED, b);
-		b = null;
 		return ret;
 	}
 
 	/**
 	 * This sets this data type
-	 * 
+	 *
 	 * @return true is value has changed
 	 * @since 9.0.0
 	 */
@@ -1003,30 +996,30 @@ public final class DataInterface extends Table {
 
 	/**
 	 * This sets this data OS
-	 * 
+	 *
 	 * @return true is value has changed
 	 */
-	public boolean setOs(OSEnum v) {
+	public boolean setOs(final OSEnum v) {
 		return setValue(Columns.OS, v);
 	}
 
 	/**
 	 * This sets this data CPU
-	 * 
+	 *
 	 * @return true is value has changed
 	 */
-	public boolean setCpu(CPUEnum v) {
+	public boolean setCpu(final CPUEnum v) {
 		return setValue(Columns.CPU, v);
 	}
 
 	/**
 	 * This sets this data size
-	 * 
+	 *
 	 * @param v
 	 *            is the data size in bytes
 	 * @return true is value has changed
 	 */
-	public boolean setSize(long v) {
+	public boolean setSize(final long v) {
 		Long l = new Long(v);
 		final boolean ret = setValue(Columns.SIZE, l);
 		l = null;
@@ -1035,7 +1028,7 @@ public final class DataInterface extends Table {
 
 	/**
 	 * This retrieves the status id
-	 * 
+	 *
 	 * @exception IOException
 	 *                is thrown if attribute is not set
 	 * @return this attribute
@@ -1051,32 +1044,31 @@ public final class DataInterface extends Table {
 
 	/**
 	 * This calls setStatusId(v.ordinal())
-	 * 
+	 *
 	 * @return true if value has changed, false otherwise
 	 */
-	public final boolean setStatus(final StatusEnum v)
-			throws ArrayIndexOutOfBoundsException {
+	public final boolean setStatus(final StatusEnum v) throws IndexOutOfBoundsException {
 		return setValue(Columns.STATUS, v);
 	}
 
 	/**
 	 * This sets the number of links to this data
-	 * 
+	 *
 	 * @return true is value has changed
 	 */
-	public boolean setLinks(int v) {
-		if (v < 0) {
-			v = 0;
+	public boolean setLinks(final int v) {
+		int value = v;
+		if (value < 0) {
+			value = 0;
 		}
-		Integer i = new Integer(v);
+		final Integer i = new Integer(value);
 		final boolean ret = setValue(Columns.LINKS, i);
-		i = null;
 		return ret;
 	}
 
 	/**
 	 * This increments the number of links to this data
-	 * 
+	 *
 	 * @return the new number of links
 	 */
 	public int incLinks() {
@@ -1086,7 +1078,7 @@ public final class DataInterface extends Table {
 
 	/**
 	 * This decrements the number of links to this data
-	 * 
+	 *
 	 * @return the new number of links
 	 */
 	public int decLinks() {
@@ -1097,13 +1089,13 @@ public final class DataInterface extends Table {
 	/**
 	 * @return true if value has changed, false otherwise
 	 */
-	public boolean setInsertionDate(Date v) {
+	public boolean setInsertionDate(final Date v) {
 		return setValue(Columns.INSERTIONDATE, v);
 	}
 
 	/**
 	 * This return the data path
-	 * 
+	 *
 	 * @return the data path
 	 */
 	public String getPathName() throws IOException {
@@ -1112,7 +1104,7 @@ public final class DataInterface extends Table {
 
 	/**
 	 * This return the data path
-	 * 
+	 *
 	 * @return the data path
 	 */
 	public File getPath() throws IOException {
@@ -1121,7 +1113,7 @@ public final class DataInterface extends Table {
 
 	/**
 	 * This return the data directory name
-	 * 
+	 *
 	 * @return the directory name
 	 */
 	public String getDirName() throws IOException {
@@ -1130,15 +1122,12 @@ public final class DataInterface extends Table {
 
 	/**
 	 * This return the data directory name
-	 * 
+	 *
 	 * @return the directory name
 	 */
 	public File getDir() throws IOException {
 
-		return XWTools
-				.createDir(
-						System.getProperty(XWPropertyDefs.HOMEDIR.toString()),
-						getUID());
+		return XWTools.createDir(System.getProperty(XWPropertyDefs.HOMEDIR.toString()), getUID());
 	}
 
 	/**
@@ -1148,17 +1137,16 @@ public final class DataInterface extends Table {
 	@Override
 	public void delete() throws IOException {
 		decLinks();
-		File p = null;
 		if (getLinks() > 0) {
 			update(false);
 		} else {
-			p = getPath();
-			if (p != null) {
-				p.delete();
+			final File path = getPath();
+			if (path != null) {
+				path.delete();
 			}
-			p = getDir();
-			if (p != null) {
-				p.delete();
+			final File rep = getDir();
+			if (rep != null) {
+				rep.delete();
 			}
 			super.delete();
 		}
@@ -1171,7 +1159,7 @@ public final class DataInterface extends Table {
 	 * dumps it. Usage : java -cp xtremweb.jar xtremweb.common.DataInterface
 	 * [xmlFile]
 	 */
-	public static void main(String[] argv) {
+	public static void main(final String[] argv) {
 		try {
 			final DataInterface itf = new DataInterface();
 			itf.setUID(UID.getMyUid());
@@ -1188,8 +1176,8 @@ public final class DataInterface extends Table {
 			writer.write(itf);
 		} catch (final Exception e) {
 			final Logger logger = new Logger();
-			logger.exception("Usage : java -cp " + XWTools.JARFILENAME
-					+ " xtremweb.common.DataInterface [anXMLDescriptionFile]",
+			logger.exception(
+					"Usage : java -cp " + XWTools.JARFILENAME + " xtremweb.common.DataInterface [anXMLDescriptionFile]",
 					e);
 		}
 	}
