@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -30,15 +30,15 @@ package xtremweb.common;
  *
  * Author: Oleg Lodygensky
  *
- * Environment variables : 
+ * Environment variables :
  *   - X509_CERT_DIR   must contain the directory where CA cert are stored
  *   - X509_USER_PROXY must contain the user 509 proxy
- * 
+ *
  * First this constructs list of CA cert paths from X509_CERT_DIR
  * Then this constructs a cert PATH for the X509_USER_PROXY
  * Finally this validates the X509 proxy path against CA cert paths
  *
- * Example 
+ * Example
  *    - X509_USER_PROXY contains two public keys
  *        [0] IssuerDN  = CN=Oleg Lodygensky, OU=LAL, O=CNRS, C=FR, O=GRID-FR
  *        [0] SubjectDN = CN=proxy, CN=Oleg Lodygensky, OU=LAL, O=CNRS, C=FR, O=GRID-FR
@@ -102,7 +102,7 @@ public final class CertificateValidator {
 		/**
 		 *
 		 */
-		public CACertPath(X509Certificate c, File f) throws IOException, CertificateException {
+		public CACertPath(final X509Certificate c, final File f) throws IOException, CertificateException {
 
 			try (FileInputStream certis = new FileInputStream(f)) {
 				mostTrustedCertParams = createParams(c);
@@ -119,7 +119,7 @@ public final class CertificateValidator {
 		 *            contains the certificate path; it must not contain the
 		 *            most trusted cert CA
 		 */
-		public CACertPath(PKIXParameters p, CertPath cp) throws NoSuchAlgorithmException {
+		public CACertPath(final PKIXParameters p, final CertPath cp) throws NoSuchAlgorithmException {
 
 			mostTrustedCertParams = p;
 			certPathList = (LinkedList<X509Certificate>) cp.getCertificates();
@@ -132,7 +132,7 @@ public final class CertificateValidator {
 		 *            contains the certificate path; it must not contain the
 		 *            most trusted cert CA
 		 */
-		public CACertPath(X509Certificate c, CertPath cp) throws IOException, CertificateException {
+		public CACertPath(final X509Certificate c, final CertPath cp) throws IOException, CertificateException {
 
 			mostTrustedCertParams = createParams(c);
 			certPathList = (LinkedList<X509Certificate>) cp.getCertificates();
@@ -145,7 +145,7 @@ public final class CertificateValidator {
 		 *            contains the certificates list of the certificate path; it
 		 *            must not contain the most trusted cert CA
 		 */
-		public CACertPath(X509Certificate c, LinkedList<X509Certificate> list)
+		public CACertPath(final X509Certificate c, final LinkedList<X509Certificate> list)
 				throws CertificateException, IOException {
 
 			mostTrustedCertParams = createParams(c);
@@ -159,7 +159,7 @@ public final class CertificateValidator {
 		 *            contains the certificates list of the certificate path; it
 		 *            must not contain the most trusted cert CA
 		 */
-		public CACertPath(PKIXParameters p, LinkedList<X509Certificate> list) throws CertificateException {
+		public CACertPath(final PKIXParameters p, final LinkedList<X509Certificate> list) throws CertificateException {
 
 			mostTrustedCertParams = p;
 			certPathList = list;
@@ -168,12 +168,12 @@ public final class CertificateValidator {
 		/**
 		 * This constructor extract the most trusted CA cert from the list. The
 		 * most trusted CA cert must be the last cert from the list.
-		 * 
+		 *
 		 * @param list
 		 *            contains the certificates of the path; it must contain the
 		 *            most trusted cert CA at last position
 		 */
-		public CACertPath(LinkedList<X509Certificate> list) throws CertificateException {
+		public CACertPath(final LinkedList<X509Certificate> list) throws CertificateException {
 
 			X509Certificate mostTrustedCert = null;
 			try {
@@ -210,14 +210,13 @@ public final class CertificateValidator {
 
 		/**
 		 * This validates an X509 proxy through the cert path
-		 * 
+		 *
 		 * @param proxy
 		 *            contains public certificate from X50 proxy
 		 */
-		public CertPathValidatorResult validate(X509CertPath proxy) throws CertPathValidatorException {
+		public CertPathValidatorResult validate(final X509CertPath proxy) throws CertPathValidatorException {
 
 			try {
-				final X509Certificate proxyFirst = proxy.getFirst();
 				final X509Certificate proxyLast = proxy.getLast();
 				final X509Certificate pathFirst = certPathList.getFirst();
 
@@ -229,7 +228,6 @@ public final class CertificateValidator {
 						+ ") is issued by cert path least trusted " + pathFirst.getSubjectDN());
 				logger.info(">> Validating MTC " + mostTrustedCertParams);
 
-				final int proxysize = proxy.size();
 				certPathList.add(0, proxyLast);
 
 				final ListIterator<X509Certificate> certsIterator = certPathList.listIterator();
@@ -276,31 +274,31 @@ public final class CertificateValidator {
 
 		/**
 		 * This adds a new entry
-		 * 
+		 *
 		 * @param v
 		 *            is the CACertPath to add
 		 */
-		public void add(X509Certificate v) {
+		public void add(final X509Certificate v) {
 			certsFromProxy.add(v);
 		}
 
 		/**
 		 * This adds a new entry at the beginning of the list
-		 * 
+		 *
 		 * @param v
 		 *            is the CACertPath to add
 		 */
-		public void addFirst(X509Certificate v) {
+		public void addFirst(final X509Certificate v) {
 			certsFromProxy.addFirst(v);
 		}
 
 		/**
 		 * This adds a new entry at the end of the list
-		 * 
+		 *
 		 * @param v
 		 *            is the CACertPath to add
 		 */
-		public void addLast(X509Certificate v) {
+		public void addLast(final X509Certificate v) {
 			certsFromProxy.addLast(v);
 		}
 
@@ -334,7 +332,7 @@ public final class CertificateValidator {
 
 		/**
 		 * This retreives the size of this vector
-		 * 
+		 *
 		 * @return the size of this vector
 		 */
 		public int size() {
@@ -360,7 +358,7 @@ public final class CertificateValidator {
 
 	/**
 	 * This constructs a new CertificateValidator
-	 * 
+	 *
 	 * @exception CertificateException
 	 *                - on certificate parsing error
 	 * @exception NoSuchAlgorithmeException
@@ -397,7 +395,7 @@ public final class CertificateValidator {
 
 	/**
 	 * This validates an user X509 proxy on the certificate path
-	 * 
+	 *
 	 * @param userCertFileName
 	 *            contains the user X509 proxy to validate among the cert path
 	 * @exception IOException
@@ -407,14 +405,15 @@ public final class CertificateValidator {
 	 * @exception CertPathValidatorException
 	 *                is thrown on validation error
 	 */
-	public void validate(String userCertFileName) throws IOException, CertificateException, CertPathValidatorException {
+	public void validate(final String userCertFileName)
+			throws IOException, CertificateException, CertPathValidatorException {
 
 		validate(new File(userCertFileName));
 	}
 
 	/**
 	 * This validates an X509 proxy through all cert paths
-	 * 
+	 *
 	 * @param userCertFile
 	 *            contains the user X509 cert to validate against the cert path
 	 * @exception IOException
@@ -424,7 +423,7 @@ public final class CertificateValidator {
 	 * @exception CertPathValidatorException
 	 *                - on validation error
 	 */
-	public void validate(File userCertFile) throws IOException, CertificateException, CertPathValidatorException {
+	public void validate(final File userCertFile) throws IOException, CertificateException, CertPathValidatorException {
 		final Enumeration<CACertPath> listsEnum = caCertPaths.elements();
 		boolean validated = false;
 
@@ -451,7 +450,7 @@ public final class CertificateValidator {
 	/**
 	 * This retreives X509 public keys from X509 proxy and put them in a linked
 	 * list where one element is the issuer if the following
-	 * 
+	 *
 	 * @param userCertFile
 	 *            contains the user X509 proxy to validate among the cert path
 	 * @exception IOException
@@ -461,7 +460,7 @@ public final class CertificateValidator {
 	 * @exception CertPathValidatorException
 	 *                is thrown on validation error
 	 */
-	X509CertPath getCertsFromX509(File certFile) throws IOException, CertificateException {
+	X509CertPath getCertsFromX509(final File certFile) throws IOException, CertificateException {
 
 		if (certFile == null) {
 			throw new IOException("file is null");
@@ -514,7 +513,7 @@ public final class CertificateValidator {
 				} catch (final CertificateParsingException e) {
 				}
 			}
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			throw e;
 		}
 
@@ -525,13 +524,13 @@ public final class CertificateValidator {
 	 * This creates a PKIXParameters object that is needed to validate a cert
 	 * path. A PKIXParameters object is created from one or more most-trusted
 	 * CAs (aka root CA that must be trusted).
-	 * 
+	 *
 	 * @param anchorPathName
 	 *            contains a certificate file or directory path of the most
 	 *            trusted CA
 	 * @return a PKIXParameters for the most trusted CA
 	 */
-	public PKIXParameters createParams(String anchorPathName) throws IOException, CertificateException {
+	public PKIXParameters createParams(final String anchorPathName) throws IOException, CertificateException {
 		final File anchorFile = new File(anchorPathName);
 		return createParams(anchorFile);
 	}
@@ -540,13 +539,13 @@ public final class CertificateValidator {
 	 * This creates a PKIXParameters object that is needed to validate a cert
 	 * path. Is the given parameter denotes a directory this calls
 	 * createParams(File[]), otherwise this calls createParams(File).
-	 * 
+	 *
 	 * @param anchorFile
 	 *            is the certificate file of the most trusted CA
 	 * @see #createParams(String)
 	 * @return a PKIXParameters for the most trusted CA
 	 */
-	public PKIXParameters createParams(File anchorFile) throws IOException, CertificateException {
+	public PKIXParameters createParams(final File anchorFile) throws IOException, CertificateException {
 
 		try (FileInputStream certis = new FileInputStream(anchorFile)) {
 			final X509Certificate anchorCert = (X509Certificate) certFactory.generateCertificate(certis);
@@ -560,13 +559,13 @@ public final class CertificateValidator {
 	/**
 	 * This creates a PKIXParameters object that is needed to validate a cert
 	 * path.
-	 * 
+	 *
 	 * @param anchorCert
 	 *            is the certificate of the most trusted CA
 	 * @see #createParams(String)
 	 * @return a PKIXParameters for the most trusted CA
 	 */
-	public PKIXParameters createParams(X509Certificate anchorCert) throws IOException, CertificateException {
+	public PKIXParameters createParams(final X509Certificate anchorCert) throws IOException, CertificateException {
 
 		PKIXParameters ret = null;
 
@@ -585,12 +584,12 @@ public final class CertificateValidator {
 	 * file name denotes a file, the vector will contain a single cert path, if
 	 * any. If file name denotes a directory, the vector will contain a certain
 	 * amount of cert paths, if any.
-	 * 
+	 *
 	 * @param certFilePathName
 	 *            is a certificate file or directory path name
 	 * @return a vector containing all found cert paths
 	 */
-	public Vector<CACertPath> createPaths(String certFilePathName)
+	public Vector<CACertPath> createPaths(final String certFilePathName)
 			throws NoSuchAlgorithmException, IOException, CertificateException {
 
 		File certFile = null;
@@ -611,12 +610,12 @@ public final class CertificateValidator {
 	 * calling createPaths(File).) If given file denotes a directory, the vector
 	 * will contain a certain amount of cert paths, if any (by calling
 	 * createPaths(File[])).
-	 * 
+	 *
 	 * @param certFile
 	 *            is the certificate file
 	 * @return a vector containing all found cert paths
 	 */
-	public Vector<CACertPath> createPaths(File certFile)
+	public Vector<CACertPath> createPaths(final File certFile)
 			throws NoSuchAlgorithmException, IOException, CertificateException {
 
 		FileInputStream certis = null;
@@ -657,10 +656,10 @@ public final class CertificateValidator {
 	/**
 	 * This retreives all CA certificate from the given parameter and creates a
 	 * vector of linked list of certificates path
-	 * 
+	 *
 	 * @return a Vector of ProxyValidator
 	 */
-	public Vector<CACertPath> createPaths(File[] certs) throws IOException, CertificateException {
+	public Vector<CACertPath> createPaths(final File[] certs) throws IOException, CertificateException {
 		if (certs == null) {
 			throw new IOException("certs is null");
 		}
@@ -861,7 +860,7 @@ public final class CertificateValidator {
 	/**
 	 * This is the main method for test purposes only
 	 */
-	public static void main(String[] args) throws Exception {
+	public static void main(final String[] args) throws Exception {
 
 		String certToCheck = System.getenv("X509_USER_PROXY");
 
