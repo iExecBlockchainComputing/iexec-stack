@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -70,7 +70,7 @@ public class Browser extends JFrame {
 
 	/**
 	 * This calls this(_URL)
-	 * 
+	 *
 	 * @see #Browser(String)
 	 */
 	public Browser() throws IOException {
@@ -79,11 +79,11 @@ public class Browser extends JFrame {
 
 	/**
 	 * This instantiates a new object with the given url
-	 * 
+	 *
 	 * @param url
 	 *            contains the URL to download the content from
 	 */
-	public Browser(URL url) throws IOException {
+	public Browser(final URL url) throws IOException {
 		super(url.toString());
 		localContent = false;
 		createFrame(new JEditorPane(url));
@@ -91,11 +91,11 @@ public class Browser extends JFrame {
 
 	/**
 	 * This instantiates a new object with the given content
-	 * 
+	 *
 	 * @param content
 	 *            contains the text to display
 	 */
-	public Browser(String content) throws IOException {
+	public Browser(final String content) throws IOException {
 		super("Help");
 		localContent = true;
 		createFrame(new JEditorPane("text/html", content));
@@ -103,17 +103,18 @@ public class Browser extends JFrame {
 
 	/**
 	 * This instantiates a new object with the given url
-	 * 
+	 *
 	 * @param url
 	 *            contains the URL to download the content from
 	 */
-	private void createFrame(JEditorPane pane) throws IOException {
+	private void createFrame(final JEditorPane pane) throws IOException {
 
 		htmlPane = pane;
 		htmlPane.setEditable(false);
 		if (localContent == false) {
 			htmlPane.addHyperlinkListener(new HyperlinkListener() {
-				public void hyperlinkUpdate(HyperlinkEvent event) {
+				@Override
+				public void hyperlinkUpdate(final HyperlinkEvent event) {
 					if (event.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
 						try {
 							htmlPane.setPage(event.getURL());
@@ -132,7 +133,7 @@ public class Browser extends JFrame {
 		pack();
 	}
 
-	public static void main(String[] args) {
+	public static void main(final String[] args) {
 		try {
 			URL url = new URL(URL);
 			if (args.length > 0) {
