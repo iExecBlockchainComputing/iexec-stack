@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -26,7 +26,7 @@ package xtremweb.common;
 /**
  * This class helps to define some constants This is used to define Works, Tasks
  * and results status
- * 
+ *
  * <br />
  * <br />
  * Job state graph <code>
@@ -47,14 +47,14 @@ package xtremweb.common;
  *               |           |               |           |
  *               v           v               v           |
  *             Error    Completed <-- DataRequest -------+
- * 
+ *
  * </code>
- * 
- * Any update in this enum must be reflected in src/scripts/db-maintenance:
- * - xwhep-core-tables-create-tables.sql.in
- * - xwhep-core-tables-create-views-for-sessions-and-groups.sql
- * - xwhep-core-tables-from-8-create-new-tables-columns-fk.sql
- * 
+ *
+ * Any update in this enum must be reflected in src/scripts/db-maintenance: -
+ * xwhep-core-tables-create-tables.sql.in -
+ * xwhep-core-tables-create-views-for-sessions-and-groups.sql -
+ * xwhep-core-tables-from-8-create-new-tables-columns-fk.sql
+ *
  */
 public enum StatusEnum {
 
@@ -105,7 +105,7 @@ public enum StatusEnum {
 	 * This is used to ask the computing resource to send results "as is", for a
 	 * job which is running The computing resource send a archive of the job
 	 * working directory
-	 * 
+	 *
 	 * @since 8.2.0
 	 */
 	RESULTREQUEST,
@@ -119,6 +119,7 @@ public enum StatusEnum {
 	UNAVAILABLE,
 	/**
 	 * This tells work has not reached expected replication yet
+	 *
 	 * @since 10.2.0
 	 */
 	REPLICATING;
@@ -128,12 +129,12 @@ public enum StatusEnum {
 
 	/**
 	 * This retrieves a status from its integer value
-	 * 
+	 *
 	 * @param v
 	 *            is the integer value of the status
 	 * @return a StatusEnum
 	 */
-	public static StatusEnum fromInt(int v) throws IndexOutOfBoundsException {
+	public static StatusEnum fromInt(final int v) throws IndexOutOfBoundsException {
 		for (final StatusEnum c : StatusEnum.values()) {
 			if (c.ordinal() == v) {
 				return c;
@@ -149,7 +150,7 @@ public enum StatusEnum {
 
 	/**
 	 * This retreives this enum string representation
-	 * 
+	 *
 	 * @return a array containing this enum string representation
 	 */
 	public static String[] getLabels() {
@@ -166,7 +167,7 @@ public enum StatusEnum {
 	/**
 	 * This dumps enums to stdout
 	 */
-	public static void main(String[] argv) {
+	public static void main(final String[] argv) {
 		for (final StatusEnum i : StatusEnum.values()) {
 			System.out.println(i.toString());
 		}
