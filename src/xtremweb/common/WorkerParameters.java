@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -25,9 +25,9 @@ package xtremweb.common;
 
 /**
  * XWMAPanel.java
- * 
+ *
  * Purpose : Created : Nov 30 2001
- * 
+ *
  * @author <a href="mailto:lodygens /at\ .in2p3.fr>Oleg Lodygensky</a>
  * @version %I%, %G%
  */
@@ -40,7 +40,7 @@ public class WorkerParameters implements java.io.Serializable {
 		return sendResultDelay;
 	}
 
-	public void setSendResultDelay(int sendResultDelay) {
+	public void setSendResultDelay(final int sendResultDelay) {
 		this.sendResultDelay = sendResultDelay;
 	}
 
@@ -48,7 +48,7 @@ public class WorkerParameters implements java.io.Serializable {
 		return resultDelay;
 	}
 
-	public void setResultDelay(int resultDelay) {
+	public void setResultDelay(final int resultDelay) {
 		this.resultDelay = resultDelay;
 	}
 
