@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -26,14 +26,14 @@ package xtremweb.archdep;
 public class WinSaver {
 	/**
 	 * Retreive whether the screen saver is running
-	 * 
+	 *
 	 * @return true if screen saver is running
 	 */
 	public static native boolean screenSaverRunning();
 
 	/**
 	 * Retreive whether the low power is enabled for this station
-	 * 
+	 *
 	 * @return true if low power is enabled
 	 */
 	public static native boolean lowPowerActive();
@@ -50,7 +50,7 @@ public class WinSaver {
 
 	/**
 	 * Retreive whether the power off is enabled for this station
-	 * 
+	 *
 	 * @return true if power off is enabled
 	 */
 	public static native boolean powerOffActive();
@@ -67,14 +67,14 @@ public class WinSaver {
 
 	/**
 	 * Retreive time out to low power
-	 * 
+	 *
 	 * @return the low power time out in seconds
 	 */
 	public static native int lowPowerTimeOut();
 
 	/**
 	 * Retreive time out to power off
-	 * 
+	 *
 	 * @return the power off time out in seconds
 	 */
 	public static native int powerOffTimeOut();
