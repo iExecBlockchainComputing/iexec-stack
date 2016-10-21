@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -38,14 +38,14 @@ import antlr.TokenStreamException;
 import antlr.collections.impl.BitSet;
 
 /**
- * 
+ *
  * (Don't move those comments on very first lines since header part must start
  * on line 1)
- * 
+ *
  * Created : May 14th, 2003<br />
- * 
+ *
  * @author : Oleg Lodygensky (lodygens@lal.in2p3.fr)
- * 
+ *
  *         Purpose : ANTLR grammar definition to decode java procedure calls
  *         Grammar : aJar.jar:aPackage.aClass.aMethod(paramsList) where -
  *         aJar.jar is optionnal but if present must be followed by ':' -
@@ -60,33 +60,32 @@ import antlr.collections.impl.BitSet;
  *         vectorType[] (i.e scalarType[][]) - paramName must be a valid java
  *         identifier - paramValue must be a valid java value (depending of
  *         paramType)
- * 
+ *
  *         Note : I don't really understand where (SPACE)* is necessary But
  *         don't remove those found in this file or it won't work :(
- * 
+ *
  */
-public class MethodParser extends antlr.LLkParser implements
-		MethodParserTokenTypes {
+public class MethodParser extends antlr.LLkParser implements MethodParserTokenTypes {
 
-	protected MethodParser(TokenBuffer tokenBuf, int k) {
+	protected MethodParser(final TokenBuffer tokenBuf, final int k) {
 		super(tokenBuf, k);
 		tokenNames = _tokenNames;
 	}
 
-	public MethodParser(TokenBuffer tokenBuf) {
+	public MethodParser(final TokenBuffer tokenBuf) {
 		this(tokenBuf, 3);
 	}
 
-	protected MethodParser(TokenStream lexer, int k) {
+	protected MethodParser(final TokenStream lexer, final int k) {
 		super(lexer, k);
 		tokenNames = _tokenNames;
 	}
 
-	public MethodParser(TokenStream lexer) {
+	public MethodParser(final TokenStream lexer) {
 		this(lexer, 3);
 	}
 
-	public MethodParser(ParserSharedInputState state) {
+	public MethodParser(final ParserSharedInputState state) {
 		super(state, 3);
 		tokenNames = _tokenNames;
 	}
@@ -94,8 +93,7 @@ public class MethodParser extends antlr.LLkParser implements
 	/**
 	 * This is a test method
 	 */
-	public final void startRule() throws RecognitionException,
-			TokenStreamException {
+	public final void startRule() throws RecognitionException, TokenStreamException {
 
 		CallDef n;
 
@@ -111,11 +109,10 @@ public class MethodParser extends antlr.LLkParser implements
 
 	/**
 	 * This parses a method call definition
-	 * 
+	 *
 	 * @return a CallDef object containing the method call
 	 */
-	public final CallDef methodCall() throws RecognitionException,
-			TokenStreamException {
+	public final CallDef methodCall() throws RecognitionException, TokenStreamException {
 		CallDef calldef;
 
 		calldef = new CallDef();
@@ -125,12 +122,10 @@ public class MethodParser extends antlr.LLkParser implements
 
 		try {
 			{
-				if ((LA(1) == IDENT) && (LA(2) == DOT)
-						&& (LA(3) == LITERAL_jar)) {
+				if ((LA(1) == IDENT) && (LA(2) == DOT) && (LA(3) == LITERAL_jar)) {
 					jarfilename = jarFileName();
 					match(COLON);
-				} else if ((LA(1) == IDENT) && (LA(2) == DOT)
-						&& (LA(3) == IDENT)) {
+				} else if ((LA(1) == IDENT) && (LA(2) == DOT) && (LA(3) == IDENT)) {
 				} else {
 					throw new NoViableAltException(LT(1), getFilename());
 				}
@@ -162,11 +157,10 @@ public class MethodParser extends antlr.LLkParser implements
 
 	/**
 	 * This parses the jar file name
-	 * 
+	 *
 	 * @return a string containing the jar file name
 	 */
-	private final String jarFileName() throws RecognitionException,
-			TokenStreamException {
+	private final String jarFileName() throws RecognitionException, TokenStreamException {
 		String jarfilename;
 
 		Token jarname = null;
@@ -190,11 +184,10 @@ public class MethodParser extends antlr.LLkParser implements
 
 	/**
 	 * This parses the method name
-	 * 
+	 *
 	 * @return a string containing the method name
 	 */
-	private final String[] methodName() throws RecognitionException,
-			TokenStreamException {
+	private final String[] methodName() throws RecognitionException, TokenStreamException {
 		String[] names;
 
 		Token methodname = null;
@@ -224,11 +217,10 @@ public class MethodParser extends antlr.LLkParser implements
 	/**
 	 * This parses a method parameter list; it calls param as many time as
 	 * needed
-	 * 
+	 *
 	 * @return a Vector containing the method parameters
 	 */
-	private final Vector paramsList() throws RecognitionException,
-			TokenStreamException {
+	private final Vector paramsList() throws RecognitionException, TokenStreamException {
 		Vector params;
 
 		params = new Vector();
@@ -305,11 +297,10 @@ public class MethodParser extends antlr.LLkParser implements
 
 	/**
 	 * This parses the class name
-	 * 
+	 *
 	 * @return a string containing the class name
 	 */
-	private final String className() throws RecognitionException,
-			TokenStreamException {
+	private final String className() throws RecognitionException, TokenStreamException {
 		String classname;
 
 		Token n1 = null;
@@ -365,8 +356,7 @@ public class MethodParser extends antlr.LLkParser implements
 	/**
 	 * This parses the jar file extension ".jar"
 	 */
-	private final void dotJar() throws RecognitionException,
-			TokenStreamException {
+	private final void dotJar() throws RecognitionException, TokenStreamException {
 
 		try {
 			match(DOT);
@@ -380,11 +370,10 @@ public class MethodParser extends antlr.LLkParser implements
 
 	/**
 	 * This parses a method parameter; its type, name and value
-	 * 
+	 *
 	 * @return a ParamDef object containing the parameter
 	 */
-	private final ParamDef param() throws RecognitionException,
-			TokenStreamException {
+	private final ParamDef param() throws RecognitionException, TokenStreamException {
 		ParamDef param;
 
 		Token n = null;
@@ -434,11 +423,10 @@ public class MethodParser extends antlr.LLkParser implements
 	/**
 	 * This parses a method parameter type which can be a scalar, vector or
 	 * matrice
-	 * 
+	 *
 	 * @return a Class containing a method parameters type
 	 */
-	private final Class type() throws RecognitionException,
-			TokenStreamException {
+	private final Class type() throws RecognitionException, TokenStreamException {
 		Class t;
 
 		t = null;
@@ -487,13 +475,12 @@ public class MethodParser extends antlr.LLkParser implements
 
 	/**
 	 * This parses parameter value, which can be a scalar, vector or matrice
-	 * 
+	 *
 	 * @param type
 	 *            is the parameter type as read
 	 * @return an object containing the value in the expected type
 	 */
-	private final Object value(Class type) throws RecognitionException,
-			TokenStreamException {
+	private final Object value(final Class type) throws RecognitionException, TokenStreamException {
 		Object v;
 
 		v = null;
@@ -502,8 +489,7 @@ public class MethodParser extends antlr.LLkParser implements
 			if ((((LA(1) >= LITERAL_true) && (LA(1) <= STRING_LITERAL)))) {
 				v = scalarValue(type);
 
-			} else if ((LA(1) == LCURL)
-					&& (((LA(2) >= LITERAL_true) && (LA(2) <= STRING_LITERAL)))) {
+			} else if ((LA(1) == LCURL) && (((LA(2) >= LITERAL_true) && (LA(2) <= STRING_LITERAL)))) {
 				v = vectorValues(type);
 
 			} else if ((LA(1) == LCURL) && (LA(2) == LCURL)) {
@@ -521,11 +507,10 @@ public class MethodParser extends antlr.LLkParser implements
 
 	/**
 	 * This parses a scalar method parameter type (int, boolean etc. or String)
-	 * 
+	 *
 	 * @return a Class containing a method parameters type
 	 */
-	private final Class scalarType() throws RecognitionException,
-			TokenStreamException {
+	private final Class scalarType() throws RecognitionException, TokenStreamException {
 		Class t;
 
 		t = null;
@@ -561,11 +546,10 @@ public class MethodParser extends antlr.LLkParser implements
 
 	/**
 	 * This parses a scalar method parameter type (int, boolean...)
-	 * 
+	 *
 	 * @return a Class containing a method parameters type
 	 */
-	private final Class basicType() throws RecognitionException,
-			TokenStreamException {
+	private final Class basicType() throws RecognitionException, TokenStreamException {
 		Class t;
 
 		t = null;
@@ -626,11 +610,10 @@ public class MethodParser extends antlr.LLkParser implements
 
 	/**
 	 * This parses a scalar method parameter String type
-	 * 
+	 *
 	 * @return a Class containing a method parameters type
 	 */
-	private final Class stringType() throws RecognitionException,
-			TokenStreamException {
+	private final Class stringType() throws RecognitionException, TokenStreamException {
 		Class t;
 
 		t = null;
@@ -648,16 +631,16 @@ public class MethodParser extends antlr.LLkParser implements
 
 	/**
 	 * This parses parameter value
-	 * 
+	 *
 	 * @param type
 	 *            is the parameter type as read
 	 * @return an object containing the value in the expected type
 	 * @exception ParseException
 	 *                is thrown if value is not in the expected type
-	 * 
+	 *
 	 */
-	private final Object scalarValue(Class type) throws RecognitionException,
-			TokenStreamException, ParseException {
+	private final Object scalarValue(final Class type)
+			throws RecognitionException, TokenStreamException, ParseException {
 		Object s;
 
 		Token valD = null;
@@ -697,8 +680,7 @@ public class MethodParser extends antlr.LLkParser implements
 				} else if (type == Float.TYPE) {
 					s = new Float(Float.parseFloat(valD.getText()));
 				} else {
-					throw new ParseException("double/float value not expected",
-							0);
+					throw new ParseException("double/float value not expected", 0);
 				}
 
 				break;
@@ -741,13 +723,12 @@ public class MethodParser extends antlr.LLkParser implements
 	/**
 	 * This parses a matrice parameter value. It catches ParseException that can
 	 * be thrown by scalarValue
-	 * 
+	 *
 	 * @param type
 	 *            is the parameter type as read
 	 * @return an object containing the value in the expected type
 	 */
-	private final Object vectorValues(Class type) throws RecognitionException,
-			TokenStreamException {
+	private final Object vectorValues(final Class type) throws RecognitionException, TokenStreamException {
 		Object v;
 
 		v = new Vector();
@@ -803,13 +784,12 @@ public class MethodParser extends antlr.LLkParser implements
 
 	/**
 	 * This parses a matrice parameter value
-	 * 
+	 *
 	 * @param type
 	 *            is the parameter type as read
 	 * @return an object containing the value in the expected type
 	 */
-	private final Object matriceValues(Class type) throws RecognitionException,
-			TokenStreamException {
+	private final Object matriceValues(final Class type) throws RecognitionException, TokenStreamException {
 		Object m;
 
 		m = new Vector();
@@ -865,13 +845,10 @@ public class MethodParser extends antlr.LLkParser implements
 		return m;
 	}
 
-	public static final String[] _tokenNames = { "<0>", "EOF", "<2>",
-			"NULL_TREE_LOOKAHEAD", "COLON", "(", ")", "IDENT", "DOT",
-			"\"jar\"", "SPACE", "COMMA", "[", "]", "\"boolean\"", "\"char\"",
-			"\"byte\"", "\"short\"", "\"int\"", "\"long\"", "\"float\"",
-			"\"double\"", "\"String\"", "{", "}", "\"true\"", "\"false\"",
-			"DOUBLE", "INTEGER", "STRING_LITERAL", "NEWLINE", "NUM", "ESC",
-			"DIGIT" };
+	public static final String[] _tokenNames = { "<0>", "EOF", "<2>", "NULL_TREE_LOOKAHEAD", "COLON", "(", ")", "IDENT",
+			"DOT", "\"jar\"", "SPACE", "COMMA", "[", "]", "\"boolean\"", "\"char\"", "\"byte\"", "\"short\"", "\"int\"",
+			"\"long\"", "\"float\"", "\"double\"", "\"String\"", "{", "}", "\"true\"", "\"false\"", "DOUBLE", "INTEGER",
+			"STRING_LITERAL", "NEWLINE", "NUM", "ESC", "DIGIT" };
 
 	private static final long[] mk_tokenSet_0() {
 		final long[] data = { 2L, 0L };
