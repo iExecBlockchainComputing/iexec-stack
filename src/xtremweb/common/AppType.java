@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -38,7 +38,7 @@ import xtremweb.database.SQLRequest;
 
 /**
  * Created: Mar 31st, 2014<br />
- * 
+ *
  * @author <a href="mailto:oleg.lodygensky /at\ lal.in2p3.fr>Oleg Lodygensky</a>
  * @version %I%, %G%
  * @since 9.0.0
@@ -49,12 +49,12 @@ public final class AppType extends Type {
 	/**
 	 * This is the database table name
 	 */
-	public static final String TABLENAME = ("apptypes");
+	public static final String TABLENAME = "apptypes";
 
 	/**
 	 * This is the XML tag
 	 */
-	public static final String THISTAG = ("apptype");
+	public static final String THISTAG = "apptype";
 
 	/**
 	 * This enumerates this type columns
@@ -68,7 +68,7 @@ public final class AppType extends Type {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return an Integer representing the column value
@@ -76,7 +76,7 @@ public final class AppType extends Type {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public Integer fromString(String v) {
+			public Integer fromString(final String v) {
 				return new Integer(v);
 			}
 		},
@@ -87,7 +87,7 @@ public final class AppType extends Type {
 			/**
 			 * This creates an object from String representation for this column
 			 * value This cleans the parameter to ensure SQL compliance
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return the app type represented by v
@@ -104,7 +104,7 @@ public final class AppType extends Type {
 			/**
 			 * This creates an object from String representation for this column
 			 * value This cleans the parameter to ensure SQL compliance
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return a Boolean representing the column value
@@ -120,9 +120,10 @@ public final class AppType extends Type {
 
 		/**
 		 * This retrieves the index based ordinal
-		 * 
+		 *
 		 * @return the index based ordinal
 		 */
+		@Override
 		public int getOrdinal() {
 			return this.ordinal();
 		}
@@ -130,39 +131,39 @@ public final class AppType extends Type {
 		/**
 		 * This creates a new object from String for the given column This must
 		 * be overridden by enum which value is not a String
-		 * 
+		 *
 		 * @param v
 		 *            the String representation
 		 * @return v
 		 * @throws Exception
 		 *             is thrown on instantiation error
 		 */
-		public Object fromString(String v) throws Exception {
+		@Override
+		public Object fromString(final String v) throws Exception {
 			return v;
 		}
 
 		/**
 		 * This creates a new object from the digen SQL result set
-		 * 
+		 *
 		 * @param rs
 		 *            the SQL result set
 		 * @return the object representing the column
 		 * @throws Exception
 		 *             is thrown on instantiation error
 		 */
-		public final Object fromResultSet(ResultSet rs) throws Exception {
+		public final Object fromResultSet(final ResultSet rs) throws Exception {
 			return this.fromString(rs.getString(this.toString()));
 		}
 
 		/**
 		 * This retrieves an Columns from its integer value
-		 * 
+		 *
 		 * @param v
 		 *            is the integer value of the Columns
 		 * @return an Columns
 		 */
-		public static XWBaseColumn fromInt(int v)
-				throws IndexOutOfBoundsException {
+		public static XWBaseColumn fromInt(final int v) throws IndexOutOfBoundsException {
 			for (final Columns c : Columns.values()) {
 				if (c.getOrdinal() == v) {
 					return c;
@@ -189,55 +190,55 @@ public final class AppType extends Type {
 	 * This creates a new object that will be retrieved with a complex SQL
 	 * request
 	 */
-	public AppType(SQLRequest r) {
+	public AppType(final SQLRequest r) {
 		this();
 		setRequest(r);
 	}
 
 	/**
 	 * This constructs an object from DB
-	 * 
+	 *
 	 * @param rs
 	 *            is an SQL request result
 	 * @exception IOException
 	 */
-	public AppType(ResultSet rs) throws IOException {
+	public AppType(final ResultSet rs) throws IOException {
 		this();
 		fill(rs);
 	}
 
 	/**
 	 * This calls this(StreamIO.stream(input));
-	 * 
+	 *
 	 * @param input
 	 *            is a String containing an XML representation
 	 */
-	public AppType(String input) throws IOException, SAXException {
+	public AppType(final String input) throws IOException, SAXException {
 		this(StreamIO.stream(input));
 	}
 
 	/**
 	 * This constructs a new object from an XML file
-	 * 
+	 *
 	 * @param f
 	 *            is the XML file
 	 * @see #AppType(InputStream)
 	 */
-	public AppType(File f) throws IOException, SAXException {
+	public AppType(final File f) throws IOException, SAXException {
 		this(new FileInputStream(f));
 	}
 
 	/**
 	 * This constructs a new object from XML attributes received from input
 	 * stream
-	 * 
+	 *
 	 * @param input
 	 *            is the input stream
 	 * @throws IOException
 	 *             on XML error
 	 * @see XMLReader#read(InputStream)
 	 */
-	public AppType(InputStream input) throws IOException, SAXException {
+	public AppType(final InputStream input) throws IOException, SAXException {
 		this();
 		final XMLReader reader = new XMLReader(this);
 		try {
@@ -250,33 +251,32 @@ public final class AppType extends Type {
 	/**
 	 * This constructs a new object from XML attributes received from input
 	 * stream
-	 * 
+	 *
 	 * @param attrs
 	 *            contains attributes XML representation
 	 * @see Table#fromXml(Attributes)
 	 * @throws IOException
 	 *             on XML error
 	 */
-	public AppType(Attributes attrs) {
+	public AppType(final Attributes attrs) {
 		this();
 		super.fromXml(attrs);
 	}
 
 	/**
 	 * This fills columns from DB
-	 * 
+	 *
 	 * @param rs
 	 *            is the SQL data set
 	 * @throws IOException
 	 */
 	@Override
-	public void fill(ResultSet rs) throws IOException {
+	public void fill(final ResultSet rs) throws IOException {
 
 		try {
 			setId((Integer) Columns.APPTYPEID.fromResultSet(rs));
 			setType((String) Columns.APPTYPENAME.fromResultSet(rs));
-			setDescription((String) Columns.APPTYPEDESCRIPTION
-					.fromResultSet(rs));
+			setDescription((String) Columns.APPTYPEDESCRIPTION.fromResultSet(rs));
 		} catch (final Exception e) {
 			throw new IOException(e.toString());
 		}
@@ -286,32 +286,32 @@ public final class AppType extends Type {
 
 	/**
 	 * This retrieves column label from enum Columns
-	 * 
+	 *
 	 * @param i
 	 *            is an ordinal of an Columns
 	 */
 	@Override
-	public String getColumnLabel(int i) throws IndexOutOfBoundsException {
+	public String getColumnLabel(final int i) throws IndexOutOfBoundsException {
 		return Columns.fromInt(i).toString();
 	}
 
 	/**
 	 * This retrieves the name
-	 * 
+	 *
 	 * @return this attribute, or null if not set
 	 */
 	public AppTypeEnum getType() {
-		return ((AppTypeEnum) getValue(Columns.APPTYPENAME));
+		return (AppTypeEnum) getValue(Columns.APPTYPENAME);
 	}
 
 	/**
 	 * This retrieves the description
-	 * 
+	 *
 	 * @return this attribute, or null if not set
 	 */
 	public String getDescription() {
 		try {
-			return ((String) getValue(Columns.APPTYPEDESCRIPTION));
+			return (String) getValue(Columns.APPTYPEDESCRIPTION);
 		} catch (final Exception e) {
 		}
 		return null;
@@ -319,7 +319,7 @@ public final class AppType extends Type {
 
 	/**
 	 * This retrieves the id
-	 * 
+	 *
 	 * @return this identifier
 	 */
 	public int getId() {
@@ -329,7 +329,7 @@ public final class AppType extends Type {
 	/**
 	 * This sets parameter value; this is called from
 	 * TableInterface#fromXml(Attributes)
-	 * 
+	 *
 	 * @param attribute
 	 *            is the name of the attribute to set
 	 * @param v
@@ -338,15 +338,14 @@ public final class AppType extends Type {
 	 * @see Table#fromXml(Attributes)
 	 */
 	@Override
-	public final boolean setValue(final String attribute, final Object v)
-			throws IllegalArgumentException {
-		final String A = attribute.toUpperCase();
-		return setValue(Columns.valueOf(A), v);
+	public final boolean setValue(final String attribute, final Object v) {
+		final String uppercaseAttr = attribute.toUpperCase();
+		return setValue(Columns.valueOf(uppercaseAttr), v);
 	}
 
 	/**
 	 * This sets the id
-	 * 
+	 *
 	 * @return true if value has changed, false otherwise
 	 */
 	private boolean setId(final Integer v) {
@@ -355,7 +354,7 @@ public final class AppType extends Type {
 
 	/**
 	 * This calls setName(AppTypeEnum.valueOf(v))
-	 * 
+	 *
 	 * @see #setName(AppTypeEnum);
 	 */
 	private boolean setType(final String v) {
@@ -364,7 +363,7 @@ public final class AppType extends Type {
 
 	/**
 	 * This sets the name
-	 * 
+	 *
 	 * @return true if value has changed, false otherwise
 	 */
 	public boolean setType(final AppTypeEnum v) {
@@ -373,7 +372,7 @@ public final class AppType extends Type {
 
 	/**
 	 * This sets the description
-	 * 
+	 *
 	 * @return true if value has changed, false otherwise
 	 */
 	public boolean setDescription(final String v) {
@@ -387,7 +386,7 @@ public final class AppType extends Type {
 	 * dumps it. <br />
 	 * Usage : java -cp xtremweb.jar xtremweb.common.AppInterface [xmlFile]
 	 */
-	public static void main(String[] argv) {
+	public static void main(final String[] argv) {
 		try {
 			final AppType itf = new AppType();
 			if (argv.length > 0) {
@@ -403,8 +402,9 @@ public final class AppType extends Type {
 			writer.write(itf);
 		} catch (final Exception e) {
 			final Logger logger = new Logger();
-			logger.exception("Usage : java -cp " + XWTools.JARFILENAME
-					+ " xtremweb.common.AppInterface [anXMLDescriptionFile]", e);
+			logger.exception(
+					"Usage : java -cp " + XWTools.JARFILENAME + " xtremweb.common.AppInterface [anXMLDescriptionFile]",
+					e);
 		}
 	}
 

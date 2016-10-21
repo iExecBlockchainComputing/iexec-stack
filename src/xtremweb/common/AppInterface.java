@@ -61,7 +61,7 @@ public final class AppInterface extends Table {
 	 *
 	 * @since 9.0.0
 	 */
-	public static final String TABLENAME = ("apps");
+	public static final String TABLENAME = "apps";
 
 	/**
 	 * This the application name length as defined in DB
@@ -71,7 +71,7 @@ public final class AppInterface extends Table {
 	/**
 	 * This is the XML tag
 	 */
-	public static final String THISTAG = ("app");
+	public static final String THISTAG = "app";
 
 	/**
 	 * This enumerates this interface columns. The base enumerations are defined
@@ -103,7 +103,8 @@ public final class AppInterface extends Table {
 		/**
 		 * This is the column index of the flag which tells whether this
 		 * application is a service<br />
-		 * A service is a java code inserted in the platform at compile time<br />
+		 * A service is a java code inserted in the platform at compile time
+		 * <br />
 		 * At launch time, the server inserts its embedded services into
 		 * database
 		 *
@@ -121,7 +122,7 @@ public final class AppInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public Boolean fromString(String v) {
+			public Boolean fromString(final String v) {
 				return new Boolean(v);
 			}
 		},
@@ -143,9 +144,9 @@ public final class AppInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public AppTypeEnum fromString(String v) {
-				final String V = v.toUpperCase();
-				return AppTypeEnum.valueOf(V);
+			public AppTypeEnum fromString(final String v) {
+				final String value = v.toUpperCase();
+				return AppTypeEnum.valueOf(value);
 			}
 		},
 		/**
@@ -166,7 +167,7 @@ public final class AppInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public Long fromString(String v) {
+			public Long fromString(final String v) {
 				return Long.valueOf(v);
 			}
 		},
@@ -186,7 +187,7 @@ public final class AppInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public Integer fromString(String v) {
+			public Integer fromString(final String v) {
 				return Integer.valueOf(v);
 			}
 		},
@@ -206,7 +207,7 @@ public final class AppInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public Integer fromString(String v) {
+			public Integer fromString(final String v) {
 				return Integer.valueOf(v);
 			}
 		},
@@ -226,7 +227,7 @@ public final class AppInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public Integer fromString(String v) {
+			public Integer fromString(final String v) {
 				return Integer.valueOf(v);
 			}
 		},
@@ -248,7 +249,7 @@ public final class AppInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public URI fromString(String v) throws URISyntaxException {
+			public URI fromString(final String v) throws URISyntaxException {
 				return new URI(v);
 			}
 		},
@@ -270,7 +271,7 @@ public final class AppInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public URI fromString(String v) throws URISyntaxException {
+			public URI fromString(final String v) throws URISyntaxException {
 				return new URI(v);
 			}
 		},
@@ -292,7 +293,7 @@ public final class AppInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public URI fromString(String v) throws URISyntaxException {
+			public URI fromString(final String v) throws URISyntaxException {
 				return new URI(v);
 			}
 		},
@@ -314,7 +315,7 @@ public final class AppInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public URI fromString(String v) throws URISyntaxException {
+			public URI fromString(final String v) throws URISyntaxException {
 				return new URI(v);
 			}
 		},
@@ -334,7 +335,7 @@ public final class AppInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public Integer fromString(String v) {
+			public Integer fromString(final String v) {
 				return Integer.valueOf(v);
 			}
 		},
@@ -356,7 +357,7 @@ public final class AppInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public Integer fromString(String v) {
+			public Integer fromString(final String v) {
 				return Integer.valueOf(v);
 			}
 		},
@@ -378,7 +379,7 @@ public final class AppInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public Integer fromString(String v) {
+			public Integer fromString(final String v) {
 				return Integer.valueOf(v);
 			}
 		},
@@ -400,7 +401,7 @@ public final class AppInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public Integer fromString(String v) {
+			public Integer fromString(final String v) {
 				return Integer.valueOf(v);
 			}
 		},
@@ -414,7 +415,7 @@ public final class AppInterface extends Table {
 		 * This is the column index of the needed packages list. This is
 		 * optional. This is a comma separated list of name packages. This is
 		 * used by the scheduler. This must match worker SHAREDPACKAGES.
-		 * 
+		 *
 		 * @see xtremweb.database.SQLRequestWorkRequest
 		 * @see HostInterface.Columns#SHAREDPACKAGES
 		 * @since 8.0.0 (FG)
@@ -445,7 +446,7 @@ public final class AppInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public URI fromString(String v) throws URISyntaxException {
+			public URI fromString(final String v) throws URISyntaxException {
 				return new URI(v);
 			}
 		},
@@ -469,7 +470,7 @@ public final class AppInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public URI fromString(String v) throws URISyntaxException {
+			public URI fromString(final String v) throws URISyntaxException {
 				return new URI(v);
 			}
 		},
@@ -493,7 +494,7 @@ public final class AppInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public URI fromString(String v) throws URISyntaxException {
+			public URI fromString(final String v) throws URISyntaxException {
 				return new URI(v);
 			}
 		},
@@ -516,7 +517,7 @@ public final class AppInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public URI fromString(String v) throws URISyntaxException {
+			public URI fromString(final String v) throws URISyntaxException {
 				return new URI(v);
 			}
 		},
@@ -537,7 +538,7 @@ public final class AppInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public URI fromString(String v) throws URISyntaxException {
+			public URI fromString(final String v) throws URISyntaxException {
 				return new URI(v);
 			}
 		},
@@ -556,7 +557,7 @@ public final class AppInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public URI fromString(String v) throws URISyntaxException {
+			public URI fromString(final String v) throws URISyntaxException {
 				return new URI(v);
 			}
 		},
@@ -577,7 +578,7 @@ public final class AppInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public URI fromString(String v) throws URISyntaxException {
+			public URI fromString(final String v) throws URISyntaxException {
 				return new URI(v);
 			}
 		},
@@ -596,7 +597,7 @@ public final class AppInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public URI fromString(String v) throws URISyntaxException {
+			public URI fromString(final String v) throws URISyntaxException {
 				return new URI(v);
 			}
 		},
@@ -615,7 +616,7 @@ public final class AppInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public URI fromString(String v) throws URISyntaxException {
+			public URI fromString(final String v) throws URISyntaxException {
 				return new URI(v);
 			}
 		},
@@ -634,7 +635,7 @@ public final class AppInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public URI fromString(String v) throws URISyntaxException {
+			public URI fromString(final String v) throws URISyntaxException {
 				return new URI(v);
 			}
 		},
@@ -653,7 +654,7 @@ public final class AppInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public URI fromString(String v) throws URISyntaxException {
+			public URI fromString(final String v) throws URISyntaxException {
 				return new URI(v);
 			}
 		},
@@ -672,7 +673,7 @@ public final class AppInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public URI fromString(String v) throws URISyntaxException {
+			public URI fromString(final String v) throws URISyntaxException {
 				return new URI(v);
 			}
 		},
@@ -691,7 +692,7 @@ public final class AppInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public URI fromString(String v) throws URISyntaxException {
+			public URI fromString(final String v) throws URISyntaxException {
 				return new URI(v);
 			}
 		},
@@ -710,7 +711,7 @@ public final class AppInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public URI fromString(String v) throws URISyntaxException {
+			public URI fromString(final String v) throws URISyntaxException {
 				return new URI(v);
 			}
 		},
@@ -729,7 +730,7 @@ public final class AppInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public URI fromString(String v) throws URISyntaxException {
+			public URI fromString(final String v) throws URISyntaxException {
 				return new URI(v);
 			}
 		},
@@ -748,7 +749,7 @@ public final class AppInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public URI fromString(String v) throws URISyntaxException {
+			public URI fromString(final String v) throws URISyntaxException {
 				return new URI(v);
 			}
 		},
@@ -767,7 +768,7 @@ public final class AppInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public URI fromString(String v) throws URISyntaxException {
+			public URI fromString(final String v) throws URISyntaxException {
 				return new URI(v);
 			}
 		},
@@ -786,7 +787,7 @@ public final class AppInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public URI fromString(String v) throws URISyntaxException {
+			public URI fromString(final String v) throws URISyntaxException {
 				return new URI(v);
 			}
 		},
@@ -805,7 +806,7 @@ public final class AppInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public URI fromString(String v) throws URISyntaxException {
+			public URI fromString(final String v) throws URISyntaxException {
 				return new URI(v);
 			}
 		},
@@ -824,7 +825,7 @@ public final class AppInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public URI fromString(String v) throws URISyntaxException {
+			public URI fromString(final String v) throws URISyntaxException {
 				return new URI(v);
 			}
 		},
@@ -845,7 +846,7 @@ public final class AppInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public URI fromString(String v) throws URISyntaxException {
+			public URI fromString(final String v) throws URISyntaxException {
 				return new URI(v);
 			}
 		},
@@ -866,7 +867,7 @@ public final class AppInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public URI fromString(String v) throws URISyntaxException {
+			public URI fromString(final String v) throws URISyntaxException {
 				return new URI(v);
 			}
 		},
@@ -885,7 +886,7 @@ public final class AppInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public URI fromString(String v) throws URISyntaxException {
+			public URI fromString(final String v) throws URISyntaxException {
 				return new URI(v);
 			}
 		},
@@ -904,7 +905,7 @@ public final class AppInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public URI fromString(String v) throws URISyntaxException {
+			public URI fromString(final String v) throws URISyntaxException {
 				return new URI(v);
 			}
 		},
@@ -923,7 +924,7 @@ public final class AppInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public URI fromString(String v) throws URISyntaxException {
+			public URI fromString(final String v) throws URISyntaxException {
 				return new URI(v);
 			}
 		},
@@ -942,7 +943,7 @@ public final class AppInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public URI fromString(String v) throws URISyntaxException {
+			public URI fromString(final String v) throws URISyntaxException {
 				return new URI(v);
 			}
 		},
@@ -961,7 +962,7 @@ public final class AppInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public URI fromString(String v) throws URISyntaxException {
+			public URI fromString(final String v) throws URISyntaxException {
 				return new URI(v);
 			}
 		},
@@ -980,7 +981,7 @@ public final class AppInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public URI fromString(String v) throws URISyntaxException {
+			public URI fromString(final String v) throws URISyntaxException {
 				return new URI(v);
 			}
 		},
@@ -999,7 +1000,7 @@ public final class AppInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public URI fromString(String v) throws URISyntaxException {
+			public URI fromString(final String v) throws URISyntaxException {
 				return new URI(v);
 			}
 		},
@@ -1018,7 +1019,7 @@ public final class AppInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public URI fromString(String v) throws URISyntaxException {
+			public URI fromString(final String v) throws URISyntaxException {
 				return new URI(v);
 			}
 		},
@@ -1037,7 +1038,7 @@ public final class AppInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public URI fromString(String v) throws URISyntaxException {
+			public URI fromString(final String v) throws URISyntaxException {
 				return new URI(v);
 			}
 		},
@@ -1056,7 +1057,7 @@ public final class AppInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public URI fromString(String v) throws URISyntaxException {
+			public URI fromString(final String v) throws URISyntaxException {
 				return new URI(v);
 			}
 		},
@@ -1075,7 +1076,7 @@ public final class AppInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public URI fromString(String v) throws URISyntaxException {
+			public URI fromString(final String v) throws URISyntaxException {
 				return new URI(v);
 			}
 		},
@@ -1094,7 +1095,7 @@ public final class AppInterface extends Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public URI fromString(String v) throws URISyntaxException {
+			public URI fromString(final String v) throws URISyntaxException {
 				return new URI(v);
 			}
 		};
@@ -1124,6 +1125,7 @@ public final class AppInterface extends Table {
 		 * @return the index based ordinal
 		 * @since 8.2.0
 		 */
+		@Override
 		public int getOrdinal() {
 			return ord;
 		}
@@ -1138,7 +1140,8 @@ public final class AppInterface extends Table {
 		 * @throws Exception
 		 *             is thrown on instantiation error
 		 */
-		public Object fromString(String v) throws Exception {
+		@Override
+		public Object fromString(final String v) throws Exception {
 			return v;
 		}
 
@@ -1151,7 +1154,7 @@ public final class AppInterface extends Table {
 		 * @throws Exception
 		 *             is thrown on instantiation error
 		 */
-		public final Object fromResultSet(ResultSet rs) throws Exception {
+		public final Object fromResultSet(final ResultSet rs) throws Exception {
 			return this.fromString(rs.getString(this.toString()));
 		}
 
@@ -1162,8 +1165,7 @@ public final class AppInterface extends Table {
 		 *            is the integer value of the Columns
 		 * @return an Columns
 		 */
-		public static XWBaseColumn fromInt(int v)
-				throws IndexOutOfBoundsException {
+		public static XWBaseColumn fromInt(final int v) throws IndexOutOfBoundsException {
 			try {
 				return TableColumns.fromInt(v);
 			} catch (final Exception e) {
@@ -1196,7 +1198,7 @@ public final class AppInterface extends Table {
 	 *         LDMACOS_X86_64URI.ordinal()))); column label otherwise
 	 */
 	@Override
-	public String getColumnLabel(int i) throws IndexOutOfBoundsException {
+	public String getColumnLabel(final int i) throws IndexOutOfBoundsException {
 		try {
 			return TableColumns.fromInt(i).toString();
 		} catch (final Exception e) {
@@ -1216,8 +1218,7 @@ public final class AppInterface extends Table {
 		setService(false);
 		setType(AppTypeEnum.DEPLOYABLE);
 		setAccessRights(XWAccessRights.DEFAULT);
-		setShortIndexes(new int[] { TableColumns.UID.getOrdinal(),
-				Columns.NAME.getOrdinal() });
+		setShortIndexes(new int[] { TableColumns.UID.getOrdinal(), Columns.NAME.getOrdinal() });
 	}
 
 	/**
@@ -1226,7 +1227,7 @@ public final class AppInterface extends Table {
 	 * @param uid
 	 *            is this new object UID
 	 */
-	public AppInterface(UID uid) throws IOException {
+	public AppInterface(final UID uid) throws IOException {
 		this();
 		setUID(uid);
 	}
@@ -1235,7 +1236,7 @@ public final class AppInterface extends Table {
 	 * This creates a new object that will be retrieved with a complex SQL
 	 * request
 	 */
-	public AppInterface(SQLRequest r) {
+	public AppInterface(final SQLRequest r) {
 		this();
 		setRequest(r);
 	}
@@ -1247,7 +1248,7 @@ public final class AppInterface extends Table {
 	 *            is an SQL request result
 	 * @exception IOException
 	 */
-	public AppInterface(ResultSet rs) throws IOException {
+	public AppInterface(final ResultSet rs) throws IOException {
 		this();
 		fill(rs);
 	}
@@ -1261,13 +1262,12 @@ public final class AppInterface extends Table {
 	 * @throws IOException
 	 */
 	@Override
-	public void fill(ResultSet rs) throws IOException {
+	public void fill(final ResultSet rs) throws IOException {
 
 		try {
 			setUID((UID) TableColumns.UID.fromResultSet(rs));
 			setOwner((UID) TableColumns.OWNERUID.fromResultSet(rs));
-			setAccessRights((XWAccessRights) TableColumns.ACCESSRIGHTS
-					.fromResultSet(rs));
+			setAccessRights((XWAccessRights) TableColumns.ACCESSRIGHTS.fromResultSet(rs));
 
 			try {
 				setWebPage((URL) Columns.WEBPAGE.fromResultSet(rs));
@@ -1330,13 +1330,11 @@ public final class AppInterface extends Table {
 			} catch (final Exception e) {
 			}
 			try {
-				setSolaris_sparc((URI) Columns.SOLARIS_SPARCURI
-						.fromResultSet(rs));
+				setSolaris_sparc((URI) Columns.SOLARIS_SPARCURI.fromResultSet(rs));
 			} catch (final Exception e) {
 			}
 			try {
-				setSolaris_alpha((URI) Columns.SOLARIS_ALPHAURI
-						.fromResultSet(rs));
+				setSolaris_alpha((URI) Columns.SOLARIS_ALPHAURI.fromResultSet(rs));
 			} catch (final Exception e) {
 			}
 			try {
@@ -1344,13 +1342,11 @@ public final class AppInterface extends Table {
 			} catch (final Exception e) {
 			}
 			try {
-				setLDWin32_amd64((URI) Columns.LDWIN32_AMD64URI
-						.fromResultSet(rs));
+				setLDWin32_amd64((URI) Columns.LDWIN32_AMD64URI.fromResultSet(rs));
 			} catch (final Exception e) {
 			}
 			try {
-				setLDWin32_x86_64((URI) Columns.LDWIN32_X86_64URI
-						.fromResultSet(rs));
+				setLDWin32_x86_64((URI) Columns.LDWIN32_X86_64URI.fromResultSet(rs));
 			} catch (final Exception e) {
 			}
 			try {
@@ -1358,13 +1354,11 @@ public final class AppInterface extends Table {
 			} catch (final Exception e) {
 			}
 			try {
-				setLDLinux_amd64((URI) Columns.LDLINUX_AMD64URI
-						.fromResultSet(rs));
+				setLDLinux_amd64((URI) Columns.LDLINUX_AMD64URI.fromResultSet(rs));
 			} catch (final Exception e) {
 			}
 			try {
-				setLDLinux_x86_64((URI) Columns.LDLINUX_X86_64URI
-						.fromResultSet(rs));
+				setLDLinux_x86_64((URI) Columns.LDLINUX_X86_64URI.fromResultSet(rs));
 			} catch (final Exception e) {
 			}
 			try {
@@ -1380,8 +1374,7 @@ public final class AppInterface extends Table {
 			} catch (final Exception e) {
 			}
 			try {
-				setLDMacos_x86_64((URI) Columns.LDMACOS_X86_64URI
-						.fromResultSet(rs));
+				setLDMacos_x86_64((URI) Columns.LDMACOS_X86_64URI.fromResultSet(rs));
 			} catch (final Exception e) {
 			}
 			try {
@@ -1397,13 +1390,11 @@ public final class AppInterface extends Table {
 			} catch (final Exception e) {
 			}
 			try {
-				setLDSolaris_sparc((URI) Columns.LDSOLARIS_SPARCURI
-						.fromResultSet(rs));
+				setLDSolaris_sparc((URI) Columns.LDSOLARIS_SPARCURI.fromResultSet(rs));
 			} catch (final Exception e) {
 			}
 			try {
-				setLDSolaris_alpha((URI) Columns.LDSOLARIS_ALPHAURI
-						.fromResultSet(rs));
+				setLDSolaris_alpha((URI) Columns.LDSOLARIS_ALPHAURI.fromResultSet(rs));
 			} catch (final Exception e) {
 			}
 			try {
@@ -1419,23 +1410,19 @@ public final class AppInterface extends Table {
 			} catch (final Exception e) {
 			}
 			try {
-				setLaunchScriptSh((URI) Columns.LAUNCHSCRIPTSHURI
-						.fromResultSet(rs));
+				setLaunchScriptSh((URI) Columns.LAUNCHSCRIPTSHURI.fromResultSet(rs));
 			} catch (final Exception e) {
 			}
 			try {
-				setLaunchScriptCmd((URI) Columns.LAUNCHSCRIPTCMDURI
-						.fromResultSet(rs));
+				setLaunchScriptCmd((URI) Columns.LAUNCHSCRIPTCMDURI.fromResultSet(rs));
 			} catch (final Exception e) {
 			}
 			try {
-				setUnloadScriptSh((URI) Columns.UNLOADSCRIPTSHURI
-						.fromResultSet(rs));
+				setUnloadScriptSh((URI) Columns.UNLOADSCRIPTSHURI.fromResultSet(rs));
 			} catch (final Exception e) {
 			}
 			try {
-				setUnloadScriptCmd((URI) Columns.UNLOADSCRIPTCMDURI
-						.fromResultSet(rs));
+				setUnloadScriptCmd((URI) Columns.UNLOADSCRIPTCMDURI.fromResultSet(rs));
 			} catch (final Exception e) {
 			}
 			try {
@@ -1467,8 +1454,7 @@ public final class AppInterface extends Table {
 			} catch (final Exception e) {
 			}
 			try {
-				setMinFreeMassStorage((Long) Columns.MINFREEMASSSTORAGE
-						.fromResultSet(rs));
+				setMinFreeMassStorage((Long) Columns.MINFREEMASSSTORAGE.fromResultSet(rs));
 			} catch (final Exception e) {
 			}
 			try {
@@ -1476,8 +1462,7 @@ public final class AppInterface extends Table {
 			} catch (final Exception e) {
 			}
 			try {
-				setNeededPackages((String) Columns.NEEDEDPACKAGES
-						.fromResultSet(rs));
+				setNeededPackages((String) Columns.NEEDEDPACKAGES.fromResultSet(rs));
 			} catch (final Exception e) {
 			}
 			try {
@@ -1505,7 +1490,7 @@ public final class AppInterface extends Table {
 	 * @param input
 	 *            is a String containing an XML representation
 	 */
-	public AppInterface(String input) throws IOException, SAXException {
+	public AppInterface(final String input) throws IOException, SAXException {
 		this(StreamIO.stream(input));
 	}
 
@@ -1516,7 +1501,7 @@ public final class AppInterface extends Table {
 	 *            is the XML file
 	 * @see #AppInterface(InputStream)
 	 */
-	public AppInterface(File f) throws IOException, SAXException {
+	public AppInterface(final File f) throws IOException, SAXException {
 		this(new FileInputStream(f));
 	}
 
@@ -1530,7 +1515,7 @@ public final class AppInterface extends Table {
 	 *             on XML error
 	 * @see XMLReader#read(InputStream)
 	 */
-	public AppInterface(InputStream input) throws IOException, SAXException {
+	public AppInterface(final InputStream input) throws IOException, SAXException {
 		this();
 		final XMLReader reader = new XMLReader(this);
 		try {
@@ -1550,7 +1535,7 @@ public final class AppInterface extends Table {
 	 * @throws IOException
 	 *             on XML error
 	 */
-	public AppInterface(Attributes attrs) {
+	public AppInterface(final Attributes attrs) {
 		this();
 		super.fromXml(attrs);
 	}
@@ -1561,7 +1546,7 @@ public final class AppInterface extends Table {
 	 * @since 9.0.0
 	 */
 	@Override
-	public void updateInterface(Table appitf) throws IOException {
+	public void updateInterface(final Table appitf) throws IOException {
 		final AppInterface itf = (AppInterface) appitf;
 		if (itf.getName() != null) {
 			setName(itf.getName());
@@ -1629,7 +1614,7 @@ public final class AppInterface extends Table {
 	 *         available the the given OS and CPU
 	 * @since 8.0.0 (FG)
 	 */
-	public URI getLaunchScript(OSEnum os) {
+	public URI getLaunchScript(final OSEnum os) {
 
 		if (os == null) {
 			return null;
@@ -1657,7 +1642,7 @@ public final class AppInterface extends Table {
 	 *         available the the given OS and CPU
 	 * @since 8.0.0 (FG)
 	 */
-	public URI getUnloadScript(OSEnum os) {
+	public URI getUnloadScript(final OSEnum os) {
 
 		if (os == null) {
 			return null;
@@ -1688,7 +1673,7 @@ public final class AppInterface extends Table {
 	 * @return binary URI for the given OS and CPU; otherwise null if no binary
 	 *         available the the given OS and CPU
 	 */
-	public URI getBinary(CPUEnum cpu, OSEnum os) {
+	public URI getBinary(final CPUEnum cpu, final OSEnum os) {
 
 		if (getJava() != null) {
 			return getJava();
@@ -1775,7 +1760,7 @@ public final class AppInterface extends Table {
 	 *         available the the given OS and CPU
 	 * @since 5.8.0
 	 */
-	public static String getBinaryField(CPUEnum cpu, OSEnum os) {
+	public static String getBinaryField(final CPUEnum cpu, final OSEnum os) {
 
 		if ((os == null) || (cpu == null)) {
 			return null;
@@ -1857,7 +1842,7 @@ public final class AppInterface extends Table {
 	 *            is the os for the expected binary
 	 * @return library URI or null
 	 */
-	public URI getLibrary(CPUEnum cpu, OSEnum os) {
+	public URI getLibrary(final CPUEnum cpu, final OSEnum os) {
 
 		if ((os == null) || (cpu == null)) {
 			return null;
@@ -2294,7 +2279,7 @@ public final class AppInterface extends Table {
 	/**
 	 * This retrieves the mimimum RAM needed for this application; if not set it
 	 * is forced to 0 This is ni Kb
-	 * 
+	 *
 	 * @return the mimimum RAM needed for this application in Kb
 	 */
 	public int getMinMemory() {
@@ -2309,7 +2294,7 @@ public final class AppInterface extends Table {
 	/**
 	 * This retrieves the mimimal CPU speed for this application; if not set it
 	 * is forced to 0 This is in MHz
-	 * 
+	 *
 	 * @return the mimimal CPU speed for this application in MHz
 	 */
 	public int getMinCpuSpeed() {
@@ -2345,7 +2330,7 @@ public final class AppInterface extends Table {
 	 */
 	public String getEnvVars() {
 		try {
-			return ((String) getValue(Columns.ENVVARS));
+			return (String) getValue(Columns.ENVVARS);
 		} catch (final Exception e) {
 		}
 		return null;
@@ -2359,7 +2344,7 @@ public final class AppInterface extends Table {
 	 */
 	public String getNeededPackages() {
 		try {
-			return ((String) getValue(Columns.NEEDEDPACKAGES));
+			return (String) getValue(Columns.NEEDEDPACKAGES);
 		} catch (final Exception e) {
 		}
 		return null;
@@ -2372,7 +2357,7 @@ public final class AppInterface extends Table {
 	 */
 	public String getName() {
 		try {
-			return ((String) getValue(Columns.NAME));
+			return (String) getValue(Columns.NAME);
 		} catch (final Exception e) {
 		}
 		return null;
@@ -2473,13 +2458,12 @@ public final class AppInterface extends Table {
 	 * @see Table#fromXml(Attributes)
 	 */
 	@Override
-	public final boolean setValue(String attribute, Object v)
-			throws IllegalArgumentException {
-		final String A = attribute.toUpperCase();
+	public final boolean setValue(final String attribute, final Object v) {
+		final String uppercaseAttribute = attribute.toUpperCase();
 		try {
-			return setValue(TableColumns.valueOf(A), v);
+			return setValue(TableColumns.valueOf(uppercaseAttribute), v);
 		} catch (final Exception e) {
-			return setValue(Columns.valueOf(A), v);
+			return setValue(Columns.valueOf(uppercaseAttribute), v);
 		}
 	}
 
@@ -2488,8 +2472,7 @@ public final class AppInterface extends Table {
 	 *
 	 * @return true if value has changed, false otherwise
 	 */
-	public boolean setBinary(CPUEnum cpu, OSEnum os, URI v)
-			throws ParseException {
+	public boolean setBinary(final CPUEnum cpu, final OSEnum os, final URI v) throws ParseException {
 
 		if (os == null) {
 			throw new ParseException("unknown OS", 0);
@@ -2578,8 +2561,7 @@ public final class AppInterface extends Table {
 	 *            is the library URI
 	 * @return true if value has changed, false otherwise
 	 */
-	public boolean setLibrary(CPUEnum cpu, OSEnum os, URI v)
-			throws ParseException {
+	public boolean setLibrary(final CPUEnum cpu, final OSEnum os, final URI v) throws ParseException {
 
 		if (os == null) {
 			throw new ParseException("unknown OS", 0);
@@ -2659,7 +2641,7 @@ public final class AppInterface extends Table {
 	 *
 	 * @return true if value has changed, false otherwise
 	 */
-	public boolean setLinux_ix86(URI v) {
+	public boolean setLinux_ix86(final URI v) {
 		return setValue(Columns.LINUX_IX86URI, v);
 	}
 
@@ -2668,7 +2650,7 @@ public final class AppInterface extends Table {
 	 *
 	 * @return true if value has changed, false otherwise
 	 */
-	public boolean setLinux_amd64(URI v) {
+	public boolean setLinux_amd64(final URI v) {
 		return setValue(Columns.LINUX_AMD64URI, v);
 	}
 
@@ -2678,7 +2660,7 @@ public final class AppInterface extends Table {
 	 * @return true if value has changed, false otherwise
 	 * @since 7.2.0
 	 */
-	public boolean setLinux_x86_64(URI v) {
+	public boolean setLinux_x86_64(final URI v) {
 		return setValue(Columns.LINUX_X86_64URI, v);
 	}
 
@@ -2688,7 +2670,7 @@ public final class AppInterface extends Table {
 	 * @return true if value has changed, false otherwise
 	 * @since 7.0.0
 	 */
-	public boolean setLinux_ia64(URI v) {
+	public boolean setLinux_ia64(final URI v) {
 		return setValue(Columns.LINUX_IA64URI, v);
 	}
 
@@ -2697,7 +2679,7 @@ public final class AppInterface extends Table {
 	 *
 	 * @return true if value has changed, false otherwise
 	 */
-	public boolean setLinux_ppc(URI v) {
+	public boolean setLinux_ppc(final URI v) {
 		return setValue(Columns.LINUX_PPCURI, v);
 	}
 
@@ -2706,7 +2688,7 @@ public final class AppInterface extends Table {
 	 *
 	 * @return true if value has changed, false otherwise
 	 */
-	public boolean setWin32_ix86(URI v) {
+	public boolean setWin32_ix86(final URI v) {
 		return setValue(Columns.WIN32_IX86URI, v);
 	}
 
@@ -2715,7 +2697,7 @@ public final class AppInterface extends Table {
 	 *
 	 * @return true if value has changed, false otherwise
 	 */
-	public boolean setWin32_amd64(URI v) {
+	public boolean setWin32_amd64(final URI v) {
 		return setValue(Columns.WIN32_AMD64URI, v);
 	}
 
@@ -2725,7 +2707,7 @@ public final class AppInterface extends Table {
 	 * @return true if value has changed, false otherwise
 	 * @since 6.0.0
 	 */
-	public boolean setWin32_x86_64(URI v) {
+	public boolean setWin32_x86_64(final URI v) {
 		return setValue(Columns.WIN32_X86_64URI, v);
 	}
 
@@ -2734,7 +2716,7 @@ public final class AppInterface extends Table {
 	 *
 	 * @return true if value has changed, false otherwise
 	 */
-	public boolean setMacos_ix86(URI v) {
+	public boolean setMacos_ix86(final URI v) {
 		return setValue(Columns.MACOS_IX86URI, v);
 	}
 
@@ -2744,7 +2726,7 @@ public final class AppInterface extends Table {
 	 * @return true if value has changed, false otherwise
 	 * @since 5.8.0
 	 */
-	public boolean setMacos_x86_64(URI v) {
+	public boolean setMacos_x86_64(final URI v) {
 		return setValue(Columns.MACOS_X86_64URI, v);
 	}
 
@@ -2753,7 +2735,7 @@ public final class AppInterface extends Table {
 	 *
 	 * @return true if value has changed, false otherwise
 	 */
-	public boolean setMacos_ppc(URI v) {
+	public boolean setMacos_ppc(final URI v) {
 		return setValue(Columns.MACOS_PPCURI, v);
 	}
 
@@ -2762,7 +2744,7 @@ public final class AppInterface extends Table {
 	 *
 	 * @return true if value has changed, false otherwise
 	 */
-	public boolean setJava(URI v) {
+	public boolean setJava(final URI v) {
 		return setValue(Columns.JAVAURI, v);
 	}
 
@@ -2771,7 +2753,7 @@ public final class AppInterface extends Table {
 	 *
 	 * @return true if value has changed, false otherwise
 	 */
-	public boolean setSolaris_sparc(URI v) {
+	public boolean setSolaris_sparc(final URI v) {
 		return setValue(Columns.SOLARIS_SPARCURI, v);
 	}
 
@@ -2780,7 +2762,7 @@ public final class AppInterface extends Table {
 	 *
 	 * @return true if value has changed, false otherwise
 	 */
-	public boolean setSolaris_alpha(URI v) {
+	public boolean setSolaris_alpha(final URI v) {
 		return setValue(Columns.SOLARIS_ALPHAURI, v);
 	}
 
@@ -2789,7 +2771,7 @@ public final class AppInterface extends Table {
 	 *
 	 * @return true if value has changed, false otherwise
 	 */
-	public boolean setOsf1_sparc(URI v) {
+	public boolean setOsf1_sparc(final URI v) {
 		return setValue(Columns.OSF1_SPARCURI, v);
 	}
 
@@ -2798,7 +2780,7 @@ public final class AppInterface extends Table {
 	 *
 	 * @return true if value has changed, false otherwise
 	 */
-	public boolean setOsf1_alpha(URI v) {
+	public boolean setOsf1_alpha(final URI v) {
 		return setValue(Columns.OSF1_ALPHAURI, v);
 	}
 
@@ -2807,7 +2789,7 @@ public final class AppInterface extends Table {
 	 *
 	 * @return true if value has changed, false otherwise
 	 */
-	public boolean setLDLinux_ix86(URI v) {
+	public boolean setLDLinux_ix86(final URI v) {
 		return setValue(Columns.LDLINUX_IX86URI, v);
 	}
 
@@ -2816,7 +2798,7 @@ public final class AppInterface extends Table {
 	 *
 	 * @return true if value has changed, false otherwise
 	 */
-	public boolean setLDLinux_amd64(URI v) {
+	public boolean setLDLinux_amd64(final URI v) {
 		return setValue(Columns.LDLINUX_AMD64URI, v);
 	}
 
@@ -2825,7 +2807,7 @@ public final class AppInterface extends Table {
 	 *
 	 * @return true if value has changed, false otherwise
 	 */
-	public boolean setLDLinux_x86_64(URI v) {
+	public boolean setLDLinux_x86_64(final URI v) {
 		return setValue(Columns.LDLINUX_X86_64URI, v);
 	}
 
@@ -2834,7 +2816,7 @@ public final class AppInterface extends Table {
 	 *
 	 * @return true if value has changed, false otherwise
 	 */
-	public boolean setLDLinux_ia64(URI v) {
+	public boolean setLDLinux_ia64(final URI v) {
 		return setValue(Columns.LDLINUX_IA64URI, v);
 	}
 
@@ -2843,7 +2825,7 @@ public final class AppInterface extends Table {
 	 *
 	 * @return true if value has changed, false otherwise
 	 */
-	public boolean setLDLinux_ppc(URI v) {
+	public boolean setLDLinux_ppc(final URI v) {
 		return setValue(Columns.LDLINUX_PPCURI, v);
 	}
 
@@ -2852,7 +2834,7 @@ public final class AppInterface extends Table {
 	 *
 	 * @return true if value has changed, false otherwise
 	 */
-	public boolean setLDWin32_ix86(URI v) {
+	public boolean setLDWin32_ix86(final URI v) {
 		return setValue(Columns.LDWIN32_IX86URI, v);
 	}
 
@@ -2861,7 +2843,7 @@ public final class AppInterface extends Table {
 	 *
 	 * @return true if value has changed, false otherwise
 	 */
-	public boolean setLDWin32_amd64(URI v) {
+	public boolean setLDWin32_amd64(final URI v) {
 		return setValue(Columns.LDWIN32_AMD64URI, v);
 	}
 
@@ -2871,7 +2853,7 @@ public final class AppInterface extends Table {
 	 * @return true if value has changed, false otherwise
 	 * @since 6.0.0
 	 */
-	public boolean setLDWin32_x86_64(URI v) {
+	public boolean setLDWin32_x86_64(final URI v) {
 		return setValue(Columns.LDWIN32_X86_64URI, v);
 	}
 
@@ -2880,7 +2862,7 @@ public final class AppInterface extends Table {
 	 *
 	 * @return true if value has changed, false otherwise
 	 */
-	public boolean setLDMacos_ix86(URI v) {
+	public boolean setLDMacos_ix86(final URI v) {
 		return setValue(Columns.LDMACOS_IX86URI, v);
 	}
 
@@ -2890,7 +2872,7 @@ public final class AppInterface extends Table {
 	 * @return true if value has changed, false otherwise
 	 * @since 5.8.0
 	 */
-	public boolean setLDMacos_x86_64(URI v) {
+	public boolean setLDMacos_x86_64(final URI v) {
 		return setValue(Columns.LDMACOS_X86_64URI, v);
 	}
 
@@ -2899,7 +2881,7 @@ public final class AppInterface extends Table {
 	 *
 	 * @return true if value has changed, false otherwise
 	 */
-	public boolean setLDMacos_ppc(URI v) {
+	public boolean setLDMacos_ppc(final URI v) {
 		return setValue(Columns.LDMACOS_PPCURI, v);
 	}
 
@@ -2908,7 +2890,7 @@ public final class AppInterface extends Table {
 	 *
 	 * @return true if value has changed, false otherwise
 	 */
-	public boolean setLDSolaris_sparc(URI v) {
+	public boolean setLDSolaris_sparc(final URI v) {
 		return setValue(Columns.LDSOLARIS_SPARCURI, v);
 	}
 
@@ -2917,7 +2899,7 @@ public final class AppInterface extends Table {
 	 *
 	 * @return true if value has changed, false otherwise
 	 */
-	public boolean setLDSolaris_alpha(URI v) {
+	public boolean setLDSolaris_alpha(final URI v) {
 		return setValue(Columns.LDSOLARIS_ALPHAURI, v);
 	}
 
@@ -2926,7 +2908,7 @@ public final class AppInterface extends Table {
 	 *
 	 * @return true if value has changed, false otherwise
 	 */
-	public boolean setLDOsf1_sparc(URI v) {
+	public boolean setLDOsf1_sparc(final URI v) {
 		return setValue(Columns.LDOSF1_SPARCURI, v);
 	}
 
@@ -2935,7 +2917,7 @@ public final class AppInterface extends Table {
 	 *
 	 * @return true if value has changed, false otherwise
 	 */
-	public boolean setLDOsf1_alpha(URI v) {
+	public boolean setLDOsf1_alpha(final URI v) {
 		return setValue(Columns.LDOSF1_ALPHAURI, v);
 	}
 
@@ -2947,14 +2929,14 @@ public final class AppInterface extends Table {
 	 * @return true if value has changed, false otherwise
 	 * @since 7.0.0
 	 */
-	public boolean setWebPage(URL v) {
+	public boolean setWebPage(final URL v) {
 		return setValue(Columns.WEBPAGE, v);
 	}
 
 	/**
 	 * @return true if value has changed, false otherwise
 	 */
-	public boolean setNbJobs(int v) {
+	public boolean setNbJobs(final int v) {
 		return setValue(Columns.NBJOBS, Integer.valueOf(v < 0 ? 0 : v));
 	}
 
@@ -2964,7 +2946,7 @@ public final class AppInterface extends Table {
 	 * @return true is value has changed
 	 * @since 7.0.0
 	 */
-	public boolean setPendingJobs(int v) {
+	public boolean setPendingJobs(final int v) {
 		return setValue(Columns.PENDINGJOBS, Integer.valueOf(v < 0 ? 0 : v));
 	}
 
@@ -2974,7 +2956,7 @@ public final class AppInterface extends Table {
 	 * @return true is value has changed
 	 * @since 7.0.0
 	 */
-	public boolean setRunningJobs(int v) {
+	public boolean setRunningJobs(final int v) {
 		return setValue(Columns.RUNNINGJOBS, Integer.valueOf(v < 0 ? 0 : v));
 	}
 
@@ -2984,7 +2966,7 @@ public final class AppInterface extends Table {
 	 * @return true is value has changed
 	 * @since 7.0.0
 	 */
-	public boolean setErrorJobs(int v) {
+	public boolean setErrorJobs(final int v) {
 		return setValue(Columns.ERRORJOBS, Integer.valueOf(v < 0 ? 0 : v));
 	}
 
@@ -3043,7 +3025,7 @@ public final class AppInterface extends Table {
 	/**
 	 * @return true if value has changed, false otherwise
 	 */
-	public boolean setAvgExecTime(int v) {
+	public boolean setAvgExecTime(final int v) {
 		return setValue(Columns.AVGEXECTIME, Integer.valueOf(v < 0 ? 0 : v));
 	}
 
@@ -3053,12 +3035,12 @@ public final class AppInterface extends Table {
 	 * @param v
 	 *            is the last execution time
 	 */
-	public void incAvgExecTime(int v) {
+	public void incAvgExecTime(final int v) {
 		int nbJobs = getNbJobs();
 		int avg = getAvgExecTime();
-
-		if (v <= 0) {
-			v = 0;
+		int value = v;
+		if (value <= 0) {
+			value = 0;
 		}
 		if (avg <= 0) {
 			avg = 0;
@@ -3066,16 +3048,16 @@ public final class AppInterface extends Table {
 		if (nbJobs <= 0) {
 			nbJobs = 0;
 		}
-		final int total = (avg * nbJobs) + v;
+		final int total = (avg * nbJobs) + value;
 		setAvgExecTime(total / (nbJobs + 1));
 		incNbJobs();
 	}
 
 	/**
-	 * This set the mimumal RAM needed for this application
-	 * 
+	 * This set the minimal RAM needed for this application
+	 *
 	 * @param v
-	 *            is the mimumal RAM needed for this application in Kb
+	 *            is the minimal RAM needed for this application in Kb
 	 * @return true if value has changed, false otherwise
 	 */
 	public boolean setMinMemory(final Integer v) {
@@ -3087,7 +3069,7 @@ public final class AppInterface extends Table {
 	 * value must be positive and can not exceed XWPropertyDefs.MAXRAMSPACE.
 	 * If(v > XWPropertyDefs.MAXDISKSPACE) v is forced to
 	 * XWPropertyDefs.MAXDISKSPACE. If(v < 0) v is forced to 0.
-	 * 
+	 *
 	 * @param v
 	 *            is the minimal amount of RAM this work needs in Kb.
 	 * @return true if value has changed, false otherwise
@@ -3095,14 +3077,11 @@ public final class AppInterface extends Table {
 	 */
 	public final boolean setMinMemory(final int v) {
 		try {
-			final String sysValueStr = System
-					.getProperty(XWPropertyDefs.MAXRAMSPACE.toString());
-			final String maxValueStr = sysValueStr == null ? XWPropertyDefs.MAXRAMSPACE
-					.defaultValue() : sysValueStr;
-			final int maxValue = Integer.valueOf(maxValueStr);
+			final String sysValueStr = System.getProperty(XWPropertyDefs.MAXRAMSPACE.toString());
+			final String maxValueStr = sysValueStr == null ? XWPropertyDefs.MAXRAMSPACE.defaultValue() : sysValueStr;
+			final int maxValue = Integer.parseInt(maxValueStr);
 			final int value = v > maxValue ? maxValue : v;
-			return setValue(Columns.MINMEMORY,
-					Integer.valueOf(value < 0 ? 0 : value));
+			return setValue(Columns.MINMEMORY, Integer.valueOf(value < 0 ? 0 : value));
 		} catch (final Exception e) {
 			return setValue(Columns.MINMEMORY, Integer.valueOf(0));
 		}
@@ -3110,12 +3089,12 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This sets the mimimal CPU speed for this application
-	 * 
+	 *
 	 * @param v
 	 *            is the mimimal CPU speed for this application, in MHz
 	 * @return true if value has changed, false otherwise
 	 */
-	public boolean setMinCpuSpeed(int v) {
+	public boolean setMinCpuSpeed(final int v) {
 		return setValue(Columns.MINCPUSPEED, Integer.valueOf(v < 0 ? 0 : v));
 	}
 
@@ -3124,26 +3103,23 @@ public final class AppInterface extends Table {
 	 * not exceed XWPropertyDefs.MAXDISKSPACE If(v >
 	 * XWPropertyDefs.MAXDISKSPACE) v is forced to XWPropertyDefs.MAXDISKSPACE.
 	 * If(v < 0) v is forced to 0.
-	 * 
+	 *
 	 * @param v
 	 *            is the minimal amount of disk space this work needs in Mb.
 	 * @return true if value has changed, false otherwise
 	 * @since 9.0.5
 	 * @see XWPropertyDefs#MAXDISKSPACE
 	 */
-	public boolean setMinFreeMassStorage(long v) {
+	public boolean setMinFreeMassStorage(final long v) {
 		try {
 			long value = v;
-			final String sysValueStr = System
-					.getProperty(XWPropertyDefs.MAXDISKSPACE.toString());
-			final String maxValueStr = sysValueStr == null ? XWPropertyDefs.MAXDISKSPACE
-					.defaultValue() : sysValueStr;
-			final long maxValue = Long.valueOf(maxValueStr);
+			final String sysValueStr = System.getProperty(XWPropertyDefs.MAXDISKSPACE.toString());
+			final String maxValueStr = sysValueStr == null ? XWPropertyDefs.MAXDISKSPACE.defaultValue() : sysValueStr;
+			final long maxValue = Long.parseLong(maxValueStr);
 			if (value > maxValue) {
 				value = maxValue;
 			}
-			return setValue(Columns.MINFREEMASSSTORAGE,
-					Long.valueOf(value < 0L ? 0L : value));
+			return setValue(Columns.MINFREEMASSSTORAGE, Long.valueOf(value < 0L ? 0L : value));
 		} catch (final Exception e) {
 			return setValue(Columns.MINFREEMASSSTORAGE, 0L);
 		}
@@ -3152,19 +3128,20 @@ public final class AppInterface extends Table {
 	/**
 	 * @return true if value has changed, false otherwise
 	 */
-	public boolean setName(String v) {
-		if ((v != null) && (v.length() > APPNAMELENGTH)) {
-			v = v.substring(0, APPNAMELENGTH - 1);
-			getLogger().warn("Name too long; truncated to " + v);
+	public boolean setName(final String v) {
+		String value = v;
+		if ((value != null) && (value.length() > APPNAMELENGTH)) {
+			value = value.substring(0, APPNAMELENGTH - 1);
+			getLogger().warn("Name too long; truncated to " + value);
 		}
-		return setValue(Columns.NAME, (v == null ? null : v));
+		return setValue(Columns.NAME, value == null ? null : value);
 	}
 
 	/**
 	 * @return true if value has changed, false otherwise
 	 * @since 8.0.0 (FG)
 	 */
-	public boolean setEnvVars(String v) {
+	public boolean setEnvVars(final String v) {
 		return setValue(Columns.ENVVARS, v);
 	}
 
@@ -3172,14 +3149,14 @@ public final class AppInterface extends Table {
 	 * @return true if value has changed, false otherwise
 	 * @since 8.0.0 (FG)
 	 */
-	public boolean setNeededPackages(String v) {
+	public boolean setNeededPackages(final String v) {
 		return setValue(Columns.NEEDEDPACKAGES, v);
 	}
 
 	/**
 	 * @return true if value has changed, false otherwise
 	 */
-	public boolean setService(boolean v) {
+	public boolean setService(final boolean v) {
 		return setValue(Columns.ISSERVICE, Boolean.valueOf(v));
 	}
 
@@ -3197,14 +3174,14 @@ public final class AppInterface extends Table {
 	/**
 	 * @return true if value has changed, false otherwise
 	 */
-	public boolean setDefaultStdin(URI v) {
+	public boolean setDefaultStdin(final URI v) {
 		return setValue(Columns.DEFAULTSTDINURI, v);
 	}
 
 	/**
 	 * @return true if value has changed, false otherwise
 	 */
-	public boolean setBaseDirin(URI v) {
+	public boolean setBaseDirin(final URI v) {
 		return setValue(Columns.BASEDIRINURI, v);
 	}
 
@@ -3212,7 +3189,7 @@ public final class AppInterface extends Table {
 	 * @return true if value has changed, false otherwise
 	 * @since 8.0.0 (FG)
 	 */
-	public boolean setLaunchScriptCmd(URI v) {
+	public boolean setLaunchScriptCmd(final URI v) {
 		return setValue(Columns.LAUNCHSCRIPTCMDURI, v);
 	}
 
@@ -3220,7 +3197,7 @@ public final class AppInterface extends Table {
 	 * @return true if value has changed, false otherwise
 	 * @since 8.0.0 (FG)
 	 */
-	public boolean setLaunchScriptSh(URI v) {
+	public boolean setLaunchScriptSh(final URI v) {
 		return setValue(Columns.LAUNCHSCRIPTSHURI, v);
 	}
 
@@ -3228,7 +3205,7 @@ public final class AppInterface extends Table {
 	 * @return true if value has changed, false otherwise
 	 * @since 8.0.0 (FG)
 	 */
-	public boolean setUnloadScriptCmd(URI v) {
+	public boolean setUnloadScriptCmd(final URI v) {
 		return setValue(Columns.UNLOADSCRIPTCMDURI, v);
 	}
 
@@ -3236,14 +3213,14 @@ public final class AppInterface extends Table {
 	 * @return true if value has changed, false otherwise
 	 * @since 8.0.0 (FG)
 	 */
-	public boolean setUnloadScriptSh(URI v) {
+	public boolean setUnloadScriptSh(final URI v) {
 		return setValue(Columns.UNLOADSCRIPTSHURI, v);
 	}
 
 	/**
 	 * @return true if value has changed, false otherwise
 	 */
-	public boolean setDefaultDirin(URI v) {
+	public boolean setDefaultDirin(final URI v) {
 		return setValue(Columns.DEFAULTDIRINURI, v);
 	}
 
@@ -3267,12 +3244,11 @@ public final class AppInterface extends Table {
 	 * dumps it. <br />
 	 * Usage : java -cp xtremweb.jar xtremweb.common.AppInterface [xmlFile]
 	 */
-	public static void main(String[] argv) {
+	public static void main(final String[] argv) {
 		try {
 			LoggerLevel logLevel = LoggerLevel.DEBUG;
 			try {
-				logLevel = LoggerLevel.valueOf(System
-						.getProperty(XWPropertyDefs.LOGGERLEVEL.toString()));
+				logLevel = LoggerLevel.valueOf(System.getProperty(XWPropertyDefs.LOGGERLEVEL.toString()));
 			} catch (final Exception e) {
 			}
 			final AppInterface itf = new AppInterface();
@@ -3286,13 +3262,13 @@ public final class AppInterface extends Table {
 			}
 			itf.setLoggerLevel(logLevel);
 			itf.setDUMPNULLS(true);
-			final XMLWriter writer = new XMLWriter(new DataOutputStream(
-					System.out));
+			final XMLWriter writer = new XMLWriter(new DataOutputStream(System.out));
 			writer.write(itf);
 		} catch (final Exception e) {
 			final Logger logger = new Logger();
-			logger.exception("Usage : java -cp " + XWTools.JARFILENAME
-					+ " xtremweb.common.AppInterface [anXMLDescriptionFile]", e);
+			logger.exception(
+					"Usage : java -cp " + XWTools.JARFILENAME + " xtremweb.common.AppInterface [anXMLDescriptionFile]",
+					e);
 		}
 	}
 }

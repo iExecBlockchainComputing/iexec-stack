@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -25,14 +25,12 @@ package xtremweb.common;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.Collection;
-import java.util.Iterator;
 
 /**
  * This defines XtremWeb application type.
- * 
+ *
  * Created: 16 novembre 2011
- * 
+ *
  * @author <a href="mailto: lodygens at lal in2p3 fr">Oleg Lodygensky</a>
  * @since 8.0.0
  */
@@ -62,11 +60,11 @@ public enum AppTypeEnum {
 
 	/**
 	 * This retrieves an OS from its ordinal value
-	 * 
+	 *
 	 * @exception IllegalArgumentException
 	 *                is thrown if v is not a valid ordinal value
 	 */
-	public static AppTypeEnum fromInt(int v) throws IllegalArgumentException {
+	public static AppTypeEnum fromInt(final int v) throws IllegalArgumentException {
 		for (final AppTypeEnum i : AppTypeEnum.values()) {
 			if (i.ordinal() == v) {
 				return i;
@@ -77,7 +75,7 @@ public enum AppTypeEnum {
 
 	/**
 	 * This retrieves this string representation
-	 * 
+	 *
 	 * @return a array containing this string representation
 	 */
 	public static String[] getLabels() {
@@ -92,11 +90,10 @@ public enum AppTypeEnum {
 	 * This array stores default VirtualBox pathnames (one entry per OS). Each
 	 * entry is a semicolon separated paths list Defaults are Oracle VirtualBox
 	 * paths
-	 * 
+	 *
 	 * @since 8.0.0 (FG)
 	 */
-	private static String[] virtualboxpaths = {
-			null, // NONE
+	private static String[] virtualboxpaths = { null, // NONE
 			"/usr/bin/VBoxHeadless", // LINUX
 			"c:\\Program Files\\Oracle\\VirtualBox\\VBoxHeadless.exe;c:\\Program Files\\VirtualBox\\VBoxHeadless.exe;c:\\Program Files (x86)\\Oracle\\VirtualBox\\VBoxHeadless.exe;c:\\Program Files (x86)\\VirtualBox\\VBoxHeadless.exe", // WIN32
 			"/Applications/VirtualBox.app/Contents/MacOS/VBoxHeadless", // MACOSX
@@ -107,7 +104,7 @@ public enum AppTypeEnum {
 
 	/**
 	 * This retrieves application default pathname
-	 * 
+	 *
 	 * @param t
 	 *            is the application type to retrieve path for
 	 * @return application binary path if available
@@ -116,13 +113,13 @@ public enum AppTypeEnum {
 	 * @see xtremweb.common.OSEnum#getOs(String)
 	 * @since 8.0.0 (FG)
 	 */
-	public String getPathName()  {
+	public String getPathName() {
 		return virtualboxpaths[OSEnum.getOs().ordinal()];
 	}
 
 	/**
 	 * This retrieves application default pathname
-	 * 
+	 *
 	 * @return application binary path for the current OS
 	 * @throws FileNotFoundException
 	 *             if no application binary path found for the current OS
@@ -135,29 +132,30 @@ public enum AppTypeEnum {
 			throw new FileNotFoundException("no binary path for " + this);
 		}
 		final File f = new File(filePath);
-		if (f.exists() == true) {
+		if (f.exists()) {
 			return f;
 		}
 		throw new FileNotFoundException("no binary path for " + this);
 	}
+
 	/**
 	 * This dumps path
-	 * 
+	 *
 	 * @see xtremweb.common.OSEnum#getOs(String)
 	 * @since 8.0.0 (FG)
 	 */
-	static public void dumpPath() {
+	public static void dumpPath() {
 		for (final AppTypeEnum a : AppTypeEnum.values()) {
 			try {
 				System.out.println(a.getPath());
-			} catch (Exception e) {
+			} catch (final Exception e) {
 			}
 		}
 	}
 
 	/**
 	 * This checks if the provided application is available
-	 * 
+	 *
 	 * @return true if getPath() != null; false otherwise
 	 * @throws FileNotFoundException
 	 *             if application path is not valid
@@ -165,15 +163,15 @@ public enum AppTypeEnum {
 	 * @since 8.0.0 (FG)
 	 */
 	public boolean available() throws FileNotFoundException {
-		return (getPath() != null);
+		return getPath() != null;
 	}
 
 	/**
 	 * This is for debug purposes
-	 * 
+	 *
 	 * @param argv
 	 */
-	public static void main(String[] argv) {
+	public static void main(final String[] argv) {
 		for (final AppTypeEnum i : AppTypeEnum.values()) {
 			System.out.println(i.toString());
 		}
