@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -31,7 +31,7 @@ package xtremweb.archdep;
  * An object implementing this interface can be obtained with the
  * <code>xwexec()</code> of <code>ArchDepFactory</code>
  * </p>
- * 
+ *
  * @see xtremweb.archdep.ArchDepFactory
  */
 
@@ -40,8 +40,7 @@ public interface XWExec {
 	void init();
 
 	// Launch the execution on a separate process
-	boolean exec(String[] args, String stdin, String stdout, String stderr,
-			String workingDir);
+	boolean exec(String[] args, String stdin, String stdout, String stderr, String workingDir);
 
 	// Stop the curant execution
 	boolean kill();

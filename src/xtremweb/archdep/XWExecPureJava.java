@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -46,19 +46,21 @@ public class XWExecPureJava implements XWExec {
 	private OutputStream stderrFile;
 	private InputStream stdinFile = null;
 
-	public XWExecPureJava(LoggerLevel l) {
+	public XWExecPureJava(final LoggerLevel l) {
 		init();
 		logger = new Logger(this);
 		logger.setLoggerLevel(l);
 	}
 
+	@Override
 	public final void init() {
 		isRunning = false;
 	}
 
 	// Launch the execution on a separate process
-	public boolean exec(String[] args, String stdin, String stdout,
-			String stderr, String workingDir) {
+	@Override
+	public boolean exec(final String[] args, final String stdin, final String stdout, final String stderr,
+			final String workingDir) {
 		if (isRunning) {
 			logger.error("Cannot exec: a process already running");
 			return false;
@@ -70,26 +72,21 @@ public class XWExecPureJava implements XWExec {
 			stdoutFile = new FileOutputStream(new File(workingDir, stdout));
 			stderrFile = new FileOutputStream(new File(workingDir, stderr));
 		} catch (final Throwable e) {
-			logger.error("executeNativeJob: can't create " + stdout + " and "
-					+ stderr);
+			logger.error("executeNativeJob: can't create " + stdout + " and " + stderr);
 			e.printStackTrace();
 			return false;
 		} // end of try-catch
 
 		try {
-			workProcess = Runtime.getRuntime().exec(args, null,
-					new File(workingDir));
+			workProcess = Runtime.getRuntime().exec(args, null, new File(workingDir));
 		} catch (final Exception e) {
-			logger.error("ThreadLaunch in executeNativeJob: cannot spawn a new process"
-					+ e);
+			logger.error("ThreadLaunch in executeNativeJob: cannot spawn a new process" + e);
 			return false;
 		} // end of try-catch
 
 		logger.debug("apres exec");
-		final StreamPiper outPiper = new StreamPiper(
-				workProcess.getInputStream(), stdoutFile);
-		final StreamPiper errPiper = new StreamPiper(
-				workProcess.getErrorStream(), stderrFile);
+		final StreamPiper outPiper = new StreamPiper(workProcess.getInputStream(), stdoutFile);
+		final StreamPiper errPiper = new StreamPiper(workProcess.getErrorStream(), stderrFile);
 
 		StreamPiper inPiper;
 		outThread = new Thread(outPiper);
@@ -120,6 +117,7 @@ public class XWExecPureJava implements XWExec {
 	}
 
 	// Stop the curant execution
+	@Override
 	public boolean kill() {
 		logger.debug("kill process");
 		workProcess.destroy();
@@ -138,8 +136,7 @@ public class XWExecPureJava implements XWExec {
 				inThread.join();
 			}
 		} catch (final Exception e) {
-			logger.error("ThreadLaunch::executeNativeJob() : finalization error "
-					+ e);
+			logger.error("ThreadLaunch::executeNativeJob() : finalization error " + e);
 			workProcess.destroy();
 			return false;
 		} // end of try-catch
@@ -147,11 +144,13 @@ public class XWExecPureJava implements XWExec {
 		return true;
 	}
 
+	@Override
 	public boolean destroy() {
 		return kill();
 	}
 
 	// Wait for the end of the current execution
+	@Override
 	public int waitFor() {
 		int res;
 		try {
@@ -168,15 +167,18 @@ public class XWExecPureJava implements XWExec {
 	}
 
 	// Suspend the current execution
+	@Override
 	public boolean suspend() {
 		return false;
 	}
 
 	// Re-activate the current execution
+	@Override
 	public boolean activate() {
 		return false;
 	}
 
+	@Override
 	public boolean isRunning() {
 		return isRunning;
 	}
