@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -44,11 +44,11 @@ import xtremweb.security.XWAccessRights;
  * This class defines methods for type tables (AppTypes, DataType etc.). Type
  * tables differ from interface ones (AppInterface, DataInterface etc.) as they
  * don't have columns defined in TableColumns.
- * 
+ *
  * <br />
  * <br />
  * Created: Apr 14th, 2014<br />
- * 
+ *
  * @author <a href="mailto:lodygens /at\ .in2p3.fr>Oleg Lodygensky</a>
  * @since 9.0.0
  */
@@ -70,28 +70,28 @@ public abstract class Type extends XMLable {
 	/**
 	 * This tells whether object has changed since last DB I/O This was in
 	 * xtremweb.dispatcher.TableRow until 9.0.0
-	 * 
+	 *
 	 * @since 9.0.0
 	 */
 	protected boolean dirty;
 	/**
 	 * This define default rows for "SELECT" SQL statement : "*" This was in
 	 * xtremweb.dispatcher.TableRow until 9.0.0
-	 * 
+	 *
 	 * @since 9.0.0
 	 */
 	public static final String DEFAULTSELECTIONROW = "*";
 	/**
 	 * This helps to use complex SQL request This was in
 	 * xtremweb.dispatcher.TableRow until 9.0.0
-	 * 
+	 *
 	 * @since 9.0.0
 	 */
 	private SQLRequest request;
 
 	/**
 	 * This is used in SQL statements
-	 * 
+	 *
 	 * @see xtremweb.common.XWTools#QUOTE
 	 */
 	public static final String QUOTE = XWTools.QUOTE;
@@ -101,14 +101,14 @@ public abstract class Type extends XMLable {
 	 * Since RPCXW, this KEYINDEX is not the index of the primary key as defined
 	 * in DB, but the index of the UID. Since RPCXW, UID is always the first
 	 * element in arrays columns and values.
-	 * 
+	 *
 	 * @see XMLable#columns
 	 * @see #values
 	 */
 	public static final int KEYINDEX = 0;
 	/**
 	 * This contains column indexes to be used by short description
-	 * 
+	 *
 	 * @since 7.0.0
 	 * @see #toString(boolean, boolean)
 	 */
@@ -125,7 +125,7 @@ public abstract class Type extends XMLable {
 	 * @param shortIndexes
 	 *            the shortIndexes to set
 	 */
-	public void setShortIndexes(int[] shortIndexes) {
+	public void setShortIndexes(final int[] shortIndexes) {
 		this.shortIndexes = shortIndexes.clone();
 	}
 
@@ -143,14 +143,14 @@ public abstract class Type extends XMLable {
 
 	/**
 	 * This constructor sets the table name as provided
-	 * 
+	 *
 	 * @param n
 	 *            is this tag name
 	 * @param t
 	 *            is this table name
 	 * @see #Type()
 	 */
-	public Type(String n, String t) {
+	public Type(final String n, final String t) {
 		this();
 		tagName = n;
 		if (tagName != null) {
@@ -161,7 +161,7 @@ public abstract class Type extends XMLable {
 
 	/**
 	 * This fills columns from DB
-	 * 
+	 *
 	 * @since 9.0.0
 	 * @param rs
 	 *            is the SQL data set
@@ -173,14 +173,14 @@ public abstract class Type extends XMLable {
 	 * This sets parameter with the right object type; this reads the value
 	 * string representation and instantiates the value with the right object
 	 * type.
-	 * 
+	 *
 	 * @param column
 	 *            is the column to set
 	 * @param val
 	 *            is a String representation of the new attribute value
 	 * @return true if value has changed, false otherwise
 	 */
-	protected final boolean setValue(XWBaseColumn column, Object val) {
+	protected final boolean setValue(final XWBaseColumn column, final Object val) {
 
 		Object value = null;
 		try {
@@ -196,7 +196,7 @@ public abstract class Type extends XMLable {
 	/**
 	 * This sets parameter with the given date value; this reads the value
 	 * string representation and instantiates the date value.
-	 * 
+	 *
 	 * @param column
 	 *            is the column to set
 	 * @param val
@@ -205,7 +205,7 @@ public abstract class Type extends XMLable {
 	 * @since 8.2.0
 	 * @see XWTools#getSQLDateTime(Date)
 	 */
-	protected final boolean setValue(XWBaseColumn column, Date val) {
+	protected final boolean setValue(final XWBaseColumn column, final Date val) {
 
 		Object value = null;
 		try {
@@ -221,7 +221,7 @@ public abstract class Type extends XMLable {
 	/**
 	 * This sets parameter value; this is called from
 	 * TableInterface#fromXml(Attributes)
-	 * 
+	 *
 	 * @param attribute
 	 *            is the name of the attribute to set
 	 * @param v
@@ -229,12 +229,11 @@ public abstract class Type extends XMLable {
 	 * @return true if value has changed, false otherwise
 	 * @see Type#fromXml(Attributes)
 	 */
-	public abstract boolean setValue(String attribute, Object v)
-			throws IllegalArgumentException;
+	public abstract boolean setValue(String attribute, Object v) throws IllegalArgumentException;
 
 	/**
 	 * This writes this object to a String as an XML object<br />
-	 * 
+	 *
 	 * @return a String containing this object definition as XML
 	 * @see #fromXml(Attributes)
 	 */
@@ -277,7 +276,7 @@ public abstract class Type extends XMLable {
 
 	/**
 	 * This writes this object to a String an HTML table
-	 * 
+	 *
 	 * @return a String containing this object definition as HTML
 	 */
 	public String toHtml() {
@@ -292,9 +291,7 @@ public abstract class Type extends XMLable {
 
 				final Object value = getValueAt(i);
 				if (value != null) {
-					ret += "<tr><td class='param''>"
-							+ getColumnLabel(i).toLowerCase()
-							+ "</td><td class='value'>";
+					ret += "<tr><td class='param''>" + getColumnLabel(i).toLowerCase() + "</td><td class='value'>";
 					if (value instanceof java.util.Date) {
 						ret += XWTools.getSQLDateTime((java.util.Date) value);
 					} else {
@@ -314,7 +311,7 @@ public abstract class Type extends XMLable {
 	 * This retrieves attributes from XML representation. Since 5.8.0, this does
 	 * not throw an exception if attribute is unknown but displays a warning
 	 * message to allow connection among different versions
-	 * 
+	 *
 	 * @param attrs
 	 *            contains attributes XML representation
 	 * @throws IOException
@@ -327,7 +324,7 @@ public abstract class Type extends XMLable {
 	 */
 	@Deprecated
 	@Override
-	public void fromXml(Attributes attrs) {
+	public void fromXml(final Attributes attrs) {
 
 		if (attrs == null) {
 			return;
@@ -337,9 +334,8 @@ public abstract class Type extends XMLable {
 			final String attribute = attrs.getQName(a);
 			String value = attrs.getValue(a);
 
-			getLogger().finest(
-					"Type  ##  attribute #" + a + ": name=\"" + attribute
-							+ "\"" + ", value=\"" + value + "\"");
+			getLogger()
+					.finest("Type  ##  attribute #" + a + ": name=\"" + attribute + "\"" + ", value=\"" + value + "\"");
 
 			if (value.compareToIgnoreCase(NULLVALUE) == 0) {
 				value = null;
@@ -348,13 +344,10 @@ public abstract class Type extends XMLable {
 			try {
 				setValue(attribute, value);
 			} catch (final IllegalArgumentException e) {
-				getLogger()
-						.exception(
-								getClass().getCanonicalName()
-										+ " : '"
-										+ attribute
-										+ "' is not a valid attribute (you should use 'xwversion' to check your client version)",
-								e);
+				getLogger().exception(
+						getClass().getCanonicalName() + " : '" + attribute
+								+ "' is not a valid attribute (you should use 'xwversion' to check your client version)",
+						e);
 			}
 		}
 	}
@@ -363,12 +356,12 @@ public abstract class Type extends XMLable {
 	 * This is called by XML parser on XML element open tag This checks the
 	 * qname attribute which must be the XML qualified name of either this
 	 * object or of a column of this object
-	 * 
+	 *
 	 * @see XMLReader#read(InputStream)
 	 */
 	@Override
-	public void xmlElementStart(String uri, String tag, String qname,
-			Attributes attrs) throws SAXException {
+	public void xmlElementStart(final String uri, final String tag, final String qname, final Attributes attrs)
+			throws SAXException {
 
 		try {
 			super.xmlElementStart(uri, tag, qname, attrs);
@@ -377,9 +370,7 @@ public abstract class Type extends XMLable {
 			getLogger().finest(ioe.toString());
 		}
 
-		getLogger().finest(
-				"Type#xmlElementStart(" + uri + ", " + tag + ", " + qname
-						+ ") " + attrs.getLength());
+		getLogger().finest("Type#xmlElementStart(" + uri + ", " + tag + ", " + qname + ") " + attrs.getLength());
 
 		if (qname.compareToIgnoreCase(getXMLTag()) == 0) {
 			fromXml(attrs);
@@ -400,7 +391,7 @@ public abstract class Type extends XMLable {
 	/**
 	 * This is called by XML parser on XML element close tag. This sets value
 	 * retrieve by
-	 * 
+	 *
 	 * @see XMLable#characters(char[], int, int)
 	 * @see XMLReader#read(InputStream)
 	 * @exception SAXException
@@ -409,14 +400,11 @@ public abstract class Type extends XMLable {
 	 * @since 9.0.0
 	 */
 	@Override
-	public void xmlElementStop(String uri, String tag, String qname)
-			throws SAXException {
+	public void xmlElementStop(final String uri, final String tag, final String qname) throws SAXException {
 
 		super.xmlElementStop(uri, tag, qname);
 
-		getLogger().finest(
-				"Type#xmlElementStop " + uri + ", " + tag + ", " + qname
-						+ " = " + getCurrentValue());
+		getLogger().finest("Type#xmlElementStop " + uri + ", " + tag + ", " + qname + " = " + getCurrentValue());
 		try {
 			setValue(qname, getCurrentValue());
 		} catch (final IllegalArgumentException e) {
@@ -427,7 +415,7 @@ public abstract class Type extends XMLable {
 
 	/**
 	 * This calls toString(false)
-	 * 
+	 *
 	 * @see #toString(boolean)
 	 */
 	@Override
@@ -437,23 +425,23 @@ public abstract class Type extends XMLable {
 
 	/**
 	 * This calls toString(csv, false)
-	 * 
+	 *
 	 * @see #toString(boolean, boolean)
 	 */
 	@Override
-	public String toString(boolean csv) {
+	public String toString(final boolean csv) {
 		return toString(csv, false);
 	}
 
 	/**
 	 * This retrieves the effective index, depending of shortIndexes value.
-	 * 
+	 *
 	 * @return i, if shortIndexes == null; shortIndexes[i] otherwise
 	 * @param i
 	 *            is the index to retrieve
 	 * @since 7.0.0
 	 */
-	public int getIndex(int i, boolean shortDescription) {
+	public int getIndex(final int i, final boolean shortDescription) {
 		int ret = i;
 		if (shortIndexes == null) {
 			return i;
@@ -466,21 +454,21 @@ public abstract class Type extends XMLable {
 
 	/**
 	 * This calls toString(csv, shortOutput, false)
-	 * 
+	 *
 	 * @see #toString(boolean,boolean,boolean)
 	 */
 	@Override
-	public String toString(boolean csv, boolean shortOutput) {
+	public String toString(final boolean csv, final boolean shortOutput) {
 		return toString(csv, shortOutput, false);
 	}
 
 	/**
 	 * This calls toString(csv, shortOutput, true)
-	 * 
+	 *
 	 * @see #toString(boolean,boolean,boolean)
 	 */
 	@Override
-	public String toHexString(boolean csv, boolean shortOutput) {
+	public String toHexString(final boolean csv, final boolean shortOutput) {
 		return toString(csv, shortOutput, true);
 	}
 
@@ -491,7 +479,7 @@ public abstract class Type extends XMLable {
 	 * shortOutput == false, all attributes are included in the description.
 	 * Otherwise this returns a short description only, containing attributes
 	 * which indexes are in shortIndexes.
-	 * 
+	 *
 	 * @param csv
 	 *            tells whether CSV format is expected
 	 * @param shortOutput
@@ -500,7 +488,7 @@ public abstract class Type extends XMLable {
 	 *            if true, integers are dumped as hexadecimal; decimal if false
 	 * @return a String representation of this interface
 	 */
-	public String toString(boolean csv, boolean shortOutput, boolean hex) {
+	public String toString(final boolean csv, final boolean shortOutput, final boolean hex) {
 
 		try {
 			int max = getMaxAttribute();
@@ -540,17 +528,14 @@ public abstract class Type extends XMLable {
 						if (csv) {
 							ret += " " + QUOTE + value.toString() + QUOTE;
 						} else {
-							ret += " " + getColumnLabel(index) + "=" + QUOTE
-									+ value.toString() + QUOTE;
+							ret += " " + getColumnLabel(index) + "=" + QUOTE + value.toString() + QUOTE;
 						}
 					} else {
 						final java.util.Date date = (java.util.Date) value;
 						if (csv) {
-							ret += " " + QUOTE + XWTools.getSQLDateTime(date)
-									+ QUOTE;
+							ret += " " + QUOTE + XWTools.getSQLDateTime(date) + QUOTE;
 						} else {
-							ret += " " + getColumnLabel(index) + "=" + QUOTE
-									+ XWTools.getSQLDateTime(date) + QUOTE;
+							ret += " " + getColumnLabel(index) + "=" + QUOTE + XWTools.getSQLDateTime(date) + QUOTE;
 						}
 					}
 				} else if (!csv) {
@@ -569,7 +554,7 @@ public abstract class Type extends XMLable {
 
 	/**
 	 * This calls toHexString(false)
-	 * 
+	 *
 	 * @see #toHexString(boolean)
 	 */
 	@Override
@@ -579,18 +564,18 @@ public abstract class Type extends XMLable {
 
 	/**
 	 * This calls toHexString(csv, false)
-	 * 
+	 *
 	 * @see #toHexString(boolean, boolean)
 	 */
 	@Override
-	public String toHexString(boolean csv) {
+	public String toHexString(final boolean csv) {
 		return toHexString(csv, false);
 	}
 
 	/**
 	 * This returns a vector representation of this object<br />
 	 * This is usefull for client GUI
-	 * 
+	 *
 	 * @return a Vector representation, or an empty Vector on error
 	 * @see xtremweb.client.gui.TableModel#getRows()
 	 */
@@ -646,19 +631,19 @@ public abstract class Type extends XMLable {
 
 	/**
 	 * This calls columns(shortOutput, false)
-	 * 
+	 *
 	 * @see #columns(boolean, boolean)
 	 */
-	final public String[] columns(boolean shortOutput) {
+	final public String[] columns(final boolean shortOutput) {
 		return columns(shortOutput, false);
 	}
 
 	/**
 	 * This calls columns(shortOutput, true)
-	 * 
+	 *
 	 * @see #columns(boolean, boolean)
 	 */
-	final public String[] notnullcolumns(boolean shortOutput) {
+	final public String[] notnullcolumns(final boolean shortOutput) {
 		return columns(shortOutput, true);
 	}
 
@@ -667,7 +652,7 @@ public abstract class Type extends XMLable {
 	 * be used in GUI. This uses shortIndexes, if set. If shortIndexes == null
 	 * or shortOutput == false, all attributes are included in the returned
 	 * array
-	 * 
+	 *
 	 * @since 7.0.0
 	 * @return an array of String containing column names
 	 * @param shortOutput
@@ -676,7 +661,7 @@ public abstract class Type extends XMLable {
 	 *            if false, all columns are returned; if true, null columns are
 	 *            not returned
 	 */
-	final public String[] columns(boolean shortOutput, boolean notnull) {
+	final public String[] columns(final boolean shortOutput, final boolean notnull) {
 
 		String[] ret = null;
 		try {
@@ -695,8 +680,7 @@ public abstract class Type extends XMLable {
 				final int index = getIndex(i, shortOutput);
 
 				final String label = getColumnLabel(index);
-				if ((label == null)
-						|| ((notnull == true) && (getValue(index) == null))) {
+				if ((label == null) || ((notnull == true) && (getValue(index) == null))) {
 					continue;
 				}
 
@@ -746,7 +730,7 @@ public abstract class Type extends XMLable {
 
 	/**
 	 * This creates the needed SQL query string to select work
-	 * 
+	 *
 	 * @return a String containing the needed SQL query conditions
 	 */
 	public String criteria() throws IOException {
@@ -757,9 +741,7 @@ public abstract class Type extends XMLable {
 
 		if (getColumnLabel(KEYINDEX) == null) {
 			getLogger().error("\n\n\nWe got a huuuge problem, folks");
-			getLogger()
-					.fatal(this.getClass().getName()
-							+ "#crietrias() : getColumnLabel(KEYINDEX) == null");
+			getLogger().fatal(this.getClass().getName() + "#crietrias() : getColumnLabel(KEYINDEX) == null");
 		}
 		final Object value = getValueAt(KEYINDEX);
 		if (value != null) {
@@ -770,21 +752,19 @@ public abstract class Type extends XMLable {
 
 	/**
 	 * This sets parameter
-	 * 
+	 *
 	 * @param index
 	 *            is the index of the attribute to set
 	 * @param v
 	 *            is the new attribute value
 	 * @return true if value has changed, false otherwise
 	 */
-	final public boolean setValue(int index, Object v) {
+	final public boolean setValue(final int index, final Object v) {
 
 		if ((index > getLastAttribute()) || (index < KEYINDEX)) {
 			getLogger().error("\n\n\nWe got a huuuge problem, folks");
-			getLogger().fatal(
-					this.getClass().getName() + "#setValue() : invalid index "
-							+ index + " (" + FIRST_ATTRIBUTE + ", "
-							+ getLastAttribute() + ")");
+			getLogger().fatal(this.getClass().getName() + "#setValue() : invalid index " + index + " ("
+					+ FIRST_ATTRIBUTE + ", " + getLastAttribute() + ")");
 		}
 
 		boolean change = false;
@@ -816,32 +796,30 @@ public abstract class Type extends XMLable {
 
 	/**
 	 * This retrieves a parameter
-	 * 
+	 *
 	 * @param c
 	 *            is the column of the parameter to retrieve
 	 * @return the expected value
 	 */
-	public final Object getValue(XWBaseColumn c) {
+	public final Object getValue(final XWBaseColumn c) {
 		return getValue(c.getOrdinal());
 	}
 
 	/**
 	 * This retrieves a parameter
-	 * 
+	 *
 	 * @param index
 	 *            is the attribute index to set
 	 * @return the value of the attribute index
 	 */
-	public final Object getValue(int index) {
+	public final Object getValue(final int index) {
 
 		if ((index > getLastAttribute()) || (index < FIRST_ATTRIBUTE)) {
 			getLogger().error("\n\n\nWe got a huuuge problem, folks");
 			Thread.currentThread();
 			Thread.dumpStack();
-			getLogger().fatal(
-					this.getClass().getName() + "#getValue() : invalid index "
-							+ index + " (" + FIRST_ATTRIBUTE + ", "
-							+ getLastAttribute() + ")");
+			getLogger().fatal(this.getClass().getName() + "#getValue() : invalid index " + index + " ("
+					+ FIRST_ATTRIBUTE + ", " + getLastAttribute() + ")");
 		}
 		try {
 			return getValueAt(index);
@@ -856,20 +834,20 @@ public abstract class Type extends XMLable {
 
 	/**
 	 * This constructs a new XMLRPCCommand object
-	 * 
+	 *
 	 * @param io
 	 *            is stream handler to read XML representation from
 	 * @throws AccessControlException
 	 * @throws InvalidKeyException
 	 */
-	public static Type newType(StreamIO io) throws ClassNotFoundException,
-			IOException, InvalidKeyException, AccessControlException {
+	public static Type newType(final StreamIO io)
+			throws ClassNotFoundException, IOException, InvalidKeyException, AccessControlException {
 		return newType(io.input());
 	}
 
 	/**
 	 * This reads a new XMLRPCCommand object from input stream
-	 * 
+	 *
 	 * @param in
 	 *            is the input stream
 	 * @param itf
@@ -882,7 +860,7 @@ public abstract class Type extends XMLable {
 	 *             on XML exception error
 	 * @return the read interface
 	 */
-	private static Type readType(BufferedInputStream input, Type itf)
+	private static Type readType(final BufferedInputStream input, final Type itf)
 			throws InvalidKeyException, SAXException, IOException {
 		final XMLReader reader = new XMLReader(itf);
 		reader.read(input);
@@ -892,7 +870,7 @@ public abstract class Type extends XMLable {
 	/**
 	 * This constructs a new XMLRPCCommand object. This first checks the opening
 	 * tag and then instanciate the right object accordingly to the opening tag.
-	 * 
+	 *
 	 * @param in
 	 *            is the input stream to read interface from
 	 * @throws IOException
@@ -900,8 +878,7 @@ public abstract class Type extends XMLable {
 	 * @throws InvalidKeyException
 	 *             on authentication or authorization error
 	 */
-	public static Type newType(InputStream in) throws IOException,
-			InvalidKeyException {
+	public static Type newType(final InputStream in) throws IOException, InvalidKeyException {
 
 		final BufferedInputStream input = new BufferedInputStream(in);
 		input.mark(XWTools.BUFFEREND);
@@ -911,14 +888,13 @@ public abstract class Type extends XMLable {
 			return readType(input, ret);
 		} catch (final SAXException e) {
 		}
-		throw new IOException(
-				"Unable to create new Interface from input stream");
+		throw new IOException("Unable to create new Interface from input stream");
 	}
 
 	/**
 	 * This returns table name as needed by SQL requests; the table name is also
 	 * aliased as SQLRequest.MAINTABLEALIAS
-	 * 
+	 *
 	 * @return the aliased main table name
 	 * @see SQLRequest#MAINTABLEALIAS
 	 * @see #tagName
@@ -930,7 +906,7 @@ public abstract class Type extends XMLable {
 
 	/**
 	 * This retrieves "FROM" SQL statement table names
-	 * 
+	 *
 	 * @return if request != null, this returns request.fromTableNames(); else
 	 *         this returns aliasedTableName()
 	 * @since 5.8.0
@@ -946,7 +922,7 @@ public abstract class Type extends XMLable {
 
 	/**
 	 * This reads from DB
-	 * 
+	 *
 	 * @see xtremweb.common.Type#criteria()
 	 * @exception IOException
 	 *                is thrown on error
@@ -963,7 +939,7 @@ public abstract class Type extends XMLable {
 	/**
 	 * This inserts this object in DB and re-reads it immediately so that we
 	 * have the correct primary key (which is auto-increment)
-	 * 
+	 *
 	 * @see #select()
 	 * @see xtremweb.common.Type#valuesToString()
 	 * @see #tagName
@@ -976,7 +952,7 @@ public abstract class Type extends XMLable {
 
 	/**
 	 * This aims to retrieve rows for the "SELECT" SQL statement.
-	 * 
+	 *
 	 * @return DEFAULTSELECTIONROW
 	 * @since 5.8.0
 	 */
@@ -990,7 +966,7 @@ public abstract class Type extends XMLable {
 	/**
 	 * This aims to retreive "GROUP BY" SQL statement. This returns null and
 	 * should be overriden
-	 * 
+	 *
 	 * @return null
 	 * @since 5.8.0
 	 */
@@ -1009,7 +985,7 @@ public abstract class Type extends XMLable {
 	 * @param dirty
 	 *            the dirty to set
 	 */
-	public final void setDirty(boolean dirty) {
+	public final void setDirty(final boolean dirty) {
 		this.dirty = dirty;
 	}
 
@@ -1024,7 +1000,7 @@ public abstract class Type extends XMLable {
 	 * @param request
 	 *            the request to set
 	 */
-	public final void setRequest(SQLRequest request) {
+	public final void setRequest(final SQLRequest request) {
 		this.request = request;
 	}
 
@@ -1035,17 +1011,14 @@ public abstract class Type extends XMLable {
 	 * argv[0] must contain an XML representation.<br />
 	 * The object is finally dumped
 	 */
-	public static void main(String[] argv) {
+	public static void main(final String[] argv) {
 		try {
-			final Type itf = Type.newType(new ByteArrayInputStream(argv[0]
-					.getBytes(XWTools.UTF8)));
-			System.out.println(itf.openXmlRootElement() + itf.toXml()
-					+ itf.closeXmlRootElement());
+			final Type itf = Type.newType(new ByteArrayInputStream(argv[0].getBytes(XWTools.UTF8)));
+			System.out.println(itf.openXmlRootElement() + itf.toXml() + itf.closeXmlRootElement());
 		} catch (final Exception e) {
 			final Logger logger = new Logger();
 			logger.exception("Usage : java -cp " + XWTools.JARFILENAME
-					+ " xtremweb.common.TableInterface [anXMLDescriptionFile]",
-					e);
+					+ " xtremweb.common.TableInterface [anXMLDescriptionFile]", e);
 		}
 	}
 }
