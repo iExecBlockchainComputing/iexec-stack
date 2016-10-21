@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -66,7 +66,7 @@ public enum DataTypeEnum {
 	},
 	/**
 	 * This denotes a binary file
-	 * 
+	 *
 	 * @since 9.0.0
 	 */
 	LIBRARY {
@@ -82,7 +82,7 @@ public enum DataTypeEnum {
 	},
 	/**
 	 * This denotes an ISO file
-	 * 
+	 *
 	 * @since 8.0.0
 	 */
 	ISO {
@@ -98,7 +98,7 @@ public enum DataTypeEnum {
 	},
 	/**
 	 * This denotes a VDI file
-	 * 
+	 *
 	 * @since 8.0.0
 	 */
 	VDI {
@@ -114,7 +114,7 @@ public enum DataTypeEnum {
 	},
 	/**
 	 * This denotes a VMDK file
-	 * 
+	 *
 	 * @since 8.0.0
 	 */
 	VMDK {
@@ -166,7 +166,7 @@ public enum DataTypeEnum {
 	},
 	/**
 	 * This denotes a text file containing a list of URI to download
-	 * 
+	 *
 	 * @since 8.0.0
 	 */
 	URIPASSTHROUGH {
@@ -182,7 +182,7 @@ public enum DataTypeEnum {
 	},
 	/**
 	 * This denotes an sh script
-	 * 
+	 *
 	 * @since 8.0.0
 	 */
 	SH {
@@ -198,7 +198,7 @@ public enum DataTypeEnum {
 	},
 	/**
 	 * This denotes a BAT script
-	 * 
+	 *
 	 * @since 8.0.0
 	 */
 	BAT {
@@ -252,10 +252,10 @@ public enum DataTypeEnum {
 	public static final DataTypeEnum LAST = STREAM;
 	public static final int SIZE = LAST.ordinal() + 1;
 
-	final String MIMETYPEAPP = "application/octet-stream";
-	final String MIMETYPETEXT = "text/plain";
-	final String MIMETYPEZIP = "application/zip";
-	final String MIMETYPESTREAM = "application/octet-stream";
+	static final String MIMETYPEAPP = "application/octet-stream";
+	static final String MIMETYPETEXT = "text/plain";
+	static final String MIMETYPEZIP = "application/zip";
+	static final String MIMETYPESTREAM = "application/octet-stream";
 
 	/**
 	 * This is the default work result data name. Default result data name :
@@ -265,7 +265,7 @@ public enum DataTypeEnum {
 
 	/**
 	 * This retrieves this enum file extension
-	 * 
+	 *
 	 * @return a string containing file extension or null if not applicable
 	 * @since 9.0.0
 	 */
@@ -273,7 +273,7 @@ public enum DataTypeEnum {
 
 	/**
 	 * This retrieves this enum mime type
-	 * 
+	 *
 	 * @return a string containing mime type or null if not applicable
 	 * @since 9.0.0
 	 */
@@ -281,7 +281,7 @@ public enum DataTypeEnum {
 
 	/**
 	 * This retrieves all labels
-	 * 
+	 *
 	 * @return a array containing this enum string representation
 	 */
 	public static String[] getLabels() {
@@ -295,7 +295,7 @@ public enum DataTypeEnum {
 
 	/**
 	 * This retrieves this enum file extension
-	 * 
+	 *
 	 * @return a string containing file extension
 	 * @see #fileExtension()
 	 */
@@ -305,7 +305,7 @@ public enum DataTypeEnum {
 
 	/**
 	 * This retrieves this enum MIME type
-	 * 
+	 *
 	 * @return a string containing the MIME type
 	 * @see #mimeType()
 	 * @since 8.1.0
@@ -317,6 +317,7 @@ public enum DataTypeEnum {
 	/**
 	 * This retrieves the data file type accordingly to its file extension (i.e.
 	 * .jar returns JAVA)
+	 *
 	 * @since 9.1.0
 	 * @return the data file type
 	 */
@@ -326,10 +327,11 @@ public enum DataTypeEnum {
 		}
 		return getFileType(new File(filePath));
 	}
+
 	/**
 	 * This retrieves the data file type accordingly to its file extension (i.e.
 	 * .jar returns JAVA)
-	 * 
+	 *
 	 * @return the data file type
 	 */
 	public static DataTypeEnum getFileType(final File file) {
@@ -349,12 +351,12 @@ public enum DataTypeEnum {
 
 	/**
 	 * This retrieves an DataTypeEnum from its integer value
-	 * 
+	 *
 	 * @param v
 	 *            is the integer value of the DataTypeEnum
 	 * @return a DataTypeEnum
 	 */
-	public static DataTypeEnum fromInt(int v) throws IndexOutOfBoundsException {
+	public static DataTypeEnum fromInt(final int v) throws IndexOutOfBoundsException {
 		for (final DataTypeEnum i : DataTypeEnum.values()) {
 			if (i.ordinal() == v) {
 				return i;
@@ -365,10 +367,10 @@ public enum DataTypeEnum {
 
 	/**
 	 * This is for debug purposes
-	 * 
+	 *
 	 * @param argv
 	 */
-	public static void main(String[] argv) {
+	public static void main(final String[] argv) {
 		for (final DataTypeEnum i : DataTypeEnum.values()) {
 			System.out.println(i.toString());
 		}
