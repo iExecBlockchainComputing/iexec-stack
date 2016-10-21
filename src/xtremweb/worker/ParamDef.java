@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -56,16 +56,16 @@ public class ParamDef {
 
 	/**
 	 * This is the a constructor.
-	 * 
+	 *
 	 * @param b
 	 *            set debug level.
 	 */
-	public ParamDef(boolean b) {
+	public ParamDef(final boolean b) {
 		this();
 		debug = b;
 	}
 
-	private void println(String str) {
+	private void println(final String str) {
 		if (debug) {
 			System.out.println(str);
 		}
@@ -74,7 +74,7 @@ public class ParamDef {
 	/**
 	 * This stores the full param definition in a String; its type, name and
 	 * value.
-	 * 
+	 *
 	 * @return a String containing the param definition. If param is an array or
 	 *         a matrice, all elements are written down.
 	 */
@@ -90,8 +90,7 @@ public class ParamDef {
 		// scalar value
 		//
 		if (value.getClass().isArray() == false) {
-			return value.getClass().getName() + " " + name + " "
-					+ value.toString();
+			return value.getClass().getName() + " " + name + " " + value.toString();
 		}
 
 		//
@@ -104,8 +103,7 @@ public class ParamDef {
 		//
 		if (vector[0].getClass().isArray()) {
 			// write matrice type
-			ret = new String(((Object[]) vector[0])[0].getClass().getName()
-					+ "[][] ");
+			ret = new String(((Object[]) vector[0])[0].getClass().getName() + "[][] ");
 		} else {
 			// write vector type
 			ret = new String(vector[0].getClass().getName() + "[] ");
@@ -151,27 +149,27 @@ public class ParamDef {
 
 	/**
 	 * This sets the param type
-	 * 
+	 *
 	 * @param v
 	 *            is a Class object defining the param type
 	 */
-	public void setType(Class v) {
+	public void setType(final Class v) {
 		type = v;
 	}
 
 	/**
 	 * This sets the param name
-	 * 
+	 *
 	 * @param v
 	 *            is a String object defining the param name
 	 */
-	public void setName(String v) {
+	public void setName(final String v) {
 		name = v;
 	}
 
 	/**
 	 * This sets the param value
-	 * 
+	 *
 	 * @param v
 	 *            is an Object object defining the param value. If param is an
 	 *            array, v contains a Vector which is converted as an array is
@@ -179,7 +177,7 @@ public class ParamDef {
 	 *            of Vectors which are converted as a bidimentionnal array in
 	 *            the expected type.
 	 */
-	public void setValue(Object v) {
+	public void setValue(final Object v) {
 		value = v;
 
 		if (value.getClass() != java.util.Vector.class) {
@@ -187,8 +185,7 @@ public class ParamDef {
 		}
 
 		Vector vector = (Vector) v;
-		value = vector.toArray((Object[]) Array.newInstance(vector
-				.firstElement().getClass(), vector.size()));
+		value = vector.toArray((Object[]) Array.newInstance(vector.firstElement().getClass(), vector.size()));
 
 		final Object[] array = (Object[]) value;
 
@@ -199,14 +196,13 @@ public class ParamDef {
 		}
 
 		final int[] dimMatrice = { array.length, ((Vector) array[0]).size() };
-		final Object[][] matrice = (Object[][]) Array.newInstance(
-				((Vector) array[0]).firstElement().getClass(), dimMatrice);
+		final Object[][] matrice = (Object[][]) Array.newInstance(((Vector) array[0]).firstElement().getClass(),
+				dimMatrice);
 
 		for (int i = 0; i < array.length; i++) {
 			vector = (Vector) array[i];
 
-			matrice[i] = vector.toArray((Object[]) Array.newInstance(vector
-					.firstElement().getClass(), vector.size()));
+			matrice[i] = vector.toArray((Object[]) Array.newInstance(vector.firstElement().getClass(), vector.size()));
 		}
 
 		value = matrice;
@@ -214,7 +210,7 @@ public class ParamDef {
 
 	/**
 	 * This gets the param type
-	 * 
+	 *
 	 * @return a Class containing the param type
 	 */
 	public Class getType() {
@@ -228,7 +224,7 @@ public class ParamDef {
 
 	/**
 	 * This gets the param name
-	 * 
+	 *
 	 * @return a String containing the param name
 	 */
 	public String getName() {
@@ -237,7 +233,7 @@ public class ParamDef {
 
 	/**
 	 * This gets the param value
-	 * 
+	 *
 	 * @return an Object containing the param value, possibly an array or a
 	 *         matrice
 	 */
@@ -328,7 +324,7 @@ public class ParamDef {
 		return value;
 	}
 
-	static private boolean[] booleanArray(Object[] array) {
+	static private boolean[] booleanArray(final Object[] array) {
 		final boolean[] ret = new boolean[array.length];
 		for (int i = 0; i < array.length; i++) {
 			ret[i] = ((Boolean) array[i]).booleanValue();
@@ -336,7 +332,7 @@ public class ParamDef {
 		return ret;
 	}
 
-	static private char[] charArray(Object[] array) {
+	static private char[] charArray(final Object[] array) {
 		final char[] ret = new char[array.length];
 		for (int i = 0; i < array.length; i++) {
 			ret[i] = ((Character) array[i]).charValue();
@@ -344,7 +340,7 @@ public class ParamDef {
 		return ret;
 	}
 
-	static private byte[] byteArray(Object[] array) {
+	static private byte[] byteArray(final Object[] array) {
 		final byte[] ret = new byte[array.length];
 		for (int i = 0; i < array.length; i++) {
 			ret[i] = ((Byte) array[i]).byteValue();
@@ -352,7 +348,7 @@ public class ParamDef {
 		return ret;
 	}
 
-	static private short[] shortArray(Object[] array) {
+	static private short[] shortArray(final Object[] array) {
 		final short[] ret = new short[array.length];
 		for (int i = 0; i < array.length; i++) {
 			ret[i] = ((Short) array[i]).shortValue();
@@ -360,7 +356,7 @@ public class ParamDef {
 		return ret;
 	}
 
-	static private int[] integerArray(Object[] array) {
+	static private int[] integerArray(final Object[] array) {
 		final int[] ret = new int[array.length];
 		for (int i = 0; i < array.length; i++) {
 			ret[i] = ((Integer) array[i]).intValue();
@@ -368,7 +364,7 @@ public class ParamDef {
 		return ret;
 	}
 
-	static private long[] longArray(Object[] array) {
+	static private long[] longArray(final Object[] array) {
 		final long[] ret = new long[array.length];
 		for (int i = 0; i < array.length; i++) {
 			ret[i] = ((Long) array[i]).longValue();
@@ -376,7 +372,7 @@ public class ParamDef {
 		return ret;
 	}
 
-	static private float[] floatArray(Object[] array) {
+	static private float[] floatArray(final Object[] array) {
 		final float[] ret = new float[array.length];
 		for (int i = 0; i < array.length; i++) {
 			ret[i] = ((Float) array[i]).floatValue();
@@ -384,7 +380,7 @@ public class ParamDef {
 		return ret;
 	}
 
-	static private double[] doubleArray(Object[] array) {
+	static private double[] doubleArray(final Object[] array) {
 		final double[] ret = new double[array.length];
 		for (int i = 0; i < array.length; i++) {
 			ret[i] = ((Double) array[i]).doubleValue();
@@ -392,7 +388,7 @@ public class ParamDef {
 		return ret;
 	}
 
-	static private String[] stringArray(Object[] array) {
+	static private String[] stringArray(final Object[] array) {
 		final String[] ret = new String[array.length];
 		for (int i = 0; i < array.length; i++) {
 			ret[i] = ((String) array[i]);
@@ -400,7 +396,7 @@ public class ParamDef {
 		return ret;
 	}
 
-	static private boolean[][] booleanMatrice(Object[] array) {
+	static private boolean[][] booleanMatrice(final Object[] array) {
 		final Object[] matrice = ((Object[]) array[0]);
 		final boolean[][] ret = new boolean[array.length][matrice.length];
 
@@ -410,7 +406,7 @@ public class ParamDef {
 		return ret;
 	}
 
-	static private char[][] charMatrice(Object[] array) {
+	static private char[][] charMatrice(final Object[] array) {
 		final Object[] matrice = ((Object[]) array[0]);
 		final char[][] ret = new char[array.length][matrice.length];
 
@@ -420,7 +416,7 @@ public class ParamDef {
 		return ret;
 	}
 
-	static private byte[][] byteMatrice(Object[] array) {
+	static private byte[][] byteMatrice(final Object[] array) {
 		final Object[] matrice = ((Object[]) array[0]);
 		final byte[][] ret = new byte[array.length][matrice.length];
 
@@ -430,7 +426,7 @@ public class ParamDef {
 		return ret;
 	}
 
-	static private short[][] shortMatrice(Object[] array) {
+	static private short[][] shortMatrice(final Object[] array) {
 		final Object[] matrice = ((Object[]) array[0]);
 		final short[][] ret = new short[array.length][matrice.length];
 
@@ -440,7 +436,7 @@ public class ParamDef {
 		return ret;
 	}
 
-	static private int[][] integerMatrice(Object[] array) {
+	static private int[][] integerMatrice(final Object[] array) {
 		final Object[] matrice = ((Object[]) array[0]);
 		final int[][] ret = new int[array.length][matrice.length];
 
@@ -450,7 +446,7 @@ public class ParamDef {
 		return ret;
 	}
 
-	static private long[][] longMatrice(Object[] array) {
+	static private long[][] longMatrice(final Object[] array) {
 		final Object[] matrice = ((Object[]) array[0]);
 		final long[][] ret = new long[array.length][matrice.length];
 
@@ -460,7 +456,7 @@ public class ParamDef {
 		return ret;
 	}
 
-	static private float[][] floatMatrice(Object[] array) {
+	static private float[][] floatMatrice(final Object[] array) {
 		final Object[] matrice = ((Object[]) array[0]);
 		final float[][] ret = new float[array.length][matrice.length];
 
@@ -470,7 +466,7 @@ public class ParamDef {
 		return ret;
 	}
 
-	static private double[][] doubleMatrice(Object[] array) {
+	static private double[][] doubleMatrice(final Object[] array) {
 		final Object[] matrice = ((Object[]) array[0]);
 		final double[][] ret = new double[array.length][matrice.length];
 
@@ -480,7 +476,7 @@ public class ParamDef {
 		return ret;
 	}
 
-	static private String[][] stringMatrice(Object[] array) {
+	static private String[][] stringMatrice(final Object[] array) {
 		final Object[] matrice = ((Object[]) array[0]);
 		final String[][] ret = new String[array.length][matrice.length];
 
