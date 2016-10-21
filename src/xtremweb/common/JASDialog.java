@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -59,13 +59,12 @@ interface JASState {
  * the dialog using the window manager
  * </ul>
  * To make components visible on this dialog, add them to the content pane.
- * 
+ *
  * @see JASDialog#getContentPane()
  * @author Tony Johnson
  */
 
-public class JASDialog extends JDialog implements MouseListener,
-		DocumentListener {
+public class JASDialog extends JDialog implements MouseListener, DocumentListener {
 	/** Include this in your flags to include an OK button. */
 	public final static int OK_BUTTON = 1;
 
@@ -80,19 +79,19 @@ public class JASDialog extends JDialog implements MouseListener,
 
 	/**
 	 * Creates a modal dialog with OK and Cancel buttons.
-	 * 
+	 *
 	 * @param frame
 	 *            the parent frame
 	 * @param title
 	 *            the title for the dialog box
 	 */
-	public JASDialog(Frame frame, String title) {
+	public JASDialog(final Frame frame, final String title) {
 		this(frame, title, true, OK_BUTTON | CANCEL_BUTTON);
 	}
 
 	/**
 	 * Creates a dialog with OK and Cancel buttons.
-	 * 
+	 *
 	 * @param frame
 	 *            the parent frame
 	 * @param title
@@ -100,7 +99,7 @@ public class JASDialog extends JDialog implements MouseListener,
 	 * @param modal
 	 *            whether the dialog box is modal
 	 */
-	public JASDialog(Frame frame, String title, boolean modal) {
+	public JASDialog(final Frame frame, final String title, final boolean modal) {
 		this(frame, title, modal, OK_BUTTON | CANCEL_BUTTON);
 	}
 
@@ -112,7 +111,7 @@ public class JASDialog extends JDialog implements MouseListener,
 	 * <br>
 	 * when passed as the <code>flags</code> parameter will create a button that
 	 * has an OK button, a Cancel button, and a Help button.
-	 * 
+	 *
 	 * @param f
 	 *            the parent frame
 	 * @param t
@@ -122,7 +121,7 @@ public class JASDialog extends JDialog implements MouseListener,
 	 * @param flags
 	 *            option flags
 	 */
-	public JASDialog(Frame f, String t, boolean modal, int flags) {
+	public JASDialog(final Frame f, final String t, final boolean modal, final int flags) {
 		super(f, t, modal);
 		m_frame = f;
 		m_flags = flags;
@@ -159,7 +158,7 @@ public class JASDialog extends JDialog implements MouseListener,
 	/**
 	 * Causes a default pack(), but also places the dialog in the center of the
 	 * parent frame.
-	 * 
+	 *
 	 * @see java.awt.Window#pack()
 	 */
 	@Override
@@ -192,7 +191,7 @@ public class JASDialog extends JDialog implements MouseListener,
 	 * override.
 	 */
 	@Override
-	public void processEvent(AWTEvent e) {
+	public void processEvent(final AWTEvent e) {
 		if (e.getID() == WindowEvent.WINDOW_CLOSING) {
 			onCancel();
 		}
@@ -201,7 +200,7 @@ public class JASDialog extends JDialog implements MouseListener,
 
 	/**
 	 * Forces a modal display of the dialog box
-	 * 
+	 *
 	 * @return true if the OK button was pushed, otherwise false
 	 */
 	public boolean doModal() {
@@ -212,7 +211,7 @@ public class JASDialog extends JDialog implements MouseListener,
 	}
 
 	@Override
-	public void setVisible(boolean b) {
+	public void setVisible(final boolean b) {
 		if (b) {
 			callEnable();
 		}
@@ -222,7 +221,7 @@ public class JASDialog extends JDialog implements MouseListener,
 	/**
 	 * Set the label on the OK button. Allows for customized button labels.
 	 */
-	public void setOKLabel(String label) {
+	public void setOKLabel(final String label) {
 		m_ok.setText(label);
 	}
 
@@ -231,19 +230,19 @@ public class JASDialog extends JDialog implements MouseListener,
 	 * changed the label using <code>setOKLabel(String)</code> the default
 	 * mnemonic ('O') may not be appropriate, so use this method to set a better
 	 * one.
-	 * 
+	 *
 	 * @param mnemonic
 	 *            the new key shortcut to use
 	 * @see JASDialog#setOKLabel(String)
 	 */
-	public void setOKMnemonic(char mnemonic) {
+	public void setOKMnemonic(final char mnemonic) {
 		m_ok.setMnemonic(mnemonic);
 	}
 
 	/**
 	 * Set the label on the Cancel button. Allows for customized button labels.
 	 */
-	public void setCancelLabel(String label) {
+	public void setCancelLabel(final String label) {
 		m_cancel.setText(label);
 	}
 
@@ -252,19 +251,19 @@ public class JASDialog extends JDialog implements MouseListener,
 	 * have changed the label using <code>setCancelLabel(String)</code> the
 	 * default mnemonic ('C') may not be appropriate, so use this method to set
 	 * a better one.
-	 * 
+	 *
 	 * @param mnemonic
 	 *            the new key shortcut to use
 	 * @see JASDialog#setCancelLabel(String)
 	 */
-	public void setCancelMnemonic(char mnemonic) {
+	public void setCancelMnemonic(final char mnemonic) {
 		m_cancel.setMnemonic(mnemonic);
 	}
 
 	/**
 	 * Set the label on the Apply button. Allows for customized button labels.
 	 */
-	public void setApplyLabel(String label) {
+	public void setApplyLabel(final String label) {
 		m_apply.setText(label);
 	}
 
@@ -273,12 +272,12 @@ public class JASDialog extends JDialog implements MouseListener,
 	 * have changed the label using <code>setApplyLabel(String)</code> the
 	 * default mnemonic ('A') may not be appropriate, so use this method to set
 	 * a better one.
-	 * 
+	 *
 	 * @param mnemonic
 	 *            the new key shortcut to use
 	 * @see JASDialog#setApplyLabel(String)
 	 */
-	public void setApplyMnemonic(char mnemonic) {
+	public void setApplyMnemonic(final char mnemonic) {
 		m_apply.setMnemonic(mnemonic);
 	}
 
@@ -323,16 +322,16 @@ public class JASDialog extends JDialog implements MouseListener,
 	/**
 	 * Override to customize when OK is enabled. OK is enabled by default.
 	 */
-	protected void enableOK(JASState state) {
+	protected void enableOK(final JASState state) {
 	}
 
 	/**
 	 * Override to customize when Help is enabled. By default, Help is enabled
 	 * if both a help book and help topic have been set.
-	 * 
+	 *
 	 * @see JASDialog#setHelpTopic(String)
 	 */
-	protected void enableHelp(JASState state) {
+	protected void enableHelp(final JASState state) {
 		state.setEnabled(m_helpTopic != null);
 	}
 
@@ -340,7 +339,7 @@ public class JASDialog extends JDialog implements MouseListener,
 	 * Override to customize when Apply is enabled. By default, Apply is
 	 * disenabled.
 	 */
-	protected void enableApply(JASState state) {
+	protected void enableApply(final JASState state) {
 		state.setEnabled(false);
 	}
 
@@ -358,7 +357,7 @@ public class JASDialog extends JDialog implements MouseListener,
 	 * Sets the content pane. The buttons are not members of this content pane.
 	 */
 	@Override
-	public void setContentPane(Container c) {
+	public void setContentPane(final Container c) {
 		m_contentPane = c;
 		super.getContentPane().add(m_contentPane, BorderLayout.CENTER);
 	}
@@ -367,7 +366,7 @@ public class JASDialog extends JDialog implements MouseListener,
 	 * Sets the name for the help topic that the Help button opens. Note: This
 	 * is now being used to set the XML target for JavaHelp.
 	 */
-	public final void setHelpTopic(String topic) {
+	public final void setHelpTopic(final String topic) {
 		m_flags |= HELP_BUTTON;
 		m_helpTopic = topic;
 	}
@@ -376,7 +375,8 @@ public class JASDialog extends JDialog implements MouseListener,
 	}
 
 	private class ActionEventHandler implements ActionListener {
-		public void actionPerformed(ActionEvent e) {
+		@Override
+		public void actionPerformed(final ActionEvent e) {
 			final Object source = e.getSource();
 			if (source == m_ok) {
 				onOK();
@@ -391,11 +391,12 @@ public class JASDialog extends JDialog implements MouseListener,
 	}
 
 	private class ButtonState implements JASState {
-		ButtonState(JButton b) {
+		ButtonState(final JButton b) {
 			m_button = b;
 		}
 
-		public void setEnabled(boolean state) {
+		@Override
+		public void setEnabled(final boolean state) {
 			m_button.setEnabled(state);
 		}
 
@@ -406,64 +407,72 @@ public class JASDialog extends JDialog implements MouseListener,
 	 * Does nothing by default. To use this class as a MouseListener, override
 	 * only the method(s) you need.
 	 */
-	public void mouseClicked(MouseEvent e) {
+	@Override
+	public void mouseClicked(final MouseEvent e) {
 	}
 
 	/**
 	 * Does nothing by default. To use this class as a MouseListener, override
 	 * only the method(s) you need.
 	 */
-	public void mousePressed(MouseEvent e) {
+	@Override
+	public void mousePressed(final MouseEvent e) {
 	}
 
 	/**
 	 * Does nothing by default. To use this class as a MouseListener, override
 	 * only the method(s) you need.
 	 */
-	public void mouseReleased(MouseEvent e) {
+	@Override
+	public void mouseReleased(final MouseEvent e) {
 	}
 
 	/**
 	 * Does nothing by default. To use this class as a MouseListener, override
 	 * only the method(s) you need.
 	 */
-	public void mouseEntered(MouseEvent e) {
+	@Override
+	public void mouseEntered(final MouseEvent e) {
 	}
 
 	/**
 	 * Does nothing by default. To use this class as a MouseListener, override
 	 * only the method(s) you need.
 	 */
-	public void mouseExited(MouseEvent e) {
+	@Override
+	public void mouseExited(final MouseEvent e) {
 	}
 
 	/**
 	 * Calls <code>callEnable()</code> by default. To use this class as a
 	 * DocumentListener, override only the method(s) you need.
-	 * 
+	 *
 	 * @see JASDialog#callEnable()
 	 */
-	public void insertUpdate(DocumentEvent e) {
+	@Override
+	public void insertUpdate(final DocumentEvent e) {
 		callEnable();
 	}
 
 	/**
 	 * Calls <code>callEnable()</code> by default. To use this class as a
 	 * DocumentListener, override only the method(s) you need.
-	 * 
+	 *
 	 * @see JASDialog#callEnable()
 	 */
-	public void removeUpdate(DocumentEvent e) {
+	@Override
+	public void removeUpdate(final DocumentEvent e) {
 		callEnable();
 	}
 
 	/**
 	 * Calls <code>callEnable()</code> by default. To use this class as a
 	 * DocumentListener, override only the method(s) you need.
-	 * 
+	 *
 	 * @see JASDialog#callEnable()
 	 */
-	public void changedUpdate(DocumentEvent e) {
+	@Override
+	public void changedUpdate(final DocumentEvent e) {
 		callEnable();
 	}
 
