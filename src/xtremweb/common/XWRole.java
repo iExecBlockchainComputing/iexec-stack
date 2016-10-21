@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -75,11 +75,10 @@ public enum XWRole {
 	/**
 	 * This setS the current role to worker
 	 */
-	public static void setRole(XWRole r) {
+	public static void setRole(final XWRole r) {
 		if (getMyRole() != UNKNOWN) {
 			final Logger logger = new Logger();
-			logger.error("setRole : role redefined ?! (was " + getMyRole()
-					+ ")");
+			logger.error("setRole : role redefined ?! (was " + getMyRole() + ")");
 		}
 		setMyRole(r);
 	}
@@ -128,7 +127,7 @@ public enum XWRole {
 
 	/**
 	 * This converts this enum to a String.
-	 * 
+	 *
 	 * @return a string containing boolean value
 	 */
 	public abstract String className();
@@ -144,7 +143,7 @@ public enum XWRole {
 	 * @param myRole
 	 *            the myRole to set
 	 */
-	public static void setMyRole(XWRole myRole) {
+	public static void setMyRole(final XWRole myRole) {
 		XWRole.myRole = myRole;
 	}
 }
