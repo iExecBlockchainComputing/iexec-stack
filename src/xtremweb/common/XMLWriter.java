@@ -54,7 +54,7 @@ public class XMLWriter {
 	 *
 	 * @since 9.1.0
 	 */
-	public XMLWriter(DataOutputStream o) {
+	public XMLWriter(final DataOutputStream o) {
 		xmlObject = null;
 		output = o;
 	}
@@ -68,7 +68,7 @@ public class XMLWriter {
 	 *             It is only a question of software design
 	 */
 	@Deprecated
-	protected XMLWriter(XMLable o) {
+	protected XMLWriter(final XMLable o) {
 		xmlObject = o;
 		output = null;
 	}
