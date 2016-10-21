@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -36,13 +36,18 @@
 package xtremweb.archdep;
 
 public class XWTracerImpl implements XWTracerNative {
+	@Override
 	public native void collectNodeConfig(int i);
 
+	@Override
 	public native void checkNodeState(int i);
 
+	@Override
 	public native void checkNetwork(int i);
 
+	@Override
 	public native void fermera();
 
+	@Override
 	public native void setOutputDir(String dir);
 }
