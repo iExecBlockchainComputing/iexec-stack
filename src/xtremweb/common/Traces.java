@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -65,7 +65,7 @@ public class Traces {
 	 * @param t_config
 	 *            the t_config to set
 	 */
-	public void setT_config(TracesConfig t_config) {
+	public void setT_config(final TracesConfig t_config) {
 		this.t_config = t_config;
 	}
 
@@ -80,7 +80,7 @@ public class Traces {
 	 * @param m
 	 *            the masks to set
 	 */
-	public void setMasks(short[] m) {
+	public void setMasks(final short[] m) {
 		this.masks = m.clone();
 	}
 
@@ -95,7 +95,7 @@ public class Traces {
 	 * @param c
 	 *            the configs to set
 	 */
-	public void setConfigs(TracerConfig[] c) {
+	public void setConfigs(final TracerConfig[] c) {
 		this.configs = c.clone();
 	}
 
@@ -110,7 +110,7 @@ public class Traces {
 	 * @param s
 	 *            the states to set
 	 */
-	public void setStates(TracerState[] s) {
+	public void setStates(final TracerState[] s) {
 		this.states = s.clone();
 	}
 
@@ -123,7 +123,7 @@ public class Traces {
 		private final double timeStamp;
 		private final double value;
 
-		public Data(double t, double v) {
+		public Data(final double t, final double v) {
 			timeStamp = t;
 			value = v;
 		}
@@ -133,26 +133,26 @@ public class Traces {
 	 * This tests whether traces includes some values since they have only been
 	 * stored if they changed between two data acquisitions e.g. if mask[index]
 	 * & CPUUSER then TracerState[index] contains a CPUUSER data
-	 * 
+	 *
 	 * @param index
 	 *            to address mask array
 	 * @param dataType
 	 *            to test masks[index]
 	 * @return a boolean as test result
 	 */
-	private boolean testMask(int index, int dataType) {
+	private boolean testMask(final int index, final int dataType) {
 
 		return ((masks[index] & dataType) != 0);
 	}
 
 	/**
 	 * This counts how many traces are effectivly stored
-	 * 
+	 *
 	 * @param dataType
 	 *            determines interesting values
 	 * @return a boolean as test result
 	 */
-	private int maskLength(int dataType) {
+	private int maskLength(final int dataType) {
 		int ret = 0;
 		for (int loop = 0; loop < masks.length; loop++) {
 			if (testMask(loop, dataType)) {
@@ -164,13 +164,13 @@ public class Traces {
 
 	/**
 	 * This extracts processes informations
-	 * 
+	 *
 	 * @param total
 	 *            is a boolean to determine whether to collect total or running
 	 *            processes
 	 * @return an hashtable, as as getCPU ()
 	 */
-	private Data[] processes(boolean total) {
+	private Data[] processes(final boolean total) {
 		final int dataType = PROCRUN | PROCTOTAL;
 		final Data[] ret = new Data[maskLength(dataType)];
 		double pProcs = 0;
@@ -203,7 +203,7 @@ public class Traces {
 
 	/**
 	 * This extracts running procs
-	 * 
+	 *
 	 * @return an hashtable, as as getCPU ()
 	 */
 	public Data[] runningProcesses() {
@@ -212,7 +212,7 @@ public class Traces {
 
 	/**
 	 * This extracts total procs
-	 * 
+	 *
 	 * @return an hashtable, as as getCPU ()
 	 */
 	public Data[] totalProcesses() {
@@ -221,13 +221,13 @@ public class Traces {
 
 	/**
 	 * This extracts memory informations
-	 * 
+	 *
 	 * @param used
 	 *            is a boolean to determine whether to collect used or free
 	 *            memory
 	 * @return an hashtable, as as getCPU ()
 	 */
-	private Data[] memory(boolean used) {
+	private Data[] memory(final boolean used) {
 		final int dataType = MEMFREE;
 		final Data[] ret = new Data[maskLength(dataType)];
 		double pMem = 0;
@@ -242,8 +242,7 @@ public class Traces {
 				dTime *= 100.0;
 
 				if (configs[0].getMemTotal() > 0) {
-					pMem = (double) states[loop].getMemFree()
-							/ (double) configs[0].getMemTotal();
+					pMem = (double) states[loop].getMemFree() / (double) configs[0].getMemTotal();
 				} else {
 					pMem = 0;
 				}
@@ -262,7 +261,7 @@ public class Traces {
 
 	/**
 	 * This extracts used memory
-	 * 
+	 *
 	 * @return an hashtable, as as getCPU ()
 	 */
 	public Data[] memoryUsed() {
@@ -271,7 +270,7 @@ public class Traces {
 
 	/**
 	 * This extracts free memory
-	 * 
+	 *
 	 * @return an hashtable, as as getCPU ()
 	 */
 	public Data[] memoryFree() {
@@ -280,12 +279,12 @@ public class Traces {
 
 	/**
 	 * This extracts swap informations
-	 * 
+	 *
 	 * @param used
 	 *            is a boolean to determine whether to collect used or free swap
 	 * @return an hashtable, as as getCPU ()
 	 */
-	private Data[] swap(boolean used) {
+	private Data[] swap(final boolean used) {
 		final int dataType = SWAPFREE;
 		final Data[] ret = new Data[maskLength(dataType)];
 		double pSwap = 0;
@@ -297,8 +296,7 @@ public class Traces {
 				double dTime = (states[loop].getTime());
 				dTime *= 100.0;
 				if (configs[0].getSwapTotal() > 0) {
-					pSwap = (double) states[loop].getSwapFree()
-							/ (double) configs[0].getSwapTotal();
+					pSwap = (double) states[loop].getSwapFree() / (double) configs[0].getSwapTotal();
 				} else {
 					pSwap = 0;
 				}
@@ -318,7 +316,7 @@ public class Traces {
 
 	/**
 	 * This extracts used swap
-	 * 
+	 *
 	 * @return an hashtable, as as getCPU ()
 	 */
 	public Data[] swapUsed() {
@@ -327,7 +325,7 @@ public class Traces {
 
 	/**
 	 * This extracts free swap
-	 * 
+	 *
 	 * @return an hashtable, as as getCPU ()
 	 */
 	public Data[] swapFree() {
@@ -336,12 +334,12 @@ public class Traces {
 
 	/**
 	 * This extracts data accordingly to param dataType
-	 * 
+	 *
 	 * @param dataType
 	 *            to determine which data to work on
 	 * @return a hastable containing time stamps as keys, and data as values
 	 */
-	private Data[] getCPU(int dataType) {
+	private Data[] getCPU(final int dataType) {
 		final Data[] ret = new Data[maskLength(dataType)];
 		double pCPU = 0;
 		int index = 0;
@@ -363,10 +361,8 @@ public class Traces {
 					totalUsedCPU += states[loop].getCpuSystem();
 				}
 
-				final long totalCPU = (states[loop].getCpuUser()
-						+ states[loop].getCpuNice()
-						+ states[loop].getCpuSystem() + states[loop]
-						.getCpuIdle());
+				final long totalCPU = (states[loop].getCpuUser() + states[loop].getCpuNice()
+						+ states[loop].getCpuSystem() + states[loop].getCpuIdle());
 
 				if (totalCPU > 0) {
 					pCPU = (double) totalUsedCPU / (double) totalCPU;
