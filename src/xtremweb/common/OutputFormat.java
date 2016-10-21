@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -25,25 +25,25 @@ package xtremweb.common;
 
 /**
  * This class defines output format used to write objects.
- * 
- * 
+ *
+ *
  * Created: Thu May 31 10:03:43 2001
- * 
+ *
  * @author <a href="mailto: fedak@lri.fr">Gilles Fedak</a>
  */
 
 public enum OutputFormat {
 	/**
 	 * This defines the minimal format
-	 * 
+	 *
 	 * @since 7.0.0
 	 */
 	SHORT, CSV, TEXT, HTML, XML;
 
-	public static void main(String[] argv) {
+	public static void main(final String[] argv) {
 		for (final OutputFormat i : OutputFormat.values()) {
-			System.out.println(i.toString() + " = " + i.ordinal()
-					+ " valueOf() = " + OutputFormat.valueOf(i.toString()));
+			System.out
+					.println(i.toString() + " = " + i.ordinal() + " valueOf() = " + OutputFormat.valueOf(i.toString()));
 		}
 	}
 
