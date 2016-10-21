@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -59,7 +59,7 @@ import java.io.OutputStream;
  * package only because it came without a package. I was not the the original
  * author of the code, although I did optimize it (substantially) and fix some
  * bugs.
- * 
+ *
  * @author Santeri Paavolainen <santtu@cs.hut.fi>
  * @author Timothy W Macinta (twm@alum.mit.edu) (added main() method)
  **/
@@ -72,12 +72,12 @@ public class MD5OutputStream extends FilterOutputStream {
 
 	/**
 	 * Creates MD5OutputStream
-	 * 
+	 *
 	 * @param out
 	 *            The output stream
 	 */
 
-	public MD5OutputStream(OutputStream out) {
+	public MD5OutputStream(final OutputStream out) {
 		super(out);
 
 		md5 = new MD5();
@@ -85,24 +85,24 @@ public class MD5OutputStream extends FilterOutputStream {
 
 	/**
 	 * Writes a byte.
-	 * 
+	 *
 	 * @see java.io.FilterOutputStream
 	 */
 
 	@Override
-	public void write(int b) throws IOException {
+	public void write(final int b) throws IOException {
 		out.write(b);
 		md5.update((byte) b);
 	}
 
 	/**
 	 * Writes a sub array of bytes.
-	 * 
+	 *
 	 * @see java.io.FilterOutputStream
 	 */
 
 	@Override
-	public void write(byte b[], int off, int len) throws IOException {
+	public void write(final byte b[], final int off, final int len) throws IOException {
 		out.write(b, off, len);
 		md5.update(b, off, len);
 	}
@@ -110,7 +110,7 @@ public class MD5OutputStream extends FilterOutputStream {
 	/**
 	 * Returns array of bytes representing hash of the stream as finalized for
 	 * the current state.
-	 * 
+	 *
 	 * @see MD5#Final
 	 */
 
@@ -126,12 +126,10 @@ public class MD5OutputStream extends FilterOutputStream {
 	 * This method is here for testing purposes only - do not rely on it being
 	 * here.
 	 **/
-	public static void main(String[] arg) {
+	public static void main(final String[] arg) {
 		try {
-			final MD5OutputStream out = new MD5OutputStream(
-					new NullOutputStream());
-			final InputStream in = new BufferedInputStream(new FileInputStream(
-					arg[0]));
+			final MD5OutputStream out = new MD5OutputStream(new NullOutputStream());
+			final InputStream in = new BufferedInputStream(new FileInputStream(arg[0]));
 			final byte[] buf = new byte[65536];
 			int numRead;
 			long totalRead = 0;
