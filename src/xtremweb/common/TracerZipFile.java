@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -53,7 +53,7 @@ public class TracerZipFile {
 	/**
 	 * This is the constructor to create read only file.
 	 */
-	public TracerZipFile(String filename) {
+	public TracerZipFile(final String filename) {
 		try {
 			infile = new ZipFile(filename);
 		} catch (final Exception e) {
@@ -64,7 +64,7 @@ public class TracerZipFile {
 	/**
 	 * This is the constructor to create write only file. It inserts header (ie
 	 * configuration) in zip file.
-	 * 
+	 *
 	 * @param filename
 	 *            is the name of the file to create.
 	 * @param host
@@ -74,8 +74,8 @@ public class TracerZipFile {
 	 * @param sendResultDelay
 	 *            contains the send trace period.
 	 */
-	public TracerZipFile(String filename, HostInterface host, int resultDelay,
-			int sendResultDelay) {
+	public TracerZipFile(final String filename, final HostInterface host, final int resultDelay,
+			final int sendResultDelay) {
 
 		try {
 			outfile = new ZipOutputStream(new FileOutputStream(filename));
@@ -106,8 +106,7 @@ public class TracerZipFile {
 			outfile.write(String.valueOf(resultDelay).getBytes(XWTools.UTF8));
 			outfile.write(lineFeed.getBytes(XWTools.UTF8));
 
-			outfile.write(String.valueOf(sendResultDelay)
-					.getBytes(XWTools.UTF8));
+			outfile.write(String.valueOf(sendResultDelay).getBytes(XWTools.UTF8));
 			outfile.write(lineFeed.getBytes(XWTools.UTF8));
 
 			outfile.closeEntry();
@@ -132,13 +131,13 @@ public class TracerZipFile {
 	/**
 	 * This is the constructor to create write only file. It inserts header (ie
 	 * configuration) in zip file.
-	 * 
+	 *
 	 * @param entryName
 	 *            is the name of the entry to create.
 	 * @param fileName
 	 *            is the name of the data file.
 	 */
-	public void addEntry(String entryName, String fileName) throws Exception {
+	public void addEntry(final String entryName, final String fileName) throws Exception {
 		try {
 
 			final File file = new File(fileName);
@@ -161,7 +160,7 @@ public class TracerZipFile {
 
 	} // addEntry()
 
-	private byte[] readEntry(String entryName) throws IOException {
+	private byte[] readEntry(final String entryName) throws IOException {
 
 		final ZipEntry ze = infile.getEntry(entryName);
 		final InputStream istr = infile.getInputStream(ze);
@@ -229,16 +228,14 @@ public class TracerZipFile {
 			if (indexEnd == -1) {
 				return null;
 			}
-			ret.setResultDelay(new Integer(new String(strBuf.substring(
-					indexStart, indexEnd))).intValue());
+			ret.setResultDelay(new Integer(new String(strBuf.substring(indexStart, indexEnd))).intValue());
 
 			indexStart = indexEnd + lineFeed.length();
 			indexEnd = strBuf.indexOf(lineFeed, indexStart);
 			if (indexEnd == -1) {
 				return null;
 			}
-			ret.setSendResultDelay(new Integer(new String(strBuf.substring(
-					indexStart, indexEnd))).intValue());
+			ret.setSendResultDelay(new Integer(new String(strBuf.substring(indexStart, indexEnd))).intValue());
 		} catch (final Exception e) {
 			throw e;
 		}
@@ -271,7 +268,7 @@ public class TracerZipFile {
 		}
 	}
 
-	private int byteToInt(byte[] buf, int offset) throws Exception {
+	private int byteToInt(final byte[] buf, final int offset) throws Exception {
 
 		try {
 			int ret = 0xff000000 & (buf[offset] << 24);
@@ -285,7 +282,7 @@ public class TracerZipFile {
 		}
 	}
 
-	private short byteToShort(byte[] buf, int offset) throws Exception {
+	private short byteToShort(final byte[] buf, final int offset) throws Exception {
 
 		try {
 			short ret = 0;
@@ -298,7 +295,7 @@ public class TracerZipFile {
 		}
 	}
 
-	private TracerState[] readStates(short[] masks) throws Exception {
+	private TracerState[] readStates(final short[] masks) throws Exception {
 		int i = 0;
 
 		try {
@@ -405,8 +402,7 @@ public class TracerZipFile {
 
 		try {
 			final byte buf[] = readEntry("config");
-			final TracerConfig[] configs = new TracerConfig[buf.length
-					/ TracerConfig.LENGTH];
+			final TracerConfig[] configs = new TracerConfig[buf.length / TracerConfig.LENGTH];
 
 			int bufIdx = 0;
 
@@ -458,4 +454,3 @@ public class TracerZipFile {
 	}
 
 } // class TracerZipFile
-
