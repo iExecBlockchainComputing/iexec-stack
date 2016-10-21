@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -58,7 +58,7 @@ import java.io.InputStream;
  * package only because it came without a package. I was not the the original
  * author of the code, although I did optimize it (substantially) and fix some
  * bugs.
- * 
+ *
  * @author Santeri Paavolainen <santtu@cs.hut.fi>
  * @author Timothy W Macinta (twm@alum.mit.edu) (added main() method)
  **/
@@ -71,11 +71,11 @@ public class MD5InputStream extends FilterInputStream {
 
 	/**
 	 * Creates a MD5InputStream
-	 * 
+	 *
 	 * @param in
 	 *            The input stream
 	 */
-	public MD5InputStream(InputStream in) {
+	public MD5InputStream(final InputStream in) {
 		super(in);
 
 		md5 = new MD5();
@@ -83,7 +83,7 @@ public class MD5InputStream extends FilterInputStream {
 
 	/**
 	 * Read a byte of data.
-	 * 
+	 *
 	 * @see java.io.FilterInputStream
 	 */
 	@Override
@@ -95,8 +95,7 @@ public class MD5InputStream extends FilterInputStream {
 		}
 
 		if ((c & ~0xff) != 0) {
-			System.out
-					.println("MD5InputStream.read() got character with (c & ~0xff) != 0)!");
+			System.out.println("MD5InputStream.read() got character with (c & ~0xff) != 0)!");
 		} else {
 			md5.update(c);
 		}
@@ -106,11 +105,11 @@ public class MD5InputStream extends FilterInputStream {
 
 	/**
 	 * Reads into an array of bytes.
-	 * 
+	 *
 	 * @see java.io.FilterInputStream
 	 */
 	@Override
-	public int read(byte bytes[], int offset, int length) throws IOException {
+	public int read(final byte bytes[], final int offset, final int length) throws IOException {
 		int r;
 
 		if ((r = in.read(bytes, offset, length)) == -1) {
@@ -125,7 +124,7 @@ public class MD5InputStream extends FilterInputStream {
 	/**
 	 * Returns array of bytes representing hash of the stream as finalized for
 	 * the current state.
-	 * 
+	 *
 	 * @see MD5#Final
 	 */
 	public byte[] hash() {
@@ -140,7 +139,7 @@ public class MD5InputStream extends FilterInputStream {
 	 * This method is here for testing purposes only - do not rely on it being
 	 * here.
 	 **/
-	public static void main(String[] arg) {
+	public static void main(final String[] arg) {
 		try {
 
 			// //////////////////////////////////////////////////////////////
@@ -171,15 +170,12 @@ public class MD5InputStream extends FilterInputStream {
 			// Use the default MD5 implementation that comes with Java
 
 			if (useDefaultMd5) {
-				final InputStream in = new BufferedInputStream(
-						new FileInputStream(filename));
-				final java.security.MessageDigest digest = java.security.MessageDigest
-						.getInstance("MD5");
+				final InputStream in = new BufferedInputStream(new FileInputStream(filename));
+				final java.security.MessageDigest digest = java.security.MessageDigest.getInstance("MD5");
 				while ((num_read = in.read(buf)) != -1) {
 					digest.update(buf, 0, num_read);
 				}
-				System.out
-						.println(MD5.asHex(digest.digest()) + "  " + filename);
+				System.out.println(MD5.asHex(digest.digest()) + "  " + filename);
 				in.close();
 
 				// Use the optimized MD5 implementation
@@ -194,8 +190,7 @@ public class MD5InputStream extends FilterInputStream {
 
 				// calculate the checksum
 
-				final MD5InputStream in = new MD5InputStream(
-						new BufferedInputStream(new FileInputStream(filename)));
+				final MD5InputStream in = new MD5InputStream(new BufferedInputStream(new FileInputStream(filename)));
 				while ((num_read = in.read(buf)) != -1) {
 					;
 				}
