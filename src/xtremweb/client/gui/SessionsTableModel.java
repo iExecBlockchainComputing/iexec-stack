@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -60,11 +60,10 @@ class SessionsTableModel extends TableModel {
 	private static final String USERLABEL = "Owner";
 	private static final String SESSIONLABEL = "Name";
 
-	private static final String HELPSTRING = new String(
-			"A session aggregates jobs to facilitate job management.<br>"
-					+ "A session is valid until you disconnect (close the client or connect as another user).<br>"
-					+ "A session is automatically deleted when disconnecting : all associated jobs are deleted.<br><u>"
-					+ SESSIONLABEL + "</u> is the name of the session");
+	private static final String HELPSTRING = new String("A session aggregates jobs to facilitate job management.<br>"
+			+ "A session is valid until you disconnect (close the client or connect as another user).<br>"
+			+ "A session is automatically deleted when disconnecting : all associated jobs are deleted.<br><u>"
+			+ SESSIONLABEL + "</u> is the name of the session");
 	/**
 	 * These defines submission parameter labels
 	 */
@@ -73,23 +72,23 @@ class SessionsTableModel extends TableModel {
 	/**
 	 * This is the default constructor.
 	 */
-	public SessionsTableModel(MainFrame p) {
+	public SessionsTableModel(final MainFrame p) {
 		this(p, true);
 	}
 
 	/**
 	 * This is a constructor.
-	 * 
+	 *
 	 * @param detail
 	 *            tells whether to add a last column to get details
 	 */
-	public SessionsTableModel(MainFrame p, boolean detail) {
+	public SessionsTableModel(final MainFrame p, final boolean detail) {
 		super(p, new SessionInterface(), detail);
 	}
 
 	/**
 	 * This calls TableModel#getButtons() and enables all buttons
-	 * 
+	 *
 	 * @return a Vector of JButton
 	 * @see xtremweb.client.gui.TableModel#getButtons()
 	 */
@@ -124,11 +123,10 @@ class SessionsTableModel extends TableModel {
 		newRow.add(new String()); // user login
 		newRow.add(new String()); // session name
 
-		ViewDialog vdialog = new ViewDialog(getParent(), "Add session", labels, newRow, true);
+		final ViewDialog vdialog = new ViewDialog(getParent(), "Add session", labels, newRow, true);
 		setViewDialog(vdialog);
 
-		final JTextField component = (JTextField) vdialog.getFields()
-				.get(USERLABEL);
+		final JTextField component = (JTextField) vdialog.getFields().get(USERLABEL);
 		component.setEditable(false);
 		component.setText(getParent().user().getLogin());
 
@@ -144,14 +142,12 @@ class SessionsTableModel extends TableModel {
 			session.setUID(sessionUID);
 			session.setOwner(userUID);
 
-			session.setName(((JTextField) vdialog.getFields().get(SESSIONLABEL))
-					.getText());
+			session.setName(((JTextField) vdialog.getFields().get(SESSIONLABEL)).getText());
 
 			getParent().commClient().send(session);
 		} catch (final Exception e) {
 			getLogger().exception(e);
-			JOptionPane.showMessageDialog(getParent(), "Can't send session : " + e,
-					ERROR, JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(getParent(), "Can't send session : " + e, ERROR, JOptionPane.ERROR_MESSAGE);
 		}
 	}
 
@@ -165,7 +161,7 @@ class SessionsTableModel extends TableModel {
 
 	/**
 	 * This retreives a Vector of work UID from server
-	 * 
+	 *
 	 * @see xtremweb.communications.CommAPI#getWorks()
 	 */
 	@Override

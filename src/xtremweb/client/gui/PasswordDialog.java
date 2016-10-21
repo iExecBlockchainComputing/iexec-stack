@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -48,14 +48,14 @@ public class PasswordDialog extends JDialog implements ActionListener {
 	private static String HELP = "Help";
 
 	private final JFrame parent;
-	private JPasswordField password;
-	private JPasswordField password2;
+	private final JPasswordField password;
+	private final JPasswordField password2;
 	private boolean cancelled;
 
 	/**
 	 * This constructor does everything
 	 */
-	public PasswordDialog(JFrame f, String login) {
+	public PasswordDialog(final JFrame f, final String login) {
 
 		super(f, "XWHEP login", true);
 
@@ -116,7 +116,8 @@ public class PasswordDialog extends JDialog implements ActionListener {
 		setSize(400, 150);
 	}
 
-	public void actionPerformed(ActionEvent e) {
+	@Override
+	public void actionPerformed(final ActionEvent e) {
 		final String cmd = e.getActionCommand();
 
 		if (OK.equals(cmd)) {
@@ -126,8 +127,7 @@ public class PasswordDialog extends JDialog implements ActionListener {
 			cancelled = true;
 			setVisible(false);
 		} else {
-			JOptionPane.showMessageDialog(parent,
-					"You must enter password twice to avoid errors");
+			JOptionPane.showMessageDialog(parent, "You must enter password twice to avoid errors");
 		}
 	}
 

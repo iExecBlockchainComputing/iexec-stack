@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -51,16 +51,16 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import xtremweb.common.CPUEnum;
 import xtremweb.common.DataInterface;
 import xtremweb.common.DataTypeEnum;
 import xtremweb.common.MD5;
+import xtremweb.common.OSEnum;
+import xtremweb.common.StatusEnum;
 import xtremweb.common.TableColumns;
 import xtremweb.common.UID;
 import xtremweb.common.UserInterface;
 import xtremweb.common.XMLVector;
-import xtremweb.common.CPUEnum;
-import xtremweb.common.OSEnum;
-import xtremweb.common.StatusEnum;
 import xtremweb.communications.URI;
 import xtremweb.security.XWAccessRights;
 
@@ -87,28 +87,16 @@ class DatasTableModel extends TableModel {
 	/**
 	 * These defines submission parameter labels
 	 */
-	private static final String[] labels = { UIDLABEL, OWNERLABEL, NAMELABEL,
-			ACCESSRIGHTSLABEL, TYPELABEL, OSLABEL, CPULABEL, CONTENTLABEL,
-			SIZELABEL, MD5LABEL };
+	private static final String[] labels = { UIDLABEL, OWNERLABEL, NAMELABEL, ACCESSRIGHTSLABEL, TYPELABEL, OSLABEL,
+			CPULABEL, CONTENTLABEL, SIZELABEL, MD5LABEL };
 
-	private static final String HELPSTRING = new String(
-			"<u>"
-					+ NAMELABEL
-					+ "</u> : is required (automatically sets if selecting a file)<br>"
-					+ "<u>"
-					+ ACCESSRIGHTSLABEL
-					+ "</u> : Linux FS like access rights (default is 0x755)<br>"
-					+ "<u>"
-					+ TYPELABEL
-					+ "</u> : is optional but highly recommanded; select a data type from drop down menu<br>"
-					+ "<u>"
-					+ OSLABEL
-					+ "</u> : is optional but highly recommanded; select an OS from drop down menu<br>"
-					+ "<u>"
-					+ CPULABEL
-					+ "</u> : is optional but highly recommandeed; select a CPU from drop down menu<br>"
-					+ "<u>" + CONTENTLABEL
-					+ "</u> : is required; select a file or enter a valid URI");
+	private static final String HELPSTRING = new String("<u>" + NAMELABEL
+			+ "</u> : is required (automatically sets if selecting a file)<br>" + "<u>" + ACCESSRIGHTSLABEL
+			+ "</u> : Linux FS like access rights (default is 0x755)<br>" + "<u>" + TYPELABEL
+			+ "</u> : is optional but highly recommanded; select a data type from drop down menu<br>" + "<u>" + OSLABEL
+			+ "</u> : is optional but highly recommanded; select an OS from drop down menu<br>" + "<u>" + CPULABEL
+			+ "</u> : is optional but highly recommandeed; select a CPU from drop down menu<br>" + "<u>" + CONTENTLABEL
+			+ "</u> : is required; select a file or enter a valid URI");
 	/**
 	 * This is the activate button label, alos used as key in hashtable
 	 */
@@ -139,23 +127,23 @@ class DatasTableModel extends TableModel {
 	/**
 	 * This is the default constructor.
 	 */
-	public DatasTableModel(MainFrame p) {
+	public DatasTableModel(final MainFrame p) {
 		this(p, true);
 	}
 
 	/**
 	 * This is a constructor.
-	 * 
+	 *
 	 * @param detail
 	 *            tells whether to add a last column to get details
 	 */
-	public DatasTableModel(MainFrame p, boolean detail) {
+	public DatasTableModel(final MainFrame p, final boolean detail) {
 		super(p, new DataInterface(), detail);
 	}
 
 	/**
 	 * This creates new JButton
-	 * 
+	 *
 	 * @return a Vector of JButton
 	 */
 	@Override
@@ -169,7 +157,8 @@ class DatasTableModel extends TableModel {
 		final JButton downloadButton = new JButton(DOWNLOAD_LABEL);
 		downloadButton.setMnemonic(KeyEvent.VK_D);
 		downloadButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+			@Override
+			public void actionPerformed(final ActionEvent e) {
 				download();
 			}
 		});
@@ -206,7 +195,8 @@ class DatasTableModel extends TableModel {
 		binButton.setMaximumSize(BUTTONDIMENSION);
 		binButton.setPreferredSize(BUTTONDIMENSION);
 		binButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+			@Override
+			public void actionPerformed(final ActionEvent e) {
 				selectFile();
 			}
 		});
@@ -214,7 +204,8 @@ class DatasTableModel extends TableModel {
 		resetButton.setMaximumSize(BUTTONDIMENSION);
 		resetButton.setPreferredSize(BUTTONDIMENSION);
 		resetButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+			@Override
+			public void actionPerformed(final ActionEvent e) {
 				((JTextField) vdialog.getFields().get(MD5LABEL)).setText("");
 				((JTextField) vdialog.getFields().get(SIZELABEL)).setText("");
 				contentURI.setText("");
@@ -242,11 +233,11 @@ class DatasTableModel extends TableModel {
 		gbLayout.setConstraints(resetButton, gbConstraints);
 		newRow.add(container);
 
-		JTextField field = new JTextField();  // SIZE
+		JTextField field = new JTextField(); // SIZE
 		field.setEditable(false);
 		newRow.add(field);
 
-		field = new JTextField();  // MD5
+		field = new JTextField(); // MD5
 		field.setEditable(false);
 		newRow.add(field);
 
@@ -266,24 +257,17 @@ class DatasTableModel extends TableModel {
 
 		final String dataName = dataNameField.getText();
 		if ((dataName == null) || (dataName.length() == 0)) {
-			JOptionPane.showMessageDialog(getParent(),
-					"You must specify either a data name or a file", WARNING,
+			JOptionPane.showMessageDialog(getParent(), "You must specify either a data name or a file", WARNING,
 					JOptionPane.WARNING_MESSAGE);
 			contentFile = null;
 			return;
 		}
-		final String accessRights = ((JTextField) vdialog.getFields()
-				.get(ACCESSRIGHTSLABEL)).getText();
-		final String md5Value = ((JTextField) vdialog.getFields().get(MD5LABEL))
-				.getText();
-		final String sizeValue = ((JTextField) vdialog.getFields().get(SIZELABEL))
-				.getText();
-		final String type = (String) ((JComboBox) vdialog.getFields()
-				.get(TYPELABEL)).getSelectedItem();
-		final String os = (String) ((JComboBox) vdialog.getFields().get(OSLABEL))
-				.getSelectedItem();
-		final String cpu = (String) ((JComboBox) vdialog.getFields()
-				.get(CPULABEL)).getSelectedItem();
+		final String accessRights = ((JTextField) vdialog.getFields().get(ACCESSRIGHTSLABEL)).getText();
+		final String md5Value = ((JTextField) vdialog.getFields().get(MD5LABEL)).getText();
+		final String sizeValue = ((JTextField) vdialog.getFields().get(SIZELABEL)).getText();
+		final String type = (String) ((JComboBox) vdialog.getFields().get(TYPELABEL)).getSelectedItem();
+		final String os = (String) ((JComboBox) vdialog.getFields().get(OSLABEL)).getSelectedItem();
+		final String cpu = (String) ((JComboBox) vdialog.getFields().get(CPULABEL)).getSelectedItem();
 		final JPanel filePanel = (JPanel) vdialog.getFields().get(CONTENTLABEL);
 		final JTextField jtf = (JTextField) filePanel.getComponent(0);
 		final String fileName = jtf.getText();
@@ -308,8 +292,8 @@ class DatasTableModel extends TableModel {
 					if (contentFile.exists()) {
 						data.setStatus(StatusEnum.UNAVAILABLE);
 					} else {
-						JOptionPane.showMessageDialog(getParent(), "File not found",
-								WARNING, JOptionPane.WARNING_MESSAGE);
+						JOptionPane.showMessageDialog(getParent(), "File not found", WARNING,
+								JOptionPane.WARNING_MESSAGE);
 						contentFile = null;
 						return;
 					}
@@ -321,8 +305,7 @@ class DatasTableModel extends TableModel {
 				}
 			} catch (final Exception e) {
 				getLogger().exception(e);
-				JOptionPane.showMessageDialog(getParent(), "Can't send data : " + e,
-						ERROR, JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(getParent(), "Can't send data : " + e, ERROR, JOptionPane.ERROR_MESSAGE);
 			}
 		} catch (final Exception e) {
 			getLogger().exception(e);
@@ -351,15 +334,12 @@ class DatasTableModel extends TableModel {
 
 		if (contentFile != null) {
 			contentURI.setText(contentFile.getName());
-			if ((dataNameField.getText() == null)
-					|| (dataNameField.getText().length() == 0)) {
+			if ((dataNameField.getText() == null) || (dataNameField.getText().length() == 0)) {
 				dataNameField.setText(contentFile.getName());
 			}
 			try {
-				((JTextField) vdialog.getFields().get(MD5LABEL)).setText(MD5
-						.asHex(MD5.getHash(contentFile)));
-				((JTextField) vdialog.getFields().get(SIZELABEL)).setText(""
-						+ contentFile.length());
+				((JTextField) vdialog.getFields().get(MD5LABEL)).setText(MD5.asHex(MD5.getHash(contentFile)));
+				((JTextField) vdialog.getFields().get(SIZELABEL)).setText("" + contentFile.length());
 			} catch (final Exception e) {
 			}
 		} else {
@@ -381,13 +361,12 @@ class DatasTableModel extends TableModel {
 	 * This replaces UID by human readable columns
 	 */
 	@Override
-	protected Vector getViewableRow(Vector row) {
+	protected Vector getViewableRow(final Vector row) {
 		final Vector clone = (Vector) row.clone();
 		try {
 			final int index = TableColumns.OWNERUID.getOrdinal();
 			final UID uid = (UID) clone.elementAt(index);
-			final UserInterface user = (UserInterface) getParent().commClient().get(
-					uid, false);
+			final UserInterface user = (UserInterface) getParent().commClient().get(uid, false);
 			clone.set(index, user.getLogin());
 		} catch (final Exception e) {
 			getLogger().exception(e);
@@ -397,7 +376,7 @@ class DatasTableModel extends TableModel {
 
 	/**
 	 * This retreives a Vector of data UID from server
-	 * 
+	 *
 	 * @return an empty vector on error
 	 * @see xtremweb.communications.CommAPI#getDatas()
 	 */
@@ -415,20 +394,18 @@ class DatasTableModel extends TableModel {
 
 	/**
 	 * This downloads data content
-	 * 
+	 *
 	 * @see xtremweb.client.Client#result()
 	 */
 	public void download() {
 
 		final int[] selectedRows = getSelection();
 		if (selectedRows.length == 0) {
-			JOptionPane.showMessageDialog(getParent(), "No row selected!", WARNING,
-					JOptionPane.WARNING_MESSAGE);
+			JOptionPane.showMessageDialog(getParent(), "No row selected!", WARNING, JOptionPane.WARNING_MESSAGE);
 			return;
 		} else if (selectedRows.length > 1) {
-			JOptionPane.showMessageDialog(getParent(),
-					"You can not download more than one data at a time",
-					WARNING, JOptionPane.WARNING_MESSAGE);
+			JOptionPane.showMessageDialog(getParent(), "You can not download more than one data at a time", WARNING,
+					JOptionPane.WARNING_MESSAGE);
 			return;
 		}
 
@@ -456,8 +433,7 @@ class DatasTableModel extends TableModel {
 			dataUid = data.getUID();
 		} catch (final Exception e) {
 			getLogger().exception(e);
-			JOptionPane.showMessageDialog(getParent(), e.toString(), WARNING,
-					JOptionPane.WARNING_MESSAGE);
+			JOptionPane.showMessageDialog(getParent(), e.toString(), WARNING, JOptionPane.WARNING_MESSAGE);
 			getParent().setCursor(null);
 			return;
 		}
@@ -470,8 +446,7 @@ class DatasTableModel extends TableModel {
 			final String dataName = data.getName();
 			File fdata = null;
 			if (dataName != null) {
-				fdata = new File(currentDir, dataUid.toString() + "_"
-						+ dataName + fext);
+				fdata = new File(currentDir, dataUid.toString() + "_" + dataName + fext);
 			} else {
 				fdata = new File(currentDir, dataUid.toString() + fext);
 			}

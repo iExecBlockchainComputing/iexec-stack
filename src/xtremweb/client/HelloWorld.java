@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -53,11 +53,12 @@ import xtremweb.communications.XMLRPCCommandSend;
 
 /**
  * Created: May 23rd, 2014<br />
- * 
- * This class implements API usage to retrieve applications list, as example <br />
+ *
+ * This class implements API usage to retrieve applications list, as example
+ * <br />
  * Usage: java -cp xtremweb.jar xtremweb.client.HelloWorld --xwconfig
  * xtremweb.client.conf <br />
- * 
+ *
  * @author <a href="mailto:lodygens a lal.in2p3.fr">Oleg Lodygensky</a>
  * @since 9.0.0
  */
@@ -65,7 +66,7 @@ import xtremweb.communications.XMLRPCCommandSend;
 public final class HelloWorld {
 	/**
 	 * This is the logger
-	 * 
+	 *
 	 * @since 7.0.0
 	 */
 	private final Logger logger;
@@ -87,7 +88,7 @@ public final class HelloWorld {
 		config = null;
 
 		args = new CommandLineParser(argv);
-		if(args.getOption(CommandLineOptions.HELP) != null) {
+		if (args.getOption(CommandLineOptions.HELP) != null) {
 			logger.info("Usage : java HelloWorld [appUID] [inputFileName] [cmdLineParam0] [cmdLineParamN...]");
 			System.exit(0);
 		}
@@ -105,7 +106,7 @@ public final class HelloWorld {
 
 	/**
 	 * This retrieves and initializes the default communication client
-	 * 
+	 *
 	 * @return the default communication client
 	 * @exception IOException
 	 *                is thrown if cache directory can not be created or if we
@@ -125,13 +126,13 @@ public final class HelloWorld {
 
 	/**
 	 * This prints a message to std err and exits.
-	 * 
+	 *
 	 * @param msg
 	 *            is the message to print to stderr
 	 * @param code
 	 *            is the return code to use on exit
 	 */
-	private void exit(String msg, XWReturnCode code) {
+	private void exit(final String msg, final XWReturnCode code) {
 
 		try {
 			final CommClient client = commClient();
@@ -153,8 +154,7 @@ public final class HelloWorld {
 			//
 			// retrieve register applications
 			//
-			final XMLRPCCommandGetApps cmd = new XMLRPCCommandGetApps(uri,
-					config.getUser());
+			final XMLRPCCommandGetApps cmd = new XMLRPCCommandGetApps(uri, config.getUser());
 			final XMLVector xmluids = (XMLVector) cmd.exec(client);
 			final Collection<XMLValue> uids = xmluids.getXmlValues();
 			if ((uids == null) || (uids.isEmpty())) {
@@ -167,22 +167,21 @@ public final class HelloWorld {
 			UID appUid = null;
 
 			final List commandLineParams = (List) args.commandParams();
-			if((commandLineParams == null) || (commandLineParams.size() == 0)) {
-				if(theEnum.hasNext()) {
+			if ((commandLineParams == null) || (commandLineParams.size() == 0)) {
+				if (theEnum.hasNext()) {
 					appUid = (UID) theEnum.next().getValue();
 				}
-			}
-			else {
+			} else {
 				try {
-					appUid = ((URI)commandLineParams.get(0)).getUID();
+					appUid = ((URI) commandLineParams.get(0)).getUID();
 				} catch (final Exception e) {
 					try {
-						appUid = (UID)commandLineParams.get(0);
+						appUid = (UID) commandLineParams.get(0);
 					} catch (final Exception e2) {
 					}
 				}
 			}
-			if(appUid == null) {
+			if (appUid == null) {
 				logger.fatal("Can't retrieve application");
 			}
 			//
@@ -199,10 +198,10 @@ public final class HelloWorld {
 			// if for example, 'input' is a directory
 			//
 			String inputFileName = "input.zip";
-			if((commandLineParams != null) && (commandLineParams.size() > 1)) {
-				inputFileName = (String)commandLineParams.get(1);
+			if ((commandLineParams != null) && (commandLineParams.size() > 1)) {
+				inputFileName = (String) commandLineParams.get(1);
 			}
-			final File dataFile = inputFileName ==  null ? null : new File(inputFileName);
+			final File dataFile = inputFileName == null ? null : new File(inputFileName);
 			if ((dataFile != null) && (dataFile.exists())) {
 				final DataInterface data = new DataInterface(new UID());
 				final URI dataUri = commClient().newURI(data.getUID());
@@ -218,8 +217,7 @@ public final class HelloWorld {
 				// 1st, send data definition
 				//
 				logger.info("Sending data  '" + inputFileName + "' : " + data.toXml());
-				final XMLRPCCommandSend cmdSend = new XMLRPCCommandSend(
-						dataUri, data);
+				final XMLRPCCommandSend cmdSend = new XMLRPCCommandSend(dataUri, data);
 				cmdSend.exec(client);
 				//
 				// then send data content
@@ -239,15 +237,12 @@ public final class HelloWorld {
 			}
 
 			if (cmdLineStr.indexOf(XWTools.QUOTE) != -1) {
-				throw new ParseException(
-						"6 dec 2005 : command line cannot have \""
-								+ XWTools.QUOTE
-								+ "\" character until further notification", 0);
+				throw new ParseException("6 dec 2005 : command line cannot have \"" + XWTools.QUOTE
+						+ "\" character until further notification", 0);
 			}
 			work.setCmdLine(cmdLineStr);
 
-			logger.info("Submitting a new work for application '" + appUid
-					+ "' : " + work.toXml());
+			logger.info("Submitting a new work for application '" + appUid + "' : " + work.toXml());
 
 			final XMLRPCCommandSend cmdSend = new XMLRPCCommandSend(uri, work);
 			cmdSend.exec(client);
@@ -260,17 +255,16 @@ public final class HelloWorld {
 
 			if (work.getResult() != null) {
 				logger.info("Downloading results");
-				final DataInterface result = (DataInterface)commClient().get(work.getResult());
-				final DataTypeEnum resultType = result.getType(); 
-				final String resultFileName = "myresult" + (resultType == null ? "" : "." + resultType.fileExtension()); 
+				final DataInterface result = (DataInterface) commClient().get(work.getResult());
+				final DataTypeEnum resultType = result.getType();
+				final String resultFileName = "myresult" + (resultType == null ? "" : "." + resultType.fileExtension());
 				final File fileResult = new File(resultFileName);
 				client.downloadData(work.getResult(), fileResult);
 			}
 
 			logger.info("Removing work from server");
 			final URI workURI = client.newURI(work.getUID());
-			final XMLRPCCommandRemove cmdRemove = new XMLRPCCommandRemove(
-					workURI);
+			final XMLRPCCommandRemove cmdRemove = new XMLRPCCommandRemove(workURI);
 			cmdRemove.exec(client);
 
 			logger.info("Disconnecting");
@@ -284,7 +278,7 @@ public final class HelloWorld {
 	/**
 	 * This is the standard main method
 	 */
-	public static void main(String[] argv) {
+	public static void main(final String[] argv) {
 		try {
 			new HelloWorld(argv).execute();
 		} catch (final IOException e) {

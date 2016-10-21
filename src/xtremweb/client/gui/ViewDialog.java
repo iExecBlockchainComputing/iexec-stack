@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -37,7 +37,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Vector;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -62,10 +61,12 @@ public class ViewDialog extends JDialog implements ActionListener {
 	public static final String EDIT = "Edit";
 	public static final String CANCEL = "Cancel";
 	public static final String HELP = "Help";
-	private JFrame parent;
+	private final JFrame parent;
+
 	/**
 	 * @return the textPane
 	 */
+	@Override
 	public JFrame getParent() {
 		return parent;
 	}
@@ -82,7 +83,7 @@ public class ViewDialog extends JDialog implements ActionListener {
 	/**
 	 * This contains the editable fields
 	 */
-	private String[] columns;
+	private final String[] columns;
 	/**
 	 * This contains the editable fields
 	 */
@@ -106,7 +107,7 @@ public class ViewDialog extends JDialog implements ActionListener {
 
 	/**
 	 * This constructor does everything
-	 * 
+	 *
 	 * @param f
 	 *            is the aprent JFrame
 	 * @param title
@@ -120,8 +121,8 @@ public class ViewDialog extends JDialog implements ActionListener {
 	 * @param editable
 	 *            enables/disables edition
 	 */
-	public ViewDialog(JFrame f, String title, String[] thecolumns, List row,
-			boolean editable) {
+	public ViewDialog(final JFrame f, final String title, final String[] thecolumns, final List row,
+			final boolean editable) {
 
 		super(f, title, true);
 
@@ -154,8 +155,7 @@ public class ViewDialog extends JDialog implements ActionListener {
 				if (value != null) {
 					if (value.getClass() == java.lang.Boolean.class) {
 						field = (new JCheckBox());
-						((JCheckBox) field).setSelected(((Boolean) value)
-								.booleanValue());
+						((JCheckBox) field).setSelected(((Boolean) value).booleanValue());
 					} else if (value.getClass().isArray()) {
 						final String[] v = (String[]) value;
 						final JComboBox jcb = new JComboBox(v);
@@ -166,8 +166,7 @@ public class ViewDialog extends JDialog implements ActionListener {
 						field = (JComponent) value;
 					} else {
 						if (value instanceof XWAccessRights) {
-							field = (new JTextField(
-									((XWAccessRights) value).toHexString()));
+							field = (new JTextField(((XWAccessRights) value).toHexString()));
 						} else {
 							field = (new JTextField(value.toString()));
 						}
@@ -262,7 +261,8 @@ public class ViewDialog extends JDialog implements ActionListener {
 	/**
 	 * This is called when user clicks on any button
 	 */
-	public void actionPerformed(ActionEvent e) {
+	@Override
+	public void actionPerformed(final ActionEvent e) {
 		final String cmd = e.getActionCommand();
 
 		if (OK.equals(cmd)) {
@@ -278,12 +278,12 @@ public class ViewDialog extends JDialog implements ActionListener {
 				final Browser helpViewer = new Browser(getHelpString());
 				helpViewer.addWindowListener(new WindowAdapter() {
 					@Override
-					public void windowClosing(WindowEvent e) {
+					public void windowClosing(final WindowEvent e) {
 						helpViewer.setVisible(false);
 					}
 				});
-				JOptionPane.showMessageDialog(parent, helpViewer.getPane(),
-						"XWHEP help", JOptionPane.INFORMATION_MESSAGE);
+				JOptionPane.showMessageDialog(parent, helpViewer.getPane(), "XWHEP help",
+						JOptionPane.INFORMATION_MESSAGE);
 
 			} catch (final Exception ex) {
 				logger.exception(ex);
@@ -299,9 +299,10 @@ public class ViewDialog extends JDialog implements ActionListener {
 	}
 
 	/**
-	 * @param fields the fields to set
+	 * @param fields
+	 *            the fields to set
 	 */
-	public void setFields(Hashtable fields) {
+	public void setFields(final Hashtable fields) {
 		this.fields = fields;
 	}
 
@@ -313,9 +314,10 @@ public class ViewDialog extends JDialog implements ActionListener {
 	}
 
 	/**
-	 * @param helpString the helpString to set
+	 * @param helpString
+	 *            the helpString to set
 	 */
-	public void setHelpString(String helpString) {
+	public void setHelpString(final String helpString) {
 		this.helpString = helpString;
 	}
 
@@ -327,9 +329,10 @@ public class ViewDialog extends JDialog implements ActionListener {
 	}
 
 	/**
-	 * @param cancelled the cancelled to set
+	 * @param cancelled
+	 *            the cancelled to set
 	 */
-	public void setCancelled(boolean cancelled) {
+	public void setCancelled(final boolean cancelled) {
 		this.cancelled = cancelled;
 	}
 
@@ -341,9 +344,10 @@ public class ViewDialog extends JDialog implements ActionListener {
 	}
 
 	/**
-	 * @param edited the edited to set
+	 * @param edited
+	 *            the edited to set
 	 */
-	public void setEdited(boolean edited) {
+	public void setEdited(final boolean edited) {
 		this.edited = edited;
 	}
 

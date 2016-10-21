@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -75,10 +75,11 @@ public abstract class TableModel extends DefaultTableModel {
 	/**
 	 * This is the logger
 	 */
-	private Logger logger;
+	private final Logger logger;
 
 	/**
 	 * This is the logger getter
+	 *
 	 * @return the logger
 	 */
 	public Logger getLogger() {
@@ -97,26 +98,23 @@ public abstract class TableModel extends DefaultTableModel {
 	 * This sets the logger level. This also sets the logger levels checkboxes
 	 * menu item.
 	 */
-	public final void setLoggerLevel(LoggerLevel l) {
+	public final void setLoggerLevel(final LoggerLevel l) {
 		logger.setLoggerLevel(l);
 	}
 
 	/**
 	 * These commands are used to set some fields in dialog boxes
-	 * 
+	 *
 	 * @see #selectData(Commands)
 	 */
 	protected enum Commands {
 		JAVAJAR, LINUXIX86, LINUXIA64, LINUXAMD64, LINUXPPC, MACOSX86_64, MACOSIX86, MACOSPPC, WIN32IX86, WIN32AMD64, BINARY, GROUP, SESSION, X509CERT, EXPECTEDHOST, STDIN, DIRIN;
 
-		public static final String[] titles = { "Select Java JAR binary",
-			"Select linux ix86 binary", "Select linux amd64 binary",
-			"Select linux ppc binary", "Select mac os x ix86 binary",
-			"Select mac os x ppc binary", "Select win32 ix86 binary",
-			"Select win32 amd64 binary", "Select binary", "Select group",
-			"Select session", "Select X509 certificate proxy",
-			"Select the worker to run this job", "Select standard input",
-		"Select environment" };
+		public static final String[] titles = { "Select Java JAR binary", "Select linux ix86 binary",
+				"Select linux amd64 binary", "Select linux ppc binary", "Select mac os x ix86 binary",
+				"Select mac os x ppc binary", "Select win32 ix86 binary", "Select win32 amd64 binary", "Select binary",
+				"Select group", "Select session", "Select X509 certificate proxy", "Select the worker to run this job",
+				"Select standard input", "Select environment" };
 
 		/**
 		 * @return the titles
@@ -135,9 +133,10 @@ public abstract class TableModel extends DefaultTableModel {
 	private ViewDialog viewDialog = null;
 
 	/**
-	 * @param viewDialog the viewDialog to set
+	 * @param viewDialog
+	 *            the viewDialog to set
 	 */
-	public void setViewDialog(ViewDialog viewDialog) {
+	public void setViewDialog(final ViewDialog viewDialog) {
 		this.viewDialog = viewDialog;
 	}
 
@@ -156,6 +155,7 @@ public abstract class TableModel extends DefaultTableModel {
 	 * This is the select button
 	 */
 	private JButton selectButton;
+
 	/**
 	 * @return the selectButton
 	 */
@@ -171,6 +171,7 @@ public abstract class TableModel extends DefaultTableModel {
 	 * This is the unselect button
 	 */
 	private JButton unselectButton;
+
 	/**
 	 * @return the unselectButton
 	 */
@@ -220,6 +221,7 @@ public abstract class TableModel extends DefaultTableModel {
 	 * This is the parent main frame
 	 */
 	private MainFrame parent;
+
 	/**
 	 * @return the parent
 	 */
@@ -228,15 +230,18 @@ public abstract class TableModel extends DefaultTableModel {
 	}
 
 	/**
-	 * @param parent the parent to set
+	 * @param parent
+	 *            the parent to set
 	 */
-	public void setParent(MainFrame parent) {
+	public void setParent(final MainFrame parent) {
 		this.parent = parent;
 	}
+
 	/**
 	 * This is the table
 	 */
 	private JTable jTable;
+
 	/**
 	 * @return the jTable
 	 */
@@ -252,22 +257,25 @@ public abstract class TableModel extends DefaultTableModel {
 	/**
 	 * This is the interface to display and manage
 	 */
-	private Table itf;
+	private final Table itf;
+
 	public Table getInterface() {
 		return itf;
 	}
+
 	/**
-	 * This contains data.
-	 * Each rows has also a last item which contains a <CODE>JButton</CODE> to
-	 * view data.
+	 * This contains data. Each rows has also a last item which contains a
+	 * <CODE>JButton</CODE> to view data.
 	 */
-	private Vector<Table> rows = new Vector<Table>();
+	private final Vector<Table> rows = new Vector<Table>();
+
 	public Vector<Table> getDataRows() {
 		return rows;
 	}
+
 	/**
 	 * This is a constructor.
-	 * 
+	 *
 	 * @param p
 	 *            is the parent main frame
 	 * @param itf
@@ -276,7 +284,7 @@ public abstract class TableModel extends DefaultTableModel {
 	 *            is a boolean that tells whether to add a last column to
 	 *            details rows.
 	 */
-	protected TableModel(MainFrame p, Table itf, boolean d) {
+	protected TableModel(final MainFrame p, final Table itf, final boolean d) {
 
 		logger = new Logger(this);
 
@@ -299,18 +307,18 @@ public abstract class TableModel extends DefaultTableModel {
 	/**
 	 * This sets the JTable
 	 */
-	public void setTable(JTable j) {
+	public void setTable(final JTable j) {
 		jTable = j;
 
 		final ListSelectionModel selectionListener = jTable.getSelectionModel();
 		selectionListener.addListSelectionListener(new ListSelectionListener() {
-			public void valueChanged(ListSelectionEvent e) {
+			@Override
+			public void valueChanged(final ListSelectionEvent e) {
 				if (e.getValueIsAdjusting()) {
 					return;
 				}
 
-				final ListSelectionModel lsm = (ListSelectionModel) e
-						.getSource();
+				final ListSelectionModel lsm = (ListSelectionModel) e.getSource();
 				if (!lsm.isSelectionEmpty()) {
 					getParent().setSelectedLines(getSelectionLength());
 				}
@@ -318,7 +326,7 @@ public abstract class TableModel extends DefaultTableModel {
 		});
 		jTable.addMouseListener(new MouseAdapter() {
 			@Override
-			public void mouseClicked(MouseEvent e) {
+			public void mouseClicked(final MouseEvent e) {
 				if (e.getClickCount() == 2) {
 					view();
 				}
@@ -336,7 +344,7 @@ public abstract class TableModel extends DefaultTableModel {
 	/**
 	 * This sets the TableSorter
 	 */
-	public void setSorter(TableSorter s) {
+	public void setSorter(final TableSorter s) {
 		sorter = s;
 	}
 
@@ -344,7 +352,7 @@ public abstract class TableModel extends DefaultTableModel {
 	 * This retreives buttons. If button are not created yet (on first call),
 	 * they are created.<br />
 	 * Some buttons may be disabled accordingly to user rights
-	 * 
+	 *
 	 * @return a Vector of JButton
 	 */
 	public Hashtable getButtons() {
@@ -355,7 +363,8 @@ public abstract class TableModel extends DefaultTableModel {
 			selectButton = new JButton(SELECT_LABEL);
 			selectButton.setMnemonic(KeyEvent.VK_A);
 			selectButton.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
+				@Override
+				public void actionPerformed(final ActionEvent e) {
 					selectAll();
 				}
 			});
@@ -367,7 +376,8 @@ public abstract class TableModel extends DefaultTableModel {
 			unselectButton = new JButton(UNSELECT_LABEL);
 			unselectButton.setMnemonic(KeyEvent.VK_C);
 			unselectButton.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
+				@Override
+				public void actionPerformed(final ActionEvent e) {
 					unselectAll();
 				}
 			});
@@ -379,7 +389,8 @@ public abstract class TableModel extends DefaultTableModel {
 			refreshButton = new JButton(REFRESH_LABEL);
 			refreshButton.setMnemonic(KeyEvent.VK_R);
 			refreshButton.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
+				@Override
+				public void actionPerformed(final ActionEvent e) {
 					try {
 						getParent().setTitleConnected();
 						refresh();
@@ -397,7 +408,8 @@ public abstract class TableModel extends DefaultTableModel {
 			addButton = new JButton(ADD_LABEL);
 			addButton.setMnemonic(KeyEvent.VK_D);
 			addButton.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
+				@Override
+				public void actionPerformed(final ActionEvent e) {
 					add();
 				}
 			});
@@ -410,7 +422,8 @@ public abstract class TableModel extends DefaultTableModel {
 			viewButton = new JButton(VIEW_LABEL);
 			viewButton.setMnemonic(KeyEvent.VK_V);
 			viewButton.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
+				@Override
+				public void actionPerformed(final ActionEvent e) {
 					view();
 				}
 			});
@@ -422,7 +435,8 @@ public abstract class TableModel extends DefaultTableModel {
 			delButton = new JButton(DEL_LABEL);
 			delButton.setMnemonic(KeyEvent.VK_E);
 			delButton.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
+				@Override
+				public void actionPerformed(final ActionEvent e) {
 					del();
 				}
 			});
@@ -443,7 +457,7 @@ public abstract class TableModel extends DefaultTableModel {
 	 * This retreives selected row indexes, if any. To retreive a row, each
 	 * element of the returned array must be used as parameter of
 	 * getSelectedRow() since the sorter may have modified row order
-	 * 
+	 *
 	 * @see #getSelectedRowIndex(int)
 	 * @see #getSelectedRow(int)
 	 */
@@ -460,23 +474,23 @@ public abstract class TableModel extends DefaultTableModel {
 
 	/**
 	 * This retreives a selected row index, accordingly to the sorter indexation
-	 * 
+	 *
 	 * @param index
 	 *            is the selected row index retreived with getSelection()
 	 * @see #getSelection()
 	 */
-	public int getSelectedRowIndex(int index) {
+	public int getSelectedRowIndex(final int index) {
 		return sorter.modelIndex(index);
 	}
 
 	/**
 	 * This retreives a selected row, accordingly to the sorter indexation
-	 * 
+	 *
 	 * @param index
 	 *            is the selected row index retreived with getSelection()
 	 * @see #getSelection()
 	 */
-	public Table getSelectedRow(int index) {
+	public Table getSelectedRow(final int index) {
 		final int selectedRow = getSelectedRowIndex(index);
 		return rows.elementAt(selectedRow);
 	}
@@ -488,18 +502,15 @@ public abstract class TableModel extends DefaultTableModel {
 
 		final int[] selectedRows = getSelection();
 		if (selectedRows.length == 0) {
-			JOptionPane.showMessageDialog(getParent(), "No row selected!", WARNING,
-					JOptionPane.WARNING_MESSAGE);
+			JOptionPane.showMessageDialog(getParent(), "No row selected!", WARNING, JOptionPane.WARNING_MESSAGE);
 			return;
 		} else if (selectedRows.length > 1) {
-			JOptionPane.showMessageDialog(getParent(),
-					"You can not delete more than one row at a time", WARNING,
+			JOptionPane.showMessageDialog(getParent(), "You can not delete more than one row at a time", WARNING,
 					JOptionPane.WARNING_MESSAGE);
 			return;
 		}
 
-		final int confirm = JOptionPane.showConfirmDialog(getParent(),
-				"Are you sure to delete one row ?");
+		final int confirm = JOptionPane.showConfirmDialog(getParent(), "Are you sure to delete one row ?");
 		if (confirm != 0) {
 			return;
 		}
@@ -512,8 +523,7 @@ public abstract class TableModel extends DefaultTableModel {
 			uri = getParent().commClient().newURI(row.getUID());
 		} catch (final Exception e) {
 			logger.exception(e);
-			JOptionPane.showMessageDialog(getParent(), e.toString(), WARNING,
-					JOptionPane.WARNING_MESSAGE);
+			JOptionPane.showMessageDialog(getParent(), e.toString(), WARNING, JOptionPane.WARNING_MESSAGE);
 			return;
 		} finally {
 			row = null;
@@ -539,14 +549,14 @@ public abstract class TableModel extends DefaultTableModel {
 	/**
 	 * This saved objects to server
 	 */
-	protected void save(Hashtable columns) {
+	protected void save(final Hashtable columns) {
 		logger.error("TableModel#save() does nothing");
 	}
 
 	/**
 	 * This replaces UID by human readable columns
 	 */
-	protected Vector getViewableRow(Vector row) {
+	protected Vector getViewableRow(final Vector row) {
 		logger.error("TableModel#getViewableRow() does nothing");
 		return row;
 	}
@@ -569,28 +579,25 @@ public abstract class TableModel extends DefaultTableModel {
 	/**
 	 * This views an object
 	 */
-	protected void view(String title) {
+	protected void view(final String title) {
 		this.view(title, "No help available");
 	}
 
 	/**
 	 * This views an object
 	 */
-	protected void view(String title, String help) {
+	protected void view(final String title, final String help) {
 		final int[] selectedRows = getSelection();
 		if (selectedRows.length == 0) {
-			JOptionPane.showMessageDialog(getParent(), "No row selected!", WARNING,
-					JOptionPane.WARNING_MESSAGE);
+			JOptionPane.showMessageDialog(getParent(), "No row selected!", WARNING, JOptionPane.WARNING_MESSAGE);
 			return;
 		} else if (selectedRows.length > 1) {
-			JOptionPane.showMessageDialog(getParent(),
-					"You can not view more than one row at a time", WARNING,
+			JOptionPane.showMessageDialog(getParent(), "You can not view more than one row at a time", WARNING,
 					JOptionPane.WARNING_MESSAGE);
 			return;
 		}
 
-		final ViewDialog dlg = getViewDialog(title,
-				getSelectedRow(selectedRows[0]), false);
+		final ViewDialog dlg = getViewDialog(title, getSelectedRow(selectedRows[0]), false);
 		if (dlg != null) {
 			dlg.setHelpString(help);
 			dlg.setVisible(true);
@@ -607,11 +614,11 @@ public abstract class TableModel extends DefaultTableModel {
 
 	/**
 	 * This retreives an object from cache or server if not in cache
-	 * 
+	 *
 	 * @return a TableInterface or null on error
 	 * @see xtremweb.communications.CommClient#get(UID, boolean)
 	 */
-	public Table getRow(UID uid) throws ConnectException {
+	public Table getRow(final UID uid) throws ConnectException {
 		try {
 			getParent().setTitleConnected();
 			final Table ret = getParent().commClient().get(uid, false);
@@ -625,7 +632,7 @@ public abstract class TableModel extends DefaultTableModel {
 
 	/**
 	 * This creates a new ViewDialog to display row details
-	 * 
+	 *
 	 * @param title
 	 *            is the dialog title
 	 * @param row
@@ -634,10 +641,8 @@ public abstract class TableModel extends DefaultTableModel {
 	 *            enables/disables edition
 	 * @return a new ViewDialog
 	 */
-	protected ViewDialog getViewDialog(String title, Table row,
-			boolean editable) {
-		return new ViewDialog(getParent(), title,
-				row.notnullcolumns(false), row.toVector(), editable);
+	protected ViewDialog getViewDialog(final String title, final Table row, final boolean editable) {
+		return new ViewDialog(getParent(), title, row.notnullcolumns(false), row.toVector(), editable);
 	}
 
 	/**
@@ -651,7 +656,7 @@ public abstract class TableModel extends DefaultTableModel {
 
 	/**
 	 * This retreives datas from server
-	 * 
+	 *
 	 * @see #getRows()
 	 */
 	public void refresh() throws ConnectException {
@@ -732,7 +737,7 @@ public abstract class TableModel extends DefaultTableModel {
 	}
 
 	@Override
-	public String getColumnName(int col) {
+	public String getColumnName(final int col) {
 		final String cname = itf.columns(true)[col];
 		if (cname != null) {
 			return cname;
@@ -742,7 +747,7 @@ public abstract class TableModel extends DefaultTableModel {
 	}
 
 	@Override
-	public Object getValueAt(int arow, int acol) {
+	public Object getValueAt(final int arow, final int acol) {
 		try {
 			final Table row = rows.elementAt(arow);
 			return row.getValue(row.getIndex(acol, true));
@@ -754,7 +759,7 @@ public abstract class TableModel extends DefaultTableModel {
 
 	/**
 	 * This changes value in table thanks to its coordinates.
-	 * 
+	 *
 	 * @param value
 	 *            is the new value
 	 * @param arow
@@ -763,7 +768,7 @@ public abstract class TableModel extends DefaultTableModel {
 	 *            is the column where data is
 	 */
 	@Override
-	public void setValueAt(Object value, int arow, int acol) {
+	public void setValueAt(final Object value, final int arow, final int acol) {
 
 		if (!isCellEditable(arow, acol)) {
 			return;
@@ -785,7 +790,7 @@ public abstract class TableModel extends DefaultTableModel {
 	 * contain text ("true"/"false"), rather than a check box.
 	 */
 	@Override
-	public Class getColumnClass(int column) {
+	public Class getColumnClass(final int column) {
 		try {
 			if (getValueAt(0, column) == null) {
 				return String.class;
@@ -800,7 +805,7 @@ public abstract class TableModel extends DefaultTableModel {
 	/**
 	 * This is called to determine whether a cell is editable or not. This
 	 * returns true for the last column only to enable row details edition.
-	 * 
+	 *
 	 * @param row
 	 *            : cell row
 	 * @param column
@@ -808,14 +813,14 @@ public abstract class TableModel extends DefaultTableModel {
 	 * @return true if cell is editable
 	 */
 	@Override
-	public boolean isCellEditable(int row, int column) {
+	public boolean isCellEditable(final int row, final int column) {
 		return false;
 	}
 
 	/**
 	 * This create a new JPanel containing a JTextField with associated button
 	 * The button calls selectData()
-	 * 
+	 *
 	 * @return the new JPanel
 	 */
 	protected JPanel newContainer(final Commands id) {
@@ -827,7 +832,8 @@ public abstract class TableModel extends DefaultTableModel {
 		selectButton.setPreferredSize(BUTTONDIMENSION);
 		selectButton.setSize(BUTTONDIMENSION);
 		selectButton.addActionListener(new ActionListener() {
-			public final void actionPerformed(ActionEvent e) {
+			@Override
+			public final void actionPerformed(final ActionEvent e) {
 				selectData(id);
 			}
 		});
@@ -836,7 +842,8 @@ public abstract class TableModel extends DefaultTableModel {
 		resetButton.setPreferredSize(BUTTONDIMENSION);
 		resetButton.setSize(BUTTONDIMENSION);
 		resetButton.addActionListener(new ActionListener() {
-			public final void actionPerformed(ActionEvent e) {
+			@Override
+			public final void actionPerformed(final ActionEvent e) {
 				resetData(id);
 			}
 		});
@@ -865,14 +872,14 @@ public abstract class TableModel extends DefaultTableModel {
 	/**
 	 * This does nothing and must be overriden, if needed
 	 */
-	public void selectData(Commands id) {
+	public void selectData(final Commands id) {
 		logger.error("selectData does nothing for : " + id);
 	}
 
 	/**
 	 * This does nothing and must be overriden, if needed
 	 */
-	public void resetData(Commands id) {
+	public void resetData(final Commands id) {
 		logger.error("selectData does nothing for : " + id);
 	}
 
@@ -880,7 +887,7 @@ public abstract class TableModel extends DefaultTableModel {
 	 * This opens a dialog box to display the provided table model. The can
 	 * select a row from the provided table model
 	 */
-	public Table selectDialogBox(String title, TableModel tableModel) {
+	public Table selectDialogBox(final String title, final TableModel tableModel) {
 
 		final Vector newRow = new Vector();
 
@@ -900,8 +907,7 @@ public abstract class TableModel extends DefaultTableModel {
 		container.add(panel);
 		newRow.add(container);
 
-		final ViewDialog dlg = new ViewDialog(getParent(), title, null, newRow,
-				false);
+		final ViewDialog dlg = new ViewDialog(getParent(), title, null, newRow, false);
 
 		dlg.setSize(DIALOGDIMENSION);
 		dlg.setVisible(true);

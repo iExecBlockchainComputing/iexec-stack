@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -56,13 +56,13 @@ import xtremweb.common.GroupInterface;
 import xtremweb.common.HostInterface;
 import xtremweb.common.JobInterface;
 import xtremweb.common.SessionInterface;
+import xtremweb.common.StatusEnum;
 import xtremweb.common.Table;
 import xtremweb.common.TaskInterface;
 import xtremweb.common.UID;
 import xtremweb.common.UserInterface;
 import xtremweb.common.WorkInterface;
 import xtremweb.common.XMLVector;
-import xtremweb.common.StatusEnum;
 import xtremweb.communications.URI;
 import xtremweb.security.XWAccessRights;
 
@@ -72,9 +72,9 @@ import xtremweb.security.XWAccessRights;
  * This is used to display informations in a more friendly way than
  * xtremweb.common.WorkInterface only. This mainly translates UID to names and
  * labels (i.e. users UID to users name etc.).<br />
- * 
+ *
  * This gathers informations from apps, works, tasks, users.<br />
- * 
+ *
  * This derives from xtremweb.common.TableInterface to uniform code so that it
  * can be used where a TableInterface is expected but this does not transit
  * through the network.<br />
@@ -85,10 +85,11 @@ import xtremweb.security.XWAccessRights;
  * works.resultstatus,works.cmdline,works.arrivaldate,
  * works.completeddate,works.resultdate,works.returncode,works.error_msg,
  * hosts.name FROM users,apps,tasks,hosts WHERE works.uid = tasks.uid AND
- * works.user = users.uid AND works.app = apps.uid AND tasks.host = hosts.uid;<br />
+ * works.user = users.uid AND works.app = apps.uid AND tasks.host = hosts.uid;
+ * <br />
  * <br />
  * Created: 23 avril 2006<br />
- * 
+ *
  * @author <a href="mailto:lodygens /at\ .in2p3.fr>Oleg Lodygensky</a>
  * @version %I%, %G%
  */
@@ -127,50 +128,25 @@ class JobsTableModel extends TableModel {
 	/**
 	 * This is the help
 	 */
-	private static final String HELPSTRING = new String(
-			"<u>"
-					+ APPLABEL
-					+ "</u> is an URI; click to select/deselect<br>"
-					+ "<u>"
-					+ JOBLABEL
-					+ "</u> is an optionnal field to set a job label<br>"
-					+ "<u>"
-					+ ACCESSRIGHTSLABEL
-					+ "</u> : this is not editabled; this is the application one<br>"
-					+ "<u>"
-					+ GROUPLABEL
-					+ "</u> is optionnal; click to select/deselect a job group<br>"
-					+ "<u>"
-					+ SESSIONLABEL
-					+ "</u> is optionnal; click to select/deselect a job session<br>"
-					+ "<u>"
-					+ CMDLINELABEL
-					+ "</u> is an optionnal field to set the job command line<br>"
-					+ "<u>"
-					+ EXPECTEDHOSTLABEL
-					+ "</u> is optionnal; click to specify a worker to run the job<br>"
-					+ "<u>"
-					+ X509CERTLABEL
-					+ "</u> is optionnal; click to select/deselect an X509 certificate proxy<br>"
-					+ "<u>"
-					+ STDINLABEL
-					+ "</u> is optionnal; click to select/deselect an input text file.<br>"
-					+ "<u>"
-					+ DIRINLABEL
-					+ "</u> is optionnal; click to select/deselect a directory.<br>"
-					+ "<u>"
-					+ MEMORYLABEL
-					+ "</u> is optionnal; it aims to specify the minimal required RAM for the job<br>"
-					+ "<u>"
-					+ CPUSPEEDLABEL
-					+ "</u> is optionnal; it aims to specify the minimal required CPU speed for the job");
+	private static final String HELPSTRING = new String("<u>" + APPLABEL
+			+ "</u> is an URI; click to select/deselect<br>" + "<u>" + JOBLABEL
+			+ "</u> is an optionnal field to set a job label<br>" + "<u>" + ACCESSRIGHTSLABEL
+			+ "</u> : this is not editabled; this is the application one<br>" + "<u>" + GROUPLABEL
+			+ "</u> is optionnal; click to select/deselect a job group<br>" + "<u>" + SESSIONLABEL
+			+ "</u> is optionnal; click to select/deselect a job session<br>" + "<u>" + CMDLINELABEL
+			+ "</u> is an optionnal field to set the job command line<br>" + "<u>" + EXPECTEDHOSTLABEL
+			+ "</u> is optionnal; click to specify a worker to run the job<br>" + "<u>" + X509CERTLABEL
+			+ "</u> is optionnal; click to select/deselect an X509 certificate proxy<br>" + "<u>" + STDINLABEL
+			+ "</u> is optionnal; click to select/deselect an input text file.<br>" + "<u>" + DIRINLABEL
+			+ "</u> is optionnal; click to select/deselect a directory.<br>" + "<u>" + MEMORYLABEL
+			+ "</u> is optionnal; it aims to specify the minimal required RAM for the job<br>" + "<u>" + CPUSPEEDLABEL
+			+ "</u> is optionnal; it aims to specify the minimal required CPU speed for the job");
 	/**
 	 * These defines submission parameter labels
 	 */
-	private static final String[] labels = { UID, OWNERLABEL, GROUPLABEL,
-		SESSIONLABEL, APPLABEL, JOBLABEL, ACCESSRIGHTSLABEL, CMDLINELABEL,
-		X509CERTLABEL, STDINLABEL, DIRINLABEL, EXPECTEDHOSTLABEL,
-		MEMORYLABEL, CPUSPEEDLABEL };
+	private static final String[] labels = { UID, OWNERLABEL, GROUPLABEL, SESSIONLABEL, APPLABEL, JOBLABEL,
+			ACCESSRIGHTSLABEL, CMDLINELABEL, X509CERTLABEL, STDINLABEL, DIRINLABEL, EXPECTEDHOSTLABEL, MEMORYLABEL,
+			CPUSPEEDLABEL };
 
 	/**
 	 * This combo box contains expected status to download
@@ -190,24 +166,24 @@ class JobsTableModel extends TableModel {
 	/**
 	 * This is the default constructor.
 	 */
-	public JobsTableModel(MainFrame p) {
+	public JobsTableModel(final MainFrame p) {
 		this(p, true);
 	}
 
 	/**
 	 * This is a constructor.
-	 * 
+	 *
 	 * @param detail
 	 *            tells whether to add a last column to get details
 	 */
-	public JobsTableModel(MainFrame p, boolean detail) {
+	public JobsTableModel(final MainFrame p, final boolean detail) {
 		super(p, new JobInterface(), detail);
 		refreshSelectedIndex = StatusEnum.NONE;
 	}
 
 	/**
 	 * This creates new JButton
-	 * 
+	 *
 	 * @return a Vector of JButton
 	 */
 	@Override
@@ -222,11 +198,11 @@ class JobsTableModel extends TableModel {
 		ret.remove(REFRESH_LABEL);
 		refreshComboBox = new JComboBox(StatusEnum.getLabels());
 		refreshComboBox.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+			@Override
+			public void actionPerformed(final ActionEvent e) {
 				final JComboBox source = (JComboBox) e.getSource();
 				final String statusText = (String) source.getSelectedItem();
-				refreshSelectedIndex = StatusEnum.fromInt(source
-						.getSelectedIndex());
+				refreshSelectedIndex = StatusEnum.fromInt(source.getSelectedIndex());
 				try {
 					refresh();
 				} catch (final ConnectException ex) {
@@ -243,7 +219,8 @@ class JobsTableModel extends TableModel {
 		final JButton resultButton = new JButton(RESULT_LABEL);
 		resultButton.setMnemonic(KeyEvent.VK_D);
 		resultButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+			@Override
+			public void actionPerformed(final ActionEvent e) {
 				result();
 			}
 		});
@@ -255,7 +232,7 @@ class JobsTableModel extends TableModel {
 
 	/**
 	 * This retreives a Vector of work UID from server
-	 * 
+	 *
 	 * @see xtremweb.communications.CommAPI#getTasks()
 	 */
 	@Override
@@ -272,11 +249,11 @@ class JobsTableModel extends TableModel {
 
 	/**
 	 * This calls getRow(uid, false)
-	 * 
+	 *
 	 * @return an JobInterface or null on error
 	 */
 	@Override
-	public Table getRow(UID uid) throws ConnectException {
+	public Table getRow(final UID uid) throws ConnectException {
 		return getRow(uid, false);
 	}
 
@@ -285,7 +262,7 @@ class JobsTableModel extends TableModel {
 	 * download Work App and User interfaces only. These are needed to display
 	 * list of job in TableModel. Since 7.0.0 we retrieve full job description
 	 * when user click on View button only
-	 * 
+	 *
 	 * @return an JobInterface or null on error
 	 * @param uid
 	 *            is the uid of the row to retrieve
@@ -295,28 +272,23 @@ class JobsTableModel extends TableModel {
 	 *            UserInterface are downloaded
 	 * @since 7.0.0
 	 */
-	public Table getRow(UID uid, boolean fullDescription)
-			throws ConnectException {
+	public Table getRow(final UID uid, final boolean fullDescription) throws ConnectException {
 
 		try {
-			final WorkInterface work = (WorkInterface) getParent().commClient().get(
-					uid, true);
+			final WorkInterface work = (WorkInterface) getParent().commClient().get(uid, true);
 			if (work == null) {
 				getLogger().error("can't find any work " + uid);
 				return null;
 			}
 
-			if ((refreshSelectedIndex != StatusEnum.ANY)
-					&& (refreshSelectedIndex != work.getStatus())) {
-				getLogger().info("can't find any work with the given status "
-						+ work.getStatus());
+			if ((refreshSelectedIndex != StatusEnum.ANY) && (refreshSelectedIndex != work.getStatus())) {
+				getLogger().info("can't find any work with the given status " + work.getStatus());
 				return null;
 			}
 
 			AppInterface app = null;
 			try {
-				app = (AppInterface) getParent().commClient().get(
-						work.getApplication());
+				app = (AppInterface) getParent().commClient().get(work.getApplication());
 			} catch (final Exception e) {
 			}
 			UserInterface user = null;
@@ -332,27 +304,22 @@ class JobsTableModel extends TableModel {
 
 			if (fullDescription) {
 				try {
-					group = (GroupInterface) getParent().commClient().get(
-							work.getGroup());
+					group = (GroupInterface) getParent().commClient().get(work.getGroup());
 				} catch (final Exception e) {
 				}
 				try {
-					session = (SessionInterface) getParent().commClient().get(
-							work.getSession());
+					session = (SessionInterface) getParent().commClient().get(work.getSession());
 				} catch (final Exception e) {
 				}
 				try {
-					final TaskInterface task = (TaskInterface) getParent()
-							.commClient().get(uid);
-					host = (HostInterface) getParent().commClient().get(
-							task.getHost(), true);
+					final TaskInterface task = (TaskInterface) getParent().commClient().get(uid);
+					host = (HostInterface) getParent().commClient().get(task.getHost(), true);
 				} catch (final Exception e) {
 					e.printStackTrace();
 				}
 			}
 
-			final JobInterface row = new JobInterface(work, group, session,
-					app, user, host);
+			final JobInterface row = new JobInterface(work, group, session, app, user, host);
 
 			return row;
 		} catch (final Exception e) {
@@ -371,7 +338,7 @@ class JobsTableModel extends TableModel {
 
 	/**
 	 * This creates a new ViewDialog to display row details
-	 * 
+	 *
 	 * @param title
 	 *            is the dialog title
 	 * @param row
@@ -382,12 +349,10 @@ class JobsTableModel extends TableModel {
 	 * @since 7.0.0
 	 */
 	@Override
-	protected ViewDialog getViewDialog(String title, Table row,
-			boolean editable) {
+	protected ViewDialog getViewDialog(final String title, final Table row, final boolean editable) {
 		try {
 			final Table job = getRow(row.getUID(), true);
-			return new ViewDialog(getParent(), title, job.columns(false),
-					job.toVector(), editable);
+			return new ViewDialog(getParent(), title, job.columns(false), job.toVector(), editable);
 		} catch (final Exception e) {
 			getLogger().exception(e);
 		}
@@ -396,7 +361,7 @@ class JobsTableModel extends TableModel {
 
 	/**
 	 * This retreives job results
-	 * 
+	 *
 	 * @see xtremweb.client.Client#result()
 	 */
 	public void result() {
@@ -404,8 +369,7 @@ class JobsTableModel extends TableModel {
 		final int[] selectedRows = getjTable().getSelectedRows();
 		final int selection = selectedRows.length;
 		if (selection == 0) {
-			JOptionPane.showMessageDialog(getParent(), "No row selected!", WARNING,
-					JOptionPane.WARNING_MESSAGE);
+			JOptionPane.showMessageDialog(getParent(), "No row selected!", WARNING, JOptionPane.WARNING_MESSAGE);
 			return;
 		}
 
@@ -440,16 +404,14 @@ class JobsTableModel extends TableModel {
 
 		for (int i = 0; i < selection; i++) {
 			final int selectedRow = getSelectedRowIndex(selectedRows[i]);
-			final WorkInterface row = ((JobInterface) getSelectedRow(selectedRow))
-					.getWork();
+			final WorkInterface row = ((JobInterface) getSelectedRow(selectedRow)).getWork();
 
 			try {
 				final UID jobUid = row.getUID();
 				final String jobLabel = row.getLabel();
 				final URI dataUri = row.getResult();
 				final UID dataUid = dataUri.getUID();
-				final DataInterface data = (DataInterface) getParent().commClient()
-						.get(dataUid);
+				final DataInterface data = (DataInterface) getParent().commClient().get(dataUid);
 				if (data == null) {
 					continue;
 				}
@@ -457,13 +419,11 @@ class JobsTableModel extends TableModel {
 				String fext = "";
 				if (data.getType() != null) {
 					fext = data.getType().getFileExtension();
-					System.out.println("02 data type = "
-							+ data.getType().getFileExtension());
+					System.out.println("02 data type = " + data.getType().getFileExtension());
 				}
 				File fdata = null;
 				if (jobLabel != null) {
-					fdata = new File(currentDir, jobUid.toString() + "_"
-							+ jobLabel + fext);
+					fdata = new File(currentDir, jobUid.toString() + "_" + jobLabel + fext);
 				} else {
 					fdata = new File(currentDir, jobUid.toString() + fext);
 				}
@@ -476,14 +436,14 @@ class JobsTableModel extends TableModel {
 
 		getParent().setCursor(null);
 
-		JOptionPane.showMessageDialog(getParent(), "" + downloaded
-				+ " retreived result(s)\n" + "Results are stored in "
-				+ currentDir, INFO, JOptionPane.INFORMATION_MESSAGE);
+		JOptionPane.showMessageDialog(getParent(),
+				"" + downloaded + " retreived result(s)\n" + "Results are stored in " + currentDir, INFO,
+				JOptionPane.INFORMATION_MESSAGE);
 	}
 
 	/**
 	 * This adds a job by calling CommClient.java::send(WorkInterface)
-	 * 
+	 *
 	 * @see xtremweb.communications.CommClient#send(WorkInterface)
 	 */
 	@Override
@@ -508,8 +468,7 @@ class JobsTableModel extends TableModel {
 		newRow.add(new String()); // Min memory
 		newRow.add(new String()); // Min CPUSpeed
 
-		final ViewDialog vdialog = new ViewDialog(getParent(), "Submit new job", labels, newRow,
-				true);
+		final ViewDialog vdialog = new ViewDialog(getParent(), "Submit new job", labels, newRow, true);
 		setViewDialog(vdialog);
 
 		JTextField component = (JTextField) vdialog.getFields().get(OWNERLABEL);
@@ -533,11 +492,9 @@ class JobsTableModel extends TableModel {
 				final WorkInterface job = new WorkInterface();
 				job.setUID(jobUID);
 
-				job.setLabel(((JTextField) vdialog.getFields().get(JOBLABEL))
-						.getText());
+				job.setLabel(((JTextField) vdialog.getFields().get(JOBLABEL)).getText());
 
-				job.setCmdLine(((JTextField) vdialog.getFields()
-						.get(CMDLINELABEL)).getText());
+				job.setCmdLine(((JTextField) vdialog.getFields().get(CMDLINELABEL)).getText());
 
 				JPanel innerPanel = (JPanel) vdialog.getFields().get(APPLABEL);
 				JTextField jtf = (JTextField) innerPanel.getComponent(0);
@@ -548,8 +505,7 @@ class JobsTableModel extends TableModel {
 					throw new IOException("Invalid application : '" + str + "'");
 				}
 
-				final String accessRightsStr = ((JTextField) vdialog.getFields()
-						.get(ACCESSRIGHTSLABEL)).getText();
+				final String accessRightsStr = ((JTextField) vdialog.getFields().get(ACCESSRIGHTSLABEL)).getText();
 				if ((accessRightsStr != null) && (accessRightsStr.length() > 0)) {
 					try {
 						accessRights = new XWAccessRights(accessRightsStr);
@@ -593,14 +549,12 @@ class JobsTableModel extends TableModel {
 					job.setDirin(new URI(str));
 				}
 
-				final String minMem = ((JTextField) vdialog.getFields()
-						.get(MEMORYLABEL)).getText();
+				final String minMem = ((JTextField) vdialog.getFields().get(MEMORYLABEL)).getText();
 				if ((minMem != null) && (minMem.length() > 0)) {
 					job.setMinMemory(new Integer(minMem).intValue());
 				}
 
-				final String minSpeed = ((JTextField) vdialog.getFields()
-						.get(CPUSPEEDLABEL)).getText();
+				final String minSpeed = ((JTextField) vdialog.getFields().get(CPUSPEEDLABEL)).getText();
 				if ((minSpeed != null) && (minSpeed.length() > 0)) {
 					job.setMinCpuSpeed(new Integer(minSpeed).intValue());
 				}
@@ -610,8 +564,7 @@ class JobsTableModel extends TableModel {
 				finished = true;
 			} catch (final Exception e) {
 				getLogger().exception(e);
-				JOptionPane.showMessageDialog(getParent(), "Can't send job : " + e,
-						ERROR, JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(getParent(), "Can't send job : " + e, ERROR, JOptionPane.ERROR_MESSAGE);
 				vdialog.setVisible(true);
 			}
 		}
@@ -620,7 +573,7 @@ class JobsTableModel extends TableModel {
 	/**
 	 * This retreives the label of the command
 	 */
-	public JPanel getPanel(Commands id) {
+	public JPanel getPanel(final Commands id) {
 
 		String label = null;
 
@@ -655,7 +608,7 @@ class JobsTableModel extends TableModel {
 	/**
 	 * This retreives the table model for the command
 	 */
-	public TableModel getTableModel(Commands id) {
+	public TableModel getTableModel(final Commands id) {
 
 		TableModel tm = null;
 
@@ -691,7 +644,7 @@ class JobsTableModel extends TableModel {
 	 * stdin, dirin
 	 */
 	@Override
-	public void selectData(Commands id) {
+	public void selectData(final Commands id) {
 
 		final TableModel tm = getTableModel(id);
 
@@ -733,7 +686,7 @@ class JobsTableModel extends TableModel {
 	 * This resets command field
 	 */
 	@Override
-	public void resetData(Commands id) {
+	public void resetData(final Commands id) {
 
 		final JPanel innerPanel = getPanel(id);
 

@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -44,13 +44,13 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import xtremweb.common.AppInterface;
+import xtremweb.common.CPUEnum;
 import xtremweb.common.DataInterface;
 import xtremweb.common.DataTypeEnum;
+import xtremweb.common.OSEnum;
 import xtremweb.common.Table;
 import xtremweb.common.UID;
 import xtremweb.common.XMLVector;
-import xtremweb.common.CPUEnum;
-import xtremweb.common.OSEnum;
 import xtremweb.communications.URI;
 import xtremweb.security.XWAccessRights;
 
@@ -85,80 +85,50 @@ class AppsTableModel extends TableModel {
 	/**
 	 * These defines submission parameter labels
 	 */
-	private static final String[] labels = { UIDLABEL, OWNERLABEL, NAMELABEL,
-		ACCESSRIGHTSLABEL, JAVAJARLABEL, LINUXIX86LABEL, LINUXAMD64LABEL,
-		LINUXIA64LABEL, LINUXPPCLABEL, MACOSX86_64LABEL, MACOSIX86LABEL,
-		MACOSPPCLABEL, WIN32IX86LABEL, WIN32AMD64LABEL, STDINLABEL,
-		DIRINLABEL, MEMORYLABEL, CPUSPEEDLABEL };
+	private static final String[] labels = { UIDLABEL, OWNERLABEL, NAMELABEL, ACCESSRIGHTSLABEL, JAVAJARLABEL,
+			LINUXIX86LABEL, LINUXAMD64LABEL, LINUXIA64LABEL, LINUXPPCLABEL, MACOSX86_64LABEL, MACOSIX86LABEL,
+			MACOSPPCLABEL, WIN32IX86LABEL, WIN32AMD64LABEL, STDINLABEL, DIRINLABEL, MEMORYLABEL, CPUSPEEDLABEL };
 
-	private static final String HELPSTRING = "<u>"
-			+ NAMELABEL
-			+ "</u> : should be unic in the platform; reusing an existing name update application<br>"
-			+ "<u>"
-			+ ACCESSRIGHTSLABEL
-			+ "</u> : Linux FS like access rights"
+	private static final String HELPSTRING = "<u>" + NAMELABEL
+			+ "</u> : should be unic in the platform; reusing an existing name update application<br>" + "<u>"
+			+ ACCESSRIGHTSLABEL + "</u> : Linux FS like access rights"
 			+ "<ul><li>default is 0x755 for administrator,<li>0x700 otherwise<li>if you're not administrator you can't modify this</ul>"
 			+ "<br> In the following, you can enter a file URI to select a local file (e.g. &quot;file:///bin/ls&quot;)<br><br>"
-			+ "<u>"
-			+ JAVAJARLABEL
-			+ "</u> : Select a JAR file or enter a valid URI<br>"
-			+ "<u>"
-			+ LINUXIX86LABEL
-			+ "</u> : Select a binary or enter a valid URI<br>"
-			+ "<u>"
-			+ LINUXAMD64LABEL
-			+ "</u> : Select a binary or enter a valid URI<br>"
-			+ "<u>"
-			+ LINUXIA64LABEL
-			+ "</u> : Select a binary or enter a valid URI<br>"
-			+ "<u>"
-			+ LINUXPPCLABEL
-			+ "</u> : Select a binary or enter a valid URI<br>"
-			+ "<u>"
-			+ MACOSX86_64LABEL
-			+ "</u> : Select a binary or enter a valid URI<br>"
-			+ "<u>"
-			+ MACOSIX86LABEL
-			+ "</u> : Select a binary or enter a valid URI<br>"
-			+ "<u>"
-			+ MACOSPPCLABEL
-			+ "</u> : Select a binay or enter a valid URI<br>"
-			+ "<u>"
-			+ WIN32IX86LABEL
-			+ "</u> : Select a binary or enter a valid URI<br>"
-			+ "<u>"
-			+ WIN32AMD64LABEL
-			+ "</u> : Select a binary or enter a valid URI<br>"
-			+ "<u>"
-			+ STDINLABEL
-			+ "</u> : Select a text file or enter a valid URI<br>"
-			+ "<u>"
-			+ DIRINLABEL
-			+ "</u> : Select a file (typically a ZIP file containing a directory tree) or enter a valid URI<br>"
-			+ "<u>" + MEMORYLABEL
-			+ "</u> : Enter the minimal memory size requirements<br>" + "<u>"
-			+ CPUSPEEDLABEL + "</u> : Enter the minimal CPU speed requirements";
+			+ "<u>" + JAVAJARLABEL + "</u> : Select a JAR file or enter a valid URI<br>" + "<u>" + LINUXIX86LABEL
+			+ "</u> : Select a binary or enter a valid URI<br>" + "<u>" + LINUXAMD64LABEL
+			+ "</u> : Select a binary or enter a valid URI<br>" + "<u>" + LINUXIA64LABEL
+			+ "</u> : Select a binary or enter a valid URI<br>" + "<u>" + LINUXPPCLABEL
+			+ "</u> : Select a binary or enter a valid URI<br>" + "<u>" + MACOSX86_64LABEL
+			+ "</u> : Select a binary or enter a valid URI<br>" + "<u>" + MACOSIX86LABEL
+			+ "</u> : Select a binary or enter a valid URI<br>" + "<u>" + MACOSPPCLABEL
+			+ "</u> : Select a binay or enter a valid URI<br>" + "<u>" + WIN32IX86LABEL
+			+ "</u> : Select a binary or enter a valid URI<br>" + "<u>" + WIN32AMD64LABEL
+			+ "</u> : Select a binary or enter a valid URI<br>" + "<u>" + STDINLABEL
+			+ "</u> : Select a text file or enter a valid URI<br>" + "<u>" + DIRINLABEL
+			+ "</u> : Select a file (typically a ZIP file containing a directory tree) or enter a valid URI<br>" + "<u>"
+			+ MEMORYLABEL + "</u> : Enter the minimal memory size requirements<br>" + "<u>" + CPUSPEEDLABEL
+			+ "</u> : Enter the minimal CPU speed requirements";
 
 	/**
 	 * This is the default constructor.
 	 */
-	public AppsTableModel(MainFrame p) {
+	public AppsTableModel(final MainFrame p) {
 		this(p, true);
 	}
 
 	/**
 	 * This is a constructor.
-	 * 
+	 *
 	 * @param detail
 	 *            tells whether to add a last column to get details
 	 */
-	public AppsTableModel(MainFrame p, boolean detail) {
+	public AppsTableModel(final MainFrame p, final boolean detail) {
 		super(p, new AppInterface(), detail);
 	}
 
 	/**
 	 * This creates new JButton
-	 * 
+	 *
 	 * @return a Vector of JButton
 	 */
 	@Override
@@ -199,8 +169,7 @@ class AppsTableModel extends TableModel {
 		newRow.add(new String()); // Min memory
 		newRow.add(new String()); // Min CPUSpeed
 
-		ViewDialog vdialog = new ViewDialog(getParent(), "Add application", labels, newRow,
-				true);
+		final ViewDialog vdialog = new ViewDialog(getParent(), "Add application", labels, newRow, true);
 		setViewDialog(vdialog);
 
 		JTextField component = (JTextField) vdialog.getFields().get(UIDLABEL);
@@ -210,8 +179,7 @@ class AppsTableModel extends TableModel {
 		component.setText(getParent().user().getLogin());
 
 		if (getParent().privileged() == false) {
-			final JTextField jtf = (JTextField) vdialog.getFields()
-					.get(ACCESSRIGHTSLABEL);
+			final JTextField jtf = (JTextField) vdialog.getFields().get(ACCESSRIGHTSLABEL);
 			accessRights = XWAccessRights.USERALL;
 			jtf.setText(accessRights.toString());
 			jtf.setEditable(false);
@@ -224,20 +192,17 @@ class AppsTableModel extends TableModel {
 			return;
 		}
 
-		String appName = ((JTextField) vdialog.getFields().get(NAMELABEL))
-				.getText();
+		String appName = ((JTextField) vdialog.getFields().get(NAMELABEL)).getText();
 		if ((appName == null) || (appName.length() == 0)) {
-			JOptionPane.showMessageDialog(getParent(),
-					"You must specify an application name", WARNING,
+			JOptionPane.showMessageDialog(getParent(), "You must specify an application name", WARNING,
 					JOptionPane.WARNING_MESSAGE);
 			return;
 		}
 
 		if (appName.length() > AppInterface.APPNAMELENGTH) {
 			appName = appName.substring(0, AppInterface.APPNAMELENGTH - 1);
-			JOptionPane.showMessageDialog(getParent(),
-					"Application name too long; truncated to " + appName,
-					WARNING, JOptionPane.WARNING_MESSAGE);
+			JOptionPane.showMessageDialog(getParent(), "Application name too long; truncated to " + appName, WARNING,
+					JOptionPane.WARNING_MESSAGE);
 		}
 
 		try {
@@ -251,12 +216,10 @@ class AppsTableModel extends TableModel {
 			try {
 				fileUri = new URI(jtf.getText());
 				if (fileUri.isFile()) {
-					fileUri = getParent().getClient().sendData(OSEnum.JAVA,
-							CPUEnum.NONE, DataTypeEnum.BINARY,
-							XWAccessRights.DEFAULT, fileUri,
-							new File(fileUri.getPath()).getName());
+					fileUri = getParent().getClient().sendData(OSEnum.JAVA, CPUEnum.NONE, DataTypeEnum.BINARY,
+							XWAccessRights.DEFAULT, fileUri, new File(fileUri.getPath()).getName());
 				}
-//				app.setBinary(XWCPUs.NONE, XWOSes.JAVA, fileUri);
+				// app.setBinary(XWCPUs.NONE, XWOSes.JAVA, fileUri);
 			} catch (final Exception e) {
 				getLogger().debug("No java JAR : " + e.toString());
 			}
@@ -266,12 +229,10 @@ class AppsTableModel extends TableModel {
 			try {
 				fileUri = new URI(jtf.getText());
 				if (fileUri.isFile()) {
-					fileUri = getParent().getClient().sendData(OSEnum.LINUX,
-							CPUEnum.IX86, DataTypeEnum.BINARY,
-							XWAccessRights.DEFAULT, fileUri,
-							new File(fileUri.getPath()).getName());
+					fileUri = getParent().getClient().sendData(OSEnum.LINUX, CPUEnum.IX86, DataTypeEnum.BINARY,
+							XWAccessRights.DEFAULT, fileUri, new File(fileUri.getPath()).getName());
 				}
-//				app.setBinary(XWCPUs.IX86, XWOSes.LINUX, fileUri);
+				// app.setBinary(XWCPUs.IX86, XWOSes.LINUX, fileUri);
 			} catch (final Exception e) {
 				getLogger().debug("No Linux ix86 binary : " + e.toString());
 			}
@@ -281,12 +242,10 @@ class AppsTableModel extends TableModel {
 			try {
 				fileUri = new URI(jtf.getText());
 				if (fileUri.isFile()) {
-					fileUri = getParent().getClient().sendData(OSEnum.LINUX,
-							CPUEnum.AMD64, DataTypeEnum.BINARY,
-							XWAccessRights.DEFAULT, fileUri,
-							new File(fileUri.getPath()).getName());
+					fileUri = getParent().getClient().sendData(OSEnum.LINUX, CPUEnum.AMD64, DataTypeEnum.BINARY,
+							XWAccessRights.DEFAULT, fileUri, new File(fileUri.getPath()).getName());
 				}
-//				app.setBinary(XWCPUs.AMD64, XWOSes.LINUX, fileUri);
+				// app.setBinary(XWCPUs.AMD64, XWOSes.LINUX, fileUri);
 			} catch (final Exception e) {
 				getLogger().debug("No Linux ix86 binary : " + e.toString());
 			}
@@ -296,12 +255,10 @@ class AppsTableModel extends TableModel {
 			try {
 				fileUri = new URI(jtf.getText());
 				if (fileUri.isFile()) {
-					fileUri = getParent().getClient().sendData(OSEnum.LINUX,
-							CPUEnum.IA64, DataTypeEnum.BINARY,
-							XWAccessRights.DEFAULT, fileUri,
-							new File(fileUri.getPath()).getName());
+					fileUri = getParent().getClient().sendData(OSEnum.LINUX, CPUEnum.IA64, DataTypeEnum.BINARY,
+							XWAccessRights.DEFAULT, fileUri, new File(fileUri.getPath()).getName());
 				}
-//				app.setBinary(XWCPUs.IA64, XWOSes.LINUX, fileUri);
+				// app.setBinary(XWCPUs.IA64, XWOSes.LINUX, fileUri);
 			} catch (final Exception e) {
 				getLogger().debug("No Linux ia64 binary : " + e.toString());
 			}
@@ -311,12 +268,10 @@ class AppsTableModel extends TableModel {
 			try {
 				fileUri = new URI(jtf.getText());
 				if (fileUri.isFile()) {
-					fileUri = getParent().getClient().sendData(OSEnum.LINUX,
-							CPUEnum.PPC, DataTypeEnum.BINARY,
-							XWAccessRights.DEFAULT, fileUri,
-							new File(fileUri.getPath()).getName());
+					fileUri = getParent().getClient().sendData(OSEnum.LINUX, CPUEnum.PPC, DataTypeEnum.BINARY,
+							XWAccessRights.DEFAULT, fileUri, new File(fileUri.getPath()).getName());
 				}
-//				app.setBinary(XWCPUs.PPC, XWOSes.LINUX, fileUri);
+				// app.setBinary(XWCPUs.PPC, XWOSes.LINUX, fileUri);
 			} catch (final Exception e) {
 				getLogger().debug("No Linux ppc binary : " + e.toString());
 			}
@@ -326,12 +281,10 @@ class AppsTableModel extends TableModel {
 			try {
 				fileUri = new URI(jtf.getText());
 				if (fileUri.isFile()) {
-					fileUri = getParent().getClient().sendData(OSEnum.WIN32,
-							CPUEnum.IX86, DataTypeEnum.BINARY,
-							XWAccessRights.DEFAULT, fileUri,
-							new File(fileUri.getPath()).getName());
+					fileUri = getParent().getClient().sendData(OSEnum.WIN32, CPUEnum.IX86, DataTypeEnum.BINARY,
+							XWAccessRights.DEFAULT, fileUri, new File(fileUri.getPath()).getName());
 				}
-//				app.setBinary(XWCPUs.PPC, XWOSes.LINUX, fileUri);
+				// app.setBinary(XWCPUs.PPC, XWOSes.LINUX, fileUri);
 			} catch (final Exception e) {
 				getLogger().debug("No Win32 ix86 binary : " + e.toString());
 			}
@@ -341,12 +294,10 @@ class AppsTableModel extends TableModel {
 			try {
 				fileUri = new URI(jtf.getText());
 				if (fileUri.isFile()) {
-					fileUri = getParent().getClient().sendData(OSEnum.WIN32,
-							CPUEnum.AMD64, DataTypeEnum.BINARY,
-							XWAccessRights.DEFAULT, fileUri,
-							new File(fileUri.getPath()).getName());
+					fileUri = getParent().getClient().sendData(OSEnum.WIN32, CPUEnum.AMD64, DataTypeEnum.BINARY,
+							XWAccessRights.DEFAULT, fileUri, new File(fileUri.getPath()).getName());
 				}
-//				app.setBinary(XWCPUs.PPC, XWOSes.LINUX, fileUri);
+				// app.setBinary(XWCPUs.PPC, XWOSes.LINUX, fileUri);
 			} catch (final Exception e) {
 				getLogger().debug("No Win32 AMD64 binary : " + e.toString());
 			}
@@ -356,12 +307,10 @@ class AppsTableModel extends TableModel {
 			try {
 				fileUri = new URI(jtf.getText());
 				if (fileUri.isFile()) {
-					fileUri = getParent().getClient().sendData(OSEnum.MACOSX,
-							CPUEnum.X86_64, DataTypeEnum.BINARY,
-							XWAccessRights.DEFAULT, fileUri,
-							new File(fileUri.getPath()).getName());
+					fileUri = getParent().getClient().sendData(OSEnum.MACOSX, CPUEnum.X86_64, DataTypeEnum.BINARY,
+							XWAccessRights.DEFAULT, fileUri, new File(fileUri.getPath()).getName());
 				}
-//				app.setBinary(XWCPUs.X86_64, XWOSes.MACOSX, fileUri);
+				// app.setBinary(XWCPUs.X86_64, XWOSes.MACOSX, fileUri);
 			} catch (final Exception e) {
 				getLogger().debug("No Mac OS X x86_64  binary : " + e.toString());
 			}
@@ -371,12 +320,10 @@ class AppsTableModel extends TableModel {
 			try {
 				fileUri = new URI(jtf.getText());
 				if (fileUri.isFile()) {
-					fileUri = getParent().getClient().sendData(OSEnum.MACOSX,
-							CPUEnum.IX86, DataTypeEnum.BINARY,
-							XWAccessRights.DEFAULT, fileUri,
-							new File(fileUri.getPath()).getName());
+					fileUri = getParent().getClient().sendData(OSEnum.MACOSX, CPUEnum.IX86, DataTypeEnum.BINARY,
+							XWAccessRights.DEFAULT, fileUri, new File(fileUri.getPath()).getName());
 				}
-//				app.setBinary(XWCPUs.IX86, XWOSes.MACOSX, fileUri);
+				// app.setBinary(XWCPUs.IX86, XWOSes.MACOSX, fileUri);
 			} catch (final Exception e) {
 				getLogger().debug("No Mac OS X ix86  binary : " + e.toString());
 			}
@@ -386,12 +333,10 @@ class AppsTableModel extends TableModel {
 			try {
 				fileUri = new URI(jtf.getText());
 				if (fileUri.isFile()) {
-					fileUri = getParent().getClient().sendData(OSEnum.MACOSX,
-							CPUEnum.PPC, DataTypeEnum.BINARY,
-							XWAccessRights.DEFAULT, fileUri,
-							new File(fileUri.getPath()).getName());
+					fileUri = getParent().getClient().sendData(OSEnum.MACOSX, CPUEnum.PPC, DataTypeEnum.BINARY,
+							XWAccessRights.DEFAULT, fileUri, new File(fileUri.getPath()).getName());
 				}
-//				app.setBinary(XWCPUs.PPC, XWOSes.MACOSX, fileUri);
+				// app.setBinary(XWCPUs.PPC, XWOSes.MACOSX, fileUri);
 			} catch (final Exception e) {
 				getLogger().debug("No Mac OS X PPC binary : " + e.toString());
 			}
@@ -410,8 +355,7 @@ class AppsTableModel extends TableModel {
 				app.setDefaultDirin(new URI(str));
 			}
 
-			final String accessRightsStr = ((JTextField) vdialog.getFields()
-					.get(ACCESSRIGHTSLABEL)).getText();
+			final String accessRightsStr = ((JTextField) vdialog.getFields().get(ACCESSRIGHTSLABEL)).getText();
 			if ((accessRightsStr != null) && (accessRightsStr.length() > 0)) {
 				try {
 					accessRights = new XWAccessRights(accessRightsStr);
@@ -420,14 +364,12 @@ class AppsTableModel extends TableModel {
 			}
 			app.setAccessRights(accessRights);
 
-			final String minMem = ((JTextField) vdialog.getFields()
-					.get(MEMORYLABEL)).getText();
+			final String minMem = ((JTextField) vdialog.getFields().get(MEMORYLABEL)).getText();
 			if ((minMem != null) && (minMem.length() > 0)) {
 				app.setMinMemory(new Integer(minMem).intValue());
 			}
 
-			final String minSpeed = ((JTextField) vdialog.getFields()
-					.get(CPUSPEEDLABEL)).getText();
+			final String minSpeed = ((JTextField) vdialog.getFields().get(CPUSPEEDLABEL)).getText();
 			if ((minSpeed != null) && (minSpeed.length() > 0)) {
 				app.setMinCpuSpeed(new Integer(minSpeed).intValue());
 			}
@@ -437,19 +379,19 @@ class AppsTableModel extends TableModel {
 			if (getLogger().debug()) {
 				e.printStackTrace();
 			}
-			JOptionPane.showMessageDialog(getParent(), "Can't send application : "
-					+ e, ERROR, JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(getParent(), "Can't send application : " + e, ERROR,
+					JOptionPane.ERROR_MESSAGE);
 		}
 	}
 
 	/**
 	 * This retreives the panel of the specified command
 	 */
-	public JPanel getPanel(Commands id) {
+	public JPanel getPanel(final Commands id) {
 
 		JPanel innerPanel = null;
-		ViewDialog vdialog = getViewDialog();
-		
+		final ViewDialog vdialog = getViewDialog();
+
 		switch (id) {
 		case LINUXIX86:
 			innerPanel = (JPanel) vdialog.getFields().get(LINUXIX86LABEL);
@@ -494,7 +436,7 @@ class AppsTableModel extends TableModel {
 	 * according field
 	 */
 	@Override
-	public void selectData(Commands id) {
+	public void selectData(final Commands id) {
 
 		final TableModel tm = new DatasTableModel(getParent());
 		try {
@@ -508,8 +450,7 @@ class AppsTableModel extends TableModel {
 			return;
 		}
 
-		final DataInterface data = (DataInterface) selectDialogBox(
-				id.getTitle(), tm);
+		final DataInterface data = (DataInterface) selectDialogBox(id.getTitle(), tm);
 
 		if (data == null) {
 			return;
@@ -528,7 +469,7 @@ class AppsTableModel extends TableModel {
 	 * This reset the command field
 	 */
 	@Override
-	public void resetData(Commands id) {
+	public void resetData(final Commands id) {
 
 		final JPanel innerPanel = getPanel(id);
 		if (innerPanel != null) {
@@ -549,7 +490,7 @@ class AppsTableModel extends TableModel {
 
 	/**
 	 * This retreives a Vector of application UID from server
-	 * 
+	 *
 	 * @return an empty vector on error
 	 * @see xtremweb.communications.CommAPI#getApps()
 	 */
@@ -567,12 +508,12 @@ class AppsTableModel extends TableModel {
 
 	/**
 	 * This retreives an application from server
-	 * 
+	 *
 	 * @return an AppInterface or null on error
 	 * @see xtremweb.communications.CommAPI#getApp(UID)
 	 */
 	@Override
-	public Table getRow(UID uid) throws ConnectException {
+	public Table getRow(final UID uid) throws ConnectException {
 		try {
 			final AppInterface app = (AppInterface) super.getRow(uid);
 			if (app == null) {

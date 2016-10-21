@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -42,8 +42,8 @@ import java.util.Vector;
 import javax.swing.JButton;
 
 import xtremweb.common.HostInterface;
-import xtremweb.common.TableColumns;
 import xtremweb.common.Table;
+import xtremweb.common.TableColumns;
 import xtremweb.common.UID;
 import xtremweb.common.UserInterface;
 import xtremweb.common.XMLVector;
@@ -67,24 +67,24 @@ class HostsTableModel extends TableModel {
 	/**
 	 * This is the default constructor.
 	 */
-	public HostsTableModel(MainFrame p) {
+	public HostsTableModel(final MainFrame p) {
 		this(p, true);
 	}
 
 	/**
 	 * This is a constructor.
-	 * 
+	 *
 	 * @param detail
 	 *            tells whether to add a last column to get details
 	 */
-	public HostsTableModel(MainFrame p, boolean detail) {
+	public HostsTableModel(final MainFrame p, final boolean detail) {
 		super(p, new HostInterface(), detail);
 		activateButton = null;
 	}
 
 	/**
 	 * This creates new JButton
-	 * 
+	 *
 	 * @return a Vector of JButton
 	 */
 	@Override
@@ -95,7 +95,8 @@ class HostsTableModel extends TableModel {
 		if (activateButton == null) {
 			activateButton = new JButton(ACTIVATE_LABEL);
 			activateButton.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
+				@Override
+				public void actionPerformed(final ActionEvent e) {
 					activate();
 				}
 			});
@@ -122,23 +123,20 @@ class HostsTableModel extends TableModel {
 	 */
 	@Override
 	public void view() {
-		super.view(
-				"Host viewer",
-				"ACTIVE flag is set on server side: only ACTIVE workers may receive jobs\n"
-						+ "AVAILABLE flas is set by the worker itself, accordingly to its local policy (mouse/keyboard...)");
+		super.view("Host viewer", "ACTIVE flag is set on server side: only ACTIVE workers may receive jobs\n"
+				+ "AVAILABLE flas is set by the worker itself, accordingly to its local policy (mouse/keyboard...)");
 	}
 
 	/**
 	 * This replaces UID by human readable columns
 	 */
 	@Override
-	protected Vector getViewableRow(Vector row) {
+	protected Vector getViewableRow(final Vector row) {
 		final Vector clone = (Vector) row.clone();
 		try {
 			final int index = TableColumns.OWNERUID.getOrdinal();
 			final UID uid = (UID) clone.elementAt(index);
-			final UserInterface user = (UserInterface) getParent().commClient().get(
-					uid, false);
+			final UserInterface user = (UserInterface) getParent().commClient().get(uid, false);
 			clone.set(index, user.getLogin());
 		} catch (final Exception e) {
 			getLogger().exception(e);
@@ -155,7 +153,7 @@ class HostsTableModel extends TableModel {
 
 	/**
 	 * This retreives a Vector of worker UID from server
-	 * 
+	 *
 	 * @return an empty vector on error
 	 * @see xtremweb.communications.CommAPI#getHosts()
 	 */
@@ -173,16 +171,15 @@ class HostsTableModel extends TableModel {
 
 	/**
 	 * This retreives an host from server
-	 * 
+	 *
 	 * @return an HostInterface or null on error
 	 * @see xtremweb.communications.CommAPI#getWorker(UID)
 	 */
 	@Override
-	public Table getRow(UID uid) throws ConnectException {
+	public Table getRow(final UID uid) throws ConnectException {
 		try {
 			getParent().setTitleConnected();
-			final HostInterface host = (HostInterface) getParent().commClient().get(
-					uid);
+			final HostInterface host = (HostInterface) getParent().commClient().get(uid);
 			if (host == null) {
 				return null;
 			}
@@ -215,12 +212,9 @@ class HostsTableModel extends TableModel {
 
 		for (int row = 0; row < getRowCount(); row++) {
 
-			final String hostName = (String) getValueAt(row,
-					HostInterface.Columns.NAME.ordinal());
-			final Boolean trace = (Boolean) getValueAt(row,
-					HostInterface.Columns.TRACES.ordinal());
-			final Boolean active = (Boolean) getValueAt(row,
-					HostInterface.Columns.ACTIVE.ordinal());
+			final String hostName = (String) getValueAt(row, HostInterface.Columns.NAME.ordinal());
+			final Boolean trace = (Boolean) getValueAt(row, HostInterface.Columns.TRACES.ordinal());
+			final Boolean active = (Boolean) getValueAt(row, HostInterface.Columns.ACTIVE.ordinal());
 
 			activatedHosts.put(hostName, active);
 			tracerHosts.put(hostName, trace);

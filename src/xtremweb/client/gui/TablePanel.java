@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -56,8 +56,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.TableCellRenderer;
 
-import xtremweb.common.UID;
 import xtremweb.common.StatusEnum;
+import xtremweb.common.UID;
 
 /**
  * This class describes the XtremWeb client swing panel.
@@ -65,7 +65,7 @@ import xtremweb.common.StatusEnum;
 
 public class TablePanel extends JPanel {
 
-	private JTable jTable;
+	private final JTable jTable;
 	private final TableModel model;
 
 	public TableModel getTableModel() {
@@ -77,7 +77,7 @@ public class TablePanel extends JPanel {
 	/**
 	 * This constructor inserts needed tables.
 	 */
-	public TablePanel(TableModel m) {
+	public TablePanel(final TableModel m) {
 
 		super(new GridBagLayout());
 		model = m;
@@ -155,12 +155,12 @@ public class TablePanel extends JPanel {
 	 * This calls JTable::setDefaultRenderer(). Its sets a renderer for JButton;
 	 * we don't have to worry about rendering JCheckBox since it is included in
 	 * standard Java API.
-	 * 
+	 *
 	 * @see the java programming API.
 	 * @param table
 	 *            containing button cells.
 	 */
-	private void setUpButtonRenderer(JTable table) {
+	private void setUpButtonRenderer(final JTable table) {
 		table.setDefaultRenderer(JButton.class, new PushButtonRenderer());
 		table.setDefaultRenderer(String.class, new StringRenderer());
 		table.setDefaultRenderer(UID.class, new StringRenderer());
@@ -171,12 +171,12 @@ public class TablePanel extends JPanel {
 	 * This defines action on button click in dedicated table button cells. Its
 	 * sets an editor for JButton; we don't have to worry about editing
 	 * JCheckBox since it is included in standard Java API.
-	 * 
+	 *
 	 * @see the java programming API.
 	 * @param table
 	 *            containing button cells.
 	 */
-	private void setUpButtonEditor(JTable table) {
+	private void setUpButtonEditor(final JTable table) {
 		//
 		// First, set up button that bring up the dialog.
 		//
@@ -186,8 +186,7 @@ public class TablePanel extends JPanel {
 		// Now create editors to encapsulate buttons, and
 		// set them up as editors.
 		//
-		final PushButtonEditor pushButtonEditor = new PushButtonEditor(
-				pushButton);
+		final PushButtonEditor pushButtonEditor = new PushButtonEditor(pushButton);
 		table.setDefaultEditor(JButton.class, pushButtonEditor);
 	}
 
@@ -199,9 +198,9 @@ public class TablePanel extends JPanel {
 		public ArrayRenderer() {
 		}
 
-		public Component getTableCellRendererComponent(JTable table,
-				Object value, boolean isSelected, boolean hasFocus, int row,
-				int column) {
+		@Override
+		public Component getTableCellRendererComponent(final JTable table, final Object value, final boolean isSelected,
+				final boolean hasFocus, final int row, final int column) {
 			return this;
 		}
 	}
@@ -215,9 +214,9 @@ public class TablePanel extends JPanel {
 			super("Detail");
 		}
 
-		public Component getTableCellRendererComponent(JTable table,
-				Object value, boolean isSelected, boolean hasFocus, int row,
-				int column) {
+		@Override
+		public Component getTableCellRendererComponent(final JTable table, final Object value, final boolean isSelected,
+				final boolean hasFocus, final int row, final int column) {
 			return this;
 		}
 	}
@@ -233,9 +232,9 @@ public class TablePanel extends JPanel {
 			this.setBackground(Color.WHITE);
 		}
 
-		public Component getTableCellRendererComponent(JTable table,
-				Object value, boolean isSelected, boolean hasFocus, int row,
-				int column) {
+		@Override
+		public Component getTableCellRendererComponent(final JTable table, final Object value, final boolean isSelected,
+				final boolean hasFocus, final int row, final int column) {
 			if (value != null) {
 
 				Color color = Color.BLACK;
@@ -280,9 +279,9 @@ public class TablePanel extends JPanel {
 			this.setBackground(Color.WHITE);
 		}
 
-		public Component getTableCellRendererComponent(JTable table,
-				Object value, boolean isSelected, boolean hasFocus, int row,
-				int column) {
+		@Override
+		public Component getTableCellRendererComponent(final JTable table, final Object value, final boolean isSelected,
+				final boolean hasFocus, final int row, final int column) {
 			if (value != null) {
 				setText(value.toString());
 				if (isSelected) {
@@ -301,7 +300,7 @@ public class TablePanel extends JPanel {
 
 	class PushButtonEditor extends DefaultCellEditor {
 
-		public PushButtonEditor(JButton b) {
+		public PushButtonEditor(final JButton b) {
 			// This is an artefact only, since our button is a simple JButton.
 			// Unfortunately, the constructor expects JCheckBox, JComboBox,
 			// or JText.
@@ -312,7 +311,8 @@ public class TablePanel extends JPanel {
 
 			// Must do this so that editing stops when appropriate.
 			b.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
+				@Override
+				public void actionPerformed(final ActionEvent e) {
 					fireEditingStopped();
 				}
 			});
@@ -324,8 +324,8 @@ public class TablePanel extends JPanel {
 		}
 
 		@Override
-		public Component getTableCellEditorComponent(JTable table,
-				Object value, boolean isSelected, int row, int column) {
+		public Component getTableCellEditorComponent(final JTable table, final Object value, final boolean isSelected,
+				final int row, final int column) {
 
 			final JTable dataTable;
 			final String dlgTitle;

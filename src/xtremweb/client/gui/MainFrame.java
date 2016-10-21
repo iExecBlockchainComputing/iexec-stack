@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -89,7 +89,7 @@ import xtremweb.worker.Worker;
  */
 public final class MainFrame extends JFrame implements ActionListener {
 
-	private Logger logger;
+	private final Logger logger;
 
 	public LoggerLevel getLoggerLevel() {
 		return logger.getLoggerLevel();
@@ -101,7 +101,7 @@ public final class MainFrame extends JFrame implements ActionListener {
 	 * This sets the logger level. This also sets the logger levels checkboxes
 	 * menu item.
 	 */
-	public void setLoggerLevel(LoggerLevel l) {
+	public void setLoggerLevel(final LoggerLevel l) {
 		try {
 			logger.setLoggerLevel(l);
 			client.setLoggerLevel(l);
@@ -146,9 +146,9 @@ public final class MainFrame extends JFrame implements ActionListener {
 
 	/**
 	 * This retrieves the communication layer
-	 * 
+	 *
 	 * @throws IOException
-	 * @throws InstantiationException 
+	 * @throws InstantiationException
 	 */
 	public CommClient commClient() throws IOException, InstantiationException {
 		return client.commClient();
@@ -205,13 +205,13 @@ public final class MainFrame extends JFrame implements ActionListener {
 	private final JCheckBoxMenuItem itemDebug;
 	/**
 	 * This is the "logger config" menu item, in "Help" menu
-	 * 
+	 *
 	 * @since 7.0.0
 	 */
 	private final JCheckBoxMenuItem itemConfig;
 	/**
 	 * This is the "logger finest" menu item, in "Help" menu
-	 * 
+	 *
 	 * @since 7.0.0
 	 */
 	private final JCheckBoxMenuItem itemFinest;
@@ -235,7 +235,7 @@ public final class MainFrame extends JFrame implements ActionListener {
 	/**
 	 * This is the main panel
 	 */
-	private MainPanel myPanel;
+	private final MainPanel myPanel;
 
 	/**
 	 * This shows download progress
@@ -245,7 +245,7 @@ public final class MainFrame extends JFrame implements ActionListener {
 	/**
 	 * This sets the progressbar value
 	 */
-	public void setProgressValue(int v) {
+	public void setProgressValue(final int v) {
 		progressBar.setValue(v);
 		progressBar.paintImmediately(progressBar.getVisibleRect());
 	}
@@ -253,7 +253,7 @@ public final class MainFrame extends JFrame implements ActionListener {
 	/**
 	 * This sets the progressbar value
 	 */
-	public void setProgressStringPainted(boolean b) {
+	public void setProgressStringPainted(final boolean b) {
 		progressBar.setStringPainted(b);
 	}
 
@@ -274,14 +274,14 @@ public final class MainFrame extends JFrame implements ActionListener {
 	/**
 	 * This sets the progressbar minimum
 	 */
-	public void setProgressMinimum(int v) {
+	public void setProgressMinimum(final int v) {
 		progressBar.setMinimum(v);
 	}
 
 	/**
 	 * This sets the progressbar maximum
 	 */
-	public void setProgressMaximum(int v) {
+	public void setProgressMaximum(final int v) {
 		progressBar.setMaximum(v);
 	}
 
@@ -297,14 +297,13 @@ public final class MainFrame extends JFrame implements ActionListener {
 	 * This sets title to "login@server"
 	 */
 	public void setTitleConnected() {
-		setTitleConnected(client.getConfig().getUser().getLogin(), client
-				.getConfig().getCurrentDispatcher());
+		setTitleConnected(client.getConfig().getUser().getLogin(), client.getConfig().getCurrentDispatcher());
 	}
 
 	/**
 	 * This sets title to "login@server"
 	 */
-	public void setTitleConnected(String login, String server) {
+	public void setTitleConnected(final String login, final String server) {
 		setTitle("XWHEP : " + login + "@" + server);
 		myPanel.setVisible(true);
 	}
@@ -325,7 +324,7 @@ public final class MainFrame extends JFrame implements ActionListener {
 	/**
 	 * This sets the total lines and refresh linesInfo
 	 */
-	public void setTotalLines(int v) {
+	public void setTotalLines(final int v) {
 		totalLines = v;
 		linesInfo.setText("" + selectedLines + "/" + totalLines);
 	}
@@ -347,7 +346,7 @@ public final class MainFrame extends JFrame implements ActionListener {
 	/**
 	 * This sets the selected lines and refresh linesInfo
 	 */
-	public void setSelectedLines(int v) {
+	public void setSelectedLines(final int v) {
 		selectedLines = v;
 		linesInfo.setText("" + selectedLines + "/" + totalLines);
 	}
@@ -364,12 +363,12 @@ public final class MainFrame extends JFrame implements ActionListener {
 		/**
 		 * This is the only method of that class, inherited from interface
 		 * <CODE>WindowAdapter</CODE>.
-		 * 
+		 *
 		 * @param ev
 		 *            is the event to process.
 		 */
 		@Override
-		public void windowClosing(WindowEvent ev) {
+		public void windowClosing(final WindowEvent ev) {
 			processQuit();
 		}
 
@@ -378,11 +377,11 @@ public final class MainFrame extends JFrame implements ActionListener {
 	/**
 	 * This constructor creates the main window. Including a <CODE>Panel</CODE>
 	 * panel.
-	 * 
+	 *
 	 * @param c
 	 *            is the client
 	 */
-	public MainFrame(Client c) {
+	public MainFrame(final Client c) {
 
 		super("XWHEP Client");
 
@@ -516,7 +515,8 @@ public final class MainFrame extends JFrame implements ActionListener {
 		startWorker = new JButton("Start a new worker");
 		startWorker.setMnemonic(KeyEvent.VK_W);
 		startWorker.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+			@Override
+			public void actionPerformed(final ActionEvent e) {
 				startWorker();
 			}
 		});
@@ -524,7 +524,8 @@ public final class MainFrame extends JFrame implements ActionListener {
 		showWorker = new JButton("Show worker");
 		showWorker.setMnemonic(KeyEvent.VK_W);
 		showWorker.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+			@Override
+			public void actionPerformed(final ActionEvent e) {
 				showWorker();
 			}
 		});
@@ -585,14 +586,13 @@ public final class MainFrame extends JFrame implements ActionListener {
 
 	/**
 	 * This checks whether user is administrator
-	 * 
+	 *
 	 * @return true if user is administrator, false on connection error
 	 * @see xtremweb.common.UserRightEnum
 	 */
 	public boolean privileged() {
 		try {
-			return (client.getConfig().getUser().getRights()
-					.higherOrEquals(UserRightEnum.SUPER_USER));
+			return (client.getConfig().getUser().getRights().higherOrEquals(UserRightEnum.SUPER_USER));
 		} catch (final NullPointerException e) {
 			return false;
 		}
@@ -601,11 +601,12 @@ public final class MainFrame extends JFrame implements ActionListener {
 	/**
 	 * This instanciates the ActionListener interface method to catch menu
 	 * events.
-	 * 
+	 *
 	 * @param ev
 	 *            is the event to process.
 	 */
-	public void actionPerformed(ActionEvent ev) {
+	@Override
+	public void actionPerformed(final ActionEvent ev) {
 		final JMenuItem src = (JMenuItem) ev.getSource();
 
 		if (src == itemQuit) {
@@ -648,18 +649,15 @@ public final class MainFrame extends JFrame implements ActionListener {
 	 */
 	private void processHttp() {
 		try {
-			client.getConfig().setProperty(XWPropertyDefs.COMMLAYER,
-					Connection.HTTPPORT.layer());
-			CommClient.addHandler(Connection.xwScheme(),
-					Connection.HTTPPORT.layer());
+			client.getConfig().setProperty(XWPropertyDefs.COMMLAYER, Connection.HTTPPORT.layer());
+			CommClient.addHandler(Connection.xwScheme(), Connection.HTTPPORT.layer());
 			tryGetUser();
 			itemHttp.setState(true);
 			itemTcp.setState(false);
 			itemUdp.setState(false);
 		} catch (final Exception e) {
 			itemHttp.setState(false);
-			JOptionPane.showMessageDialog(this, e.toString(),
-					TableModel.WARNING, JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(this, e.toString(), TableModel.WARNING, JOptionPane.ERROR_MESSAGE);
 		}
 	}
 
@@ -668,18 +666,15 @@ public final class MainFrame extends JFrame implements ActionListener {
 	 */
 	private void processTcp() {
 		try {
-			client.getConfig().setProperty(XWPropertyDefs.COMMLAYER,
-					Connection.TCPPORT.layer());
-			CommClient
-					.addHandler(Connection.xwScheme(), Connection.TCPPORT.layer());
+			client.getConfig().setProperty(XWPropertyDefs.COMMLAYER, Connection.TCPPORT.layer());
+			CommClient.addHandler(Connection.xwScheme(), Connection.TCPPORT.layer());
 			tryGetUser();
 			itemHttp.setState(false);
 			itemTcp.setState(true);
 			itemUdp.setState(false);
 		} catch (final Exception e) {
 			itemTcp.setState(false);
-			JOptionPane.showMessageDialog(this, e.toString(),
-					TableModel.WARNING, JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(this, e.toString(), TableModel.WARNING, JOptionPane.ERROR_MESSAGE);
 		}
 	}
 
@@ -688,18 +683,15 @@ public final class MainFrame extends JFrame implements ActionListener {
 	 */
 	private void processUdp() {
 		try {
-			client.getConfig().setProperty(XWPropertyDefs.COMMLAYER,
-					Connection.UDPPORT.layer());
-			CommClient
-					.addHandler(Connection.xwScheme(), Connection.UDPPORT.layer());
+			client.getConfig().setProperty(XWPropertyDefs.COMMLAYER, Connection.UDPPORT.layer());
+			CommClient.addHandler(Connection.xwScheme(), Connection.UDPPORT.layer());
 			tryGetUser();
 			itemHttp.setState(false);
 			itemTcp.setState(false);
 			itemUdp.setState(true);
 		} catch (final Exception e) {
 			itemUdp.setState(false);
-			JOptionPane.showMessageDialog(this, e.toString(),
-					TableModel.WARNING, JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(this, e.toString(), TableModel.WARNING, JOptionPane.ERROR_MESSAGE);
 		}
 	}
 
@@ -743,8 +735,7 @@ public final class MainFrame extends JFrame implements ActionListener {
 			client.getConfig().addDispatcher(dlg.getServer().getText());
 			client.getConfig().setCurrentDispatcher(dlg.getServer().getText());
 		} catch (final Exception e) {
-			JOptionPane.showMessageDialog(this, e.toString(),
-					TableModel.WARNING, JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(this, e.toString(), TableModel.WARNING, JOptionPane.ERROR_MESSAGE);
 			return;
 		}
 
@@ -790,15 +781,14 @@ public final class MainFrame extends JFrame implements ActionListener {
 				helpViewer = new Browser();
 				helpViewer.addWindowListener(new WindowAdapter() {
 					@Override
-					public void windowClosing(WindowEvent e) {
+					public void windowClosing(final WindowEvent e) {
 						helpViewer.setVisible(false);
 					}
 				});
 			}
 			helpViewer.setVisible(true);
 		} catch (final IOException e) {
-			JOptionPane.showMessageDialog(this, "Can't get help from "
-					+ Browser.getURL(), TableModel.WARNING,
+			JOptionPane.showMessageDialog(this, "Can't get help from " + Browser.getURL(), TableModel.WARNING,
 					JOptionPane.ERROR_MESSAGE);
 		}
 	}
@@ -816,8 +806,7 @@ public final class MainFrame extends JFrame implements ActionListener {
 			logger.exception(e);
 		}
 
-		System.out.println("currentVersion "
-				+ CommonVersion.getCurrent().toString());
+		System.out.println("currentVersion " + CommonVersion.getCurrent().toString());
 		System.out.println(" serverVersion " + serverVersion.toString());
 		String versionWarn = "unknown";
 		if (serverVersion != null) {
@@ -827,28 +816,20 @@ public final class MainFrame extends JFrame implements ActionListener {
 			versionWarn += "\n\n* * * * * * \nYou should upgrade your client\n* * * * * * \n\n";
 		}
 
-		JOptionPane
-				.showMessageDialog(
-						this,
-						"Current version : "
-								+ CommonVersion.getCurrent()
-								+ "\nServer  version : "
-								+ versionWarn
-								+ "\nWritten by Oleg Lodygensky\n"
-								+ "LAL IN2P3 CNRS France - "
-								+ url
-								+ "\n\nBased on XtremWeb 1.8.0 by LRI INRIA France\n\n"
-								+ "This software is under GPL license\n"
-								+ "THIS SOFTWARE IS PROVIDED \"AS IS\" AND ANY EXPRESSED OR IMPLIED WARRANTIES,\n"
-								+ "INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS\n"
-								+ "FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS\n"
-								+ "BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL\n"
-								+ "DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n"
-								+ "LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY\n"
-								+ "OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE\n"
-								+ "OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF\n"
-								+ "THE POSSIBILITY OF SUCH DAMAGE.\n\n",
-						"XWHEP Version", JOptionPane.INFORMATION_MESSAGE);
+		JOptionPane.showMessageDialog(this,
+				"Current version : " + CommonVersion.getCurrent() + "\nServer  version : " + versionWarn
+						+ "\nWritten by Oleg Lodygensky\n" + "LAL IN2P3 CNRS France - " + url
+						+ "\n\nBased on XtremWeb 1.8.0 by LRI INRIA France\n\n" + "This software is under GPL license\n"
+						+ "THIS SOFTWARE IS PROVIDED \"AS IS\" AND ANY EXPRESSED OR IMPLIED WARRANTIES,\n"
+						+ "INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS\n"
+						+ "FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS\n"
+						+ "BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL\n"
+						+ "DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n"
+						+ "LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY\n"
+						+ "OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE\n"
+						+ "OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF\n"
+						+ "THE POSSIBILITY OF SUCH DAMAGE.\n\n",
+				"XWHEP Version", JOptionPane.INFORMATION_MESSAGE);
 	}
 
 	/**
@@ -865,13 +846,11 @@ public final class MainFrame extends JFrame implements ActionListener {
 			commClient().disconnect();
 
 			if (!getUser()) {
-				JOptionPane.showMessageDialog(this, "Connection error!!!\n\n"
-						+ "This may be due to :\n"
-						+ "  - server is not reachable;\n"
-						+ "  - communication layer is wrong"
-						+ " (try another one in 'Comm' menu);\n"
-						+ "  - wrong login/password.", TableModel.WARNING,
-						JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(this,
+						"Connection error!!!\n\n" + "This may be due to :\n" + "  - server is not reachable;\n"
+								+ "  - communication layer is wrong" + " (try another one in 'Comm' menu);\n"
+								+ "  - wrong login/password.",
+						TableModel.WARNING, JOptionPane.ERROR_MESSAGE);
 				startWorker.setEnabled(false);
 			}
 
@@ -885,9 +864,9 @@ public final class MainFrame extends JFrame implements ActionListener {
 			setTitleNotConnected();
 			startWorker.setEnabled(false);
 			myPanel.setEnabled(false);
-			JOptionPane.showMessageDialog(this, "Can not connect to server "
-					+ client.getConfig().getCurrentDispatcher(),
-					TableModel.WARNING, JOptionPane.WARNING_MESSAGE);
+			JOptionPane.showMessageDialog(this,
+					"Can not connect to server " + client.getConfig().getCurrentDispatcher(), TableModel.WARNING,
+					JOptionPane.WARNING_MESSAGE);
 		}
 
 		setCursor(null);
@@ -903,19 +882,15 @@ public final class MainFrame extends JFrame implements ActionListener {
 			String certificate = null;
 			pass = client.getConfig().getUser().getPassword();
 			certificate = client.getConfig().getUser().getCertificate();
-			client.getConfig().setUser(commClient().getUser(
-					client.getConfig().getUser().getLogin()));
+			client.getConfig().setUser(commClient().getUser(client.getConfig().getUser().getLogin()));
 			client.getConfig().getUser().setPassword(pass);
 			client.getConfig().getUser().setCertificate(certificate);
 
 			if (!privileged()) {
-				JOptionPane.showMessageDialog(this,
-						"You are not administrator : "
-								+ "some options are disabled",
+				JOptionPane.showMessageDialog(this, "You are not administrator : " + "some options are disabled",
 						TableModel.WARNING, JOptionPane.WARNING_MESSAGE);
 			}
-			setTitleConnected(client.getConfig().getUser().getLogin(), client
-					.getConfig().getCurrentDispatcher());
+			setTitleConnected(client.getConfig().getUser().getLogin(), client.getConfig().getCurrentDispatcher());
 
 			myPanel.setEnabled(true);
 			startWorker.setEnabled(true);
@@ -949,20 +924,17 @@ public final class MainFrame extends JFrame implements ActionListener {
 		//
 		// verifying URL launcher
 		//
-		String launchURL = client.getConfig().getProperty(
-				XWPropertyDefs.LAUNCHERURL);
+		String launchURL = client.getConfig().getProperty(XWPropertyDefs.LAUNCHERURL);
 		if ((launchURL == null) || (launchURL.length() == 0)) {
 			final String strurl = JOptionPane.showInputDialog(this,
-					XWPropertyDefs.LAUNCHERURL.toString() + " is not set.\n"
-							+ "Do you knwow a valid URL ?", TableModel.WARNING,
-					JOptionPane.WARNING_MESSAGE);
+					XWPropertyDefs.LAUNCHERURL.toString() + " is not set.\n" + "Do you knwow a valid URL ?",
+					TableModel.WARNING, JOptionPane.WARNING_MESSAGE);
 			if ((strurl == null) || (strurl.length() <= 0)) {
 				return;
 			}
 
 			client.getConfig().setProperty(XWPropertyDefs.LAUNCHERURL, strurl);
-			launchURL = client.getConfig().getProperty(
-					XWPropertyDefs.LAUNCHERURL);
+			launchURL = client.getConfig().getProperty(XWPropertyDefs.LAUNCHERURL);
 
 		}
 
@@ -972,8 +944,7 @@ public final class MainFrame extends JFrame implements ActionListener {
 			try {
 				URL url = new URL(launchURL);
 				if ((url.getPath() == null) || (url.getPath().length() == 0)) {
-					url = new URL(url.toString()
-							+ "/XWHEP/download/xtremweb.jar");
+					url = new URL(url.toString() + "/XWHEP/download/xtremweb.jar");
 				}
 				logger.debug("url launcher = " + launchURL);
 				final JarClassLoader cl = new JarClassLoader(url);
@@ -983,17 +954,14 @@ public final class MainFrame extends JFrame implements ActionListener {
 			} catch (final Exception e) {
 				logger.exception(e);
 				final String strurl = JOptionPane.showInputDialog(this,
-						"Invalid launch URL : " + launchURL + "\n"
-								+ "Do you have a valid URL ?",
-						TableModel.WARNING, JOptionPane.WARNING_MESSAGE);
+						"Invalid launch URL : " + launchURL + "\n" + "Do you have a valid URL ?", TableModel.WARNING,
+						JOptionPane.WARNING_MESSAGE);
 				if ((strurl == null) || (strurl.length() <= 0)) {
 					return;
 				}
 
-				client.getConfig().setProperty(XWPropertyDefs.LAUNCHERURL,
-						strurl);
-				launchURL = client.getConfig().getProperty(
-						XWPropertyDefs.LAUNCHERURL);
+				client.getConfig().setProperty(XWPropertyDefs.LAUNCHERURL, strurl);
+				launchURL = client.getConfig().getProperty(XWPropertyDefs.LAUNCHERURL);
 			}
 		}
 
@@ -1011,21 +979,18 @@ public final class MainFrame extends JFrame implements ActionListener {
 
 					// try to find a free port to ensure worker can start
 					// a new HTTP server in order to be able to stop the worker
-					workerPort = client.getConfig().getPort(
-							Connection.HTTPWORKERPORT);
+					workerPort = client.getConfig().getPort(Connection.HTTPWORKERPORT);
 
 					boolean success = false;
 
-					final JOptionPane pane = new JOptionPane("Please wait   "
-							+ cursors[0], JOptionPane.INFORMATION_MESSAGE);
+					final JOptionPane pane = new JOptionPane("Please wait   " + cursors[0],
+							JOptionPane.INFORMATION_MESSAGE);
 					pane.setVisible(true);
 					int i = 0;
 					while (!success) {
 						try {
-							workerURL = new URL("http://localhost:"
-									+ workerPort + "/");
-							final URLConnection connection = workerURL
-									.openConnection();
+							workerURL = new URL("http://localhost:" + workerPort + "/");
+							final URLConnection connection = workerURL.openConnection();
 							connection.connect();
 							workerPort++;
 
@@ -1039,26 +1004,20 @@ public final class MainFrame extends JFrame implements ActionListener {
 					pane.setVisible(true);
 
 					// create a configuration file
-					final XWConfigurator clone = (XWConfigurator) client
-							.getConfig().clone();
-					clone.setProperty(XWPropertyDefs.ROLE,
-							XWRole.WORKER.toString());
-					clone.setProperty(Connection.HTTPPORT.toString(), ""
-							+ workerPort);
+					final XWConfigurator clone = (XWConfigurator) client.getConfig().clone();
+					clone.setProperty(XWPropertyDefs.ROLE, XWRole.WORKER.toString());
+					clone.setProperty(Connection.HTTPPORT.toString(), "" + workerPort);
 					clone.setProperty(XWPropertyDefs.STARTSERVERHTTP, "true");
 
-					final File out = new File(
-							System.getProperty(XWPropertyDefs.JAVATMPDIR
-									.toString()), "workerconf.txt");
+					final File out = new File(System.getProperty(XWPropertyDefs.JAVATMPDIR.toString()),
+							"workerconf.txt");
 
 					clone.setConfigFile(out);
-					clone.setProperty(XWPropertyDefs.CONFIGFILE,
-							out.getCanonicalPath());
+					clone.setProperty(XWPropertyDefs.CONFIGFILE, out.getCanonicalPath());
 
 					clone.store("# Launched by client", out);
 
-					final String[] argv = { "--xwconfig",
-							out.getCanonicalPath() };
+					final String[] argv = { "--xwconfig", out.getCanonicalPath() };
 
 					setCursor(null);
 
@@ -1066,8 +1025,7 @@ public final class MainFrame extends JFrame implements ActionListener {
 					worker.initialize(argv);
 					worker.run();
 				} catch (final IOException e) {
-					new JOptionPane("Worker launch error : " + e,
-							JOptionPane.ERROR_MESSAGE).setVisible(true);
+					new JOptionPane("Worker launch error : " + e, JOptionPane.ERROR_MESSAGE).setVisible(true);
 					startWorker.setEnabled(true);
 					showWorker.setEnabled(false);
 					setCursor(null);
@@ -1083,8 +1041,7 @@ public final class MainFrame extends JFrame implements ActionListener {
 	 */
 	private void showWorker() {
 
-		final JOptionPane pane = new JOptionPane("Please wait   " + cursors[0],
-				JOptionPane.INFORMATION_MESSAGE);
+		final JOptionPane pane = new JOptionPane("Please wait   " + cursors[0], JOptionPane.INFORMATION_MESSAGE);
 		pane.setVisible(true);
 
 		for (int i = 9; i >= 0; i--) {
@@ -1115,8 +1072,7 @@ public final class MainFrame extends JFrame implements ActionListener {
 		showWorker.setEnabled(false);
 
 		try {
-			final URL url = new URL("http://localhost:" + workerPort
-					+ "/?exit=1");
+			final URL url = new URL("http://localhost:" + workerPort + "/?exit=1");
 			url.openStream();
 		} catch (final Exception e) {
 			logger.exception(e);

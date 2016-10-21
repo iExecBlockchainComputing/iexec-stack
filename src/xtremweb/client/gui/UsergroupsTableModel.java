@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -65,17 +65,17 @@ class UsergroupsTableModel extends TableModel {
 	/**
 	 * This is the default constructor.
 	 */
-	public UsergroupsTableModel(MainFrame p) throws IOException {
+	public UsergroupsTableModel(final MainFrame p) throws IOException {
 		this(p, true);
 	}
 
 	/**
 	 * This is a constructor.
-	 * 
+	 *
 	 * @param detail
 	 *            tells whether to add a last column to get details
 	 */
-	public UsergroupsTableModel(MainFrame p, boolean detail) throws IOException {
+	public UsergroupsTableModel(final MainFrame p, final boolean detail) throws IOException {
 		super(p, new UserGroupInterface(), detail);
 	}
 
@@ -89,8 +89,7 @@ class UsergroupsTableModel extends TableModel {
 		newRow.add(uid); // UID
 		newRow.add(new String()); // label
 
-		final ViewDialog dlg = new ViewDialog(getParent(), "Create new user group",
-				labels, newRow, true);
+		final ViewDialog dlg = new ViewDialog(getParent(), "Create new user group", labels, newRow, true);
 
 		final JTextField component = (JTextField) dlg.getFields().get(UID);
 		component.setEditable(false);
@@ -108,8 +107,7 @@ class UsergroupsTableModel extends TableModel {
 			group.setLabel(jtf.getText());
 
 			if (group.getLabel().length() < 1) {
-				JOptionPane.showMessageDialog(getParent(),
-						"You must specify a label", WARNING,
+				JOptionPane.showMessageDialog(getParent(), "You must specify a label", WARNING,
 						JOptionPane.WARNING_MESSAGE);
 				return;
 			}
@@ -130,7 +128,7 @@ class UsergroupsTableModel extends TableModel {
 
 	/**
 	 * This retreives a Vector of user group UID from server
-	 * 
+	 *
 	 * @see xtremweb.communications.CommAPI#getUsers()
 	 */
 	@Override
@@ -147,7 +145,7 @@ class UsergroupsTableModel extends TableModel {
 
 	/**
 	 * This creates a new ViewDialog to display row details
-	 * 
+	 *
 	 * @param title
 	 *            is the dialog title
 	 * @param selectedRow
@@ -156,9 +154,8 @@ class UsergroupsTableModel extends TableModel {
 	 *            enables/disables edition
 	 * @return a new ViewDialog
 	 */
-	protected ViewDialog getViewDialog(String title, int selectedRow,
-			boolean editable) {
-		return new UserDialog(getParent(), title, getInterface().columns(),
-				getDataRows().elementAt(selectedRow), editable);
+	protected ViewDialog getViewDialog(final String title, final int selectedRow, final boolean editable) {
+		return new UserDialog(getParent(), title, getInterface().columns(), getDataRows().elementAt(selectedRow),
+				editable);
 	}
 }

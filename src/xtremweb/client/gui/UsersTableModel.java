@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -75,20 +75,14 @@ class UsersTableModel extends TableModel {
 	/**
 	 * These defines submission parameter labels
 	 */
-	private static final String[] labels = { UID, GROUP, LOGIN, PASSWORD,
-		PASSWORD2, EMAIL, FNAME, LNAME, TEAM, COUNTRY, RIGHTS };
+	private static final String[] labels = { UID, GROUP, LOGIN, PASSWORD, PASSWORD2, EMAIL, FNAME, LNAME, TEAM, COUNTRY,
+			RIGHTS };
 
-	private static final String HELPSTRING = "<u>"
-			+ GROUP
-			+ "</u> : select an user group (this is optionnal)<br>"
-			+ "<u>"
-			+ LOGIN
-			+ "</u> : a login must be unic in the platform; reusing an existing login updates user<br>"
-			+ "<u>" + PASSWORD + "</u> : please provide a password <br>"
-			+ "<u>" + PASSWORD2 + "</u> : please confirm the password<br>"
-			+ "<u>" + EMAIL + "</u> : a valid email address is required<br>"
-			+ "<u>" + FNAME + "</u> first name<br>" + "<u>" + LNAME
-			+ "</u> last name<br>" + "<u>" + RIGHTS
+	private static final String HELPSTRING = "<u>" + GROUP + "</u> : select an user group (this is optionnal)<br>"
+			+ "<u>" + LOGIN + "</u> : a login must be unic in the platform; reusing an existing login updates user<br>"
+			+ "<u>" + PASSWORD + "</u> : please provide a password <br>" + "<u>" + PASSWORD2
+			+ "</u> : please confirm the password<br>" + "<u>" + EMAIL + "</u> : a valid email address is required<br>"
+			+ "<u>" + FNAME + "</u> first name<br>" + "<u>" + LNAME + "</u> last name<br>" + "<u>" + RIGHTS
 			+ "</u> select a user rights from drop down menu";
 	/**
 	 * This is used in the user group drop down menu
@@ -98,17 +92,17 @@ class UsersTableModel extends TableModel {
 	/**
 	 * This is the default constructor.
 	 */
-	public UsersTableModel(MainFrame p) throws IOException {
+	public UsersTableModel(final MainFrame p) throws IOException {
 		this(p, true);
 	}
 
 	/**
 	 * This is a constructor.
-	 * 
+	 *
 	 * @param detail
 	 *            tells whether to add a last column to get details
 	 */
-	public UsersTableModel(MainFrame p, boolean detail) throws IOException {
+	public UsersTableModel(final MainFrame p, final boolean detail) throws IOException {
 		super(p, new UserInterface(), detail);
 	}
 
@@ -137,8 +131,7 @@ class UsersTableModel extends TableModel {
 
 			while (enums.hasMoreElements()) {
 				final UID groupUID = (UID) enums.nextElement().getValue();
-				final UserGroupInterface group = (UserGroupInterface) getParent()
-						.commClient().get(groupUID, false);
+				final UserGroupInterface group = (UserGroupInterface) getParent().commClient().get(groupUID, false);
 				groupLabels[i++] = group.getLabel();
 				groupsUID.put(group.getLabel(), groupUID);
 			}
@@ -164,8 +157,7 @@ class UsersTableModel extends TableModel {
 
 		newRow.add(URLABELS); // rights
 
-		final ViewDialog dlg = new ViewDialog(getParent(), "Create new user",
-				labels, newRow, true);
+		final ViewDialog dlg = new ViewDialog(getParent(), "Create new user", labels, newRow, true);
 
 		final JTextField component = (JTextField) dlg.getFields().get(UID);
 		component.setEditable(false);
@@ -183,15 +175,13 @@ class UsersTableModel extends TableModel {
 			String login = jtf.getText();
 			if (login.length() > UserInterface.USERLOGINLENGTH) {
 				login = login.substring(0, UserInterface.USERLOGINLENGTH - 1);
-				JOptionPane.showMessageDialog(getParent(),
-						"Login too long; truncated to " + login, WARNING,
+				JOptionPane.showMessageDialog(getParent(), "Login too long; truncated to " + login, WARNING,
 						JOptionPane.WARNING_MESSAGE);
 			}
 			user.setLogin(login);
 
 			if (user.getLogin().length() < 1) {
-				JOptionPane.showMessageDialog(getParent(),
-						"You must specify a login", WARNING,
+				JOptionPane.showMessageDialog(getParent(), "You must specify a login", WARNING,
 						JOptionPane.WARNING_MESSAGE);
 				return;
 			}
@@ -202,8 +192,7 @@ class UsersTableModel extends TableModel {
 			final String password2 = jtf.getText();
 
 			if (password2.compareTo(password) != 0) {
-				JOptionPane.showMessageDialog(getParent(),
-						"Passwords do not match!", WARNING,
+				JOptionPane.showMessageDialog(getParent(), "Passwords do not match!", WARNING,
 						JOptionPane.WARNING_MESSAGE);
 				return;
 			}
@@ -239,8 +228,7 @@ class UsersTableModel extends TableModel {
 
 			getParent().commClient().send(user);
 		} catch (final Exception e) {
-			JOptionPane.showMessageDialog(getParent(), "Can't send user : " + e,
-					ERROR, JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(getParent(), "Can't send user : " + e, ERROR, JOptionPane.ERROR_MESSAGE);
 			getLogger().exception(e);
 		}
 	}
@@ -257,13 +245,12 @@ class UsersTableModel extends TableModel {
 	 * This replaces UID by human readable columns
 	 */
 	@Override
-	protected Vector getViewableRow(Vector row) {
+	protected Vector getViewableRow(final Vector row) {
 		final Vector clone = (Vector) row.clone();
 		try {
 			final int index = UserInterface.Columns.USERGROUPUID.ordinal();
 			final UID uid = (UID) clone.elementAt(index);
-			final UserGroupInterface usergroup = (UserGroupInterface) getParent()
-					.commClient().get(uid, false);
+			final UserGroupInterface usergroup = (UserGroupInterface) getParent().commClient().get(uid, false);
 			clone.set(index, usergroup.getLabel());
 		} catch (final Exception e) {
 			getLogger().exception(e);
@@ -273,7 +260,7 @@ class UsersTableModel extends TableModel {
 
 	/**
 	 * This retreives a Vector of user UID from server
-	 * 
+	 *
 	 * @see xtremweb.communications.CommAPI#getUsers()
 	 */
 	@Override
@@ -290,7 +277,7 @@ class UsersTableModel extends TableModel {
 
 	/**
 	 * This creates a new ViewDialog to display row details
-	 * 
+	 *
 	 * @param title
 	 *            is the dialog title
 	 * @param selectedRow
@@ -299,10 +286,9 @@ class UsersTableModel extends TableModel {
 	 *            enables/disables edition
 	 * @return a new ViewDialog
 	 */
-	protected ViewDialog getViewDialog(String title, int selectedRow,
-			boolean editable) {
-		return new UserDialog(getParent(), title, getInterface().columns(),
-				getDataRows().elementAt(selectedRow), editable);
+	protected ViewDialog getViewDialog(final String title, final int selectedRow, final boolean editable) {
+		return new UserDialog(getParent(), title, getInterface().columns(), getDataRows().elementAt(selectedRow),
+				editable);
 	}
 
 }

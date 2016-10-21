@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -57,7 +57,7 @@ public final class LoginDialog extends JDialog implements ActionListener {
 	/**
 	 * This constructor does everything
 	 */
-	public LoginDialog(JFrame f) {
+	public LoginDialog(final JFrame f) {
 
 		super(f, "XWHEP login", true);
 
@@ -119,7 +119,8 @@ public final class LoginDialog extends JDialog implements ActionListener {
 		setSize(400, 150);
 	}
 
-	public void actionPerformed(ActionEvent e) {
+	@Override
+	public void actionPerformed(final ActionEvent e) {
 		final String cmd = e.getActionCommand();
 
 		if (OK.equals(cmd)) {
@@ -129,12 +130,10 @@ public final class LoginDialog extends JDialog implements ActionListener {
 			setCancelled(true);
 			setVisible(false);
 		} else {
-			JOptionPane
-					.showMessageDialog(
-							parent,
-							"Server is either a resolved server name, or an IP address\n"
-									+ "Login/Password are those provided by the server administrator",
-							TableModel.INFO, JOptionPane.INFORMATION_MESSAGE);
+			JOptionPane.showMessageDialog(parent,
+					"Server is either a resolved server name, or an IP address\n"
+							+ "Login/Password are those provided by the server administrator",
+					TableModel.INFO, JOptionPane.INFORMATION_MESSAGE);
 		}
 	}
 
@@ -151,9 +150,10 @@ public final class LoginDialog extends JDialog implements ActionListener {
 	}
 
 	/**
-	 * @param server the server to set
+	 * @param server
+	 *            the server to set
 	 */
-	public void setServer(JTextField server) {
+	public void setServer(final JTextField server) {
 		this.server = server;
 	}
 
@@ -165,9 +165,10 @@ public final class LoginDialog extends JDialog implements ActionListener {
 	}
 
 	/**
-	 * @param cancelled the cancelled to set
+	 * @param cancelled
+	 *            the cancelled to set
 	 */
-	public void setCancelled(boolean cancelled) {
+	public void setCancelled(final boolean cancelled) {
 		this.cancelled = cancelled;
 	}
 
@@ -179,9 +180,10 @@ public final class LoginDialog extends JDialog implements ActionListener {
 	}
 
 	/**
-	 * @param login the login to set
+	 * @param login
+	 *            the login to set
 	 */
-	public void setLogin(JTextField login) {
+	public void setLogin(final JTextField login) {
 		this.login = login;
 	}
 
@@ -193,9 +195,10 @@ public final class LoginDialog extends JDialog implements ActionListener {
 	}
 
 	/**
-	 * @param password the password to set
+	 * @param password
+	 *            the password to set
 	 */
-	public void setPassword(JPasswordField password) {
+	public void setPassword(final JPasswordField password) {
 		this.password = password;
 	}
 

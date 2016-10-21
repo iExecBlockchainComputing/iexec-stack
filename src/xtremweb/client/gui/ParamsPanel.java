@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -77,25 +77,26 @@ public class ParamsPanel extends JPanel {
 	/**
 	 * These are needed to retreive parameters values from user.
 	 */
-	private JTextField paramsNbWorkers;
+	private final JTextField paramsNbWorkers;
 
 	private final MainFrame parent;
 
 	/**
 	 * This constructs a new panel with GUI to manage XtremWeb parameters
 	 */
-	public ParamsPanel(MainFrame p) {
+	public ParamsPanel(final MainFrame p) {
 
 		parent = p;
 		final JTabbedPane tabbedPane = new JTabbedPane();
 		final GridBagLayout gbLayout = new GridBagLayout();
 		final GridBagConstraints gbConstraints = new GridBagConstraints();
-		WorkerParameters params;
+		final WorkerParameters params;
 
 		final JButton aButton = new JButton("Commit");
 
 		aButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+			@Override
+			public void actionPerformed(final ActionEvent e) {
 				commitParams(e);
 			}
 		});
@@ -122,8 +123,7 @@ public class ParamsPanel extends JPanel {
 		add(paramsNbWorkers);
 
 		trustedAddressesList = new JList(trustedAddressesModel);
-		trustedAddressesList
-				.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		trustedAddressesList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		final JScrollPane addrScrollPane = new JScrollPane(trustedAddressesList);
 		gbConstraints.weighty = 1.0;
 		gbConstraints.ipadx = -5;
@@ -133,7 +133,8 @@ public class ParamsPanel extends JPanel {
 
 		addTrustedAddress = new JButton("Add");
 		addTrustedAddress.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+			@Override
+			public void actionPerformed(final ActionEvent e) {
 				addAddress(e);
 			}
 		});
@@ -144,7 +145,8 @@ public class ParamsPanel extends JPanel {
 
 		removeTrustedAddress = new JButton("Remove");
 		removeTrustedAddress.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+			@Override
+			public void actionPerformed(final ActionEvent e) {
 				removeAddress(e);
 			}
 		});
@@ -157,7 +159,7 @@ public class ParamsPanel extends JPanel {
 	/**
 	 * This is called when user clicks 'commit' on page 'params'
 	 */
-	void commitParams(ActionEvent e) {
+	void commitParams(final ActionEvent e) {
 
 		int nbWorkers;
 		final int sendResultDelay = 0;
@@ -175,7 +177,7 @@ public class ParamsPanel extends JPanel {
 	 * This is called when user clicks 'add' on page 'params' to add a trusted
 	 * adresse.
 	 */
-	void addAddress(ActionEvent e) {
+	void addAddress(final ActionEvent e) {
 		final JOptionPane jop = new JOptionPane();
 		final String newAddr;
 	}
@@ -184,13 +186,13 @@ public class ParamsPanel extends JPanel {
 	 * This is called when user clicks 'remove' on page 'params' to remove
 	 * selected trusted adresse.
 	 */
-	void removeAddress(ActionEvent e) {
+	void removeAddress(final ActionEvent e) {
 	}
 
 	/**
 	 * This converts a string to a list model accordingly to a separator
 	 */
-	private DefaultListModel stringToListModel(String input, char separator) {
+	private DefaultListModel stringToListModel(final String input, final char separator) {
 		final DefaultListModel ret = new DefaultListModel();
 		int index = 0;
 		int lastIndex = -1;
@@ -199,8 +201,7 @@ public class ParamsPanel extends JPanel {
 			return ret;
 		}
 
-		for (index = input.indexOf(separator); index != -1; index = input
-				.indexOf(separator, index + 1)) {
+		for (index = input.indexOf(separator); index != -1; index = input.indexOf(separator, index + 1)) {
 
 			final String newStr = input.substring(lastIndex + 1, index);
 			ret.addElement(newStr);

@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -46,7 +46,7 @@ import xtremweb.communications.XMLRPCCommand;
  * time only. <br />
  * Incoming connection must send a valid XMLRPCCommand <br />
  * Created: Sept 14th, 2010
- * 
+ *
  * @author Oleg Lodygensky
  * @since 7.0.0
  */
@@ -68,11 +68,11 @@ public class Shell extends Thread {
 
 	/**
 	 * This constructs a new instance
-	 * 
+	 *
 	 * @param label
 	 *            is this thread label
 	 */
-	public Shell(String label) {
+	public Shell(final String label) {
 		super(label);
 		logger = new Logger(this);
 		port = -1;
@@ -88,29 +88,26 @@ public class Shell extends Thread {
 	/**
 	 * This initializes communications
 	 */
-	public void initComm(Client c) {
+	public void initComm(final Client c) {
 
 		client = c;
 
 		try {
-			final String proptxt = System.getProperty(Connection.XMLRPCPORT
-					.toString());
+			final String proptxt = System.getProperty(Connection.XMLRPCPORT.toString());
 			if (proptxt != null) {
 				port = new Integer(proptxt.trim()).intValue();
 			}
 
 			socketServer = new ServerSocket(port);
 
-			Runtime.getRuntime().addShutdownHook(
-					new Thread(getName() + "Cleaner") {
-						@Override
-						public void run() {
-							cleanup();
-						}
-					});
+			Runtime.getRuntime().addShutdownHook(new Thread(getName() + "Cleaner") {
+				@Override
+				public void run() {
+					cleanup();
+				}
+			});
 		} catch (final Exception e) {
-			logger.fatal(getName() + ": could not listen on port " + port
-					+ " : " + e);
+			logger.fatal(getName() + ": could not listen on port " + port + " : " + e);
 		}
 	}
 
@@ -158,8 +155,7 @@ public class Shell extends Thread {
 	/**
 	 * This reads from socket input stream
 	 */
-	private void process(Socket socket) throws ParseException, IOException,
-			FileNotFoundException {
+	private void process(final Socket socket) throws ParseException, IOException, FileNotFoundException {
 
 		InputStreamReader isreader = null;
 		BufferedReader breader = null;
@@ -172,8 +168,7 @@ public class Shell extends Thread {
 			client.setPrintStream(printStream);
 
 			io = new StreamIO(new DataOutputStream(socket.getOutputStream()),
-					new DataInputStream(socket.getInputStream()),
-					socket.getSendBufferSize(), false);
+					new DataInputStream(socket.getInputStream()), socket.getSendBufferSize(), false);
 			final XMLRPCCommand cmd = XMLRPCCommand.newCommand(io);
 			if (cmd.getUser() == null) {
 				printStream.println("ERROR : user must be set");
@@ -184,8 +179,7 @@ public class Shell extends Thread {
 		} catch (final ClassNotFoundException e) {
 			try {
 				if (printStream != null) {
-					printStream
-							.println("ERROR : object or not found (or access denied)");
+					printStream.println("ERROR : object or not found (or access denied)");
 				}
 			} catch (final Exception e2) {
 			}
@@ -225,14 +219,13 @@ public class Shell extends Thread {
 	 * This is for testing only <br /> Usage : java xtremweb.worker.ThreadProxy
 	 * <server address> <port>
 	 */
-	public static void main(String[] args) throws Exception {
+	public static void main(final String[] args) throws Exception {
 		SmartSocketsProxy proxy = null;
 		try {
-			proxy = new SmartSocketsProxy(args[0], args[1],
-					Integer.parseInt(args[2]), Boolean.parseBoolean(args[3]));
+			proxy = new SmartSocketsProxy(args[0], args[1], Integer.parseInt(args[2]), Boolean.parseBoolean(args[3]));
 		} catch (final ArrayIndexOutOfBoundsException e) {
-			System.out
-					.println("Usage : java xtremweb.worker.ThreadProxy <hub address> <server address> <port> <true|false>");
+			System.out.println(
+					"Usage : java xtremweb.worker.ThreadProxy <hub address> <server address> <port> <true|false>");
 			System.exit(1);
 		}
 		proxy.start();

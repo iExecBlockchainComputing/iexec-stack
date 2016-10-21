@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -42,7 +42,7 @@ public class UserDialog extends ViewDialog implements ActionListener {
 
 	/**
 	 * This constructor does everything
-	 * 
+	 *
 	 * @param f
 	 *            is the aprent JFrame
 	 * @param title
@@ -54,8 +54,8 @@ public class UserDialog extends ViewDialog implements ActionListener {
 	 * @param editable
 	 *            enables/disables edition
 	 */
-	public UserDialog(JFrame f, String title, String[] columns,
-			Table row, boolean editable) {
+	public UserDialog(final JFrame f, final String title, final String[] columns, final Table row,
+			final boolean editable) {
 
 		super(f, title, columns, row.toVector(), editable);
 
@@ -70,7 +70,7 @@ public class UserDialog extends ViewDialog implements ActionListener {
 	}
 
 	@Override
-	public void actionPerformed(ActionEvent e) {
+	public void actionPerformed(final ActionEvent e) {
 
 		super.actionPerformed(e);
 		if (isVisible() == false) {
@@ -81,8 +81,7 @@ public class UserDialog extends ViewDialog implements ActionListener {
 
 		if (PASSWORD.equals(cmd)) {
 			final JTextField jlogin = (JTextField) getFields().get("LOGIN");
-			final PasswordDialog dlgPassword = new PasswordDialog(getParent(),
-					jlogin.getText());
+			final PasswordDialog dlgPassword = new PasswordDialog(getParent(), jlogin.getText());
 			dlgPassword.setVisible(true);
 		}
 	}

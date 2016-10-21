@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -54,23 +54,23 @@ class TasksTableModel extends TableModel {
 	/**
 	 * This is the default constructor.
 	 */
-	public TasksTableModel(MainFrame p) {
+	public TasksTableModel(final MainFrame p) {
 		this(p, true);
 	}
 
 	/**
 	 * This is a constructor.
-	 * 
+	 *
 	 * @param detail
 	 *            tells whether to add a last column to get details
 	 */
-	public TasksTableModel(MainFrame p, boolean detail) {
+	public TasksTableModel(final MainFrame p, final boolean detail) {
 		super(p, new TaskInterface(), detail);
 	}
 
 	/**
 	 * This creates new JButton
-	 * 
+	 *
 	 * @return a Vector of JButton
 	 */
 	@Override
@@ -89,8 +89,7 @@ class TasksTableModel extends TableModel {
 	 */
 	@Override
 	public void add() {
-		JOptionPane.showMessageDialog(getParent(),
-				"You can't add task, please use the job manager", WARNING,
+		JOptionPane.showMessageDialog(getParent(), "You can't add task, please use the job manager", WARNING,
 				JOptionPane.WARNING_MESSAGE);
 	}
 
@@ -107,14 +106,13 @@ class TasksTableModel extends TableModel {
 	 */
 	@Override
 	public void del() {
-		JOptionPane.showMessageDialog(getParent(),
-				"You can't delete tasks, please use the job manager", WARNING,
+		JOptionPane.showMessageDialog(getParent(), "You can't delete tasks, please use the job manager", WARNING,
 				JOptionPane.WARNING_MESSAGE);
 	}
 
 	/**
 	 * This retrieves a Vector of task UID from server
-	 * 
+	 *
 	 * @see xtremweb.communications.CommAPI#getTasks()
 	 */
 	@Override
@@ -131,12 +129,12 @@ class TasksTableModel extends TableModel {
 
 	/**
 	 * This retrieves an object from server
-	 * 
+	 *
 	 * @return a TableInterface or null on error
 	 * @see xtremweb.communications.CommAPI#get(UID)
 	 */
 	@Override
-	public Table getRow(UID uid) throws ConnectException {
+	public Table getRow(final UID uid) throws ConnectException {
 		try {
 			getParent().setTitleConnected();
 			return getParent().commClient().get(uid);

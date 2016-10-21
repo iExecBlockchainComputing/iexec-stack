@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -68,7 +68,7 @@ public final class MainPanel extends JPanel {
 	 * This sets the logger level. This also sets the logger levels checkboxes
 	 * menu item.
 	 */
-	public void setLoggerLevel(LoggerLevel l) {
+	public void setLoggerLevel(final LoggerLevel l) {
 		logger.setLoggerLevel(l);
 		jobsTableModel.setLoggerLevel(l);
 		groupsTableModel.setLoggerLevel(l);
@@ -90,7 +90,7 @@ public final class MainPanel extends JPanel {
 	/**
 	 * This is the tabbed pane containing all panes
 	 */
-	private JTabbedPane tabbedPane;
+	private final JTabbedPane tabbedPane;
 
 	/**
 	 * This is the jobs table model
@@ -153,7 +153,7 @@ public final class MainPanel extends JPanel {
 	/**
 	 * This constructor inserts needed panels in a new tabbed pane
 	 */
-	public MainPanel(MainFrame p) {
+	public MainPanel(final MainFrame p) {
 
 		parent = p;
 
@@ -184,8 +184,7 @@ public final class MainPanel extends JPanel {
 			tabbedPane.setMnemonicAt(Tabs.APPS.ordinal(), KeyEvent.VK_P);
 			tabbedPane.addTab("Users", new TablePanel(usersTableModel));
 			tabbedPane.setMnemonicAt(Tabs.USERS.ordinal(), KeyEvent.VK_U);
-			tabbedPane.addTab("Usergroups",
-					new TablePanel(usergroupsTableModel));
+			tabbedPane.addTab("Usergroups", new TablePanel(usergroupsTableModel));
 			tabbedPane.setMnemonicAt(Tabs.USERGROUPS.ordinal(), KeyEvent.VK_G);
 			tabbedPane.addTab("Hosts", new TablePanel(hostsTableModel));
 			tabbedPane.setMnemonicAt(Tabs.HOSTS.ordinal(), KeyEvent.VK_H);
@@ -197,10 +196,10 @@ public final class MainPanel extends JPanel {
 
 			tabbedPane.addChangeListener(new ChangeListener() {
 				// This method is called whenever the selected tab changes
-				public void stateChanged(ChangeEvent evt) {
+				@Override
+				public void stateChanged(final ChangeEvent evt) {
 					final JTabbedPane pane = (JTabbedPane) evt.getSource();
-					final TablePanel tab = (TablePanel) pane
-							.getSelectedComponent();
+					final TablePanel tab = (TablePanel) pane.getSelectedComponent();
 					parent.setTotalLines(tab.getRowCount());
 					parent.setSelectedLines(tab.getTable().getSelectedRows().length);
 				}

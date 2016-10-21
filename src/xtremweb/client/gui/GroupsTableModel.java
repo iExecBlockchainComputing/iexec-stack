@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -61,12 +61,10 @@ class GroupsTableModel extends TableModel {
 	/**
 	 * This is the help
 	 */
-	private static final String HELPSTRING = new String(
-			"A group aggregates jobs to facilitate job management.<br>"
-					+ "A group is valid until you delete it.<br>"
-					+ "You can close the client and retreive you group later.<br>"
-					+ "When a group is deleted, all associated jobs are deleted.<br><u>"
-					+ GROUPLABEL + "</u> is the name of the group");
+	private static final String HELPSTRING = new String("A group aggregates jobs to facilitate job management.<br>"
+			+ "A group is valid until you delete it.<br>" + "You can close the client and retreive you group later.<br>"
+			+ "When a group is deleted, all associated jobs are deleted.<br><u>" + GROUPLABEL
+			+ "</u> is the name of the group");
 	/**
 	 * These defines submission parameter labels
 	 */
@@ -75,23 +73,23 @@ class GroupsTableModel extends TableModel {
 	/**
 	 * This is the default constructor.
 	 */
-	public GroupsTableModel(MainFrame p) {
+	public GroupsTableModel(final MainFrame p) {
 		this(p, true);
 	}
 
 	/**
 	 * This is a constructor.
-	 * 
+	 *
 	 * @param detail
 	 *            tells whether to add a last column to get details
 	 */
-	public GroupsTableModel(MainFrame p, boolean detail) {
+	public GroupsTableModel(final MainFrame p, final boolean detail) {
 		super(p, new GroupInterface(), detail);
 	}
 
 	/**
 	 * This calls TableModel#getButtons() and enables all buttons
-	 * 
+	 *
 	 * @return a Vector of JButton
 	 * @see xtremweb.client.gui.TableModel#getButtons()
 	 */
@@ -126,13 +124,11 @@ class GroupsTableModel extends TableModel {
 		newRow.add(new String()); // user login
 		newRow.add(new String()); // group name
 
-		ViewDialog vdialog = new ViewDialog(getParent(), "Create group", labels, newRow,
-				true);
+		final ViewDialog vdialog = new ViewDialog(getParent(), "Create group", labels, newRow, true);
 		setViewDialog(vdialog);
 		vdialog.setHelpString(HELPSTRING);
 
-		final JTextField component = (JTextField) vdialog.getFields()
-				.get(USERLABEL);
+		final JTextField component = (JTextField) vdialog.getFields().get(USERLABEL);
 		component.setEditable(false);
 		component.setText(getParent().user().getLogin());
 
@@ -147,14 +143,12 @@ class GroupsTableModel extends TableModel {
 			group.setUID(groupUID);
 			group.setOwner(userUID);
 
-			group.setName(((JTextField) vdialog.getFields().get(GROUPLABEL))
-					.getText());
+			group.setName(((JTextField) vdialog.getFields().get(GROUPLABEL)).getText());
 
 			getParent().commClient().send(group);
 		} catch (final Exception e) {
 			getLogger().exception(e);
-			JOptionPane.showMessageDialog(getParent(), "Can't send group : " + e,
-					ERROR, JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(getParent(), "Can't send group : " + e, ERROR, JOptionPane.ERROR_MESSAGE);
 		}
 	}
 
@@ -168,7 +162,7 @@ class GroupsTableModel extends TableModel {
 
 	/**
 	 * This retreives a Vector of work UID from server
-	 * 
+	 *
 	 * @see xtremweb.communications.CommAPI#getWorks()
 	 */
 	@Override
