@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -40,9 +40,9 @@ import xtremweb.database.SQLRequest;
 
 /**
  * AppTypeInterface.java
- * 
+ *
  * Created: Mar 31st, 2014
- * 
+ *
  * @author <a href="mailto:lodygens /at\ .in2p3.fr>Oleg Lodygensky</a>
  * @version %I%, %G%
  * @since 9.0.0
@@ -54,12 +54,12 @@ public final class Executable extends Type {
 	 * This is the database table name This was stored in
 	 * xtremweb.dispatcher.App
 	 */
-	public static final String TABLENAME = ("executables");
+	public static final String TABLENAME = "executables";
 
 	/**
 	 * This is the XML tag
 	 */
-	public static final String THISTAG = ("executable");
+	public static final String THISTAG = "executable";
 
 	/**
 	 * This enumerates this interface columns. The base enumerations are defined
@@ -71,7 +71,7 @@ public final class Executable extends Type {
 		 */
 		APPUID {
 			@Override
-			public UID fromString(String v) {
+			public UID fromString(final String v) {
 				return new UID(v);
 			}
 		},
@@ -80,7 +80,7 @@ public final class Executable extends Type {
 		 */
 		DATAUID {
 			@Override
-			public UID fromString(String v) {
+			public UID fromString(final String v) {
 				return new UID(v);
 			}
 		},
@@ -89,7 +89,7 @@ public final class Executable extends Type {
 		 */
 		DATAURI {
 			@Override
-			public URI fromString(String v) throws URISyntaxException {
+			public URI fromString(final String v) throws URISyntaxException {
 				return new URI(v);
 			}
 		},
@@ -120,7 +120,7 @@ public final class Executable extends Type {
 			/**
 			 * This creates an object from String representation for this column
 			 * value This cleans the parameter to ensure SQL compliance
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return a Boolean representing the column value
@@ -136,7 +136,7 @@ public final class Executable extends Type {
 		/**
 		 * This is the index based on ordinal so that the first value is
 		 * TableColumns + 1
-		 * 
+		 *
 		 * @see xtremweb.common#TableColumns
 		 * @see Enum#ordinal()
 		 */
@@ -151,9 +151,10 @@ public final class Executable extends Type {
 
 		/**
 		 * This retrieves the index based ordinal
-		 * 
+		 *
 		 * @return the index based ordinal
 		 */
+		@Override
 		public int getOrdinal() {
 			return ord;
 		}
@@ -161,39 +162,39 @@ public final class Executable extends Type {
 		/**
 		 * This creates a new object from String for the given column This must
 		 * be overridden by enum which value is not a String
-		 * 
+		 *
 		 * @param v
 		 *            the String representation
 		 * @return v
 		 * @throws Exception
 		 *             is thrown on instantiation error
 		 */
-		public Object fromString(String v) throws Exception {
+		@Override
+		public Object fromString(final String v) throws Exception {
 			return v;
 		}
 
 		/**
 		 * This creates a new object from the digen SQL result set
-		 * 
+		 *
 		 * @param rs
 		 *            the SQL result set
 		 * @return the object representing the column
 		 * @throws Exception
 		 *             is thrown on instantiation error
 		 */
-		public final Object fromResultSet(ResultSet rs) throws Exception {
+		public final Object fromResultSet(final ResultSet rs) throws Exception {
 			return this.fromString(rs.getString(this.toString()));
 		}
 
 		/**
 		 * This retrieves an Columns from its integer value
-		 * 
+		 *
 		 * @param v
 		 *            is the integer value of the Columns
 		 * @return an Columns
 		 */
-		public static XWBaseColumn fromInt(int v)
-				throws IndexOutOfBoundsException {
+		public static XWBaseColumn fromInt(final int v) throws IndexOutOfBoundsException {
 			for (final Columns c : Columns.values()) {
 				if (c.getOrdinal() == v) {
 					return c;
@@ -220,55 +221,55 @@ public final class Executable extends Type {
 	 * This creates a new object that will be retrieved with a complex SQL
 	 * request
 	 */
-	public Executable(SQLRequest r) {
+	public Executable(final SQLRequest r) {
 		this();
 		setRequest(r);
 	}
 
 	/**
 	 * This constructs an object from DB
-	 * 
+	 *
 	 * @param rs
 	 *            is an SQL request result
 	 * @exception IOException
 	 */
-	public Executable(ResultSet rs) throws IOException {
+	public Executable(final ResultSet rs) throws IOException {
 		this();
 		fill(rs);
 	}
 
 	/**
 	 * This calls this(StreamIO.stream(input));
-	 * 
+	 *
 	 * @param input
 	 *            is a String containing an XML representation
 	 */
-	public Executable(String input) throws IOException, SAXException {
+	public Executable(final String input) throws IOException, SAXException {
 		this(StreamIO.stream(input));
 	}
 
 	/**
 	 * This constructs a new object from an XML file
-	 * 
+	 *
 	 * @param f
 	 *            is the XML file
 	 * @see #Executable(InputStream)
 	 */
-	public Executable(File f) throws IOException, SAXException {
+	public Executable(final File f) throws IOException, SAXException {
 		this(new FileInputStream(f));
 	}
 
 	/**
 	 * This constructs a new object from XML attributes received from input
 	 * stream
-	 * 
+	 *
 	 * @param input
 	 *            is the input stream
 	 * @throws IOException
 	 *             on XML error
 	 * @see XMLReader#read(InputStream)
 	 */
-	public Executable(InputStream input) throws IOException, SAXException {
+	public Executable(final InputStream input) throws IOException, SAXException {
 		this();
 		final XMLReader reader = new XMLReader(this);
 		try {
@@ -281,27 +282,27 @@ public final class Executable extends Type {
 	/**
 	 * This constructs a new object from XML attributes received from input
 	 * stream
-	 * 
+	 *
 	 * @param attrs
 	 *            contains attributes XML representation
 	 * @see Table#fromXml(Attributes)
 	 * @throws IOException
 	 *             on XML error
 	 */
-	public Executable(Attributes attrs) {
+	public Executable(final Attributes attrs) {
 		this();
 		super.fromXml(attrs);
 	}
 
 	/**
 	 * This fills columns from DB
-	 * 
+	 *
 	 * @param rs
 	 *            is the SQL data set
 	 * @throws IOException
 	 */
 	@Override
-	public void fill(ResultSet rs) throws IOException {
+	public void fill(final ResultSet rs) throws IOException {
 
 		try {
 			setApp((UID) Columns.APPUID.fromResultSet(rs));
@@ -321,7 +322,7 @@ public final class Executable extends Type {
 	 * version. If this version is null, this version is prior to 5.8.0. Before
 	 * 5.8.0, OWNERUID and ACCESSRIGHTS did not exist. Then this returns null
 	 * for these two columns.
-	 * 
+	 *
 	 * @param i
 	 *            is an ordinal of an Columns
 	 * @return null if((version == null) &amp;&amp; ((i ==
@@ -329,18 +330,18 @@ public final class Executable extends Type {
 	 *         LDMACOS_X86_64URI.ordinal()))); column label otherwise
 	 */
 	@Override
-	public String getColumnLabel(int i) throws IndexOutOfBoundsException {
+	public String getColumnLabel(final int i) throws IndexOutOfBoundsException {
 		return Columns.fromInt(i).toString();
 	}
 
 	/**
 	 * This retrieves the app UID
-	 * 
+	 *
 	 * @return this attribute, or null if not set
 	 */
 	public String getApp() {
 		try {
-			return ((String) getValue(Columns.APPUID));
+			return (String) getValue(Columns.APPUID);
 		} catch (final Exception e) {
 		}
 		return null;
@@ -348,12 +349,12 @@ public final class Executable extends Type {
 
 	/**
 	 * This retrieves the data UID
-	 * 
+	 *
 	 * @return this attribute, or null if not set
 	 */
 	public String getData() {
 		try {
-			return ((String) getValue(Columns.DATAUID));
+			return (String) getValue(Columns.DATAUID);
 		} catch (final Exception e) {
 		}
 		return null;
@@ -361,12 +362,12 @@ public final class Executable extends Type {
 
 	/**
 	 * This retrieves the CPU type name
-	 * 
+	 *
 	 * @return this attribute, or null if not set
 	 */
 	public String getCpuTypeName() {
 		try {
-			return ((String) getValue(Columns.CPUTYPENAME));
+			return (String) getValue(Columns.CPUTYPENAME);
 		} catch (final Exception e) {
 		}
 		return null;
@@ -374,12 +375,12 @@ public final class Executable extends Type {
 
 	/**
 	 * This retrieves the OS name
-	 * 
+	 *
 	 * @return this attribute, or null if not set
 	 */
 	public String getOsName() {
 		try {
-			return ((String) getValue(Columns.OSNAME));
+			return (String) getValue(Columns.OSNAME);
 		} catch (final Exception e) {
 		}
 		return null;
@@ -387,12 +388,12 @@ public final class Executable extends Type {
 
 	/**
 	 * This retrieves the OS version
-	 * 
+	 *
 	 * @return this attribute, or null if not set
 	 */
 	public String getOsVersion() {
 		try {
-			return ((String) getValue(Columns.OSVERSION));
+			return (String) getValue(Columns.OSVERSION);
 		} catch (final Exception e) {
 		}
 		return null;
@@ -401,7 +402,7 @@ public final class Executable extends Type {
 	/**
 	 * This sets parameter value; this is called from
 	 * TableInterface#fromXml(Attributes)
-	 * 
+	 *
 	 * @param attribute
 	 *            is the name of the attribute to set
 	 * @param v
@@ -410,54 +411,53 @@ public final class Executable extends Type {
 	 * @see Table#fromXml(Attributes)
 	 */
 	@Override
-	public final boolean setValue(String attribute, Object v)
-			throws IllegalArgumentException {
-		final String A = attribute.toUpperCase();
-		return setValue(Columns.valueOf(A), v);
+	public final boolean setValue(final String attribute, final Object v) throws IllegalArgumentException {
+		final String uppercaseAttr = attribute.toUpperCase();
+		return setValue(Columns.valueOf(uppercaseAttr), v);
 	}
 
 	/**
 	 * This sets the CPU type name
-	 * 
+	 *
 	 * @return true if value has changed, false otherwise
 	 */
-	public boolean setCpuTypeName(String v) {
+	public boolean setCpuTypeName(final String v) {
 		return setValue(Columns.CPUTYPENAME, v);
 	}
 
 	/**
 	 * This sets the OS name
-	 * 
+	 *
 	 * @return true if value has changed, false otherwise
 	 */
-	public boolean setOsName(String v) {
+	public boolean setOsName(final String v) {
 		return setValue(Columns.OSNAME, v);
 	}
 
 	/**
 	 * This sets the OS name
-	 * 
+	 *
 	 * @return true if value has changed, false otherwise
 	 */
-	public boolean setOsVersion(String v) {
+	public boolean setOsVersion(final String v) {
 		return setValue(Columns.OSVERSION, v);
 	}
 
 	/**
 	 * This sets the app UID
-	 * 
+	 *
 	 * @return true if value has changed, false otherwise
 	 */
-	public boolean setApp(UID v) {
+	public boolean setApp(final UID v) {
 		return setValue(Columns.APPUID, v);
 	}
 
 	/**
 	 * This sets the data UID
-	 * 
+	 *
 	 * @return true if value has changed, false otherwise
 	 */
-	public boolean setData(UID v) {
+	public boolean setData(final UID v) {
 		return setValue(Columns.DATAUID, v);
 	}
 
@@ -468,7 +468,7 @@ public final class Executable extends Type {
 	 * dumps it. <br />
 	 * Usage : java -cp xtremweb.jar xtremweb.common.AppInterface [xmlFile]
 	 */
-	public static void main(String[] argv) {
+	public static void main(final String[] argv) {
 		try {
 			final Executable itf = new Executable();
 			if (argv.length > 0) {
@@ -484,8 +484,9 @@ public final class Executable extends Type {
 			writer.write(itf);
 		} catch (final Exception e) {
 			final Logger logger = new Logger();
-			logger.exception("Usage : java -cp " + XWTools.JARFILENAME
-					+ " xtremweb.common.AppInterface [anXMLDescriptionFile]", e);
+			logger.exception(
+					"Usage : java -cp " + XWTools.JARFILENAME + " xtremweb.common.AppInterface [anXMLDescriptionFile]",
+					e);
 		}
 	}
 }
