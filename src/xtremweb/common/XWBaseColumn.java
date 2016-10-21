@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -25,21 +25,21 @@ package xtremweb.common;
 /**
  * This interface aims to use columns of all Interfaces (AppInterface etc.)
  * These interfaces have enumerations that must implement this interface
- * 
+ *
  * @author Oleg Lodygensky
  * @since 8.2.0
  */
 public interface XWBaseColumn {
 	/**
 	 * This retrieves the ordinal
-	 * 
+	 *
 	 * @return the ordinal
 	 */
 	public abstract int getOrdinal();
 
 	/**
 	 * This creates a new object from String representing this enum value
-	 * 
+	 *
 	 * @param s
 	 *            the String representation
 	 * @return the object representing the column
