@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -31,9 +31,9 @@ import xtremweb.security.XWAccessRights;
 
 /**
  * This class describes the base columns for all manageable objects.
- * 
+ *
  * Created: November 22th, 2012
- * 
+ *
  * @author <a href="mailto:oleg.lodygensky /at\ .in2p3.fr>Oleg Lodygensky</a>
  * @version %I%, %G%
  * @since 8.2.0
@@ -44,7 +44,7 @@ public enum TableColumns implements XWBaseColumn {
 	/**
 	 * This is the column index of the UNIQUE ID.<br />
 	 * It <b>must</b> be the first attribute since we use it as primary key.
-	 * 
+	 *
 	 * @see Table
 	 */
 	UID {
@@ -52,42 +52,42 @@ public enum TableColumns implements XWBaseColumn {
 		 * This creates a new UID from string
 		 */
 		@Override
-		public UID fromString(String v) {
+		public UID fromString(final String v) {
 			return new UID(v);
 		}
 	},
 	/**
 	 * This is the column index of the UID of the owner.<br />
-	 * 
+	 *
 	 * @since 5.8.0
 	 */
 	OWNERUID {
 		@Override
-		public UID fromString(String v) {
+		public UID fromString(final String v) {
 			return new UID(v);
 		}
 	},
 	/**
 	 * This is the column index of this work access rights if any
-	 * 
+	 *
 	 * @since 5.8.0
 	 */
 	ACCESSRIGHTS {
 		@Override
-		public XWAccessRights fromString(String v) throws ParseException {
+		public XWAccessRights fromString(final String v) throws ParseException {
 			return new XWAccessRights(v);
 		}
 	},
 	/**
 	 * This is the column index of the error message, if any
-	 * 
+	 *
 	 * @since 9.0.0
 	 */
 	ERRORMSG {
 		/**
 		 * This creates an object from String representation for this column
 		 * value This cleans the parameter to ensure SQL compliance
-		 * 
+		 *
 		 * @param v
 		 *            the String representation
 		 * @return a Boolean representing the column value
@@ -103,16 +103,16 @@ public enum TableColumns implements XWBaseColumn {
 	/**
 	 * This is the column index of the last update date. This has a timestamp
 	 * SQL type which is automatically updated
-	 * 
-	 * @link 
-	 *       http://dev.mysql.com/doc/refman/5.0/en/timestamp-initialization.html
+	 *
+	 * @link http://dev.mysql.com/doc/refman/5.0/en/timestamp-initialization.
+	 *       html
 	 * @since 9.0.0
 	 */
 	MTIME {
 		/**
 		 * This creates an object from String representation for this column
 		 * value
-		 * 
+		 *
 		 * @param v
 		 *            the String representation
 		 * @return a Boolean representing the column value
@@ -120,7 +120,7 @@ public enum TableColumns implements XWBaseColumn {
 		 *             is thrown on instantiation error
 		 */
 		@Override
-		public Date fromString(String v) {
+		public Date fromString(final String v) {
 			return XWTools.getSQLDateTime(v);
 		}
 	};
@@ -129,51 +129,53 @@ public enum TableColumns implements XWBaseColumn {
 
 	/**
 	 * This retrieves the ordinal
-	 * 
+	 *
 	 * @return the ordinal
 	 * @since 8.2.0
 	 */
+	@Override
 	public int getOrdinal() {
 		return this.ordinal();
 	}
 
 	/**
 	 * This retrieves an Columns from its integer value
-	 * 
+	 *
 	 * @param v
 	 *            is the integer value of the Columns
 	 * @return an Columns
 	 */
-	public static TableColumns fromInt(int v) throws IndexOutOfBoundsException {
+	public static TableColumns fromInt(final int v) throws ArrayIndexOutOfBoundsException {
 		for (final TableColumns c : TableColumns.values()) {
 			if (c.ordinal() == v) {
 				return c;
 			}
 		}
-		throw new IndexOutOfBoundsException("unvalid Columns value " + v);
+		throw new ArrayIndexOutOfBoundsException("unvalid Columns value " + v);
 	}
 
 	/**
 	 * This instantiates a representation of the enumeration
-	 * 
+	 *
 	 * @param r
 	 *            is the String representation
 	 * @return this enumeration representation
 	 * @throws Exception
 	 *             is thrown on error
 	 */
+	@Override
 	public abstract Object fromString(String r) throws Exception;
 
 	/**
 	 * This creates a new UID from DB result set
-	 * 
+	 *
 	 * @param rs
 	 *            is the DB result set
 	 * @return this enumeration representation
 	 * @throws Exception
 	 *             is thrown on error
 	 */
-	public final Object fromResultSet(ResultSet rs) throws Exception {
+	public final Object fromResultSet(final ResultSet rs) throws Exception {
 		return this.fromString(rs.getString(this.toString()));
 	}
 }
