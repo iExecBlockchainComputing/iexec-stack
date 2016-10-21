@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -47,19 +47,17 @@ public enum XWDBs {
 
 	/**
 	 * This converts database vendor to a String.
-	 * 
+	 *
 	 * @param db
 	 *            is the value to convert
 	 * @return a string containing boolean value
 	 */
-	public static String toString(XWDBs db)
-			throws ArrayIndexOutOfBoundsException {
+	public static String toString(final XWDBs db) throws ArrayIndexOutOfBoundsException {
 		try {
 			return LABELS[db.ordinal()];
 		} catch (final Exception e) {
 		}
-		throw new ArrayIndexOutOfBoundsException("unknown database vendor : "
-				+ db);
+		throw new ArrayIndexOutOfBoundsException("unknown database vendor : " + db);
 	}
 
 	public static final String HSQLUSER = "sa";
@@ -68,10 +66,10 @@ public enum XWDBs {
 	/**
 	 * This dumps enums to stdout
 	 */
-	public static void main(String[] argv) {
+	public static void main(final String[] argv) {
 		for (final XWPropertyDefs i : XWPropertyDefs.values()) {
-			System.out.println(i.toString() + " = " + i.ordinal()
-					+ " valueOf() = " + XWPropertyDefs.valueOf(i.toString()));
+			System.out.println(
+					i.toString() + " = " + i.ordinal() + " valueOf() = " + XWPropertyDefs.valueOf(i.toString()));
 		}
 	}
 }
