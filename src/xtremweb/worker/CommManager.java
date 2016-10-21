@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -84,7 +84,7 @@ public final class CommManager extends Thread {
 	 * If(xtremweb.common.XWConfigurator#noopTimeout is set) and if (currentTime
 	 * - firstWorkRequest > xtremweb.common.XWConfigurator#noopTimeout) then
 	 * exit
-	 * 
+	 *
 	 * @see xtremweb.common.XWConfigurator#noopTimeout
 	 * @since RPCXW v3
 	 */
@@ -105,9 +105,11 @@ public final class CommManager extends Thread {
 	private boolean connected = true;
 	/**
 	 * This tells if this thread is sleeping
+	 *
 	 * @since 10.1.0
 	 */
 	private boolean sleeping;
+
 	/**
 	 * @return the sleeping
 	 * @since 10.1.0
@@ -117,10 +119,11 @@ public final class CommManager extends Thread {
 	}
 
 	/**
-	 * @param sleeping the sleeping to set
+	 * @param sleeping
+	 *            the sleeping to set
 	 * @since 10.1.0
 	 */
-	private void setSleeping(boolean sleeping) {
+	private void setSleeping(final boolean sleeping) {
 		this.sleeping = sleeping;
 	}
 
@@ -157,7 +160,7 @@ public final class CommManager extends Thread {
 	/**
 	 * This is the default and only constructor. This installs communication
 	 * layers and try to connect to server.
-	 * 
+	 *
 	 * The specialized error <CODE>UpdateException</CODE>, defined in
 	 * xtremweb.upgrade package, may occur while getting connected. In such a
 	 * case we have to download a new version of the worker software and restart
@@ -211,17 +214,16 @@ public final class CommManager extends Thread {
 		NONE, NOCOMMEVENT, POOLWORKFULL, WORKREQUEST, SENDRESULT, NOWORKAVAILABLE, DOWNLOADERROR, RECONNECTION;
 	}
 
-	private void sleeping(SleepEvent s) {
+	private void sleeping(final SleepEvent s) {
 		sleeping(s, null, nullWorkTimeOut);
 	}
 
-	private void sleeping(SleepEvent s, String msg) {
+	private void sleeping(final SleepEvent s, final String msg) {
 		sleeping(s, msg, nullWorkTimeOut);
 	}
 
-	private void sleeping(SleepEvent s, String msg, int d) {
-		logger.debug("sleeping " + s + " (" + (msg == null ? "" : msg) + ") "
-				+ d);
+	private void sleeping(final SleepEvent s, final String msg, final int d) {
+		logger.debug("sleeping " + s + " (" + (msg == null ? "" : msg) + ") " + d);
 
 		try {
 			setSleeping(true);
@@ -236,7 +238,7 @@ public final class CommManager extends Thread {
 	/**
 	 * @see #message(boolean, String)
 	 */
-	private void message(boolean lost) {
+	private void message(final boolean lost) {
 		message(lost, null);
 	}
 
@@ -244,30 +246,24 @@ public final class CommManager extends Thread {
 	 * This prints a message on connection/deconnection events. This prints out
 	 * a single message for several equivalent events in order to reduce
 	 * outputs. This sets the connected attribute.
-	 * 
+	 *
 	 * @param lost
 	 *            tells whether connection is lost or not
 	 * @param trailer
 	 *            is an optionnal message trailer
 	 * @see #connected
 	 */
-	private void message(boolean lost, String trailer) {
+	private void message(final boolean lost, final String trailer) {
 		if (!lost) {
 			if (!connected) {
-				logger.error("XWHEP Worker ("
-						+ CommonVersion.getCurrent().full()
-						+ ") connected to \""
-						+ Worker.getConfig().getCurrentDispatcher()
-						+ (trailer == null ? "\"" : "\" : " + trailer));
+				logger.error("XWHEP Worker (" + CommonVersion.getCurrent().full() + ") connected to \""
+						+ Worker.getConfig().getCurrentDispatcher() + (trailer == null ? "\"" : "\" : " + trailer));
 			}
 			connected = true;
 		} else {
 			if (connected) {
-				logger.error("XWHEP Worker ("
-						+ CommonVersion.getCurrent().full() + ") "
-						+ " connection lost from \""
-						+ Worker.getConfig().getCurrentDispatcher()
-						+ (trailer == null ? "\"" : "\" : " + trailer));
+				logger.error("XWHEP Worker (" + CommonVersion.getCurrent().full() + ") " + " connection lost from \""
+						+ Worker.getConfig().getCurrentDispatcher() + (trailer == null ? "\"" : "\" : " + trailer));
 			}
 			connected = false;
 		}
@@ -283,7 +279,7 @@ public final class CommManager extends Thread {
 	/**
 	 * This inserts a send result event on event queue
 	 */
-	protected void sendResult(Work w) {
+	protected void sendResult(final Work w) {
 		commQueue.sendResult(w);
 		resetTimeouts();
 		this.interrupt();
@@ -291,10 +287,10 @@ public final class CommManager extends Thread {
 
 	/**
 	 * This inserts a send work event on event queue
-	 * 
+	 *
 	 * @since 8.3.0
 	 */
-	protected void sendWork(Work w) {
+	protected void sendWork(final Work w) {
 		commQueue.sendWork(w);
 		resetTimeouts();
 		this.interrupt();
@@ -305,7 +301,7 @@ public final class CommManager extends Thread {
 	 * This sends back the work to server. A worker must set
 	 * XMLRPCCommandSendWork.host to make the server able to update the work and
 	 * the associated task
-	 * 
+	 *
 	 * @throws IOException
 	 * @throws URISyntaxException
 	 * @throws UnknownHostException
@@ -315,9 +311,8 @@ public final class CommManager extends Thread {
 	 * @throws InvalidKeyException
 	 * @since 8.0.0
 	 */
-	private void workSend(Work w) throws ConnectException,
-	UnknownHostException, URISyntaxException, IOException,
-	InvalidKeyException, AccessControlException, SAXException {
+	private void workSend(final Work w) throws ConnectException, UnknownHostException, URISyntaxException, IOException,
+			InvalidKeyException, AccessControlException, SAXException {
 
 		final URI uri = commClient().newURI(w.getUID());
 		final XMLRPCCommandSend cmd = new XMLRPCCommandSend(uri, w);
@@ -336,7 +331,7 @@ public final class CommManager extends Thread {
 	 * @param instance
 	 *            the instance to set
 	 */
-	public static void setInstance(CommManager instance) {
+	public static void setInstance(final CommManager instance) {
 		CommManager.instance = instance;
 	}
 
@@ -361,24 +356,23 @@ public final class CommManager extends Thread {
 	/**
 	 * This asks the server for a new worker version
 	 */
-	public WorkInterface getWorkerBin(HostInterface host) throws IOException {
+	public WorkInterface getWorkerBin(final HostInterface host) throws IOException {
 		throw new IOException("CommManager::getWorkerBin() not implemented yet");
 	}
 
 	/**
 	 * This sends traces to the server
-	 * 
+	 *
 	 * @throws IOException
 	 */
-	public void tactivityMonitor(String hostName, String login, long start,
-			long end, byte[] file) throws IOException {
-		throw new IOException(
-				"CommManager::tactivityMonitor() not implemented yet");
+	public void tactivityMonitor(final String hostName, final String login, final long start, final long end,
+			final byte[] file) throws IOException {
+		throw new IOException("CommManager::tactivityMonitor() not implemented yet");
 	}
 
 	/**
 	 * This calls interrupt()
-	 * 
+	 *
 	 * @see #interrupt()
 	 */
 	public void terminate() {
@@ -389,11 +383,10 @@ public final class CommManager extends Thread {
 
 	/**
 	 * This retrieves the default comm client and initializes it
-	 * 
+	 *
 	 * @return the default comm client
 	 */
-	public CommClient commClient() throws UnknownHostException, IOException,
-	ConnectException {
+	public CommClient commClient() throws UnknownHostException, IOException, ConnectException {
 
 		CommClient commClient = null;
 		try {
@@ -409,13 +402,12 @@ public final class CommManager extends Thread {
 
 	/**
 	 * This retrieves the comm client for the given URI and initializes it
-	 * 
+	 *
 	 * @param uri
 	 *            is the uri to retrieve comm client for
 	 * @return the expected comm client
 	 */
-	public CommClient commClient(URI uri) throws UnknownHostException,
-	ConnectException, IOException {
+	public CommClient commClient(final URI uri) throws UnknownHostException, ConnectException, IOException {
 
 		CommClient commClient = null;
 		try {
@@ -435,16 +427,15 @@ public final class CommManager extends Thread {
 	/**
 	 * This connects to server to request a new work Since 7.2.0, this resets
 	 * host.jobId because this must be used only once
-	 * 
+	 *
 	 * Since 9.1.0, this updates this host free disk space before remotely
 	 * calling workRequest()
-	 * 
+	 *
 	 * @throws AccessControlException
 	 * @throws InvalidKeyException
 	 */
-	private WorkInterface getWork() throws ClassNotFoundException,
-	UnknownHostException, ConnectException, IOException, SAXException,
-	URISyntaxException, InvalidKeyException, AccessControlException {
+	private WorkInterface getWork() throws ClassNotFoundException, UnknownHostException, ConnectException, IOException,
+			SAXException, URISyntaxException, InvalidKeyException, AccessControlException {
 
 		final HostInterface workerHost = Worker.getConfig().getHost();
 		final File d = Worker.getConfig().getTmpDir();
@@ -456,16 +447,15 @@ public final class CommManager extends Thread {
 
 	/**
 	 * This retrieves the app for the given UID
-	 * 
+	 *
 	 * @param uid
 	 *            is the app uid
 	 * @return the app
 	 * @throws AccessControlException
 	 * @throws InvalidKeyException
 	 */
-	private AppInterface getApp(UID uid) throws ClassNotFoundException,
-	UnknownHostException, ConnectException, IOException, SAXException,
-	URISyntaxException, InvalidKeyException, AccessControlException {
+	private AppInterface getApp(final UID uid) throws ClassNotFoundException, UnknownHostException, ConnectException,
+			IOException, SAXException, URISyntaxException, InvalidKeyException, AccessControlException {
 
 		final AppInterface app = (AppInterface) commClient().get(uid, false);
 		if (app == null) {
@@ -477,7 +467,7 @@ public final class CommManager extends Thread {
 	/**
 	 * This downloads data from an URI pass through file and call installFile()
 	 * for each uri. This stops on the first error while trying to install URIs.
-	 * 
+	 *
 	 * @param throughUri
 	 *            is the URI of the URI pass through file
 	 * @return the directory of the last installed data
@@ -488,9 +478,8 @@ public final class CommManager extends Thread {
 	 * @throws InvalidKeyException
 	 * @since 8.0.0
 	 */
-	protected File uriPassThrough(URI throughUri) throws IOException,
-	URISyntaxException, InvalidKeyException, AccessControlException,
-	ClassNotFoundException, SAXException {
+	protected File uriPassThrough(final URI throughUri) throws IOException, URISyntaxException, InvalidKeyException,
+			AccessControlException, ClassNotFoundException, SAXException {
 
 		final File ret = null;
 		boolean islocked = false;
@@ -502,8 +491,7 @@ public final class CommManager extends Thread {
 			CommManager.instance.commClient().lock(throughUri);
 			logger.debug("uriPassThrough 01");
 			islocked = true;
-			final File fData = CommManager.instance.commClient()
-					.getContentFile(throughUri);
+			final File fData = CommManager.instance.commClient().getContentFile(throughUri);
 			logger.debug("uriPassThrough 02");
 			reader = new BufferedReader(new FileReader(fData));
 			while (true) {
@@ -524,8 +512,7 @@ public final class CommManager extends Thread {
 				logger.debug("uriPassThrough line = " + line);
 				final URI uri = new URI(line);
 				if ((uri.getScheme() == null) || (uri.getHost() == null)) {
-					throw new URISyntaxException(line,
-							"syntax error (sheme or host is null)");
+					throw new URISyntaxException(line, "syntax error (sheme or host is null)");
 				}
 				logger.debug("uriPassThrough uri = " + line);
 				downloadData(uri);
@@ -548,10 +535,10 @@ public final class CommManager extends Thread {
 
 	/**
 	 * This all data associated to the current work
-	 * 
+	 *
 	 * @param uid
 	 *            is the work uid
-	 * 
+	 *
 	 */
 	private void downloadWork(final Work w) throws IOException {
 
@@ -568,56 +555,52 @@ public final class CommManager extends Thread {
 			if (dirin != null) {
 				final DataTypeEnum dirinType = dirin.getType();
 				logger.debug("dirinType = " + dirinType);
-				if ((dirinType != null)
-						&& (dirinType == DataTypeEnum.URIPASSTHROUGH)) {
+				if ((dirinType != null) && (dirinType == DataTypeEnum.URIPASSTHROUGH)) {
 					uriPassThrough(uri);
 				}
 			}
 		} catch (final Exception e) {
 			logger.exception(e);
-			throw new IOException("can't download dirin (" + e.getMessage()
-					+ ")");
+			throw new IOException("can't download dirin (" + e.getMessage() + ")");
 		}
-
 
 		try {
 			final DataInterface drivenData = getData(w.getDataDriven(), false);
-			if(drivenData != null){
+			if (drivenData != null) {
 				final String sharedDataPkgs = Worker.getConfig().getHost().getSharedDatas();
 				logger.debug("downloadWork worker sharedDataPkg = " + sharedDataPkgs);
 				final Collection<String> datas = XWTools.split(sharedDataPkgs, ",");
 				boolean found = false;
-				for(final Iterator<String> datasIterator = datas.iterator(); datasIterator.hasNext();) {
+				for (final Iterator<String> datasIterator = datas.iterator(); datasIterator.hasNext();) {
 					final String sharedData = datasIterator.next();
-					if(drivenData.getPackage().compareTo(sharedData) == 0) {
+					if (drivenData.getPackage().compareTo(sharedData) == 0) {
 						w.setDataPackage(sharedData);
 						found = true;
 						break;
 					}
 				}
-				if(!found) {
-					throw new IOException("Driven data package (" + drivenData.getPackage() + ") doesn't match worker packages : " + sharedDataPkgs);
+				if (!found) {
+					throw new IOException("Driven data package (" + drivenData.getPackage()
+							+ ") doesn't match worker packages : " + sharedDataPkgs);
 				}
 			}
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			logger.exception(e);
-			throw new IOException("can't download driven data (" + e.getMessage()
-					+ ")");
+			throw new IOException("can't download driven data (" + e.getMessage() + ")");
 		}
 	}
 
 	/**
 	 * This retrieves the app This also retrieves all app files contents (bin,
 	 * stdin, dirin...)
-	 * 
+	 *
 	 * @param uid
 	 *            is the data uid
 	 * @throws AccessControlException
 	 * @throws InvalidKeyException
 	 */
-	private void downloadApp(UID uid) throws ClassNotFoundException,
-	UnknownHostException, ConnectException, IOException, SAXException,
-	URISyntaxException, InvalidKeyException, AccessControlException {
+	private void downloadApp(final UID uid) throws ClassNotFoundException, UnknownHostException, ConnectException,
+			IOException, SAXException, URISyntaxException, InvalidKeyException, AccessControlException {
 
 		final AppInterface app = getApp(uid);
 		final CPUEnum cpu = Worker.getConfig().getHost().getCpu();
@@ -627,8 +610,7 @@ public final class CommManager extends Thread {
 
 		AppTypeEnum appType = app.getType();
 		String apptypestr = appType.toString();
-		final boolean localapp = Worker.getConfig().getLocalApps()
-				.contains(apptypestr);
+		final boolean localapp = Worker.getConfig().getLocalApps().contains(apptypestr);
 		appType = null;
 		apptypestr = null;
 
@@ -698,7 +680,7 @@ public final class CommManager extends Thread {
 
 	/**
 	 * This retrieves the data for the given URI
-	 * 
+	 *
 	 * @param uri
 	 *            is the data uri
 	 * @return the data
@@ -706,16 +688,15 @@ public final class CommManager extends Thread {
 	 * @throws AccessControlException
 	 * @throws InvalidKeyException
 	 */
-	public DataInterface getData(URI uri) throws ClassNotFoundException,
-	UnknownHostException, ConnectException, IOException, SAXException,
-	InvalidKeyException, AccessControlException, URISyntaxException {
+	public DataInterface getData(final URI uri) throws ClassNotFoundException, UnknownHostException, ConnectException,
+			IOException, SAXException, InvalidKeyException, AccessControlException, URISyntaxException {
 
 		return getData(uri, true);
 	}
 
 	/**
 	 * This retrieves the data for the given URI
-	 * 
+	 *
 	 * @param uri
 	 *            is the data uri
 	 * @return the data
@@ -723,10 +704,9 @@ public final class CommManager extends Thread {
 	 * @throws AccessControlException
 	 * @throws InvalidKeyException
 	 */
-	private DataInterface getData(URI uri, boolean bypass)
-			throws ClassNotFoundException, UnknownHostException,
-			ConnectException, IOException, SAXException, InvalidKeyException,
-			AccessControlException, URISyntaxException {
+	private DataInterface getData(final URI uri, final boolean bypass)
+			throws ClassNotFoundException, UnknownHostException, ConnectException, IOException, SAXException,
+			InvalidKeyException, AccessControlException, URISyntaxException {
 
 		if (uri == null) {
 			return null;
@@ -743,16 +723,15 @@ public final class CommManager extends Thread {
 	/**
 	 * This retrieves the data for the given URI This finally retrieves the data
 	 * content for the given URI
-	 * 
+	 *
 	 * @param uri
 	 *            is the data uri
 	 * @throws URISyntaxException
 	 * @throws AccessControlException
 	 * @throws InvalidKeyException
 	 */
-	private void uploadData(URI uri) throws ClassNotFoundException,
-	UnknownHostException, ConnectException, IOException, SAXException,
-	InvalidKeyException, AccessControlException, URISyntaxException {
+	private void uploadData(final URI uri) throws ClassNotFoundException, UnknownHostException, ConnectException,
+			IOException, SAXException, InvalidKeyException, AccessControlException, URISyntaxException {
 
 		if (uri == null) {
 			throw new IOException("uploadData() : uri is null");
@@ -764,16 +743,14 @@ public final class CommManager extends Thread {
 			commClient = commClient();
 			final DataInterface data = getData(uri);
 			if (data == null) {
-				throw new IOException("uploadData(" + uri.toString()
-						+ ") can't get data");
+				throw new IOException("uploadData(" + uri.toString() + ") can't get data");
 			}
 			final long start = System.currentTimeMillis();
 			commClient.lock(uri);
 			islocked = true;
 			final File fdata = commClient.getContentFile(uri);
 			if (fdata == null) {
-				throw new IOException("uploadData(" + uri.toString()
-						+ ") can't get content file");
+				throw new IOException("uploadData(" + uri.toString() + ") can't get content file");
 			}
 			final long fsize = fdata.length();
 
@@ -796,12 +773,11 @@ public final class CommManager extends Thread {
 
 	/**
 	 * This calls downloadData(uri, false)
-	 * 
+	 *
 	 * @see #downloadData(URI, boolean)
 	 */
-	public void downloadData(URI uri) throws ClassNotFoundException,
-	UnknownHostException, ConnectException, IOException, SAXException,
-	InvalidKeyException, AccessControlException, URISyntaxException {
+	public void downloadData(final URI uri) throws ClassNotFoundException, UnknownHostException, ConnectException,
+			IOException, SAXException, InvalidKeyException, AccessControlException, URISyntaxException {
 
 		downloadData(uri, false);
 	}
@@ -812,7 +788,7 @@ public final class CommManager extends Thread {
 	 * content, if not already in cache. This first tries to call
 	 * downloadData(new URL(uri), download) to try to download data from an HTTP
 	 * server if uri is an URL
-	 * 
+	 *
 	 * @param uri
 	 *            is the data uri
 	 * @param bypass
@@ -823,10 +799,9 @@ public final class CommManager extends Thread {
 	 * @throws AccessControlException
 	 * @throws InvalidKeyException
 	 */
-	private synchronized void downloadData(URI uri, boolean bypass)
-			throws ClassNotFoundException, UnknownHostException,
-			ConnectException, IOException, SAXException, InvalidKeyException,
-			AccessControlException, URISyntaxException {
+	private synchronized void downloadData(URI uri, final boolean bypass)
+			throws ClassNotFoundException, UnknownHostException, ConnectException, IOException, SAXException,
+			InvalidKeyException, AccessControlException, URISyntaxException {
 
 		File fdata = null;
 		boolean islocked = false;
@@ -880,8 +855,7 @@ public final class CommManager extends Thread {
 			fdata = commClient.getContentFile(uri);
 			if (data.getType() == DataTypeEnum.BAT) {
 				final UID uid = data.getUID();
-				final String cmdname = uid.toString()
-						+ DataTypeEnum.BAT.getFileExtension();
+				final String cmdname = uid.toString() + DataTypeEnum.BAT.getFileExtension();
 				fdata = new File(fdata.getParentFile(), cmdname);
 				commClient.setContentFile(uri, fdata);
 			}
@@ -895,9 +869,7 @@ public final class CommManager extends Thread {
 			final long start = System.currentTimeMillis();
 			long fsize = fdata.length();
 
-			if ((fdata.exists())
-					&& (!bypass)
-					&& (data.getMD5().compareTo(MD5.asHex(MD5.getHash(fdata))) == 0)
+			if ((fdata.exists()) && (!bypass) && (data.getMD5().compareTo(MD5.asHex(MD5.getHash(fdata))) == 0)
 					&& (data.getSize() == fsize)) {
 				logger.config("Not necessary to download data " + data.getUID());
 				return;
@@ -927,8 +899,7 @@ public final class CommManager extends Thread {
 			Worker.getConfig().getHost().setDownloadBandwidth(bandwidth);
 			logger.info("Download bandwidth = " + bandwidth);
 
-			if ((data.getMD5().compareTo(MD5.asHex(MD5.getHash(fdata))) != 0)
-					|| (data.getSize() != fsize)) {
+			if ((data.getMD5().compareTo(MD5.asHex(MD5.getHash(fdata))) != 0) || (data.getSize() != fsize)) {
 				throw new IOException(uri.toString() + " MD5 or size differs");
 			}
 		} finally {
@@ -956,16 +927,15 @@ public final class CommManager extends Thread {
 	/**
 	 * This does nothing if parameter is null. This retrieves the data from an
 	 * HTTP server
-	 * 
+	 *
 	 * @param uri
 	 *            is the data uri
 	 * @throws URISyntaxException
 	 * @throws AccessControlException
 	 * @throws InvalidKeyException
 	 */
-	private void wget(URI uri) throws ClassNotFoundException,
-	UnknownHostException, ConnectException, IOException, SAXException,
-	InvalidKeyException, AccessControlException, URISyntaxException {
+	private void wget(final URI uri) throws ClassNotFoundException, UnknownHostException, ConnectException, IOException,
+			SAXException, InvalidKeyException, AccessControlException, URISyntaxException {
 
 		if (uri == null) {
 			return;
@@ -1005,8 +975,7 @@ public final class CommManager extends Thread {
 			try {
 				final URL url = new URL(uri.toString().replaceAll("&amp;", "&"));
 				mileStone.println("<readfile file='" + fdata + "'>");
-				io = new StreamIO(null, new DataInputStream(url.openStream()),
-						false);
+				io = new StreamIO(null, new DataInputStream(url.openStream()), false);
 
 				io.readFileContent(fdata);
 				io.close();
@@ -1043,14 +1012,15 @@ public final class CommManager extends Thread {
 
 			resetTimeouts();
 
-			logger.debug("TIMEOUT = " + nullWorkTimeOut + " ; INITTIMEOUT = "
-					+ initWorkTimeOut + " ; MAXTIMEOUT = " + maxWorkTimeOut);
+			logger.debug("TIMEOUT = " + nullWorkTimeOut + " ; INITTIMEOUT = " + initWorkTimeOut + " ; MAXTIMEOUT = "
+					+ maxWorkTimeOut);
 
 			mileStone.clear();
 			final CommEvent ce = commQueue.getCommEvent();
 			if (ce == null) {
 				if (commQueue.size() < 1) {
-					logger.error("no pending comm event : is there a bug left in CommManager ? (forcing a work request)");
+					logger.error(
+							"no pending comm event : is there a bug left in CommManager ? (forcing a work request)");
 					workRequest();
 				} else {
 					logger.debug("found no comm event");
@@ -1072,16 +1042,14 @@ public final class CommManager extends Thread {
 				if (firstWorkRequest == -1) {
 					firstWorkRequest = System.currentTimeMillis() / 1000;
 				}
-				if (getPoolWork().isFull()
-						|| !ThreadLaunch.getInstance().available()) {
+				if (getPoolWork().isFull() || !ThreadLaunch.getInstance().available()) {
 					sleeping(SleepEvent.POOLWORKFULL);
 					workRequest();
 					continue;
 				}
 
 				try {
-					final long noopTimeout = Worker.getConfig().getInt(
-							XWPropertyDefs.NOOPTIMEOUT);
+					final long noopTimeout = Worker.getConfig().getInt(XWPropertyDefs.NOOPTIMEOUT);
 
 					if ((noopTimeout > 0) && (firstWorkRequest > 0)) {
 						final long current = System.currentTimeMillis() / 1000;
@@ -1090,11 +1058,8 @@ public final class CommManager extends Thread {
 						logger.debug("delai = " + delai);
 
 						if (delai > noopTimeout) {
-							System.out.println("XWHEP Worker ("
-									+ CommonVersion.getCurrent().full() + ") ["
-									+ new Date()
-									+ "] ended : not waiting any longer ("
-									+ delai + " > " + noopTimeout + ")");
+							System.out.println("XWHEP Worker (" + CommonVersion.getCurrent().full() + ") [" + new Date()
+									+ "] ended : not waiting any longer (" + delai + " > " + noopTimeout + ")");
 							System.exit(0);
 						}
 					}
@@ -1136,22 +1101,14 @@ public final class CommManager extends Thread {
 				Worker.getConfig().incNbJobs();
 				if (Worker.getConfig().stopComputing()) {
 					if (commQueue.size() < 1) {
-						System.out.println("XWHEP Worker ("
-								+ CommonVersion.getCurrent().full()
-								+ ") ["
-								+ new Date()
-								+ "] ended : enough computings ("
-								+ Worker.getConfig().getNbJobs()
-								+ " > "
-								+ Worker.getConfig().getInt(
-										XWPropertyDefs.COMPUTINGJOBS) + ")");
+						System.out.println("XWHEP Worker (" + CommonVersion.getCurrent().full() + ") [" + new Date()
+								+ "] ended : enough computings (" + Worker.getConfig().getNbJobs() + " > "
+								+ Worker.getConfig().getInt(XWPropertyDefs.COMPUTINGJOBS) + ")");
 						System.exit(0);
 					}
 
-					logger.warn("Enough jobs! ("
-							+ Worker.getConfig().getNbJobs()
-							+ " already downloaded)" + " but there's still "
-							+ commQueue.size() + " results to send");
+					logger.warn("Enough jobs! (" + Worker.getConfig().getNbJobs() + " already downloaded)"
+							+ " but there's still " + commQueue.size() + " results to send");
 
 					continue;
 				}
@@ -1170,14 +1127,12 @@ public final class CommManager extends Thread {
 					try {
 						downloadWork(newWork);
 					} catch (final Exception e) {
-						throw new IOException(
-								"can't download work :" + e.getMessage());
+						throw new IOException("can't download work :" + e.getMessage());
 					}
 					try {
 						downloadApp(newWork.getApplication());
 					} catch (final Exception e) {
-						throw new IOException(
-								"can't download app : " + e.getMessage());
+						throw new IOException("can't download app : " + e.getMessage());
 					}
 
 					mileStone.println("got new work files");
@@ -1259,13 +1214,12 @@ public final class CommManager extends Thread {
 
 	/**
 	 * This uploads result to server and updates job to server
-	 * 
+	 *
 	 * @throws AccessControlException
 	 * @throws InvalidKeyException
 	 */
-	protected void uploadResults(Work theWork) throws IOException,
-	ClassNotFoundException, SAXException, URISyntaxException,
-	InvalidKeyException, AccessControlException {
+	protected void uploadResults(final Work theWork) throws IOException, ClassNotFoundException, SAXException,
+			URISyntaxException, InvalidKeyException, AccessControlException {
 
 		IOException ioe = null;
 
@@ -1324,12 +1278,9 @@ public final class CommManager extends Thread {
 		getPoolWork().saveWork(theWork);
 
 		if (Worker.getConfig().stopComputing()) {
-			System.err.println("XWHEP Worker ("
-					+ CommonVersion.getCurrent().full() + ") [" + new Date()
-					+ "] ended : enough computings ("
-					+ Worker.getConfig().getNbJobs() + " > "
-					+ Worker.getConfig().getInt(XWPropertyDefs.COMPUTINGJOBS)
-					+ ")");
+			System.err.println("XWHEP Worker (" + CommonVersion.getCurrent().full() + ") [" + new Date()
+					+ "] ended : enough computings (" + Worker.getConfig().getNbJobs() + " > "
+					+ Worker.getConfig().getInt(XWPropertyDefs.COMPUTINGJOBS) + ")");
 
 			System.exit(0);
 		}
@@ -1353,7 +1304,7 @@ public final class CommManager extends Thread {
 	 * @param poolWork
 	 *            the poolWork to set
 	 */
-	public void setPoolWork(PoolWork poolWork) {
+	public void setPoolWork(final PoolWork poolWork) {
 		this.poolWork = poolWork;
 	}
 }

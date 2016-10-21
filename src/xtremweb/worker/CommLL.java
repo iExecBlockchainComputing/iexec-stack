@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -59,7 +59,7 @@ public class CommLL extends CommQueue {
 	}
 
 	@Override
-	public void sendResult(Work w) {
+	public void sendResult(final Work w) {
 		try {
 			getLogger().info("Added Communication : SENDRESULT " + w.getUID());
 		} catch (final Exception e) {
@@ -71,7 +71,7 @@ public class CommLL extends CommQueue {
 	 * @since 8.3.0
 	 */
 	@Override
-	public void sendWork(Work w) {
+	public void sendWork(final Work w) {
 		try {
 			getLogger().info("Added Communication : SENDWORK " + w.getUID());
 		} catch (final Exception e) {
@@ -81,13 +81,9 @@ public class CommLL extends CommQueue {
 
 	@Override
 	public CommEvent getCommEvent() {
-		getLogger().debug(
-				"poolQueue.isEmpty() = " + poolQueue.isEmpty()
-						+ ";   commEventInProgress.size ("
-						+ commEventInProgress.size() + ") > "
-						+ MAX_COMMEVENT_INPROGRESS);
-		if (poolQueue.isEmpty()
-				|| (commEventInProgress.size() > MAX_COMMEVENT_INPROGRESS)) {
+		getLogger().debug("poolQueue.isEmpty() = " + poolQueue.isEmpty() + ";   commEventInProgress.size ("
+				+ commEventInProgress.size() + ") > " + MAX_COMMEVENT_INPROGRESS);
+		if (poolQueue.isEmpty() || (commEventInProgress.size() > MAX_COMMEVENT_INPROGRESS)) {
 			return null;
 		}
 
@@ -97,7 +93,7 @@ public class CommLL extends CommQueue {
 	}
 
 	@Override
-	public void removeCommEvent(CommEvent ce) {
+	public void removeCommEvent(final CommEvent ce) {
 		commEventInProgress.remove(ce);
 	}
 
@@ -107,7 +103,7 @@ public class CommLL extends CommQueue {
 	}
 
 	@Override
-	public int size(int type) {
+	public int size(final int type) {
 		return poolQueue.size();
 	}
 
