@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -58,7 +58,7 @@ public final class UserGroupInterface extends xtremweb.common.Table {
 	/**
 	 * This is the database table name This was stored in
 	 * xtremweb.dispatcher.UserGroup
-	 * 
+	 *
 	 * @since 9.0.0
 	 */
 	public static final String TABLENAME = ("usergroups");
@@ -73,14 +73,14 @@ public final class UserGroupInterface extends xtremweb.common.Table {
 	public enum Columns implements XWBaseColumn {
 		/**
 		 * This is the column index of the application web page, if any
-		 * 
+		 *
 		 * @since 7.0.0
 		 */
 		WEBPAGE {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return an URL representing the column value
@@ -88,7 +88,7 @@ public final class UserGroupInterface extends xtremweb.common.Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public URL fromString(String v) {
+			public URL fromString(final String v) {
 				try {
 					return new URL(v);
 				} catch (final MalformedURLException e) {
@@ -105,7 +105,7 @@ public final class UserGroupInterface extends xtremweb.common.Table {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return a Boolean representing the column value
@@ -113,7 +113,7 @@ public final class UserGroupInterface extends xtremweb.common.Table {
 			 *             is thrown on instantiation error
 			 */
 			@Override
-			public Boolean fromString(String v) throws URISyntaxException {
+			public Boolean fromString(final String v) throws URISyntaxException {
 				return new Boolean(v);
 			}
 		},
@@ -124,7 +124,7 @@ public final class UserGroupInterface extends xtremweb.common.Table {
 			/**
 			 * This creates an object from String representation for this column
 			 * value This cleans the parameter to ensure SQL compliance
-			 * 
+			 *
 			 * @param v
 			 *            the String representation
 			 * @return a Boolean representing the column value
@@ -141,7 +141,7 @@ public final class UserGroupInterface extends xtremweb.common.Table {
 		/**
 		 * This is the index based on ordinal so that the first value is
 		 * TableColumns + 1
-		 * 
+		 *
 		 * @see xtremweb.common#TableColumns
 		 * @see Enum#ordinal()
 		 * @since 8.2.0
@@ -151,7 +151,7 @@ public final class UserGroupInterface extends xtremweb.common.Table {
 		/**
 		 * This constructor sets the ord member as ord = this.ordinal +
 		 * TableColumns.SIZE
-		 * 
+		 *
 		 * @since 8.2.0
 		 */
 		Columns() {
@@ -160,49 +160,50 @@ public final class UserGroupInterface extends xtremweb.common.Table {
 
 		/**
 		 * This retrieves the index based ordinal
-		 * 
+		 *
 		 * @return the index based ordinal
 		 * @since 8.2.0
 		 */
+		@Override
 		public int getOrdinal() {
 			return ord;
 		}
 
 		/**
 		 * This creates a new object from String for the given column
-		 * 
+		 *
 		 * @param v
 		 *            the String representation
 		 * @return v
 		 * @throws Exception
 		 *             is thrown on instantiation error
 		 */
-		public Object fromString(String v) throws Exception {
+		@Override
+		public Object fromString(final String v) throws Exception {
 			return v;
 		}
 
 		/**
 		 * This creates a new object from SQL result set
-		 * 
+		 *
 		 * @param rs
 		 *            is the SQL result set
 		 * @return the object representing the column
 		 * @throws Exception
 		 *             is thrown on instantiation error
 		 */
-		public final Object fromResultSet(ResultSet rs) throws Exception {
+		public final Object fromResultSet(final ResultSet rs) throws Exception {
 			return this.fromString(rs.getString(this.toString()));
 		}
 
 		/**
 		 * This retrieves an Columns from its integer value
-		 * 
+		 *
 		 * @param v
 		 *            is the integer value of the Columns
 		 * @return an Columns
 		 */
-		public static XWBaseColumn fromInt(int v)
-				throws IndexOutOfBoundsException {
+		public static XWBaseColumn fromInt(final int v) throws IndexOutOfBoundsException {
 			try {
 				return TableColumns.fromInt(v);
 			} catch (final Exception e) {
@@ -226,7 +227,7 @@ public final class UserGroupInterface extends xtremweb.common.Table {
 	 * version. If this version is null, this version is prior to 5.8.0. Before
 	 * 5.8.0, OWNERUID and ACCESSRIGHTS did not exist. Then this returns null
 	 * for these two values.
-	 * 
+	 *
 	 * @param i
 	 *            is an ordinal of an Columns
 	 * @since 5.8.0
@@ -234,7 +235,7 @@ public final class UserGroupInterface extends xtremweb.common.Table {
 	 *         || (c == ACCESSRIGHTS.ordinal()))); column label otherwise
 	 */
 	@Override
-	public String getColumnLabel(int i) throws IndexOutOfBoundsException {
+	public String getColumnLabel(final int i) throws IndexOutOfBoundsException {
 		try {
 			return TableColumns.fromInt(i).toString();
 		} catch (final Exception e) {
@@ -252,37 +253,35 @@ public final class UserGroupInterface extends xtremweb.common.Table {
 		setAttributeLength(ENUMSIZE);
 
 		setAccessRights(XWAccessRights.DEFAULT);
-		setShortIndexes(new int[] { TableColumns.UID.getOrdinal(),
-				Columns.LABEL.getOrdinal() });
+		setShortIndexes(new int[] { TableColumns.UID.getOrdinal(), Columns.LABEL.getOrdinal() });
 	}
 
 	/**
 	 * This constructs an object from DB
-	 * 
+	 *
 	 * @param rs
 	 *            is an SQL request result
 	 * @exception IOException
 	 */
-	public UserGroupInterface(ResultSet rs) throws IOException {
+	public UserGroupInterface(final ResultSet rs) throws IOException {
 		this();
 		fill(rs);
 	}
 
 	/**
 	 * This fills columns from DB
-	 * 
+	 *
 	 * @since 9.0.0
 	 * @param rs
 	 *            is the SQL data set
 	 * @throws IOException
 	 */
 	@Override
-	public void fill(ResultSet rs) throws IOException {
+	public void fill(final ResultSet rs) throws IOException {
 		try {
 			setUID((UID) TableColumns.UID.fromResultSet(rs));
 			setOwner((UID) TableColumns.OWNERUID.fromResultSet(rs));
-			setAccessRights((XWAccessRights) TableColumns.ACCESSRIGHTS
-					.fromResultSet(rs));
+			setAccessRights((XWAccessRights) TableColumns.ACCESSRIGHTS.fromResultSet(rs));
 			setLabel((String) Columns.LABEL.fromResultSet(rs));
 			try {
 				setWebPage((URL) Columns.WEBPAGE.fromResultSet(rs));
@@ -300,32 +299,32 @@ public final class UserGroupInterface extends xtremweb.common.Table {
 
 	/**
 	 * This calls this(StreamIO.stream(input));
-	 * 
+	 *
 	 * @param input
 	 *            is a String containing an XML representation
 	 */
-	public UserGroupInterface(String input) throws IOException, SAXException {
+	public UserGroupInterface(final String input) throws IOException, SAXException {
 		this(StreamIO.stream(input));
 	}
 
 	/**
 	 * This constructs a new object from an XML file
-	 * 
+	 *
 	 * @param f
 	 *            is the XML file
 	 * @see #UserGroupInterface(InputStream)
 	 */
-	public UserGroupInterface(File f) throws IOException, SAXException {
+	public UserGroupInterface(final File f) throws IOException, SAXException {
 		this(new FileInputStream(f));
 	}
 
 	/**
 	 * This creates a new object that will be retreived with a complex SQL
 	 * request
-	 * 
+	 *
 	 * @since 5.8.0
 	 */
-	public UserGroupInterface(SQLRequest r) {
+	public UserGroupInterface(final SQLRequest r) {
 		this();
 		setRequest(r);
 	}
@@ -333,15 +332,14 @@ public final class UserGroupInterface extends xtremweb.common.Table {
 	/**
 	 * This constructs a new object from XML attributes received from input
 	 * stream
-	 * 
+	 *
 	 * @param input
 	 *            is the input stream
 	 * @see XMLReader#read(InputStream)
 	 * @throws IOException
 	 *             on XML error
 	 */
-	public UserGroupInterface(InputStream input) throws IOException,
-			SAXException {
+	public UserGroupInterface(final InputStream input) throws IOException, SAXException {
 		this();
 		final XMLReader reader = new XMLReader(this);
 		try {
@@ -354,14 +352,14 @@ public final class UserGroupInterface extends xtremweb.common.Table {
 	/**
 	 * This constructs a new object from XML attributes received from input
 	 * stream
-	 * 
+	 *
 	 * @param attrs
 	 *            contains attributes XML representation
 	 * @see Table#fromXml(Attributes)
 	 * @throws IOException
 	 *             on XML error
 	 */
-	public UserGroupInterface(Attributes attrs) {
+	public UserGroupInterface(final Attributes attrs) {
 		this();
 		super.fromXml(attrs);
 	}
@@ -369,7 +367,7 @@ public final class UserGroupInterface extends xtremweb.common.Table {
 	/**
 	 * This is the default constructor
 	 */
-	public UserGroupInterface(UID uid) {
+	public UserGroupInterface(final UID uid) {
 		this();
 		setUID(uid);
 	}
@@ -378,7 +376,7 @@ public final class UserGroupInterface extends xtremweb.common.Table {
 	 * This updates this object from interface.
 	 */
 	@Override
-	public void updateInterface(Table gitf) throws IOException {
+	public void updateInterface(final Table gitf) throws IOException {
 		final UserGroupInterface itf = (UserGroupInterface) gitf;
 		if (itf.getAccessRights() != null) {
 			setAccessRights(itf.getAccessRights());
@@ -394,7 +392,7 @@ public final class UserGroupInterface extends xtremweb.common.Table {
 
 	/**
 	 * This retrieves the web page
-	 * 
+	 *
 	 * @return the URL of the web page
 	 * @since 7.0.0
 	 */
@@ -404,7 +402,7 @@ public final class UserGroupInterface extends xtremweb.common.Table {
 
 	/**
 	 * This retrieves is this can be a "project"
-	 * 
+	 *
 	 * @return UID
 	 * @exception IOException
 	 *                is thrown is attribute is not set
@@ -428,7 +426,7 @@ public final class UserGroupInterface extends xtremweb.common.Table {
 	/**
 	 * This sets parameter value; this is called from
 	 * TableInterface#fromXml(Attributes)
-	 * 
+	 *
 	 * @param attribute
 	 *            is the name of the attribute to set
 	 * @param v
@@ -437,8 +435,7 @@ public final class UserGroupInterface extends xtremweb.common.Table {
 	 * @see Table#fromXml(Attributes)
 	 */
 	@Override
-	public final boolean setValue(String attribute, Object v)
-			throws IllegalArgumentException {
+	public final boolean setValue(final String attribute, final Object v) throws IllegalArgumentException {
 		final String A = attribute.toUpperCase();
 		try {
 			return setValue(TableColumns.valueOf(A), v);
@@ -449,22 +446,22 @@ public final class UserGroupInterface extends xtremweb.common.Table {
 
 	/**
 	 * This sets this user group web page
-	 * 
+	 *
 	 * @param v
 	 *            is the URL
 	 * @return true if value has changed, false otherwise
 	 * @since 7.0.0
 	 */
-	public boolean setWebPage(URL v) {
+	public boolean setWebPage(final URL v) {
 		return setValue(Columns.WEBPAGE, v);
 	}
 
 	/**
 	 * This sets the label
-	 * 
+	 *
 	 * @return true if value has changed
 	 */
-	public boolean setLabel(String v) {
+	public boolean setLabel(final String v) {
 		return setValue(Columns.LABEL, v);
 	}
 
@@ -472,7 +469,7 @@ public final class UserGroupInterface extends xtremweb.common.Table {
 	 * @return true if value has changed, false otherwise
 	 * @since XWHEP 1.0.0
 	 */
-	public boolean setProject(boolean v) {
+	public boolean setProject(final boolean v) {
 		Boolean b = new Boolean(v);
 		final boolean ret = setValue(Columns.PROJECT, b);
 		b = null;
@@ -500,7 +497,7 @@ public final class UserGroupInterface extends xtremweb.common.Table {
 	 * Usage : java -cp xtremweb.jar xtremweb.common.UserGroupInterface
 	 * [xmlFile]
 	 */
-	public static void main(String[] argv) {
+	public static void main(final String[] argv) {
 		try {
 			final UserGroupInterface itf = new UserGroupInterface();
 			itf.setUID(UID.getMyUid());
@@ -517,11 +514,8 @@ public final class UserGroupInterface extends xtremweb.common.Table {
 			writer.write(itf);
 		} catch (final Exception e) {
 			final Logger logger = new Logger();
-			logger.exception(
-					"Usage : java -cp "
-							+ XWTools.JARFILENAME
-							+ " xtremweb.common.UserGroupInterface [anXMLDescriptionFile]",
-					e);
+			logger.exception("Usage : java -cp " + XWTools.JARFILENAME
+					+ " xtremweb.common.UserGroupInterface [anXMLDescriptionFile]", e);
 		}
 	}
 }
