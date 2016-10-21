@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -42,7 +42,7 @@ import org.xml.sax.SAXException;
 /**
  * This class (un)marshal object to/from XML This is especially used by XMLtuple
  * as key
- * 
+ *
  * @see XMLtuple
  */
 public class XMLKey extends XMLObject {
@@ -58,8 +58,8 @@ public class XMLKey extends XMLObject {
 	}
 
 	/**
-     */
-	public XMLKey(Object v) {
+	 */
+	public XMLKey(final Object v) {
 		super(v);
 		setXMLTag(THISTAG);
 	}
@@ -67,7 +67,7 @@ public class XMLKey extends XMLObject {
 	/**
 	 * This constructs a new object from XML attributes received from input
 	 * stream
-	 * 
+	 *
 	 * @param input
 	 *            is the input stream
 	 * @throws IOException
@@ -75,7 +75,7 @@ public class XMLKey extends XMLObject {
 	 * @throws SAXException
 	 *             on XML error
 	 */
-	public XMLKey(DataInputStream input) throws IOException, SAXException {
+	public XMLKey(final DataInputStream input) throws IOException, SAXException {
 		final XMLReader reader = new XMLReader(this);
 		try {
 			reader.read(input);
@@ -88,20 +88,20 @@ public class XMLKey extends XMLObject {
 	/**
 	 * This constructs a new object from XML attributes
 	 */
-	public XMLKey(Attributes attrs) {
+	public XMLKey(final Attributes attrs) {
 		this();
 		super.fromXml(attrs);
 	}
 
 	/**
 	 * This calls toString()
-	 * 
+	 *
 	 * @param csv
 	 *            is never used
 	 * @see Table#toString(boolean)
 	 */
 	@Override
-	public String toString(boolean csv) {
+	public String toString(final boolean csv) {
 		return toString();
 	}
 }
