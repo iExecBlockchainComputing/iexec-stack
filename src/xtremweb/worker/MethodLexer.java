@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -45,21 +45,20 @@ import antlr.TokenStreamIOException;
 import antlr.TokenStreamRecognitionException;
 import antlr.collections.impl.BitSet;
 
-public class MethodLexer extends antlr.CharScanner implements
-		MethodParserTokenTypes, TokenStream {
-	public MethodLexer(InputStream in) {
+public class MethodLexer extends antlr.CharScanner implements MethodParserTokenTypes, TokenStream {
+	public MethodLexer(final InputStream in) {
 		this(new ByteBuffer(in));
 	}
 
-	public MethodLexer(Reader in) {
+	public MethodLexer(final Reader in) {
 		this(new CharBuffer(in));
 	}
 
-	public MethodLexer(InputBuffer ib) {
+	public MethodLexer(final InputBuffer ib) {
 		this(new LexerSharedInputState(ib));
 	}
 
-	public MethodLexer(LexerSharedInputState state) {
+	public MethodLexer(final LexerSharedInputState state) {
 		super(state);
 		caseSensitiveLiterals = true;
 		setCaseSensitive(true);
@@ -226,8 +225,7 @@ public class MethodLexer extends antlr.CharScanner implements
 							uponEOF();
 							_returnToken = makeToken(Token.EOF_TYPE);
 						} else {
-							throw new NoViableAltForCharException(LA(1),
-									getFilename(), getLine(), getColumn());
+							throw new NoViableAltForCharException(LA(1), getFilename(), getLine(), getColumn());
 						}
 					}
 					}
@@ -243,8 +241,7 @@ public class MethodLexer extends antlr.CharScanner implements
 				}
 			} catch (final CharStreamException cse) {
 				if (cse instanceof CharStreamIOException) {
-					throw new TokenStreamIOException(
-							((CharStreamIOException) cse).io);
+					throw new TokenStreamIOException(((CharStreamIOException) cse).io);
 				} else {
 					throw new TokenStreamException(cse.getMessage());
 				}
@@ -252,8 +249,8 @@ public class MethodLexer extends antlr.CharScanner implements
 		}
 	}
 
-	public final void mSPACE(boolean _createToken) throws RecognitionException,
-			CharStreamException, TokenStreamException {
+	public final void mSPACE(final boolean _createToken)
+			throws RecognitionException, CharStreamException, TokenStreamException {
 		int _ttype;
 		Token _token = null;
 		final int _begin = text.length();
@@ -270,20 +267,18 @@ public class MethodLexer extends antlr.CharScanner implements
 			break;
 		}
 		default: {
-			throw new NoViableAltForCharException(LA(1), getFilename(),
-					getLine(), getColumn());
+			throw new NoViableAltForCharException(LA(1), getFilename(), getLine(), getColumn());
 		}
 		}
 		if (_createToken && (_token == null) && (_ttype != Token.SKIP)) {
 			_token = makeToken(_ttype);
-			_token.setText(new String(text.getBuffer(), _begin, text.length()
-					- _begin));
+			_token.setText(new String(text.getBuffer(), _begin, text.length() - _begin));
 		}
 		_returnToken = _token;
 	}
 
-	public final void mIDENT(boolean _createToken) throws RecognitionException,
-			CharStreamException, TokenStreamException {
+	public final void mIDENT(final boolean _createToken)
+			throws RecognitionException, CharStreamException, TokenStreamException {
 		int _ttype;
 		Token _token = null;
 		final int _begin = text.length();
@@ -355,8 +350,7 @@ public class MethodLexer extends antlr.CharScanner implements
 				break;
 			}
 			default: {
-				throw new NoViableAltForCharException(LA(1), getFilename(),
-						getLine(), getColumn());
+				throw new NoViableAltForCharException(LA(1), getFilename(), getLine(), getColumn());
 			}
 			}
 		}
@@ -446,15 +440,13 @@ public class MethodLexer extends antlr.CharScanner implements
 		}
 		if (_createToken && (_token == null) && (_ttype != Token.SKIP)) {
 			_token = makeToken(_ttype);
-			_token.setText(new String(text.getBuffer(), _begin, text.length()
-					- _begin));
+			_token.setText(new String(text.getBuffer(), _begin, text.length() - _begin));
 		}
 		_returnToken = _token;
 	}
 
-	public final void mNEWLINE(boolean _createToken)
-			throws RecognitionException, CharStreamException,
-			TokenStreamException {
+	public final void mNEWLINE(final boolean _createToken)
+			throws RecognitionException, CharStreamException, TokenStreamException {
 		int _ttype;
 		Token _token = null;
 		final int _begin = text.length();
@@ -472,20 +464,18 @@ public class MethodLexer extends antlr.CharScanner implements
 			break;
 		}
 		default: {
-			throw new NoViableAltForCharException(LA(1), getFilename(),
-					getLine(), getColumn());
+			throw new NoViableAltForCharException(LA(1), getFilename(), getLine(), getColumn());
 		}
 		}
 		if (_createToken && (_token == null) && (_ttype != Token.SKIP)) {
 			_token = makeToken(_ttype);
-			_token.setText(new String(text.getBuffer(), _begin, text.length()
-					- _begin));
+			_token.setText(new String(text.getBuffer(), _begin, text.length() - _begin));
 		}
 		_returnToken = _token;
 	}
 
-	public final void mNUM(boolean _createToken) throws RecognitionException,
-			CharStreamException, TokenStreamException {
+	public final void mNUM(final boolean _createToken)
+			throws RecognitionException, CharStreamException, TokenStreamException {
 		int _ttype;
 		Token _token = null;
 		final int _begin = text.length();
@@ -501,8 +491,7 @@ public class MethodLexer extends antlr.CharScanner implements
 					if (_cnt53 >= 1) {
 						break _loop53;
 					} else {
-						throw new NoViableAltForCharException(LA(1),
-								getFilename(), getLine(), getColumn());
+						throw new NoViableAltForCharException(LA(1), getFilename(), getLine(), getColumn());
 					}
 				}
 
@@ -524,8 +513,7 @@ public class MethodLexer extends antlr.CharScanner implements
 							if (_cnt56 >= 1) {
 								break _loop56;
 							} else {
-								throw new NoViableAltForCharException(LA(1),
-										getFilename(), getLine(), getColumn());
+								throw new NoViableAltForCharException(LA(1), getFilename(), getLine(), getColumn());
 							}
 						}
 
@@ -541,15 +529,13 @@ public class MethodLexer extends antlr.CharScanner implements
 		}
 		if (_createToken && (_token == null) && (_ttype != Token.SKIP)) {
 			_token = makeToken(_ttype);
-			_token.setText(new String(text.getBuffer(), _begin, text.length()
-					- _begin));
+			_token.setText(new String(text.getBuffer(), _begin, text.length() - _begin));
 		}
 		_returnToken = _token;
 	}
 
-	protected final void mDIGIT(boolean _createToken)
-			throws RecognitionException, CharStreamException,
-			TokenStreamException {
+	protected final void mDIGIT(final boolean _createToken)
+			throws RecognitionException, CharStreamException, TokenStreamException {
 		int _ttype;
 		Token _token = null;
 		final int _begin = text.length();
@@ -559,15 +545,13 @@ public class MethodLexer extends antlr.CharScanner implements
 		matchRange('0', '9');
 		if (_createToken && (_token == null) && (_ttype != Token.SKIP)) {
 			_token = makeToken(_ttype);
-			_token.setText(new String(text.getBuffer(), _begin, text.length()
-					- _begin));
+			_token.setText(new String(text.getBuffer(), _begin, text.length() - _begin));
 		}
 		_returnToken = _token;
 	}
 
-	public final void mSTRING_LITERAL(boolean _createToken)
-			throws RecognitionException, CharStreamException,
-			TokenStreamException {
+	public final void mSTRING_LITERAL(final boolean _createToken)
+			throws RecognitionException, CharStreamException, TokenStreamException {
 		int _ttype;
 		Token _token = null;
 		final int _begin = text.length();
@@ -673,15 +657,13 @@ public class MethodLexer extends antlr.CharScanner implements
 		match('"');
 		if (_createToken && (_token == null) && (_ttype != Token.SKIP)) {
 			_token = makeToken(_ttype);
-			_token.setText(new String(text.getBuffer(), _begin, text.length()
-					- _begin));
+			_token.setText(new String(text.getBuffer(), _begin, text.length() - _begin));
 		}
 		_returnToken = _token;
 	}
 
-	protected final void mESC(boolean _createToken)
-			throws RecognitionException, CharStreamException,
-			TokenStreamException {
+	protected final void mESC(final boolean _createToken)
+			throws RecognitionException, CharStreamException, TokenStreamException {
 		int _ttype;
 		Token _token = null;
 		final int _begin = text.length();
@@ -724,21 +706,19 @@ public class MethodLexer extends antlr.CharScanner implements
 				break;
 			}
 			default: {
-				throw new NoViableAltForCharException(LA(1), getFilename(),
-						getLine(), getColumn());
+				throw new NoViableAltForCharException(LA(1), getFilename(), getLine(), getColumn());
 			}
 			}
 		}
 		if (_createToken && (_token == null) && (_ttype != Token.SKIP)) {
 			_token = makeToken(_ttype);
-			_token.setText(new String(text.getBuffer(), _begin, text.length()
-					- _begin));
+			_token.setText(new String(text.getBuffer(), _begin, text.length() - _begin));
 		}
 		_returnToken = _token;
 	}
 
-	public final void mDOT(boolean _createToken) throws RecognitionException,
-			CharStreamException, TokenStreamException {
+	public final void mDOT(final boolean _createToken)
+			throws RecognitionException, CharStreamException, TokenStreamException {
 		int _ttype;
 		Token _token = null;
 		final int _begin = text.length();
@@ -748,14 +728,13 @@ public class MethodLexer extends antlr.CharScanner implements
 		match('.');
 		if (_createToken && (_token == null) && (_ttype != Token.SKIP)) {
 			_token = makeToken(_ttype);
-			_token.setText(new String(text.getBuffer(), _begin, text.length()
-					- _begin));
+			_token.setText(new String(text.getBuffer(), _begin, text.length() - _begin));
 		}
 		_returnToken = _token;
 	}
 
-	public final void mCOLON(boolean _createToken) throws RecognitionException,
-			CharStreamException, TokenStreamException {
+	public final void mCOLON(final boolean _createToken)
+			throws RecognitionException, CharStreamException, TokenStreamException {
 		int _ttype;
 		Token _token = null;
 		final int _begin = text.length();
@@ -765,14 +744,13 @@ public class MethodLexer extends antlr.CharScanner implements
 		match(':');
 		if (_createToken && (_token == null) && (_ttype != Token.SKIP)) {
 			_token = makeToken(_ttype);
-			_token.setText(new String(text.getBuffer(), _begin, text.length()
-					- _begin));
+			_token.setText(new String(text.getBuffer(), _begin, text.length() - _begin));
 		}
 		_returnToken = _token;
 	}
 
-	public final void mCOMMA(boolean _createToken) throws RecognitionException,
-			CharStreamException, TokenStreamException {
+	public final void mCOMMA(final boolean _createToken)
+			throws RecognitionException, CharStreamException, TokenStreamException {
 		int _ttype;
 		Token _token = null;
 		final int _begin = text.length();
@@ -782,15 +760,13 @@ public class MethodLexer extends antlr.CharScanner implements
 		match(',');
 		if (_createToken && (_token == null) && (_ttype != Token.SKIP)) {
 			_token = makeToken(_ttype);
-			_token.setText(new String(text.getBuffer(), _begin, text.length()
-					- _begin));
+			_token.setText(new String(text.getBuffer(), _begin, text.length() - _begin));
 		}
 		_returnToken = _token;
 	}
 
-	public final void mLPAREN(boolean _createToken)
-			throws RecognitionException, CharStreamException,
-			TokenStreamException {
+	public final void mLPAREN(final boolean _createToken)
+			throws RecognitionException, CharStreamException, TokenStreamException {
 		int _ttype;
 		Token _token = null;
 		final int _begin = text.length();
@@ -800,15 +776,13 @@ public class MethodLexer extends antlr.CharScanner implements
 		match('(');
 		if (_createToken && (_token == null) && (_ttype != Token.SKIP)) {
 			_token = makeToken(_ttype);
-			_token.setText(new String(text.getBuffer(), _begin, text.length()
-					- _begin));
+			_token.setText(new String(text.getBuffer(), _begin, text.length() - _begin));
 		}
 		_returnToken = _token;
 	}
 
-	public final void mRPAREN(boolean _createToken)
-			throws RecognitionException, CharStreamException,
-			TokenStreamException {
+	public final void mRPAREN(final boolean _createToken)
+			throws RecognitionException, CharStreamException, TokenStreamException {
 		int _ttype;
 		Token _token = null;
 		final int _begin = text.length();
@@ -818,14 +792,13 @@ public class MethodLexer extends antlr.CharScanner implements
 		match(')');
 		if (_createToken && (_token == null) && (_ttype != Token.SKIP)) {
 			_token = makeToken(_ttype);
-			_token.setText(new String(text.getBuffer(), _begin, text.length()
-					- _begin));
+			_token.setText(new String(text.getBuffer(), _begin, text.length() - _begin));
 		}
 		_returnToken = _token;
 	}
 
-	public final void mLCURL(boolean _createToken) throws RecognitionException,
-			CharStreamException, TokenStreamException {
+	public final void mLCURL(final boolean _createToken)
+			throws RecognitionException, CharStreamException, TokenStreamException {
 		int _ttype;
 		Token _token = null;
 		final int _begin = text.length();
@@ -835,14 +808,13 @@ public class MethodLexer extends antlr.CharScanner implements
 		match('{');
 		if (_createToken && (_token == null) && (_ttype != Token.SKIP)) {
 			_token = makeToken(_ttype);
-			_token.setText(new String(text.getBuffer(), _begin, text.length()
-					- _begin));
+			_token.setText(new String(text.getBuffer(), _begin, text.length() - _begin));
 		}
 		_returnToken = _token;
 	}
 
-	public final void mRCURL(boolean _createToken) throws RecognitionException,
-			CharStreamException, TokenStreamException {
+	public final void mRCURL(final boolean _createToken)
+			throws RecognitionException, CharStreamException, TokenStreamException {
 		int _ttype;
 		Token _token = null;
 		final int _begin = text.length();
@@ -852,15 +824,13 @@ public class MethodLexer extends antlr.CharScanner implements
 		match('}');
 		if (_createToken && (_token == null) && (_ttype != Token.SKIP)) {
 			_token = makeToken(_ttype);
-			_token.setText(new String(text.getBuffer(), _begin, text.length()
-					- _begin));
+			_token.setText(new String(text.getBuffer(), _begin, text.length() - _begin));
 		}
 		_returnToken = _token;
 	}
 
-	public final void mLBRACKET(boolean _createToken)
-			throws RecognitionException, CharStreamException,
-			TokenStreamException {
+	public final void mLBRACKET(final boolean _createToken)
+			throws RecognitionException, CharStreamException, TokenStreamException {
 		int _ttype;
 		Token _token = null;
 		final int _begin = text.length();
@@ -870,15 +840,13 @@ public class MethodLexer extends antlr.CharScanner implements
 		match('[');
 		if (_createToken && (_token == null) && (_ttype != Token.SKIP)) {
 			_token = makeToken(_ttype);
-			_token.setText(new String(text.getBuffer(), _begin, text.length()
-					- _begin));
+			_token.setText(new String(text.getBuffer(), _begin, text.length() - _begin));
 		}
 		_returnToken = _token;
 	}
 
-	public final void mRBRACKET(boolean _createToken)
-			throws RecognitionException, CharStreamException,
-			TokenStreamException {
+	public final void mRBRACKET(final boolean _createToken)
+			throws RecognitionException, CharStreamException, TokenStreamException {
 		int _ttype;
 		Token _token = null;
 		final int _begin = text.length();
@@ -888,8 +856,7 @@ public class MethodLexer extends antlr.CharScanner implements
 		match(']');
 		if (_createToken && (_token == null) && (_ttype != Token.SKIP)) {
 			_token = makeToken(_ttype);
-			_token.setText(new String(text.getBuffer(), _begin, text.length()
-					- _begin));
+			_token.setText(new String(text.getBuffer(), _begin, text.length() - _begin));
 		}
 		_returnToken = _token;
 	}
