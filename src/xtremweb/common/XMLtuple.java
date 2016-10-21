@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -61,7 +61,7 @@ public final class XMLtuple extends XMLable {
 
 	/**
 	 * This is called by the GC; this calls clear();
-	 * 
+	 *
 	 * @since 5.8.0
 	 * @see #clear()
 	 */
@@ -72,7 +72,7 @@ public final class XMLtuple extends XMLable {
 
 	/**
 	 * This clears this object
-	 * 
+	 *
 	 * @since 5.8.0
 	 */
 	@Override
@@ -100,7 +100,7 @@ public final class XMLtuple extends XMLable {
 	/**
 	 * This constructor sets key and value
 	 */
-	public XMLtuple(XMLKey k, XMLValue v) {
+	public XMLtuple(final XMLKey k, final XMLValue v) {
 		this();
 		key = k;
 		value = v;
@@ -108,7 +108,7 @@ public final class XMLtuple extends XMLable {
 
 	/**
 	 * This constructor sets key and value from Objects
-	 * 
+	 *
 	 * @param k
 	 *            is the tuple key; a new XMLKey is created from this param
 	 * @param v
@@ -116,9 +116,9 @@ public final class XMLtuple extends XMLable {
 	 *            is created as value. If v is a Vector, a new XMLVector is
 	 *            created as value Otherwise, a new XMLValue is created as
 	 *            value.
-	 * 
+	 *
 	 */
-	public XMLtuple(Object k, Object v) {
+	public XMLtuple(final Object k, final Object v) {
 		this();
 		key = new XMLKey(k);
 		if (v instanceof Hashtable) {
@@ -133,13 +133,13 @@ public final class XMLtuple extends XMLable {
 	/**
 	 * This constructs a new object from XML attributes received from input
 	 * stream
-	 * 
+	 *
 	 * @param input
 	 *            is the input stream
 	 * @throws IOException
 	 *             on XML error
 	 */
-	public XMLtuple(DataInputStream input) throws IOException, SAXException {
+	public XMLtuple(final DataInputStream input) throws IOException, SAXException {
 		this();
 		final XMLReader reader = new XMLReader(this);
 		try {
@@ -152,24 +152,24 @@ public final class XMLtuple extends XMLable {
 	/**
 	 * This constructs a new object from XML attributes
 	 */
-	public XMLtuple(Attributes attrs) {
+	public XMLtuple(final Attributes attrs) {
 		this();
 		fromXml(attrs);
 	}
 
 	/**
 	 * This does nothing since this has no attribute
-	 * 
+	 *
 	 * @param attrs
 	 *            contains attributes XML representation
 	 */
 	@Override
-	public void fromXml(Attributes attrs) {
+	public void fromXml(final Attributes attrs) {
 	}
 
 	/**
 	 * This serializes this object to a String as an XML object<br />
-	 * 
+	 *
 	 * @return a String containing this object definition as XML
 	 * @see #fromXml(Attributes)
 	 */
@@ -192,12 +192,12 @@ public final class XMLtuple extends XMLable {
 
 	/**
 	 * This is called to decode XML elements
-	 * 
+	 *
 	 * @see XMLReader#read(InputStream)
 	 */
 	@Override
-	public void xmlElementStart(String uri, String tag, String qname,
-			Attributes attrs) throws SAXException {
+	public void xmlElementStart(final String uri, final String tag, final String qname, final Attributes attrs)
+			throws SAXException {
 
 		try {
 			super.xmlElementStart(uri, tag, qname, attrs);
@@ -209,8 +209,7 @@ public final class XMLtuple extends XMLable {
 			fromXml(attrs);
 			return;
 		} else {
-			if ((qname.compareToIgnoreCase(XMLKey.THISTAG) == 0)
-					&& (key == null)) {
+			if ((qname.compareToIgnoreCase(XMLKey.THISTAG) == 0) && (key == null)) {
 
 				getLogger().finest("new " + qname);
 				key = new XMLKey(attrs);
@@ -236,8 +235,7 @@ public final class XMLtuple extends XMLable {
 	 * @see xtremweb.common.XMLObject#xmlElementStop(String, String, String)
 	 */
 	@Override
-	public void xmlElementStop(String uri, String tag, String qname)
-			throws SAXException {
+	public void xmlElementStop(final String uri, final String tag, final String qname) throws SAXException {
 
 		getLogger().finest("xmlElementStop (" + qname + ")");
 
@@ -260,19 +258,19 @@ public final class XMLtuple extends XMLable {
 
 	/**
 	 * This calls toString()
-	 * 
+	 *
 	 * @param csv
 	 *            is never used
 	 * @see Table#toString(boolean)
 	 */
 	@Override
-	public String toString(boolean csv) {
+	public String toString(final boolean csv) {
 		return toString();
 	}
 
 	/**
 	 * This retrieves this tuple key
-	 * 
+	 *
 	 * @return this tuple key XML representation
 	 */
 	public XMLKey getXMLKey() {
@@ -281,7 +279,7 @@ public final class XMLtuple extends XMLable {
 
 	/**
 	 * This retrieves this tuple value
-	 * 
+	 *
 	 * @return this tuple value XML representation
 	 */
 	public XMLValue getXMLValue() {
@@ -290,7 +288,7 @@ public final class XMLtuple extends XMLable {
 
 	/**
 	 * This retreives this tuple key
-	 * 
+	 *
 	 * @return this tuple key
 	 */
 	public Object getKey() {
@@ -299,7 +297,7 @@ public final class XMLtuple extends XMLable {
 
 	/**
 	 * This retreives this tuple value
-	 * 
+	 *
 	 * @return this tuple value
 	 */
 	public Object getValue() {
@@ -308,41 +306,41 @@ public final class XMLtuple extends XMLable {
 
 	/**
 	 * This sets this tuple key
-	 * 
+	 *
 	 * @param k
 	 *            is the new key
 	 */
-	public void setKey(Object k) {
+	public void setKey(final Object k) {
 		key = new XMLKey(k);
 	}
 
 	/**
 	 * This sets this tuple value
-	 * 
+	 *
 	 * @param v
 	 *            is the new value
 	 */
-	public void setValue(Object v) {
+	public void setValue(final Object v) {
 		value = new XMLValue(v);
 	}
 
 	/**
 	 * This sets this tuple key
-	 * 
+	 *
 	 * @param k
 	 *            is the new key
 	 */
-	public void setKey(XMLKey k) {
+	public void setKey(final XMLKey k) {
 		key = k;
 	}
 
 	/**
 	 * This sets this tuple value
-	 * 
+	 *
 	 * @param v
 	 *            is the new value
 	 */
-	public void setValue(XMLValue v) {
+	public void setValue(final XMLValue v) {
 		value = v;
 	}
 
@@ -354,13 +352,12 @@ public final class XMLtuple extends XMLable {
 	 * <br />
 	 * The dummy or read representation is finally dumped
 	 */
-	public static void main(String[] argv) {
+	public static void main(final String[] argv) {
 		try {
 			XMLtuple tuple = new XMLtuple(new Integer(1), new String("un"));
 
 			if (argv.length == 1) {
-				tuple = new XMLtuple(new DataInputStream(new FileInputStream(
-						argv[0])));
+				tuple = new XMLtuple(new DataInputStream(new FileInputStream(argv[0])));
 			}
 
 			System.out.println(tuple.toXml());

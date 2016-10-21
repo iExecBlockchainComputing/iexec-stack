@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -35,7 +35,7 @@ import xtremweb.communications.URI;
 /**
  * Created: Sept 15th, 2005<br />
  * This class implements XML un/marschalling
- * 
+ *
  * @author Oleg Lodygensky
  * @since RPCXW-v5
  */
@@ -48,13 +48,13 @@ public abstract class XMLable {
 		return logger;
 	}
 
-	public void setLoggerLevel(LoggerLevel l) {
+	public void setLoggerLevel(final LoggerLevel l) {
 		logger.setLoggerLevel(l);
 	}
 
 	/**
 	 * This contains the version attribute name
-	 * 
+	 *
 	 * @since 5.8.0
 	 */
 	private static final String VERSIONATTRIBUTE = "version";
@@ -62,14 +62,14 @@ public abstract class XMLable {
 	 * This contains the version attribute value. This is set to null by default
 	 * But this contains version as received in a message and this may contain
 	 * another version : the sender one.
-	 * 
+	 *
 	 * @since 5.8.0
 	 */
 	private Version currentVersion = null;
 
 	/**
 	 * This sets version to current one.
-	 * 
+	 *
 	 * @since 5.8.0
 	 * @see CommonVersion#getCurrent()
 	 * @see #currentVersion
@@ -80,7 +80,7 @@ public abstract class XMLable {
 
 	/**
 	 * This sets version to null
-	 * 
+	 *
 	 * @since 5.8.0
 	 * @see #currentVersion
 	 */
@@ -90,18 +90,18 @@ public abstract class XMLable {
 
 	/**
 	 * This sets version to the provided one
-	 * 
+	 *
 	 * @since 5.8.0
 	 * @see CommonVersion#getCurrent()
 	 * @see #currentVersion
 	 */
-	public void setCurrentVersion(Version v) {
+	public void setCurrentVersion(final Version v) {
 		currentVersion = v;
 	}
 
 	/**
 	 * This retrieves this object version
-	 * 
+	 *
 	 * @since 5.8.0
 	 * @see CommonVersion#getCurrent()
 	 * @see #currentVersion
@@ -112,7 +112,7 @@ public abstract class XMLable {
 
 	/**
 	 * This stores attribute values, if any
-	 * 
+	 *
 	 * @since 5.8.0
 	 */
 	protected Object[] values;
@@ -126,7 +126,7 @@ public abstract class XMLable {
 
 	/**
 	 * This retrieves the value given its index
-	 * 
+	 *
 	 * @param i
 	 *            is the index
 	 * @return the value at index i
@@ -137,7 +137,7 @@ public abstract class XMLable {
 
 	/**
 	 * This sets the value at the given index
-	 * 
+	 *
 	 * @param i
 	 *            is the index
 	 * @param v
@@ -167,7 +167,7 @@ public abstract class XMLable {
 	 * <li>xmlElementStop(String, String, String) correctly stop parsing
 	 * independently of the version of the sender
 	 * </ul>
-	 * 
+	 *
 	 * @see #xmlElementStart(String, String, String, Attributes)
 	 * @since 5.9.0
 	 */
@@ -177,7 +177,7 @@ public abstract class XMLable {
 
 	/**
 	 * This calls xmlRootElement(false)
-	 * 
+	 *
 	 * @see #xmlRootElement(boolean)
 	 * @since 5.8.0
 	 */
@@ -187,7 +187,7 @@ public abstract class XMLable {
 
 	/**
 	 * This calls xmlRootElement(true)
-	 * 
+	 *
 	 * @see #xmlRootElement(boolean)
 	 * @since 5.8.0
 	 */
@@ -201,7 +201,7 @@ public abstract class XMLable {
 	 * This creates a string contains opening or closing root tag, depending on
 	 * close param. This set the 'version' root tag attribute to
 	 * CommonVersion#getCurrent()
-	 * 
+	 *
 	 * @param open
 	 *            contains true to open the xml tag, false to close it
 	 * @return a String containing the XML tag
@@ -213,8 +213,7 @@ public abstract class XMLable {
 			return emptyString;
 		}
 		if (open) {
-			return "<" + ROOTTAG + " " + VERSIONATTRIBUTE + "=\""
-					+ CommonVersion.getCurrent().toString() + "\">";
+			return "<" + ROOTTAG + " " + VERSIONATTRIBUTE + "=\"" + CommonVersion.getCurrent().toString() + "\">";
 		}
 		return "</" + ROOTTAG + ">";
 	}
@@ -243,7 +242,7 @@ public abstract class XMLable {
 		return XMLTAG;
 	}
 
-	public void setXMLTag(String t) {
+	public void setXMLTag(final String t) {
 		XMLTAG = t;
 	}
 
@@ -254,7 +253,7 @@ public abstract class XMLable {
 
 	/**
 	 * This checks DUMPNULLS
-	 * 
+	 *
 	 * @return DUMPNULLS
 	 * @see #DUMPNULLS
 	 */
@@ -264,12 +263,12 @@ public abstract class XMLable {
 
 	/**
 	 * This sets DUMPNULLS
-	 * 
+	 *
 	 * @param d
 	 *            the value to set DUMPNULLS
 	 * @see #DUMPNULLS
 	 */
-	public void setDUMPNULLS(boolean d) {
+	public void setDUMPNULLS(final boolean d) {
 		DUMPNULLS = d;
 	}
 
@@ -297,7 +296,7 @@ public abstract class XMLable {
 	 * <li>this may return null if a column does not exist in this object
 	 * version.
 	 * <ul>
-	 * 
+	 *
 	 * @param i
 	 *            is an index for array columns
 	 * @exception IndexOutOfBoundsException
@@ -326,7 +325,7 @@ public abstract class XMLable {
 
 	/**
 	 * This returns columns
-	 * 
+	 *
 	 * @see #columns
 	 */
 	public String[] columns() {
@@ -335,19 +334,19 @@ public abstract class XMLable {
 
 	/**
 	 * This is the index of the first element
-	 * 
+	 *
 	 * @see #columns
 	 */
 	protected static final int FIRST_ATTRIBUTE = 0;
 	/**
 	 * This is the index of the last element
-	 * 
+	 *
 	 * @see #columns
 	 */
 	protected int lastAttribute;
 	/**
 	 * This is the number of element
-	 * 
+	 *
 	 * @see #columns
 	 */
 	protected int maxAttribute;
@@ -362,7 +361,7 @@ public abstract class XMLable {
 	/**
 	 * This calls setAttributeSize(s + TableColumns.SIZE). This is called by
 	 * interfaces (AppInterface...)
-	 * 
+	 *
 	 * @param l
 	 *            is the attribute length
 	 * @see #setAttributeSize(int)
@@ -376,7 +375,7 @@ public abstract class XMLable {
 	 * This sets maxAttribute to s and lastAttribute to (maxAttribute - 1).
 	 * Finally, this sets values to new Object[maxAttribute]. This is called by
 	 * types (AppType...)
-	 * 
+	 *
 	 * @param s
 	 *            is the attribute size
 	 * @see #maxAttribute
@@ -398,9 +397,9 @@ public abstract class XMLable {
 
 	/**
 	 * This is called by the GC; this calls clear();
-	 * 
+	 *
 	 * @throws Throwable
-	 * 
+	 *
 	 * @since 5.8.0
 	 * @see #clear()
 	 */
@@ -412,7 +411,7 @@ public abstract class XMLable {
 
 	/**
 	 * This clears this object
-	 * 
+	 *
 	 * @since 5.8.0
 	 */
 	protected void clear() {
@@ -442,7 +441,7 @@ public abstract class XMLable {
 
 	/**
 	 * This constructor sets XMLTAG, LAST_ATTRIBUTE and MAX_ATTRIBUTE
-	 * 
+	 *
 	 * @param tag
 	 *            is this object XML tag
 	 * @param last
@@ -460,7 +459,7 @@ public abstract class XMLable {
 
 	/**
 	 * This retrieves this object String representation
-	 * 
+	 *
 	 * @return this object String representation
 	 */
 	@Override
@@ -469,7 +468,7 @@ public abstract class XMLable {
 	/**
 	 * This retrieves this object String representation where XWAccessRights are
 	 * in hexadecimal This must be overridden; default is to return toString()
-	 * 
+	 *
 	 * @return toString()
 	 */
 	public String toHexString() {
@@ -480,7 +479,7 @@ public abstract class XMLable {
 	 * This retrieves this object String representation where XWAccessRights are
 	 * in hexadecimal This must be overridden; default is to return
 	 * toString(csv)
-	 * 
+	 *
 	 * @return toString(csv)
 	 */
 	public String toHexString(final boolean csv) {
@@ -491,7 +490,7 @@ public abstract class XMLable {
 	 * This retrieves this object String representation where XWAccessRights are
 	 * in hexadecimal This must be overridden; default is to return
 	 * toString(csv, shortoutput)
-	 * 
+	 *
 	 * @return toString(csv, shortoutput)
 	 */
 	public String toHexString(final boolean csv, final boolean shortoutput) {
@@ -500,7 +499,7 @@ public abstract class XMLable {
 
 	/**
 	 * This retrieves this object XML tag
-	 * 
+	 *
 	 * @return this object XML tag
 	 */
 	public String xmlTag() {
@@ -509,7 +508,7 @@ public abstract class XMLable {
 
 	/**
 	 * This retrieves this object XML representation
-	 * 
+	 *
 	 * @return this object XML representation
 	 * @throws IOException
 	 */
@@ -517,7 +516,7 @@ public abstract class XMLable {
 
 	/**
 	 * This writes this object XML representation to output stream
-	 * 
+	 *
 	 * @param o
 	 *            is the output stream
 	 */
@@ -531,7 +530,7 @@ public abstract class XMLable {
 	 * This returns a string representation of this object, in the form
 	 * column='value',column='value',... in csv is false or in the form
 	 * 'value','value',... if csv is true
-	 * 
+	 *
 	 * @param csv
 	 *            tells whether CSV format is expected
 	 */
@@ -540,7 +539,7 @@ public abstract class XMLable {
 	/**
 	 * This calls this#toString(csv). This should be overwritten by inheriting
 	 * classes.
-	 * 
+	 *
 	 * @param csv
 	 *            tells whether CSV format is expected
 	 * @param shortOutput
@@ -552,7 +551,7 @@ public abstract class XMLable {
 
 	/**
 	 * This retrieves attributes from XML attributes.
-	 * 
+	 *
 	 * @param attrs
 	 *            contains attributes XML representation
 	 */
@@ -560,7 +559,7 @@ public abstract class XMLable {
 
 	/**
 	 * This stores the current XML element value
-	 * 
+	 *
 	 * @since 9.0.0
 	 */
 	private String currentValue;
@@ -576,7 +575,7 @@ public abstract class XMLable {
 
 	/**
 	 * This sets currentValue to null
-	 * 
+	 *
 	 * @see #currentValue
 	 * @since 9.0.0
 	 */
@@ -586,29 +585,26 @@ public abstract class XMLable {
 
 	/**
 	 * This retrieves XML element value
-	 * 
+	 *
 	 * @since 9.0.0
 	 * @see XMLReader#read(InputStream)
 	 */
-	final public void characters(final char[] ch, final int start, final int length)
-			throws SAXException {
+	final public void characters(final char[] ch, final int start, final int length) throws SAXException {
 		currentValue = new String(ch.clone(), start, length);
 	}
 
 	/**
 	 * This decodes XML elements. Since 5.8.0, this method is not abstract any
 	 * more to retrieve VERSION attribute
-	 * 
+	 *
 	 * @see XMLReader#read(InputStream)
 	 */
-	public void xmlElementStart(final String uri, final String tag,
-			final String qname, final Attributes attrs) throws SAXException {
+	public void xmlElementStart(final String uri, final String tag, final String qname, final Attributes attrs)
+			throws SAXException {
 
 		if (qname.compareToIgnoreCase(ROOTTAG) == 0) {
 
-			getLogger().finest(
-					"XMLable#xmlElementStart(" + uri + ", " + tag + ", "
-							+ qname + ") " + attrs.getLength());
+			getLogger().finest("XMLable#xmlElementStart(" + uri + ", " + tag + ", " + qname + ") " + attrs.getLength());
 
 			rootTagFound = true;
 
@@ -617,15 +613,12 @@ public abstract class XMLable {
 				final String value = attrs.getValue(a);
 
 				if (attribute.compareToIgnoreCase(VERSIONATTRIBUTE) == 0) {
-					getLogger().finest(
-							"XMLable#xmlElementStart() set current version "
-									+ value);
+					getLogger().finest("XMLable#xmlElementStart() set current version " + value);
 					currentVersion = new Version(value);
 				}
 			}
 		} else {
-			throw new SAXException("XMLable not a " + ROOTTAG + " element ("
-					+ qname + ")");
+			throw new SAXException("XMLable not a " + ROOTTAG + " element (" + qname + ")");
 		}
 	}
 
@@ -634,14 +627,13 @@ public abstract class XMLable {
 	 * ROOTTAG. This is to ensure that we stop waiting incoming bytes since we
 	 * don't close communication channel because we want to answer by the same
 	 * channel
-	 * 
+	 *
 	 * @see XMLReader#read(InputStream)
 	 * @exception SAXException
 	 *                on XML error, or SAXException(XMLEndParseException()) to
 	 *                force stop parsing
 	 */
-	public void xmlElementStop(final String uri, final String tag, final String qname)
-			throws SAXException {
+	public void xmlElementStop(final String uri, final String tag, final String qname) throws SAXException {
 
 		if (((qname.compareToIgnoreCase(ROOTTAG) == 0) && (rootTagFound))
 				|| ((qname.compareToIgnoreCase(XMLTAG) == 0) && !rootTagFound)) {
