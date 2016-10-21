@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -44,7 +44,7 @@ public class TracerConfig {
 	 * @param cpuNum
 	 *            the cpuNum to set
 	 */
-	public void setCpuNum(short cpuNum) {
+	public void setCpuNum(final short cpuNum) {
 		this.cpuNum = cpuNum;
 	}
 
@@ -59,7 +59,7 @@ public class TracerConfig {
 	 * @param cpuSpeed
 	 *            the cpuSpeed to set
 	 */
-	public void setCpuSpeed(short cpuSpeed) {
+	public void setCpuSpeed(final short cpuSpeed) {
 		this.cpuSpeed = cpuSpeed;
 	}
 
@@ -74,7 +74,7 @@ public class TracerConfig {
 	 * @param memTotal
 	 *            the memTotal to set
 	 */
-	public void setMemTotal(int memTotal) {
+	public void setMemTotal(final int memTotal) {
 		this.memTotal = memTotal;
 	}
 
@@ -89,7 +89,7 @@ public class TracerConfig {
 	 * @param swapTotal
 	 *            the swapTotal to set
 	 */
-	public void setSwapTotal(int swapTotal) {
+	public void setSwapTotal(final int swapTotal) {
 		this.swapTotal = swapTotal;
 	}
 
@@ -104,7 +104,7 @@ public class TracerConfig {
 	 * @param boottime
 	 *            the boottime to set
 	 */
-	public void setBoottime(int boottime) {
+	public void setBoottime(final int boottime) {
 		this.boottime = boottime;
 	}
 
@@ -119,7 +119,7 @@ public class TracerConfig {
 	 * @param kernel
 	 *            the kernel to set
 	 */
-	public void setKernel(byte[] kernel) {
+	public void setKernel(final byte[] kernel) {
 		this.kernel = kernel.clone();
 	}
 
@@ -134,7 +134,7 @@ public class TracerConfig {
 	 * @param time
 	 *            the time to set
 	 */
-	public void setTime(int time) {
+	public void setTime(final int time) {
 		this.time = time;
 	}
 
