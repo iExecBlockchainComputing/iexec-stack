@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -48,7 +48,7 @@ public final class ButtonRow extends JPanel {
 	/**
 	 * The number of pixels separating buttons.
 	 */
-	private final static int BUTTONSEP = 6;
+	private static final int BUTTONSEP = 6;
 
 	/**
 	 * Specifies that the buttons should be aligned along the x axis.
@@ -94,48 +94,47 @@ public final class ButtonRow extends JPanel {
 	 * Creates a row of buttons with standard separation between each button and
 	 * with the specified tooltips and listeners. This constructor uses the
 	 * default <tt>X_AXIS</tt> orientation and the default <tt>NO_GLUE</tt>.
-	 * 
+	 *
 	 * @param labelKeys
 	 *            the array of keys for looking up the locale-specific labels to
 	 *            use for the buttons
-	 * 
+	 *
 	 * @param toolTipKeys
 	 *            the array of keys for looking up the locale-specific tooltips
 	 *            to use for the buttons
-	 * 
+	 *
 	 * @param listeners
 	 *            the array of <tt>ActionListeners</tt> to use for the buttons
 	 */
-	public ButtonRow(String[] labelKeys, String[] toolTipKeys,
-			ActionListener[] listeners) {
+	public ButtonRow(final String[] labelKeys, final String[] toolTipKeys, final ActionListener[] listeners) {
 		this(labelKeys, toolTipKeys, listeners, X_AXIS, NO_GLUE);
 	}
 
 	/**
 	 * Creates a row of buttons with standard separation between each button,
 	 * aligned either vertically or horizontally, with or without glue.
-	 * 
+	 *
 	 * @param labelKeys
 	 *            the array of keys for looking up the locale-specific labels to
 	 *            use for the buttons
-	 * 
+	 *
 	 * @param toolTipKeys
 	 *            the array of keys for looking up the locale-specific tooltips
 	 *            to use for the buttons
-	 * 
+	 *
 	 * @param listeners
 	 *            the array of <tt>ActionListeners</tt> to use for the buttons
-	 * 
+	 *
 	 * @param orientation
 	 *            the orientation to use for the row of buttons, either
 	 *            ButtonRow.X_AXIS or ButtonRow.Y_AXIS
-	 * 
+	 *
 	 * @param glue
 	 *            the glue determining the placement of the buttons, either
 	 *            TOP_GLUE, BOTTOM_GLUE, LEFT_GLUE, RIGHT_GLUE, or NO_GLUE
 	 */
-	public ButtonRow(String[] labelKeys, String[] toolTipKeys,
-			ActionListener[] listeners, int orientation, int glue) {
+	public ButtonRow(final String[] labelKeys, final String[] toolTipKeys, final ActionListener[] listeners,
+			final int orientation, final int glue) {
 		final BoxLayout bl = new BoxLayout(this, orientation);
 		setLayout(bl);
 		final int length = labelKeys.length;
@@ -144,10 +143,10 @@ public final class ButtonRow extends JPanel {
 		final Component[] separators = new Component[sepLength];
 		int i = 0;
 		while (i < length) {
-			final String label = new String(labelKeys[i]);
+			final String label = labelKeys[i];
 			buttons[i] = new JButton(label);
 			if (toolTipKeys[i] != null) {
-				final String tip = new String(toolTipKeys[i]);
+				final String tip = toolTipKeys[i];
 				buttons[i].setToolTipText(tip);
 			}
 			i++;
@@ -197,11 +196,11 @@ public final class ButtonRow extends JPanel {
 
 	/**
 	 * Assigns listeners to each button in the row.
-	 * 
+	 *
 	 * @param listeners
 	 *            the array of listeners to assign to the buttons
 	 */
-	private void setListeners(ActionListener[] listeners) {
+	private void setListeners(final ActionListener[] listeners) {
 		int i = 0;
 		final int length = buttons.length;
 		final int listenLength = listeners.length;
@@ -215,23 +214,23 @@ public final class ButtonRow extends JPanel {
 
 	/**
 	 * This method allows access to specific buttons in the button row.
-	 * 
+	 *
 	 * @param index
 	 *            the index of the button to retrieve
 	 * @return the <tt>JButton</tt> at that index
-	 * @throws ArrayIndexOutOfBoundsException
+	 * @throws IndexOutOfBoundsException
 	 *             if the index is out of bounds
 	 */
-	public JButton getButtonAtIndex(int index) {
+	public JButton getButtonAtIndex(final int index) {
 		if (index > buttons.length) {
-			throw new ArrayIndexOutOfBoundsException();
+			throw new IndexOutOfBoundsException();
 		}
 		return buttons[index];
 	}
 
 	/**
 	 * Sets the button at the specified index to be enabled or disabled.
-	 * 
+	 *
 	 * @param buttonIndex
 	 *            the index of the button to enable or disable
 	 * @param enabled
@@ -239,7 +238,7 @@ public final class ButtonRow extends JPanel {
 	 */
 	public void setButtonEnabled(final int buttonIndex, final boolean enabled) {
 		if (buttonIndex > buttons.length) {
-			throw new ArrayIndexOutOfBoundsException();
+			throw new IndexOutOfBoundsException();
 		}
 		buttons[buttonIndex].setEnabled(enabled);
 	}
