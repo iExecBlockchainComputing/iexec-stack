@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -25,13 +25,13 @@ package xtremweb.common;
 
 /**
  * XWCPUs.java<br />
- * 
+ *
  * This defines XtremWeb compatible CPUs<br />
- * 
+ *
  * Created: 29 janvier 2007 ChangeLog - 6 janvier 2014 : introducing ARM
- * 
+ *
  * @since 1.9.0
- * 
+ *
  * @author <a href="mailto: lodygens  *a**t* lal.in2p3.fr">Oleg Lodygensky</a>
  * @version %I% %G%
  */
@@ -43,7 +43,7 @@ public enum CPUEnum {
 	public static final CPUEnum LAST = ARM;
 	public static final int SIZE = LAST.ordinal() + 1;
 
-	public static CPUEnum fromInt(int v) throws IllegalArgumentException {
+	public static CPUEnum fromInt(final int v) throws IllegalArgumentException {
 		for (final CPUEnum i : CPUEnum.values()) {
 			if (i.ordinal() == v) {
 				return i;
@@ -55,7 +55,7 @@ public enum CPUEnum {
 	/**
 	 * Get Hardware name If this architecture is not supported by XtremWeb, this
 	 * forces the program to immediately stop
-	 * 
+	 *
 	 * @see #getCpuName(String)
 	 */
 	public static String getCpuName() {
@@ -69,30 +69,22 @@ public enum CPUEnum {
 
 	/**
 	 * This forces architecture name to predefined values to avoid confusion
-	 * 
+	 *
 	 * @param archName
 	 *            the architecture name
 	 * @exception ClassNotFound
 	 *                exception is thrown if archName is not supported by
 	 *                XtremWeb
 	 */
-	public static String getCpuName(String archName)
-			throws IllegalArgumentException {
+	public static String getCpuName(final String archName) throws IllegalArgumentException {
 
-		if ((archName.compareToIgnoreCase("i86") == 0)
-				|| (archName.compareToIgnoreCase("x86") == 0)
-				|| (archName.compareToIgnoreCase("ix86") == 0)
-				|| (archName.compareToIgnoreCase("i386") == 0)
-				|| (archName.compareToIgnoreCase("x386") == 0)
-				|| (archName.compareToIgnoreCase("ix386") == 0)
-				|| (archName.compareToIgnoreCase("i486") == 0)
-				|| (archName.compareToIgnoreCase("x486") == 0)
-				|| (archName.compareToIgnoreCase("ix486") == 0)
-				|| (archName.compareToIgnoreCase("i586") == 0)
-				|| (archName.compareToIgnoreCase("x586") == 0)
-				|| (archName.compareToIgnoreCase("ix586") == 0)
-				|| (archName.compareToIgnoreCase("i686") == 0)
-				|| (archName.compareToIgnoreCase("x686") == 0)
+		if ((archName.compareToIgnoreCase("i86") == 0) || (archName.compareToIgnoreCase("x86") == 0)
+				|| (archName.compareToIgnoreCase("ix86") == 0) || (archName.compareToIgnoreCase("i386") == 0)
+				|| (archName.compareToIgnoreCase("x386") == 0) || (archName.compareToIgnoreCase("ix386") == 0)
+				|| (archName.compareToIgnoreCase("i486") == 0) || (archName.compareToIgnoreCase("x486") == 0)
+				|| (archName.compareToIgnoreCase("ix486") == 0) || (archName.compareToIgnoreCase("i586") == 0)
+				|| (archName.compareToIgnoreCase("x586") == 0) || (archName.compareToIgnoreCase("ix586") == 0)
+				|| (archName.compareToIgnoreCase("i686") == 0) || (archName.compareToIgnoreCase("x686") == 0)
 				|| (archName.compareToIgnoreCase("ix686") == 0)) {
 			return IX86.toString();
 		}
@@ -103,7 +95,7 @@ public enum CPUEnum {
 	/**
 	 * Get Hardware type If this architecture is not supported by XtremWeb, this
 	 * forces the program to immediately stop
-	 * 
+	 *
 	 * @see #getCpu(String)
 	 */
 	public static CPUEnum getCpu() {
@@ -117,19 +109,18 @@ public enum CPUEnum {
 
 	/**
 	 * This forces architecture name to predefined values to avoid confusion
-	 * 
+	 *
 	 * @param archName
 	 *            the architecture name
 	 * @return architecture type
 	 */
-	public static CPUEnum getCpu(String archName)
-			throws IllegalArgumentException {
+	public static CPUEnum getCpu(final String archName) throws IllegalArgumentException {
 		return valueOf(getCpuName(archName));
 	}
 
 	/**
 	 * This retrieves this enum string representation
-	 * 
+	 *
 	 * @return a array containing this enum string representation
 	 */
 	public static String[] getLabels() {
@@ -140,7 +131,7 @@ public enum CPUEnum {
 		return labels;
 	}
 
-	public static void main(String[] argv) {
+	public static void main(final String[] argv) {
 		for (final CPUEnum i : CPUEnum.values()) {
 			System.out.println(i.toString());
 		}
