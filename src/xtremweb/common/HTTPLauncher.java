@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -40,7 +40,7 @@ import xtremweb.exec.Executor;
  * This launches XtremWeb from its JAR file. This first retreive URL from config
  * file, if any. If the config file contains no URL, this contructs a new URL
  * with the server found in the config file.
- * 
+ *
  * URL must be like "http://aServer/aFile.jar. Default URL is
  * "http://aServer/XWHEP/download/xtremweb.jar"
  */
@@ -51,7 +51,7 @@ public final class HTTPLauncher {
 
 	/**
 	 * This retreives the default comm client and initializes it
-	 * 
+	 *
 	 * @return the default comm client
 	 */
 	private CommClient commClient() throws ConnectException {
@@ -67,7 +67,7 @@ public final class HTTPLauncher {
 
 	/**
 	 * Creates a new <code>HTTPLauncher</code> instance.
-	 * 
+	 *
 	 * @param argv
 	 *            a <code>String[]</code> value : command line arguments which
 	 *            specificies the config file name
@@ -161,8 +161,7 @@ public final class HTTPLauncher {
 					logger.exception(e);
 					logger.warn("Can't download " + XWTools.JARFILENAME + "; using default : " + e.toString());
 				}
-			}
-			else {
+			} else {
 				logger.info("Not downloading xwhep JAR file");
 			}
 
@@ -225,8 +224,8 @@ public final class HTTPLauncher {
 						: " -D" + XWPropertyDefs.HWMEM + "=" + System.getProperty(XWPropertyDefs.HWMEM.toString());
 				final String javaOpts = " -Dxtremweb.cache=" + tmpPath + " -Djava.library.path=" + tmpPath + hwmem
 						+ " -Dxtremweb.cp=" + xwcp + " -Djavax.net.ssl.trustStore=" + keystorePath + " -cp "
-						+ jarFilePath + File.pathSeparator + (javacp != null ? javacp : "")
-						+ " xtremweb.worker.Worker " + " --xwconfig " + configPath;
+						+ jarFilePath + File.pathSeparator + (javacp != null ? javacp : "") + " xtremweb.worker.Worker "
+						+ " --xwconfig " + configPath;
 
 				if (OSEnum.getOs().isWin32()) {
 					javaCmd += " -Xrs ";
@@ -251,8 +250,7 @@ public final class HTTPLauncher {
 
 					final String cmd1 = javaCmd + javaOpts;
 
-					logger.config(
-							"Trying to launch the worker without \"" + serveurOpt + "\" java option : " + cmd1);
+					logger.config("Trying to launch the worker without \"" + serveurOpt + "\" java option : " + cmd1);
 					exec = new Executor(cmd1, binDir.getCanonicalPath(), in, System.out, System.err,
 							Long.parseLong(config.getProperty(XWPropertyDefs.TIMEOUT)));
 					rc = exec.startAndWait();
@@ -290,7 +288,7 @@ public final class HTTPLauncher {
 		}
 	}
 
-	public static void main(String[] argv) {
+	public static void main(final String[] argv) {
 		new HTTPLauncher(argv);
 	}
 }
