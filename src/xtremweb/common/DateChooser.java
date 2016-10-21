@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -63,20 +63,20 @@ interface DateListener {
 }
 
 final class DateModel {
-	DateModel(Calendar date) {
+	DateModel(final Calendar date) {
 		this.date = date;
 	}
 
-	DateModel(Date date) {
+	DateModel(final Date date) {
 		this.date = Calendar.getInstance();
 		this.date.setTime(date);
 	}
 
-	synchronized void addDateListener(DateListener l) {
+	synchronized void addDateListener(final DateListener l) {
 		listeners.add(l);
 	}
 
-	synchronized void removeDateListener(DateListener l) {
+	synchronized void removeDateListener(final DateListener l) {
 		listeners.remove(l);
 	}
 
@@ -88,22 +88,22 @@ final class DateModel {
 		}
 	}
 
-	void set(int field, int value) {
+	void set(final int field, final int value) {
 		date.set(field, value);
 		fireDateChanged();
 	}
 
-	void roll(int field, boolean up) {
+	void roll(final int field, final boolean up) {
 		date.roll(field, up);
 		fireDateChanged();
 	}
 
-	void add(int field, int delta) {
+	void add(final int field, final int delta) {
 		date.add(field, delta);
 		fireDateChanged();
 	}
 
-	int get(int field) {
+	int get(final int field) {
 		return date.get(field);
 	}
 
@@ -114,8 +114,7 @@ final class DateModel {
 	int getDaysInMonth() {
 		final Calendar temp = (Calendar) date.clone();
 		temp.add(Calendar.DATE, 31);
-		return (31 - temp.get(Calendar.DAY_OF_MONTH))
-				+ date.get(Calendar.DAY_OF_MONTH);
+		return (31 - temp.get(Calendar.DAY_OF_MONTH)) + date.get(Calendar.DAY_OF_MONTH);
 	}
 
 	Date getTime() {
@@ -126,19 +125,20 @@ final class DateModel {
 	private final Calendar date;
 }
 
-class AbstractDateComboModel extends AbstractListModel implements
-		ComboBoxModel, DateListener {
-	AbstractDateComboModel(DateModel model, int field) {
+class AbstractDateComboModel extends AbstractListModel implements ComboBoxModel, DateListener {
+	AbstractDateComboModel(final DateModel model, final int field) {
 		this.setModel(model);
 		this.setField(field);
 		model.addDateListener(this);
 	}
 
+	@Override
 	public void dateChanged() {
 		fireContentsChanged(this, 0, 100);
 	}
 
-	public Object getElementAt(int index) {
+	@Override
+	public Object getElementAt(final int index) {
 		return element[index];
 	}
 
@@ -146,16 +146,19 @@ class AbstractDateComboModel extends AbstractListModel implements
 		return element.length;
 	}
 
+	@Override
 	public int getSize() {
 		return getModel().getCalendar().getMaximum(getField()) + 1;
 	}
 
+	@Override
 	public Object getSelectedItem() {
 		final int i = getModel().get(getField());
 		return element[i];
 	}
 
-	public void setSelectedItem(Object value) {
+	@Override
+	public void setSelectedItem(final Object value) {
 		final int i = ((Integer) value).intValue();
 		getModel().set(getField(), i);
 	}
@@ -171,7 +174,7 @@ class AbstractDateComboModel extends AbstractListModel implements
 	 * @param model
 	 *            the model to set
 	 */
-	public void setModel(DateModel model) {
+	public void setModel(final DateModel model) {
 		this.model = model;
 	}
 
@@ -186,7 +189,7 @@ class AbstractDateComboModel extends AbstractListModel implements
 	 * @param field
 	 *            the field to set
 	 */
-	public void setField(int field) {
+	public void setField(final int field) {
 		this.field = field;
 	}
 
@@ -202,7 +205,7 @@ class AbstractDateComboModel extends AbstractListModel implements
 }
 
 class DateMonthModel extends AbstractDateComboModel {
-	DateMonthModel(DateModel model) {
+	DateMonthModel(final DateModel model) {
 		super(model, Calendar.MONTH);
 	}
 
@@ -210,21 +213,19 @@ class DateMonthModel extends AbstractDateComboModel {
 
 class MonthCellRenderer extends BasicComboBoxRenderer {
 	@Override
-	public Component getListCellRendererComponent(JList list, Object value,
-			int index, boolean isSelected, boolean cellHasFocus) {
+	public Component getListCellRendererComponent(final JList list, final Object value, final int index,
+			final boolean isSelected, final boolean cellHasFocus) {
 		final int i = ((Integer) value).intValue();
 
-		return super.getListCellRendererComponent(list, month[i], index,
-				isSelected, cellHasFocus);
+		return super.getListCellRendererComponent(list, month[i], index, isSelected, cellHasFocus);
 	}
 
-	private static final String[] month = { "January", "February", "March",
-			"April", "May", "June", "July", "August", "September", "October",
-			"November", "December" };
+	private static final String[] month = { "January", "February", "March", "April", "May", "June", "July", "August",
+			"September", "October", "November", "December" };
 }
 
 class DateDayModel extends AbstractDateComboModel {
-	DateDayModel(DateModel model) {
+	DateDayModel(final DateModel model) {
 		super(model, Calendar.DAY_OF_MONTH);
 	}
 
@@ -234,13 +235,13 @@ class DateDayModel extends AbstractDateComboModel {
 	}
 
 	@Override
-	public Object getElementAt(int index) {
+	public Object getElementAt(final int index) {
 		return getElementAt(index + 1);
 	}
 }
 
 class DateHourModel extends AbstractDateComboModel {
-	DateHourModel(DateModel model) {
+	DateHourModel(final DateModel model) {
 		super(model, Calendar.HOUR_OF_DAY);
 	}
 
@@ -260,7 +261,7 @@ class DateHourModel extends AbstractDateComboModel {
 	}
 
 	@Override
-	public void setSelectedItem(Object value) {
+	public void setSelectedItem(final Object value) {
 		final int ampm = getModel().get(Calendar.AM_PM);
 		int i = ((Integer) value).intValue();
 		if (ampm > 0) {
@@ -271,24 +272,24 @@ class DateHourModel extends AbstractDateComboModel {
 }
 
 class DateMinuteModel extends AbstractDateComboModel {
-	DateMinuteModel(DateModel model) {
+	DateMinuteModel(final DateModel model) {
 		super(model, Calendar.MINUTE);
 	}
 }
 
 class DateSecondModel extends AbstractDateComboModel {
-	DateSecondModel(DateModel model) {
+	DateSecondModel(final DateModel model) {
 		super(model, Calendar.SECOND);
 	}
 }
 
 class DateAMPMModel extends AbstractDateComboModel {
-	DateAMPMModel(DateModel model) {
+	DateAMPMModel(final DateModel model) {
 		super(model, Calendar.AM_PM);
 	}
 
 	@Override
-	public void setSelectedItem(Object value) {
+	public void setSelectedItem(final Object value) {
 		int hour = getModel().get(Calendar.HOUR_OF_DAY);
 		final int i = ((Integer) value).intValue();
 
@@ -304,12 +305,11 @@ class DateAMPMModel extends AbstractDateComboModel {
 
 class MinuteCellRenderer extends BasicComboBoxRenderer {
 	@Override
-	public Component getListCellRendererComponent(JList list, Object value,
-			int index, boolean isSelected, boolean cellHasFocus) {
+	public Component getListCellRendererComponent(final JList list, final Object value, final int index,
+			final boolean isSelected, final boolean cellHasFocus) {
 		final String s = f.format(value);
 
-		return super.getListCellRendererComponent(list, s, index, isSelected,
-				cellHasFocus);
+		return super.getListCellRendererComponent(list, s, index, isSelected, cellHasFocus);
 	}
 
 	private static Format f = new DecimalFormat("00");
@@ -321,33 +321,31 @@ class HourCellRenderer extends BasicComboBoxRenderer {
 	}
 
 	@Override
-	public Component getListCellRendererComponent(JList list, Object value,
-			int index, boolean isSelected, boolean cellHasFocus) {
+	public Component getListCellRendererComponent(final JList list, final Object value, final int index,
+			final boolean isSelected, final boolean cellHasFocus) {
 		int i = ((Integer) value).intValue();
 		if (i == 0) {
 			i = 12;
 		}
 		final String s = String.valueOf(i);
-		return super.getListCellRendererComponent(list, s, index, isSelected,
-				cellHasFocus);
+		return super.getListCellRendererComponent(list, s, index, isSelected, cellHasFocus);
 	}
 }
 
 class AMPMCellRenderer extends BasicComboBoxRenderer {
 	@Override
-	public Component getListCellRendererComponent(JList list, Object value,
-			int index, boolean isSelected, boolean cellHasFocus) {
+	public Component getListCellRendererComponent(final JList list, final Object value, final int index,
+			final boolean isSelected, final boolean cellHasFocus) {
 		final int i = ((Integer) value).intValue();
 
-		return super.getListCellRendererComponent(list, ampm[i], index,
-				isSelected, cellHasFocus);
+		return super.getListCellRendererComponent(list, ampm[i], index, isSelected, cellHasFocus);
 	}
 
 	private static String[] ampm = { "AM", "PM" };
 }
 
 class DateYearModel extends AbstractDateComboModel {
-	DateYearModel(DateModel model, int offset) {
+	DateYearModel(final DateModel model, final int offset) {
 		super(model, Calendar.YEAR);
 		this.offset = offset;
 	}
@@ -364,7 +362,7 @@ class DateYearModel extends AbstractDateComboModel {
 	}
 
 	@Override
-	public void setSelectedItem(Object value) {
+	public void setSelectedItem(final Object value) {
 		final int i = ((Integer) value).intValue();
 		getModel().set(getField(), i + offset);
 	}
@@ -373,17 +371,16 @@ class DateYearModel extends AbstractDateComboModel {
 }
 
 class YearCellRenderer extends BasicComboBoxRenderer {
-	YearCellRenderer(int offset) {
+	YearCellRenderer(final int offset) {
 		YearCellRenderer.offset = offset;
 	}
 
 	@Override
-	public Component getListCellRendererComponent(JList list, Object value,
-			int index, boolean isSelected, boolean cellHasFocus) {
+	public Component getListCellRendererComponent(final JList list, final Object value, final int index,
+			final boolean isSelected, final boolean cellHasFocus) {
 		final int i = ((Integer) value).intValue();
 
-		return super.getListCellRendererComponent(list,
-				String.valueOf(i + offset), index, isSelected, cellHasFocus);
+		return super.getListCellRendererComponent(list, String.valueOf(i + offset), index, isSelected, cellHasFocus);
 	}
 
 	private static int offset;
@@ -391,7 +388,7 @@ class YearCellRenderer extends BasicComboBoxRenderer {
 
 class CalendarHeader extends JComponent {
 
-	CalendarHeader(DateModel model) {
+	CalendarHeader(final DateModel model) {
 		this.model = model;
 		final int offset = 1950;
 
@@ -418,11 +415,12 @@ class CalendarHeader extends JComponent {
 	private final DateModel model;
 
 	private class RollListener implements ActionListener {
-		RollListener(int delta) {
+		RollListener(final int delta) {
 			this.delta = delta;
 		}
 
-		public void actionPerformed(ActionEvent evt) {
+		@Override
+		public void actionPerformed(final ActionEvent evt) {
 			model.add(Calendar.MONTH, delta);
 		}
 
@@ -431,7 +429,7 @@ class CalendarHeader extends JComponent {
 }
 
 class TimeHeader extends JComponent {
-	TimeHeader(DateModel model) {
+	TimeHeader(final DateModel model) {
 		this.model = model;
 
 		setLayout(new FlowLayout());
@@ -456,7 +454,7 @@ class TimeHeader extends JComponent {
 }
 
 class CalendarPane extends JComponent implements DateListener, ActionListener {
-	CalendarPane(DateModel model) {
+	CalendarPane(final DateModel model) {
 		this.model = model;
 		model.addDateListener(this);
 
@@ -496,12 +494,14 @@ class CalendarPane extends JComponent implements DateListener, ActionListener {
 		return panelSize;
 	}
 
-	public void actionPerformed(ActionEvent e) {
+	@Override
+	public void actionPerformed(final ActionEvent e) {
 		final String s = e.getActionCommand();
 		final int day = Integer.valueOf(s).intValue();
 		model.set(Calendar.DAY_OF_MONTH, day);
 	}
 
+	@Override
 	public void dateChanged() {
 		layoutCalendar();
 	}
@@ -517,8 +517,7 @@ class CalendarPane extends JComponent implements DateListener, ActionListener {
 				selectedButton.repaint();
 			}
 			selectedButton = days[day];
-			selectedButton.setForeground(UIManager
-					.getColor("textHighlightText"));
+			selectedButton.setForeground(UIManager.getColor("textHighlightText"));
 			selectedButton.setBackground(UIManager.getColor("textHighlight"));
 			selectedButton.repaint();
 		}
@@ -529,10 +528,8 @@ class CalendarPane extends JComponent implements DateListener, ActionListener {
 		int i = 0;
 
 		for (; i < model.getDaysInMonth(); i++) {
-			final int x = (date.get(Calendar.DAY_OF_WEEK) - 1)
-					* buttonSize.width;
-			final int y = (date.get(Calendar.WEEK_OF_MONTH))
-					* buttonSize.height;
+			final int x = (date.get(Calendar.DAY_OF_WEEK) - 1) * buttonSize.width;
+			final int y = (date.get(Calendar.WEEK_OF_MONTH)) * buttonSize.height;
 			days[i].setLocation(x, y);
 			date.add(Calendar.DATE, 1);
 		}
@@ -550,12 +547,11 @@ class CalendarPane extends JComponent implements DateListener, ActionListener {
 	private final Point hidden;
 	private final DateModel model;
 	private final JButton[] days;
-	private final static String[] labels = { "Sun", "Mon", "Tue", "Wed", "Thu",
-			"Fri", "Sat" };
+	private final static String[] labels = { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" };
 }
 
 class CalendarTest {
-	public static void main(String[] argv) {
+	public static void main(final String[] argv) {
 		final JFrame f = new JFrame("test");
 		final DateModel model = new DateModel(Calendar.getInstance());
 
@@ -568,7 +564,7 @@ class CalendarTest {
 }
 
 public class DateChooser extends JASDialog {
-	public DateChooser(Frame f, Date d) {
+	public DateChooser(final Frame f, final Date d) {
 		super(f, "Choose Date...");
 		model = new DateModel(d);
 		getContentPane().add(new CalendarHeader(model), BorderLayout.NORTH);
