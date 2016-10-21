@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -54,8 +54,7 @@ public class Ps {
 			// on recupere la liste des process
 			ls = machine.exec("ls -A1 /proc");
 			ls.waitFor();
-			input = new BufferedReader(new InputStreamReader(
-					ls.getInputStream()));
+			input = new BufferedReader(new InputStreamReader(ls.getInputStream()));
 
 			id = 0;
 			while (input.ready()) {
@@ -63,8 +62,7 @@ public class Ps {
 				try {
 					// on ne garde que ce qui est numerique (i.e. pid)
 					pid[id] = Integer.valueOf(ligne).intValue();
-					final BufferedReader pidstat = new BufferedReader(
-							new FileReader("/proc/" + pid[id] + "/stat"));
+					final BufferedReader pidstat = new BufferedReader(new FileReader("/proc/" + pid[id] + "/stat"));
 					ligne = pidstat.readLine();
 					pidstat.close();
 					index = 0;
@@ -72,15 +70,9 @@ public class Ps {
 						index = ligne.indexOf(' ', index + 1);
 					}
 					// on recupere les jiffies user et system du process
-					us[id] = Integer.valueOf(
-							ligne.substring(index,
-									ligne.indexOf(' ', index + 1)).trim())
-							.intValue();
+					us[id] = Integer.valueOf(ligne.substring(index, ligne.indexOf(' ', index + 1)).trim()).intValue();
 					index = ligne.indexOf(' ', index + 1);
-					sy[id] = Integer.valueOf(
-							ligne.substring(index,
-									ligne.indexOf(' ', index + 1)).trim())
-							.intValue();
+					sy[id] = Integer.valueOf(ligne.substring(index, ligne.indexOf(' ', index + 1)).trim()).intValue();
 					id++;
 
 				} catch (final Exception e) {
@@ -89,8 +81,7 @@ public class Ps {
 
 			// lecture de la premiere ligne de /proc/stat
 			// "cpu long:user long:nice long:sys long:idle"
-			final BufferedReader stat = new BufferedReader(new FileReader(
-					"/proc/stat"));
+			final BufferedReader stat = new BufferedReader(new FileReader("/proc/stat"));
 			ligne = stat.readLine();
 			stat.close();
 			ligne = ligne.trim();
@@ -103,9 +94,7 @@ public class Ps {
 				try {
 					index = ligne.indexOf(' ');
 					if (index != -1) {
-						jiffies = Long
-								.valueOf(ligne.substring(0, index).trim())
-								.longValue();
+						jiffies = Long.valueOf(ligne.substring(0, index).trim()).longValue();
 					} else {
 						jiffies = Long.valueOf(ligne.trim()).longValue();
 					}
@@ -135,7 +124,7 @@ public class Ps {
 		}
 	}
 
-	public static int ps(int delai) {
+	public static int ps(final int delai) {
 		int idOld, user, system;
 		long userTotOld;
 		long niceTotOld;
