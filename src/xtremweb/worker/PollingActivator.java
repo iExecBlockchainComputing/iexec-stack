@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -31,7 +31,7 @@ import xtremweb.common.XWPropertyDefs;
  * <p>
  * Abtract class for implementing polling activators
  * </p>
- * 
+ *
  * <p>
  * <code>PollingActivator</code> contains methods common to activators that
  * polls the system to see if the worker is allowed to compute<br>
@@ -41,9 +41,9 @@ import xtremweb.common.XWPropertyDefs;
  * then the worker is awaken and <code>isActive</code> is called every
  * <code>workingProbeInterval</code> ms to see if the worker should be stopped.
  * </p>
- * 
+ *
  * Created May 30 2002 (from MouseKbdActivator.java)
- * 
+ *
  * @author Samuel Heriard
  */
 
@@ -63,7 +63,7 @@ public abstract class PollingActivator extends Activator {
 	/**
 	 * This tells whether the worker can start computing, accordingly to the
 	 * local activation policy
-	 * 
+	 *
 	 * @return true if the work can start computing
 	 */
 	protected abstract boolean canStart();
@@ -71,14 +71,14 @@ public abstract class PollingActivator extends Activator {
 	/**
 	 * This tells whether the worker must stop computing, accordingly to the
 	 * local activation policy
-	 * 
+	 *
 	 * @return true if the work must stop computing
 	 */
 	protected abstract boolean mustStop();
 
 	/**
 	 * This initializes the activator accordingly to the config file
-	 * 
+	 *
 	 * @param c
 	 *            is the Properties read from file
 	 * @exception Exception
@@ -86,40 +86,36 @@ public abstract class PollingActivator extends Activator {
 	 *                Acivator implementation
 	 */
 	@Override
-	public void initialize(XWConfigurator c) {
+	public void initialize(final XWConfigurator c) {
 
 		super.initialize(c);
 
 		try {
 			if (getConfig().getProperty(XWPropertyDefs.ACTIVATORDELAY) != null) {
-				setActivationDelay(60000 * Integer.parseInt(getConfig()
-						.getProperty(XWPropertyDefs.ACTIVATORDELAY)));
+				setActivationDelay(60000 * Integer.parseInt(getConfig().getProperty(XWPropertyDefs.ACTIVATORDELAY)));
 			}
 		} catch (final NumberFormatException e) {
-			getLogger().warn(
-					"'activator.poll.delay' is not an integer ("
-							+ getConfig().getProperty(
-									XWPropertyDefs.ACTIVATORDELAY) + ")");
+			getLogger().warn("'activator.poll.delay' is not an integer ("
+					+ getConfig().getProperty(XWPropertyDefs.ACTIVATORDELAY) + ")");
 		}
 
 		if (getActivationDelay() <= 0) {
 			setActivationDelay(60000);
 		}
 
-		getLogger().debug(
-				"PollingActivator::initilize() " + getActivationDelay());
+		getLogger().debug("PollingActivator::initilize() " + getActivationDelay());
 
 		setMask(~CPU_ACTIVITY);
 	}
 
 	/**
 	 * This wait for an event
-	 * 
+	 *
 	 * @param mask
 	 *            is the event mask to wait for
 	 */
 	@Override
-	public int waitForEvent(int mask) throws InterruptedException {
+	public int waitForEvent(final int mask) throws InterruptedException {
 		final Logger logger = getLogger();
 		try {
 			if ((getMask() & CPU_ACTIVITY) != 0) {
@@ -132,8 +128,7 @@ public abstract class PollingActivator extends Activator {
 				}
 
 				setMask(getMask() - CPU_ACTIVITY);
-				logger.debug("PollingActivator (end running) : "
-						+ Integer.toHexString(getMask()));
+				logger.debug("PollingActivator (end running) : " + Integer.toHexString(getMask()));
 
 			} else {
 
@@ -142,14 +137,12 @@ public abstract class PollingActivator extends Activator {
 
 				Thread.sleep(getWaitingProbeInterval());
 				while (this.canStart() == false) {
-					logger.debug("PollingActivator : sleeping "
-							+ getWaitingProbeInterval());
+					logger.debug("PollingActivator : sleeping " + getWaitingProbeInterval());
 					Thread.sleep(getWaitingProbeInterval());
 				}
 
 				setMask(getMask() | CPU_ACTIVITY);
-				logger.debug("PollingActivator (end sleeping) : "
-						+ Integer.toHexString(getMask()));
+				logger.debug("PollingActivator (end sleeping) : " + Integer.toHexString(getMask()));
 			}
 		} catch (final InterruptedException e) {
 			logger.info("PollingActivator#waitForEvent() : interrupted");
@@ -169,7 +162,7 @@ public abstract class PollingActivator extends Activator {
 	 * @param activationDelay
 	 *            the activationDelay to set
 	 */
-	public void setActivationDelay(int activationDelay) {
+	public void setActivationDelay(final int activationDelay) {
 		this.activationDelay = activationDelay;
 	}
 
@@ -184,7 +177,7 @@ public abstract class PollingActivator extends Activator {
 	 * @param waitingProbeInterval
 	 *            the waitingProbeInterval to set
 	 */
-	public void setWaitingProbeInterval(long waitingProbeInterval) {
+	public void setWaitingProbeInterval(final long waitingProbeInterval) {
 		this.waitingProbeInterval = waitingProbeInterval;
 	}
 
@@ -199,7 +192,7 @@ public abstract class PollingActivator extends Activator {
 	 * @param workingProbeInterval
 	 *            the workingProbeInterval to set
 	 */
-	public void setWorkingProbeInterval(long workingProbeInterval) {
+	public void setWorkingProbeInterval(final long workingProbeInterval) {
 		this.workingProbeInterval = workingProbeInterval;
 	}
 
