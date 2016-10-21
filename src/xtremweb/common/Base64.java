@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -26,7 +26,7 @@ package xtremweb.common;
 /**
  * Provides encoding of raw bytes to base64-encoded characters, and decoding of
  * base64 characters to raw bytes.
- * 
+ *
  * @author Kevin Kelley (kelley@iguana.ruralnet.net)
  * @version 1.0 Date : 06 August 1998
  */
@@ -35,13 +35,13 @@ public class Base64 {
 	/**
 	 * returns an array of base64-encoded characters to represent the passed
 	 * data array.
-	 * 
+	 *
 	 * @param data
 	 *            the array of bytes to encode
 	 * @return base64-coded character array.
 	 */
 
-	static public char[] encode(byte[] data) {
+	static public char[] encode(final byte[] data) {
 
 		final char[] out = new char[((data.length + 2) / 3) * 4];
 		//
@@ -78,12 +78,12 @@ public class Base64 {
 	/**
 	 * Returns an array of bytes which were encoded in the passed character
 	 * array.
-	 * 
+	 *
 	 * @param data
 	 *            the array of base64-encoded characters
 	 * @return decoded data array
 	 */
-	static public byte[] decode(byte[] data) {
+	static public byte[] decode(final byte[] data) {
 		int len = ((data.length + 3) / 4) * 3;
 		if ((data.length > 0) && (data[data.length - 1] == '=')) {
 			--len;
@@ -115,8 +115,7 @@ public class Base64 {
 		}
 
 		if (index != out.length) {
-			throw new RuntimeException(
-					"Error decoding BASE64 element: miscalculated data length!");
+			throw new RuntimeException("Error decoding BASE64 element: miscalculated data length!");
 		}
 
 		return out;
@@ -128,8 +127,7 @@ public class Base64 {
 
 	static private char[] alphabet =
 
-	"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/="
-			.toCharArray();
+			"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=".toCharArray();
 
 	//
 	// lookup table for converting base64 characters to value in range 0..63
