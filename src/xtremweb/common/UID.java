@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -23,7 +23,6 @@
 
 package xtremweb.common;
 
-import java.io.DataInput;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -64,19 +63,19 @@ public final class UID extends XMLable {
 
 	/**
 	 * Tests if the argument is equal to NULLUID
-	 * 
+	 *
 	 * @param anUid
 	 *            is the uid to test
 	 * @return true if argument is equal to NULLUID
 	 * @see #NULLUID
 	 */
-	public static boolean isNull(UID anUid) {
+	public static boolean isNull(final UID anUid) {
 		return NULLUID.equals(anUid);
 	}
 
 	/**
 	 * Tests if this UID is null
-	 * 
+	 *
 	 * @see #isNull(UID)
 	 */
 	public boolean isNull() {
@@ -94,7 +93,7 @@ public final class UID extends XMLable {
 	private UUID uid;
 	/**
 	 * This is the UID column index
-	 * 
+	 *
 	 * @see XMLable#columns
 	 */
 	private static final int UID = FIRST_ATTRIBUTE;
@@ -110,38 +109,38 @@ public final class UID extends XMLable {
 
 	/**
 	 * This constructs a new instance from a UID String representation
-	 * 
+	 *
 	 * @param value
 	 *            is the UID String representation
 	 * @exception IllegalArgumentException
 	 *                is thrown if parameter does not represents an UID
 	 */
-	private static UID newUID(String value) throws IllegalArgumentException {
+	private static UID newUID(final String value) throws IllegalArgumentException {
 		return new UID(value);
 	}
 
 	/**
 	 * This constructs a new instance from a UID String representation
-	 * 
+	 *
 	 * @param value
 	 *            is the UID String representation
 	 * @exception IllegalArgumentException
 	 *                is thrown if parameter does not represents an UID
 	 */
-	public UID(String value) throws IllegalArgumentException {
+	public UID(final String value) throws IllegalArgumentException {
 		fromString(value);
 	}
 
 	/**
 	 * This constructs a new object by receiving XML representation from input
 	 * stream
-	 * 
+	 *
 	 * @param in
 	 *            is the input stream
 	 * @exception IOException
 	 *                is thrown on XML parsing error
 	 */
-	public UID(DataInputStream in) throws IOException, SAXException {
+	public UID(final DataInputStream in) throws IOException, SAXException {
 		this();
 		final XMLReader reader = new XMLReader(this);
 		try {
@@ -154,7 +153,7 @@ public final class UID extends XMLable {
 
 	/**
 	 * This compares this UID to provided one
-	 * 
+	 *
 	 * @param uid2
 	 *            is the object to compare to; this params must be an Object and
 	 *            not an UID to be correctly called if UID is used as key in
@@ -162,7 +161,7 @@ public final class UID extends XMLable {
 	 * @return false if uid2 is null or if uid2 differs from this
 	 */
 	@Override
-	public boolean equals(Object uid2) {
+	public boolean equals(final Object uid2) {
 		if ((uid2 == null) || !(uid2 instanceof UID)) {
 			return false;
 		}
@@ -175,7 +174,7 @@ public final class UID extends XMLable {
 
 	/**
 	 * This return this objet hash code.
-	 * 
+	 *
 	 * @return uid.hashCode() if uid is not null, NULLUID.hashCode() otherwise
 	 * @see #uid
 	 * @see #NULLUID
@@ -199,12 +198,12 @@ public final class UID extends XMLable {
 
 	/**
 	 * This calls java.util.UUID.toString()
-	 * 
+	 *
 	 * @param csv
 	 *            is never used
 	 */
 	@Override
-	public String toString(boolean csv) {
+	public String toString(final boolean csv) {
 		try {
 			return uid.toString();
 		} catch (final NullPointerException e) {
@@ -221,7 +220,7 @@ public final class UID extends XMLable {
 	 * <li>DataInput.readLong()
 	 * <li>DataInput.readShort()
 	 * </ol>
-	 * 
+	 *
 	 * @param value
 	 *            is the UID String representation
 	 * @exception IllegalArgumentException
@@ -242,7 +241,7 @@ public final class UID extends XMLable {
 
 	/**
 	 * This retrieves this object XML representation
-	 * 
+	 *
 	 * @return this object XML representation
 	 */
 	@Override
@@ -252,12 +251,12 @@ public final class UID extends XMLable {
 
 	/**
 	 * This retrieves attributes from XML attributes
-	 * 
+	 *
 	 * @param attrs
 	 *            contains attributes XML representation
 	 */
 	@Override
-	public void fromXml(Attributes attrs) {
+	public void fromXml(final Attributes attrs) {
 
 		if (attrs == null) {
 			return;
@@ -269,8 +268,7 @@ public final class UID extends XMLable {
 		for (int a = 0; a < attrs.getLength(); a++) {
 			final String attribute = attrs.getQName(a);
 			final String value = attrs.getValue(a);
-			logger.finest("UID  ##  attribute #" + a + ": name=\"" + attribute
-					+ "\"" + ", value=\"" + value + "\"");
+			logger.finest("UID  ##  attribute #" + a + ": name=\"" + attribute + "\"" + ", value=\"" + value + "\"");
 
 			if (attribute.compareToIgnoreCase(getColumnLabel(UID)) == 0) {
 				try {
@@ -284,12 +282,12 @@ public final class UID extends XMLable {
 
 	/**
 	 * This is called to decode XML elements
-	 * 
+	 *
 	 * @see XMLReader#read(InputStream)
 	 */
 	@Override
-	public void xmlElementStart(String uri, String tag, String qname,
-			Attributes attrs) throws SAXException {
+	public void xmlElementStart(final String uri, final String tag, final String qname, final Attributes attrs)
+			throws SAXException {
 
 		try {
 			super.xmlElementStart(uri, tag, qname, attrs);
@@ -305,7 +303,7 @@ public final class UID extends XMLable {
 	/**
 	 * This is for testing only
 	 */
-	public static void main(String[] argv) {
+	public static void main(final String[] argv) {
 
 		final Hashtable<UID, String> cache = new Hashtable<UID, String>();
 		final Logger logger = new Logger();
@@ -338,7 +336,7 @@ public final class UID extends XMLable {
 
 	/**
 	 * This retrieves myUid
-	 * 
+	 *
 	 * @return the myUid
 	 */
 	public static UID getMyUid() {
@@ -349,7 +347,7 @@ public final class UID extends XMLable {
 	 * @param m
 	 *            the new value of myUid
 	 */
-	public static void setMyUid(UID m) {
+	public static void setMyUid(final UID m) {
 		myUid = m;
 	}
 }
