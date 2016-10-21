@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -42,7 +42,7 @@ import org.xml.sax.SAXException;
 /**
  * This class (un)marshal object to/from XML This is used by XMLHashtable,
  * XMLVector
- * 
+ *
  * @see XMLHashtable
  * @see XMLVector
  */
@@ -59,42 +59,42 @@ public class XMLValue extends XMLObject {
 
 	/**
 	 * This calls XMLable(String, int)
-	 * 
+	 *
 	 * @see XMLable#XMLable(String, int)
 	 */
-	public XMLValue(String tag, int last) {
+	public XMLValue(final String tag, final int last) {
 		super(tag, last);
 	}
 
 	/**
 	 */
-	public XMLValue(Object v) {
+	public XMLValue(final Object v) {
 		super(v);
 		setXMLTag(THISTAG);
 	}
 
 	/**
 	 * This calls toString()
-	 * 
+	 *
 	 * @param csv
 	 *            is never used
 	 * @see Table#toString(boolean)
 	 */
 	@Override
-	public String toString(boolean csv) {
+	public String toString(final boolean csv) {
 		return toString();
 	}
 
 	/**
 	 * This constructs a new object from XML attributes received from input
 	 * stream
-	 * 
+	 *
 	 * @param input
 	 *            is the input stream
 	 * @throws IOException
 	 *             on XML error
 	 */
-	public XMLValue(DataInputStream input) throws IOException, SAXException {
+	public XMLValue(final DataInputStream input) throws IOException, SAXException {
 		final XMLReader reader = new XMLReader(this);
 		try {
 			reader.read(input);
@@ -106,7 +106,7 @@ public class XMLValue extends XMLObject {
 	/**
 	 * This constructs a new object from XML attributes
 	 */
-	public XMLValue(Attributes attrs) {
+	public XMLValue(final Attributes attrs) {
 		this();
 		setXMLTag(THISTAG);
 		fromXml(attrs);
