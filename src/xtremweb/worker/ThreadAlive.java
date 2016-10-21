@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -56,12 +56,12 @@ import xtremweb.communications.URI;
 import xtremweb.communications.XWPostParams;
 
 /**
- * 
+ *
  * This uses xtremweb.communications.HTTPClient as communication layer since RMI
  * is obsolete and UDP does not implement workAlive methods <br/>
- * 
+ *
  * Signal to the coordinator the worker is still there.<br />
- * 
+ *
  * Historically, that signal was called 'Alive' since it was preminirarly only
  * used to signal the dispatcher this worker is still here. This processes a
  * much more than signalling only since RPC-V.<br>
@@ -82,9 +82,9 @@ import xtremweb.communications.XWPostParams;
  * connects to the new current server
  * </ul>
  * </ul>
- * 
+ *
  * Created: Thu Jun 29 17:47:11 2000
- * 
+ *
  * @author Gilles Fedak
  */
 
@@ -105,7 +105,7 @@ public class ThreadAlive extends Thread {
 	 * This is the only constructor This initializes TCP communication layer
 	 * whatever could be written in config file
 	 */
-	public ThreadAlive(XWConfigurator conf) {
+	public ThreadAlive(final XWConfigurator conf) {
 
 		super("ThreadAlive");
 		logger = new Logger(this);
@@ -136,12 +136,10 @@ public class ThreadAlive extends Thread {
 
 				// we don't sleep for the whole timeout as we need to
 				// take care that the computation is still on.
-				logger.config("Sleep until the next alive (" + alivePeriod
-						+ " seconds)");
+				logger.config("Sleep until the next alive (" + alivePeriod + " seconds)");
 				java.lang.Thread.sleep(alivePeriod * 1000);
 
-				Vector<Work> wal = CommManager.getInstance().getPoolWork()
-						.getAliveWork();
+				Vector<Work> wal = CommManager.getInstance().getPoolWork().getAliveWork();
 				if (wal == null) {
 					continue;
 				}
@@ -169,11 +167,11 @@ public class ThreadAlive extends Thread {
 	/**
 	 * This checks the provided job accordingly to the server status (i.e.
 	 * should we continue computing the job ? )
-	 * 
+	 *
 	 * @param theJob
 	 *            is the work to signal.
 	 */
-	private void checkJob(Work theJob) {
+	private void checkJob(final Work theJob) {
 
 		if (theJob == null) {
 			logger.debug("ThreadAlive::checkJob() : theJob = null");
@@ -208,8 +206,7 @@ public class ThreadAlive extends Thread {
 
 				if (keepWorking.booleanValue() == false) {
 
-					final ThreadWork tw = ThreadLaunch.getInstance()
-							.getThreadByWork(theJob);
+					final ThreadWork tw = ThreadLaunch.getInstance().getThreadByWork(theJob);
 
 					if (tw != null) {
 
@@ -218,8 +215,7 @@ public class ThreadAlive extends Thread {
 					} else {
 						logger.warn(msg + " can't find working thread");
 					}
-					CommManager.getInstance().getPoolWork()
-							.removeWork(theJob.getUID());
+					CommManager.getInstance().getPoolWork().removeWork(theJob.getUID());
 
 					ThreadLaunch.getInstance().raz();
 				} else {
@@ -241,7 +237,9 @@ public class ThreadAlive extends Thread {
 	 * <li>retrieve results status (can we definitly delete them ? should we
 	 * re-send them ?)
 	 * </ul>
-	 * Since 9.1.1, this sends the first 20 job results only, otherwise the message may be too long and reset the comm channel 
+	 * Since 9.1.1, this sends the first 20 job results only, otherwise the
+	 * message may be too long and reset the comm channel
+	 *
 	 * @see xtremweb.dispatcher.CommHandler#workAlive(IdServers, Hashtable)
 	 */
 	private void synchronize() {
@@ -254,12 +252,11 @@ public class ThreadAlive extends Thread {
 			// retrieve stored job results
 			//
 			final Vector<UID> jobResults = new Vector<UID>();
-			final Hashtable<UID, Work> savingWorks = CommManager.getInstance()
-					.getPoolWork().getSavingWork();
+			final Hashtable<UID, Work> savingWorks = CommManager.getInstance().getPoolWork().getSavingWork();
 
 			final Enumeration<Work> theEnumeration = savingWorks.elements();
 
-			for (int i = 0; i < 20 && theEnumeration.hasMoreElements(); i++) {
+			for (int i = 0; (i < 20) && theEnumeration.hasMoreElements(); i++) {
 				final Work aWork = theEnumeration.nextElement();
 				if (aWork == null) {
 					continue;
@@ -270,8 +267,7 @@ public class ThreadAlive extends Thread {
 				jobResults.add(aWork.getUID());
 			}
 
-			logger.debug("threadAlive() : jobResults.size() = "
-					+ jobResults.size());
+			logger.debug("threadAlive() : jobResults.size() = " + jobResults.size());
 			final Hashtable rmiParams = new Hashtable();
 			rmiParams.put(XWPostParams.JOBRESULTS.toString(), jobResults);
 
@@ -292,14 +288,10 @@ public class ThreadAlive extends Thread {
 				return;
 			}
 
-			final String serverVersion = (String) rmiResults
-					.get(XWPostParams.CURRENTVERSION.toString());
-			if ((serverVersion != null)
-					&& !serverVersion.equals(CommonVersion.getCurrent()
-							.toString())) {
+			final String serverVersion = (String) rmiResults.get(XWPostParams.CURRENTVERSION.toString());
+			if ((serverVersion != null) && !serverVersion.equals(CommonVersion.getCurrent().toString())) {
 				logger.info("**********  **********  **********");
-				logger.info("\nCurrent version : "
-						+ CommonVersion.getCurrent().toString());
+				logger.info("\nCurrent version : " + CommonVersion.getCurrent().toString());
 				logger.info("Server  version : " + serverVersion);
 				logger.info("We must upgrade");
 				logger.info("Restarting now");
@@ -311,12 +303,10 @@ public class ThreadAlive extends Thread {
 			// RPC-V : retrieve saved tasks and remove them from from
 			// PoolWork::savingTasks
 			//
-			final Vector finishedTasks = (Vector) rmiResults
-					.get(XWPostParams.FINISHEDTASKS.toString());
+			final Vector finishedTasks = (Vector) rmiResults.get(XWPostParams.FINISHEDTASKS.toString());
 
 			if (finishedTasks != null) {
-				logger.debug("ThreadAlive() : finishedTasks.size() = "
-						+ finishedTasks.size());
+				logger.debug("ThreadAlive() : finishedTasks.size() = " + finishedTasks.size());
 				final Iterator<XMLValue> li = finishedTasks.iterator();
 
 				while (li.hasNext()) {
@@ -331,12 +321,10 @@ public class ThreadAlive extends Thread {
 			// RPC-V : retrieve tasks which results are expected by the
 			// coordinator
 			//
-			final Vector resultsExpected = (Vector) rmiResults
-					.get(XWPostParams.RESULTEXPECTEDS.toString());
+			final Vector resultsExpected = (Vector) rmiResults.get(XWPostParams.RESULTEXPECTEDS.toString());
 
 			if (resultsExpected != null) {
-				logger.debug("ThreadAlive() : resultsExpected.size() = "
-						+ resultsExpected.size());
+				logger.debug("ThreadAlive() : resultsExpected.size() = " + resultsExpected.size());
 
 				final Iterator<XMLValue> li = resultsExpected.iterator();
 
@@ -346,14 +334,11 @@ public class ThreadAlive extends Thread {
 						continue;
 					}
 
-					Work theWork = CommManager.getInstance().getPoolWork()
-							.getSavingWork(uid);
+					Work theWork = CommManager.getInstance().getPoolWork().getSavingWork(uid);
 					if (theWork == null) {
-						final ThreadWork threadWork = ThreadLaunch
-								.getInstance().getThreadByWorkUid(uid);
+						final ThreadWork threadWork = ThreadLaunch.getInstance().getThreadByWorkUid(uid);
 						if (threadWork == null) {
-							logger.error("ThreadAlive() : can't retreive running work = "
-									+ uid);
+							logger.error("ThreadAlive() : can't retreive running work = " + uid);
 							continue;
 						}
 						try {
@@ -373,8 +358,7 @@ public class ThreadAlive extends Thread {
 			//
 			// Retrieve new server key
 			//
-			final String keystoreUriStr = (String) rmiResults
-					.get(XWPostParams.KEYSTOREURI.toString());
+			final String keystoreUriStr = (String) rmiResults.get(XWPostParams.KEYSTOREURI.toString());
 			if ((keystoreUriStr != null) && (keystoreUriStr.length() > 0)) {
 				logger.info("ThreadAlive() KEYSTOREURI : " + keystoreUriStr);
 				URI keystoreUri = null;
@@ -388,33 +372,24 @@ public class ThreadAlive extends Thread {
 				boolean newkeystore = false;
 				try {
 					keystoreUri = new URI(keystoreUriStr);
-					currentKeystoreFile = new File(
-							System.getProperty(XWPropertyDefs.JAVAKEYSTORE
-									.toString()));
-					logger.debug("currentKeystoreFile : " + currentKeystoreFile
-							+ " length = " + currentKeystoreFile.length());
+					currentKeystoreFile = new File(System.getProperty(XWPropertyDefs.JAVAKEYSTORE.toString()));
+					logger.debug("currentKeystoreFile : " + currentKeystoreFile + " length = "
+							+ currentKeystoreFile.length());
 
-					newKeystoreData = CommManager.getInstance().getData(
-							keystoreUri);
+					newKeystoreData = CommManager.getInstance().getData(keystoreUri);
 					if (newKeystoreData == null) {
-						throw new IOException(
-								"Can't retrieve new keystore data "
-										+ keystoreUri);
+						throw new IOException("Can't retrieve new keystore data " + keystoreUri);
 					}
 
-					currentKeystoreMD5 = MD5.asHex(MD5
-							.getHash(currentKeystoreFile));
+					currentKeystoreMD5 = MD5.asHex(MD5.getHash(currentKeystoreFile));
 
 					if (newKeystoreData.getMD5().compareTo(currentKeystoreMD5) != 0) {
 						logger.info("Downloading new keystore");
 						CommManager.getInstance().downloadData(keystoreUri);
-						newKeystoreFile = CommManager.getInstance()
-								.commClient(keystoreUri)
-								.getContentFile(keystoreUri);
+						newKeystoreFile = CommManager.getInstance().commClient(keystoreUri).getContentFile(keystoreUri);
 						foutput = new FileOutputStream(currentKeystoreFile);
 						output = new DataOutputStream(foutput);
-						logger.debug("newKeystoreFile : " + newKeystoreFile
-								+ " length = " + newKeystoreFile.length());
+						logger.debug("newKeystoreFile : " + newKeystoreFile + " length = " + newKeystoreFile.length());
 
 						io = new StreamIO(output, null, false);
 						io.writeFileContent(newKeystoreFile);
@@ -447,8 +422,7 @@ public class ThreadAlive extends Thread {
 			//
 			// retreive new server to connect to
 			//
-			final String newServer = (String) rmiResults
-					.get(XWPostParams.NEWSERVER.toString());
+			final String newServer = (String) rmiResults.get(XWPostParams.NEWSERVER.toString());
 			if (newServer != null) {
 				logger.debug("ThreadAlive() new server : " + newServer);
 				config.addDispatcher(newServer);
@@ -457,18 +431,13 @@ public class ThreadAlive extends Thread {
 			//
 			// the SmartSockets hub address
 			//
-			final String hubAddrStr = (String) rmiResults
-					.get(Connection.HUBPNAME);
-			String dbgMsg = "SmartSockets hub address = "
-					+ (hubAddrStr == null ? "unknwown" : hubAddrStr);
+			final String hubAddrStr = (String) rmiResults.get(Connection.HUBPNAME);
+			String dbgMsg = "SmartSockets hub address = " + (hubAddrStr == null ? "unknwown" : hubAddrStr);
 			if (hubAddrStr != null) {
-				System.setProperty(
-						XWPropertyDefs.SMARTSOCKETSHUBADDR.toString(),
-						hubAddrStr);
+				System.setProperty(XWPropertyDefs.SMARTSOCKETSHUBADDR.toString(), hubAddrStr);
 			}
 
-			final Boolean traces = (Boolean) rmiResults.get(XWPostParams.TRACES
-					.toString());
+			final Boolean traces = (Boolean) rmiResults.get(XWPostParams.TRACES.toString());
 			if (traces != null) {
 				if (traces.booleanValue()) {
 					dbgMsg += "; tracing";
@@ -486,8 +455,7 @@ public class ThreadAlive extends Thread {
 				dbgMsg += "; " + tracesSendResultDelay.intValue();
 			}
 
-			final Integer tracesResultDelay = (Integer) rmiResults
-					.get(XWPostParams.TRACESRESULTDELAY.toString());
+			final Integer tracesResultDelay = (Integer) rmiResults.get(XWPostParams.TRACESRESULTDELAY.toString());
 			int rDelay = 0;
 			if (tracesResultDelay != null) {
 				rDelay = tracesResultDelay.intValue();
@@ -498,15 +466,13 @@ public class ThreadAlive extends Thread {
 
 			if (XWTracer.getInstance() != null) {
 				if (traces != null) {
-					XWTracer.getInstance().setConfig(traces.booleanValue(),
-							rDelay, sDelay);
+					XWTracer.getInstance().setConfig(traces.booleanValue(), rDelay, sDelay);
 				} else {
 					XWTracer.getInstance().setConfig(rDelay, sDelay);
 				}
 			}
 
-			final Integer newAlivePeriod = (Integer) rmiResults
-					.get(XWPostParams.ALIVEPERIOD.toString());
+			final Integer newAlivePeriod = (Integer) rmiResults.get(XWPostParams.ALIVEPERIOD.toString());
 			if (newAlivePeriod != null) {
 				alivePeriod = newAlivePeriod.intValue();
 				logger.info("Alive period from server = " + alivePeriod);
@@ -522,15 +488,15 @@ public class ThreadAlive extends Thread {
 
 	/**
 	 * This checks the provided job accordingly to the server status
-	 * 
+	 *
 	 * @param jobUID
 	 *            is the UID of the currently computed job
 	 * @throws AccessControlException
 	 * @throws InvalidKeyException
 	 * @see #checkJob(Work)
 	 */
-	public Hashtable workAlive(UID jobUID) throws InterruptedException,
-			URISyntaxException, InvalidKeyException, AccessControlException {
+	public Hashtable workAlive(final UID jobUID)
+			throws InterruptedException, URISyntaxException, InvalidKeyException, AccessControlException {
 
 		CommClient commClient = null;
 		Hashtable result = null;
@@ -554,18 +520,17 @@ public class ThreadAlive extends Thread {
 
 	/**
 	 * This synchronizes with the server
-	 * 
+	 *
 	 * @param rmiParams
 	 *            is a Hashtable containing the list of local results
 	 * @see #synchronize()
 	 */
-	public Hashtable workAlive(Hashtable rmiParams) throws InterruptedException {
+	public Hashtable workAlive(final Hashtable rmiParams) throws InterruptedException {
 
 		CommClient commClient = null;
 		Hashtable result = null;
 		try {
-			config.getHost().setAvailable(
-					ThreadLaunch.getInstance().available());
+			config.getHost().setAvailable(ThreadLaunch.getInstance().available());
 			commClient = commClient();
 			result = commClient.workAlive(rmiParams).getHashtable();
 		} catch (final RemoteException ce) {
@@ -583,7 +548,7 @@ public class ThreadAlive extends Thread {
 
 	/**
 	 * This pings the server
-	 * 
+	 *
 	 * @see #synchronize()
 	 */
 	public void ping() {
@@ -609,11 +574,10 @@ public class ThreadAlive extends Thread {
 
 	/**
 	 * This retreives the default comm client and initializes it
-	 * 
+	 *
 	 * @return the default comm client
 	 */
-	private CommClient commClient() throws RemoteException,
-			UnknownHostException, ConnectException {
+	private CommClient commClient() throws RemoteException, UnknownHostException, ConnectException {
 
 		CommClient commClient = null;
 		try {
