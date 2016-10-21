@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -36,7 +36,7 @@ import java.util.Vector;
 /**
  * This encapsulates a java method call definition; the jar file , class, method
  * names as well as the method params
- * 
+ *
  * @see ParamDef
  */
 public class CallDef {
@@ -55,12 +55,12 @@ public class CallDef {
 		debug = false;
 	}
 
-	public CallDef(boolean b) {
+	public CallDef(final boolean b) {
 		this();
 		debug = b;
 	}
 
-	private void println(String str) {
+	private void println(final String str) {
 		if (debug) {
 			System.out.println(str);
 		}
@@ -96,7 +96,7 @@ public class CallDef {
 		return ret;
 	}
 
-	public void setJarFileName(String v) {
+	public void setJarFileName(final String v) {
 		jarFileName = v;
 		System.err.println("\n\n\nset jar file = " + jarFileName + "\n\n\n");
 		if (jarFileName == null) {
@@ -108,15 +108,15 @@ public class CallDef {
 		}
 	}
 
-	public void setClassName(String v) {
+	public void setClassName(final String v) {
 		className = v;
 	}
 
-	public void setMethodName(String v) {
+	public void setMethodName(final String v) {
 		methodName = v;
 	}
 
-	public void setParams(Vector v) {
+	public void setParams(final Vector v) {
 		params = v;
 	}
 
