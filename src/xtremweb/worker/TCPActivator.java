@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -24,7 +24,7 @@
 package xtremweb.worker;
 
 // TCPActivator.java
-// 
+//
 // Created: Mon Apr 22 2002
 
 import java.io.BufferedReader;
@@ -43,7 +43,7 @@ import xtremweb.common.XWPropertyDefs;
  * <p>
  * Simple Activator that reads its activity mask from a socket
  * </p>
- * 
+ *
  * @author Samuel H&eacute;riard
  */
 
@@ -56,8 +56,7 @@ public final class TCPActivator extends Activator implements Runnable {
 	private boolean m_feedback;
 
 	protected void setListen() throws UnknownHostException {
-		final String listen = Worker.getConfig().getProperty(
-				"activator.tcp.listen");
+		final String listen = Worker.getConfig().getProperty("activator.tcp.listen");
 		m_port = default_port;
 		m_addr = InetAddress.getLocalHost();
 		if (!((listen == null) || listen.equals(""))) {
@@ -76,15 +75,12 @@ public final class TCPActivator extends Activator implements Runnable {
 					} else {
 						m_addr = null;
 					}
-					m_port = Integer.parseInt(listen.substring(i + 1,
-							listen.length()));
+					m_port = Integer.parseInt(listen.substring(i + 1, listen.length()));
 				}
 			} catch (final UnknownHostException e) {
 				throw e;
 			} catch (final Throwable e) {
-				getLogger().warn(
-						"can't parse 'activator.tcp.listen=" + listen + "' "
-								+ e);
+				getLogger().warn("can't parse 'activator.tcp.listen=" + listen + "' " + e);
 				m_port = default_port;
 				m_addr = InetAddress.getLocalHost();
 			}
@@ -94,10 +90,8 @@ public final class TCPActivator extends Activator implements Runnable {
 	public TCPActivator() {
 		try {
 			this.setListen();
-			getLogger().debug(
-					"TCPActivator will listen on " + m_addr + ":" + m_port);
-			m_feedback = Worker.getConfig().getBoolean(
-					XWPropertyDefs.TCPACTIVATORFEEDBACK);
+			getLogger().debug("TCPActivator will listen on " + m_addr + ":" + m_port);
+			m_feedback = Worker.getConfig().getBoolean(XWPropertyDefs.TCPACTIVATORFEEDBACK);
 			if (m_feedback) {
 				getLogger().debug("feedback enable");
 			}
@@ -106,6 +100,7 @@ public final class TCPActivator extends Activator implements Runnable {
 		}
 	}
 
+	@Override
 	public void run() {
 		ServerSocket servsock;
 		int soTimeout = 0;
@@ -133,8 +128,7 @@ public final class TCPActivator extends Activator implements Runnable {
 			}
 
 			try {
-				input = new BufferedReader(new InputStreamReader(
-						control.getInputStream()));
+				input = new BufferedReader(new InputStreamReader(control.getInputStream()));
 				output = null;
 				if (m_feedback) {
 					output = new PrintWriter(control.getOutputStream());
@@ -142,8 +136,7 @@ public final class TCPActivator extends Activator implements Runnable {
 					output.flush();
 				}
 
-				for (String line = input.readLine(); line != null; line = input
-						.readLine()) {
+				for (String line = input.readLine(); line != null; line = input.readLine()) {
 					try {
 						final int mask = Integer.parseInt(line);
 						synchronized (this) {
