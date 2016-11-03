@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -30,15 +30,15 @@ package xtremweb.security;
  *
  * Author: Oleg Lodygensky
  *
- * Environment variables : 
+ * Environment variables :
  *   - X509_CERT_DIR   must contain the directory where CA cert are stored
  *   - X509_USER_PROXY must contain the user 509 proxy
- * 
+ *
  * First this constructs list of CA cert paths from X509_CERT_DIR
  * Then this constructs a cert PATH for the X509_USER_PROXY
  * Finally this validates the X509 proxy path against CA cert paths
  *
- * Example 
+ * Example
  *    - X509_USER_PROXY contains two public keys
  *        [0] IssuerDN  = CN=Oleg Lodygensky, OU=LAL, O=CNRS, C=FR, O=GRID-FR
  *        [0] SubjectDN = CN=proxy, CN=Oleg Lodygensky, OU=LAL, O=CNRS, C=FR, O=GRID-FR
@@ -99,8 +99,7 @@ public final class X509ProxyValidator {
 
 	/**
 	 */
-	public X509ProxyValidator() throws CertificateException, IOException,
-	NoSuchAlgorithmException {
+	public X509ProxyValidator() throws CertificateException, IOException, NoSuchAlgorithmException {
 
 		certFactory = CertificateFactory.getInstance("X.509");
 
@@ -120,7 +119,7 @@ public final class X509ProxyValidator {
 
 	/**
 	 * This validates an user X509 proxy on the certificate path
-	 * 
+	 *
 	 * @param userCertFileName
 	 *            contains the user X509 proxy to validate among the cert path
 	 * @exception IOException
@@ -130,9 +129,8 @@ public final class X509ProxyValidator {
 	 * @exception CertPathValidatorException
 	 *                is thrown on validation error
 	 */
-	public PKIXCertPathValidatorResult validate(String userCertFileName)
-			throws IOException, CertificateException,
-			CertPathValidatorException {
+	public PKIXCertPathValidatorResult validate(final String userCertFileName)
+			throws IOException, CertificateException, CertPathValidatorException {
 
 		File userCertFile = null;
 
@@ -146,7 +144,7 @@ public final class X509ProxyValidator {
 
 	/**
 	 * This validates an user X509 proxy on the certificate path
-	 * 
+	 *
 	 * @param userCertFile
 	 *            contains the user X509 proxy to validate among the cert path
 	 * @exception IOException
@@ -156,9 +154,8 @@ public final class X509ProxyValidator {
 	 * @exception CertPathValidatorException
 	 *                is thrown on validation error
 	 */
-	public PKIXCertPathValidatorResult validate(File userCertFile)
-			throws IOException, CertificateException,
-			CertPathValidatorException {
+	public PKIXCertPathValidatorResult validate(final File userCertFile)
+			throws IOException, CertificateException, CertPathValidatorException {
 
 		X509Proxy proxy = null;
 		try {
@@ -171,7 +168,7 @@ public final class X509ProxyValidator {
 
 	/**
 	 * This validates an user X509 proxy on the certificate paths
-	 * 
+	 *
 	 * @param proxy
 	 *            contains the user X509 proxy to validate among the cert path
 	 * @exception IOException
@@ -181,15 +178,13 @@ public final class X509ProxyValidator {
 	 * @exception CertPathValidatorException
 	 *                is thrown on validation error
 	 */
-	public PKIXCertPathValidatorResult validate(X509Proxy proxy)
-			throws IOException, CertificateException,
-			CertPathValidatorException {
+	public PKIXCertPathValidatorResult validate(final X509Proxy proxy)
+			throws IOException, CertificateException, CertPathValidatorException {
 
 		if (logger.finest()) {
 			logger.finest("<< ******************************************************************************** <<");
 			logger.finest("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
-			logger.finest("proxy.getLast  ="
-					+ proxy.getLast().getSubjectX500Principal().getName());
+			logger.finest("proxy.getLast  =" + proxy.getLast().getSubjectX500Principal().getName());
 			logger.finest("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
 		}
 
@@ -204,7 +199,7 @@ public final class X509ProxyValidator {
 
 	/**
 	 * This validates an user X509 proxy on the certificate paths
-	 * 
+	 *
 	 * @param cert
 	 *            contains the user X509 proxy to validate among the cert path
 	 * @exception IOException
@@ -214,15 +209,13 @@ public final class X509ProxyValidator {
 	 * @exception CertPathValidatorException
 	 *                is thrown on validation error
 	 */
-	public PKIXCertPathValidatorResult validate(X509Certificate cert)
-			throws IOException, CertificateException,
-			CertPathValidatorException {
+	public PKIXCertPathValidatorResult validate(final X509Certificate cert)
+			throws IOException, CertificateException, CertPathValidatorException {
 
 		if (logger.finest()) {
 			logger.finest("<< ******************************************************************************** <<");
 			logger.finest("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
-			logger.finest("cert.subject ="
-					+ cert.getSubjectX500Principal().getName());
+			logger.finest("cert.subject =" + cert.getSubjectX500Principal().getName());
 			logger.finest("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
 		}
 
@@ -231,8 +224,7 @@ public final class X509ProxyValidator {
 			X509CACertPath cacertpath = null;
 			try {
 				cacertpath = listsEnum.nextElement();
-				final PKIXCertPathValidatorResult ret = cacertpath
-						.validate(cert);
+				final PKIXCertPathValidatorResult ret = cacertpath.validate(cert);
 				return ret;
 			} catch (final CertPathValidatorException e) {
 				logger.finest(e.toString());
@@ -241,8 +233,7 @@ public final class X509ProxyValidator {
 			}
 		}
 
-		throw new CertPathValidatorException(
-				"not validated by any known certificate path");
+		throw new CertPathValidatorException("not validated by any known certificate path");
 	}
 
 	/**
@@ -250,12 +241,12 @@ public final class X509ProxyValidator {
 	 * file name denotes a file, the vector will contain a single cert path, if
 	 * any. If file name denotes a directory, the vector will contain a certain
 	 * amount of cert paths, if any.
-	 * 
+	 *
 	 * @param certFilePathName
 	 *            is a certificate file or directory path name
 	 * @return a ProxyValidator containing all found cert paths
 	 */
-	public Vector<X509CACertPath> createPaths(String certFilePathName)
+	public Vector<X509CACertPath> createPaths(final String certFilePathName)
 			throws NoSuchAlgorithmException, IOException, CertificateException {
 
 		File certFile = null;
@@ -276,12 +267,12 @@ public final class X509ProxyValidator {
 	 * calling createPaths(File).) If given file denotes a directory, the vector
 	 * will contain a certain amount of cert paths, if any (by calling
 	 * createPaths(File[])).
-	 * 
+	 *
 	 * @param certFile
 	 *            is the certificate file
 	 * @return a Vector of ProxyValidator
 	 */
-	public Vector<X509CACertPath> createPaths(File certFile)
+	public Vector<X509CACertPath> createPaths(final File certFile)
 			throws NoSuchAlgorithmException, IOException, CertificateException {
 
 		FileInputStream certis = null;
@@ -300,8 +291,7 @@ public final class X509ProxyValidator {
 				ret.add(validator);
 			}
 		} catch (final CertificateException ce) {
-			certs = (Collection<X509Certificate>) (certFactory
-					.generateCertificates(certis));
+			certs = (Collection<X509Certificate>) (certFactory.generateCertificates(certis));
 			certslist = new LinkedList<X509Certificate>(certs);
 			validator = new X509CACertPath((X509Certificate) null, certslist);
 			ret.add(validator);
@@ -324,11 +314,10 @@ public final class X509ProxyValidator {
 	/**
 	 * This retreives all CA certificate from the given parameter and creates a
 	 * vector of linked list of certificates path
-	 * 
+	 *
 	 * @return a Vector of ProxyValidator
 	 */
-	public Vector<X509CACertPath> createPaths(File[] certs) throws IOException,
-	CertificateException {
+	public Vector<X509CACertPath> createPaths(final File[] certs) throws IOException, CertificateException {
 		if (certs == null) {
 			throw new IOException("certs is null");
 		}
@@ -350,8 +339,7 @@ public final class X509ProxyValidator {
 			X509Certificate certFromFile = null;
 			try {
 				certis = new FileInputStream(certs[i]);
-				certFromFile = (X509Certificate) certFactory 
-						.generateCertificate(certis);
+				certFromFile = (X509Certificate) certFactory.generateCertificate(certis);
 			} catch (final Exception e) {
 			} finally {
 				if (certis != null) {
@@ -384,13 +372,11 @@ public final class X509ProxyValidator {
 			//
 			boolean inserted = false;
 
-			final Enumeration<LinkedList<X509Certificate>> listsEnum = lists
-					.elements();
-			int numlist = 0;
+			final Enumeration<LinkedList<X509Certificate>> listsEnum = lists.elements();
+			final int numlist = 0;
 			while (listsEnum.hasMoreElements() && (inserted == false)) {
 				try {
-					final LinkedList<X509Certificate> cacertsList = listsEnum
-							.nextElement();
+					final LinkedList<X509Certificate> cacertsList = listsEnum.nextElement();
 
 					X509Certificate firstcert = null;
 					X509Certificate lastcert = null;
@@ -412,17 +398,18 @@ public final class X509ProxyValidator {
 						principal = null;
 
 						if (certSubjectName.compareTo(firstcertSubjectName) == 0) {
-							logger.finest(">>> 01 certSubjectName = " + certSubjectName + " firstcertSubjectName = " + firstcertSubjectName);
+							logger.finest(">>> 01 certSubjectName = " + certSubjectName + " firstcertSubjectName = "
+									+ firstcertSubjectName);
 							continue;
 						}
 
 						if (certSubjectName.compareTo(lastcertSubjectName) == 0) {
-							logger.finest(">>> 02 certSubjectName = " + certSubjectName + " lastcertSubjectName = " + lastcertSubjectName);
+							logger.finest(">>> 02 certSubjectName = " + certSubjectName + " lastcertSubjectName = "
+									+ lastcertSubjectName);
 							continue;
 						}
 
-						if (certIssuerName.compareTo(
-								firstcertSubjectName) == 0) {
+						if (certIssuerName.compareTo(firstcertSubjectName) == 0) {
 							cacertsList.addFirst(certFromFile);
 							logger.finest(">>> addFirst (" + cacertsList.size() + ") " + certSubjectName
 									+ " is issued by " + firstcertSubjectName);
@@ -467,8 +454,7 @@ public final class X509ProxyValidator {
 		//
 		// second, check if some lists should also be linked to each other
 		//
-		Iterator<LinkedList<X509Certificate>> listsIterator = lists
-				.listIterator();
+		Iterator<LinkedList<X509Certificate>> listsIterator = lists.listIterator();
 
 		while (listsIterator.hasNext()) {
 
@@ -480,8 +466,7 @@ public final class X509ProxyValidator {
 			String lastcertSubjectName = null;
 
 			try {
-				final LinkedList<X509Certificate> cacertsList = listsIterator
-						.next();
+				final LinkedList<X509Certificate> cacertsList = listsIterator.next();
 				if (cacertsList == null) {
 					continue;
 				}
@@ -497,12 +482,10 @@ public final class X509ProxyValidator {
 				principal = lastCert.getSubjectX500Principal();
 				lastcertSubjectName = principal.getName();
 
-				final Iterator<LinkedList<X509Certificate>> listsIterator2 = lists
-						.listIterator();
+				final Iterator<LinkedList<X509Certificate>> listsIterator2 = lists.listIterator();
 
 				while (listsIterator2.hasNext()) {
-					final LinkedList<X509Certificate> cacertsList2 = listsIterator2
-							.next();
+					final LinkedList<X509Certificate> cacertsList2 = listsIterator2.next();
 
 					X509Certificate firstCert2 = null;
 					X509Certificate lastCert2 = null;
@@ -570,8 +553,7 @@ public final class X509ProxyValidator {
 		int numlist = 0;
 		while (listsIterator.hasNext()) {
 			try {
-				final LinkedList<X509Certificate> cacertsList = listsIterator
-						.next();
+				final LinkedList<X509Certificate> cacertsList = listsIterator.next();
 
 				if (cacertsList == null) {
 					continue;
@@ -581,31 +563,29 @@ public final class X509ProxyValidator {
 				try {
 					v = new X509CACertPath(cacertsList);
 
-					String  dn = v.getAnchorSubjectName();
+					String dn = v.getAnchorSubjectName();
 					String idn = v.getAnchorIssuerName();
-					boolean trusted = (idn.compareTo(dn) == 0); 
-					if  (trusted) {
+					final boolean trusted = (idn.compareTo(dn) == 0);
+					if (trusted) {
 						logger.config("> #" + numlist++ + " " + dn);
 						ret.add(v);
 					} else {
-						logger.error(">  !! Trust Anchor Error !! " + dn + " is not a trusted anchor: it is issued by " + idn + ". We miss the issuer certificate (the CA cert path is incomplete)");
+						logger.error(">  !! Trust Anchor Error !! " + dn + " is not a trusted anchor: it is issued by "
+								+ idn + ". We miss the issuer certificate (the CA cert path is incomplete)");
 					}
 					dn = null;
 					idn = null;
 
-					final Iterator<X509Certificate> certit = cacertsList
-							.listIterator();
+					final Iterator<X509Certificate> certit = cacertsList.listIterator();
 					while (certit.hasNext()) {
 						try {
 							final X509Certificate cert = certit.next();
-							if(trusted) {
-								logger.config(">> Subject=\"" + cert.getSubjectDN()
-									+ "\" Issuer=\"" + cert.getIssuerDN()
-									+ "\"");
+							if (trusted) {
+								logger.config(">> Subject=\"" + cert.getSubjectDN() + "\" Issuer=\""
+										+ cert.getIssuerDN() + "\"");
 							} else {
 								logger.error(">> !! Trust Anchor Error !!  Subject=\"" + cert.getSubjectDN()
-										+ "\" Issuer=\"" + cert.getIssuerDN()
-										+ "\"");
+										+ "\" Issuer=\"" + cert.getIssuerDN() + "\"");
 							}
 						} catch (final Exception e) {
 						}
@@ -624,13 +604,14 @@ public final class X509ProxyValidator {
 
 	/**
 	 * This inserts all known CA certificates to the provided keystore
-	 * 
+	 *
 	 * @param store
 	 *            is the keystore to add certificate to
-	 * @return this returns null, if parameter is null; else this returns the keystore filled with some new entries
+	 * @return this returns null, if parameter is null; else this returns the
+	 *         keystore filled with some new entries
 	 * @since 8.0.2
 	 */
-	public KeyStore setCACertificateEntries(KeyStore store) {
+	public KeyStore setCACertificateEntries(final KeyStore store) {
 		if (store == null) {
 			return null;
 		}
@@ -638,16 +619,14 @@ public final class X509ProxyValidator {
 		while (pathsit.hasNext()) {
 			try {
 				final X509CACertPath certpath = pathsit.next();
-				final LinkedList<X509Certificate> certlist = certpath
-						.getCertPathList();
+				final LinkedList<X509Certificate> certlist = certpath.getCertPathList();
 				store.setCertificateEntry(certpath.getAnchorSubjectName(), certpath.getAnchor());
 				final Iterator<X509Certificate> certit = certlist.iterator();
 				while (certit.hasNext()) {
 					try {
 						final X509Certificate cert = certit.next();
 						final String alias = cert.getSubjectDN().toString();
-						logger.finest("KeyStore set entry= " + alias
-								+ "; KeyStore.size = " + store.size());
+						logger.finest("KeyStore set entry= " + alias + "; KeyStore.size = " + store.size());
 						store.setCertificateEntry(alias, cert);
 					} catch (final Exception e) {
 						logger.exception("Can't add new entry to keystore", e);
@@ -663,7 +642,7 @@ public final class X509ProxyValidator {
 	/**
 	 * This is the main method for test purposes only
 	 */
-	public static void main(String[] args) throws Exception {
+	public static void main(final String[] args) throws Exception {
 
 		String certToCheck = System.getenv("X509_USER_PROXY");
 

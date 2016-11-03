@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -53,7 +53,7 @@ import xtremweb.common.Logger;
 
 /**
  * This reads X509 private key from PEM files
- * 
+ *
  * @since 7.4.0
  */
 public final class PEMPrivateKey {
@@ -70,6 +70,7 @@ public final class PEMPrivateKey {
 			this.password = password.clone();
 		}
 
+		@Override
 		public char[] getPassword() {
 			return Arrays.copyOf(password, password.length);
 		}
@@ -98,14 +99,14 @@ public final class PEMPrivateKey {
 
 	/**
 	 * This calls read(new File(keyPath), password)
-	 * 
+	 *
 	 * @param keyPath
 	 *            is the private key file path
 	 * @param password
 	 *            is the private key password
 	 * @see #read(File, String)
 	 */
-	public void read(String keyPath, String password)
+	public void read(final String keyPath, final String password)
 			throws CertificateException, FileNotFoundException, IOException {
 
 		File f = null;
@@ -119,15 +120,15 @@ public final class PEMPrivateKey {
 
 	/**
 	 * This calls read(f, password.toCharArray())
-	 * 
+	 *
 	 * @param f
 	 *            is the private key file
 	 * @param password
 	 *            is the private key password
 	 * @see #read(File, char[])
 	 */
-	public void read(File f, String password) throws CertificateException,
-			FileNotFoundException, IOException {
+	public void read(final File f, final String password)
+			throws CertificateException, FileNotFoundException, IOException {
 
 		final char[] p = password == null ? null : password.toCharArray();
 		read(f, p);
@@ -136,13 +137,13 @@ public final class PEMPrivateKey {
 	/**
 	 * This reads both public and private from file. (public key is for testing
 	 * only)
-	 * 
+	 *
 	 * @param keyFile
 	 *            is the private key file
 	 * @param password
 	 *            is the private key password
 	 */
-	public void read(File keyFile, char[] password)
+	public void read(final File keyFile, final char[] password)
 			throws CertificateException, FileNotFoundException, IOException {
 
 		if (keyFile == null) {
@@ -164,8 +165,7 @@ public final class PEMPrivateKey {
 			} catch (final Exception ingore) {
 			}
 			privateKey = kp.getPrivate();
-		}
-		catch (final ClassCastException e) {
+		} catch (final ClassCastException e) {
 			throw new CertificateException(e);
 		} finally {
 			try {
@@ -183,7 +183,7 @@ public final class PEMPrivateKey {
 
 	/**
 	 * This inserts this private key into the provided KeyStore
-	 * 
+	 *
 	 * @param store
 	 *            is the keystore to add certificate to
 	 * @param cert
@@ -193,15 +193,13 @@ public final class PEMPrivateKey {
 	 * @return the keystore filled with some new entries
 	 * @since 8.0.2
 	 */
-	public KeyStore setKeyntries(KeyStore store, X509Certificate cert,
-			String password) {
+	public KeyStore setKeyntries(final KeyStore store, final X509Certificate cert, final String password) {
 
 		try {
 			final X509Certificate[] chain = new X509Certificate[1];
 			chain[0] = cert;
 			final char[] p = password.toCharArray();
-			store.setKeyEntry(cert.getSubjectX500Principal().getName(),
-					privateKey, p, chain);
+			store.setKeyEntry(cert.getSubjectX500Principal().getName(), privateKey, p, chain);
 		} catch (final KeyStoreException e) {
 			logger.exception("Can't insert key into keystore", e);
 		}
@@ -211,8 +209,8 @@ public final class PEMPrivateKey {
 	/**
 	 * This is for testing only
 	 */
-	public void sendAuthentication(OutputStream outStream) throws IOException,
-			NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+	public void sendAuthentication(final OutputStream outStream)
+			throws IOException, NoSuchAlgorithmException, InvalidKeyException, SignatureException {
 
 		final DataOutputStream out = new DataOutputStream(outStream);
 		final long t = System.currentTimeMillis();
@@ -233,7 +231,7 @@ public final class PEMPrivateKey {
 	/**
 	 * This is for testing only
 	 */
-	public static void main(String[] args) throws Exception {
+	public static void main(final String[] args) throws Exception {
 
 		final Logger logger = new Logger();
 		if (args.length < 2) {
@@ -250,15 +248,13 @@ public final class PEMPrivateKey {
 
 		logger.info("privateKey = " + reader.privateKey.toString());
 
-		final Signature signature = Signature
-				.getInstance("SHA256WithRSAEncryption");
+		final Signature signature = Signature.getInstance("SHA256WithRSAEncryption");
 		signature.initSign(reader.privateKey);
 		signature.update(message.getBytes());
 		final byte[] signatureBytes = signature.sign();
 		logger.info(new String(Hex.encode(signatureBytes)));
 
-		final Signature verifier = Signature
-				.getInstance("SHA256WithRSAEncryption");
+		final Signature verifier = Signature.getInstance("SHA256WithRSAEncryption");
 		verifier.initVerify(reader.publicKey);
 		verifier.update(message.getBytes());
 		if (verifier.verify(signatureBytes)) {

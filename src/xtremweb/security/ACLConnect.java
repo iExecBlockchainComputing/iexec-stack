@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -40,9 +40,11 @@ import sun.security.acl.PrincipalImpl;
 import xtremweb.common.XWTools;
 
 /**
- * This manages connection access control list (ACL) from IP and resolved names.<br />
- * This constructs ACL list from a comma separated regular expressions (regexp)<br />
- * 
+ * This manages connection access control list (ACL) from IP and resolved names.
+ * <br />
+ * This constructs ACL list from a comma separated regular expressions (regexp)
+ * <br />
+ *
  * Regexp examples :
  * <ul>
  * <li>accept all incoming connection : .*
@@ -67,11 +69,11 @@ public class ACLConnect {
 	/**
 	 * This constructs a new object with ACL as provided as a comma separated
 	 * string
-	 * 
+	 *
 	 * @param acls
 	 *            contains comma separated ACLs
 	 */
-	public ACLConnect(String acls) {
+	public ACLConnect(final String acls) {
 
 		final Collection<String> acl_regexps = XWTools.split(acls, ",");
 
@@ -117,24 +119,23 @@ public class ACLConnect {
 
 	/**
 	 * This checks whether rhost is a valid host IP or name
-	 * 
+	 *
 	 * @param rhost
 	 *            is a String containing IP or name to check
 	 * @return true if rhost is a valid host IP or name
 	 */
-	public boolean isValidHost(String rhost) {
-		return ((_IPPattern.matcher(rhost).matches() == false) || (rhost
-				.matches(_hostnameregexp) == false));
+	public boolean isValidHost(final String rhost) {
+		return ((_IPPattern.matcher(rhost).matches() == false) || (rhost.matches(_hostnameregexp) == false));
 	}
 
 	/**
 	 * This checks whether rhost can connect accordingly to ACLs
-	 * 
+	 *
 	 * @param rhost
 	 *            is a String containing IP or name
 	 * @return true if rhost can connect
 	 */
-	public boolean canConnect(String rhost) {
+	public boolean canConnect(final String rhost) {
 
 		boolean ret = false;
 
@@ -156,7 +157,7 @@ public class ACLConnect {
 	/**
 	 * This is for debug purposes only
 	 */
-	public static void main(String[] argv) {
+	public static void main(final String[] argv) {
 
 		final ACLConnect aclregexp = new ACLConnect(argv[0]);
 
@@ -169,8 +170,7 @@ public class ACLConnect {
 			return;
 		}
 
-		System.out.println(rhost + " can connect = "
-				+ aclregexp.canConnect(rhost));
+		System.out.println(rhost + " can connect = " + aclregexp.canConnect(rhost));
 	}
 
 }

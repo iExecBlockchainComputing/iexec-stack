@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -51,7 +51,7 @@ import xtremweb.common.Logger;
 
 /**
  * This reads X509 public key from PEM files
- * 
+ *
  * @since 7.4.0
  */
 public class PEMPublicKey {
@@ -62,6 +62,7 @@ public class PEMPublicKey {
 	 * This is the certifiate read from file
 	 */
 	private X509CertificateObject certificate;
+
 	/**
 	 * This retrieves this public key certificate
 	 */
@@ -78,12 +79,11 @@ public class PEMPublicKey {
 
 	/**
 	 * This reads public key from file
-	 * 
+	 *
 	 * @param keyPath
 	 *            is the public key file path
 	 */
-	public PublicKey read(String keyPath) throws CertificateException,
-	FileNotFoundException, IOException {
+	public PublicKey read(final String keyPath) throws CertificateException, FileNotFoundException, IOException {
 
 		File f = null;
 		try {
@@ -96,12 +96,11 @@ public class PEMPublicKey {
 
 	/**
 	 * This reads public key from file
-	 * 
+	 *
 	 * @param keyFile
 	 *            is the public key file path
 	 */
-	public PublicKey read(File keyFile) throws CertificateException,
-	FileNotFoundException, IOException {
+	public PublicKey read(final File keyFile) throws CertificateException, FileNotFoundException, IOException {
 
 		FileReader fr = null;
 		try {
@@ -120,14 +119,13 @@ public class PEMPublicKey {
 
 	/**
 	 * This reads public key from file
-	 * 
+	 *
 	 * @param reader
 	 *            is the reader to read key from
 	 * @exception CertificateException
 	 *                on certificate format or validity error
 	 */
-	public PublicKey read(Reader reader) throws CertificateException,
-	FileNotFoundException, IOException {
+	public PublicKey read(final Reader reader) throws CertificateException, FileNotFoundException, IOException {
 
 		PEMReader r = null;
 		try {
@@ -161,7 +159,7 @@ public class PEMPublicKey {
 
 	/**
 	 * This retrieves the subject distinguished name of this proxy
-	 * 
+	 *
 	 * @see #getSubject()
 	 */
 	public String getSubjectName() {
@@ -186,7 +184,7 @@ public class PEMPublicKey {
 
 	/**
 	 * This retrieves the subject distinguished name of this proxy
-	 * 
+	 *
 	 * @see #getSubject()
 	 */
 	public String getIssuerName() {
@@ -202,9 +200,8 @@ public class PEMPublicKey {
 	/**
 	 * This is for testing only
 	 */
-	public boolean authenticate(InputStream inStream, PublicKey publicKey)
-			throws IOException, NoSuchAlgorithmException, InvalidKeyException,
-			SignatureException {
+	public boolean authenticate(final InputStream inStream, final PublicKey publicKey)
+			throws IOException, NoSuchAlgorithmException, InvalidKeyException, SignatureException {
 
 		final DataInputStream in = new DataInputStream(inStream);
 
@@ -224,15 +221,14 @@ public class PEMPublicKey {
 	/**
 	 * This is for testing only
 	 */
-	public static void main(String[] args) throws Exception {
+	public static void main(final String[] args) throws Exception {
 
 		final Logger logger = new Logger();
 
 		if (args.length < 1) {
-			logger.fatal("Usage : PublicKey file [--server]\n " +
-					"Where : file is the public key file\n" +
-					"        --server to accept connection from localhost:79999 for testing\n" +
-					"        (then you can start PrivateKeyReader to connect - see PrivateKeyReader)");
+			logger.fatal("Usage : PublicKey file [--server]\n " + "Where : file is the public key file\n"
+					+ "        --server to accept connection from localhost:79999 for testing\n"
+					+ "        (then you can start PrivateKeyReader to connect - see PrivateKeyReader)");
 		}
 		final PEMPublicKey reader = new PEMPublicKey();
 		final PublicKey publicKey = reader.read(args[0]);
@@ -256,7 +252,7 @@ public class PEMPublicKey {
 			final int port = 7999;
 			final ServerSocket s = new ServerSocket(port);
 			final Socket client = s.accept();
-			
+
 			logger.info("Client logged in = " + reader.authenticate(client.getInputStream(), publicKey));
 
 			s.close();

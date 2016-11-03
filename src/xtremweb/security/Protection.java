@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -31,14 +31,14 @@ import java.security.NoSuchAlgorithmException;
 
 /**
  * This helps to create an SSL challenge
- * 
+ *
  * @author Oleg Lodygensky
  * @since 7.4.0
  */
 
 public class Protection {
-	public static byte[] makeDigest(String user, String password, long t1,
-			double q1) throws NoSuchAlgorithmException {
+	public static byte[] makeDigest(final String user, final String password, final long t1, final double q1)
+			throws NoSuchAlgorithmException {
 		MessageDigest md = null;
 		try {
 			md = MessageDigest.getInstance("SHA");
@@ -51,7 +51,7 @@ public class Protection {
 		}
 	}
 
-	public static byte[] makeBytes(long t, double q) {
+	public static byte[] makeBytes(final long t, final double q) {
 		ByteArrayOutputStream byteOut = null;
 		DataOutputStream dataOut = null;
 		try {

@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -30,15 +30,15 @@ package xtremweb.security;
  *
  * Author: Oleg Lodygensky
  *
- * Environment variables : 
+ * Environment variables :
  *   - X509_CERT_DIR   must contain the directory where CA cert are stored
  *   - X509_USER_PROXY must contain the user 509 proxy
- * 
+ *
  * First this constructs list of CA cert paths from X509_CERT_DIR
  * Then this constructs a cert PATH for the X509_USER_PROXY
  * Finally this validates the X509 proxy path against CA cert paths
  *
- * Example 
+ * Example
  *    - X509_USER_PROXY contains two public keys
  *        [0] IssuerDN  = CN=Oleg Lodygensky, OU=LAL, O=CNRS, C=FR, O=GRID-FR
  *        [0] SubjectDN = CN=proxy, CN=Oleg Lodygensky, OU=LAL, O=CNRS, C=FR, O=GRID-FR
@@ -76,7 +76,7 @@ import xtremweb.common.XWPropertyDefs;
 /**
  * This reads public keys from USERCERTDIR. Public keys are used to verify
  * signature.
- * 
+ *
  * @see xtremweb.common.XWPropertyDefs#USERCERTDIR
  * @since 7.4.1
  */
@@ -94,19 +94,18 @@ public class PEMPublicKeyValidator {
 	 * This doesn't allow self signed keys : the client sends its public key and
 	 * the server checks CA certification
 	 */
-	public PEMPublicKeyValidator() throws CertificateException, IOException,
-			NoSuchAlgorithmException {
+	public PEMPublicKeyValidator() throws CertificateException, IOException, NoSuchAlgorithmException {
 
 		signator = Signature.getInstance("SHA256WithRSAEncryption");
 	}
 
 	/**
 	 * This authenticates
-	 * 
+	 *
 	 * @return the certificate that authenticates data from is
 	 */
-	public X509Certificate authenticate(InputStream is) throws IOException,
-			NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+	public X509Certificate authenticate(final InputStream is)
+			throws IOException, NoSuchAlgorithmException, InvalidKeyException, SignatureException {
 
 		DataInputStream in = null;
 		try {
@@ -119,15 +118,14 @@ public class PEMPublicKeyValidator {
 
 	/**
 	 * This authenticates data from input stream
-	 * 
+	 *
 	 * @param cert
 	 *            is the public key to authenticate data
 	 * @param in
 	 *            is the input stream
 	 */
-	public static void authenticate(X509Certificate cert, DataInputStream in)
-			throws IOException, NoSuchAlgorithmException, InvalidKeyException,
-			SignatureException {
+	public static void authenticate(final X509Certificate cert, final DataInputStream in)
+			throws IOException, NoSuchAlgorithmException, InvalidKeyException, SignatureException {
 
 		byte[] signature = null;
 		Signature signator = null;
@@ -151,19 +149,16 @@ public class PEMPublicKeyValidator {
 	/**
 	 * This is the main method for test purposes only
 	 */
-	public static void main(String[] args) throws Exception {
+	public static void main(final String[] args) throws Exception {
 
-		String certToCheck = System.getenv(XWPropertyDefs.USERCERTDIR
-				.toString());
+		String certToCheck = System.getenv(XWPropertyDefs.USERCERTDIR.toString());
 
 		if (System.getProperty(XWPropertyDefs.USERCERTDIR.toString()) != null) {
-			certToCheck = System.getProperty(XWPropertyDefs.USERCERTDIR
-					.toString());
+			certToCheck = System.getProperty(XWPropertyDefs.USERCERTDIR.toString());
 		}
 
 		if (certToCheck == null) {
-			System.err.println(XWPropertyDefs.USERCERTDIR.toString()
-					+ " must be set");
+			System.err.println(XWPropertyDefs.USERCERTDIR.toString() + " must be set");
 			System.exit(1);
 		}
 
