@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -34,7 +34,7 @@ import xtremweb.common.XWPropertyDefs;
 /**
  * The <CODE>ThreadLaunch</CODE> class determines whether worker should compute
  * or not.
- * 
+ *
  * @see Activator
  */
 
@@ -74,7 +74,7 @@ public final class ThreadLaunch extends Thread {
 	/**
 	 * This sets the activator
 	 */
-	public void setActivator(Activator act) {
+	public void setActivator(final Activator act) {
 		activator = act;
 	}
 
@@ -126,8 +126,7 @@ public final class ThreadLaunch extends Thread {
 	}
 
 	public void wakeup() {
-		for (final Iterator<ThreadWork> it = threadWorkPool.iterator(); it
-				.hasNext();) {
+		for (final Iterator<ThreadWork> it = threadWorkPool.iterator(); it.hasNext();) {
 			ThreadWork threadWork = it.next();
 			threadWork.wakeup();
 			threadWork = null;
@@ -154,8 +153,8 @@ public final class ThreadLaunch extends Thread {
 				//
 				// we ask new jobs here only (see constructor comments)
 				//
-				for (int i = CommManager.getInstance().getPoolWork().getSize(); i < Worker
-						.getConfig().getWorkPoolSize(); i++) {
+				for (int i = CommManager.getInstance().getPoolWork().getSize(); i < Worker.getConfig()
+						.getWorkPoolSize(); i++) {
 					CommManager.getInstance().workRequest();
 				}
 
@@ -167,16 +166,14 @@ public final class ThreadLaunch extends Thread {
 
 				checkThreadPoolSanity();
 
-				for (final Iterator<ThreadWork> it = threadWorkPool.iterator(); it
-						.hasNext();) {
+				for (final Iterator<ThreadWork> it = threadWorkPool.iterator(); it.hasNext();) {
 					ThreadWork threadWork = it.next();
 					threadWork.resumeProcess();
 					threadWork = null;
 				}
 
 				try {
-					Thread.sleep(Long.parseLong(Worker.getConfig().getProperty(
-							XWPropertyDefs.TIMEOUT)));
+					Thread.sleep(Long.parseLong(Worker.getConfig().getProperty(XWPropertyDefs.TIMEOUT)));
 				} catch (final InterruptedException ie) {
 					logger.info("interrupted");
 				}
@@ -191,8 +188,7 @@ public final class ThreadLaunch extends Thread {
 					notify();
 				}
 
-				for (final Iterator<ThreadWork> it = threadWorkPool.iterator(); it
-						.hasNext();) {
+				for (final Iterator<ThreadWork> it = threadWorkPool.iterator(); it.hasNext();) {
 					ThreadWork threadWork = it.next();
 					if (threadWork != null) {
 						threadWork.suspendProcess();
@@ -211,7 +207,7 @@ public final class ThreadLaunch extends Thread {
 	/**
 	 * This tells whether this worker is available. This is deprecated and
 	 * should not be used any longer.
-	 * 
+	 *
 	 * @return always false
 	 * @deprecated
 	 * @see #available()
@@ -223,7 +219,7 @@ public final class ThreadLaunch extends Thread {
 
 	/**
 	 * This tells whether this worker is available
-	 * 
+	 *
 	 * @return true if this worker is allowed to compute, accordingly to its
 	 *         local activation policy
 	 * @since 1.3.12
@@ -239,12 +235,10 @@ public final class ThreadLaunch extends Thread {
 
 		final Vector<Work> ret = new Vector<Work>();
 
-		for (final Iterator<ThreadWork> it = threadWorkPool.iterator(); it
-				.hasNext();) {
+		for (final Iterator<ThreadWork> it = threadWorkPool.iterator(); it.hasNext();) {
 			final ThreadWork threadWork = it.next();
 			final Work work = threadWork.getWork();
-			if ((threadWork != null) && (work != null)
-					&& (work.isRunning() == true)) {
+			if ((threadWork != null) && (work != null) && (work.isRunning() == true)) {
 				ret.add(work);
 			}
 		}
@@ -254,12 +248,12 @@ public final class ThreadLaunch extends Thread {
 
 	/**
 	 * This calls getThreadByWorkUid(w.getUID())
-	 * 
+	 *
 	 * @param w
 	 *            is the work we want to retrieve the managing ThreadWork
 	 * @see #getThreadByWorkUid(UID)
 	 */
-	public ThreadWork getThreadByWork(Work w) {
+	public ThreadWork getThreadByWork(final Work w) {
 
 		UID uid = null;
 		try {
@@ -274,22 +268,21 @@ public final class ThreadLaunch extends Thread {
 
 	/**
 	 * This returns the ThreadWork executing the work which UID is provided
-	 * 
+	 *
 	 * @param uid
 	 *            is the work identifier
 	 * @return the ThreadWork managing to the work which uid is provided, or
 	 *         null if not found
 	 * @since 8.2.0
 	 */
-	public ThreadWork getThreadByWorkUid(UID uid) {
+	public ThreadWork getThreadByWorkUid(final UID uid) {
 
 		if (uid == null) {
 			return null;
 		}
 
 		try {
-			for (final Iterator<ThreadWork> it = threadWorkPool.iterator(); it
-					.hasNext();) {
+			for (final Iterator<ThreadWork> it = threadWorkPool.iterator(); it.hasNext();) {
 				ThreadWork threadWork = it.next();
 				if ((threadWork != null) && (threadWork.getWork() != null)
 						&& threadWork.getWork().getUID().equals(uid)) {
@@ -308,8 +301,7 @@ public final class ThreadLaunch extends Thread {
 	 */
 	private void checkThreadPoolSanity() {
 
-		final int threadsToCreate = Worker.getConfig().getWorkPoolSize()
-				- threadWorkPool.size();
+		final int threadsToCreate = Worker.getConfig().getWorkPoolSize() - threadWorkPool.size();
 
 		for (int i = 0; i < threadsToCreate; i++) {
 			final ThreadWork threadWork = new ThreadWork();
@@ -322,55 +314,46 @@ public final class ThreadLaunch extends Thread {
 
 	/**
 	 * This instantiates a new activator as defined in config file
-	 * 
+	 *
 	 * @since XWHEP 1.0.0
 	 * @see #activator
 	 * @see #setupActivator(String)
 	 */
 	private void setupActivator() throws InstantiationException {
-		setupActivator(Worker.getConfig().getProperty(
-				XWPropertyDefs.ACTIVATORCLASS));
+		setupActivator(Worker.getConfig().getProperty(XWPropertyDefs.ACTIVATORCLASS));
 	}
 
 	/**
 	 * This instantiates a new activator
-	 * 
+	 *
 	 * @param activatorClassName
 	 *            is the activator class name to instantiate
 	 * @since XWHEP 1.0.0
 	 * @see #activator
 	 * @see #initActivator()
 	 */
-	public void setupActivator(String activatorClassName)
-			throws InstantiationException {
+	public void setupActivator(final String activatorClassName) throws InstantiationException {
 		try {
 			if (activatorThread != null) {
 				activatorThread.wait();
 			}
 			activator = null;
 			final Class actClass = Class.forName(activatorClassName);
-			Worker.getConfig().setProperty(XWPropertyDefs.ACTIVATORCLASS,
-					activatorClassName);
+			Worker.getConfig().setProperty(XWPropertyDefs.ACTIVATORCLASS, activatorClassName);
 			activator = (Activator) actClass.newInstance();
 			initActivator();
 		} catch (final InterruptedException e) {
-			throw new InstantiationException(
-					"Error while instanciating activator " + activatorClassName
-							+ e);
+			throw new InstantiationException("Error while instanciating activator " + activatorClassName + e);
 		} catch (final IllegalAccessException e) {
-			throw new InstantiationException(
-					"Error while instanciating activator " + activatorClassName
-							+ e);
+			throw new InstantiationException("Error while instanciating activator " + activatorClassName + e);
 		} catch (final ClassNotFoundException e) {
-			throw new InstantiationException(
-					"Error while instanciating activator " + activatorClassName
-							+ e);
+			throw new InstantiationException("Error while instanciating activator " + activatorClassName + e);
 		}
 	}
 
 	/**
 	 * This initializes the activator and its associated thread
-	 * 
+	 *
 	 * @since XWHEP 1.0.0
 	 * @see #activator
 	 * @see #activatorThread
@@ -395,8 +378,7 @@ public final class ThreadLaunch extends Thread {
 		} catch (final Exception e) {
 			logger.exception(e);
 			throw new InstantiationException(
-					"Error while instanciating activator "
-							+ activator.getClass().getName() + " " + e);
+					"Error while instanciating activator " + activator.getClass().getName() + " " + e);
 		}
 	}
 
@@ -411,7 +393,7 @@ public final class ThreadLaunch extends Thread {
 	 * @param instance
 	 *            the instance to set
 	 */
-	public static void setInstance(ThreadLaunch instance) {
+	public static void setInstance(final ThreadLaunch instance) {
 		ThreadLaunch.instance = instance;
 	}
 }
