@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -32,7 +32,7 @@ import java.io.InputStreamReader;
 
 public class cpuUsed {
 
-	public static void main(String[] args) {
+	public static void main(final String[] args) {
 		Runtime machine;
 		machine = java.lang.Runtime.getRuntime();
 		final String name = "a.out";
@@ -52,21 +52,18 @@ public class cpuUsed {
 				// on recupere la liste des process
 				ls = machine.exec("ls -A1 /proc");
 				ls.waitFor();
-				input = new BufferedReader(new InputStreamReader(
-						ls.getInputStream()));
+				input = new BufferedReader(new InputStreamReader(ls.getInputStream()));
 
 				while (input.ready()) {
 					ligne = input.readLine();
 					try {
 						// on ne garde que ce qui est numerique (i.e. pid)
 						pid = Integer.valueOf(ligne).intValue();
-						final BufferedReader pidstat = new BufferedReader(
-								new FileReader("/proc/" + pid + "/stat"));
+						final BufferedReader pidstat = new BufferedReader(new FileReader("/proc/" + pid + "/stat"));
 						ligne = pidstat.readLine();
 						pidstat.close();
 
-						pname = ligne.substring(ligne.indexOf('(') + 1,
-								ligne.indexOf(')'));
+						pname = ligne.substring(ligne.indexOf('(') + 1, ligne.indexOf(')'));
 						if (pname.equals(name)) {
 							index = 0;
 							System.out.println(pname);
@@ -75,10 +72,8 @@ public class cpuUsed {
 							}
 							// on recupere les jiffies user et system du process
 
-							us = Integer.valueOf(
-									ligne.substring(index,
-											ligne.indexOf('+', index + 1))
-											.trim()).intValue();
+							us = Integer.valueOf(ligne.substring(index, ligne.indexOf('+', index + 1)).trim())
+									.intValue();
 						}
 					} catch (final Exception e) {
 					} // ce n'est pas numerique
@@ -86,8 +81,7 @@ public class cpuUsed {
 
 				// lecture de la premiere ligne de /proc/stat
 				// "cpu long:user+long:nice long:sys long:idle"
-				final BufferedReader stat = new BufferedReader(new FileReader(
-						"/proc/stat"));
+				final BufferedReader stat = new BufferedReader(new FileReader("/proc/stat"));
 				ligne = stat.readLine();
 				stat.close();
 				ligne = ligne.trim();
@@ -97,9 +91,7 @@ public class cpuUsed {
 						index = ligne.indexOf(' ');
 						if (index != -1) {
 
-							jiffies = Long.valueOf(
-									ligne.substring(0, index).trim())
-									.longValue();
+							jiffies = Long.valueOf(ligne.substring(0, index).trim()).longValue();
 						} else {
 							jiffies = Long.valueOf(ligne.trim()).longValue();
 						}
@@ -118,8 +110,7 @@ public class cpuUsed {
 				 */
 				user = us - usOld;
 
-				System.out.println("%CPU user:"
-						+ ((user * 100) / (somme - sommeOld)));
+				System.out.println("%CPU user:" + ((user * 100) / (somme - sommeOld)));
 
 				// intervalle en ms.
 				java.lang.Thread.sleep(1000);
