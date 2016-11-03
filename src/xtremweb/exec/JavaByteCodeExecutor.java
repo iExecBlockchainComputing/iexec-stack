@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -37,14 +37,14 @@ import java.io.File;
 
 public class JavaByteCodeExecutor extends Executor {
 
-	private  String jarNameOrClassName;
-	private  String args;
-	private  boolean isJar;
-	private  String jvm;
-	private  String classPath;
+	private final String jarNameOrClassName;
+	private final String args;
+	private final boolean isJar;
+	private String jvm;
+	private final String classPath;
 
-	protected JavaByteCodeExecutor(String cP, String jNoC, String argv,
-			boolean iJ) throws ExecutorLaunchException {
+	protected JavaByteCodeExecutor(final String cP, final String jNoC, final String argv, final boolean iJ)
+			throws ExecutorLaunchException {
 		jarNameOrClassName = jNoC;
 		classPath = cP;
 		args = argv;
@@ -55,8 +55,7 @@ public class JavaByteCodeExecutor extends Executor {
 
 	private void setJVM() throws ExecutorLaunchException {
 		try {
-			jvm = System.getProperty("java.home") + File.separator + "bin"
-					+ File.separator + "java";
+			jvm = System.getProperty("java.home") + File.separator + "bin" + File.separator + "java";
 		} catch (final Exception e) {
 			getLogger().debug("Can't acces to property java.home");
 			throw new ExecutorLaunchException();

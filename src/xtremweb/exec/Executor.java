@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -31,7 +31,7 @@ package xtremweb.exec;
  *
  * @author <a href="mailto:fedak@lri.fr">Gilles Fedak</a>
  * @version 1.0
- * 
+ *
  * @author Oleg Lodygensky
  * @version 8.2.0
  */
@@ -54,7 +54,7 @@ public class Executor {
 	private Logger logger;
 	/**
 	 * This contains environment variables
-	 * 
+	 *
 	 * @since 8.0.0 (FG)
 	 */
 	private String[] envvars = null;
@@ -83,7 +83,7 @@ public class Executor {
 
 	/** This stores the process running flag */
 	private boolean isRunning = false;
-/** block siez in bytes */
+	/** block siez in bytes */
 	private final int BLOCK_SIZE = 65500;
 
 	/**
@@ -97,13 +97,13 @@ public class Executor {
 	/**
 	 * This is the wallclock time in seconds. The job is killed when call
 	 * clocktime is reached. If wall clocktime < 0, this means don't use.
-	 * 
+	 *
 	 * @since 8.2.0
 	 */
 	private long maxWallClockTime;
 	/**
 	 * This is the start computing date in seconds
-	 * 
+	 *
 	 * @since 8.2.0
 	 */
 	private long startDate;
@@ -114,7 +114,7 @@ public class Executor {
 	private final Timer timer = new Timer();
 	private boolean wallclockTimeReached;
 
-	public void setLoggerLevel(LoggerLevel l) {
+	public void setLoggerLevel(final LoggerLevel l) {
 		getLogger().setLoggerLevel(l);
 	}
 
@@ -127,53 +127,53 @@ public class Executor {
 
 	/**
 	 * This constructor sets execution directory and I/O to null
-	 * 
+	 *
 	 * @param cmd
 	 *            is the command to execute
 	 * @param ev
 	 *            contains the env variables
 	 */
-	public Executor(String cmd, String[] ev) {
+	public Executor(final String cmd, final String[] ev) {
 		this(cmd);
 		setEnvVars(ev);
 	}
 
 	/**
 	 * This constructor sets execution directory and I/O to null
-	 * 
+	 *
 	 * @param cmd
 	 *            is the command to execute
 	 */
-	public Executor(String cmd) {
+	public Executor(final String cmd) {
 		this(cmd, (String) null);
 	}
 
 	/**
 	 * This constructor sets I/O to the standard input and output
-	 * 
+	 *
 	 * @param cmd
 	 *            is the command to execute
 	 * @param dir
 	 *            is the execution directory
 	 */
-	public Executor(String cmd, String dir) {
+	public Executor(final String cmd, final String dir) {
 		this(cmd, dir, System.in, System.out, System.err);
 	}
 
 	/**
 	 * This constructor sets sleep delay to SLEEP_UNIT
-	 * 
+	 *
 	 * @see #Executor(String, String, InputStream, OutputStream, OutputStream,
 	 *      long)
 	 */
-	public Executor(String cmd, String dir, InputStream in, OutputStream out,
-			OutputStream err) {
+	public Executor(final String cmd, final String dir, final InputStream in, final OutputStream out,
+			final OutputStream err) {
 		this(cmd, dir, in, out, err, -1);
 	}
 
 	/**
 	 * This constructor sets I/O to null If delay == 0 , sleep delay set to 5
-	 * 
+	 *
 	 * @param cmd
 	 *            is the command to execute
 	 * @param dir
@@ -191,8 +191,8 @@ public class Executor {
 	 * @see #stdout
 	 * @see #stderr
 	 */
-	public Executor(String cmd, String dir, InputStream in, OutputStream out,
-			OutputStream err, long delay) {
+	public Executor(final String cmd, final String dir, final InputStream in, final OutputStream out,
+			final OutputStream err, final long delay) {
 		this();
 		setCommandLine(cmd);
 		executionDirectory = dir;
@@ -204,7 +204,7 @@ public class Executor {
 
 	/**
 	 * This constructor sets I/O to null If delay == 0 , sleep delay set to 5
-	 * 
+	 *
 	 * @param cmd
 	 *            is the command to execute
 	 * @param env
@@ -225,8 +225,8 @@ public class Executor {
 	 * @see #stderr
 	 * @since 8.0.0 (FG)
 	 */
-	public Executor(String cmd, String[] env, String dir, InputStream in,
-			OutputStream out, OutputStream err, long delay) {
+	public Executor(final String cmd, final String[] env, final String dir, final InputStream in,
+			final OutputStream out, final OutputStream err, final long delay) {
 		this();
 		setCommandLine(cmd);
 		envvars = env.clone();
@@ -239,17 +239,17 @@ public class Executor {
 
 	/**
 	 * This sets the environment variables
-	 * 
+	 *
 	 * @since 8.0.0 (FG)
 	 */
-	public final void setEnvVars(String[] v) {
+	public final void setEnvVars(final String[] v) {
 		envvars = v.clone();
 	}
 
 	/**
 	 * This sets and corrects the sleep delay
 	 */
-	private final long setDelay(long delay) {
+	private final long setDelay(final long delay) {
 		sleep_delay = delay;
 		if ((sleep_delay < 0) || (sleep_delay > SLEEP_UNIT)) {
 			sleep_delay = SLEEP_UNIT;
@@ -262,19 +262,19 @@ public class Executor {
 
 	/**
 	 * This sets the wall clock time
-	 * 
+	 *
 	 * @param w
 	 *            is the new wall clock time in seconds
 	 * @since 8.2.0
 	 * @see #maxWallClockTime
 	 */
-	public void setMaxWallClockTime(long w) {
+	public void setMaxWallClockTime(final long w) {
 		maxWallClockTime = w * 1000;
 	}
 
 	/**
 	 * This retreives an attribute (as the name says)
-	 * 
+	 *
 	 * @return the expected attribute
 	 */
 	public String getCmdLine() {
@@ -283,7 +283,7 @@ public class Executor {
 
 	/**
 	 * This retreives an attribute (as the name says)
-	 * 
+	 *
 	 * @return the expected attribute
 	 */
 	public String getExecDir() {
@@ -292,27 +292,27 @@ public class Executor {
 
 	/**
 	 * This sets an attribute (as the name says)
-	 * 
+	 *
 	 * @param v
 	 *            is the new attribute value
 	 */
-	public void setCmdLine(String v) {
+	public void setCmdLine(final String v) {
 		setCommandLine(v);
 	}
 
 	/**
 	 * This sets an attribute (as the name says)
-	 * 
+	 *
 	 * @param v
 	 *            is the new attribute value
 	 */
-	public void setExecDir(String v) {
+	public void setExecDir(final String v) {
 		executionDirectory = v;
 	}
 
 	/**
 	 * This stops the process, if any
-	 * 
+	 *
 	 * @exception ExecutorLaunchException
 	 *                is thrown on error (no running process)
 	 */
@@ -334,7 +334,7 @@ public class Executor {
 
 	/**
 	 * This closes handles stdin, stdout and stderr. This cancels the timer.
-	 * 
+	 *
 	 * @exception ExecutorLaunchException
 	 *                is thrown on error (no running process)
 	 */
@@ -452,16 +452,14 @@ public class Executor {
 						stdin = null;
 					}
 				} catch (final Exception e) {
-					getLogger().exception("Executor (" + getCommandLine()
-							+ ") : stdin error", e);
+					getLogger().exception("Executor (" + getCommandLine() + ") : stdin error", e);
 					try {
 						stdin.close();
 					} catch (final Exception e1) {
 					}
 
 					try {
-						if ((process != null)
-								&& (process.getOutputStream() != null)) {
+						if ((process != null) && (process.getOutputStream() != null)) {
 							process.getOutputStream().close();
 						}
 					} catch (final Exception e1) {
@@ -472,8 +470,8 @@ public class Executor {
 			if (process.getInputStream() != null) {
 				try {
 					if (process.getInputStream().available() > 0) {
-						getLogger().debug("process.getInputStream().available() = "
-								+ process.getInputStream().available());
+						getLogger().debug(
+								"process.getInputStream().available() = " + process.getInputStream().available());
 					}
 
 					piped = pipe(process.getInputStream(), stdout, false);
@@ -481,23 +479,21 @@ public class Executor {
 						getLogger().debug("pipe(stdout) = " + piped);
 					}
 				} catch (final Exception e) {
-					getLogger().exception("Executor (" + getCommandLine()
-							+ ") : input stream error", e);
+					getLogger().exception("Executor (" + getCommandLine() + ") : input stream error", e);
 				}
 			}
 			if (process.getErrorStream() != null) {
 				try {
 					if (process.getErrorStream().available() > 0) {
-						getLogger().debug("process.getErrorStream().available() = "
-								+ process.getErrorStream().available());
+						getLogger().debug(
+								"process.getErrorStream().available() = " + process.getErrorStream().available());
 					}
 					piped = pipe(process.getErrorStream(), stderr, false);
 					if (piped > 0) {
 						getLogger().debug("pipe(stderr) = " + piped);
 					}
 				} catch (final Exception e) {
-					getLogger().exception("Executor (" + getCommandLine()
-							+ ") : err stream error", e);
+					getLogger().exception("Executor (" + getCommandLine() + ") : err stream error", e);
 				}
 			}
 		} catch (final Exception e) {
@@ -507,7 +503,7 @@ public class Executor {
 
 	/**
 	 * This waits until the process exits
-	 * 
+	 *
 	 * @return the process return code
 	 * @throws InterruptedException
 	 *             is thrown if wall clock time reached
@@ -541,7 +537,7 @@ public class Executor {
 
 	/**
 	 * This flushed pipes, closes handles and cancels timer
-	 * 
+	 *
 	 * @since 8.2.0
 	 */
 	private void clean() {
@@ -553,12 +549,11 @@ public class Executor {
 	/**
 	 * This checks wall clock time and terminates the current process, if it is
 	 * reached
-	 * 
+	 *
 	 * @since 8.2.0
 	 */
 	private void checkWallClock() {
-		if ((maxWallClockTime > 0)
-				&& ((new Date().getTime() - startDate) > maxWallClockTime)) {
+		if ((maxWallClockTime > 0) && ((new Date().getTime() - startDate) > maxWallClockTime)) {
 			try {
 				stop();
 			} catch (final ExecutorLaunchException e) {
@@ -571,20 +566,19 @@ public class Executor {
 
 	/**
 	 * This start the process and wait until the process exits
-	 * 
+	 *
 	 * @return the process exit code
 	 * @throws InterruptedException
 	 *             is thrown if wall clock time reached
 	 */
-	public int startAndWait() throws ExecutorLaunchException,
-			InterruptedException {
+	public int startAndWait() throws ExecutorLaunchException, InterruptedException {
 		start();
 		return waitFor();
 	}
 
 	/**
 	 * This pipes from one stream to other
-	 * 
+	 *
 	 * @param in
 	 *            is the input stream to read from; if null this method returns
 	 *            immediatly
@@ -593,8 +587,7 @@ public class Executor {
 	 * @param isBlocking
 	 *            tells whether I/O are blocking or not
 	 */
-	private int pipe(InputStream in, OutputStream out, boolean isBlocking)
-			throws IOException {
+	private int pipe(final InputStream in, final OutputStream out, final boolean isBlocking) throws IOException {
 		int nread;
 		int navailable;
 		int total = 0;
@@ -608,8 +601,7 @@ public class Executor {
 			final byte[] buf = new byte[BLOCK_SIZE];
 
 			while (((navailable = (isBlocking ? BLOCK_SIZE : in.available())) > 0)
-					&& ((nread = in.read(buf, 0,
-							Math.min(buf.length, navailable))) >= 0)) {
+					&& ((nread = in.read(buf, 0, Math.min(buf.length, navailable))) >= 0)) {
 
 				if (out != null) {
 					out.write(buf, 0, nread);
@@ -629,9 +621,9 @@ public class Executor {
 	}
 
 	/**
-	 * 
+	 *
 	 */
-	protected static String join(String tab[], String sep) {
+	protected static String join(final String tab[], final String sep) {
 		String result = "";
 		if (tab == null) {
 			return null;
@@ -648,7 +640,7 @@ public class Executor {
 	/**
 	 * This is the standard main () method This is only for test purposes
 	 */
-	public static void main(String[] args) {
+	public static void main(final String[] args) {
 		try {
 			String command = args[0];
 			String stdinName = null;
@@ -661,10 +653,8 @@ public class Executor {
 			}
 
 			final Executor exec = new Executor(command, ".",
-					stdinName == null ? null : new FileInputStream(new File(
-							stdinName)), new FileOutputStream(new File(
-							"stdout.txt")), new FileOutputStream(new File(
-							"stderr.txt")));
+					stdinName == null ? null : new FileInputStream(new File(stdinName)),
+					new FileOutputStream(new File("stdout.txt")), new FileOutputStream(new File("stderr.txt")));
 			exec.getLogger().setLoggerLevel(LoggerLevel.DEBUG);
 			exec.startAndWait();
 		} catch (final Exception e) {
@@ -681,9 +671,10 @@ public class Executor {
 	}
 
 	/**
-	 * @param logger the logger to set
+	 * @param logger
+	 *            the logger to set
 	 */
-	public void setLogger(Logger logger) {
+	public void setLogger(final Logger logger) {
 		this.logger = logger;
 	}
 
@@ -695,9 +686,10 @@ public class Executor {
 	}
 
 	/**
-	 * @param commandLine the commandLine to set
+	 * @param commandLine
+	 *            the commandLine to set
 	 */
-	public void setCommandLine(String commandLine) {
+	public void setCommandLine(final String commandLine) {
 		this.commandLine = commandLine;
 	}
 
