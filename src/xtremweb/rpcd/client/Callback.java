@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -25,7 +25,7 @@ package xtremweb.rpcd.client;
 
 /**
  * Date : Mar 25th, 2005 Project : RPCXW / RPCXW-C File : CallbackRpc.java
- * 
+ *
  * @author <a href="mailto:lodygens_a_lal.in2p3.fr">Oleg Lodygensky </a>
  * @version
  */
@@ -54,7 +54,8 @@ import xtremweb.services.rpc.rpcdefs;
  */
 public class Callback {
 
-	private Logger logger;
+	private final Logger logger;
+
 	/**
 	 * @return the logger
 	 */
@@ -70,7 +71,7 @@ public class Callback {
 	/**
 	 * This stores client configuration
 	 */
-	private XWConfigurator config;
+	private final XWConfigurator config;
 
 	/**
 	 * This is the program name to launch
@@ -106,7 +107,8 @@ public class Callback {
 
 	/**
 	 * This is the server identifier<br />
-	 * If forwarding to XtremWeb this is the worker UID String representation<br />
+	 * If forwarding to XtremWeb this is the worker UID String representation
+	 * <br />
 	 * If piping (i.e. testing) this is the server host name
 	 */
 	private String serverId;
@@ -129,9 +131,10 @@ public class Callback {
 	}
 
 	/**
-	 * @param serverHost the serverHost to set
+	 * @param serverHost
+	 *            the serverHost to set
 	 */
-	public void setServerHost(InetAddress serverHost) {
+	public void setServerHost(final InetAddress serverHost) {
 		this.serverHost = serverHost;
 	}
 
@@ -150,16 +153,17 @@ public class Callback {
 	}
 
 	/**
-	 * @param serverName the serverName to set
+	 * @param serverName
+	 *            the serverName to set
 	 */
-	public void setServerName(String serverName) {
+	public void setServerName(final String serverName) {
 		this.serverName = serverName;
 	}
 
 	/**
 	 * This stores XtremWeb job uid
 	 */
-	private Vector uids;
+	private final Vector uids;
 
 	/**
 	 * This is the transfert buffer size
@@ -200,15 +204,15 @@ public class Callback {
 
 	/**
 	 * This is the default constructor.
-	 * 
+	 *
 	 * @param c
 	 *            is the configuration
 	 */
-	protected Callback(String argv[], XWConfigurator c) {
+	protected Callback(final String argv[], final XWConfigurator c) {
 
 		logger = new Logger(this);
-		logger.setLoggerLevel(config.getLoggerLevel());
 		config = c;
+		logger.setLoggerLevel(config.getLoggerLevel());
 		serverId = null;
 		serverUID = null;
 		comm = null;
@@ -221,17 +225,14 @@ public class Callback {
 
 		parse(argv);
 
-		final boolean test = (this.getClass().getName()
-				.compareTo("xtremweb.rpcd.client.CallbackPipe") != 0);
+		final boolean test = (this.getClass().getName().compareTo("xtremweb.rpcd.client.CallbackPipe") != 0);
 
 		if (test == true) {
 
 			// serverUID is already set in case of
 			// instanciation from xtremweb.worker.Worker
 			try {
-				comm = (CommClient) Class.forName(
-						config.getProperty(XWPropertyDefs.COMMLAYER))
-						.newInstance();
+				comm = (CommClient) Class.forName(config.getProperty(XWPropertyDefs.COMMLAYER)).newInstance();
 				CommClient.setConfig(config);
 
 				Runtime.getRuntime().addShutdownHook(new Thread() {
@@ -251,8 +252,7 @@ public class Callback {
 					// 14 nov 2005 : to ease deployment, we now take
 					// the first worker found as NFS server
 					logger.warn("Looking for any server");
-					final Vector<XMLValue> workers = comm.getHosts()
-							.getXmlValues();
+					final Vector<XMLValue> workers = comm.getHosts().getXmlValues();
 					if ((workers == null) || (workers.size() < 1)) {
 						logger.fatal("can't find any server");
 					}
@@ -306,7 +306,7 @@ public class Callback {
 	/**
 	 * This parses command line arguments
 	 */
-	public final void parse(String argv[]) {
+	public final void parse(final String argv[]) {
 
 		int i = 0;
 
@@ -333,15 +333,14 @@ public class Callback {
 	/**
 	 * This connects RPC client to RPC server This transmits RPC client requests
 	 * to RPC server and forwards RPC server answers back to RPC client
-	 * 
+	 *
 	 * It first determines RPC server to connect to, thanks to client RPC
 	 * message.
-	 * 
+	 *
 	 * @param clientPacket
 	 *            is the client datagram packet
 	 */
-	protected void udp(DatagramSocket clientSocket, DatagramPacket clientPacket)
-			throws Exception {
+	protected void udp(final DatagramSocket clientSocket, final DatagramPacket clientPacket) throws Exception {
 
 		mileStone.println("new packet received");
 
@@ -349,9 +348,7 @@ public class Callback {
 
 		Packet request = null;
 		try {
-			request = new Packet(clientPacket.getData(),
-					clientPacket.getLength(), logger.getLoggerLevel(),
-					serverName);
+			request = new Packet(clientPacket.getData(), clientPacket.getLength(), logger.getLoggerLevel(), serverName);
 		} catch (final Exception e) {
 			logger.exception(e);
 			throw e;
@@ -375,8 +372,7 @@ public class Callback {
 			break;
 		}
 
-		datas = xwForward(proc, newDatas, "" + prog + " " + version + " --udp",
-				request.getLength());
+		datas = xwForward(proc, newDatas, "" + prog + " " + version + " --udp", request.getLength());
 
 		if (datas == null) {
 			logger.error("!?!?!?!?!?!?!?!?! datas is null !?!?!?!?!?!?!?!?!");
@@ -395,7 +391,7 @@ public class Callback {
 	/**
 	 * This is for debug purposes only<br />
 	 * This sleeps sleep_delay seconds
-	 * 
+	 *
 	 * @see #sleep_delay
 	 */
 	protected void sleep() {
@@ -410,7 +406,7 @@ public class Callback {
 	/**
 	 * This retreives the list of computed jobs This is typically needed by the
 	 * Cleaner
-	 * 
+	 *
 	 * @see xtremweb.rpcd.client.Cleaner
 	 */
 	public synchronized Vector getJobs() {
@@ -425,7 +421,7 @@ public class Callback {
 	/**
 	 * This forwards the packet to XtremWeb.<br />
 	 * This is typically called if serverId is set
-	 * 
+	 *
 	 * @param proc
 	 *            is the RPC proc name
 	 * @param newDatas
@@ -436,8 +432,8 @@ public class Callback {
 	 *            is the packet length (i.e. <SunRPC Prog Num> <SunRPC Version
 	 *            Num> [--udp])
 	 */
-	protected byte[] xwForward(String proc, byte[] newDatas, String params,
-			int len) throws Exception {
+	protected byte[] xwForward(final String proc, final byte[] newDatas, final String params, final int len)
+			throws Exception {
 
 		throw new Exception("Callback::xwForward not implemented");
 	}

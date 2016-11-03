@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -41,7 +41,7 @@ import xtremweb.communications.Connection;
 
 /**
  * This implements the RPC Proxy for the UDP protocol<br />
- * 
+ *
  * RPC message structure on UDP :
  * <ul>
  * <li>[0] 4 bytes : one 32 bits integer : XID
@@ -63,7 +63,7 @@ import xtremweb.communications.Connection;
  * <li>some more bytes follow
  * </ul>
  * Under UDP : [3] and [4] to determine RPC port
- * 
+ *
  */
 public class rpcudp extends rpc {
 
@@ -76,13 +76,13 @@ public class rpcudp extends rpc {
 
 	/**
 	 * This is the only constructor
-	 * 
+	 *
 	 * @param argv
 	 *            is the command line
 	 * @param c
 	 *            is the XtremWeb config
 	 */
-	public rpcudp(String[] argv, XWConfigurator c) {
+	public rpcudp(final String[] argv, final XWConfigurator c) {
 
 		super("UDP", argv, c);
 		buf = new byte[getBUFSIZE()];
@@ -97,13 +97,10 @@ public class rpcudp extends rpc {
 		final int port = config.getPort(Connection.SUNRPCPORT);
 		try {
 			clientSocket = new DatagramSocket(port);
-			System.out.println("XtremWeb for SunRPC listening on UDP port: "
-					+ clientSocket.getLocalPort());
+			System.out.println("XtremWeb for SunRPC listening on UDP port: " + clientSocket.getLocalPort());
 		} catch (final IOException e) {
-			getLogger().warn("Could not listen on UDP port " + port
-					+ ". xtremweb.rpcd.client.rpcudp stops now.");
-			throw new IllegalThreadStateException(
-					"Could not listen on UDP port " + port);
+			getLogger().warn("Could not listen on UDP port " + port + ". xtremweb.rpcd.client.rpcudp stops now.");
+			throw new IllegalThreadStateException("Could not listen on UDP port " + port);
 		}
 
 		while (true) {
@@ -112,8 +109,7 @@ public class rpcudp extends rpc {
 				getLogger().debug("accepting...");
 
 				// byte[] buf = new byte [BUFSIZE];
-				final DatagramPacket packet = new DatagramPacket(buf,
-						buf.length);
+				final DatagramPacket packet = new DatagramPacket(buf, buf.length);
 				clientSocket.receive(packet);
 
 				getLogger().debug("accepted...");
@@ -122,9 +118,9 @@ public class rpcudp extends rpc {
 				 * byte[] datas = packet.getData (); int [] integers =
 				 * io.bytes2integers (datas, datas.length); int prog = integers
 				 * [3];
-				 * 
+				 *
 				 * logger.logger.debug ("prog " + prog);
-				 * 
+				 *
 				 * if (piped != null) piped.udp (clientSocket, packet,
 				 * integers); else { callback.udp(clientSocket, packet,
 				 * integers);
@@ -154,7 +150,7 @@ public class rpcudp extends rpc {
 	/**
 	 * This is the standard main function for debug purposes
 	 */
-	public static void main(String[] argv) {
+	public static void main(final String[] argv) {
 
 		rpcudp client;
 

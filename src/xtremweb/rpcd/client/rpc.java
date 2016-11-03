@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -39,12 +39,12 @@ import xtremweb.common.XWConfigurator;
  * This aims to fake sun RPC by interposing between RPC client and sun RPC This
  * reads input bytes from client, send them to sun RPC, wait for call to
  * complete, reads result bytes and send them back to client.
- * 
+ *
  * This automatically detects RPC ports on first client connection, using
  * portmapper.c jni library.
- * 
+ *
  * This virtual class must be derived
- * 
+ *
  */
 public abstract class rpc extends Thread {
 
@@ -67,7 +67,7 @@ public abstract class rpc extends Thread {
 	/**
 	 * This is the command line argument
 	 */
-	private String[] argv;
+	private final String[] argv;
 
 	/**
 	 * This stores client config such as login, password, server addr etc.
@@ -76,7 +76,7 @@ public abstract class rpc extends Thread {
 
 	/**
 	 * This is the only constructor
-	 * 
+	 *
 	 * @param n
 	 *            is this thread name
 	 * @param a
@@ -84,7 +84,7 @@ public abstract class rpc extends Thread {
 	 * @param c
 	 *            is the XtremWeb config
 	 */
-	protected rpc(String n, String[] a, XWConfigurator c) {
+	protected rpc(final String n, final String[] a, final XWConfigurator c) {
 
 		super(n);
 		setLogger(new Logger(c.getLoggerLevel()));
@@ -100,7 +100,7 @@ public abstract class rpc extends Thread {
 	/**
 	 * This parses command line arguments
 	 */
-	private boolean parse(String[] argv) {
+	private boolean parse(final String[] argv) {
 
 		int i = 0;
 
@@ -129,9 +129,10 @@ public abstract class rpc extends Thread {
 	}
 
 	/**
-	 * @param logger the logger to set
+	 * @param logger
+	 *            the logger to set
 	 */
-	public void setLogger(Logger logger) {
+	public void setLogger(final Logger logger) {
 		this.logger = logger;
 	}
 
@@ -143,9 +144,10 @@ public abstract class rpc extends Thread {
 	}
 
 	/**
-	 * @param piped the piped to set
+	 * @param piped
+	 *            the piped to set
 	 */
-	public void setPiped(Callback piped) {
+	public void setPiped(final Callback piped) {
 		this.piped = piped;
 	}
 
@@ -157,9 +159,10 @@ public abstract class rpc extends Thread {
 	}
 
 	/**
-	 * @param callback the callback to set
+	 * @param callback
+	 *            the callback to set
 	 */
-	public void setCallback(Callback callback) {
+	public void setCallback(final Callback callback) {
 		this.callback = callback;
 	}
 

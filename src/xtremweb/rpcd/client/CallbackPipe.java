@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -56,11 +56,11 @@ public class CallbackPipe extends Callback {
 
 	/**
 	 * This is the default consructor. This does nothing
-	 * 
+	 *
 	 * @param c
 	 *            is the XtremWeb config
 	 */
-	public CallbackPipe(String argv[], XWConfigurator c) {
+	public CallbackPipe(final String argv[], final XWConfigurator c) {
 		super(argv, c);
 
 		// let preload library now
@@ -68,7 +68,7 @@ public class CallbackPipe extends Callback {
 		final String sn = getServerName();
 		try {
 			setServerHost(InetAddress.getByName(sn));
-		} catch (final Exception e) { 
+		} catch (final Exception e) {
 			final Logger logger = getLogger();
 			logger.exception("InetAddress.getByName (" + sn + ")", e);
 			logger.fatal("Please use '--name' option");
@@ -78,23 +78,22 @@ public class CallbackPipe extends Callback {
 	/**
 	 * This connects RPC clients to RPC servers with a simple pipe. This is
 	 * called on UDP connections.
-	 * 
+	 *
 	 * It first determines RPC server to connect to, thanks to client RPC
 	 * message.
-	 * 
+	 *
 	 * @param clientPacket
 	 *            is the client datagram packet
 	 */
 	@Override
-	protected void udp(DatagramSocket clientSocket, DatagramPacket clientPacket)
-			throws Exception {
+	protected void udp(final DatagramSocket clientSocket, final DatagramPacket clientPacket) throws Exception {
 
 		DatagramSocket serverSocket = null;
 		DatagramPacket serverPacket = null;
 		final Logger logger = getLogger();
-		final String serverName = getServerName(); 
-		final Packet request = new Packet(clientPacket.getData(),
-				clientPacket.getLength(), logger.getLoggerLevel(), serverName);
+		final String serverName = getServerName();
+		final Packet request = new Packet(clientPacket.getData(), clientPacket.getLength(), logger.getLoggerLevel(),
+				serverName);
 
 		String proc = null;
 		final int prog = request.getProg();
@@ -109,8 +108,7 @@ public class CallbackPipe extends Callback {
 			break;
 		}
 
-		logger.debug("CallbackMountd;" + proc + " received;"
-				+ new Date().getTime());
+		logger.debug("CallbackMountd;" + proc + " received;" + new Date().getTime());
 
 		final byte[] newDatas = request.getBuffer();
 		byte[] datas = null;
@@ -130,8 +128,7 @@ public class CallbackPipe extends Callback {
 			break;
 		}
 
-		logger.debug("CallbackPipe;" + proc + " forwarding;"
-				+ new Date().getTime());
+		logger.debug("CallbackPipe;" + proc + " forwarding;" + new Date().getTime());
 
 		logger.info("prog " + prog + " version " + version);
 
@@ -139,9 +136,8 @@ public class CallbackPipe extends Callback {
 
 		logger.info("newDatas.length = " + newDatas.length);
 		logger.info("request.getLength() = " + request.getLength());
-		InetAddress serverHost = getServerHost();
-		serverPacket = new DatagramPacket(newDatas, request.getLength(),
-				serverHost , rpcServerPort);
+		final InetAddress serverHost = getServerHost();
+		serverPacket = new DatagramPacket(newDatas, request.getLength(), serverHost, rpcServerPort);
 
 		logger.info("writing to " + serverName + ":" + rpcServerPort);
 
@@ -165,8 +161,7 @@ public class CallbackPipe extends Callback {
 
 		final int nbBytes = serverPacket.getLength();
 
-		logger.debug("CallbackPipe;" + proc + " forwarded;"
-				+ new Date().getTime());
+		logger.debug("CallbackPipe;" + proc + " forwarded;" + new Date().getTime());
 
 		datas = new byte[nbBytes];
 		System.arraycopy(serverPacket.getData(), 0, datas, 0, nbBytes);
@@ -174,7 +169,6 @@ public class CallbackPipe extends Callback {
 		clientPacket.setData(datas);
 		clientSocket.send(clientPacket);
 
-		logger.debug("CallbackPipe;" + proc + " answered;"
-				+ new Date().getTime());
+		logger.debug("CallbackPipe;" + proc + " answered;" + new Date().getTime());
 	}
 }

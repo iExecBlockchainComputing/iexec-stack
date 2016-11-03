@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -74,7 +74,7 @@ public class Client {
 	/**
 	 * This is the default constructor
 	 */
-	public Client(String argv[]) {
+	public Client(final String argv[]) {
 		discovering = false;
 		parse(argv);
 		zipper = new Zipper(LoggerLevel.INFO);
@@ -83,7 +83,7 @@ public class Client {
 	/**
 	 * This parses command line arguments
 	 */
-	private void parse(String argv[]) {
+	private void parse(final String argv[]) {
 
 		int i = 0;
 
@@ -112,91 +112,90 @@ public class Client {
 		System.out.println("Client::discover not implemented");
 
 		/*
-		 * 
+		 *
 		 * try { comm =
 		 * (CommClient)Class.forName(config.getProperty(XWPropertyDefs
 		 * .COMMLAYER)).newInstance(); comm.setConfig(config);
 		 * comm.initComm(config.getCurrentServer()); } catch(Exception e) {
 		 * util.fatal("Can't init comm :  " + e); }
-		 * 
+		 *
 		 * if(comm == null) util.fatal("Can't init comm");
-		 * 
+		 *
 		 * UID jobUID = new UID(); MobileWork job = new MobileWork(jobUID,
 		 * logger.getEffectiveLevel());
-		 * 
+		 *
 		 * String appName = "cat"; String appParams = "/etc/exports";
-		 * 
+		 *
 		 * // job.setServer(config.getCurrentServer()); //
 		 * job.setApplicationName(appName); job.setCmdLine(appParams);
-		 * 
+		 *
 		 * String ret = null; Vector broadcasted = new Vector(); Vector
 		 * completed = new Vector();
-		 * 
+		 *
 		 * try { broadcasted = comm.broadcast(job); } catch(Exception ce) {
 		 * ce.printStackTrace(); System.exit(ERRCONNECTION); }
-		 * 
+		 *
 		 * while(broadcasted.size() > completed.size()) {
-		 * 
+		 *
 		 * Iterator li = broadcasted.iterator();
-		 * 
+		 *
 		 * while(li.hasNext()) {
-		 * 
+		 *
 		 * UID uid =(UID)li.next(); MobileResult result = null; TaskInterface
 		 * task = null;
-		 * 
-		 * if(completed.contains(uid)) { logger.debug(uid +
-		 * " already completed"); continue; }
-		 * 
+		 *
+		 * if(completed.contains(uid)) { logger.debug(uid + " already completed"
+		 * ); continue; }
+		 *
 		 * try { result = comm.getResult(uid); task = comm.getTask(uid); }
 		 * catch(Exception ce) { logger.debug(ce.toString());
 		 * System.exit(ERRCONNECTION); }
-		 * 
+		 *
 		 * if(result == null) { logger.debug(uid + " not COMPLETED yet");
 		 * continue; }
-		 * 
+		 *
 		 * if(task == null) { logger.error(uid + " task is null ???"); continue;
 		 * }
-		 * 
+		 *
 		 * try { String dirname = task.getHost() +"_exports"; String filename =
 		 * dirname + File.separator + "catexports.zip"; boolean resultRetreived
 		 * = true; File output = new File(dirname);
-		 * 
+		 *
 		 * output.mkdirs();
-		 * 
+		 *
 		 * logger.debug("saving " + filename);
-		 * 
+		 *
 		 * try { output = new File(filename); FileOutputStream fos = new
 		 * FileOutputStream(output); fos.write(result.getResult()); fos.close();
 		 * } catch(Exception e) { logger.error(e.toString());
 		 * System.exit(ERRDISK); }
-		 * 
+		 *
 		 * zipper.setFileName(filename); if(zipper.unzip(dirname) == true) new
 		 * File(filename).delete();
-		 * 
+		 *
 		 * try { BufferedReader inbuf = new BufferedReader(new FileReader(new
 		 * File(dirname, util.STDOUT)));
-		 * 
+		 *
 		 * for(String line = inbuf.readLine(); line != null; line =
 		 * inbuf.readLine()) {
-		 * 
-		 * line = line.trim(); if(line.startsWith("/"))
-		 * System.out.println("XWNFS : " + task.getHost() + " is exporting " +
-		 * line); }
-		 * 
+		 *
+		 * line = line.trim(); if(line.startsWith("/")) System.out.println(
+		 * "XWNFS : " + task.getHost() + " is exporting " + line); }
+		 *
 		 * if(logger.getEffectiveLevel() != Level.DEBUG) util.deleteDir(logger,
 		 * new File(dirname)); } catch(Exception e) { logger.error(e); }
 		 * logger.debug(uid + " will be deleted"); completed.add(uid); }
 		 * catch(Exception e) { logger.error("can't retreive result for " + uid
 		 * + "(" + e.toString() + ")"); System.exit(ERRDISK); } }
-		 * 
+		 *
 		 * logger.debug("" + broadcasted.size() + " ; " + completed.size());
-		 * 
+		 *
 		 * try { Thread.sleep(2500); } catch(InterruptedException e){ } }
-		 * 
+		 *
 		 * try { comm.removeWorks(completed); } catch(RemoteException ce) {
 		 * logger.error(ce.toString()); System.exit(ERRCONNECTION); }
-		 * 
-		 * 
+		 *
+		 *
 		 * try { comm.disconnect(); } catch(Exception ce) {
 		 * logger.error(ce.toString()); System.exit(ERRCONNECTION); }
 		 */
@@ -205,7 +204,7 @@ public class Client {
 	/**
 	 * This is the standard main function; this parses args
 	 */
-	public static void main(String[] argv) {
+	public static void main(final String[] argv) {
 
 		final Client c = new Client(argv);
 

@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -56,13 +56,13 @@ public class Cleaner extends Thread {
 
 	/**
 	 * This is the default consructor.
-	 * 
+	 *
 	 * @param c
 	 *            is the XtremWeb config
 	 * @param cb
 	 *            is the callback to delete jobs for
 	 */
-	protected Cleaner(XWConfigurator c, Callback cb) {
+	protected Cleaner(final XWConfigurator c, final Callback cb) {
 
 		super("Cleaner");
 		logger = new Logger(c.getLoggerLevel());
@@ -70,8 +70,7 @@ public class Cleaner extends Thread {
 		callback = cb;
 
 		try {
-			comm = (CommClient) Class.forName(
-					c.getProperty(XWPropertyDefs.COMMLAYER)).newInstance();
+			comm = (CommClient) Class.forName(c.getProperty(XWPropertyDefs.COMMLAYER)).newInstance();
 			CommClient.setConfig(c);
 		} catch (final Exception e) {
 			logger.fatal("Can't init comm :  " + e);
