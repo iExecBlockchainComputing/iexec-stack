@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -38,7 +38,6 @@ public interface AuthenticatedXmlRpcHandler {
 	/**
 	 * Return the result, or throw an Exception if something went wrong.
 	 */
-	Object execute(String method, Vector params, String user, String password)
-			throws Exception;
+	Object execute(String method, Vector params, String user, String password) throws Exception;
 
 }
