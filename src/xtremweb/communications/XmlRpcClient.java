@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -23,7 +23,7 @@
 
 package xtremweb.communications;
 
-/** 
+/**
  * Copyright 1999 Hannes Wallnoefer
  * Implements a XML-RPC client. See http://www.xmlrpc.com/
  */
@@ -62,7 +62,7 @@ public class XmlRpcClient implements XmlRpcHandler {
 	/**
 	 * Construct a XML-RPC client with this URL.
 	 */
-	public XmlRpcClient(URL url) {
+	public XmlRpcClient(final URL url) {
 		logger = new Logger(this);
 		this.setUrl(url);
 	}
@@ -70,15 +70,14 @@ public class XmlRpcClient implements XmlRpcHandler {
 	/**
 	 * Construct a XML-RPC client for the URL represented by this String.
 	 */
-	public XmlRpcClient(String url) throws MalformedURLException {
+	public XmlRpcClient(final String url) throws MalformedURLException {
 		this(new URL(url));
 	}
 
 	/**
 	 * Construct a XML-RPC client for the URL represented by this String.
 	 */
-	public XmlRpcClient(String socketType, String url)
-			throws MalformedURLException {
+	public XmlRpcClient(final String socketType, final String url) throws MalformedURLException {
 		this(new URL(url));
 		this.setSocketType(socketType);
 	}
@@ -86,31 +85,29 @@ public class XmlRpcClient implements XmlRpcHandler {
 	/**
 	 * Construct a XML-RPC client for the specified hostname and port.
 	 */
-	public XmlRpcClient(String hostname, int port) throws MalformedURLException {
+	public XmlRpcClient(final String hostname, final int port) throws MalformedURLException {
 		this("http://" + hostname + ":" + port + "/RPC2");
 	}
 
 	/**
 	 * Construct a XML-RPC client for the specified hostname and port.
 	 */
-	public XmlRpcClient(String socketType, String hostname, int port)
-			throws MalformedURLException {
+	public XmlRpcClient(final String socketType, final String hostname, final int port) throws MalformedURLException {
 		this("http://" + hostname + ":" + port + "/RPC2");
 		this.setSocketType(socketType);
 	}
 
 	/**
 	 * Sets Authentication for this client. This will be sent as Basic
-	 * Authentication header to the server as described in <a
-	 * href="http://www.ietf.org/rfc/rfc2617.txt"
-	 * >http://www.ietf.org/rfc/rfc2617.txt</a>.
+	 * Authentication header to the server as described in
+	 * <a href="http://www.ietf.org/rfc/rfc2617.txt" >http://www.ietf.org/rfc/
+	 * rfc2617.txt</a>.
 	 */
-	public void setBasicAuthentication(String user, String password) {
+	public void setBasicAuthentication(final String user, final String password) {
 		if ((user == null) || (password == null)) {
 			setAuth(null);
 		} else {
-			final char[] basicAuth = Base64.encode((user + ":" + password)
-					.getBytes());
+			final char[] basicAuth = Base64.encode((user + ":" + password).getBytes());
 			setAuth(new String(basicAuth).trim());
 		}
 	}
@@ -118,15 +115,15 @@ public class XmlRpcClient implements XmlRpcHandler {
 	/**
 	 * Generate an XML-RPC request and send it to the server. Parse the result
 	 * and return the corresponding Java object.
-	 * 
+	 *
 	 * @exception XmlRpcException
 	 *                : If the remote host returned a fault message.
 	 * @exception IOException
 	 *                : If the call could not be made because of lower level
 	 *                problems.
 	 */
-	public Object execute(String method, Vector params) throws XmlRpcException,
-			IOException {
+	@Override
+	public Object execute(final String method, final Vector params) throws XmlRpcException, IOException {
 		final Worker worker = getWorker();
 		try {
 			final Object retval = worker.execute(method, params);
@@ -165,8 +162,7 @@ public class XmlRpcClient implements XmlRpcHandler {
 			super();
 		}
 
-		public Object execute(String method, Vector params)
-				throws XmlRpcException, IOException {
+		public Object execute(final String method, final Vector params) throws XmlRpcException, IOException {
 			fault = false;
 			final long now = System.currentTimeMillis();
 
@@ -189,12 +185,10 @@ public class XmlRpcClient implements XmlRpcHandler {
 				con.setDoOutput(true);
 				con.setUseCaches(false);
 				con.setAllowUserInteraction(false);
-				con.setRequestProperty("Content-Length",
-						Integer.toString(request.length));
+				con.setRequestProperty("Content-Length", Integer.toString(request.length));
 				con.setRequestProperty("Content-Type", "text/xml");
 				if (getAuth() != null) {
-					con.setRequestProperty("Authorization", "Basic "
-							+ getAuth());
+					con.setRequestProperty("Authorization", "Basic " + getAuth());
 				}
 				final OutputStream out = con.getOutputStream();
 				out.write(request);
@@ -225,17 +219,14 @@ public class XmlRpcClient implements XmlRpcHandler {
 				try {
 					final Hashtable f = (Hashtable) result;
 					final String faultString = (String) f.get("faultString");
-					final int faultCode = Integer.parseInt(f.get("faultCode")
-							.toString());
-					exception = new XmlRpcException(faultCode,
-							faultString.trim());
+					final int faultCode = Integer.parseInt(f.get("faultCode").toString());
+					exception = new XmlRpcException(faultCode, faultString.trim());
 				} catch (final Exception x) {
 					throw new XmlRpcException(0, "Invalid fault response");
 				}
 				throw exception;
 			}
-			logger.debug("Spent " + (System.currentTimeMillis() - now)
-					+ " in request");
+			logger.debug("Spent " + (System.currentTimeMillis() - now) + " in request");
 
 			return result;
 		}
@@ -244,7 +235,7 @@ public class XmlRpcClient implements XmlRpcHandler {
 		 * Called when the return value has been parsed.
 		 */
 		@Override
-		void objectParsed(Object what) {
+		void objectParsed(final Object what) {
 			result = what;
 		}
 
@@ -252,8 +243,7 @@ public class XmlRpcClient implements XmlRpcHandler {
 		 * Generate an XML-RPC request from a method name and a parameter
 		 * vector.
 		 */
-		void writeRequest(XmlWriter writer, String method, Vector params)
-				throws IOException {
+		void writeRequest(final XmlWriter writer, final String method, final Vector params) throws IOException {
 			writer.startElement("methodCall");
 
 			writer.startElement("methodName");
@@ -275,8 +265,7 @@ public class XmlRpcClient implements XmlRpcHandler {
 		 * Overrides method in XmlRpc to handle fault repsonses.
 		 */
 		@Override
-		public void startElement(String name, Attributes atts)
-				throws SAXException {
+		public void startElement(final String name, final Attributes atts) throws SAXException {
 			if ("fault".equals(name)) {
 				fault = true;
 			} else {
@@ -289,7 +278,7 @@ public class XmlRpcClient implements XmlRpcHandler {
 	/**
 	 * Just for testing.
 	 */
-	public static void main(String args[]) throws Exception {
+	public static void main(final String args[]) throws Exception {
 		try {
 			final String url = args[0];
 			final String method = args[1];
@@ -309,8 +298,7 @@ public class XmlRpcClient implements XmlRpcHandler {
 			}
 		} catch (final Exception x) {
 			System.err.println(x);
-			System.err
-					.println("Usage: java helma.xmlrpc.XmlRpcClient <url> <method> <arg> ....");
+			System.err.println("Usage: java helma.xmlrpc.XmlRpcClient <url> <method> <arg> ....");
 		}
 	}
 
@@ -325,7 +313,7 @@ public class XmlRpcClient implements XmlRpcHandler {
 	 * @param socketType
 	 *            the socketType to set
 	 */
-	public void setSocketType(String socketType) {
+	public void setSocketType(final String socketType) {
 		this.socketType = socketType;
 	}
 
@@ -340,7 +328,7 @@ public class XmlRpcClient implements XmlRpcHandler {
 	 * @param url
 	 *            the url to set
 	 */
-	public void setUrl(URL url) {
+	public void setUrl(final URL url) {
 		this.url = url;
 	}
 
@@ -355,7 +343,7 @@ public class XmlRpcClient implements XmlRpcHandler {
 	 * @param auth
 	 *            the auth to set
 	 */
-	public void setAuth(String auth) {
+	public void setAuth(final String auth) {
 		this.auth = auth;
 	}
 }

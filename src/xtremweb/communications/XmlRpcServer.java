@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -23,7 +23,7 @@
 
 package xtremweb.communications;
 
-/** 
+/**
  * Copyright 1999 Hannes Wallnoefer
  * Implements an XML-RPC server. See http://www.xmlrpc.com/
  */
@@ -48,7 +48,7 @@ import xtremweb.common.Logger;
 public class XmlRpcServer {
 
 	/**
-	 * 
+	 *
 	 */
 
 	private final Hashtable handlers;
@@ -69,9 +69,8 @@ public class XmlRpcServer {
 	 * about XML-RPC handlers see the <a href="../index.html#1a">main
 	 * documentation page</a>.
 	 */
-	public void addHandler(String handlername, Object handler) {
-		if ((handler instanceof XmlRpcHandler)
-				|| (handler instanceof AuthenticatedXmlRpcHandler)) {
+	public void addHandler(final String handlername, final Object handler) {
+		if ((handler instanceof XmlRpcHandler) || (handler instanceof AuthenticatedXmlRpcHandler)) {
 			handlers.put(handlername, handler);
 		} else if (handler != null) {
 			handlers.put(handlername, new Invoker(handler));
@@ -81,7 +80,7 @@ public class XmlRpcServer {
 	/**
 	 * Remove a handler object that was previously registered with this server.
 	 */
-	public void removeHandler(String handlername) {
+	public void removeHandler(final String handlername) {
 		handlers.remove(handlername);
 	}
 
@@ -91,7 +90,7 @@ public class XmlRpcServer {
 	 * whether the call was successful or not since this is all packed into the
 	 * response.
 	 */
-	public byte[] execute(InputStream is) {
+	public byte[] execute(final InputStream is) {
 		return execute(is, null, null);
 	}
 
@@ -100,7 +99,7 @@ public class XmlRpcServer {
 	 * invoked handler is AuthenticatedXmlRpcHandler, use the credentials to
 	 * authenticate the user.
 	 */
-	public byte[] execute(InputStream is, String user, String password) {
+	public byte[] execute(final InputStream is, final String user, final String password) {
 		final Worker worker = getWorker();
 		final byte[] retval = worker.execute(is, user, password);
 		pool.push(worker);
@@ -129,7 +128,7 @@ public class XmlRpcServer {
 		private byte[] result;
 		private StringBuffer strbuf;
 
-		public byte[] execute(InputStream is, String user, String password) {
+		public byte[] execute(final InputStream is, final String user, final String password) {
 			inParams = new Vector();
 			if (strbuf == null) {
 				strbuf = new StringBuffer();
@@ -164,24 +163,19 @@ public class XmlRpcServer {
 
 				if (handler == null) {
 					if (dot > -1) {
-						throw new Exception(
-								"RPC handler object \""
-										+ handlerName
-										+ "\" not found and no default handler registered.");
+						throw new Exception("RPC handler object \"" + handlerName
+								+ "\" not found and no default handler registered.");
 					} else {
-						throw new Exception(
-								"RPC handler object not found for \""
-										+ getMethodName()
-										+ "\": no default handler registered.");
+						throw new Exception("RPC handler object not found for \"" + getMethodName()
+								+ "\": no default handler registered.");
 					}
 				}
 
 				if (handler instanceof AuthenticatedXmlRpcHandler) {
-					outParam = ((AuthenticatedXmlRpcHandler) handler).execute(
-							getMethodName(), inParams, user, password);
+					outParam = ((AuthenticatedXmlRpcHandler) handler).execute(getMethodName(), inParams, user,
+							password);
 				} else {
-					outParam = ((XmlRpcHandler) handler).execute(
-							getMethodName(), inParams);
+					outParam = ((XmlRpcHandler) handler).execute(getMethodName(), inParams);
 				}
 				logger.debug("outparam = " + outParam);
 
@@ -193,8 +187,7 @@ public class XmlRpcServer {
 				logger.exception(x);
 				final XmlWriter writer = new XmlWriter(strbuf);
 				final String message = x.toString();
-				final int code = x instanceof XmlRpcException ? ((XmlRpcException) x)
-						.getCode() : 0;
+				final int code = x instanceof XmlRpcException ? ((XmlRpcException) x).getCode() : 0;
 				writeError(code, message, writer);
 				try {
 					result = writer.getBytes();
@@ -203,8 +196,7 @@ public class XmlRpcServer {
 					result = writer.toString().getBytes();
 				}
 			}
-			logger.debug("Spent " + (System.currentTimeMillis() - now)
-					+ " millis in request");
+			logger.debug("Spent " + (System.currentTimeMillis() - now) + " millis in request");
 			return result;
 		}
 
@@ -213,14 +205,14 @@ public class XmlRpcServer {
 		 * parsed.
 		 */
 		@Override
-		void objectParsed(Object what) {
+		void objectParsed(final Object what) {
 			inParams.addElement(what);
 		}
 
 		/**
 		 * Writes an XML-RPC response to the XML writer.
 		 */
-		void writeResponse(Object param, XmlWriter writer) {
+		void writeResponse(final Object param, final XmlWriter writer) {
 			writer.startElement("methodResponse");
 			writer.startElement("params");
 			writer.startElement("param");
@@ -233,7 +225,7 @@ public class XmlRpcServer {
 		/**
 		 * Writes an XML-RPC error response to the XML writer.
 		 */
-		void writeError(int code, String message, XmlWriter writer) {
+		void writeError(final int code, final String message, final XmlWriter writer) {
 			final Hashtable h = new Hashtable();
 			h.put("faultCode", new Integer(code));
 			h.put("faultString", message);
@@ -254,15 +246,15 @@ class Invoker implements XmlRpcHandler {
 	private final Class targetClass;
 	private final Logger logger;
 
-	public Invoker(Object target) {
+	public Invoker(final Object target) {
 		invokeTarget = target;
-		targetClass = invokeTarget instanceof Class ? (Class) invokeTarget
-				: invokeTarget.getClass();
+		targetClass = invokeTarget instanceof Class ? (Class) invokeTarget : invokeTarget.getClass();
 		logger = new Logger(this);
 		logger.debug("Target object is " + targetClass);
 	}
 
-	public Object execute(String methodName, Vector params) throws Exception {
+	@Override
+	public Object execute(final String methodName, final Vector params) throws Exception {
 
 		Class[] argClasses = null;
 		Object[] argValues = null;
@@ -288,8 +280,7 @@ class Invoker implements XmlRpcHandler {
 		if (logger.debug()) {
 			logger.debug("Searching for method: " + methodName);
 			for (int i = 0; i < argClasses.length; i++) {
-				logger.debug("Parameter " + i + ": " + argClasses[i] + " = "
-						+ argValues[i]);
+				logger.debug("Parameter " + i + ": " + argClasses[i] + " = " + argValues[i]);
 			}
 		}
 

@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -23,7 +23,7 @@
 
 package xtremweb.communications;
 
-/** 
+/**
  * Copyright 1999 Hannes Wallnoefer
  */
 
@@ -41,7 +41,7 @@ public class XmlRpcException extends Exception {
 	 */
 	private final int code;
 
-	public XmlRpcException(int code, String message) {
+	public XmlRpcException(final int code, final String message) {
 		super(message);
 		this.code = code;
 	}

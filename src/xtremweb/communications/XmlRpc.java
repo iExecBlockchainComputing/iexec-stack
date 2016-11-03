@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -23,7 +23,7 @@
 
 package xtremweb.communications;
 
-/** 
+/**
  * Copyright 1999 Hannes Wallnoefer
  * XML-RPC base class. See http://www.xmlrpc.com/
  */
@@ -58,7 +58,7 @@ import xtremweb.common.XWTools;
  * <p>
  * XmlRpcServer and XmlRpcClient are the classes that actually implement an
  * XML-RCP server and client.
- * 
+ *
  * @see XmlRpcServer
  * @see XmlRpcClient
  */
@@ -73,7 +73,7 @@ public abstract class XmlRpc extends DefaultHandler {
 		return methodName;
 	}
 
-	public void setMethodName(String m) {
+	public void setMethodName(final String m) {
 		methodName = m;
 	}
 
@@ -121,7 +121,7 @@ public abstract class XmlRpc extends DefaultHandler {
 	 * @param errorLevel
 	 *            the errorLevel to set
 	 */
-	public void setErrorLevel(int errorLevel) {
+	public void setErrorLevel(final int errorLevel) {
 		this.errorLevel = errorLevel;
 	}
 
@@ -138,7 +138,7 @@ public abstract class XmlRpc extends DefaultHandler {
 	 * @param errorMsg
 	 *            the errorMsg to set
 	 */
-	public void setErrorMsg(String errorMsg) {
+	public void setErrorMsg(final String errorMsg) {
 		this.errorMsg = errorMsg;
 	}
 
@@ -164,12 +164,12 @@ public abstract class XmlRpc extends DefaultHandler {
 	 * @param logger
 	 *            the logger to set
 	 */
-	public void setLogger(Logger logger) {
+	public void setLogger(final Logger logger) {
 		this.logger = logger;
 	}
 
-	public static final String types[] = { "String", "Integer", "Boolean",
-			"Double", "Date", "Base64", "Struct", "Array", "Nil" };
+	public static final String types[] = { "String", "Integer", "Boolean", "Double", "Date", "Base64", "Struct",
+			"Array", "Nil" };
 
 	private String encoding = "ISO8859_1";
 
@@ -177,7 +177,7 @@ public abstract class XmlRpc extends DefaultHandler {
 	 * Set the encoding of the XML. This should be the name of a Java encoding
 	 * contained in the encodings Hashtable.
 	 */
-	public void setEncoding(String enc) {
+	public void setEncoding(final String enc) {
 		encoding = enc;
 	}
 
@@ -204,7 +204,7 @@ public abstract class XmlRpc extends DefaultHandler {
 	 * setDriver() is never called then the System property "sax.driver" is
 	 * consulted. If that is not defined the driver defaults to OpenXML.
 	 */
-	public static void setDriver(String driver) throws ClassNotFoundException {
+	public static void setDriver(final String driver) throws ClassNotFoundException {
 		String parserClassName = null;
 		try {
 			parserClassName = (String) saxDrivers.get(driver);
@@ -213,22 +213,21 @@ public abstract class XmlRpc extends DefaultHandler {
 			}
 			parserClass = Class.forName(parserClassName);
 		} catch (final ClassNotFoundException x) {
-			throw new ClassNotFoundException("SAX driver not found: "
-					+ parserClassName);
+			throw new ClassNotFoundException("SAX driver not found: " + parserClassName);
 		}
 	}
 
 	/**
 	 * Set the SAX Parser to be used by directly passing the Class object.
 	 */
-	public static void setDriver(Class driver) {
+	public static void setDriver(final Class driver) {
 		parserClass = driver;
 	}
 
 	/**
 	 * Switch HTTP keepalive on/off.
 	 */
-	public static void setKeepAlive(boolean val) {
+	public static void setKeepAlive(final boolean val) {
 		keepalive = val;
 	}
 
@@ -242,7 +241,7 @@ public abstract class XmlRpc extends DefaultHandler {
 	/**
 	 * set the name of the keyStoreFile
 	 */
-	public static void setKeyStore(String name) {
+	public static void setKeyStore(final String name) {
 		keyStoreFile = name;
 	}
 
@@ -256,7 +255,7 @@ public abstract class XmlRpc extends DefaultHandler {
 	/**
 	 * set the pass phrase
 	 */
-	public static void setPassPhrase(String name) {
+	public static void setPassPhrase(final String name) {
 		passPhrase = name;
 	}
 
@@ -271,7 +270,7 @@ public abstract class XmlRpc extends DefaultHandler {
 	 * Parse the input stream. For each root level object, method
 	 * <code>objectParsed</code> is called.
 	 */
-	synchronized void parse(InputStream is) throws Exception {
+	synchronized void parse(final InputStream is) throws Exception {
 
 		errorLevel = NONE;
 		errorMsg = null;
@@ -286,8 +285,7 @@ public abstract class XmlRpc extends DefaultHandler {
 
 		final long now = System.currentTimeMillis();
 		if (parserClass == null) {
-			setDriver(System.getProperty("sax.driver",
-					"org.openxml.parser.XMLSAXParser"));
+			setDriver(System.getProperty("sax.driver", "org.openxml.parser.XMLSAXParser"));
 		}
 
 		final SAXParser parser = SAXParserFactory.newInstance().newSAXParser();
@@ -299,7 +297,7 @@ public abstract class XmlRpc extends DefaultHandler {
 	 * Writes the XML representation of a supported Java object to the XML
 	 * writer.
 	 */
-	void writeObject(Object what, XmlWriter writer) {
+	void writeObject(final Object what, final XmlWriter writer) {
 		writer.startElement("value");
 		if (what == null) {
 			writer.emptyElement("nil");
@@ -351,8 +349,7 @@ public abstract class XmlRpc extends DefaultHandler {
 			}
 			writer.endElement("struct");
 		} else {
-			throw new RuntimeException("unsupported Java type: "
-					+ what.getClass());
+			throw new RuntimeException("unsupported Java type: " + what.getClass());
 		}
 		writer.endElement("value");
 	}
@@ -366,8 +363,7 @@ public abstract class XmlRpc extends DefaultHandler {
 	 * Method called by SAX driver.
 	 */
 	@Override
-	public void characters(char ch[], int start, int length)
-			throws SAXException {
+	public void characters(final char ch[], final int start, final int length) throws SAXException {
 		if (!readCdata) {
 			return;
 		}
@@ -377,7 +373,7 @@ public abstract class XmlRpc extends DefaultHandler {
 	/**
 	 * Method called by SAX driver.
 	 */
-	public void endElement(String name) throws SAXException {
+	public void endElement(final String name) throws SAXException {
 
 		logger.debug("endElement: " + name);
 		if ((currentValue != null) && readCdata) {
@@ -388,8 +384,7 @@ public abstract class XmlRpc extends DefaultHandler {
 
 		if ("value".equals(name)) {
 			final int depth = values.size();
-			if ((depth < 2)
-					|| (values.elementAt(depth - 2).hashCode() != STRUCT)) {
+			if ((depth < 2) || (values.elementAt(depth - 2).hashCode() != STRUCT)) {
 				final Value v = currentValue;
 				values.pop();
 				if (depth < 2) {
@@ -417,7 +412,7 @@ public abstract class XmlRpc extends DefaultHandler {
 	/**
 	 * Method called by SAX driver.
 	 */
-	public void startElement(String name, Attributes atts) throws SAXException {
+	public void startElement(final String name, final Attributes atts) throws SAXException {
 
 		logger.debug("startElement: " + name);
 
@@ -466,14 +461,14 @@ public abstract class XmlRpc extends DefaultHandler {
 	}
 
 	@Override
-	public void error(SAXParseException e) throws SAXException {
+	public void error(final SAXParseException e) throws SAXException {
 		System.err.println("Error parsing XML: " + e);
 		errorLevel = RECOVERABLE;
 		errorMsg = e.toString();
 	}
 
 	@Override
-	public void fatalError(SAXParseException e) throws SAXException {
+	public void fatalError(final SAXParseException e) throws SAXException {
 		System.err.println("Fatal error parsing XML: " + e);
 		errorLevel = FATAL;
 		errorMsg = e.toString();
@@ -501,7 +496,7 @@ public abstract class XmlRpc extends DefaultHandler {
 		/**
 		 * Notification that a new child element has been parsed.
 		 */
-		public void endElement(Value child) {
+		public void endElement(final Value child) {
 			if (type == ARRAY) {
 				array.addElement(child.value);
 			} else if (type == STRUCT) {
@@ -513,7 +508,7 @@ public abstract class XmlRpc extends DefaultHandler {
 		 * Set the type of this value. If it's a container, create the
 		 * corresponding java container.
 		 */
-		public void setType(int type) {
+		public void setType(final int type) {
 			this.type = type;
 			if (type == ARRAY) {
 				value = array = new Vector();
@@ -527,7 +522,7 @@ public abstract class XmlRpc extends DefaultHandler {
 		 * Set the character data for the element and interpret it according to
 		 * the element type
 		 */
-		public void characterData(String cdata) {
+		public void characterData(final String cdata) {
 			switch (type) {
 			case INTEGER:
 				value = new Integer(cdata.trim());
@@ -573,36 +568,36 @@ public abstract class XmlRpc extends DefaultHandler {
 		private final StringBuffer buf;
 		private final String enc;
 
-		public XmlWriter(StringBuffer buf) {
+		public XmlWriter(final StringBuffer buf) {
 			this(buf, encoding);
 		}
 
-		public XmlWriter(StringBuffer buf, String enc) {
+		public XmlWriter(final StringBuffer buf, final String enc) {
 			this.buf = buf;
 			this.enc = enc;
 			final String encName = encodings.getProperty(enc, enc);
 			buf.append("<?xml version=\"1.0\" encoding=\"" + encName + "\"?>");
 		}
 
-		public void startElement(String elem) {
+		public void startElement(final String elem) {
 			buf.append("<");
 			buf.append(elem);
 			buf.append(">");
 		}
 
-		public void endElement(String elem) {
+		public void endElement(final String elem) {
 			buf.append("</");
 			buf.append(elem);
 			buf.append(">");
 		}
 
-		public void emptyElement(String elem) {
+		public void emptyElement(final String elem) {
 			buf.append("<");
 			buf.append(elem);
 			buf.append("/>");
 		}
 
-		public void chardata(String text) {
+		public void chardata(final String text) {
 			final int l = text.length();
 			for (int i = 0; i < l; i++) {
 				final char c = text.charAt(i);
@@ -619,11 +614,11 @@ public abstract class XmlRpc extends DefaultHandler {
 			}
 		}
 
-		public void write(char[] text) {
+		public void write(final char[] text) {
 			buf.append(text);
 		}
 
-		public void write(String text) {
+		public void write(final String text) {
 			buf.append(text);
 		}
 
@@ -645,11 +640,11 @@ class Formatter {
 	public Formatter() {
 	}
 
-	public synchronized String format(Date d) {
+	public synchronized String format(final Date d) {
 		return XWTools.getSQLDateTime(d);
 	}
 
-	public synchronized Date parse(String s) throws ParseException {
+	public synchronized Date parse(final String s) throws ParseException {
 		return XWTools.getSQLDateTime(s);
 	}
 }
