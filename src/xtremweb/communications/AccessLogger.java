@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -40,34 +40,32 @@ import xtremweb.common.XWTools;
  * This class aims to store access log "a la" Apache httpd so that we can parse
  * access log with "standard" tools such as webalizer
  * (http://www.mrunix.net/webalizer/)
- * 
+ *
  * Format:
  * {@code $RHOST - $user [dd/MM/yyyy:HH:mm:ss Z] "GET $file $PROTOCOL/$VERSION" $STATUS $SIZERETURNED "-" "XW/$VERSION ($OS)"}
- * 
+ *
  * This class create a log file per day; is automatically creates a new log file
  * on each new day.<br />
  * Log files are named $server-YYYY-MM-DD.log
- * 
+ *
  * @author Oleg Lodygensky
  * @since XWHEP 1.0.0
- * 
- *        See <a
- *        href="http://httpd.apache.org/docs/1.3/mod/mod_log_common.html">Apache
- *        log file format</a>
- * 
+ *
+ *        See
+ *        <a href="http://httpd.apache.org/docs/1.3/mod/mod_log_common.html">
+ *        Apache log file format</a>
+ *
  */
 public class AccessLogger {
 
 	/**
 	 * This helps to format date : the format is "yyyy-MM-dd HH:mm:ss"
 	 */
-	public static final SimpleDateFormat logDateFormat = new SimpleDateFormat(
-			"[dd/MMM/yyyy:HH:mm:ss Z]", Locale.US);
+	public static final SimpleDateFormat logDateFormat = new SimpleDateFormat("[dd/MMM/yyyy:HH:mm:ss Z]", Locale.US);
 	/**
 	 * This formats date for log file name as : "-yyyy-MM-dd.log"
 	 */
-	private static final SimpleDateFormat logFileNameFormat = new SimpleDateFormat(
-			"-yyyy-MM-dd", Locale.US);
+	private static final SimpleDateFormat logFileNameFormat = new SimpleDateFormat("-yyyy-MM-dd", Locale.US);
 	/**
 	 * This defines the stream to write access log to
 	 */
@@ -112,7 +110,7 @@ public class AccessLogger {
 	 * @param instance
 	 *            the instance to set
 	 */
-	public static void setInstance(AccessLogger instance) {
+	public static void setInstance(final AccessLogger instance) {
 		AccessLogger.instance = instance;
 	}
 
@@ -120,13 +118,13 @@ public class AccessLogger {
 	 * This constructs a new instance and prepare the output directory to store
 	 * log files On output directory error, logPath is set to null and out is
 	 * set to System.out
-	 * 
+	 *
 	 * @param root
 	 *            is the path where log files are stored
 	 * @param s
 	 *            is the server name to log access for
 	 */
-	public AccessLogger(File root, String s) throws IOException {
+	public AccessLogger(final File root, final String s) throws IOException {
 		if (getInstance() != null) {
 			return;
 		}
@@ -153,7 +151,7 @@ public class AccessLogger {
 
 	/**
 	 * This return the current log file name
-	 * 
+	 *
 	 * @return a String containing the current log file name
 	 */
 	public String getCurrentLogFileName() {
@@ -173,13 +171,9 @@ public class AccessLogger {
 		try {
 			final Calendar currentDate = Calendar.getInstance();
 
-			if ((out == null)
-					|| (currentDate.get(Calendar.YEAR) != logDate
-							.get(Calendar.YEAR))
-					|| (currentDate.get(Calendar.MONTH) != logDate
-							.get(Calendar.MONTH))
-					|| (currentDate.get(Calendar.DAY_OF_MONTH) != logDate
-							.get(Calendar.DAY_OF_MONTH))) {
+			if ((out == null) || (currentDate.get(Calendar.YEAR) != logDate.get(Calendar.YEAR))
+					|| (currentDate.get(Calendar.MONTH) != logDate.get(Calendar.MONTH))
+					|| (currentDate.get(Calendar.DAY_OF_MONTH) != logDate.get(Calendar.DAY_OF_MONTH))) {
 
 				if (out != null) {
 					out.flush();
@@ -187,8 +181,7 @@ public class AccessLogger {
 				}
 
 				logDate = currentDate;
-				out = new PrintStream(new FileOutputStream(new File(logPath,
-						getCurrentLogFileName()), true));
+				out = new PrintStream(new FileOutputStream(new File(logPath, getCurrentLogFileName()), true));
 			}
 		} catch (final Exception e) {
 			throw new IOException(e.toString());
@@ -197,7 +190,7 @@ public class AccessLogger {
 
 	/**
 	 * This prints an entry to out stream
-	 * 
+	 *
 	 * @param fileAccessed
 	 *            is the accessed file path
 	 * @param user
@@ -214,9 +207,8 @@ public class AccessLogger {
 	 *            is the OS of the remote host
 	 * @see #out
 	 */
-	public synchronized void println(String fileAccessed, String user,
-			String proto, int status, long returnSize, String rHost,
-			String ros, IdRpc idRpc) throws IOException {
+	public synchronized void println(final String fileAccessed, final String user, final String proto, final int status,
+			final long returnSize, final String rHost, final String ros, final IdRpc idRpc) throws IOException {
 		try {
 			checkLogFile();
 		} catch (final IOException e) {
@@ -224,30 +216,25 @@ public class AccessLogger {
 			throw e;
 		}
 
-		out.print(rHost + " " + this.server + " - " + user + " "
-				+ logDateFormat.format(new Date()) + " \"" + idRpc + " "
-				+ fileAccessed + " " + proto + "/" + version + "\" " + status
-				+ " " + returnSize + " \"-\" \"XW/" + version + " (" + ros
-				+ ")\"");
+		out.print(rHost + " " + this.server + " - " + user + " " + logDateFormat.format(new Date()) + " \"" + idRpc
+				+ " " + fileAccessed + " " + proto + "/" + version + "\" " + status + " " + returnSize + " \"-\" \"XW/"
+				+ version + " (" + ros + ")\"");
 		out.println();
 
 		notify();
 	}
 
-	public static void main(String[] args) throws IOException {
+	public static void main(final String[] args) throws IOException {
 		final AccessLogger accessLog = new AccessLogger(new File("."), "auger9");
 
 		for (int i = 0; i < 100; i++) {
-			accessLog.println("/toto", "oleg0", "HTTP/1.1", 200, 512,
-					"toto.com", "WIN32", IdRpc.GET);
+			accessLog.println("/toto", "oleg0", "HTTP/1.1", 200, 512, "toto.com", "WIN32", IdRpc.GET);
 		}
 		for (int i = 0; i < 100; i++) {
-			accessLog.println("/tata", "oleg1", "TCP/1.1", 200, 1024,
-					"tata.com", "MACOSX", IdRpc.GETAPPS);
+			accessLog.println("/tata", "oleg1", "TCP/1.1", 200, 1024, "tata.com", "MACOSX", IdRpc.GETAPPS);
 		}
 		for (int i = 0; i < 100; i++) {
-			accessLog.println("/titi", "oleg2", "UDP/0.9", 200, 1024,
-					"titi.com", "WIN32", IdRpc.DISCONNECT);
+			accessLog.println("/titi", "oleg2", "UDP/0.9", 200, 1024, "titi.com", "WIN32", IdRpc.DISCONNECT);
 		}
 
 	}
