@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -23,7 +23,7 @@
 
 package xtremweb.communications;
 
-/** 
+/**
  * Copyright 1999 Hannes Wallnoefer
  * Implements a XML-RPC client. See http://www.xmlrpc.com/
  */
@@ -65,45 +65,42 @@ public final class XwXmlRpcClient extends XmlRpcClient {
 	/**
 	 * Construct a XML-RPC client with this URL.
 	 */
-	public XwXmlRpcClient(URL url) {
+	public XwXmlRpcClient(final URL url) {
 		super(url);
 	}
 
 	/**
 	 * Construct a XML-RPC client for the URL represented by this String.
 	 */
-	public XwXmlRpcClient(String url) throws MalformedURLException {
+	public XwXmlRpcClient(final String url) throws MalformedURLException {
 		super(url);
 	}
 
 	/**
 	 * Construct a XML-RPC client for the URL represented by this String.
 	 */
-	public XwXmlRpcClient(String socketType, String url)
-			throws MalformedURLException {
+	public XwXmlRpcClient(final String socketType, final String url) throws MalformedURLException {
 		super(socketType, url);
 	}
 
 	/**
 	 * Construct a XML-RPC client for the specified hostname and port.
 	 */
-	public XwXmlRpcClient(String hostname, int port)
-			throws MalformedURLException {
+	public XwXmlRpcClient(final String hostname, final int port) throws MalformedURLException {
 		super(hostname, port);
 	}
 
 	/**
 	 * Construct a XML-RPC client for the specified hostname and port.
 	 */
-	public XwXmlRpcClient(String socketType, String hostname, int port)
-			throws MalformedURLException {
+	public XwXmlRpcClient(final String socketType, final String hostname, final int port) throws MalformedURLException {
 		super(socketType, hostname, port);
 	}
 
 	/**
 	 * Generate an XML-RPC request and send it to the server. Parse the result
 	 * and return the corresponding Java object.
-	 * 
+	 *
 	 * @exception XmlRpcException
 	 *                : If the remote host returned a fault message.
 	 * @exception IOException
@@ -111,8 +108,7 @@ public final class XwXmlRpcClient extends XmlRpcClient {
 	 *                problems.
 	 */
 	@Override
-	public Object execute(String method, Vector params) throws XmlRpcException,
-			IOException {
+	public Object execute(final String method, final Vector params) throws XmlRpcException, IOException {
 		final Worker worker = getWorker();
 		try {
 			final Object retval = worker.execute(method, params);
@@ -152,14 +148,12 @@ public final class XwXmlRpcClient extends XmlRpcClient {
 			super();
 		}
 
-		public Object execute(String method, Vector params)
-				throws XmlRpcException, IOException {
+		public Object execute(final String method, final Vector params) throws XmlRpcException, IOException {
 			final long now = System.currentTimeMillis();
 			fault = false;
 
 			final Logger logger = getLogger();
-			logger.debug("XwXmlRpcClient::execute() params.len = "
-					+ params.size());
+			logger.debug("XwXmlRpcClient::execute() params.len = " + params.size());
 
 			try {
 				if (strbuf == null) {
@@ -174,8 +168,7 @@ public final class XwXmlRpcClient extends XmlRpcClient {
 				if (client == null) {
 					client = new HttpClient(getSocketType(), getUrl());
 				}
-				logger.debug("XwXmlRpcClient::execute() request = "
-						+ request.length);
+				logger.debug("XwXmlRpcClient::execute() request = " + request.length);
 
 				client.write(request);
 
@@ -211,20 +204,16 @@ public final class XwXmlRpcClient extends XmlRpcClient {
 				try {
 					final Hashtable f = (Hashtable) result;
 					final String faultString = (String) f.get("faultString");
-					final int faultCode = Integer.parseInt(f.get("faultCode")
-							.toString());
-					exception = new XmlRpcException(faultCode,
-							faultString.trim());
+					final int faultCode = Integer.parseInt(f.get("faultCode").toString());
+					exception = new XmlRpcException(faultCode, faultString.trim());
 				} catch (final Exception x) {
 					logger.debug("XwXmlRpcClient::execute() fault exception");
 
-					throw new XmlRpcException(0,
-							"Server returned an invalid fault response.");
+					throw new XmlRpcException(0, "Server returned an invalid fault response.");
 				}
 				throw exception;
 			}
-			logger.debug("Spent " + (System.currentTimeMillis() - now)
-					+ " millis in request");
+			logger.debug("Spent " + (System.currentTimeMillis() - now) + " millis in request");
 
 			return result;
 		}
@@ -233,7 +222,7 @@ public final class XwXmlRpcClient extends XmlRpcClient {
 		 * Called when the return value has been parsed.
 		 */
 		@Override
-		void objectParsed(Object what) {
+		void objectParsed(final Object what) {
 			result = what;
 		}
 
@@ -241,8 +230,7 @@ public final class XwXmlRpcClient extends XmlRpcClient {
 		 * Generate an XML-RPC request from a method name and a parameter
 		 * vector.
 		 */
-		void writeRequest(XmlWriter writer, String method, Vector params)
-				throws IOException {
+		void writeRequest(final XmlWriter writer, final String method, final Vector params) throws IOException {
 			writer.startElement("methodCall");
 
 			writer.startElement("methodName");
@@ -264,8 +252,7 @@ public final class XwXmlRpcClient extends XmlRpcClient {
 		 * Overrides method in XmlRpc to handle fault repsonses.
 		 */
 		@Override
-		public void startElement(String name, Attributes atts)
-				throws SAXException {
+		public void startElement(final String name, final Attributes atts) throws SAXException {
 			if ("fault".equals(name)) {
 				fault = true;
 			} else {
@@ -293,7 +280,7 @@ public final class XwXmlRpcClient extends XmlRpcClient {
 		private final Logger logger;
 		private static final boolean debug = false;
 
-		public HttpClient(String socketType, URL url) throws IOException {
+		public HttpClient(final String socketType, final URL url) throws IOException {
 			logger = new Logger(this);
 			hostname = url.getHost();
 			port = url.getPort();
@@ -308,7 +295,7 @@ public final class XwXmlRpcClient extends XmlRpcClient {
 			initConnection(socketType);
 		}
 
-		protected void initConnection(String socketType) throws IOException {
+		protected void initConnection(final String socketType) throws IOException {
 			logger.debug("HttpClient::initConnection()");
 			fresh = true;
 
@@ -320,18 +307,15 @@ public final class XwXmlRpcClient extends XmlRpcClient {
 					KeyManagerFactory kmf;
 					KeyStore ks;
 					TrustManagerFactory tmf;
-					final char[] passphrase = XmlRpc.getPassPhrase()
-							.toCharArray();
+					final char[] passphrase = XmlRpc.getPassPhrase().toCharArray();
 
 					ctx = SSLContext.getInstance("TLS");
 					kmf = KeyManagerFactory.getInstance("SunX509");
 					tmf = TrustManagerFactory.getInstance("SunX509");
 					ks = KeyStore.getInstance("JKS");
 
-					logger.debug("HttpClient::initConnection() key file =  "
-							+ XmlRpc.getKeyStore());
-					ks.load(new FileInputStream(XmlRpc.getKeyStore()),
-							passphrase);
+					logger.debug("HttpClient::initConnection() key file =  " + XmlRpc.getKeyStore());
+					ks.load(new FileInputStream(XmlRpc.getKeyStore()), passphrase);
 
 					kmf.init(ks, passphrase);
 					tmf.init(ks);
@@ -340,12 +324,10 @@ public final class XwXmlRpcClient extends XmlRpcClient {
 
 					factory = ctx.getSocketFactory();
 
-					sslSocket = (SSLSocket) factory
-							.createSocket(hostname, port);
+					sslSocket = (SSLSocket) factory.createSocket(hostname, port);
 
 					sslSocket.startHandshake();
-					output = new BufferedOutputStream(
-							sslSocket.getOutputStream());
+					output = new BufferedOutputStream(sslSocket.getOutputStream());
 					input = new BufferedInputStream(sslSocket.getInputStream());
 				} catch (final Exception e) {
 					logger.exception(e);
@@ -368,20 +350,18 @@ public final class XwXmlRpcClient extends XmlRpcClient {
 			}
 		}
 
-		public void write(byte[] request) throws IOException {
+		public void write(final byte[] request) throws IOException {
 			logger.debug("XwXmlRpcClient::HttpClient::write()");
 			try {
 				output.write(("POST " + uri + " HTTP/1.0\r\n").getBytes());
-				output.write(("User-Agent: " + XmlRpc.version + "\r\n")
-						.getBytes());
+				output.write(("User-Agent: " + XmlRpc.version + "\r\n").getBytes());
 				output.write(("Host: " + host + "\r\n").getBytes());
 				if (XmlRpc.getKeepAlive()) {
 					output.write("Connection: Keep-Alive\r\n".getBytes());
 				}
 				output.write("Content-Type: text/xml\r\n".getBytes());
 				if (getAuth() != null) {
-					output.write(("Authorization: Basic " + getAuth() + "\r\n")
-							.getBytes());
+					output.write(("Authorization: Basic " + getAuth() + "\r\n").getBytes());
 				}
 				output.write(("Content-Length: " + request.length).getBytes());
 				output.write("\r\n\r\n".getBytes());
@@ -408,11 +388,9 @@ public final class XwXmlRpcClient extends XmlRpcClient {
 				final String httpversion = tokens.nextToken();
 				final String statusCode = tokens.nextToken();
 				final String statusMsg = tokens.nextToken("\n\r");
-				keepalive = XmlRpc.getKeepAlive()
-						&& "HTTP/1.1".equals(httpversion);
+				keepalive = XmlRpc.getKeepAlive() && "HTTP/1.1".equals(httpversion);
 				if (!"200".equals(statusCode)) {
-					throw new IOException("Unexpected Response from Server: "
-							+ statusMsg);
+					throw new IOException("Unexpected Response from Server: " + statusMsg);
 				}
 			} catch (final IOException iox) {
 				throw iox;
@@ -426,12 +404,10 @@ public final class XwXmlRpcClient extends XmlRpcClient {
 					logger.debug(line);
 					line = line.toLowerCase();
 					if (line.startsWith("content-length:")) {
-						contentLength = Integer.parseInt(line.substring(15)
-								.trim());
+						contentLength = Integer.parseInt(line.substring(15).trim());
 					}
 					if (line.startsWith("connection:")) {
-						keepalive = XmlRpc.getKeepAlive()
-								&& (line.indexOf("keep-alive") > -1);
+						keepalive = XmlRpc.getKeepAlive() && (line.indexOf("keep-alive") > -1);
 					}
 				}
 			} while ((line != null) && !line.equals(""));
@@ -471,7 +447,7 @@ public final class XwXmlRpcClient extends XmlRpcClient {
 	/**
 	 * Just for testing.
 	 */
-	public static void main(String args[]) throws Exception {
+	public static void main(final String args[]) throws Exception {
 		try {
 			final String url = args[0];
 			final String method = args[1];
@@ -491,8 +467,7 @@ public final class XwXmlRpcClient extends XmlRpcClient {
 			}
 		} catch (final Exception x) {
 			System.err.println(x);
-			System.err
-					.println("Usage: java helma.xmlrpc.XmlRpcClient <url> <method> <arg> ....");
+			System.err.println("Usage: java helma.xmlrpc.XmlRpcClient <url> <method> <arg> ....");
 			System.err.println("Arguments are sent as integers or strings.");
 		}
 	}
