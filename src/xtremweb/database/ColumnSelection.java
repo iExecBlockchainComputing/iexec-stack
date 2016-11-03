@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -23,12 +23,10 @@
 
 package xtremweb.database;
 
-import xtremweb.database.SQLRequest;
-
 /**
  * This helps to retrieve table columns from DB. This can be used to retrieve
  * either all columns, or UID only.
- * 
+ *
  * @author <A HREF="mailto:lodygens /at\ lal.in2p3.fr">Oleg Lodygensky </A>
  * @since 5.8.0
  */
@@ -53,7 +51,7 @@ public class ColumnSelection {
 
 		/**
 		 * This retreives a string to select rows in SQL request
-		 * 
+		 *
 		 * @see #selectionStrings
 		 * @return a non formatted string to select rows in SQL request
 		 */
@@ -65,28 +63,24 @@ public class ColumnSelection {
 	/**
 	 * This are the strings to use in SQL request
 	 */
-	public static final String[] selectionStrings = {
-			SQLRequest.MAINTABLEALIAS + ".uid as " + SQLRequest.UIDLABEL,
-			SQLRequest.MAINTABLEALIAS + ".uid as " + SQLRequest.UIDLABEL + ", "
-					+ SQLRequest.MAINTABLEALIAS + ".*", "count(*) as count" };
+	public static final String[] selectionStrings = { SQLRequest.MAINTABLEALIAS + ".uid as " + SQLRequest.UIDLABEL,
+			SQLRequest.MAINTABLEALIAS + ".uid as " + SQLRequest.UIDLABEL + ", " + SQLRequest.MAINTABLEALIAS + ".*",
+			"count(*) as count" };
 
 	private final SelectionType selection;
 
 	/**
 	 * This is used to retreive UID column only
 	 */
-	public static final ColumnSelection selectUID = new ColumnSelection(
-			SelectionType.UID);
+	public static final ColumnSelection selectUID = new ColumnSelection(SelectionType.UID);
 	/**
 	 * This is used to retreive all columns
 	 */
-	public static final ColumnSelection selectAll = new ColumnSelection(
-			SelectionType.ALL);
+	public static final ColumnSelection selectAll = new ColumnSelection(SelectionType.ALL);
 	/**
 	 * This is used to retreive row count
 	 */
-	public static final ColumnSelection selectCount = new ColumnSelection(
-			SelectionType.COUNT);
+	public static final ColumnSelection selectCount = new ColumnSelection(SelectionType.COUNT);
 
 	/**
 	 * This is the default constructor. This sets selection to SELECTIONTYPE.ALL
@@ -97,11 +91,11 @@ public class ColumnSelection {
 
 	/**
 	 * This is constructor for the given selection
-	 * 
+	 *
 	 * @param s
 	 *            is the selection type (ALL or UID)
 	 */
-	public ColumnSelection(SelectionType s) {
+	public ColumnSelection(final SelectionType s) {
 		selection = s;
 	}
 
@@ -122,7 +116,7 @@ public class ColumnSelection {
 
 	/**
 	 * This retreives the selection string
-	 * 
+	 *
 	 * @return unformatted selection string
 	 */
 	public String selectionString() {

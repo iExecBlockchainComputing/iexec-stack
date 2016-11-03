@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -25,9 +25,9 @@
  * DBConnPoolThread.java
  * This class connects to DB and executes query.
  * This class extends java.lang.Thread to execute SQL query in background
- * 
+ *
  * Created: Sun Jun 20 2011
- * 
+ *
  * @author <a href="mailto:lodygens /at\ lal.in2p3.fr ">Oleg Lodygensky</a>
  * @since 7.5.0
  */
@@ -49,35 +49,37 @@ import java.util.Vector;
 
 import xtremweb.common.Logger;
 import xtremweb.common.MileStone;
+import xtremweb.common.StatusEnum;
 import xtremweb.common.Table;
 import xtremweb.common.Type;
 import xtremweb.common.UID;
 import xtremweb.common.WorkInterface;
 import xtremweb.common.XWConfigurator;
 import xtremweb.common.XWPropertyDefs;
-import xtremweb.common.StatusEnum;
 
 /**
  * This is a threaded version of DBConnPool to improve performances This acts as
  * DBConnPool for insert, select and delete This uses a FIFO for update
- * 
+ *
  * @author Oleg Lodygensky
  * @since 7.5.0
  */
 public class DBConnPoolThread extends Thread {
 
 	/**
-	 * This stores the table history suffix name = "_history"
-	 * This was in xtremweb.dispatcher.TableRow until 9.0.0
+	 * This stores the table history suffix name = "_history" This was in
+	 * xtremweb.dispatcher.TableRow until 9.0.0
+	 *
 	 * @since 9.0.0
 	 */
 	public static final String HISTORYSUFFIX = "_history";
 
 	/**
 	 * Configurator
+	 *
 	 * @since 9.0.0
 	 */
-	private  XWConfigurator config;
+	private XWConfigurator config;
 
 	private Logger logger;
 	/**
@@ -98,7 +100,7 @@ public class DBConnPoolThread extends Thread {
 	private List<Connection> connPool;
 	/**
 	 * This is a synchronized list used as a FIFO, containing update requests
-	 * 
+	 *
 	 * @since 7.5.0
 	 */
 	private List<String> updateFifo;
@@ -126,16 +128,11 @@ public class DBConnPoolThread extends Thread {
 
 		config = c;
 
-		MAXX_CONNECTIONS = config
-				.getInt(XWPropertyDefs.DBCONNECTIONS);
+		MAXX_CONNECTIONS = config.getInt(XWPropertyDefs.DBCONNECTIONS);
 		logger.config("MAXX_CONNECTIONS = " + MAXX_CONNECTIONS);
 		try {
-			dburl = "jdbc:"
-					+ config
-					.getProperty(XWPropertyDefs.DBVENDOR) + "://"
-					+ config.getProperty(XWPropertyDefs.DBHOST)
-					+ "/"
-					+ config.getProperty(XWPropertyDefs.DBNAME);
+			dburl = "jdbc:" + config.getProperty(XWPropertyDefs.DBVENDOR) + "://"
+					+ config.getProperty(XWPropertyDefs.DBHOST) + "/" + config.getProperty(XWPropertyDefs.DBNAME);
 			logger.config("org.gjt.mm.mysql.Driver");
 			Class.forName("org.gjt.mm.mysql.Driver");
 		} catch (final java.lang.ClassNotFoundException e) {
@@ -144,10 +141,8 @@ public class DBConnPoolThread extends Thread {
 
 		className = getClass().getName();
 
-		logger.config("dburl      = '" + dburl + "' " + "dbuser     = '"
-				+ config.getProperty(XWPropertyDefs.DBUSER)
-				+ "' dbpassword = '"
-				+ config.getProperty(XWPropertyDefs.DBPASS) + "'");
+		logger.config("dburl      = '" + dburl + "' " + "dbuser     = '" + config.getProperty(XWPropertyDefs.DBUSER)
+				+ "' dbpassword = '" + config.getProperty(XWPropertyDefs.DBPASS) + "'");
 
 		connPool = Collections.synchronizedList(new LinkedList<Connection>());
 		updateFifo = Collections.synchronizedList(new LinkedList<String>());
@@ -155,11 +150,8 @@ public class DBConnPoolThread extends Thread {
 		for (int i = 0; i < MAXX_CONNECTIONS; i++) {
 
 			try {
-				final Connection conn = getConnection(dburl,
-						config.getProperty(XWPropertyDefs.DBUSER
-								.toString()),
-								config.getProperty(XWPropertyDefs.DBPASS
-										.toString()));
+				final Connection conn = getConnection(dburl, config.getProperty(XWPropertyDefs.DBUSER.toString()),
+						config.getProperty(XWPropertyDefs.DBPASS.toString()));
 				if (conn != null) {
 					pushConnection(conn);
 				}
@@ -168,8 +160,7 @@ public class DBConnPoolThread extends Thread {
 			}
 		}
 
-		logger.info("Connection to database " + dburl + " is ok, "
-				+ connPool.size() + " created");
+		logger.info("Connection to database " + dburl + " is ok, " + connPool.size() + " created");
 		nbConnections = 0;
 
 		checkAppTypes();
@@ -182,8 +173,8 @@ public class DBConnPoolThread extends Thread {
 	/**
 	 * This creates a new database connector
 	 */
-	private Connection getConnection(String dbname, String dbuser,
-			String dbpassword) throws SQLException {
+	private Connection getConnection(final String dbname, final String dbuser, final String dbpassword)
+			throws SQLException {
 
 		return DriverManager.getConnection(dbname, dbuser, dbpassword);
 	}
@@ -191,7 +182,7 @@ public class DBConnPoolThread extends Thread {
 	/**
 	 * This waits until nbConnections &lt; MAXX_CONNECTIONS; then this
 	 * decrements nbConnections and create a new Connection
-	 * 
+	 *
 	 * @see #nbConnections
 	 */
 	private synchronized Connection popConnection() {
@@ -211,10 +202,10 @@ public class DBConnPoolThread extends Thread {
 
 	/**
 	 * This increments nbConnections
-	 * 
+	 *
 	 * @see #nbConnections
 	 */
-	private synchronized void pushConnection(Connection conn) {
+	private synchronized void pushConnection(final Connection conn) {
 		nbConnections--;
 		if (nbConnections < 0) {
 			nbConnections = 0;
@@ -247,9 +238,14 @@ public class DBConnPoolThread extends Thread {
 
 	/**
 	 * This checks application types defined in DB by scripts:
-	 * <ul><li>xwhep-core-tables-create-tables.sql</li></ul> 
+	 * <ul>
+	 * <li>xwhep-core-tables-create-tables.sql</li>
+	 * </ul>
 	 * and/or
-	 * <ul><li>xwhep-core-tables-from-8-create-new-tables-columns-fk.sql</li></ul>
+	 * <ul>
+	 * <li>xwhep-core-tables-from-8-create-new-tables-columns-fk.sql</li>
+	 * </ul>
+	 *
 	 * @since 9.0.0
 	 */
 	private final void checkAppTypes() {
@@ -257,36 +253,35 @@ public class DBConnPoolThread extends Thread {
 
 	/**
 	 * This executes SQL query
-	 * 
+	 *
 	 * @param query
 	 *            is the SQL query to execute
 	 * @param row
 	 *            is the row type
 	 * @return a vector of rows found in DB, or null if no row found
 	 */
-	protected final synchronized <T extends Type> Collection<T> executeQuery(
-			String query, T row) throws IOException {
+	protected final synchronized <T extends Type> Collection<T> executeQuery(final String query, final T row)
+			throws IOException {
 		return executeQuery(null, query, row);
 	}
 
 	/**
 	 * This executes SQL query
-	 * 
+	 *
 	 * @param query
 	 *            is the SQL query to execute
 	 * @param row
 	 *            is the row type
 	 * @return a vector of rows found in DB, or null if no row found
 	 */
-	protected final synchronized <T extends Type> Collection<T> executeQuery(
-			Connection conn, String query, T row) throws IOException {
+	protected final synchronized <T extends Type> Collection<T> executeQuery(final Connection conn, final String query,
+			final T row) throws IOException {
 
 		MileStone mileStone = new MileStone(xtremweb.database.DBConnPoolThread.class);
 
 		// remove comma from milestone to be able to generate CSV files
 		// using benchmarks/milstone/scripts/parse.awk
-		final String mq = query.substring(0, Math.min(query.length(), 80)).replace(
-				',', '_');
+		final String mq = query.substring(0, Math.min(query.length(), 80)).replace(',', '_');
 		mileStone.println("<executeQuery>" + mq + "...");
 
 		Connection dbConn = conn;
@@ -391,21 +386,19 @@ public class DBConnPoolThread extends Thread {
 
 	/**
 	 * This executes SQL query
-	 * 
+	 *
 	 * @param query
 	 *            is the SQL query to execute
 	 * @return a vector of rows found in DB, or null if no row found
 	 */
-	protected synchronized Vector<UID> queryUID(String query)
-			throws IOException {
+	protected synchronized Vector<UID> queryUID(final String query) throws IOException {
 
 		MileStone mileStone = new MileStone(xtremweb.database.DBConnPoolThread.class);
 
 		if (query.length() < 80) {
 			mileStone.println("<executeQuery>" + query);
 		} else {
-			mileStone
-			.println("<executeQuery>" + query.substring(0, 80) + "...");
+			mileStone.println("<executeQuery>" + query.substring(0, 80) + "...");
 		}
 
 		Connection dbConn = null;
@@ -500,26 +493,25 @@ public class DBConnPoolThread extends Thread {
 	/**
 	 * This updates the objects contained in the provided vector in the database
 	 * table, if needed
-	 * 
+	 *
 	 * @param rows
 	 *            is the vector of rows to update
 	 */
-	public synchronized <T extends Table> void update(Collection<T> rows)
-			throws IOException {
+	public synchronized <T extends Table> void update(final Collection<T> rows) throws IOException {
 		update(rows, null);
 	}
 
 	/**
 	 * This updates objects in the database table
-	 * 
+	 *
 	 * @param rows
 	 *            is a vector of rows to update
 	 * @param _criterias
 	 *            is string to use in SQL SELECT WHERE clause if not null
 	 *            otherwise TableRow#criterias() is used
 	 */
-	public synchronized <T extends Table> void update(Collection<T> rows,
-			String _criterias) throws IOException {
+	public synchronized <T extends Table> void update(final Collection<T> rows, final String _criterias)
+			throws IOException {
 
 		try {
 			final Iterator<T> rowit = rows.iterator();
@@ -535,10 +527,8 @@ public class DBConnPoolThread extends Thread {
 					throw new IOException("unable to get update criteria");
 				}
 
-				final String query = "UPDATE "
-						+ config.getProperty(XWPropertyDefs.DBNAME)
-						+ "." + row.tableName() + " SET " + rowset + " WHERE "
-						+ criterias;
+				final String query = "UPDATE " + config.getProperty(XWPropertyDefs.DBNAME) + "." + row.tableName()
+						+ " SET " + rowset + " WHERE " + criterias;
 
 				updateFifo.add(query);
 				notify();
@@ -551,26 +541,25 @@ public class DBConnPoolThread extends Thread {
 
 	/**
 	 * This calls update(row, null, true)
-	 * 
+	 *
 	 * @see #update(Table, String, boolean)
 	 */
-	public <T extends Table> void update(T row) throws IOException {
+	public <T extends Table> void update(final T row) throws IOException {
 		update(row, null, true);
 	}
 
 	/**
 	 * This calls update(row, criteria, true)
-	 * 
+	 *
 	 * @see #update(Table, String, boolean)
 	 */
-	public synchronized <T extends Table> void update(T row, String criteria)
-			throws IOException {
+	public synchronized <T extends Table> void update(final T row, final String criteria) throws IOException {
 		update(row, criteria, true);
 	}
 
 	/**
 	 * This updates this object in the database table, if needed
-	 * 
+	 *
 	 * @param row
 	 *            is the row to update
 	 * @param criteria
@@ -579,8 +568,8 @@ public class DBConnPoolThread extends Thread {
 	 * @param pool
 	 *            uses pool mode if true; execute query immediately if false
 	 */
-	public synchronized <T extends Table> void update(T row,
-			String criteria, boolean pool) throws IOException {
+	public synchronized <T extends Table> void update(final T row, String criteria, final boolean pool)
+			throws IOException {
 
 		try {
 			final String rowset = row.toString();
@@ -592,10 +581,8 @@ public class DBConnPoolThread extends Thread {
 				throw new IOException("unable to get update criteria");
 			}
 
-			final String query = "UPDATE "
-					+ config.getProperty(XWPropertyDefs.DBNAME)
-					+ "." + row.tableName() + " SET " + rowset + " WHERE "
-					+ criteria;
+			final String query = "UPDATE " + config.getProperty(XWPropertyDefs.DBNAME) + "." + row.tableName() + " SET "
+					+ rowset + " WHERE " + criteria;
 
 			if (pool == true) {
 				logger.finest("updateFifo.add(" + query + ")");
@@ -614,30 +601,24 @@ public class DBConnPoolThread extends Thread {
 	/**
 	 * This creates a FROM sql statement part for the given row in the form
 	 * "dbname.t1 [...][,dbname.t2 [...]]"
-	 * 
+	 *
 	 * @see TableRow#fromTableNames()
 	 * @since 7.0.0
 	 * @param row
 	 *            is the TableRow to use in SQL statement
 	 * @return a String containing the FROM SQL statement part
 	 */
-	private String rowTableNames(Type row) throws IOException {
+	private String rowTableNames(final Type row) throws IOException {
 		if (row == null) {
 			throw new IOException("row is null ?!?!");
 		}
-		return config.getProperty(XWPropertyDefs.DBNAME)
-				+ "."
-				+ row.fromTableNames().replaceAll(
-						",",
-						","
-								+ config
-								.getProperty(XWPropertyDefs.DBNAME)
-								+ ".");
+		return config.getProperty(XWPropertyDefs.DBNAME) + "."
+				+ row.fromTableNames().replaceAll(",", "," + config.getProperty(XWPropertyDefs.DBNAME) + ".");
 	}
 
 	/**
 	 * This select rows from table
-	 * 
+	 *
 	 * @param row
 	 *            is the row type
 	 * @param criterias
@@ -646,10 +627,9 @@ public class DBConnPoolThread extends Thread {
 	 * @see Table#criteria()
 	 * @since 10.0.0
 	 */
-	public <T extends Type> T selectOne(final T row, final String criterias)
-			throws IOException {
+	public <T extends Type> T selectOne(final T row, final String criterias) throws IOException {
 
-		final Vector<T> v = (Vector<T>)select(row, criterias, 1);
+		final Vector<T> v = (Vector<T>) select(row, criterias, 1);
 		if (v == null) {
 			return null;
 		}
@@ -658,7 +638,7 @@ public class DBConnPoolThread extends Thread {
 
 	/**
 	 * This rows from table
-	 * 
+	 *
 	 * @param row
 	 *            is the row type
 	 * @param criterias
@@ -667,21 +647,21 @@ public class DBConnPoolThread extends Thread {
 	 * @see Table#criteria()
 	 * @since 10.0.0
 	 */
-	public <T extends Type> Collection<T> selectAll(final T row, final String criterias)
-			throws IOException {
+	public <T extends Type> Collection<T> selectAll(final T row, final String criterias) throws IOException {
 
 		return select(row, criterias, config.requestLimit());
 	}
 
 	/**
 	 * This select rows from table
-	 * 
+	 *
 	 * @param row
 	 *            is the row type
 	 * @param criterias
 	 *            is string to use in SQL SELECT WHERE clause if not null
 	 *            otherwise TableInterface#criteria() is used
-	 * @param limit is the max expected amount of rows
+	 * @param limit
+	 *            is the max expected amount of rows
 	 * @see Table#criteria()
 	 */
 	public <T extends Type> Collection<T> select(final T row, final String criterias, final int limit)
@@ -691,26 +671,22 @@ public class DBConnPoolThread extends Thread {
 			final String groupBy = row.groupBy();
 			final String rowcriteria = row.criteria();
 			String conditions = null;
-			if(rowcriteria != null) {
+			if (rowcriteria != null) {
 				conditions = rowcriteria;
-				if(criterias != null) {
+				if (criterias != null) {
 					conditions += " AND " + criterias;
 				}
 			} else {
-				if(criterias != null) {
-					conditions =  criterias;
+				if (criterias != null) {
+					conditions = criterias;
 				}
 			}
-			final String query = "SELECT "
-					+ row.rowSelection()
-					+ " FROM "
-					+ rowTableNames(row)
+			final String query = "SELECT " + row.rowSelection() + " FROM " + rowTableNames(row)
 					+ (conditions == null ? "" : " WHERE " + conditions)
-					+ (groupBy    == null ? "" : " GROUP BY " + groupBy)
-					+ " LIMIT " + limit;
-//					+ " LIMIT " + config.requestLimit();
+					+ (groupBy == null ? "" : " GROUP BY " + groupBy) + " LIMIT " + limit;
+			// + " LIMIT " + config.requestLimit();
 
-			return  executeQuery(query, row);
+			return executeQuery(query, row);
 		} catch (final Exception e) {
 			logger.exception(e);
 			throw new IOException(e.toString());
@@ -719,17 +695,17 @@ public class DBConnPoolThread extends Thread {
 
 	/**
 	 * This reads from DB
-	 * 
+	 *
 	 * @param row
 	 *            is the row type
 	 */
-	public <T extends Type> Collection<T> select(T row) throws IOException {
-		return select(row, null,config.requestLimit());
+	public <T extends Type> Collection<T> select(final T row) throws IOException {
+		return select(row, null, config.requestLimit());
 	}
 
 	/**
 	 * This retrieves UID from table
-	 * 
+	 *
 	 * @param row
 	 *            is the row type
 	 * @param criterias
@@ -737,32 +713,27 @@ public class DBConnPoolThread extends Thread {
 	 *            otherwise TableInterface#criteria() is used
 	 * @see Table#criteria()
 	 */
-	public <T extends Table> Vector<UID> selectUID(final T row, final String criterias)
-			throws IOException {
+	public <T extends Table> Vector<UID> selectUID(final T row, final String criterias) throws IOException {
 
-		if(row.criteria() == null) {
+		if (row.criteria() == null) {
 			throw new IOException("row.criteria == null ?!?");
 		}
 
 		try {
 			final String rowcriteria = row.criteria();
 			String conditions = null;
-			if(rowcriteria != null) {
+			if (rowcriteria != null) {
 				conditions = rowcriteria;
-				if(criterias != null) {
+				if (criterias != null) {
 					conditions += " AND " + criterias;
 				}
 			} else {
-				if(criterias != null) {
-					conditions =  criterias;
+				if (criterias != null) {
+					conditions = criterias;
 				}
 			}
-			final String query = "SELECT "
-					+ row.rowSelection()
-					+ " FROM "
-					+ rowTableNames(row)
-					+ (conditions == null ? "" : " WHERE " + conditions)
-					+ " LIMIT " + config.requestLimit();
+			final String query = "SELECT " + row.rowSelection() + " FROM " + rowTableNames(row)
+					+ (conditions == null ? "" : " WHERE " + conditions) + " LIMIT " + config.requestLimit();
 
 			final Vector<UID> ret = queryUID(query);
 			return ret;
@@ -774,11 +745,11 @@ public class DBConnPoolThread extends Thread {
 
 	/**
 	 * This inserts this object in DB
-	 * 
+	 *
 	 * @param row
 	 *            is the row to insert
 	 */
-	public <T extends Type> void insert(T row) throws IOException {
+	public <T extends Type> void insert(final T row) throws IOException {
 
 		final String criteria = row.valuesToString();
 
@@ -786,11 +757,8 @@ public class DBConnPoolThread extends Thread {
 			throw new IOException("unable to get insertion criteria");
 		}
 
-		final String query = "INSERT INTO "
-				+ config.getProperty(XWPropertyDefs.DBNAME) + "."
-				+ row.tableName()
-				+ ("(") + row.getColumns() + (") ") + " VALUES (" + criteria
-				+ ")";
+		final String query = "INSERT INTO " + config.getProperty(XWPropertyDefs.DBNAME) + "." + row.tableName() + ("(")
+				+ row.getColumns() + (") ") + " VALUES (" + criteria + ")";
 
 		executeQuery(query, row);
 	}
@@ -798,11 +766,11 @@ public class DBConnPoolThread extends Thread {
 	/**
 	 * Since XWHEP 1.0.0, this does not delete row from table but updates the
 	 * row and sets isdeleted flag to true. Hence the row stays in table.
-	 * 
+	 *
 	 * @param row
 	 *            is the to delete
 	 */
-	public <T extends Table> void delete(T row) throws IOException {
+	public <T extends Table> void delete(final T row) throws IOException {
 
 		try {
 			final String criteria = row.criteria();
@@ -810,20 +778,13 @@ public class DBConnPoolThread extends Thread {
 				throw new IOException("unable to get delete criteria");
 			}
 
-			String query = "INSERT INTO "
-					+ config.getProperty(XWPropertyDefs.DBNAME)
-					+ "."
-					+ row.tableName() + HISTORYSUFFIX
-					+ " SELECT * FROM "
-					+ config.getProperty(XWPropertyDefs.DBNAME)
-					+ "." + row.tableName()
-					+ " WHERE " + criteria;
+			String query = "INSERT INTO " + config.getProperty(XWPropertyDefs.DBNAME) + "." + row.tableName()
+					+ HISTORYSUFFIX + " SELECT * FROM " + config.getProperty(XWPropertyDefs.DBNAME) + "."
+					+ row.tableName() + " WHERE " + criteria;
 			executeQuery(query, row);
 
-			query = "DELETE FROM "
-					+ config.getProperty(XWPropertyDefs.DBNAME)
-					+ "." + row.tableName() +
-					" WHERE " + criteria;
+			query = "DELETE FROM " + config.getProperty(XWPropertyDefs.DBNAME) + "." + row.tableName() + " WHERE "
+					+ criteria;
 			executeQuery(query, row);
 		} catch (final Exception e) {
 			logger.exception(e);
@@ -833,24 +794,18 @@ public class DBConnPoolThread extends Thread {
 
 	/**
 	 * This set all server works to WAITING status
-	 * 
+	 *
 	 * @param serverName
 	 *            is the server name
 	 */
-	public void unlockWorks(String serverName) {
+	public void unlockWorks(final String serverName) {
 		try {
-			String query = "UPDATE "
-					+ config.getProperty(XWPropertyDefs.DBNAME)
-					+ ".works SET " + WorkInterface.Columns.STATUS.toString()
-					+ "='" + StatusEnum.WAITING + "',"
-					+ WorkInterface.Columns.SERVER.toString()
-					+ "='NULL'  WHERE "
-					+ WorkInterface.Columns.SERVER.toString() + "='"
-					+ serverName + "' and(("
-					+ WorkInterface.Columns.STATUS.toString() + "='"
-					+ StatusEnum.WAITING + "' or "
-					+ WorkInterface.Columns.STATUS.toString() + "='"
-					+ StatusEnum.PENDING + "')";
+			String query = "UPDATE " + config.getProperty(XWPropertyDefs.DBNAME) + ".works SET "
+					+ WorkInterface.Columns.STATUS.toString() + "='" + StatusEnum.WAITING + "',"
+					+ WorkInterface.Columns.SERVER.toString() + "='NULL'  WHERE "
+					+ WorkInterface.Columns.SERVER.toString() + "='" + serverName + "' and(("
+					+ WorkInterface.Columns.STATUS.toString() + "='" + StatusEnum.WAITING + "' or "
+					+ WorkInterface.Columns.STATUS.toString() + "='" + StatusEnum.PENDING + "')";
 
 			query += " OR ISNULL(status))";
 
@@ -868,9 +823,10 @@ public class DBConnPoolThread extends Thread {
 	}
 
 	/**
-	 * @param instance the instance to set
+	 * @param instance
+	 *            the instance to set
 	 */
-	public static void setInstance(DBConnPoolThread instance) {
+	public static void setInstance(final DBConnPoolThread instance) {
 		DBConnPoolThread.instance = instance;
 	}
 }

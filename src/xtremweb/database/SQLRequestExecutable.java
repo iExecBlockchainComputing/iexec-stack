@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -32,7 +32,7 @@ import xtremweb.security.XWAccessRights;
 /**
  * This extends SQLRequestAccessible so that SQL request retrieves all readable
  * and executable rows
- * 
+ *
  * @author <A HREF="mailto:lodygens /at\ lal.in2p3.fr">Oleg Lodygensky </A>
  * @see xtremweb.security.XWAccessRights
  * @since 7.0.0
@@ -51,10 +51,8 @@ public class SQLRequestExecutable extends SQLRequestAccessible {
 	 * This sets other and group accesses
 	 */
 	private void setAccesses() {
-		setOtherAccess(XWAccessRights.OTHERREAD_INT
-				| XWAccessRights.OTHEREXEC_INT);
-		setGroupAccess(XWAccessRights.GROUPREAD_INT
-				| XWAccessRights.GROUPEXEC_INT);
+		setOtherAccess(XWAccessRights.OTHERREAD_INT | XWAccessRights.OTHEREXEC_INT);
+		setGroupAccess(XWAccessRights.GROUPREAD_INT | XWAccessRights.GROUPEXEC_INT);
 	}
 
 	/**
@@ -63,7 +61,7 @@ public class SQLRequestExecutable extends SQLRequestAccessible {
 	 * @param t
 	 *            is the table name
 	 */
-	public SQLRequestExecutable(String t, UserInterface u) throws IOException {
+	public SQLRequestExecutable(final String t, final UserInterface u) throws IOException {
 		super(t, u);
 		setAccesses();
 	}
@@ -76,7 +74,7 @@ public class SQLRequestExecutable extends SQLRequestAccessible {
 	 * @param uid
 	 *            is the row UID
 	 */
-	public SQLRequestExecutable(String t, UserInterface u, UID uid) throws IOException {
+	public SQLRequestExecutable(final String t, final UserInterface u, final UID uid) throws IOException {
 		super(t, u, uid);
 		setAccesses();
 	}
@@ -89,7 +87,7 @@ public class SQLRequestExecutable extends SQLRequestAccessible {
 	 * @param c
 	 *            contains more criteria
 	 */
-	public SQLRequestExecutable(String t, UserInterface u, String c) throws IOException {
+	public SQLRequestExecutable(final String t, final UserInterface u, final String c) throws IOException {
 		super(t, u, c);
 		setAccesses();
 	}
@@ -102,8 +100,7 @@ public class SQLRequestExecutable extends SQLRequestAccessible {
 	 * @param s
 	 *            is the column selection
 	 */
-	public SQLRequestExecutable(String t, UserInterface u, ColumnSelection s)
-			throws IOException {
+	public SQLRequestExecutable(final String t, final UserInterface u, final ColumnSelection s) throws IOException {
 		super(t, u, s);
 		setAccesses();
 	}
@@ -118,7 +115,7 @@ public class SQLRequestExecutable extends SQLRequestAccessible {
 	 * @param uid
 	 *            is the UID of the object to retrieve
 	 */
-	public SQLRequestExecutable(String t, UserInterface u, ColumnSelection s, UID uid)
+	public SQLRequestExecutable(final String t, final UserInterface u, final ColumnSelection s, final UID uid)
 			throws IOException {
 		super(t, u, s, uid);
 		setAccesses();
@@ -134,7 +131,7 @@ public class SQLRequestExecutable extends SQLRequestAccessible {
 	 * @param c
 	 *            contains more criteria
 	 */
-	public SQLRequestExecutable(String t, UserInterface u, ColumnSelection s, String c)
+	public SQLRequestExecutable(final String t, final UserInterface u, final ColumnSelection s, final String c)
 			throws IOException {
 		super(t, u, s, c);
 		setAccesses();

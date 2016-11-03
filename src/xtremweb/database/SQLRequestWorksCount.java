@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -26,23 +26,23 @@ package xtremweb.database;
 import java.io.IOException;
 import java.sql.ResultSet;
 
-import xtremweb.common.WorkInterface;
 import xtremweb.common.StatusEnum;
+import xtremweb.common.WorkInterface;
 
 /**
  * This is a decorator pattern aiming to implement SQL requests used to retreive
  * objects from DB. This implements the SQL request to retreive works count with
  * the given status from DB.<br />
  * This retrieves results from SQL statement:
- * 
+ *
  * <pre>
  *   SELECT count(*) as count
  *   FROM works
- *   WHERE status="&lt;aStatus&gt;" 
+ *   WHERE status="&lt;aStatus&gt;"
  *     AND works.isdeleted="false"
  *   LIMIT 1000
  * </pre>
- * 
+ *
  * @author <a href="mailto:lodygens /at\ lal.in2p3.fr">Oleg Lodygensky </a>
  * @since 5.8.0
  */
@@ -72,27 +72,28 @@ public class SQLRequestWorksCount extends WorkInterface {
 
 	/**
 	 * This sets the status to the given one
-	 * 
+	 *
 	 * @param s
 	 *            is the status of the works to retreive from DB
 	 */
-	public SQLRequestWorksCount(StatusEnum s) {
+	public SQLRequestWorksCount(final StatusEnum s) {
 		this();
 		status = s;
 	}
 
 	/**
 	 * This calls fills(r)
+	 *
 	 * @see WorkInterface#fill(ResultSet)
 	 */
-	public SQLRequestWorksCount(ResultSet r) throws IOException {
+	public SQLRequestWorksCount(final ResultSet r) throws IOException {
 		this();
 		fill(r);
 	}
 
 	/**
 	 * This aims to retrieve rows for the "SELECT" SQL statement.
-	 * 
+	 *
 	 * @return "users.uid, users.login,count(*)"
 	 * @since 5.8.0
 	 */
@@ -103,12 +104,12 @@ public class SQLRequestWorksCount extends WorkInterface {
 
 	/**
 	 * This fills this object with data from DB
-	 * 
+	 *
 	 * @param rs
 	 *            is a ResultSet read from DB
 	 */
 	@Override
-	public final void fill(ResultSet rs) throws IOException {
+	public final void fill(final ResultSet rs) throws IOException {
 		try {
 			setCount(rs.getInt(Columns.COUNT.toString()));
 		} catch (final Exception e) {
@@ -120,13 +121,13 @@ public class SQLRequestWorksCount extends WorkInterface {
 	/**
 	 * This sets the count member
 	 */
-	public void setCount(int c) throws IOException {
+	public void setCount(final int c) throws IOException {
 		count = c;
 	}
 
 	/**
 	 * This gets parameter
-	 * 
+	 *
 	 * @return the expected parameter
 	 */
 	public int getCount() throws IOException {

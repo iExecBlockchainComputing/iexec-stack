@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -26,8 +26,6 @@ package xtremweb.database;
 import java.io.IOException;
 import java.sql.ResultSet;
 
-import org.xml.sax.Attributes;
-
 import xtremweb.common.StatusEnum;
 import xtremweb.common.Table;
 import xtremweb.common.UID;
@@ -37,10 +35,10 @@ import xtremweb.common.UID;
  * objects from DB. This implements the SQL request to retrieve PENDING and
  * RUNNING works count for all users and also for the given user.<br />
  * This retrieves results from SQL statement:
- * 
+ *
  * <pre>
  *   select login,
- *          uid as theuid, 
+ *          uid as theuid,
  *          (select count(*) from works
  *           where works.isdeleted='false'
  *   	  and works.owneruid=theuid
@@ -65,29 +63,23 @@ import xtremweb.common.UID;
  *   where users.isdeleted='false'
  *   group by users.uid;
  * </pre>
- * 
+ *
  * @author <A HREF="mailto:lodygens /at\ lal.in2p3.fr">Oleg Lodygensky </A>
  * @since 5.8.0
  */
 public class SQLRequestUserWorksCountAll extends Table {
 
 	private static final String TABLENAME = "users";
-	private static final String SELECTIONROW = "login," + "uid as theuid, "
-			+ "   (select count(*) from works "
+	private static final String SELECTIONROW = "login," + "uid as theuid, " + "   (select count(*) from works "
 			+ "where works.isdeleted='false'" + "	  and works.owneruid=theuid"
-			+ "	  and status='WAITING') as waitings,"
-			+ "   (select count(*) from works "
+			+ "	  and status='WAITING') as waitings," + "   (select count(*) from works "
 			+ "where works.isdeleted='false'" + "	  and works.owneruid=theuid"
-			+ "	  and status='PENDING') as pendings,"
-			+ "   (select count(*) from works "
+			+ "	  and status='PENDING') as pendings," + "   (select count(*) from works "
 			+ "where works.isdeleted='false'" + "	  and works.owneruid=theuid"
-			+ "	  and status='RUNNING') as runnings,"
-			+ "   (select count(*) from works "
+			+ "	  and status='RUNNING') as runnings," + "   (select count(*) from works "
 			+ "where works.isdeleted='false'" + "	  and works.owneruid=theuid"
-			+ "	  and status='ERROR') as errors,"
-			+ "   (select count(*) from works "
-			+ "    where works.isdeleted='false'"
-			+ "	  and works.owneruid=theuid"
+			+ "	  and status='ERROR') as errors," + "   (select count(*) from works "
+			+ "    where works.isdeleted='false'" + "	  and works.owneruid=theuid"
 			+ "	  and status='COMPLETED') as completeds";
 
 	/**
@@ -128,21 +120,21 @@ public class SQLRequestUserWorksCountAll extends Table {
 	/**
 	 * This is the default constructor It creates a new object which is **not**
 	 * written in the database
-	 * 
+	 *
 	 * @param s
 	 *            is the status of the works to retrieve from DB
 	 */
-	public SQLRequestUserWorksCountAll(StatusEnum s) {
+	public SQLRequestUserWorksCountAll(final StatusEnum s) {
 		this();
 		status = s;
 	}
 
 	/**
 	 * This constructor instanciates an object from data read from an SQL table
-	 * 
+	 *
 	 * @see #fill(ResultSet)
 	 */
-	public SQLRequestUserWorksCountAll(ResultSet rs) throws IOException {
+	public SQLRequestUserWorksCountAll(final ResultSet rs) throws IOException {
 		super(TABLENAME, TABLENAME);
 		fill(rs);
 	}
@@ -150,7 +142,7 @@ public class SQLRequestUserWorksCountAll extends Table {
 	/**
 	 * This aims to retrieve "GROUP BY" SQL statement. This returns null and
 	 * should be overridden
-	 * 
+	 *
 	 * @return "login"
 	 * @since 5.8.0
 	 */
@@ -161,7 +153,7 @@ public class SQLRequestUserWorksCountAll extends Table {
 
 	/**
 	 * This aims to retrieve rows for the "SELECT" SQL statement.
-	 * 
+	 *
 	 * @return rows for the SELECT SQL statement
 	 * @since 5.8.0
 	 */
@@ -172,12 +164,12 @@ public class SQLRequestUserWorksCountAll extends Table {
 
 	/**
 	 * This fills this object with data from DB
-	 * 
+	 *
 	 * @param rs
 	 *            is a ResultSet read from DB
 	 */
 	@Override
-	public final void fill(ResultSet rs) throws IOException {
+	public final void fill(final ResultSet rs) throws IOException {
 		try {
 			setUID(new UID(rs.getString(Columns.THEUID.toString())));
 		} catch (final Exception e) {
@@ -223,13 +215,13 @@ public class SQLRequestUserWorksCountAll extends Table {
 	/**
 	 * This sets the user login
 	 */
-	protected void setLogin(String l) throws IOException {
+	protected void setLogin(final String l) throws IOException {
 		login = l;
 	}
 
 	/**
 	 * This retrieves the user login
-	 * 
+	 *
 	 * @return the user login
 	 */
 	public String getLogin() throws IOException {
@@ -239,13 +231,13 @@ public class SQLRequestUserWorksCountAll extends Table {
 	/**
 	 * This sets waiting count
 	 */
-	protected void setWaitings(int c) throws IOException {
+	protected void setWaitings(final int c) throws IOException {
 		waitings = c;
 	}
 
 	/**
 	 * This retrieve waiting count
-	 * 
+	 *
 	 * @return waiting amount
 	 */
 	public int waitings() throws IOException {
@@ -255,13 +247,13 @@ public class SQLRequestUserWorksCountAll extends Table {
 	/**
 	 * This sets running count
 	 */
-	private void setPendings(int c) throws IOException {
+	private void setPendings(final int c) throws IOException {
 		pendings = c;
 	}
 
 	/**
 	 * This retrieve pending count
-	 * 
+	 *
 	 * @return pending count
 	 */
 	public int pendings() throws IOException {
@@ -271,13 +263,13 @@ public class SQLRequestUserWorksCountAll extends Table {
 	/**
 	 * This sets running count
 	 */
-	private void setRunnings(int c) throws IOException {
+	private void setRunnings(final int c) throws IOException {
 		runnings = c;
 	}
 
 	/**
 	 * This retrieve running count
-	 * 
+	 *
 	 * @return running count
 	 */
 	public int runnings() throws IOException {
@@ -287,13 +279,13 @@ public class SQLRequestUserWorksCountAll extends Table {
 	/**
 	 * This sets completed count
 	 */
-	private void setCompleteds(int c) throws IOException {
+	private void setCompleteds(final int c) throws IOException {
 		completeds = c;
 	}
 
 	/**
 	 * This retrieve completed count
-	 * 
+	 *
 	 * @return completed count
 	 */
 	public int completeds() throws IOException {
@@ -303,13 +295,13 @@ public class SQLRequestUserWorksCountAll extends Table {
 	/**
 	 * This sets error count
 	 */
-	private void setErrors(int c) throws IOException {
+	private void setErrors(final int c) throws IOException {
 		errors = c;
 	}
 
 	/**
 	 * This retrieve error count
-	 * 
+	 *
 	 * @return error count
 	 */
 	public int errors() throws IOException {
@@ -317,12 +309,11 @@ public class SQLRequestUserWorksCountAll extends Table {
 	}
 
 	@Override
-	public boolean setValue(String attribute, Object v)
-			throws IllegalArgumentException {
+	public boolean setValue(final String attribute, final Object v) throws IllegalArgumentException {
 		return false;
 	}
 
 	@Override
-	public void updateInterface(Table t) throws IOException {
+	public void updateInterface(final Table t) throws IOException {
 	}
 }

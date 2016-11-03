@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -26,15 +26,14 @@ package xtremweb.database;
 import java.io.IOException;
 
 import xtremweb.common.AppInterface;
-import xtremweb.common.AppTypeEnum;
 import xtremweb.common.DataInterface;
 import xtremweb.common.HostInterface;
 import xtremweb.common.Logger;
+import xtremweb.common.StatusEnum;
 import xtremweb.common.UID;
 import xtremweb.common.UserInterface;
 import xtremweb.common.UserRightEnum;
 import xtremweb.common.WorkInterface;
-import xtremweb.common.StatusEnum;
 import xtremweb.security.XWAccessRights;
 
 /**
@@ -43,7 +42,7 @@ import xtremweb.security.XWAccessRights;
  * given host (OS and architecture) and its identity that fulfills security
  * access according to the given host identity. This has two possible SQL
  * criteria, depending on host configuration. <br />
- * 
+ *
  * @author <A HREF="mailto:lodygens /at\ lal.in2p3.fr">Oleg Lodygensky </A>
  * @since 5.8.0
  */
@@ -52,13 +51,11 @@ public class SQLRequestWorkRequest extends SQLRequest {
 	/**
 	 * This contains table names for the FROM part of the SQL request. There
 	 * must not be a space after the comma
-	 * 
+	 *
 	 * @see DBConnPool#rowTableNames(String)
 	 */
-	private static final String TABLENAMES = WorkInterface.TABLENAME + " as "
-			+ MAINTABLEALIAS + "," + AppInterface.TABLENAME + "," 
-			+ UserInterface.TABLENAME + "," + DataInterface.TABLENAME;
-
+	private static final String TABLENAMES = WorkInterface.TABLENAME + " as " + MAINTABLEALIAS + ","
+			+ AppInterface.TABLENAME + "," + UserInterface.TABLENAME + "," + DataInterface.TABLENAME;
 
 	/**
 	 * This is used if host.acceptBin == true. This helps to retrieve any
@@ -80,7 +77,7 @@ public class SQLRequestWorkRequest extends SQLRequest {
 	/**
 	 * This is used if host.acceptBin == false. This retrieves job referring
 	 * shared application only (the worker downloads no binary)
-	 * 
+	 *
 	 * @since 8.0.0
 	 */
 	private static final String WORKREQUESTCRITERIAS_NOBIN = " AND maintable.status='%s'"
@@ -97,62 +94,57 @@ public class SQLRequestWorkRequest extends SQLRequest {
 	 * This concatenates SQLRequestAccessible.CRITERIAS and
 	 * WORKREQUESTCRITERIAS_NOBIN
 	 */
-	private static final String CRITERIAS = SQLRequestAccessible.CRITERIAS
-			+ WORKREQUESTCRITERIAS;
+	private static final String CRITERIAS = SQLRequestAccessible.CRITERIAS + WORKREQUESTCRITERIAS;
 	/**
 	 * This concatenates SQLRequestAccessible.CRITERIAS and
 	 * WORKREQUESTCRITERIAS_NOBIN
 	 */
-	private static final String CRITERIAS_NOBIN = SQLRequestAccessible.CRITERIAS
-			+ WORKREQUESTCRITERIAS_NOBIN;
+	private static final String CRITERIAS_NOBIN = SQLRequestAccessible.CRITERIAS + WORKREQUESTCRITERIAS_NOBIN;
 
 	/**
 	 * This is the equivalent of CRITERIAS for HyperSQL This is only because
 	 * HSQLDB does not accept '&amp;' as bitwise operator :(
-	 * 
+	 *
 	 * @see #CRITERIAS
 	 */
-	private static final String CRITERIAS_HSQL = SQLRequestAccessible.CRITERIAS_HSQL
-			+ WORKREQUESTCRITERIAS;
+	private static final String CRITERIAS_HSQL = SQLRequestAccessible.CRITERIAS_HSQL + WORKREQUESTCRITERIAS;
 	/**
 	 * This is the equivalent of CRITERIAS_NOBIN for HyperSQL This is only
 	 * because HSQLDB does not accept '&amp;' as bitwise operator :(
 	 */
-	private static final String CRITERIAS_HSQL_NOBIN = SQLRequestAccessible.CRITERIAS_HSQL
-			+ WORKREQUESTCRITERIAS_NOBIN;
-
+	private static final String CRITERIAS_HSQL_NOBIN = SQLRequestAccessible.CRITERIAS_HSQL + WORKREQUESTCRITERIAS_NOBIN;
 
 	/**
 	 * This is used when host.project is set.
 	 */
-	private static final String PROJECT_ACCESS = 
-			"   AND maintable.owneruid IN"
-			+ // any job submitted in the worker usergroup, and this group only
-			"     ("
-			+ "      SELECT users.uid "
-			+ "      FROM users,usergroups"
-			+ "      WHERE     users.usergroupuid=usergroups.uid "
-			+ "            AND usergroups.label='%s' "
-			+ "            AND usergroups.isdeleted='false'"
-			+ "            AND users.isdeleted='false'"
-			+ "     )"
-			+ "   AND users.usergroupuid ="
-			+ // the group of the worker only
-			"     ("
-			+ "      SELECT usergroups.uid "
-			+ "      FROM usergroups"
-			+ "      WHERE usergroups.label='%s' and usergroups.isdeleted='false'"
-			+ "     )"
-			+ "   AND ("
-			+ "      users.uid=maintable.owneruid"
-			+ // are this job AND this worker owned by the same user ?
-			"      OR ("
-			+ "              users.rights='"
-			+ UserRightEnum.WORKER_USER
-			+ "'"
-			+ // can this worker run jobs for others?
-			"          AND maintable.accessrights > "
-			+ XWAccessRights.USERALL_INT + "	  )" + " )";
+	private static final String PROJECT_ACCESS = "   AND maintable.owneruid IN" + // any
+																					// job
+																					// submitted
+																					// in
+																					// the
+																					// worker
+																					// usergroup,
+																					// and
+																					// this
+																					// group
+																					// only
+			"     (" + "      SELECT users.uid " + "      FROM users,usergroups"
+			+ "      WHERE     users.usergroupuid=usergroups.uid " + "            AND usergroups.label='%s' "
+			+ "            AND usergroups.isdeleted='false'" + "            AND users.isdeleted='false'" + "     )"
+			+ "   AND users.usergroupuid =" + // the group of the worker only
+			"     (" + "      SELECT usergroups.uid " + "      FROM usergroups"
+			+ "      WHERE usergroups.label='%s' and usergroups.isdeleted='false'" + "     )" + "   AND ("
+			+ "      users.uid=maintable.owneruid" + // are this job AND this
+														// worker owned by the
+														// same user ?
+			"      OR (" + "              users.rights='" + UserRightEnum.WORKER_USER + "'" + // can
+																								// this
+																								// worker
+																								// run
+																								// jobs
+																								// for
+																								// others?
+			"          AND maintable.accessrights > " + XWAccessRights.USERALL_INT + "	  )" + " )";
 	/**
 	 * This is used when host.project is set.
 	 */
@@ -168,8 +160,7 @@ public class SQLRequestWorkRequest extends SQLRequest {
 	 * This concatenates SQLRequestAccessible.CRITERIAS and
 	 * WORKREQUESTCRITERIAS_NOBIN
 	 */
-	private static final String PROJECTCRITERIAS = SQLRequestAccessible.CRITERIAS
-			+ WORKREQUESTPROJECTCRITERIAS;
+	private static final String PROJECTCRITERIAS = SQLRequestAccessible.CRITERIAS + WORKREQUESTPROJECTCRITERIAS;
 	/**
 	 * This concatenates SQLRequestAccessible.CRITERIAS and
 	 * WORKREQUESTCRITERIAS_NOBIN
@@ -179,7 +170,7 @@ public class SQLRequestWorkRequest extends SQLRequest {
 	/**
 	 * This is the equivalent of CRITERIAS for HyperSQL This is only because
 	 * HSQLDB does not accept '&amp;' as bitwise operator :(
-	 * 
+	 *
 	 * @see #CRITERIAS
 	 */
 	private static final String PROJECTCRITERIAS_HSQL = SQLRequestAccessible.CRITERIAS_HSQL
@@ -208,24 +199,21 @@ public class SQLRequestWorkRequest extends SQLRequest {
 	 */
 	private final int groupAccess;
 
-	private String sqlIsNull00(String what) {
+	private String sqlIsNull00(final String what) {
 		if (!getHsqldb()) {
 			return "ISNULL(" + what + ")";
 		}
 		return what + " IS NULL";
 	}
+
 	/*
-	 * 	public String sqlIsNull(String what) {
-		if (!hsqldb()) {
-			return "ISNULL(" + what + ")";
-		}
-		return what + " IS NULL";
-	}
+	 * public String sqlIsNull(String what) { if (!hsqldb()) { return "ISNULL("
+	 * + what + ")"; } return what + " IS NULL"; }
 	 */
 	/**
 	 * This sets expected status to PENDING and column selection to
 	 * ColumnSelection.selectAll
-	 * 
+	 *
 	 * @see ColumnSelection
 	 */
 	public SQLRequestWorkRequest() throws IOException {
@@ -249,10 +237,10 @@ public class SQLRequestWorkRequest extends SQLRequest {
 
 	/**
 	 * This calls this(h, u, XWStatus.PENDING)
-	 * 
+	 *
 	 * @see #SQLRequestWorkRequest(HostInterface, UserInterface, StatusEnum)
 	 */
-	public SQLRequestWorkRequest(HostInterface h, UserInterface u) throws IOException {
+	public SQLRequestWorkRequest(final HostInterface h, final UserInterface u) throws IOException {
 		this();
 		host = h;
 		setUser(u);
@@ -292,7 +280,7 @@ public class SQLRequestWorkRequest extends SQLRequest {
 
 	/**
 	 * This sets host, user and status to those provided
-	 * 
+	 *
 	 * @param h
 	 *            is the host to retrieve a work for
 	 * @param u
@@ -300,15 +288,16 @@ public class SQLRequestWorkRequest extends SQLRequest {
 	 * @param s
 	 *            is the status of the work to retrieve
 	 */
-	public SQLRequestWorkRequest(HostInterface h, UserInterface u, StatusEnum s) throws IOException {
+	public SQLRequestWorkRequest(final HostInterface h, final UserInterface u, final StatusEnum s) throws IOException {
 		this(h, u);
 		status = s;
 	}
 
 	/**
-	 * This retrieves this criteria using this host member variable.
-	 * If host does not have cpuspeed, freetmp or totalmem attributes set,
-	 * Long.MAX_VALUE is used instead to ensure the host can compute job by default
+	 * This retrieves this criteria using this host member variable. If host
+	 * does not have cpuspeed, freetmp or totalmem attributes set,
+	 * Long.MAX_VALUE is used instead to ensure the host can compute job by
+	 * default
 	 *
 	 * @see #host
 	 * @return a String containing criteria
@@ -327,24 +316,18 @@ public class SQLRequestWorkRequest extends SQLRequest {
 
 		String hostSharedAppNames = host.getSharedApps();
 		if (hostSharedAppNames != null) {
-			hostSharedAppNames = hostSharedAppNames.replaceAll("[\\n\\s\'\"]+",
-					"_");
-			hostSharedAppNames = "'"
-					+ hostSharedAppNames.replaceAll(",", "','") + "'";
+			hostSharedAppNames = hostSharedAppNames.replaceAll("[\\n\\s\'\"]+", "_");
+			hostSharedAppNames = "'" + hostSharedAppNames.replaceAll(",", "','") + "'";
 		}
 		String hostSharedPkgNames = host.getSharedPackages();
 		if (hostSharedPkgNames != null) {
-			hostSharedPkgNames = hostSharedPkgNames.replaceAll("[\\n\\s\'\"]+",
-					"_");
-			hostSharedPkgNames = "'"
-					+ hostSharedPkgNames.replaceAll(",", "','") + "'";
+			hostSharedPkgNames = hostSharedPkgNames.replaceAll("[\\n\\s\'\"]+", "_");
+			hostSharedPkgNames = "'" + hostSharedPkgNames.replaceAll(",", "','") + "'";
 		}
 		String hostSharedData = host.getSharedDatas();
 		if (hostSharedData != null) {
-			hostSharedData = hostSharedData.replaceAll("[\\n\\s\'\"]+",
-					"_");
-			hostSharedData = "'"
-					+ hostSharedData.replaceAll(",", "','") + "'";
+			hostSharedData = hostSharedData.replaceAll("[\\n\\s\'\"]+", "_");
+			hostSharedData = "'" + hostSharedData.replaceAll(",", "','") + "'";
 		}
 
 		final String projectLabel = (host.getProject() != null ? host.getProject().trim() : null);
@@ -359,80 +342,36 @@ public class SQLRequestWorkRequest extends SQLRequest {
 		String ret = null;
 		if ((projectLabel == null) || (projectLabel.length() <= 0)) {
 			if (host.acceptBin()) {
-				ret = String.format(
-						getCriterias(),
-						getUser().getUID().toString(),
-						otherAccess,
-						otherAccess,
-						groupAccess,
-						groupAccess,
-						status.toString(),
-						incomingConnections,
-						hostUid.toString(),
+				ret = String.format(getCriterias(), getUser().getUID().toString(), otherAccess, otherAccess,
+						groupAccess, groupAccess, status.toString(), incomingConnections, hostUid.toString(),
 						(host.getCpuSpeed() > 0 ? host.getCpuSpeed() : Long.MAX_VALUE),
 						(host.getAvailableMem() > 0 ? host.getAvailableMem() : Long.MAX_VALUE),
-						(host.getFreeTmp()  > 0 ? host.getFreeTmp()  : Long.MAX_VALUE),
-						binaryFieldName,
-						hostSharedAppNames,
-						hostSharedPkgNames,
-						hostSharedData);
+						(host.getFreeTmp() > 0 ? host.getFreeTmp() : Long.MAX_VALUE), binaryFieldName,
+						hostSharedAppNames, hostSharedPkgNames, hostSharedData);
 			} else {
-				ret = String.format(
-						getCriterias(),
-						getUser().getUID().toString(),
-						otherAccess,
-						otherAccess,
-						groupAccess,
-						groupAccess,
-						status.toString(),
-						incomingConnections,
-						hostUid.toString(),
+				ret = String.format(getCriterias(), getUser().getUID().toString(), otherAccess, otherAccess,
+						groupAccess, groupAccess, status.toString(), incomingConnections, hostUid.toString(),
 						(host.getCpuSpeed() > 0 ? host.getCpuSpeed() : Long.MAX_VALUE),
 						(host.getAvailableMem() > 0 ? host.getAvailableMem() : Long.MAX_VALUE),
-						(host.getFreeTmp()  > 0 ? host.getFreeTmp()  : Long.MAX_VALUE),
-						hostSharedAppNames,
-						hostSharedPkgNames,
-						hostSharedData);
+						(host.getFreeTmp() > 0 ? host.getFreeTmp() : Long.MAX_VALUE), hostSharedAppNames,
+						hostSharedPkgNames, hostSharedData);
 			}
 		} else {
 			logger.debug("projectLabel = " + projectLabel);
 			if (host.acceptBin()) {
-				ret = String.format(
-						getCriterias(),
-						getUser().getUID().toString(),
-						otherAccess,
-						otherAccess,
-						groupAccess,
-						groupAccess,
-						status.toString(),
-						incomingConnections,
-						hostUid.toString(),
+				ret = String.format(getCriterias(), getUser().getUID().toString(), otherAccess, otherAccess,
+						groupAccess, groupAccess, status.toString(), incomingConnections, hostUid.toString(),
 						(host.getCpuSpeed() > 0 ? host.getCpuSpeed() : Long.MAX_VALUE),
 						(host.getAvailableMem() > 0 ? host.getAvailableMem() : Long.MAX_VALUE),
-						(host.getFreeTmp()  > 0 ? host.getFreeTmp()  : Long.MAX_VALUE),
-						binaryFieldName,
-						hostSharedAppNames,
-						hostSharedPkgNames,
-						hostSharedData,
-						projectLabel, projectLabel);
+						(host.getFreeTmp() > 0 ? host.getFreeTmp() : Long.MAX_VALUE), binaryFieldName,
+						hostSharedAppNames, hostSharedPkgNames, hostSharedData, projectLabel, projectLabel);
 			} else {
-				ret = String.format(
-						getCriterias(),
-						getUser().getUID().toString(),
-						otherAccess,
-						otherAccess,
-						groupAccess,
-						groupAccess,
-						status.toString(),
-						incomingConnections,
+				ret = String.format(getCriterias(), getUser().getUID().toString(), otherAccess, otherAccess,
+						groupAccess, groupAccess, status.toString(), incomingConnections,
 						(host.getCpuSpeed() > 0 ? host.getCpuSpeed() : Long.MAX_VALUE),
 						(host.getAvailableMem() > 0 ? host.getAvailableMem() : Long.MAX_VALUE),
-						(host.getFreeTmp()  > 0 ? host.getFreeTmp()  : Long.MAX_VALUE),
-						hostUid.toString(),
-						hostSharedAppNames,
-						hostSharedPkgNames,
-						hostSharedData,
-						projectLabel, projectLabel);
+						(host.getFreeTmp() > 0 ? host.getFreeTmp() : Long.MAX_VALUE), hostUid.toString(),
+						hostSharedAppNames, hostSharedPkgNames, hostSharedData, projectLabel, projectLabel);
 			}
 		}
 		hostSharedAppNames = null;

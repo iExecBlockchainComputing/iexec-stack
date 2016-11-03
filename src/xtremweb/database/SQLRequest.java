@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -27,11 +27,12 @@ import java.io.IOException;
 
 import xtremweb.common.Logger;
 import xtremweb.common.UserInterface;
+import xtremweb.common.XWConfigurator;
 
 /**
  * This is a decorator pattern aiming to implement SQL requests used to retrieve
  * objects from DB.
- * 
+ *
  * @author <A HREF="mailto:lodygens /at\ lal.in2p3.fr">Oleg Lodygensky </A>
  * @since 5.8.0
  */
@@ -71,26 +72,32 @@ public abstract class SQLRequest {
 	 */
 	private String tableName;
 	/**
-	 * This contains the DB name
-	 * This is set externally by DBInterface
+	 * This contains the DB name This is set externally by DBInterface
+	 *
 	 * @see xtremweb.dspatcher.DBInterface#DBInterface(XWConfigurator)
 	 */
 	private static String dbName = null;
+
 	public static void setDbName(final String n) {
 		dbName = n;
 	}
+
 	public static String getDbName() {
 		return dbName;
 	}
+
 	/**
-	 * This is true if using an HSQLDB engine; false otherwise
-	 * This is set externally by DBInterface
+	 * This is true if using an HSQLDB engine; false otherwise This is set
+	 * externally by DBInterface
+	 *
 	 * @see xtremweb.dspatcher.DBInterface#DBInterface(XWConfigurator)
 	 */
 	private static boolean hsqldb = false;
+
 	public static void setHsqldb(final boolean n) {
 		hsqldb = n;
 	}
+
 	public static boolean getHsqldb() {
 		return hsqldb;
 	}
@@ -107,7 +114,7 @@ public abstract class SQLRequest {
 
 	/**
 	 * This retrieves "FROM" SQL statement table names
-	 * 
+	 *
 	 * @return TABLENAMES
 	 */
 	public String fromTableNames() {
@@ -116,7 +123,7 @@ public abstract class SQLRequest {
 
 	/**
 	 * This aims to retrieve rows for the "SELECT" SQL statement.
-	 * 
+	 *
 	 * @return "tablename.uid", or "tablename.*" depending on selected columns
 	 */
 	public String rowSelection() throws IOException {
@@ -125,7 +132,7 @@ public abstract class SQLRequest {
 
 	/**
 	 * This retrieves this SQL criteria
-	 * 
+	 *
 	 * @return a String containing SQL criteria
 	 */
 	public abstract String criterias() throws IOException;
@@ -138,9 +145,10 @@ public abstract class SQLRequest {
 	}
 
 	/**
-	 * @param logger the logger to set
+	 * @param logger
+	 *            the logger to set
 	 */
-	public void setLogger(Logger logger) {
+	public void setLogger(final Logger logger) {
 		this.logger = logger;
 	}
 
@@ -152,9 +160,10 @@ public abstract class SQLRequest {
 	}
 
 	/**
-	 * @param tableNames the tableNames to set
+	 * @param tableNames
+	 *            the tableNames to set
 	 */
-	public void setTableNames(String tableNames) {
+	public void setTableNames(final String tableNames) {
 		this.tableNames = tableNames;
 	}
 
@@ -166,9 +175,10 @@ public abstract class SQLRequest {
 	}
 
 	/**
-	 * @param columnSelection the columnSelection to set
+	 * @param columnSelection
+	 *            the columnSelection to set
 	 */
-	public void setColumnSelection(ColumnSelection columnSelection) {
+	public void setColumnSelection(final ColumnSelection columnSelection) {
 		this.columnSelection = columnSelection;
 	}
 
@@ -180,9 +190,10 @@ public abstract class SQLRequest {
 	}
 
 	/**
-	 * @param criterias the criteria to set
+	 * @param criterias
+	 *            the criteria to set
 	 */
-	public void setCriterias(String criterias) {
+	public void setCriterias(final String criterias) {
 		this.criterias = criterias;
 	}
 
@@ -194,9 +205,10 @@ public abstract class SQLRequest {
 	}
 
 	/**
-	 * @param moreCriterias the moreCriterias to set
+	 * @param moreCriterias
+	 *            the moreCriterias to set
 	 */
-	public void setMoreCriterias(String moreCriterias) {
+	public void setMoreCriterias(final String moreCriterias) {
 		this.moreCriterias = moreCriterias;
 	}
 
@@ -208,9 +220,10 @@ public abstract class SQLRequest {
 	}
 
 	/**
-	 * @param user the user to set
+	 * @param user
+	 *            the user to set
 	 */
-	public void setUser(UserInterface user) {
+	public void setUser(final UserInterface user) {
 		this.user = user;
 	}
 
@@ -222,9 +235,10 @@ public abstract class SQLRequest {
 	}
 
 	/**
-	 * @param tableName the tableName to set
+	 * @param tableName
+	 *            the tableName to set
 	 */
-	public void setTableName(String tableName) {
+	public void setTableName(final String tableName) {
 		this.tableName = tableName;
 	}
 }

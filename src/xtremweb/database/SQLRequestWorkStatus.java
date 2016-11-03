@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -25,26 +25,26 @@ package xtremweb.database;
 
 import java.io.IOException;
 
+import xtremweb.common.StatusEnum;
 import xtremweb.common.TableColumns;
 import xtremweb.common.UID;
 import xtremweb.common.WorkInterface;
-import xtremweb.common.StatusEnum;
 
 /**
  * This is a decorator pattern aiming to implement SQL requests used to retrieve
  * objects from DB. This implements the SQL request to retrieve works with the
  * given status from DB.<br />
  * This retrieves results from SQL statement:
- * 
+ *
  * <pre>
  *   SELECT *
  *   FROM works
- *   WHERE status="&lt;aStatus&gt;" 
+ *   WHERE status="&lt;aStatus&gt;"
  *     and works.isdeleted="false"
  *     and works.active="true"
  *   LIMIT 1000
  * </pre>
- * 
+ *
  * @author <a href="mailto:lodygens /at\ lal.in2p3.fr">Oleg Lodygensky </a>
  * @since 5.8.0
  */
@@ -53,16 +53,13 @@ public class SQLRequestWorkStatus extends SQLRequest {
 	/**
 	 * This contains table names for the FROM part of the SQL request. There
 	 * must not be a space after the comma
-	 * 
+	 *
 	 * @see DBConnPool#rowTableNames(String)
 	 */
-	private static final String TABLENAMES = WorkInterface.TABLENAME + " as "
-			+ MAINTABLEALIAS;
+	private static final String TABLENAMES = WorkInterface.TABLENAME + " as " + MAINTABLEALIAS;
 
-	private static final String CRITERIAS = MAINTABLEALIAS + "."
-			+ WorkInterface.Columns.STATUS + "='%s' AND "
-			+ MAINTABLEALIAS + "." + WorkInterface.Columns.ACTIVE.toString()
-			+ "='" + Boolean.TRUE.toString() + "'";
+	private static final String CRITERIAS = MAINTABLEALIAS + "." + WorkInterface.Columns.STATUS + "='%s' AND "
+			+ MAINTABLEALIAS + "." + WorkInterface.Columns.ACTIVE.toString() + "='" + Boolean.TRUE.toString() + "'";
 
 	private StatusEnum status;
 
@@ -82,7 +79,7 @@ public class SQLRequestWorkStatus extends SQLRequest {
 	 * @param s
 	 *            is the work status
 	 */
-	public SQLRequestWorkStatus(StatusEnum s) throws IOException {
+	public SQLRequestWorkStatus(final StatusEnum s) throws IOException {
 		this();
 		status = s;
 	}
@@ -93,7 +90,7 @@ public class SQLRequestWorkStatus extends SQLRequest {
 	 * @param ctr
 	 *            contains some more criteria
 	 */
-	public SQLRequestWorkStatus(StatusEnum s, String ctr) throws IOException {
+	public SQLRequestWorkStatus(final StatusEnum s, final String ctr) throws IOException {
 		this();
 		status = s;
 		setMoreCriterias(ctr);
@@ -105,19 +102,17 @@ public class SQLRequestWorkStatus extends SQLRequest {
 	 * @param ownerUID
 	 *            is the UID if the owner of the work
 	 */
-	public SQLRequestWorkStatus(StatusEnum s, UID ownerUID) throws IOException {
+	public SQLRequestWorkStatus(final StatusEnum s, final UID ownerUID) throws IOException {
 		this();
 		status = s;
-		setMoreCriterias(MAINTABLEALIAS + "."
-				+ TableColumns.OWNERUID.toString() + "='" + ownerUID
-				+ "'");
+		setMoreCriterias(MAINTABLEALIAS + "." + TableColumns.OWNERUID.toString() + "='" + ownerUID + "'");
 	}
 
 	/**
 	 * @param c
 	 *            is the column selection
 	 */
-	public SQLRequestWorkStatus(ColumnSelection c) throws IOException {
+	public SQLRequestWorkStatus(final ColumnSelection c) throws IOException {
 		this();
 		setColumnSelection(c);
 	}
@@ -128,8 +123,7 @@ public class SQLRequestWorkStatus extends SQLRequest {
 	 * @param ctr
 	 *            contains some more criteria
 	 */
-	public SQLRequestWorkStatus(ColumnSelection c, String ctr)
-			throws IOException {
+	public SQLRequestWorkStatus(final ColumnSelection c, final String ctr) throws IOException {
 		this();
 		setColumnSelection(c);
 		setMoreCriterias(ctr);
@@ -141,8 +135,7 @@ public class SQLRequestWorkStatus extends SQLRequest {
 	 * @param s
 	 *            is the work status
 	 */
-	public SQLRequestWorkStatus(ColumnSelection c, StatusEnum s)
-			throws IOException {
+	public SQLRequestWorkStatus(final ColumnSelection c, final StatusEnum s) throws IOException {
 		this();
 		setColumnSelection(c);
 		status = s;
@@ -156,8 +149,7 @@ public class SQLRequestWorkStatus extends SQLRequest {
 	 * @param ctr
 	 *            contains some more criteria
 	 */
-	public SQLRequestWorkStatus(ColumnSelection c, StatusEnum s, String ctr)
-			throws IOException {
+	public SQLRequestWorkStatus(final ColumnSelection c, final StatusEnum s, final String ctr) throws IOException {
 		this();
 		setColumnSelection(c);
 		status = s;
@@ -166,6 +158,7 @@ public class SQLRequestWorkStatus extends SQLRequest {
 
 	/**
 	 * This retrieves this SQL criteria
+	 *
 	 * @return a String containing SQL criteria
 	 */
 	@Override

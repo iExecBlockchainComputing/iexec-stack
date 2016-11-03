@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -26,8 +26,6 @@ package xtremweb.database;
 import java.io.IOException;
 import java.sql.ResultSet;
 
-import org.xml.sax.Attributes;
-
 import xtremweb.common.StatusEnum;
 import xtremweb.common.Table;
 import xtremweb.common.TableColumns;
@@ -40,7 +38,7 @@ import xtremweb.common.WorkInterface;
  * objects from DB. This implements the SQL request to retrieve works count for
  * the given user and the given work status.<br />
  * This retrieves results from SQL statement:<br />
- * 
+ *
  * <pre>
  *   SELECT users.uid, users.login,count(*) AS workscount
  *   FROM works, users
@@ -51,7 +49,7 @@ import xtremweb.common.WorkInterface;
  *   GROUP BY LOGIN
  *   LIMIT 1000
  * </pre>
- * 
+ *
  * @author <A HREF="mailto:lodygens /at\ lal.in2p3.fr">Oleg Lodygensky </A>
  * @since 5.8.0
  */
@@ -61,11 +59,11 @@ public class SQLRequestUserWorksCount extends Table {
 	/**
 	 * This contains table names for the FROM part of the SQL request. There
 	 * must not be a space after the comma
-	 * 
+	 *
 	 * @see DBConnPool#rowTableNames(String)
 	 */
-	private static final String TABLENAMES = WorkInterface.TABLENAME + " as "
-			+ SQLRequest.MAINTABLEALIAS + "," + UserInterface.TABLENAME;
+	private static final String TABLENAMES = WorkInterface.TABLENAME + " as " + SQLRequest.MAINTABLEALIAS + ","
+			+ UserInterface.TABLENAME;
 	private static final String SELECTIONROW = "users.uid, users.login,count(*) as workscount";
 
 	/**
@@ -92,21 +90,21 @@ public class SQLRequestUserWorksCount extends Table {
 
 	/**
 	 * This constructor sets the status to the given one
-	 * 
+	 *
 	 * @param s
 	 *            is the status of the works to retrieve from DB
 	 */
-	public SQLRequestUserWorksCount(StatusEnum s) {
+	public SQLRequestUserWorksCount(final StatusEnum s) {
 		this();
 		status = s;
 	}
 
 	/**
 	 * This constructor instanciates an object from data read from an SQL table
-	 * 
+	 *
 	 * @see #fill(ResultSet)
 	 */
-	public SQLRequestUserWorksCount(ResultSet rs) throws IOException {
+	public SQLRequestUserWorksCount(final ResultSet rs) throws IOException {
 		super(TABLENAME, TABLENAME);
 		fill(rs);
 	}
@@ -114,7 +112,7 @@ public class SQLRequestUserWorksCount extends Table {
 	/**
 	 * This aims to retrieve "GROUP BY" SQL statement. This returns null and
 	 * should be overriden
-	 * 
+	 *
 	 * @return null
 	 * @since 5.8.0
 	 */
@@ -125,7 +123,7 @@ public class SQLRequestUserWorksCount extends Table {
 
 	/**
 	 * This retrieves "FROM" SQL statement table names
-	 * 
+	 *
 	 * @return TABLENAMES
 	 * @since 5.8.0
 	 */
@@ -136,7 +134,7 @@ public class SQLRequestUserWorksCount extends Table {
 
 	/**
 	 * This aims to retrieve rows for the "SELECT" SQL statement.
-	 * 
+	 *
 	 * @return "users.uid, users.login,count(*)"
 	 * @since 5.8.0
 	 */
@@ -147,12 +145,12 @@ public class SQLRequestUserWorksCount extends Table {
 
 	/**
 	 * This fills this object with data from DB
-	 * 
+	 *
 	 * @param rs
 	 *            is a ResultSet read from DB
 	 */
 	@Override
-	public final void fill(ResultSet rs) throws IOException {
+	public final void fill(final ResultSet rs) throws IOException {
 		try {
 			setUID(new UID(rs.getString(Columns.UID.toString())));
 		} catch (final Exception e) {
@@ -173,37 +171,35 @@ public class SQLRequestUserWorksCount extends Table {
 
 	/**
 	 * This retrieves this SQL criteria
-	 * 
+	 *
 	 * @return a String containing SQL criteria
 	 */
 	@Override
 	public String criteria() throws IOException {
 
-		return SQLRequest.MAINTABLEALIAS + "." + WorkInterface.Columns.STATUS
-				+ "='" + status + "' AND " + SQLRequest.MAINTABLEALIAS + "."
-				+ WorkInterface.Columns.ACTIVE + "='" + Boolean.toString(true)
-				+ "' AND " + SQLRequest.MAINTABLEALIAS + "."
-				+ TableColumns.OWNERUID + "=" + UserInterface.TABLENAME + "."
-				+ TableColumns.UID;
+		return SQLRequest.MAINTABLEALIAS + "." + WorkInterface.Columns.STATUS + "='" + status + "' AND "
+				+ SQLRequest.MAINTABLEALIAS + "." + WorkInterface.Columns.ACTIVE + "='" + Boolean.toString(true)
+				+ "' AND " + SQLRequest.MAINTABLEALIAS + "." + TableColumns.OWNERUID + "=" + UserInterface.TABLENAME
+				+ "." + TableColumns.UID;
 	}
 
 	/**
 	 * This retrieves user login
 	 */
-	public void setLogin(String l) throws IOException {
+	public void setLogin(final String l) throws IOException {
 		login = l;
 	}
 
 	/**
 	 * This set the works count
 	 */
-	public void setWorksCount(int c) throws IOException {
+	public void setWorksCount(final int c) throws IOException {
 		worksCount = c;
 	}
 
 	/**
 	 * This retrieves the user logn
-	 * 
+	 *
 	 * @return the user login
 	 */
 	public String getLogin() throws IOException {
@@ -212,21 +208,19 @@ public class SQLRequestUserWorksCount extends Table {
 
 	/**
 	 * This retrieves the works count
-	 * 
+	 *
 	 * @return the works count
 	 */
 	public int getWorksCount() throws IOException {
 		return worksCount;
 	}
 
-
 	@Override
-	public boolean setValue(String attribute, Object v)
-			throws IllegalArgumentException {
+	public boolean setValue(final String attribute, final Object v) throws IllegalArgumentException {
 		return false;
 	}
 
 	@Override
-	public void updateInterface(Table t) throws IOException {
+	public void updateInterface(final Table t) throws IOException {
 	}
 }
