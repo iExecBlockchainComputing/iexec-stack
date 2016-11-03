@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -30,14 +30,14 @@ import java.util.StringTokenizer;
  * AddressMatcher.java<br />
  * Bored to Helma Xmplrpc<br />
  * <br />
- * 
+ *
  * This aims to detect valid IP accordingly to this IP pattern.<br />
  * Example : if this stores 192.168.*.*, then 192.168.0.1 is a matching IP
  * address whereas 193.168.0.1 is not <br />
  * <br />
  * Created: Tue Jul 17 12:16:26 2001<br />
  * Modified: 15 juin 2006
- * 
+ *
  * @author See Helma
  * @author Oleg Lodygensky
  */
@@ -47,7 +47,7 @@ public class AddressMatcher implements Principal {
 
 	/**
 	 * This contructs an IP address matcher with the provided parameter
-	 * 
+	 *
 	 * @param address
 	 *            is an IP address string representation, eventually a wilcdard
 	 *            address (e.g. "192.168.0.*")
@@ -55,12 +55,11 @@ public class AddressMatcher implements Principal {
 	 *                is thrown if address parameter is not made with 4 dot
 	 *                separated integers ot stars
 	 */
-	public AddressMatcher(String address) throws NumberFormatException {
+	public AddressMatcher(final String address) throws NumberFormatException {
 		pattern = new int[4];
 		final StringTokenizer st = new StringTokenizer(address, ".");
 		if (st.countTokens() != 4) {
-			throw new NumberFormatException("\"" + address
-					+ "\" does not represent a valid IP address");
+			throw new NumberFormatException("\"" + address + "\" does not represent a valid IP address");
 		}
 		for (int i = 0; i < 4; i++) {
 			final String next = st.nextToken();
@@ -72,7 +71,7 @@ public class AddressMatcher implements Principal {
 		}
 	}
 
-	public boolean matches(byte address[]) {
+	public boolean matches(final byte address[]) {
 		for (int i = 0; i < 4; i++) {
 			if (pattern[i] > 255) {
 				continue;
@@ -86,12 +85,12 @@ public class AddressMatcher implements Principal {
 
 	/**
 	 * This tests whether this address matcher matches provided parameter
-	 * 
+	 *
 	 * @param ip
 	 *            is an IP address string representation
 	 * @return true if param matches this address matcher, false otherwise
 	 */
-	public boolean matchesExact(String ip) {
+	public boolean matchesExact(final String ip) {
 		try {
 			final StringTokenizer st = new StringTokenizer(ip, ".");
 			if (st.countTokens() != 4) {
@@ -115,7 +114,7 @@ public class AddressMatcher implements Principal {
 
 	/**
 	 * This retrieves the IP address as String
-	 * 
+	 *
 	 * @return this IP address match representation
 	 */
 	@Override
@@ -136,24 +135,28 @@ public class AddressMatcher implements Principal {
 
 	/**
 	 * This only calls toString()
-	 * 
+	 *
 	 * @see #toString()
 	 */
+	@Override
 	public String getName() {
 		return toString();
 	}
-	@Override public int hashCode() {
-		return pattern.hashCode();	
+
+	@Override
+	public int hashCode() {
+		return pattern.hashCode();
 	}
+
 	/**
 	 * This only calls matchesExact(String)
-	 * 
+	 *
 	 * @param ip
 	 *            is an IP address string representation
 	 * @see #matchesExact(String)
 	 */
 	@Override
-	public boolean equals(Object ip) {
+	public boolean equals(final Object ip) {
 		return matchesExact((String) ip);
 	}
 
