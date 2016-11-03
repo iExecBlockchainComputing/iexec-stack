@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -48,7 +48,7 @@ import xtremweb.security.XWAccessRights;
 /**
  * This interface defines client communications facilities. This replaces
  * RMIOutputInterface.java
- * 
+ *
  * @author Oleg Lodygensky
  * @since RPCXW
  */
@@ -56,134 +56,123 @@ interface ClientAPI {
 	/**
 	 * This disconnects this client from server : all sessions jobs are removed
 	 */
-	void disconnect() throws InvalidKeyException, AccessControlException,
-			IOException, SAXException, URISyntaxException;
+	void disconnect() throws InvalidKeyException, AccessControlException, IOException, SAXException, URISyntaxException;
 
 	/**
 	 * This disconnects this client from server : all sessions jobs are removed
 	 */
 	void disconnect(XMLRPCCommandDisconnect command)
-			throws InvalidKeyException, AccessControlException, IOException,
-			SAXException, URISyntaxException;
+			throws InvalidKeyException, AccessControlException, IOException, SAXException, URISyntaxException;
 
 	/**
 	 * This sends an XMLRPC command to be executed on server side and closes
 	 * communication channel
 	 */
-	void sendCommand(XMLRPCCommand cmd) throws InvalidKeyException,
-			AccessControlException, IOException, SAXException,
-			URISyntaxException;
+	void sendCommand(XMLRPCCommand cmd)
+			throws InvalidKeyException, AccessControlException, IOException, SAXException, URISyntaxException;
 
 	/**
 	 * This set access rights to an object
-	 * 
+	 *
 	 * @since 5.8.0
 	 */
-	void chmod(UID uid, XWAccessRights r) throws SAXException,
-			InvalidKeyException, AccessControlException, IOException,
-			URISyntaxException;
+	void chmod(UID uid, XWAccessRights r)
+			throws SAXException, InvalidKeyException, AccessControlException, IOException, URISyntaxException;
 
 	/**
 	 * This retrieves an object from server
 	 */
-	Table get(UID uid) throws InvalidKeyException, AccessControlException,
-			IOException, ClassNotFoundException, SAXException,
-			URISyntaxException;
+	Table get(UID uid) throws InvalidKeyException, AccessControlException, IOException, ClassNotFoundException,
+			SAXException, URISyntaxException;
 
 	/**
 	 * This retrieves an object from server
 	 */
-	Table get(XMLRPCCommandGet command) throws InvalidKeyException,
-			AccessControlException, IOException, SAXException;
+	Table get(XMLRPCCommandGet command) throws InvalidKeyException, AccessControlException, IOException, SAXException;
 
 	/**
 	 * This sends (creates or updates) an object definition
-	 * 
+	 *
 	 * @since 5.0.0
 	 */
-	void send(XMLRPCCommandSend command) throws InvalidKeyException,
-			AccessControlException, IOException, ClassNotFoundException,
-			SAXException;
+	void send(XMLRPCCommandSend command)
+			throws InvalidKeyException, AccessControlException, IOException, ClassNotFoundException, SAXException;
 
 	/**
 	 * This sends an object
-	 * 
+	 *
 	 * @since 8.0.0
 	 */
-	void send(Table app) throws InvalidKeyException, AccessControlException,
-			IOException, ClassNotFoundException, SAXException,
-			URISyntaxException;
+	void send(Table app) throws InvalidKeyException, AccessControlException, IOException, ClassNotFoundException,
+			SAXException, URISyntaxException;
 
 	/**
 	 * This retrieves all applications from server
-	 * 
+	 *
 	 * @return a Vector of UIDs
 	 */
-	XMLVector getApps() throws InvalidKeyException, AccessControlException,
-			IOException, SAXException, URISyntaxException;
+	XMLVector getApps()
+			throws InvalidKeyException, AccessControlException, IOException, SAXException, URISyntaxException;
 
 	/**
 	 * This retrieves all applications from server
-	 * 
+	 *
 	 * @param command
 	 *            is the XMLRPC command to use
 	 * @return a Vector of UIDs
 	 */
-	XMLVector getApps(XMLRPCCommandGetApps command) throws InvalidKeyException,
-			AccessControlException, IOException, SAXException;
+	XMLVector getApps(XMLRPCCommandGetApps command)
+			throws InvalidKeyException, AccessControlException, IOException, SAXException;
 
 	/**
 	 * This removes an object definition from server
-	 * 
+	 *
 	 * @param uri
 	 *            is the URI of the object to remove
 	 */
-	void remove(URI uri) throws InvalidKeyException, AccessControlException,
-			IOException;
+	void remove(URI uri) throws InvalidKeyException, AccessControlException, IOException;
 
 	/**
 	 * This retrieves all datas from server
-	 * 
+	 *
 	 * @return a Vector of UIDs
 	 */
-	XMLVector getDatas() throws InvalidKeyException, AccessControlException,
-			IOException, SAXException, URISyntaxException;
+	XMLVector getDatas()
+			throws InvalidKeyException, AccessControlException, IOException, SAXException, URISyntaxException;
 
 	/**
 	 * This retrieves all datas from server
-	 * 
+	 *
 	 * @return a Vector of UIDs
 	 */
 	XMLVector getDatas(XMLRPCCommandGetDatas command)
-			throws InvalidKeyException, AccessControlException, IOException,
-			SAXException;
+			throws InvalidKeyException, AccessControlException, IOException, SAXException;
 
 	/**
 	 * This uploads a data to server
-	 * 
+	 *
 	 * @param command
 	 *            is the upload command to send to server
 	 * @param content
 	 *            is the file containing data content to upload
 	 */
 	void uploadData(XMLRPCCommandUploadData command, File content)
-			throws InvalidKeyException, AccessControlException, IOException,
-			URISyntaxException;
+			throws InvalidKeyException, AccessControlException, IOException, URISyntaxException;
 
 	/**
 	 * This downloads a data from server
-	 * 
+	 *
 	 * @param uid
 	 *            is the UID the data to download
 	 * @param content
 	 *            represents a File to store downloaded data
 	 */
-	void downloadData(UID uid, File content) throws InvalidKeyException,
-			AccessControlException, IOException, URISyntaxException;
+	void downloadData(UID uid, File content)
+			throws InvalidKeyException, AccessControlException, IOException, URISyntaxException;
 
 	/**
 	 * This downloads a data from server
-	 * 
+	 *
 	 * @param command
 	 *            is the download command to send to server
 	 * @param content
@@ -194,85 +183,80 @@ interface ClientAPI {
 
 	/**
 	 * This retrieves all groups from server for the client
-	 * 
+	 *
 	 * @return a Vector of UIDs
 	 */
-	XMLVector getGroups() throws InvalidKeyException, AccessControlException,
-			IOException, SAXException, URISyntaxException;
+	XMLVector getGroups()
+			throws InvalidKeyException, AccessControlException, IOException, SAXException, URISyntaxException;
 
 	/**
 	 * This retrieves all groups from server for the client
-	 * 
+	 *
 	 * @return a Vector of UIDs
 	 */
 	XMLVector getGroups(XMLRPCCommandGetGroups command)
-			throws InvalidKeyException, AccessControlException, IOException,
-			SAXException;
+			throws InvalidKeyException, AccessControlException, IOException, SAXException;
 
 	/**
 	 * This retrieves all works for the given group
-	 * 
+	 *
 	 * @param groupuid
 	 *            is the group UID to retreive works for
 	 * @return a Vector of UIDs
 	 */
-	XMLVector getGroupWorks(UID groupuid) throws InvalidKeyException,
-			AccessControlException, IOException, SAXException,
-			URISyntaxException;
+	XMLVector getGroupWorks(UID groupuid)
+			throws InvalidKeyException, AccessControlException, IOException, SAXException, URISyntaxException;
 
 	/**
 	 * This retrieves all works for the given group
-	 * 
+	 *
 	 * @param uri
 	 *            is the URI to connect to ; its path must contains the UID of
 	 *            the group to retreive works for
 	 * @return a Vector of UIDs
 	 */
-	XMLVector getGroupWorks(URI uri) throws InvalidKeyException,
-			AccessControlException, IOException, SAXException;
+	XMLVector getGroupWorks(URI uri) throws InvalidKeyException, AccessControlException, IOException, SAXException;
 
 	/**
 	 * This retrieves all works for the given group
-	 * 
+	 *
 	 * @param command
 	 *            is the command to send to server
 	 * @return a Vector of UIDs
 	 */
 	XMLVector getGroupWorks(XMLRPCCommandGetGroupWorks command)
-			throws InvalidKeyException, AccessControlException, IOException,
-			SAXException;
+			throws InvalidKeyException, AccessControlException, IOException, SAXException;
 
 	/**
 	 * This retrieves all workers from server
-	 * 
+	 *
 	 * @return a Vector of UIDs
 	 */
-	XMLVector getHosts() throws InvalidKeyException, AccessControlException,
-			IOException, SAXException, URISyntaxException;
+	XMLVector getHosts()
+			throws InvalidKeyException, AccessControlException, IOException, SAXException, URISyntaxException;
 
 	/**
 	 * This retrieves all workers from server
-	 * 
+	 *
 	 * @return a Vector of UIDs
 	 */
 	XMLVector getHosts(XMLRPCCommandGetHosts command)
-			throws InvalidKeyException, AccessControlException, IOException,
-			SAXException;
+			throws InvalidKeyException, AccessControlException, IOException, SAXException;
 
 	/**
 	 * Set workers active flag.
-	 * 
+	 *
 	 * @param uid
 	 *            is the worker uid
 	 * @param flag
 	 *            is the active flag
 	 */
-	void activateHost(UID uid, boolean flag) throws InvalidKeyException,
-			AccessControlException, IOException, URISyntaxException;
+	void activateHost(UID uid, boolean flag)
+			throws InvalidKeyException, AccessControlException, IOException, URISyntaxException;
 
 	/**
 	 * Set workers active flag.
-	 * 
+	 *
 	 * @param command
 	 *            is the command to send to server
 	 */
@@ -281,7 +265,7 @@ interface ClientAPI {
 
 	/**
 	 * Set workers running parameters.
-	 * 
+	 *
 	 * @param nbWorkers
 	 *            is the expected number of workers to activate.
 	 * @param p
@@ -293,233 +277,214 @@ interface ClientAPI {
 
 	/**
 	 * Get workers running parameters.
-	 * 
+	 *
 	 * @return worker parameters
 	 */
-	WorkerParameters getWorkersParameters() throws InvalidKeyException,
-			AccessControlException, IOException;
+	WorkerParameters getWorkersParameters() throws InvalidKeyException, AccessControlException, IOException;
 
 	/**
 	 * This set the expected number of workers
-	 * 
+	 *
 	 * @return the number of activated workers, -1 on error
 	 */
-	int setWorkersNb(int nb) throws InvalidKeyException,
-			AccessControlException, IOException;
+	int setWorkersNb(int nb) throws InvalidKeyException, AccessControlException, IOException;
 
 	/**
 	 * This retrieves all sessions from server
-	 * 
+	 *
 	 * @return a Vector of UIDs
 	 */
-	XMLVector getSessions() throws InvalidKeyException, AccessControlException,
-			IOException, SAXException, URISyntaxException;
+	XMLVector getSessions()
+			throws InvalidKeyException, AccessControlException, IOException, SAXException, URISyntaxException;
 
 	/**
 	 * This retrieves all sessions from server
-	 * 
+	 *
 	 * @return a Vector of UIDs
 	 */
 	XMLVector getSessions(XMLRPCCommandGetSessions command)
-			throws InvalidKeyException, AccessControlException, IOException,
-			SAXException;
+			throws InvalidKeyException, AccessControlException, IOException, SAXException;
 
 	/**
 	 * This retrieves all works for the given session
-	 * 
+	 *
 	 * @param session
 	 *            is the session UID to retreive works for
 	 * @return a Vector of UIDs
 	 */
-	XMLVector getSessionWorks(UID session) throws InvalidKeyException,
-			AccessControlException, IOException, SAXException,
-			URISyntaxException;
+	XMLVector getSessionWorks(UID session)
+			throws InvalidKeyException, AccessControlException, IOException, SAXException, URISyntaxException;
 
 	/**
 	 * This retrieves all works for the given session
-	 * 
+	 *
 	 * @param command
 	 *            is the command to send to server
 	 * @return a Vector of UIDs
 	 */
 	XMLVector getSessionWorks(XMLRPCCommandGetSessionWorks command)
-			throws InvalidKeyException, AccessControlException, IOException,
-			SAXException;
+			throws InvalidKeyException, AccessControlException, IOException, SAXException;
 
 	/**
 	 * This retrieves all tasks from server
-	 * 
+	 *
 	 * @return a Vector of UIDs
 	 */
-	XMLVector getTasks() throws InvalidKeyException, AccessControlException,
-			IOException, SAXException, URISyntaxException;
+	XMLVector getTasks()
+			throws InvalidKeyException, AccessControlException, IOException, SAXException, URISyntaxException;
 
 	/**
 	 * This retrieves all tasks from server
-	 * 
+	 *
 	 * @return a Vector of UIDs
 	 */
 	XMLVector getTasks(XMLRPCCommandGetTasks command)
-			throws InvalidKeyException, AccessControlException, IOException,
-			SAXException;
+			throws InvalidKeyException, AccessControlException, IOException, SAXException;
 
 	/**
 	 * This retrieves all traces from server
-	 * 
+	 *
 	 * @return a Vector of UIDs
 	 */
-	XMLVector getTraces() throws InvalidKeyException, AccessControlException,
-			IOException, SAXException, URISyntaxException;
+	XMLVector getTraces()
+			throws InvalidKeyException, AccessControlException, IOException, SAXException, URISyntaxException;
 
 	/**
 	 * This retrieves all traces from server
-	 * 
+	 *
 	 * @return a Vector of UIDs
 	 */
 	XMLVector getTraces(XMLRPCCommandGetTraces command)
-			throws InvalidKeyException, AccessControlException, IOException,
-			SAXException;
+			throws InvalidKeyException, AccessControlException, IOException, SAXException;
 
 	/**
 	 * This retrieves traces from server
-	 * 
+	 *
 	 * @return a Vector of UIDs
 	 */
-	XMLVector getTraces(Date since, Date before) throws InvalidKeyException,
-			AccessControlException, IOException, SAXException;
+	XMLVector getTraces(Date since, Date before)
+			throws InvalidKeyException, AccessControlException, IOException, SAXException;
 
 	/**
 	 * This retrieves all usergroups from server
-	 * 
+	 *
 	 * @return a Vector of UIDs
 	 */
-	XMLVector getUserGroups() throws InvalidKeyException,
-			AccessControlException, IOException, SAXException,
-			URISyntaxException;
+	XMLVector getUserGroups()
+			throws InvalidKeyException, AccessControlException, IOException, SAXException, URISyntaxException;
 
 	/**
 	 * This retrieves all usergroups from server
-	 * 
+	 *
 	 * @return a Vector of UIDs
 	 */
 	XMLVector getUserGroups(XMLRPCCommandGetUserGroups command)
-			throws InvalidKeyException, AccessControlException, IOException,
-			SAXException;
+			throws InvalidKeyException, AccessControlException, IOException, SAXException;
 
 	/**
 	 * This retrieves an user from server
 	 */
-	UserInterface getUser(String login) throws InvalidKeyException,
-			AccessControlException, IOException, SAXException,
-			URISyntaxException;
+	UserInterface getUser(String login)
+			throws InvalidKeyException, AccessControlException, IOException, SAXException, URISyntaxException;
 
 	/**
 	 * This retrieves an user from server
 	 */
 	UserInterface getUser(XMLRPCCommandGetUserByLogin command)
-			throws InvalidKeyException, AccessControlException, IOException,
-			SAXException;
+			throws InvalidKeyException, AccessControlException, IOException, SAXException;
 
 	/**
 	 * This retrieves all users from server
-	 * 
+	 *
 	 * @return a Vector of UIDs
 	 */
-	XMLVector getUsers() throws InvalidKeyException, AccessControlException,
-			IOException, SAXException, URISyntaxException;
+	XMLVector getUsers()
+			throws InvalidKeyException, AccessControlException, IOException, SAXException, URISyntaxException;
 
 	/**
 	 * This retrieves all users from server
-	 * 
+	 *
 	 * @return a Vector of UIDs
 	 */
 	XMLVector getUsers(XMLRPCCommandGetUsers command)
-			throws InvalidKeyException, AccessControlException, IOException,
-			SAXException;
+			throws InvalidKeyException, AccessControlException, IOException, SAXException;
 
 	/**
 	 * This retrieves the next work to compute
 	 */
-	WorkInterface workRequest(HostInterface h) throws InvalidKeyException,
-			AccessControlException, IOException, SAXException,
-			URISyntaxException;
+	WorkInterface workRequest(HostInterface h)
+			throws InvalidKeyException, AccessControlException, IOException, SAXException, URISyntaxException;
 
 	/**
 	 * This retrieves the next work to compute
 	 */
 	WorkInterface workRequest(XMLRPCCommandWorkRequest command)
-			throws InvalidKeyException, AccessControlException, IOException,
-			SAXException;
+			throws InvalidKeyException, AccessControlException, IOException, SAXException;
 
 	/**
 	 * This retrieves all works from server
-	 * 
+	 *
 	 * @return a Vector of UIDs
 	 */
-	XMLVector getWorks() throws InvalidKeyException, AccessControlException,
-			IOException, SAXException, URISyntaxException;
+	XMLVector getWorks()
+			throws InvalidKeyException, AccessControlException, IOException, SAXException, URISyntaxException;
 
 	/**
 	 * This retrieves all works from server
-	 * 
+	 *
 	 * @return a Vector of UIDs
 	 */
 	XMLVector getWorks(XMLRPCCommandGetWorks command)
-			throws InvalidKeyException, AccessControlException, IOException,
-			SAXException;
+			throws InvalidKeyException, AccessControlException, IOException, SAXException;
 
 	/**
 	 * This removes a set of jobs from server
-	 * 
+	 *
 	 * @param uids
 	 *            is a Vector of UID of the works to delete
 	 */
-	void removeWorks(Collection<URI> uids) throws InvalidKeyException,
-			AccessControlException, IOException;
+	void removeWorks(Collection<URI> uids) throws InvalidKeyException, AccessControlException, IOException;
 
 	/**
 	 * This broadcasts a new work to all workers
-	 * 
+	 *
 	 * @param work
 	 *            defines the work to broadcast
 	 */
-	void broadcast(WorkInterface work) throws InvalidKeyException,
-			AccessControlException, IOException, URISyntaxException;
+	void broadcast(WorkInterface work)
+			throws InvalidKeyException, AccessControlException, IOException, URISyntaxException;
 
 	/**
 	 * This broadcasts a new work to all workers
-	 * 
+	 *
 	 * @param uri
 	 *            is the URI to connect to ; its path must contains the UID of
 	 *            the work to broadcast
 	 * @since 4.2.0
 	 */
-	void broadcast(URI uri) throws InvalidKeyException, AccessControlException,
-			IOException;
+	void broadcast(URI uri) throws InvalidKeyException, AccessControlException, IOException;
 
 	/**
 	 * This broadcasts a new work to all workers
-	 * 
+	 *
 	 * @param uid
 	 *            is the uid of the work to braodcast
 	 * @since 4.2.0
 	 */
-	void broadcast(UID uid) throws InvalidKeyException, AccessControlException,
-			IOException, URISyntaxException;
+	void broadcast(UID uid) throws InvalidKeyException, AccessControlException, IOException, URISyntaxException;
 
 	/**
 	 * This broadcasts a new work to all workers
-	 * 
+	 *
 	 * @param command
 	 *            is the broadcast command to send
 	 */
-	void broadcast(XMLRPCCommandBroadcastWork command)
-			throws InvalidKeyException, AccessControlException, IOException;
+	void broadcast(XMLRPCCommandBroadcastWork command) throws InvalidKeyException, AccessControlException, IOException;
 
 	/**
 	 * This method waits for works to complete, with a time out<br />
 	 * If time out is reached, this returns
-	 * 
+	 *
 	 * @param works
 	 *            a Vector of UID
 	 * @param t
@@ -528,25 +493,23 @@ interface ClientAPI {
 	 * @exception InvalidKeyException
 	 *                , AccessControlException on connection error
 	 */
-	void getCompletedWorks(Collection<UID> works, long t)
-			throws InvalidKeyException, AccessControlException, IOException,
-			ClassNotFoundException, SAXException, URISyntaxException;
+	void getCompletedWorks(Collection<UID> works, long t) throws InvalidKeyException, AccessControlException,
+			IOException, ClassNotFoundException, SAXException, URISyntaxException;
 
 	/**
 	 * This method waits(for ever) until all works are completed
-	 * 
+	 *
 	 * @param works
 	 *            a Vector of UID
 	 * @exception InvalidKeyException
 	 *                , AccessControlException on connection error
 	 */
-	void waitForCompletedWorks(Collection<UID> works) throws InvalidKeyException,
-			AccessControlException, IOException, ClassNotFoundException,
-			SAXException, URISyntaxException;
+	void waitForCompletedWorks(Collection<UID> works) throws InvalidKeyException, AccessControlException, IOException,
+			ClassNotFoundException, SAXException, URISyntaxException;
 
 	/**
 	 * This method waits until all works are completed, with a time out
-	 * 
+	 *
 	 * @param works
 	 *            a Vector of UID
 	 * @param timeOut
@@ -555,30 +518,27 @@ interface ClientAPI {
 	 *                , AccessControlException on connection error
 	 * @exception InterruptedException
 	 *                if time out reached
-	 * @throws IOException 
+	 * @throws IOException
 	 */
-	void waitForCompletedWorks(Collection<UID> works, long timeOut)
-			throws InvalidKeyException, AccessControlException,
-			InterruptedException, ClassNotFoundException, SAXException,
-			URISyntaxException, IOException;
+	void waitForCompletedWorks(Collection<UID> works, long timeOut) throws InvalidKeyException, AccessControlException,
+			InterruptedException, ClassNotFoundException, SAXException, URISyntaxException, IOException;
 
 	/**
 	 * This method waits until the work is completed
-	 * 
+	 *
 	 * @param uid
 	 *            is the UID of the expected work
 	 * @return the found work
 	 * @exception InvalidKeyException
 	 *                , AccessControlException on connection error
-	 * @throws InterruptedException 
+	 * @throws InterruptedException
 	 */
-	WorkInterface waitForCompletedWork(UID uid) throws InvalidKeyException,
-			AccessControlException, IOException, ClassNotFoundException,
-			SAXException, URISyntaxException, InterruptedException;
+	WorkInterface waitForCompletedWork(UID uid) throws InvalidKeyException, AccessControlException, IOException,
+			ClassNotFoundException, SAXException, URISyntaxException, InterruptedException;
 
 	/**
 	 * This method waits until the work is completed, with a time out
-	 * 
+	 *
 	 * @param uid
 	 *            is the UID of the expected work
 	 * @param timeOut
@@ -588,16 +548,14 @@ interface ClientAPI {
 	 *                , AccessControlException on connection error
 	 * @exception InterruptedException
 	 *                if time out reached
-	 * @throws IOException 
+	 * @throws IOException
 	 */
-	WorkInterface waitForCompletedWork(UID uid, long timeOut)
-			throws InvalidKeyException, AccessControlException,
-			InterruptedException, ClassNotFoundException, SAXException,
-			URISyntaxException, IOException;
+	WorkInterface waitForCompletedWork(UID uid, long timeOut) throws InvalidKeyException, AccessControlException,
+			InterruptedException, ClassNotFoundException, SAXException, URISyntaxException, IOException;
 
 	/**
 	 * This waits until a work has the given status
-	 * 
+	 *
 	 * @param status
 	 *            is the status to wait for
 	 * @param uid
@@ -608,35 +566,31 @@ interface ClientAPI {
 	 *                , AccessControlException on connection error
 	 * @exception InterruptedException
 	 *                on time out error
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	WorkInterface waitForWork(StatusEnum status, UID uid, long timeOut)
-			throws InvalidKeyException, AccessControlException,
-			InterruptedException, ClassNotFoundException, SAXException,
-			URISyntaxException, IOException;
+			throws InvalidKeyException, AccessControlException, InterruptedException, ClassNotFoundException,
+			SAXException, URISyntaxException, IOException;
 
 	/**
 	 * This retrieves the knwon SmartSockets hub address
-	 * 
+	 *
 	 * @since 8.0.0
 	 */
-	XMLHashtable getHubAddress() throws InvalidKeyException,
-			AccessControlException, IOException, SAXException,
-			URISyntaxException;
+	XMLHashtable getHubAddress()
+			throws InvalidKeyException, AccessControlException, IOException, SAXException, URISyntaxException;
 
 	/**
 	 * This checks the provided work accordingly to the server status
 	 */
-	XMLHashtable workAlive(UID workUID) throws InvalidKeyException,
-			AccessControlException, IOException, SAXException,
-			URISyntaxException;
+	XMLHashtable workAlive(UID workUID)
+			throws InvalidKeyException, AccessControlException, IOException, SAXException, URISyntaxException;
 
 	/**
 	 * This synchronizes with the server
 	 */
-	XMLHashtable workAlive(Hashtable params) throws InvalidKeyException,
-			AccessControlException, IOException, SAXException,
-			URISyntaxException;
+	XMLHashtable workAlive(Hashtable params)
+			throws InvalidKeyException, AccessControlException, IOException, SAXException, URISyntaxException;
 
 	/*
 	 * Tracer
@@ -646,57 +600,51 @@ interface ClientAPI {
 
 	/**
 	 * Get trusted addresses
-	 * 
+	 *
 	 * @return a String containing trused ip addresses separated by a white
 	 *         space.
 	 */
-	String getTrustedAddresses() throws InvalidKeyException,
-			AccessControlException, IOException;
+	String getTrustedAddresses() throws InvalidKeyException, AccessControlException, IOException;
 
 	/**
 	 * Add a trusted address
-	 * 
+	 *
 	 * @param ip
 	 *            new trusted IP
 	 */
-	void addTrustedAddress(String ip) throws InvalidKeyException,
-			AccessControlException, IOException;
+	void addTrustedAddress(String ip) throws InvalidKeyException, AccessControlException, IOException;
 
 	/**
 	 * Remove a trusted address
-	 * 
+	 *
 	 * @param ip
 	 *            trusted IP to remove
 	 */
-	void removeTrustedAddress(String ip) throws InvalidKeyException,
-			AccessControlException, IOException;
+	void removeTrustedAddress(String ip) throws InvalidKeyException, AccessControlException, IOException;
 
 	/**
 	 * Set workers trace flag.
-	 * 
+	 *
 	 * @param hosts
 	 *            is a hashtable which contains host name as key and their
 	 *            dedicated trace flag as value.
 	 */
-	void traceWorkers(Hashtable hosts) throws InvalidKeyException,
-			AccessControlException, IOException;
+	void traceWorkers(Hashtable hosts) throws InvalidKeyException, AccessControlException, IOException;
 
 	/**
 	 * This reads a file from socket
-	 * 
+	 *
 	 * @param f
 	 *            is the file to store received bytes
 	 */
-	void readFile(File f) throws InvalidKeyException, AccessControlException,
-			IOException;
+	void readFile(File f) throws InvalidKeyException, AccessControlException, IOException;
 
 	/**
 	 * This writes a file to socket
-	 * 
+	 *
 	 * @param f
 	 *            is the file to write
 	 */
-	void writeFile(File f) throws InvalidKeyException, AccessControlException,
-			IOException;
+	void writeFile(File f) throws InvalidKeyException, AccessControlException, IOException;
 
 }
