@@ -1,11 +1,21 @@
 package xtremweb.communications;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.net.UnknownHostException;
+import java.util.Date;
+import java.util.concurrent.TimeoutException;
+
 /*
  * Copyrights     : CNRS
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -25,17 +35,6 @@ package xtremweb.communications;
 
 import ibis.smartsockets.util.MalformedAddressException;
 import ibis.smartsockets.virtual.InitializationException;
-
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.net.UnknownHostException;
-import java.util.Date;
-import java.util.concurrent.TimeoutException;
-
 import xtremweb.common.Logger;
 import xtremweb.common.XWPropertyDefs;
 import xtremweb.common.XWTools;
@@ -45,7 +44,7 @@ import xtremweb.common.XWTools;
  * implements a socket proxy. This listens from incoming socket IP:port and
  * forwards to output IP:port. This may be useful, in conjunction to IP aliases,
  * to pretend there's a remote host listening.
- * 
+ *
  * @author Oleg Lodygensky
  * @since 8.3.0
  */
@@ -79,7 +78,7 @@ public final class SocketProxy extends Thread {
 
 		/**
 		 * This is the constructor
-		 * 
+		 *
 		 * @param n
 		 *            is this thread name
 		 * @param s
@@ -93,8 +92,8 @@ public final class SocketProxy extends Thread {
 		 * @throws UnknownHostException
 		 *             on connection error
 		 */
-		private ProxyThread(String n, Socket s, DataInputStream in,
-				DataOutputStream out) throws UnknownHostException, IOException {
+		private ProxyThread(final String n, final Socket s, final DataInputStream in, final DataOutputStream out)
+				throws UnknownHostException, IOException {
 			super(n);
 			this.inSocket = s;
 			this.outSocket = s;
@@ -104,7 +103,7 @@ public final class SocketProxy extends Thread {
 
 		/**
 		 * This is the constructor
-		 * 
+		 *
 		 * @param n
 		 *            is this thread name
 		 * @param out
@@ -114,7 +113,7 @@ public final class SocketProxy extends Thread {
 		 * @throws UnknownHostException
 		 *             on connection error
 		 */
-		private ProxyThread(String n, DataInputStream in, DataOutputStream out)
+		private ProxyThread(final String n, final DataInputStream in, final DataOutputStream out)
 				throws UnknownHostException, IOException {
 			super(n);
 			this.inSocket = null;
@@ -125,7 +124,7 @@ public final class SocketProxy extends Thread {
 
 		/**
 		 * This tests if the incoming connection socket is closed
-		 * 
+		 *
 		 * @return incoming socket.isClised()
 		 */
 		private boolean isClosed() {
@@ -157,8 +156,7 @@ public final class SocketProxy extends Thread {
 			Date now = null;
 			long start = -1;
 			long last = -1;
-			final long timeout = Long.parseLong(XWPropertyDefs.SOTIMEOUT
-					.defaultValue());
+			final long timeout = Long.parseLong(XWPropertyDefs.SOTIMEOUT.defaultValue());
 			now = new Date();
 			start = now.getTime();
 			now = null;
@@ -180,8 +178,7 @@ public final class SocketProxy extends Thread {
 					last = now.getTime();
 					now = null;
 					if ((last - start) > timeout) {
-						throw new TimeoutException("Inactivity since "
-								+ (last - start));
+						throw new TimeoutException("Inactivity since " + (last - start));
 					}
 				} catch (final Exception e) {
 					logger.exception("run error", e);
@@ -235,7 +232,7 @@ public final class SocketProxy extends Thread {
 	 * This retrieve the port this proxy is listening to. This is only set for
 	 * "client" proxy, aiming to forward connections to a remote server
 	 * (typically running on client side).
-	 * 
+	 *
 	 * @return the port number, or -1 if not set
 	 */
 	public int getListenPort() {
@@ -257,7 +254,7 @@ public final class SocketProxy extends Thread {
 
 	/**
 	 * This tells if this thread should stop
-	 * 
+	 *
 	 * @return true if this thread should exit its main loop in run() method
 	 */
 	private synchronized boolean mustStop() {
@@ -266,11 +263,11 @@ public final class SocketProxy extends Thread {
 
 	/**
 	 * This sets this thread main loop test
-	 * 
+	 *
 	 * @param continuer
 	 *            is true to tell this thread to exit its main loop
 	 */
-	public synchronized void setContinuer(boolean continuer) {
+	public synchronized void setContinuer(final boolean continuer) {
 		this.continuer = continuer;
 	}
 
@@ -279,7 +276,7 @@ public final class SocketProxy extends Thread {
 	 * mode this listen from a socket VirtualSocket and forwards to local port.
 	 * On client mode this listen from local port and forwards to a socket
 	 * VirtualSocket.
-	 * 
+	 *
 	 * @param inputIPAddr
 	 *            is the socket hub address
 	 * @param inPort
@@ -295,8 +292,8 @@ public final class SocketProxy extends Thread {
 	 * @throws IOException
 	 *             on I/O error
 	 */
-	public SocketProxy(final String inputIPAddr, final int inPort,
-			final String outputIPAddr, final int outPort) throws IOException {
+	public SocketProxy(final String inputIPAddr, final int inPort, final String outputIPAddr, final int outPort)
+			throws IOException {
 
 		super(DEFAULT_LABEL);
 
@@ -315,8 +312,7 @@ public final class SocketProxy extends Thread {
 		this.continuer = true;
 		logger = new Logger(this);
 
-		logger.info("Started on " + inputAddr + ":" + inPort + " => "
-				+ outputAddr + ":" + outputPort);
+		logger.info("Started on " + inputAddr + ":" + inPort + " => " + outputAddr + ":" + outputPort);
 	}
 
 	/**
@@ -341,15 +337,12 @@ public final class SocketProxy extends Thread {
 				incomingIn = new DataInputStream(incoming.getInputStream());
 				incomingOut = new DataOutputStream(incoming.getOutputStream());
 				outgoingIn = new DataInputStream(outputSocket.getInputStream());
-				outgoingOut = new DataOutputStream(
-						outputSocket.getOutputStream());
+				outgoingOut = new DataOutputStream(outputSocket.getOutputStream());
 
-				final ProxyThread reader = new ProxyThread(READER_LABEL,
-						incoming, incomingIn, outgoingOut);
+				final ProxyThread reader = new ProxyThread(READER_LABEL, incoming, incomingIn, outgoingOut);
 				reader.start();
 
-				final ProxyThread writer = new ProxyThread(WRITER_LABEL,
-						outputSocket, outgoingIn, incomingOut);
+				final ProxyThread writer = new ProxyThread(WRITER_LABEL, outputSocket, outgoingIn, incomingOut);
 				writer.start();
 
 				logger.debug("Started");
@@ -386,14 +379,13 @@ public final class SocketProxy extends Thread {
 	 * This is for testing only Usage : java xtremweb.worker.ThreadProxy <hub
 	 * address> <server address> <port> <true|false>
 	 */
-	public static void main(String[] args) throws Exception {
+	public static void main(final String[] args) throws Exception {
 		SocketProxy proxy = null;
 		try {
-			proxy = new SocketProxy(args[0], Integer.parseInt(args[1]),
-					args[2], Integer.parseInt(args[3]));
+			proxy = new SocketProxy(args[0], Integer.parseInt(args[1]), args[2], Integer.parseInt(args[3]));
 		} catch (final ArrayIndexOutOfBoundsException e) {
-			System.out
-					.println("Usage : java -cp xtremweb.jar xtremweb.worker.SocketProxy <incoming IP address> <incoming port> <outgoing IP address> <outgoing port>");
+			System.out.println(
+					"Usage : java -cp xtremweb.jar xtremweb.worker.SocketProxy <incoming IP address> <incoming port> <outgoing IP address> <outgoing port>");
 			System.exit(1);
 		}
 		proxy.start();

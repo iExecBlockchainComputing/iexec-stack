@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -69,26 +69,25 @@ public class XMLRPCCommandDownloadData extends XMLRPCCommand {
 
 	/**
 	 * This constructs a new command
-	 * 
+	 *
 	 * @param uri
 	 *            to connect to; it must contains the UID of the data to
 	 *            download
 	 */
-	protected XMLRPCCommandDownloadData(URI uri) throws IOException {
+	protected XMLRPCCommandDownloadData(final URI uri) throws IOException {
 		super(uri, IDRPC);
 	}
 
 	/**
 	 * This constructs a new command
-	 * 
+	 *
 	 * @param uri
 	 *            to connect to; it must contains the UID of the data to
 	 *            download
 	 * @param u
 	 *            defines the user who executes this command
 	 */
-	public XMLRPCCommandDownloadData(URI uri, UserInterface u)
-			throws IOException {
+	public XMLRPCCommandDownloadData(final URI uri, final UserInterface u) throws IOException {
 		this(uri);
 		setUser(u);
 	}
@@ -96,7 +95,7 @@ public class XMLRPCCommandDownloadData extends XMLRPCCommand {
 	/**
 	 * This constructs a new object from XML attributes received from input
 	 * stream
-	 * 
+	 *
 	 * @param input
 	 *            is the input stream
 	 * @throws IOException
@@ -104,8 +103,7 @@ public class XMLRPCCommandDownloadData extends XMLRPCCommand {
 	 * @throws InvalidKeyException
 	 * @see xtremweb.common.XMLReader#read(InputStream)
 	 */
-	public XMLRPCCommandDownloadData(InputStream input) throws IOException,
-			SAXException, InvalidKeyException {
+	public XMLRPCCommandDownloadData(final InputStream input) throws IOException, SAXException, InvalidKeyException {
 		this();
 		final XMLReader reader = new XMLReader(this);
 		reader.read(input);
@@ -113,7 +111,7 @@ public class XMLRPCCommandDownloadData extends XMLRPCCommand {
 
 	/**
 	 * This sends this command to server and returns answer
-	 * 
+	 *
 	 * @param comm
 	 *            is the communication channel
 	 * @return always null
@@ -122,10 +120,9 @@ public class XMLRPCCommandDownloadData extends XMLRPCCommand {
 	 * @exception RemoteException
 	 *                is thrown on comm error
 	 */
-	@Override 
-	public XMLable exec(final CommClient comm) throws IOException,
-	ClassNotFoundException, SAXException, InvalidKeyException,
-	AccessControlException	{
+	@Override
+	public XMLable exec(final CommClient comm)
+			throws IOException, ClassNotFoundException, SAXException, InvalidKeyException, AccessControlException {
 		comm.downloadData(this);
 		return null;
 	}
@@ -140,12 +137,11 @@ public class XMLRPCCommandDownloadData extends XMLRPCCommand {
 	 * xtremweb.communications.XMLRPCCommandDownloadData aConfigFile
 	 * [anXMLDescriptionFile]
 	 */
-	public static void main(String[] argv) {
+	public static void main(final String[] argv) {
 		try {
 			final XWConfigurator config = new XWConfigurator(argv[0], false);
 			final XMLRPCCommandDownloadData cmd = new XMLRPCCommandDownloadData(
-					new URI(config.getCurrentDispatcher(), new UID()),
-					config.getUser());
+					new URI(config.getCurrentDispatcher(), new UID()), config.getUser());
 			cmd.test(argv);
 		} catch (final Exception e) {
 			e.printStackTrace();

@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -68,18 +68,18 @@ public class XMLRPCCommandPing extends XMLRPCCommand {
 
 	/**
 	 * This constructs a new command
-	 * 
+	 *
 	 * @param uri
 	 *            contains the URI to connect to
 	 */
-	public XMLRPCCommandPing(URI uri) throws IOException {
+	public XMLRPCCommandPing(final URI uri) throws IOException {
 		super(uri, IDRPC);
 	}
 
 	/**
 	 * This constructs a new object from XML attributes received from input
 	 * stream
-	 * 
+	 *
 	 * @param input
 	 *            is the input stream
 	 * @throws IOException
@@ -87,8 +87,7 @@ public class XMLRPCCommandPing extends XMLRPCCommand {
 	 * @throws InvalidKeyException
 	 * @see xtremweb.common.XMLReader#read(InputStream)
 	 */
-	public XMLRPCCommandPing(InputStream input) throws IOException,
-			SAXException, InvalidKeyException {
+	public XMLRPCCommandPing(final InputStream input) throws IOException, SAXException, InvalidKeyException {
 		this();
 		final XMLReader reader = new XMLReader(this);
 		reader.read(input);
@@ -96,7 +95,7 @@ public class XMLRPCCommandPing extends XMLRPCCommand {
 
 	/**
 	 * This sends this command to server and returns answer
-	 * 
+	 *
 	 * @param comm
 	 *            is the communication channel
 	 * @return always null
@@ -105,10 +104,9 @@ public class XMLRPCCommandPing extends XMLRPCCommand {
 	 * @exception RemoteException
 	 *                is thrown on comm error
 	 */
-	@Override 
-	public XMLable exec(final CommClient comm) throws IOException,
-	ClassNotFoundException, SAXException, InvalidKeyException,
-	AccessControlException	{
+	@Override
+	public XMLable exec(final CommClient comm)
+			throws IOException, ClassNotFoundException, SAXException, InvalidKeyException, AccessControlException {
 		comm.ping(this);
 		return null;
 	}
@@ -122,11 +120,10 @@ public class XMLRPCCommandPing extends XMLRPCCommand {
 	 * Usage : java -cp xtremweb.jar xtremweb.communications.XMLRPCCommandPing
 	 * aConfigFile [anXMLDescriptionFile]
 	 */
-	public static void main(String[] argv) {
+	public static void main(final String[] argv) {
 		try {
 			final XWConfigurator config = new XWConfigurator(argv[0], false);
-			final XMLRPCCommandPing cmd = new XMLRPCCommandPing(new URI(
-					config.getCurrentDispatcher(), new UID()));
+			final XMLRPCCommandPing cmd = new XMLRPCCommandPing(new URI(config.getCurrentDispatcher(), new UID()));
 			cmd.test(argv);
 		} catch (final Exception e) {
 			e.printStackTrace();

@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -43,7 +43,7 @@ import xtremweb.common.XMLable;
  * This class describes an encapsulation of java.net.URI to ensure XtremWeb is
  * formed like :
  * <code>Connection.XWSCHEME + "://" + serverName + "/" + UID</code>
- * 
+ *
  * @author Oleg Lodygensky
  * @since 2.0.0
  */
@@ -63,7 +63,7 @@ public class URI extends XMLable {
 	private java.net.URI uri;
 	/**
 	 * This is the URI column index
-	 * 
+	 *
 	 * @see XMLable#columns
 	 */
 	private static final int URI = FIRST_ATTRIBUTE;
@@ -71,7 +71,7 @@ public class URI extends XMLable {
 	/**
 	 * This tests if this contains a null UID If this does not contain an XWHEP
 	 * URI (i.e. an HTTP one), this returns fale
-	 * 
+	 *
 	 * @see UID#isNull()
 	 * @return UID#isNull() if this contains an UID, false otherwise
 	 */
@@ -95,43 +95,43 @@ public class URI extends XMLable {
 
 	/**
 	 * This constructs a new URI from string
-	 * 
+	 *
 	 * @param value
 	 *            is the URI String representation
 	 * @exception IOException
 	 *                is thrown if parameter does not represents an UID
 	 */
-	public URI(String value) throws URISyntaxException {
+	public URI(final String value) throws URISyntaxException {
 		this();
 		fromString(value);
 	}
 
 	/**
 	 * This constructs a new URI from XML attributes
-	 * 
+	 *
 	 * @since 7.5.0
 	 */
-	public URI(Attributes attrs) {
+	public URI(final Attributes attrs) {
 		this();
 		fromXml(attrs);
 	}
 
 	/**
 	 * This calls this(server, -1, uid)
-	 * 
+	 *
 	 * @param server
 	 *            is the xtremweb server name
 	 * @param uid
 	 *            is the referenced object uid
 	 * @see #URI(String, int, UID)
 	 */
-	public URI(String server, UID uid) throws URISyntaxException {
+	public URI(final String server, final UID uid) throws URISyntaxException {
 		this(server, -1, uid);
 	}
 
 	/**
 	 * This constructs a new URI
-	 * 
+	 *
 	 * @param server
 	 *            is the xtremweb server name
 	 * @param port
@@ -140,25 +140,23 @@ public class URI extends XMLable {
 	 *            is the referenced object uid
 	 * @since 5.9.0
 	 */
-	public URI(String server, int port, UID uid) throws URISyntaxException {
+	public URI(final String server, final int port, final UID uid) throws URISyntaxException {
 		this();
-		uri = new java.net.URI(Connection.xwScheme()
-				+ Connection.schemeSeparator() + server
-				+ (port > 0 ? ":" + port : "")
-				+ (uid != null ? "/" + uid.toString() : ""));
+		uri = new java.net.URI(Connection.xwScheme() + Connection.schemeSeparator() + server
+				+ (port > 0 ? ":" + port : "") + (uid != null ? "/" + uid.toString() : ""));
 		uri.normalize();
 	}
 
 	/**
 	 * This constructs a new object by receiving XML representation from input
 	 * stream
-	 * 
+	 *
 	 * @param in
 	 *            is the input stream
 	 * @exception IOException
 	 *                is thrown on XML parsing error
 	 */
-	public URI(DataInputStream in) throws IOException, SAXException {
+	public URI(final DataInputStream in) throws IOException, SAXException {
 		this();
 		final XMLReader reader = new XMLReader(this);
 		try {
@@ -173,7 +171,7 @@ public class URI extends XMLable {
 	 * This test equality
 	 */
 	@Override
-	public boolean equals(Object uri2) {
+	public boolean equals(final Object uri2) {
 		if ((uri2 == null) || (uri == null) || !(uri2 instanceof URI)) {
 			return false;
 		}
@@ -246,7 +244,7 @@ public class URI extends XMLable {
 
 	/**
 	 * This check whether scheme is file one
-	 * 
+	 *
 	 * @return true if scheme is file one
 	 * @see xtremweb.communications.Connection#fileScheme()
 	 */
@@ -259,7 +257,7 @@ public class URI extends XMLable {
 
 	/**
 	 * This check whether scheme is XtremWeb one
-	 * 
+	 *
 	 * @return true if scheme is XtremWeb one
 	 * @see xtremweb.communications.Connection#xwScheme()
 	 */
@@ -269,7 +267,7 @@ public class URI extends XMLable {
 
 	/**
 	 * This check whether scheme is attic one
-	 * 
+	 *
 	 * @return true if scheme is attic one
 	 * @see xtremweb.communications.Connection#atticScheme()
 	 */
@@ -277,8 +275,7 @@ public class URI extends XMLable {
 		URL url = null;
 		try {
 			url = new URL(uri.toString());
-			return (url.getProtocol().compareToIgnoreCase(
-					Connection.atticScheme()) == 0);
+			return (url.getProtocol().compareToIgnoreCase(Connection.atticScheme()) == 0);
 		} catch (final Exception e) {
 		}
 		return false;
@@ -286,7 +283,7 @@ public class URI extends XMLable {
 
 	/**
 	 * This check whether scheme is http one
-	 * 
+	 *
 	 * @return true if scheme is http one
 	 * @see xtremweb.communications.Connection#httpScheme()
 	 */
@@ -294,8 +291,7 @@ public class URI extends XMLable {
 		URL url = null;
 		try {
 			url = new URL(uri.toString());
-			return (url.getProtocol().compareToIgnoreCase(
-					Connection.httpScheme()) == 0);
+			return (url.getProtocol().compareToIgnoreCase(Connection.httpScheme()) == 0);
 		} catch (final Exception e) {
 		}
 		return false;
@@ -303,7 +299,7 @@ public class URI extends XMLable {
 
 	/**
 	 * This check whether scheme is http one
-	 * 
+	 *
 	 * @return true if scheme is http one
 	 * @see xtremweb.communications.Connection#httpScheme()
 	 * @since 7.3.2
@@ -312,8 +308,7 @@ public class URI extends XMLable {
 		URL url = null;
 		try {
 			url = new URL(uri.toString());
-			return (url.getProtocol().compareToIgnoreCase(
-					Connection.httpsScheme()) == 0);
+			return (url.getProtocol().compareToIgnoreCase(Connection.httpsScheme()) == 0);
 		} catch (final Exception e) {
 		}
 		return false;
@@ -329,12 +324,12 @@ public class URI extends XMLable {
 
 	/**
 	 * This calls java.util.UUID.toString()
-	 * 
+	 *
 	 * @param csv
 	 *            is never used
 	 */
 	@Override
-	public String toString(boolean csv) {
+	public String toString(final boolean csv) {
 		try {
 			String ret = uri.toString().replaceAll("&amp;", "&");
 			ret = ret.replaceAll("&", "&amp;");
@@ -346,13 +341,13 @@ public class URI extends XMLable {
 
 	/**
 	 * This retrieves an URI from String representation.
-	 * 
+	 *
 	 * @param value
 	 *            is the URI String representation
 	 * @exception IOException
 	 *                is thrown if parameter does not represents an URI
 	 */
-	public final void fromString(String value) throws URISyntaxException {
+	public final void fromString(final String value) throws URISyntaxException {
 		if (value == null) {
 			throw new URISyntaxException("string is null", "");
 		}
@@ -368,7 +363,7 @@ public class URI extends XMLable {
 
 	/**
 	 * This retrieves this object XML representation
-	 * 
+	 *
 	 * @return this object XML representation
 	 */
 	@Override
@@ -378,12 +373,12 @@ public class URI extends XMLable {
 
 	/**
 	 * This retrieves attributes from XML attributes
-	 * 
+	 *
 	 * @param attrs
 	 *            contains attributes XML representation
 	 */
 	@Override
-	public final void fromXml(Attributes attrs) {
+	public final void fromXml(final Attributes attrs) {
 		if (attrs == null) {
 			return;
 		}
@@ -391,10 +386,8 @@ public class URI extends XMLable {
 		for (int a = 0; a < attrs.getLength(); a++) {
 			final String attribute = attrs.getQName(a);
 			final String value = attrs.getValue(a);
-			getLogger().finest(
-					"     attribute #" + a + ": name=\"" + attribute + "\""
-							+ ", value=\"" + value + "\""
-							+ "getColumnLabel(URI) = " + getColumnLabel(URI));
+			getLogger().finest("     attribute #" + a + ": name=\"" + attribute + "\"" + ", value=\"" + value + "\""
+					+ "getColumnLabel(URI) = " + getColumnLabel(URI));
 
 			if (attribute.compareToIgnoreCase(getColumnLabel(URI)) == 0) {
 				try {
@@ -408,12 +401,12 @@ public class URI extends XMLable {
 
 	/**
 	 * This is called by the XML parser
-	 * 
+	 *
 	 * @see xtremweb.common.XMLReader#read(java.io.InputStream)
 	 */
 	@Override
-	public void xmlElementStart(String uri, String tag, String qname,
-			Attributes attrs) throws SAXException {
+	public void xmlElementStart(final String uri, final String tag, final String qname, final Attributes attrs)
+			throws SAXException {
 		try {
 			super.xmlElementStart(uri, tag, qname, attrs);
 			return;
@@ -428,13 +421,12 @@ public class URI extends XMLable {
 	/**
 	 * This is for debug purposes only
 	 */
-	public static void main(String[] argv) {
+	public static void main(final String[] argv) {
 		try {
 			URI uri = new URI(argv[0]);
 			System.out.println("uri = " + uri);
 			if (uri.isFile() == true) {
-				System.out.println(uri.getPath() + " exists = "
-						+ new File(uri.getPath()).exists());
+				System.out.println(uri.getPath() + " exists = " + new File(uri.getPath()).exists());
 			}
 
 			final Hashtable<URI, String> cache = new Hashtable<URI, String>();
@@ -447,8 +439,7 @@ public class URI extends XMLable {
 			final Enumeration<URI> enums = cache.keys();
 			while (enums.hasMoreElements()) {
 				uri = enums.nextElement();
-				System.out.println("cache.get(" + uri + ")) = "
-						+ cache.get(uri));
+				System.out.println("cache.get(" + uri + ")) = " + cache.get(uri));
 			}
 		} catch (final Exception e) {
 			e.printStackTrace();

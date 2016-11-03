@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -76,32 +76,32 @@ public class XMLRPCCommandWorkAlive extends XMLRPCCommand {
 
 	/**
 	 * This constructs a new command
-	 * 
+	 *
 	 * @param uri
 	 *            contains the URI to connect to
 	 * @param h
 	 *            is the hashtable WorkAlive parameter
 	 */
-	public XMLRPCCommandWorkAlive(URI uri, XMLHashtable h) throws IOException {
+	public XMLRPCCommandWorkAlive(final URI uri, final XMLHashtable h) throws IOException {
 		super(uri, IDRPC);
 		setParameter(h);
 	}
 
 	/**
 	 * This constructs a new command
-	 * 
+	 *
 	 * @param uri
 	 *            contains the URI to connect to
 	 * @param h
 	 *            is the hashtable WorkAlive parameter
 	 */
-	public XMLRPCCommandWorkAlive(URI uri, Hashtable h) throws IOException {
+	public XMLRPCCommandWorkAlive(final URI uri, final Hashtable h) throws IOException {
 		this(uri, new XMLHashtable(h));
 	}
 
 	/**
 	 * This constructs a new command
-	 * 
+	 *
 	 * @param uri
 	 *            contains the URI to connect to
 	 * @param u
@@ -111,8 +111,8 @@ public class XMLRPCCommandWorkAlive extends XMLRPCCommand {
 	 * @param p
 	 *            is the hashtable WorkAlive parameter
 	 */
-	public XMLRPCCommandWorkAlive(URI uri, UserInterface u, HostInterface h,
-			XMLHashtable p) throws IOException {
+	public XMLRPCCommandWorkAlive(final URI uri, final UserInterface u, final HostInterface h, final XMLHashtable p)
+			throws IOException {
 		this(uri, p);
 		setUser(u);
 		setHost(h);
@@ -120,7 +120,7 @@ public class XMLRPCCommandWorkAlive extends XMLRPCCommand {
 
 	/**
 	 * This constructs a new command
-	 * 
+	 *
 	 * @param uri
 	 *            contains the URI to connect to
 	 * @param u
@@ -130,23 +130,22 @@ public class XMLRPCCommandWorkAlive extends XMLRPCCommand {
 	 * @param p
 	 *            is the hashtable WorkAlive parameter
 	 */
-	public XMLRPCCommandWorkAlive(URI uri, UserInterface u, HostInterface h,
-			Hashtable p) throws IOException {
+	public XMLRPCCommandWorkAlive(final URI uri, final UserInterface u, final HostInterface h, final Hashtable p)
+			throws IOException {
 		this(uri, u, h, new XMLHashtable(p));
 	}
 
 	/**
 	 * This constructs a new object from XML attributes received from input
 	 * stream
-	 * 
+	 *
 	 * @param input
 	 *            is the input stream
 	 * @throws IOException
 	 *             on XML error
 	 * @see xtremweb.common.XMLReader#read(InputStream)
 	 */
-	public XMLRPCCommandWorkAlive(InputStream input) throws IOException,
-			SAXException, InvalidKeyException {
+	public XMLRPCCommandWorkAlive(final InputStream input) throws IOException, SAXException, InvalidKeyException {
 		this();
 		final XMLReader reader = new XMLReader(this);
 		reader.read(input);
@@ -154,12 +153,12 @@ public class XMLRPCCommandWorkAlive extends XMLRPCCommand {
 
 	/**
 	 * This is called to decode XML elements
-	 * 
+	 *
 	 * @see xtremweb.common.XMLReader#read(InputStream)
 	 */
 	@Override
-	public void xmlElementStart(String uri, String tag, String qname,
-			Attributes attrs) throws SAXException {
+	public void xmlElementStart(final String uri, final String tag, final String qname, final Attributes attrs)
+			throws SAXException {
 
 		try {
 			xmlElementStartCheckUserAndHost(uri, tag, qname, attrs);
@@ -171,8 +170,8 @@ public class XMLRPCCommandWorkAlive extends XMLRPCCommand {
 			final XMLable param = getParameter();
 			if (param == null) {
 				if (qname.compareToIgnoreCase(XMLHashtable.THISTAG) != 0) {
-					throw new SAXException("XMLRPCCommandWorkAlive : not a "
-							+ getXMLTag() + " command (" + qname + ")");
+					throw new SAXException(
+							"XMLRPCCommandWorkAlive : not a " + getXMLTag() + " command (" + qname + ")");
 				}
 				setParameter(new XMLHashtable(attrs));
 				getParameter().setCurrentVersion(getCurrentVersion());
@@ -180,8 +179,7 @@ public class XMLRPCCommandWorkAlive extends XMLRPCCommand {
 				param.xmlElementStart(uri, tag, qname, attrs);
 			}
 		} catch (final Exception e) {
-			throw new SAXException("XMLRPCCommandWorkAlive : not a "
-					+ getXMLTag() + " command (" + qname + ")");
+			throw new SAXException("XMLRPCCommandWorkAlive : not a " + getXMLTag() + " command (" + qname + ")");
 		}
 	}
 
@@ -189,18 +187,16 @@ public class XMLRPCCommandWorkAlive extends XMLRPCCommand {
 	 * This decrements nested on each "</XMLHashtable>" or "</XMLVector>".<br />
 	 * This increment currentIndex is nested is 0; otherwise this calls
 	 * tuples[currentIndex].xmlElementStop()
-	 * 
+	 *
 	 * @see xtremweb.common.XMLObject#xmlElementStop(String, String, String)
 	 */
 	@Override
-	public void xmlElementStop(String uri, String tag, String qname)
-			throws SAXException {
+	public void xmlElementStop(final String uri, final String tag, final String qname) throws SAXException {
 
 		super.xmlElementStop(uri, tag, qname);
 
 		getLogger().finest(
-				"XMLRPCCommandWorkAlive#xmlElementStop " + uri + ", " + tag
-						+ ", " + qname + " = " + getCurrentValue());
+				"XMLRPCCommandWorkAlive#xmlElementStop " + uri + ", " + tag + ", " + qname + " = " + getCurrentValue());
 
 		if (getParameter() != null) {
 			try {
@@ -213,7 +209,7 @@ public class XMLRPCCommandWorkAlive extends XMLRPCCommand {
 
 	/**
 	 * This sends this command to server and returns answer
-	 * 
+	 *
 	 * @param comm
 	 *            is the communication channel
 	 * @return always null
@@ -223,9 +219,8 @@ public class XMLRPCCommandWorkAlive extends XMLRPCCommand {
 	 *                is thrown on comm error
 	 */
 	@Override
-	public XMLable exec(final CommClient comm) throws IOException,
-			ClassNotFoundException, SAXException, InvalidKeyException,
-			AccessControlException {
+	public XMLable exec(final CommClient comm)
+			throws IOException, ClassNotFoundException, SAXException, InvalidKeyException, AccessControlException {
 		return comm.workAlive(this);
 	}
 
@@ -238,7 +233,7 @@ public class XMLRPCCommandWorkAlive extends XMLRPCCommand {
 	 * <br />
 	 * The dummy or read representation is finally dumped
 	 */
-	public static void main(String[] argv) {
+	public static void main(final String[] argv) {
 		try {
 			final XWConfigurator config = new XWConfigurator(argv[0], false);
 
@@ -259,15 +254,12 @@ public class XMLRPCCommandWorkAlive extends XMLRPCCommand {
 			h.put(new String("an hashtable"), h2);
 			final XMLHashtable xmlh = new XMLHashtable(h);
 
-			XMLRPCCommandWorkAlive cmd = new XMLRPCCommandWorkAlive(new URI(
-					config.getCurrentDispatcher()), config.getUser(),
-					config.getHost(), xmlh);
+			XMLRPCCommandWorkAlive cmd = new XMLRPCCommandWorkAlive(new URI(config.getCurrentDispatcher()),
+					config.getUser(), config.getHost(), xmlh);
 			if (argv.length > 1) {
 				cmd = new XMLRPCCommandWorkAlive(new FileInputStream(argv[1]));
 			}
-			cmd.getLogger().info(
-					cmd.openXmlRootElement() + cmd.toXml()
-							+ cmd.closeXmlRootElement());
+			cmd.getLogger().info(cmd.openXmlRootElement() + cmd.toXml() + cmd.closeXmlRootElement());
 		} catch (final Exception e) {
 			e.printStackTrace();
 		}

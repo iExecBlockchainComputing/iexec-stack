@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -110,7 +110,7 @@ public class TCPClient extends CommClient {
 
 	/**
 	 * This retrieves this client port number
-	 * 
+	 *
 	 * @since 5.9.0
 	 */
 	@Override
@@ -123,13 +123,13 @@ public class TCPClient extends CommClient {
 
 	/**
 	 * This opens connection to server
-	 * 
+	 *
 	 * @param uri
 	 *            is the URI to reach
 	 */
 	@Override
-	protected void open(URI uri) throws IOException, UnknownHostException,
-			NoRouteToHostException, SSLHandshakeException, ConnectException {
+	protected void open(URI uri)
+			throws IOException, UnknownHostException, NoRouteToHostException, SSLHandshakeException, ConnectException {
 
 		if (isOpened() == true) {
 			return;
@@ -175,15 +175,13 @@ public class TCPClient extends CommClient {
 			for (nbopens = 0; nbopens < getSocketRetries(); nbopens++) {
 				try {
 					if ((keyFile == null) || (keyFile.exists() == false)) {
-						getLogger().warn(
-								"unsecured communications : not using SSL");
+						getLogger().warn("unsecured communications : not using SSL");
 
 						if (nio) {
 							nioSocket = SocketChannel.open();
 							nioSocket.configureBlocking(true);
 
-							nioSocket.connect(new InetSocketAddress(serverName,
-									serverPort));
+							nioSocket.connect(new InetSocketAddress(serverName, serverPort));
 
 							while (!nioSocket.finishConnect()) {
 								getLogger().info("still connecting");
@@ -192,15 +190,11 @@ public class TCPClient extends CommClient {
 						} else {
 							socket = new Socket(serverName, serverPort);
 						}
-						socket.setSoTimeout(config
-								.getInt(XWPropertyDefs.SOTIMEOUT));
+						socket.setSoTimeout(config.getInt(XWPropertyDefs.SOTIMEOUT));
 					} else {
-						final SocketFactory socketFactory = SSLSocketFactory
-								.getDefault();
-						socket = socketFactory.createSocket(serverName,
-								serverPort);
-						socket.setSoTimeout(config
-								.getInt(XWPropertyDefs.SOTIMEOUT));
+						final SocketFactory socketFactory = SSLSocketFactory.getDefault();
+						socket = socketFactory.createSocket(serverName, serverPort);
+						socket.setSoTimeout(config.getInt(XWPropertyDefs.SOTIMEOUT));
 						((SSLSocket) socket).startHandshake();
 						nio = false;
 					}
@@ -212,19 +206,16 @@ public class TCPClient extends CommClient {
 					}
 					continue;
 				}
-				getLogger()
-						.debug("*************************************** Socket opened");
+				getLogger().debug("*************************************** Socket opened");
 				break;
 			}
 
 			if (nbopens == getSocketRetries()) {
-				throw new ConnectException("unsuccessfully tried to open "
-						+ nbopens + " times");
+				throw new ConnectException("unsuccessfully tried to open " + nbopens + " times");
 			}
 
 			// mac os x don't like that :(
-			if (config.getBoolean(XWPropertyDefs.OPTIMIZENETWORK)
-					&& (OSEnum.getOs().isMacosx() == false)) {
+			if (config.getBoolean(XWPropertyDefs.OPTIMIZENETWORK) && (OSEnum.getOs().isMacosx() == false)) {
 				socket.setSoLinger(false, 0); // don't wait on close
 				socket.setTcpNoDelay(true); // don't wait to send
 				socket.setTrafficClass(0x08); // maximize throughput
@@ -232,8 +223,7 @@ public class TCPClient extends CommClient {
 			}
 
 			io = new StreamIO(new DataOutputStream(socket.getOutputStream()),
-					new DataInputStream(socket.getInputStream()),
-					socket.getSendBufferSize(), nio);
+					new DataInputStream(socket.getInputStream()), socket.getSendBufferSize(), nio);
 			writer = new XMLWriter(io.output());
 
 			setOpened(true);
@@ -249,7 +239,7 @@ public class TCPClient extends CommClient {
 	/**
 	 * This closes communication channel is util.MAXMESSAGES is reached or if
 	 * autoClose is true
-	 * 
+	 *
 	 * @see xtremweb.common.XWTools#MAXMESSAGES
 	 * @see CommClient#autoClose
 	 */
@@ -289,14 +279,14 @@ public class TCPClient extends CommClient {
 
 	/**
 	 * this writes a command
-	 * 
+	 *
 	 * @param cmd
 	 *            is the command to write
 	 * @throws IOException
 	 *             is thrown on communication error
 	 */
 	@Override
-	protected void write(XMLRPCCommand cmd) throws IOException {
+	protected void write(final XMLRPCCommand cmd) throws IOException {
 		IOException ioe = null;
 		try {
 			mileStone("<write idrpc='" + cmd.getIdRpc() + "'>");
@@ -345,180 +335,177 @@ public class TCPClient extends CommClient {
 
 	/**
 	 * This creates an object from channel
-	 * 
+	 *
 	 * @throws AccessControlException
 	 * @throws InvalidKeyException
 	 */
 	@Override
-	protected Table newTableInterface() throws IOException, SAXException,
-			InvalidKeyException, AccessControlException {
+	protected Table newTableInterface() throws IOException, SAXException, InvalidKeyException, AccessControlException {
 		return super.newTableInterface(io.input());
 	}
 
 	/**
 	 * This creates an object from channel
-	 * 
+	 *
 	 * @throws AccessControlException
 	 * @throws InvalidKeyException
 	 */
 	@Override
-	protected AppInterface newAppInterface() throws IOException, SAXException,
-			InvalidKeyException, AccessControlException {
+	protected AppInterface newAppInterface()
+			throws IOException, SAXException, InvalidKeyException, AccessControlException {
 		return super.newAppInterface(io.input());
 	}
 
 	/**
 	 * This creates an object from channel
-	 * 
+	 *
 	 * @throws AccessControlException
 	 * @throws InvalidKeyException
 	 */
 	@Override
-	protected DataInterface newDataInterface() throws IOException,
-			SAXException, InvalidKeyException, AccessControlException {
+	protected DataInterface newDataInterface()
+			throws IOException, SAXException, InvalidKeyException, AccessControlException {
 		return super.newDataInterface(io.input());
 	}
 
 	/**
 	 * This creates an object from channel
-	 * 
+	 *
 	 * @throws AccessControlException
 	 * @throws InvalidKeyException
 	 */
 	@Override
-	protected GroupInterface newGroupInterface() throws IOException,
-			SAXException, InvalidKeyException, AccessControlException {
+	protected GroupInterface newGroupInterface()
+			throws IOException, SAXException, InvalidKeyException, AccessControlException {
 		return super.newGroupInterface(io.input());
 	}
 
 	/**
 	 * This creates an object from channel
-	 * 
+	 *
 	 * @throws AccessControlException
 	 * @throws InvalidKeyException
 	 */
 	@Override
-	protected HostInterface newHostInterface() throws IOException,
-			SAXException, InvalidKeyException, AccessControlException {
+	protected HostInterface newHostInterface()
+			throws IOException, SAXException, InvalidKeyException, AccessControlException {
 		return super.newHostInterface(io.input());
 	}
 
 	/**
 	 * This creates an object from channel
-	 * 
+	 *
 	 * @throws AccessControlException
 	 * @throws InvalidKeyException
 	 */
 	@Override
-	protected SessionInterface newSessionInterface() throws IOException,
-			SAXException, InvalidKeyException, AccessControlException {
+	protected SessionInterface newSessionInterface()
+			throws IOException, SAXException, InvalidKeyException, AccessControlException {
 		return super.newSessionInterface(io.input());
 	}
 
 	/**
 	 * This creates an object from channel
-	 * 
+	 *
 	 * @throws AccessControlException
 	 * @throws InvalidKeyException
 	 */
 	@Override
-	protected TaskInterface newTaskInterface() throws IOException,
-			SAXException, InvalidKeyException, AccessControlException {
+	protected TaskInterface newTaskInterface()
+			throws IOException, SAXException, InvalidKeyException, AccessControlException {
 		return super.newTaskInterface(io.input());
 	}
 
 	/**
 	 * This creates an object from channel
-	 * 
+	 *
 	 * @throws AccessControlException
 	 * @throws InvalidKeyException
 	 */
 	@Override
-	protected TraceInterface newTraceInterface() throws IOException,
-			SAXException, InvalidKeyException, AccessControlException {
+	protected TraceInterface newTraceInterface()
+			throws IOException, SAXException, InvalidKeyException, AccessControlException {
 		return super.newTraceInterface(io.input());
 	}
 
 	/**
 	 * This creates an object from channel
-	 * 
+	 *
 	 * @throws AccessControlException
 	 * @throws InvalidKeyException
 	 */
 	@Override
-	protected UserInterface newUserInterface() throws IOException,
-			SAXException, InvalidKeyException, AccessControlException {
+	protected UserInterface newUserInterface()
+			throws IOException, SAXException, InvalidKeyException, AccessControlException {
 		return super.newUserInterface(io.input());
 	}
 
 	/**
 	 * This creates an object from channel
-	 * 
+	 *
 	 * @throws AccessControlException
 	 * @throws InvalidKeyException
 	 */
 	@Override
-	protected UserGroupInterface newUserGroupInterface() throws IOException,
-			SAXException, InvalidKeyException, AccessControlException {
+	protected UserGroupInterface newUserGroupInterface()
+			throws IOException, SAXException, InvalidKeyException, AccessControlException {
 		return super.newUserGroupInterface(io.input());
 	}
 
 	/**
 	 * This creates an object from channel
-	 * 
+	 *
 	 * @throws AccessControlException
 	 * @throws InvalidKeyException
 	 */
 	@Override
-	protected WorkInterface newWorkInterface() throws IOException,
-			SAXException, InvalidKeyException, AccessControlException {
+	protected WorkInterface newWorkInterface()
+			throws IOException, SAXException, InvalidKeyException, AccessControlException {
 		return super.newWorkInterface(io.input());
 	}
 
 	/**
 	 * This creates an object from channel
-	 * 
+	 *
 	 * @throws AccessControlException
 	 * @throws InvalidKeyException
 	 */
 	@Override
-	protected XMLVector newXMLVector() throws IOException, SAXException,
-			InvalidKeyException, AccessControlException {
+	protected XMLVector newXMLVector() throws IOException, SAXException, InvalidKeyException, AccessControlException {
 		return super.newXMLVector(io.input());
 	}
 
 	/**
 	 * This creates an object from channel
-	 * 
+	 *
 	 * @throws AccessControlException
 	 * @throws InvalidKeyException
 	 */
 	@Override
-	protected Version newXMLVersion() throws IOException, SAXException,
-			InvalidKeyException, AccessControlException {
+	protected Version newXMLVersion() throws IOException, SAXException, InvalidKeyException, AccessControlException {
 		return super.newXMLVersion(io.input());
 	}
 
 	/**
 	 * This creates an object from channel
-	 * 
+	 *
 	 * @throws AccessControlException
 	 * @throws InvalidKeyException
 	 */
 	@Override
-	protected XMLHashtable newXMLHashtable() throws IOException, SAXException,
-			InvalidKeyException, AccessControlException {
+	protected XMLHashtable newXMLHashtable()
+			throws IOException, SAXException, InvalidKeyException, AccessControlException {
 		return super.newXMLHashtable(io.input());
 	}
 
 	/**
 	 * This writes a file to socket
-	 * 
+	 *
 	 * @param f
 	 *            is the file to send
 	 */
 	@Override
-	public void writeFile(File f) throws IOException {
+	public void writeFile(final File f) throws IOException {
 		mileStone("<writeFile file='" + f + "'>");
 		io.writeFile(f);
 		mileStone("</writeFile>");
@@ -527,12 +514,12 @@ public class TCPClient extends CommClient {
 	/**
 	 * This reads a file from socket This is typically needed after a
 	 * workRequest to get stdin and/or dirin files
-	 * 
+	 *
 	 * @param f
 	 *            is the file to store received bytes
 	 */
 	@Override
-	public void readFile(File f) throws IOException {
+	public void readFile(final File f) throws IOException {
 		mileStone("<readFile file='" + f + "'>");
 		io.readFile(f);
 		mileStone("</readFile>");

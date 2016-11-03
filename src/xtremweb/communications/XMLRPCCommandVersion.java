@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -73,27 +73,27 @@ public class XMLRPCCommandVersion extends XMLRPCCommand {
 	/**
 	 * This constructs a new command
 	 */
-	protected XMLRPCCommandVersion(URI uri, IdRpc id) throws IOException {
+	protected XMLRPCCommandVersion(final URI uri, final IdRpc id) throws IOException {
 		super(uri, id);
 	}
 
 	/**
 	 * This constructs a new command
-	 * 
+	 *
 	 * @param uri
 	 *            is the URI of the group to retreive
 	 */
-	public XMLRPCCommandVersion(URI uri) throws IOException {
+	public XMLRPCCommandVersion(final URI uri) throws IOException {
 		super(uri, IDRPC);
 	}
 
 	/**
 	 * This constructs a new command
-	 * 
+	 *
 	 * @param uri
 	 *            is the URI of the group to retreive
 	 */
-	public XMLRPCCommandVersion(URI uri, UserInterface u) throws IOException {
+	public XMLRPCCommandVersion(final URI uri, final UserInterface u) throws IOException {
 		this(uri);
 		setUser(u);
 	}
@@ -101,7 +101,7 @@ public class XMLRPCCommandVersion extends XMLRPCCommand {
 	/**
 	 * This constructs a new object from XML attributes received from input
 	 * stream
-	 * 
+	 *
 	 * @param input
 	 *            is the input stream
 	 * @throws IOException
@@ -109,8 +109,7 @@ public class XMLRPCCommandVersion extends XMLRPCCommand {
 	 * @throws InvalidKeyException
 	 * @see xtremweb.common.XMLReader#read(InputStream)
 	 */
-	public XMLRPCCommandVersion(InputStream input) throws IOException,
-			SAXException, InvalidKeyException {
+	public XMLRPCCommandVersion(final InputStream input) throws IOException, SAXException, InvalidKeyException {
 		this();
 		final XMLReader reader = new XMLReader(this);
 		reader.read(input);
@@ -118,7 +117,7 @@ public class XMLRPCCommandVersion extends XMLRPCCommand {
 
 	/**
 	 * This sends this command to server and returns answer
-	 * 
+	 *
 	 * @param comm
 	 *            is the communication channel
 	 * @return an object depeding on URI (an app, a data...)
@@ -128,8 +127,8 @@ public class XMLRPCCommandVersion extends XMLRPCCommand {
 	 *                is thrown on comm error
 	 */
 	@Override
-	public XMLable exec(CommClient comm) throws IOException, SAXException,
-			InvalidKeyException, AccessControlException {
+	public XMLable exec(final CommClient comm)
+			throws IOException, SAXException, InvalidKeyException, AccessControlException {
 		return comm.version(this);
 	}
 
@@ -143,11 +142,11 @@ public class XMLRPCCommandVersion extends XMLRPCCommand {
 	 * xtremweb.communications.XMLRPCCommandVersion aConfigFile
 	 * [anXMLDescriptionFile]
 	 */
-	public static void main(String[] argv) {
+	public static void main(final String[] argv) {
 		try {
 			final XWConfigurator config = new XWConfigurator(argv[0], false);
-			final XMLRPCCommandVersion cmd = new XMLRPCCommandVersion(new URI(
-					config.getCurrentDispatcher(), new UID()), config.getUser());
+			final XMLRPCCommandVersion cmd = new XMLRPCCommandVersion(new URI(config.getCurrentDispatcher(), new UID()),
+					config.getUser());
 			cmd.test(argv);
 		} catch (final Exception e) {
 			e.printStackTrace();

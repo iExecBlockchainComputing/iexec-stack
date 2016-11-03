@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -68,13 +68,13 @@ public class XMLRPCCommandGetGroups extends XMLRPCCommand {
 
 	/**
 	 * This constructs a new command
-	 * 
+	 *
 	 * @param uri
 	 *            contains the uri to connect to
 	 * @param u
 	 *            defines the user who executes this command
 	 */
-	public XMLRPCCommandGetGroups(URI uri, UserInterface u) throws IOException {
+	public XMLRPCCommandGetGroups(final URI uri, final UserInterface u) throws IOException {
 		super(uri, IDRPC);
 		setUser(u);
 	}
@@ -82,15 +82,14 @@ public class XMLRPCCommandGetGroups extends XMLRPCCommand {
 	/**
 	 * This constructs a new object from XML attributes received from input
 	 * stream
-	 * 
+	 *
 	 * @param input
 	 *            is the input stream
 	 * @throws IOException
 	 *             on XML error
 	 * @see xtremweb.common.XMLReader#read(InputStream)
 	 */
-	public XMLRPCCommandGetGroups(InputStream input) throws IOException,
-			SAXException, InvalidKeyException {
+	public XMLRPCCommandGetGroups(final InputStream input) throws IOException, SAXException, InvalidKeyException {
 		this();
 		final XMLReader reader = new XMLReader(this);
 		reader.read(input);
@@ -98,7 +97,7 @@ public class XMLRPCCommandGetGroups extends XMLRPCCommand {
 
 	/**
 	 * This sends this command to server and returns answer
-	 * 
+	 *
 	 * @param comm
 	 *            is the communication channel
 	 * @return always null since this expect no answer
@@ -106,8 +105,8 @@ public class XMLRPCCommandGetGroups extends XMLRPCCommand {
 	 * @throws InvalidKeyException
 	 */
 	@Override
-	public XMLable exec(CommClient comm) throws IOException, SAXException,
-			InvalidKeyException, AccessControlException {
+	public XMLable exec(final CommClient comm)
+			throws IOException, SAXException, InvalidKeyException, AccessControlException {
 		return comm.getGroups(this);
 	}
 
@@ -121,12 +120,11 @@ public class XMLRPCCommandGetGroups extends XMLRPCCommand {
 	 * xtremweb.communications.XMLRPCCommandGetGroups aConfigFile
 	 * [anXMLDescriptionFile]
 	 */
-	public static void main(String[] argv) {
+	public static void main(final String[] argv) {
 		try {
 			final XWConfigurator config = new XWConfigurator(argv[0], false);
 			final XMLRPCCommandGetGroups cmd = new XMLRPCCommandGetGroups(
-					new URI(config.getCurrentDispatcher(), new UID()),
-					config.getUser());
+					new URI(config.getCurrentDispatcher(), new UID()), config.getUser());
 			cmd.test(argv);
 		} catch (final Exception e) {
 			e.printStackTrace();

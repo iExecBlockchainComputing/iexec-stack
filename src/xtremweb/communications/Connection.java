@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -26,7 +26,7 @@ package xtremweb.communications;
 /**
  * @since RPC-V
  * @author <a href="mailto:lodygens a t lal.in2p3.fr">Oleg Lodygensky</a>
- * 
+ *
  *         This class defines ports used by XtremWeb
  */
 
@@ -34,7 +34,7 @@ public enum Connection {
 
 	/**
 	 * This is the TCP port (with or without SSL) with no client challenge
-	 * 
+	 *
 	 * @see #TCPSPORT
 	 */
 	TCPPORT {
@@ -46,7 +46,7 @@ public enum Connection {
 		/**
 		 * This retrieves a property name as found in config file This is for
 		 * backward compatibility only
-		 * 
+		 *
 		 * @since 8.2.0
 		 */
 		@Override
@@ -66,7 +66,7 @@ public enum Connection {
 		/**
 		 * This retrieves a property name as found in config file This is for
 		 * backward compatibility only
-		 * 
+		 *
 		 * @since 8.2.0
 		 */
 		@Override
@@ -86,7 +86,7 @@ public enum Connection {
 		/**
 		 * This retrieves a property name as found in config file This is for
 		 * backward compatibility only
-		 * 
+		 *
 		 * @since 8.2.0
 		 */
 		@Override
@@ -98,7 +98,7 @@ public enum Connection {
 	 * This is the HTTP port to connect to the worker management page (so that
 	 * the resource owner can see and configure its local worker and even stop
 	 * it)
-	 * 
+	 *
 	 * SSL is not used
 	 */
 	HTTPWORKERPORT {
@@ -110,7 +110,7 @@ public enum Connection {
 		/**
 		 * This retrieves a property name as found in config file This is for
 		 * backward compatibility only
-		 * 
+		 *
 		 * @since 8.2.0
 		 */
 		@Override
@@ -135,7 +135,7 @@ public enum Connection {
 		/**
 		 * This retrieves a property name as found in config file This is for
 		 * backward compatibility only
-		 * 
+		 *
 		 * @since 8.2.0
 		 */
 		@Override
@@ -160,7 +160,7 @@ public enum Connection {
 		/**
 		 * This retrieves a property name as found in config file This is for
 		 * backward compatibility only
-		 * 
+		 *
 		 * @since 8.2.0
 		 */
 		@Override
@@ -180,7 +180,7 @@ public enum Connection {
 		/**
 		 * This retrieves a property name as found in config file This is for
 		 * backward compatibility only
-		 * 
+		 *
 		 * @since 8.2.0
 		 */
 		@Override
@@ -200,7 +200,7 @@ public enum Connection {
 		/**
 		 * This retrieves a property name as found in config file This is for
 		 * backward compatibility only
-		 * 
+		 *
 		 * @since 8.2.0
 		 */
 		@Override
@@ -210,7 +210,7 @@ public enum Connection {
 	},
 	/**
 	 * This is the smartsocket proxy port
-	 * 
+	 *
 	 * @since 8.0.0
 	 */
 	SMARTSOCKETSPORT {
@@ -222,7 +222,7 @@ public enum Connection {
 		/**
 		 * This retrieves a property name as found in config file This is for
 		 * backward compatibility only
-		 * 
+		 *
 		 * @since 8.2.0
 		 */
 		@Override
@@ -242,7 +242,7 @@ public enum Connection {
 		/**
 		 * This retrieves a property name as found in config file This is for
 		 * backward compatibility only
-		 * 
+		 *
 		 * @since 8.2.0
 		 */
 		@Override
@@ -253,19 +253,19 @@ public enum Connection {
 
 	/**
 	 * This is the property name for the hub address
-	 * 
+	 *
 	 * @since 8.0.0
 	 */
 	public static final String HUBPNAME = "smartsockets.hub.addresses";
 	/**
 	 * This is the property name for the hub port
-	 * 
+	 *
 	 * @since 8.0.0
 	 */
 	public static final String HUBPORTPNAME = "smartsockets.hub.port";
 	/**
 	 * This is the property name for the port range
-	 * 
+	 *
 	 * @since 8.0.0
 	 */
 	public static final String PORTPNAME = "smartsockets.port.range";
@@ -276,7 +276,7 @@ public enum Connection {
 
 	/**
 	 * This returns XWSCHEME
-	 * 
+	 *
 	 * @return XWSCHEME
 	 */
 	public static String xwScheme() {
@@ -290,7 +290,7 @@ public enum Connection {
 
 	/**
 	 * This returns XWSSLSCHEME
-	 * 
+	 *
 	 * @return XWSSLSCHEME
 	 */
 	public static String xwsScheme() {
@@ -304,7 +304,7 @@ public enum Connection {
 
 	/**
 	 * This returns SCHEMESPERATAOR
-	 * 
+	 *
 	 * @return SCHEMESEPARATOR
 	 */
 	public static String schemeSeparator() {
@@ -318,7 +318,7 @@ public enum Connection {
 
 	/**
 	 * This returns ATTICSCHEME
-	 * 
+	 *
 	 * @return ATTICSCHEME
 	 */
 	public static String atticScheme() {
@@ -332,7 +332,7 @@ public enum Connection {
 
 	/**
 	 * This returns HTTPSCHEME
-	 * 
+	 *
 	 * @return HTTPSCHEME
 	 */
 	public static String httpScheme() {
@@ -346,7 +346,7 @@ public enum Connection {
 
 	/**
 	 * This returns HTTPSSLSCHEME
-	 * 
+	 *
 	 * @return HTTPSSLSCHEME
 	 */
 	public static String httpsScheme() {
@@ -360,7 +360,7 @@ public enum Connection {
 
 	/**
 	 * This returns FILESCHEME
-	 * 
+	 *
 	 * @return FILESCHEME
 	 */
 	public static String fileScheme() {
@@ -383,7 +383,7 @@ public enum Connection {
 
 	/**
 	 * This defines port given is property index
-	 * 
+	 *
 	 * @return BASEPORT + this.ordinal()
 	 * @see #BASEPORT
 	 */
@@ -400,8 +400,7 @@ public enum Connection {
 	 */
 	public abstract String propertyName();
 
-	public static Connection fromLayer(String layer)
-			throws IndexOutOfBoundsException {
+	public static Connection fromLayer(final String layer) throws IndexOutOfBoundsException {
 		for (final Connection c : Connection.values()) {
 			if (c.layer().compareTo(layer) == 0) {
 				return c;
@@ -412,7 +411,7 @@ public enum Connection {
 
 	/**
 	 * This is the standard well known port limit
-	 * 
+	 *
 	 * @since 8.0.0
 	 */
 	public static final int PRIVILEGEDPORT = 1024;

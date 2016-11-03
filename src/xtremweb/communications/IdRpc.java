@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -32,12 +32,12 @@ import xtremweb.common.UserInterface;
 
 /**
  * This defines command that can be sent to the server <br />
- * 
+ *
  * Created: Thu May 31 10:03:43 2001 <br />
- * 
+ *
  * This is used to create communication messages.<br />
  * This is also used as client command line argument.
- * 
+ *
  * @author <a href="mailto: lodygens a t lal - in2p3 - fr">Oleg Lodygensky</a>
  */
 
@@ -47,8 +47,7 @@ public enum IdRpc {
 	 */
 	NULL {
 		@Override
-		public XMLRPCCommand newCommand(URI uri, UserInterface client, Table obj)
-				throws IOException {
+		public XMLRPCCommand newCommand(final URI uri, final UserInterface client, final Table obj) throws IOException {
 			return null;
 		}
 
@@ -67,8 +66,8 @@ public enum IdRpc {
 	 */
 	DISCONNECT {
 		@Override
-		public XMLRPCCommandDisconnect newCommand(URI uri,
-				UserInterface client, Table obj) throws IOException {
+		public XMLRPCCommandDisconnect newCommand(final URI uri, final UserInterface client, final Table obj)
+				throws IOException {
 			return new XMLRPCCommandDisconnect(uri, client);
 		}
 
@@ -87,8 +86,8 @@ public enum IdRpc {
 	 */
 	VERSION {
 		@Override
-		public XMLRPCCommandVersion newCommand(URI uri, UserInterface client,
-				Table obj) throws IOException {
+		public XMLRPCCommandVersion newCommand(final URI uri, final UserInterface client, final Table obj)
+				throws IOException {
 			return new XMLRPCCommandVersion(uri, client);
 		}
 
@@ -107,8 +106,8 @@ public enum IdRpc {
 	 */
 	GET {
 		@Override
-		public XMLRPCCommandGet newCommand(URI uri, UserInterface client,
-				Table obj) throws IOException {
+		public XMLRPCCommandGet newCommand(final URI uri, final UserInterface client, final Table obj)
+				throws IOException {
 			return new XMLRPCCommandGet(uri, client);
 		}
 
@@ -127,8 +126,8 @@ public enum IdRpc {
 	 */
 	GETTASK {
 		@Override
-		public XMLRPCCommandGetTask newCommand(URI uri, UserInterface client,
-				Table obj) throws IOException {
+		public XMLRPCCommandGetTask newCommand(final URI uri, final UserInterface client, final Table obj)
+				throws IOException {
 			return new XMLRPCCommandGetTask(uri, client);
 		}
 
@@ -147,8 +146,8 @@ public enum IdRpc {
 	 */
 	SEND {
 		@Override
-		public XMLRPCCommandSend newCommand(URI uri, UserInterface client,
-				Table obj) throws IOException {
+		public XMLRPCCommandSend newCommand(final URI uri, final UserInterface client, final Table obj)
+				throws IOException {
 			return new XMLRPCCommandSend(uri, client, obj);
 		}
 
@@ -159,8 +158,7 @@ public enum IdRpc {
 
 		@Override
 		public String helpRestApi() {
-			return "/" + this.toString() + "?" + XWPostParams.XMLDESC
-					+ "=an xml description : sends an object";
+			return "/" + this.toString() + "?" + XWPostParams.XMLDESC + "=an xml description : sends an object";
 		}
 	},
 	/**
@@ -168,8 +166,8 @@ public enum IdRpc {
 	 */
 	SENDAPP {
 		@Override
-		public XMLRPCCommandSend newCommand(URI uri, UserInterface client,
-				Table obj) throws IOException {
+		public XMLRPCCommandSend newCommand(final URI uri, final UserInterface client, final Table obj)
+				throws IOException {
 			return new XMLRPCCommandSend(uri, client, obj);
 		}
 
@@ -181,8 +179,7 @@ public enum IdRpc {
 
 		@Override
 		public String helpRestApi() {
-			return "/" + this.toString() + "?" + XWPostParams.XMLDESC
-					+ "=an xml description : sends an application";
+			return "/" + this.toString() + "?" + XWPostParams.XMLDESC + "=an xml description : sends an application";
 		}
 	},
 	/**
@@ -190,8 +187,8 @@ public enum IdRpc {
 	 */
 	GETAPPS {
 		@Override
-		public XMLRPCCommandGetApps newCommand(URI uri, UserInterface client,
-				Table obj) throws IOException {
+		public XMLRPCCommandGetApps newCommand(final URI uri, final UserInterface client, final Table obj)
+				throws IOException {
 			return new XMLRPCCommandGetApps(uri, client);
 		}
 
@@ -211,15 +208,14 @@ public enum IdRpc {
 	 */
 	REMOVE {
 		@Override
-		public XMLRPCCommandRemove newCommand(URI uri, UserInterface client,
-				Table obj) throws IOException {
+		public XMLRPCCommandRemove newCommand(final URI uri, final UserInterface client, final Table obj)
+				throws IOException {
 			return new XMLRPCCommandRemove(uri, client);
 		}
 
 		@Override
 		public String helpClient() {
-			return this.toString()
-					+ " URI | UID  [ URI | UID...] : removes objects ";
+			return this.toString() + " URI | UID  [ URI | UID...] : removes objects ";
 		}
 
 		@Override
@@ -232,21 +228,19 @@ public enum IdRpc {
 	 */
 	SENDGROUP {
 		@Override
-		public XMLRPCCommandSend newCommand(URI uri, UserInterface client,
-				Table obj) throws IOException {
+		public XMLRPCCommandSend newCommand(final URI uri, final UserInterface client, final Table obj)
+				throws IOException {
 			return new XMLRPCCommandSend(uri, client, obj);
 		}
 
 		@Override
 		public String helpClient() {
-			return this.toString()
-					+ " groupName [sessionUID] : sends/updates a group";
+			return this.toString() + " groupName [sessionUID] : sends/updates a group";
 		}
 
 		@Override
 		public String helpRestApi() {
-			return "/" + this.toString() + "?" + XWPostParams.XMLDESC
-					+ "=an xml description : sends a group";
+			return "/" + this.toString() + "?" + XWPostParams.XMLDESC + "=an xml description : sends a group";
 		}
 	},
 	/**
@@ -254,8 +248,8 @@ public enum IdRpc {
 	 */
 	GETGROUPS {
 		@Override
-		public XMLRPCCommandGetGroups newCommand(URI uri, UserInterface client,
-				Table obj) throws IOException {
+		public XMLRPCCommandGetGroups newCommand(final URI uri, final UserInterface client, final Table obj)
+				throws IOException {
 			return new XMLRPCCommandGetGroups(uri, client);
 		}
 
@@ -274,8 +268,8 @@ public enum IdRpc {
 	 */
 	GETGROUPWORKS {
 		@Override
-		public XMLRPCCommandGetGroupWorks newCommand(URI uri,
-				UserInterface client, Table obj) throws IOException {
+		public XMLRPCCommandGetGroupWorks newCommand(final URI uri, final UserInterface client, final Table obj)
+				throws IOException {
 			return new XMLRPCCommandGetGroupWorks(uri, client);
 		}
 
@@ -294,8 +288,8 @@ public enum IdRpc {
 	 */
 	SENDHOST {
 		@Override
-		public XMLRPCCommandSend newCommand(URI uri, UserInterface client,
-				Table obj) throws IOException {
+		public XMLRPCCommandSend newCommand(final URI uri, final UserInterface client, final Table obj)
+				throws IOException {
 			return new XMLRPCCommandSend(uri, client, obj);
 		}
 
@@ -314,8 +308,8 @@ public enum IdRpc {
 	 */
 	GETHOSTS {
 		@Override
-		public XMLRPCCommandGetHosts newCommand(URI uri, UserInterface client,
-				Table obj) throws IOException {
+		public XMLRPCCommandGetHosts newCommand(final URI uri, final UserInterface client, final Table obj)
+				throws IOException {
 			return new XMLRPCCommandGetHosts(uri, client);
 		}
 
@@ -326,8 +320,7 @@ public enum IdRpc {
 
 		@Override
 		public String helpRestApi() {
-			return "/" + this.toString() + "/" + this.toString()
-					+ " : retrieves all hosts";
+			return "/" + this.toString() + "/" + this.toString() + " : retrieves all hosts";
 		}
 	},
 	/**
@@ -335,15 +328,14 @@ public enum IdRpc {
 	 */
 	ACTIVATEHOST {
 		@Override
-		public XMLRPCCommandActivateHost newCommand(URI uri,
-				UserInterface client, Table obj) throws IOException {
+		public XMLRPCCommandActivateHost newCommand(final URI uri, final UserInterface client, final Table obj)
+				throws IOException {
 			return new XMLRPCCommandActivateHost(uri, client);
 		}
 
 		@Override
 		public String helpClient() {
-			return this.toString()
-					+ " [on|off] hostUID [hostUID...] : activates/deactivates hosts";
+			return this.toString() + " [on|off] hostUID [hostUID...] : activates/deactivates hosts";
 		}
 
 		@Override
@@ -354,8 +346,7 @@ public enum IdRpc {
 	},
 	SETWORKERSPARAMETERS {
 		@Override
-		public XMLRPCCommand newCommand(URI uri, UserInterface client, Table obj)
-				throws IOException {
+		public XMLRPCCommand newCommand(final URI uri, final UserInterface client, final Table obj) throws IOException {
 			return null;
 		}
 
@@ -371,8 +362,7 @@ public enum IdRpc {
 	},
 	GETWORKERSPARAMETERS {
 		@Override
-		public XMLRPCCommand newCommand(URI uri, UserInterface client, Table obj)
-				throws IOException {
+		public XMLRPCCommand newCommand(final URI uri, final UserInterface client, final Table obj) throws IOException {
 			return null;
 		}
 
@@ -388,8 +378,7 @@ public enum IdRpc {
 	},
 	SETWORKERSNB {
 		@Override
-		public XMLRPCCommand newCommand(URI uri, UserInterface client, Table obj)
-				throws IOException {
+		public XMLRPCCommand newCommand(final URI uri, final UserInterface client, final Table obj) throws IOException {
 			return null;
 		}
 
@@ -408,21 +397,19 @@ public enum IdRpc {
 	 */
 	SENDSESSION {
 		@Override
-		public XMLRPCCommandSend newCommand(URI uri, UserInterface client,
-				Table obj) throws IOException {
+		public XMLRPCCommandSend newCommand(final URI uri, final UserInterface client, final Table obj)
+				throws IOException {
 			return new XMLRPCCommandSend(uri, client, obj);
 		}
 
 		@Override
 		public String helpClient() {
-			return this.toString()
-					+ " sessionName clientUID : sends/updates a session";
+			return this.toString() + " sessionName clientUID : sends/updates a session";
 		}
 
 		@Override
 		public String helpRestApi() {
-			return "/" + this.toString() + "?" + XWPostParams.XMLDESC
-					+ "=an xml description : sends a session";
+			return "/" + this.toString() + "?" + XWPostParams.XMLDESC + "=an xml description : sends a session";
 		}
 	},
 	/**
@@ -430,8 +417,8 @@ public enum IdRpc {
 	 */
 	GETSESSIONS {
 		@Override
-		public XMLRPCCommandGetSessions newCommand(URI uri,
-				UserInterface client, Table obj) throws IOException {
+		public XMLRPCCommandGetSessions newCommand(final URI uri, final UserInterface client, final Table obj)
+				throws IOException {
 			return new XMLRPCCommandGetSessions(uri, client);
 		}
 
@@ -450,8 +437,8 @@ public enum IdRpc {
 	 */
 	GETSESSIONWORKS {
 		@Override
-		public XMLRPCCommandGetSessionWorks newCommand(URI uri,
-				UserInterface client, Table obj) throws IOException {
+		public XMLRPCCommandGetSessionWorks newCommand(final URI uri, final UserInterface client, final Table obj)
+				throws IOException {
 			return new XMLRPCCommandGetSessionWorks(uri, client);
 		}
 
@@ -462,8 +449,7 @@ public enum IdRpc {
 
 		@Override
 		public String helpRestApi() {
-			return "/" + this.toString()
-					+ "/anUID : retrieves all session works";
+			return "/" + this.toString() + "/anUID : retrieves all session works";
 		}
 	},
 	/**
@@ -471,8 +457,8 @@ public enum IdRpc {
 	 */
 	GETTASKS {
 		@Override
-		public XMLRPCCommandGetTasks newCommand(URI uri, UserInterface client,
-				Table obj) throws IOException {
+		public XMLRPCCommandGetTasks newCommand(final URI uri, final UserInterface client, final Table obj)
+				throws IOException {
 			return new XMLRPCCommandGetTasks(uri, client);
 		}
 
@@ -491,8 +477,8 @@ public enum IdRpc {
 	 */
 	SENDTRACE {
 		@Override
-		public XMLRPCCommandSend newCommand(URI uri, UserInterface client,
-				Table obj) throws IOException {
+		public XMLRPCCommandSend newCommand(final URI uri, final UserInterface client, final Table obj)
+				throws IOException {
 			return new XMLRPCCommandSend(uri, client, obj);
 		}
 
@@ -511,8 +497,8 @@ public enum IdRpc {
 	 */
 	GETTRACES {
 		@Override
-		public XMLRPCCommandGetTraces newCommand(URI uri, UserInterface client,
-				Table obj) throws IOException {
+		public XMLRPCCommandGetTraces newCommand(final URI uri, final UserInterface client, final Table obj)
+				throws IOException {
 			return new XMLRPCCommandGetTraces(uri, client);
 		}
 
@@ -531,8 +517,8 @@ public enum IdRpc {
 	 */
 	SENDUSERGROUP {
 		@Override
-		public XMLRPCCommandSend newCommand(URI uri, UserInterface client,
-				Table obj) throws IOException {
+		public XMLRPCCommandSend newCommand(final URI uri, final UserInterface client, final Table obj)
+				throws IOException {
 			return new XMLRPCCommandSend(uri, client, obj);
 		}
 
@@ -544,8 +530,7 @@ public enum IdRpc {
 
 		@Override
 		public String helpRestApi() {
-			return "/" + this.toString() + "?" + XWPostParams.XMLDESC
-					+ "=an xml description : sends a user group";
+			return "/" + this.toString() + "?" + XWPostParams.XMLDESC + "=an xml description : sends a user group";
 		}
 	},
 	/**
@@ -553,8 +538,8 @@ public enum IdRpc {
 	 */
 	GETUSERGROUPS {
 		@Override
-		public XMLRPCCommandGetUserGroups newCommand(URI uri,
-				UserInterface client, Table obj) throws IOException {
+		public XMLRPCCommandGetUserGroups newCommand(final URI uri, final UserInterface client, final Table obj)
+				throws IOException {
 			return new XMLRPCCommandGetUserGroups(uri, client);
 		}
 
@@ -573,21 +558,19 @@ public enum IdRpc {
 	 */
 	SENDUSER {
 		@Override
-		public XMLRPCCommandSend newCommand(URI uri, UserInterface client,
-				Table obj) throws IOException {
+		public XMLRPCCommandSend newCommand(final URI uri, final UserInterface client, final Table obj)
+				throws IOException {
 			return new XMLRPCCommandSend(uri, client, obj);
 		}
 
 		@Override
 		public String helpClient() {
-			return this.toString()
-					+ " login password email rights [<a user group UID | URI> ] : sends/updates a user";
+			return this.toString() + " login password email rights [<a user group UID | URI> ] : sends/updates a user";
 		}
 
 		@Override
 		public String helpRestApi() {
-			return "/" + this.toString() + "?" + XWPostParams.XMLDESC
-					+ "=an xml description :  send an user";
+			return "/" + this.toString() + "?" + XWPostParams.XMLDESC + "=an xml description :  send an user";
 		}
 	},
 	/**
@@ -595,15 +578,14 @@ public enum IdRpc {
 	 */
 	GETUSERBYLOGIN {
 		@Override
-		public XMLRPCCommandGetUserByLogin newCommand(URI uri,
-				UserInterface client, Table obj) throws IOException {
+		public XMLRPCCommandGetUserByLogin newCommand(final URI uri, final UserInterface client, final Table obj)
+				throws IOException {
 			return new XMLRPCCommandGetUserByLogin(uri, client);
 		}
 
 		@Override
 		public String helpClient() {
-			return this.toString()
-					+ " userLogin [userLogin...] : retrevies users given their login";
+			return this.toString() + " userLogin [userLogin...] : retrevies users given their login";
 		}
 
 		@Override
@@ -616,8 +598,8 @@ public enum IdRpc {
 	 */
 	GETUSERS {
 		@Override
-		public XMLRPCCommandGetUsers newCommand(URI uri, UserInterface client,
-				Table obj) throws IOException {
+		public XMLRPCCommandGetUsers newCommand(final URI uri, final UserInterface client, final Table obj)
+				throws IOException {
 			return new XMLRPCCommandGetUsers(uri, client);
 		}
 
@@ -636,8 +618,8 @@ public enum IdRpc {
 	 */
 	SENDWORK {
 		@Override
-		public XMLRPCCommandSend newCommand(URI uri, UserInterface client,
-				Table obj) throws IOException {
+		public XMLRPCCommandSend newCommand(final URI uri, final UserInterface client, final Table obj)
+				throws IOException {
 			return new XMLRPCCommandSend(uri, client, obj);
 		}
 
@@ -649,8 +631,7 @@ public enum IdRpc {
 
 		@Override
 		public String helpRestApi() {
-			return "/" + this.toString() + "?" + XWPostParams.XMLDESC
-					+ "=an xml description : sends a work";
+			return "/" + this.toString() + "?" + XWPostParams.XMLDESC + "=an xml description : sends a work";
 		}
 	},
 	/**
@@ -658,15 +639,14 @@ public enum IdRpc {
 	 */
 	BROADCASTWORK {
 		@Override
-		public XMLRPCCommandBroadcastWork newCommand(URI uri,
-				UserInterface client, Table obj) throws IOException {
+		public XMLRPCCommandBroadcastWork newCommand(final URI uri, final UserInterface client, final Table obj)
+				throws IOException {
 			return new XMLRPCCommandBroadcastWork(uri, client);
 		}
 
 		@Override
 		public String helpClient() {
-			return this.toString()
-					+ " (same parameters as SENDWORK) : broadcast a work to all hosts";
+			return this.toString() + " (same parameters as SENDWORK) : broadcast a work to all hosts";
 		}
 
 		@Override
@@ -680,22 +660,19 @@ public enum IdRpc {
 	 */
 	WORKREQUEST {
 		@Override
-		public XMLRPCCommandWorkRequest newCommand(URI uri,
-				UserInterface client, Table obj) throws IOException {
+		public XMLRPCCommandWorkRequest newCommand(final URI uri, final UserInterface client, final Table obj)
+				throws IOException {
 			return new XMLRPCCommandWorkRequest(uri, null);
 		}
 
 		@Override
 		public String helpClient() {
-			return this.toString()
-					+ " : sends the work alive signal (for debugging purposes only)";
+			return this.toString() + " : sends the work alive signal (for debugging purposes only)";
 		}
 
 		@Override
 		public String helpRestApi() {
-			return "/"
-					+ this.toString()
-					+ " : sends the work alive signal (for debugging purposes only)";
+			return "/" + this.toString() + " : sends the work alive signal (for debugging purposes only)";
 		}
 	},
 	/**
@@ -703,8 +680,8 @@ public enum IdRpc {
 	 */
 	GETWORKS {
 		@Override
-		public XMLRPCCommandGetWorks newCommand(URI uri, UserInterface client,
-				Table obj) throws IOException {
+		public XMLRPCCommandGetWorks newCommand(final URI uri, final UserInterface client, final Table obj)
+				throws IOException {
 			return new XMLRPCCommandGetWorks(uri, client);
 		}
 
@@ -723,10 +700,9 @@ public enum IdRpc {
 	 */
 	WORKALIVEBYUID {
 		@Override
-		public XMLRPCCommandWorkAliveByUID newCommand(URI uri,
-				UserInterface client, Table obj) throws IOException {
-			return new XMLRPCCommandWorkAliveByUID(uri, client,
-					(HostInterface) obj);
+		public XMLRPCCommandWorkAliveByUID newCommand(final URI uri, final UserInterface client, final Table obj)
+				throws IOException {
+			return new XMLRPCCommandWorkAliveByUID(uri, client, (HostInterface) obj);
 		}
 
 		@Override
@@ -744,22 +720,19 @@ public enum IdRpc {
 	 */
 	WORKALIVE {
 		@Override
-		public XMLRPCCommandWorkAlive newCommand(URI uri, UserInterface client,
-				Table obj) throws IOException {
-			return new XMLRPCCommandWorkAlive(uri, client, (HostInterface) obj,
-					(Hashtable) null);
+		public XMLRPCCommandWorkAlive newCommand(final URI uri, final UserInterface client, final Table obj)
+				throws IOException {
+			return new XMLRPCCommandWorkAlive(uri, client, (HostInterface) obj, (Hashtable) null);
 		}
 
 		@Override
 		public String helpClient() {
-			return this.toString()
-					+ " : sends the alive signal (for debugging purposes only)";
+			return this.toString() + " : sends the alive signal (for debugging purposes only)";
 		}
 
 		@Override
 		public String helpRestApi() {
-			return "/" + this.toString()
-					+ " : sends the alive signal (for debugging purposes only)";
+			return "/" + this.toString() + " : sends the alive signal (for debugging purposes only)";
 		}
 	},
 	/**
@@ -767,8 +740,8 @@ public enum IdRpc {
 	 */
 	PING {
 		@Override
-		public XMLRPCCommandPing newCommand(URI uri, UserInterface client,
-				Table obj) throws IOException {
+		public XMLRPCCommandPing newCommand(final URI uri, final UserInterface client, final Table obj)
+				throws IOException {
 			return new XMLRPCCommandPing(uri);
 		}
 
@@ -787,8 +760,7 @@ public enum IdRpc {
 	 */
 	TACTIVITYMONITOR {
 		@Override
-		public XMLRPCCommand newCommand(URI uri, UserInterface client, Table obj)
-				throws IOException {
+		public XMLRPCCommand newCommand(final URI uri, final UserInterface client, final Table obj) throws IOException {
 			return null;
 		}
 
@@ -804,8 +776,7 @@ public enum IdRpc {
 	},
 	GETTRUSTEDADDRESSES {
 		@Override
-		public XMLRPCCommand newCommand(URI uri, UserInterface client, Table obj)
-				throws IOException {
+		public XMLRPCCommand newCommand(final URI uri, final UserInterface client, final Table obj) throws IOException {
 			return null;
 		}
 
@@ -821,8 +792,7 @@ public enum IdRpc {
 	},
 	ADDTRUSTEDADDRESS {
 		@Override
-		public XMLRPCCommand newCommand(URI uri, UserInterface client, Table obj)
-				throws IOException {
+		public XMLRPCCommand newCommand(final URI uri, final UserInterface client, final Table obj) throws IOException {
 			return null;
 		}
 
@@ -838,8 +808,7 @@ public enum IdRpc {
 	},
 	REMOVETRUSTEDADDRESS {
 		@Override
-		public XMLRPCCommand newCommand(URI uri, UserInterface client, Table obj)
-				throws IOException {
+		public XMLRPCCommand newCommand(final URI uri, final UserInterface client, final Table obj) throws IOException {
 			return null;
 		}
 
@@ -855,8 +824,7 @@ public enum IdRpc {
 	},
 	TRACEWORKERS {
 		@Override
-		public XMLRPCCommand newCommand(URI uri, UserInterface client, Table obj)
-				throws IOException {
+		public XMLRPCCommand newCommand(final URI uri, final UserInterface client, final Table obj) throws IOException {
 			return null;
 		}
 
@@ -875,8 +843,7 @@ public enum IdRpc {
 	 */
 	MOUNT {
 		@Override
-		public XMLRPCCommand newCommand(URI uri, UserInterface client, Table obj)
-				throws IOException {
+		public XMLRPCCommand newCommand(final URI uri, final UserInterface client, final Table obj) throws IOException {
 			return null;
 		}
 
@@ -896,8 +863,7 @@ public enum IdRpc {
 	 */
 	UMOUNT {
 		@Override
-		public XMLRPCCommand newCommand(URI uri, UserInterface client, Table obj)
-				throws IOException {
+		public XMLRPCCommand newCommand(final URI uri, final UserInterface client, final Table obj) throws IOException {
 			return null;
 		}
 
@@ -916,8 +882,7 @@ public enum IdRpc {
 	 */
 	SHUTDOWN {
 		@Override
-		public XMLRPCCommand newCommand(URI uri, UserInterface client, Table obj)
-				throws IOException {
+		public XMLRPCCommand newCommand(final URI uri, final UserInterface client, final Table obj) throws IOException {
 			return null;
 		}
 
@@ -936,8 +901,8 @@ public enum IdRpc {
 	 */
 	SENDDATA {
 		@Override
-		public XMLRPCCommandSend newCommand(URI uri, UserInterface client,
-				Table obj) throws IOException {
+		public XMLRPCCommandSend newCommand(final URI uri, final UserInterface client, final Table obj)
+				throws IOException {
 			return new XMLRPCCommandSend(uri, client, obj);
 		}
 
@@ -949,8 +914,7 @@ public enum IdRpc {
 
 		@Override
 		public String helpRestApi() {
-			return "/" + this.toString() + "?" + XWPostParams.XMLDESC
-					+ "=an xml description : sends a data";
+			return "/" + this.toString() + "?" + XWPostParams.XMLDESC + "=an xml description : sends a data";
 		}
 	},
 	/**
@@ -958,8 +922,8 @@ public enum IdRpc {
 	 */
 	GETDATAS {
 		@Override
-		public XMLRPCCommandGetDatas newCommand(URI uri, UserInterface client,
-				Table obj) throws IOException {
+		public XMLRPCCommandGetDatas newCommand(final URI uri, final UserInterface client, final Table obj)
+				throws IOException {
 			return new XMLRPCCommandGetDatas(uri, client);
 		}
 
@@ -978,45 +942,41 @@ public enum IdRpc {
 	 */
 	CHMOD {
 		@Override
-		public XMLRPCCommandChmod newCommand(URI uri, UserInterface client,
-				Table obj) throws IOException {
+		public XMLRPCCommandChmod newCommand(final URI uri, final UserInterface client, final Table obj)
+				throws IOException {
 			return new XMLRPCCommandChmod(uri, client);
 		}
 
 		@Override
 		public String helpClient() {
-			return this.toString()
-					+ " newAccessRights URI | UID [ URI | UID...] : changes access rights";
+			return this.toString() + " newAccessRights URI | UID [ URI | UID...] : changes access rights";
 		}
 
 		@Override
 		public String helpRestApi() {
-			return "/" + this.toString() + "/anUID?" + XWPostParams.PARAMETER
-					+ "=chmod_octal : change access rights";
+			return "/" + this.toString() + "/anUID?" + XWPostParams.PARAMETER + "=chmod_octal : change access rights";
 		}
 	},
 	/**
 	 * This retrieves the SmartSockets hub address
-	 * 
+	 *
 	 * @since 8.0.0
 	 */
 	GETHUBADDR {
 		@Override
-		public XMLRPCCommandGetHubAddr newCommand(URI uri,
-				UserInterface client, Table obj) throws IOException {
+		public XMLRPCCommandGetHubAddr newCommand(final URI uri, final UserInterface client, final Table obj)
+				throws IOException {
 			return new XMLRPCCommandGetHubAddr(uri);
 		}
 
 		@Override
 		public String helpClient() {
-			return this.toString()
-					+ " : retrieves the SmartSockets hub address";
+			return this.toString() + " : retrieves the SmartSockets hub address";
 		}
 
 		@Override
 		public String helpRestApi() {
-			return "/" + this.toString()
-					+ " : retrieves the SmartSockets hub address";
+			return "/" + this.toString() + " : retrieves the SmartSockets hub address";
 		}
 	},
 	/**
@@ -1024,15 +984,14 @@ public enum IdRpc {
 	 */
 	UPLOADDATA {
 		@Override
-		public XMLRPCCommandUploadData newCommand(URI uri,
-				UserInterface client, Table obj) throws IOException {
+		public XMLRPCCommandUploadData newCommand(final URI uri, final UserInterface client, final Table obj)
+				throws IOException {
 			return new XMLRPCCommandUploadData(uri, client);
 		}
 
 		@Override
 		public String helpClient() {
-			return this.toString()
-					+ " UID file : sends data content from file to server";
+			return this.toString() + " UID file : sends data content from file to server";
 		}
 
 		@Override
@@ -1045,15 +1004,14 @@ public enum IdRpc {
 	 */
 	DOWNLOADDATA {
 		@Override
-		public XMLRPCCommandDownloadData newCommand(URI uri,
-				UserInterface client, Table obj) throws IOException {
+		public XMLRPCCommandDownloadData newCommand(final URI uri, final UserInterface client, final Table obj)
+				throws IOException {
 			return new XMLRPCCommandDownloadData(uri, client);
 		}
 
 		@Override
 		public String helpClient() {
-			return this.toString()
-					+ " UID | URI : downloads data content from server";
+			return this.toString() + " UID | URI : downloads data content from server";
 		}
 
 		@Override
@@ -1067,7 +1025,7 @@ public enum IdRpc {
 
 	/**
 	 * This creates a new XMLRPCCommand
-	 * 
+	 *
 	 * @param uri
 	 *            is the command URI
 	 * @param client
@@ -1076,12 +1034,11 @@ public enum IdRpc {
 	 *            is an optional command parameter
 	 * @since 8.2.2
 	 */
-	public abstract XMLRPCCommand newCommand(URI uri, UserInterface client,
-			Table obj) throws IOException;
+	public abstract XMLRPCCommand newCommand(URI uri, UserInterface client, Table obj) throws IOException;
 
 	/**
 	 * This retrieves help for the command line client
-	 * 
+	 *
 	 * @since 8.2.3
 	 * @return a string containing the help
 	 */
@@ -1089,7 +1046,7 @@ public enum IdRpc {
 
 	/**
 	 * This retrieves help for the REST interface
-	 * 
+	 *
 	 * @since 8.2.3
 	 * @return a string containing the help
 	 */
@@ -1099,19 +1056,18 @@ public enum IdRpc {
 		return toXml(false);
 	}
 
-	public String toXml(boolean close) {
-		return "<" + (close == true ? "/" : "") + this.toString().toLowerCase()
-				+ ">";
+	public String toXml(final boolean close) {
+		return "<" + (close == true ? "/" : "") + this.toString().toLowerCase() + ">";
 	}
 
 	/**
 	 * This retrieves an IdRpc from its integer value
-	 * 
+	 *
 	 * @param v
 	 *            is the integer value of the IdRpc
 	 * @return an IdRpc
 	 */
-	public static IdRpc fromInt(int v) throws IndexOutOfBoundsException {
+	public static IdRpc fromInt(final int v) throws IndexOutOfBoundsException {
 		for (final IdRpc i : IdRpc.values()) {
 			if (i.ordinal() == v) {
 				return i;
@@ -1123,7 +1079,7 @@ public enum IdRpc {
 	/**
 	 * This dumps enums to stdout
 	 */
-	public static void main(String[] argv) {
+	public static void main(final String[] argv) {
 		for (final IdRpc i : IdRpc.values()) {
 			System.out.println(i.helpClient());
 		}

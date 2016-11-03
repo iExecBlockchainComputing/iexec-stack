@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -62,11 +62,10 @@ import xtremweb.common.XWTools;
  */
 public abstract class XMLRPCCommand extends XMLable {
 
-	private enum XMLTAGS{
-		NONE,
-		USER,
-		HOST
+	private enum XMLTAGS {
+		NONE, USER, HOST
 	};
+
 	private XMLTAGS currentTag;
 
 	/**
@@ -88,11 +87,11 @@ public abstract class XMLRPCCommand extends XMLable {
 
 	/**
 	 * This sets this command URI
-	 * 
+	 *
 	 * @param uri
 	 *            is this command URI
 	 */
-	public final void setURI(URI uri) {
+	public final void setURI(final URI uri) {
 		setValueAt(URI, uri);
 	}
 
@@ -107,7 +106,7 @@ public abstract class XMLRPCCommand extends XMLable {
 	private HostInterface host;
 	/**
 	 * This is an optional parameter.
-	 * 
+	 *
 	 * @see XMLRPCCommandSend
 	 * @see XMLRPCCommandWorkAlive
 	 */
@@ -124,13 +123,13 @@ public abstract class XMLRPCCommand extends XMLable {
 	 * @param parameter
 	 *            the parameter to set
 	 */
-	public void setParameter(XMLable parameter) {
+	public void setParameter(final XMLable parameter) {
 		this.parameter = parameter;
 	}
 
 	/**
 	 * This set parameter to null
-	 * 
+	 *
 	 * @since 9.0.0
 	 */
 	public void resetParameter() {
@@ -139,7 +138,7 @@ public abstract class XMLRPCCommand extends XMLable {
 
 	/**
 	 * This clears this object
-	 * 
+	 *
 	 * @since 5.8.0
 	 */
 	@Override
@@ -152,10 +151,10 @@ public abstract class XMLRPCCommand extends XMLable {
 
 	/**
 	 * This calls XMLRPCCommand(uri, cmdName, URI)
-	 * 
+	 *
 	 * @see #XMLRPCCommand(URI uri, String, int)
 	 */
-	protected XMLRPCCommand(URI uri, String cmdName) throws IOException {
+	protected XMLRPCCommand(final URI uri, final String cmdName) throws IOException {
 		this(uri, cmdName, URI);
 	}
 
@@ -164,7 +163,7 @@ public abstract class XMLRPCCommand extends XMLable {
 	 * sets LAST_ATTRIBUTE = l and MAX_ATTRIBUTE = LAST_ATTRIBUTE + 1. This sets
 	 * columns and value arrays. This class has no attribute (LAST_ATTRIBUTE =
 	 * -1; hence MAX_ATTRIBUTE = 0)
-	 * 
+	 *
 	 * @param uri
 	 *            is this command URI
 	 * @param cmdName
@@ -175,7 +174,7 @@ public abstract class XMLRPCCommand extends XMLable {
 	 *                is throws if cmdName is not a valid RPC command
 	 * @see xtremweb.communications.IdRpc
 	 */
-	protected XMLRPCCommand(URI uri, String cmdName, int l) throws IOException {
+	protected XMLRPCCommand(final URI uri, final String cmdName, final int l) throws IOException {
 		super(IdRpc.valueOf(cmdName).toString().toLowerCase(), -1);
 
 		setCurrentVersion();
@@ -193,41 +192,40 @@ public abstract class XMLRPCCommand extends XMLable {
 
 	/**
 	 * This calls XMLRPCCommand(uri, cmd, URI);
-	 * 
+	 *
 	 * @see #XMLRPCCommand(URI, String, int)
 	 */
-	protected XMLRPCCommand(URI uri, IdRpc cmd) throws IOException {
+	protected XMLRPCCommand(final URI uri, final IdRpc cmd) throws IOException {
 		this(uri, cmd, URI);
 	}
 
 	/**
 	 * This constructor a new object accordingly to the IdRpc command provided
-	 * 
+	 *
 	 * @see #XMLRPCCommand(URI, String, int)
 	 */
-	protected XMLRPCCommand(URI uri, IdRpc cmd, int l) throws IOException {
+	protected XMLRPCCommand(final URI uri, final IdRpc cmd, final int l) throws IOException {
 		this(uri, cmd.toString(), l);
 	}
 
 	/**
 	 * This constructor sets user attribute This class has no attribute
 	 * (LAST_ATTRIBUTE = -1; hence MAX_ATTRIBUTE = 0)
-	 * 
+	 *
 	 * @see #XMLRPCCommand(URI, String, int)
 	 */
-	protected XMLRPCCommand(URI uri, String cmdName, UserInterface u, int l)
-	throws IOException {
+	protected XMLRPCCommand(final URI uri, final String cmdName, final UserInterface u, final int l)
+			throws IOException {
 		this(uri, cmdName, l);
 		user = u;
 	}
 
 	/**
 	 * This constructor sets user attribute
-	 * 
+	 *
 	 * @see #XMLRPCCommand(URI, String, int)
 	 */
-	protected XMLRPCCommand(URI uri, IdRpc cmd, UserInterface u, int l)
-	throws IOException {
+	protected XMLRPCCommand(final URI uri, final IdRpc cmd, final UserInterface u, final int l) throws IOException {
 		this(uri, cmd, l);
 		user = u;
 	}
@@ -235,13 +233,13 @@ public abstract class XMLRPCCommand extends XMLable {
 	/**
 	 * This constructor sets host attribute This class has no attribute
 	 * (LAST_ATTRIBUTE = -1; hence MAX_ATTRIBUTE = 0)
-	 * 
+	 *
 	 * @see #XMLRPCCommand(URI, String, int)
 	 * @exception IOException
 	 *                is thrown if cmdName is not a valid RPC command name
 	 */
-	protected XMLRPCCommand(URI uri, String cmdName, HostInterface h, int l)
-	throws IOException {
+	protected XMLRPCCommand(final URI uri, final String cmdName, final HostInterface h, final int l)
+			throws IOException {
 		this(uri, cmdName, l);
 		host = h;
 	}
@@ -249,22 +247,20 @@ public abstract class XMLRPCCommand extends XMLable {
 	/**
 	 * @see #XMLRPCCommand(URI, String, HostInterface, int)
 	 */
-	protected XMLRPCCommand(URI uri, IdRpc cmd, HostInterface h, int l)
-	throws IOException {
+	protected XMLRPCCommand(final URI uri, final IdRpc cmd, final HostInterface h, final int l) throws IOException {
 		this(uri, cmd.toString(), h, l);
 	}
 
 	/**
 	 * This constructs a new object from XML attributes received from input
 	 * stream
-	 * 
+	 *
 	 * @param input
 	 *            is the input stream
 	 * @throws IOException
 	 *             on XML error
 	 */
-	protected XMLRPCCommand(BufferedInputStream input) throws IOException,
-	SAXException {
+	protected XMLRPCCommand(final BufferedInputStream input) throws IOException, SAXException {
 		final XMLReader reader = new XMLReader(this);
 		try {
 			reader.read(input);
@@ -275,7 +271,7 @@ public abstract class XMLRPCCommand extends XMLable {
 
 	/**
 	 * This sends this command to server and returns answer
-	 * 
+	 *
 	 * @param comm
 	 *            is the communication channel
 	 * @return always null
@@ -284,21 +280,20 @@ public abstract class XMLRPCCommand extends XMLable {
 	 * @exception RemoteException
 	 *                is thrown on comm error
 	 */
-	public abstract XMLable exec(CommClient comm) throws IOException,
-	ClassNotFoundException, SAXException, InvalidKeyException,
-	AccessControlException ;
+	public abstract XMLable exec(CommClient comm)
+			throws IOException, ClassNotFoundException, SAXException, InvalidKeyException, AccessControlException;
 
 	/**
 	 * This converts id rpc to string. This catches IOException so that this may
 	 * be used to create THISTAG
 	 */
-	public static String idRpc(IdRpc id) {
+	public static String idRpc(final IdRpc id) {
 		return id.toString();
 	}
 
 	/**
 	 * This retreives this command parameter
-	 * 
+	 *
 	 * @return this command parameter
 	 */
 	public XMLable getParam() {
@@ -307,17 +302,17 @@ public abstract class XMLRPCCommand extends XMLable {
 
 	/**
 	 * This sets the user for this command
-	 * 
+	 *
 	 * @param u
 	 *            defines this command user
 	 */
-	public void setUser(UserInterface u) {
+	public void setUser(final UserInterface u) {
 		user = u;
 	}
 
 	/**
 	 * This reterives the user for this command
-	 * 
+	 *
 	 * @return the user executing this command
 	 */
 	public UserInterface getUser() {
@@ -326,7 +321,7 @@ public abstract class XMLRPCCommand extends XMLable {
 
 	/**
 	 * This sets the host for this command.
-	 * 
+	 *
 	 * @param h
 	 *            defines this command host
 	 */
@@ -336,7 +331,7 @@ public abstract class XMLRPCCommand extends XMLable {
 
 	/**
 	 * This reterives the host for this command
-	 * 
+	 *
 	 * @return the host executing this command
 	 */
 	public HostInterface getHost() {
@@ -345,7 +340,7 @@ public abstract class XMLRPCCommand extends XMLable {
 
 	/**
 	 * This retrieves the RPC code
-	 * 
+	 *
 	 * @return an integer representing the RPC code
 	 * @see xtremweb.communications.IdRpc
 	 */
@@ -355,9 +350,9 @@ public abstract class XMLRPCCommand extends XMLable {
 
 	/**
 	 * This serializes this object to a String as an XML object<br />
-	 * 
+	 *
 	 * @return a String containing this object definition as XML
-	 * @throws IOException 
+	 * @throws IOException
 	 * @see #fromXml(Attributes)
 	 */
 	@Override
@@ -382,7 +377,7 @@ public abstract class XMLRPCCommand extends XMLable {
 
 	/**
 	 * This is called by XML parser
-	 * 
+	 *
 	 * @param attrs
 	 *            contains attributes XML representation
 	 */
@@ -398,8 +393,8 @@ public abstract class XMLRPCCommand extends XMLable {
 			final String attribute = attrs.getQName(a);
 			final String value = attrs.getValue(a);
 
-			logger.finest("XMLRPCCommand  ##  attribute #" + a + ": name=\""
-					+ attribute + "\"" + ", value=\"" + value + "\"");
+			logger.finest("XMLRPCCommand  ##  attribute #" + a + ": name=\"" + attribute + "\"" + ", value=\"" + value
+					+ "\"");
 
 			if (attribute.compareToIgnoreCase(getColumnLabel(URI)) == 0) {
 				logger.finest("XMLRPCCommand  ##  creating uri from " + value);
@@ -415,12 +410,12 @@ public abstract class XMLRPCCommand extends XMLable {
 
 	/**
 	 * This calls xmlElementStartCheckUser(uri, tag, qname, attrs)
-	 * 
+	 *
 	 * @see #xmlElementStartCheckUser(String, String, String, Attributes)
 	 */
 	@Override
-	public void xmlElementStart(final String uri, final String tag,
-			final String qname, final Attributes attrs) throws SAXException {
+	public void xmlElementStart(final String uri, final String tag, final String qname, final Attributes attrs)
+			throws SAXException {
 		xmlElementStartCheckUser(uri, tag, qname, attrs);
 	}
 
@@ -432,15 +427,15 @@ public abstract class XMLRPCCommand extends XMLable {
 	 * and resets its default values so that xmlElementStop() has a chance to
 	 * set attributes by calling Type#getValue(String) and Type#setValue(String,
 	 * Object)
-	 * 
+	 *
 	 * @see xtremweb.common.Type#setValue(String, Object)
 	 * @see #xmlElementStop(String, String, String)
 	 * @see #user
 	 * @see xtremweb.common.UserInterface#UserInterface()
 	 * @see xtremweb.common.XMLReader#read(InputStream)
 	 */
-	public void xmlElementStartCheckUser(final String uri, final String tag,
-			final String qname, final Attributes attrs) throws SAXException {
+	public void xmlElementStartCheckUser(final String uri, final String tag, final String qname, final Attributes attrs)
+			throws SAXException {
 
 		try {
 			super.xmlElementStart(uri, tag, qname, attrs);
@@ -448,9 +443,8 @@ public abstract class XMLRPCCommand extends XMLable {
 		} catch (final SAXException se) {
 		}
 
-		getLogger().finest(
-				"XMLRPCCommand#xmlElementStartCheckUser(" + uri + ", " + tag
-				+ ", " + qname + ")  " + attrs.getLength());
+		getLogger().finest("XMLRPCCommand#xmlElementStartCheckUser(" + uri + ", " + tag + ", " + qname + ")  "
+				+ attrs.getLength());
 		if (qname.compareToIgnoreCase(getXMLTag()) == 0) {
 			fromXml(attrs);
 			return;
@@ -461,19 +455,16 @@ public abstract class XMLRPCCommand extends XMLable {
 				currentTag = XMLTAGS.USER;
 				user = new UserInterface(attrs);
 				user.setCurrentVersion(getCurrentVersion());
-				getLogger().finest(
-						"XMLRPCCommand#xmlElementStartCheckUser "
-						+ user.toXml());
+				getLogger().finest("XMLRPCCommand#xmlElementStartCheckUser " + user.toXml());
 			} else {
-				throw new SAXException("XMLRPCCommand not a " + getXMLTag()
-						+ " command (" + qname + ") (user already set)");
+				throw new SAXException(
+						"XMLRPCCommand not a " + getXMLTag() + " command (" + qname + ") (user already set)");
 			}
 		}
 		if (user != null) {
 			user.xmlElementStart(uri, tag, qname, attrs);
 		} else {
-			throw new SAXException("XMLRPCCommand not a " + getXMLTag()
-					+ " command (" + qname + ")");
+			throw new SAXException("XMLRPCCommand not a " + getXMLTag() + " command (" + qname + ")");
 		}
 	}
 
@@ -485,15 +476,15 @@ public abstract class XMLRPCCommand extends XMLable {
 	 * This instantiates host and resets its default values so that
 	 * xmlElementStop() has a chance to set attributes by calling
 	 * Type#getValue(String) and Type#setValue(String, Object)
-	 * 
+	 *
 	 * @see xtremweb.common.Type#setValue(String, Object)
 	 * @see #xmlElementStop(String, String, String)
 	 * @see #xmlElementStartCheckUser(String, String, String, Attributes)
 	 * @see xtremweb.common.HostInterface#HostInterface()
 	 * @see #host
 	 */
-	public void xmlElementStartCheckUserAndHost(String uri, String tag,
-			String qname, Attributes attrs) throws SAXException {
+	public void xmlElementStartCheckUserAndHost(final String uri, final String tag, final String qname,
+			final Attributes attrs) throws SAXException {
 
 		try {
 			this.xmlElementStartCheckUser(uri, tag, qname, attrs);
@@ -501,9 +492,7 @@ public abstract class XMLRPCCommand extends XMLable {
 		} catch (final SAXException ioe) {
 		}
 
-		getLogger().finest(
-				"XMLRPCCommand#xmlElementStartCheckUserAndHost(" + uri + ", "
-				+ tag + ", " + qname + ")");
+		getLogger().finest("XMLRPCCommand#xmlElementStartCheckUserAndHost(" + uri + ", " + tag + ", " + qname + ")");
 
 		if (qname.compareToIgnoreCase(HostInterface.THISTAG) == 0) {
 			if (host == null) {
@@ -511,27 +500,25 @@ public abstract class XMLRPCCommand extends XMLable {
 				host = new HostInterface(attrs);
 				host.setCurrentVersion(getCurrentVersion());
 
-				getLogger().finest(
-						"XMLRPCCommand#xmlElementStartCheckUserAndHost "
-						+ host.toXml());
+				getLogger().finest("XMLRPCCommand#xmlElementStartCheckUserAndHost " + host.toXml());
 			} else {
-				throw new SAXException("XMLRPCCommand not a " + getXMLTag()
-						+ " command (" + qname + ") (host already set)");
+				throw new SAXException(
+						"XMLRPCCommand not a " + getXMLTag() + " command (" + qname + ") (host already set)");
 			}
 		}
 		if (host != null) {
 			host.xmlElementStart(uri, tag, qname, attrs);
 		} else {
-			throw new SAXException("XMLRPCCommand  not a " + getXMLTag()
-					+ " command (" + qname + ")");
+			throw new SAXException("XMLRPCCommand  not a " + getXMLTag() + " command (" + qname + ")");
 		}
 	}
 
 	/**
-	 * This is called on XML element close tag and sets the XML element values.<br />
+	 * This is called on XML element close tag and sets the XML element values.
+	 * <br />
 	 * This sets user and host attributes by calling Type#getValue(String) and
 	 * Type#setValue(String, Object)
-	 * 
+	 *
 	 * @see xtremweb.common.Type#setValue(String, Object)
 	 * @see #user
 	 * @see #host
@@ -543,23 +530,19 @@ public abstract class XMLRPCCommand extends XMLable {
 	 * @since 9.0.0
 	 */
 	@Override
-	public void xmlElementStop(String uri, String tag, String qname)
-	throws SAXException {
+	public void xmlElementStop(final String uri, final String tag, final String qname) throws SAXException {
 
 		super.xmlElementStop(uri, tag, qname);
 
-		getLogger().finest(
-				"XMLRPCCommand#xmlElementStop " + uri + ", " + tag + ", "
-				+ qname + " = " + getCurrentValue());
+		getLogger()
+				.finest("XMLRPCCommand#xmlElementStop " + uri + ", " + tag + ", " + qname + " = " + getCurrentValue());
 
-		switch(currentTag) {
+		switch (currentTag) {
 		case USER:
 			if (user != null) {
 				try {
-					getLogger().finest(
-							"XMLRPCCommand#xmlElementStop set user value "
-							+ uri + ", " + tag + ", " + qname + " = "
-							+ getCurrentValue());
+					getLogger().finest("XMLRPCCommand#xmlElementStop set user value " + uri + ", " + tag + ", " + qname
+							+ " = " + getCurrentValue());
 					user.setValue(qname, getCurrentValue());
 					resetCurrentValue();
 				} catch (final IllegalArgumentException e) {
@@ -569,10 +552,8 @@ public abstract class XMLRPCCommand extends XMLable {
 		case HOST:
 			if (host != null) {
 				try {
-					getLogger().finest(
-							"XMLRPCCommand#xmlElementStop set host value "
-							+ uri + ", " + tag + ", " + qname + " = "
-							+ getCurrentValue());
+					getLogger().finest("XMLRPCCommand#xmlElementStop set host value " + uri + ", " + tag + ", " + qname
+							+ " = " + getCurrentValue());
 					host.setValue(qname, getCurrentValue());
 					resetCurrentValue();
 				} catch (final IllegalArgumentException e) {
@@ -584,41 +565,42 @@ public abstract class XMLRPCCommand extends XMLable {
 			break;
 		}
 
-		if ((qname.compareToIgnoreCase(UserInterface.THISTAG) == 0) ||
-				(qname.compareToIgnoreCase(HostInterface.THISTAG) == 0)) {
+		if ((qname.compareToIgnoreCase(UserInterface.THISTAG) == 0)
+				|| (qname.compareToIgnoreCase(HostInterface.THISTAG) == 0)) {
 			currentTag = XMLTAGS.NONE;
 		}
 	}
+
 	/**
 	 * This constructs a new XMLRPCCommand object
-	 * 
+	 *
 	 * @param io
 	 *            is stream handler to read XML representation from
 	 */
-	public static XMLRPCCommand newCommand(StreamIO io) throws IOException {
+	public static XMLRPCCommand newCommand(final StreamIO io) throws IOException {
 		return newCommand(io.input());
 	}
 
 	/**
 	 * This constructs a new XMLRPCCommand object.
-	 * 
+	 *
 	 * @param xmlString
 	 *            is a String containing a full XML representation
 	 */
-	public static XMLRPCCommand newCommand(String xmlString) throws IOException {
+	public static XMLRPCCommand newCommand(final String xmlString) throws IOException {
 		return newCommand(StreamIO.stream(xmlString));
 	}
 
 	/**
 	 * This constructs a new XMLRPCCommand object. This first checks the opening
 	 * tag and then instanciate the right object accordingly to the opening tag.
-	 * 
+	 *
 	 * @param in
 	 *            is the input stream to read command from
 	 * @exception IOException
 	 *                is thrown on I/O error or if provided paremeter is null
 	 */
-	public static XMLRPCCommand newCommand(InputStream in) throws IOException {
+	public static XMLRPCCommand newCommand(final InputStream in) throws IOException {
 
 		if (in == null) {
 			throw new IOException("InputStream is null");
@@ -989,14 +971,14 @@ public abstract class XMLRPCCommand extends XMLable {
 
 	/**
 	 * This retrieves String representation
-	 * 
+	 *
 	 * @param csv
 	 *            tells whether CSV format is expected
 	 * @return this object String representation
 	 * @see xtremweb.common.Table#toString(boolean)
 	 */
 	@Override
-	public String toString(boolean csv) {
+	public String toString(final boolean csv) {
 		String ret = new String();
 
 		if (user != null) {
@@ -1017,40 +999,33 @@ public abstract class XMLRPCCommand extends XMLable {
 	 * contain a config file name argv[1] must contain an XML representation.
 	 * The object is finally dumped.
 	 */
-	public static void main(String[] argv) {
+	public static void main(final String[] argv) {
 		final Logger logger = new Logger();
 		try {
 			XMLRPCCommand cmd;
 			if (argv.length > 1) {
-				final StreamIO streamIO = new StreamIO(null,
-						new DataInputStream(new FileInputStream(argv[1])));
+				final StreamIO streamIO = new StreamIO(null, new DataInputStream(new FileInputStream(argv[1])));
 
 				cmd = XMLRPCCommand.newCommand(streamIO);
-				cmd.getLogger().info(
-						cmd.openXmlRootElement() + cmd.toXml()
-						+ cmd.closeXmlRootElement());
+				cmd.getLogger().info(cmd.openXmlRootElement() + cmd.toXml() + cmd.closeXmlRootElement());
 			}
 		} catch (final Exception e) {
-			logger.exception(
-					"Usage : java -cp "
-					+ XWTools.JARFILENAME
-					+ " xtremweb.communications.XMLRPCCommand <aConfigFile> <anXMLDescriptionFile>",
-					e);
+			logger.exception("Usage : java -cp " + XWTools.JARFILENAME
+					+ " xtremweb.communications.XMLRPCCommand <aConfigFile> <anXMLDescriptionFile>", e);
 			System.exit(1);
 		}
 	}
 
 	/**
 	 * This is for testing only.
-	 * 
+	 *
 	 * @since 8.2.0
 	 */
-	public void test(String[] argv) {
+	public void test(final String[] argv) {
 		try {
 			LoggerLevel logLevel = LoggerLevel.INFO;
 			try {
-				logLevel = LoggerLevel.valueOf(System
-						.getProperty(XWPropertyDefs.LOGGERLEVEL.toString()));
+				logLevel = LoggerLevel.valueOf(System.getProperty(XWPropertyDefs.LOGGERLEVEL.toString()));
 			} catch (final Exception e) {
 			}
 			if (argv.length > 1) {
@@ -1065,8 +1040,7 @@ public abstract class XMLRPCCommand extends XMLable {
 		} catch (final Exception e) {
 			e.printStackTrace();
 			final Logger logger = new Logger();
-			logger.fatal("Usage : java -cp " + XWTools.JARFILENAME
-					+ " a_class <aConfigFile> [anXMLDescriptionFile]");
+			logger.fatal("Usage : java -cp " + XWTools.JARFILENAME + " a_class <aConfigFile> [anXMLDescriptionFile]");
 		}
 	}
 }

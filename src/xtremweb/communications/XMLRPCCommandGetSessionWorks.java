@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -68,26 +68,25 @@ public class XMLRPCCommandGetSessionWorks extends XMLRPCCommand {
 
 	/**
 	 * This constructs a new command
-	 * 
+	 *
 	 * @param uri
 	 *            contains the URI to connect to; its path must contains the UID
 	 *            of the session to retrieve works for
 	 */
-	protected XMLRPCCommandGetSessionWorks(URI uri) throws IOException {
+	protected XMLRPCCommandGetSessionWorks(final URI uri) throws IOException {
 		super(uri, IDRPC);
 	}
 
 	/**
 	 * This constructs a new command
-	 * 
+	 *
 	 * @param uri
 	 *            contains the URI to connect to; its path must contains the UID
 	 *            of the session to retrieve works for
 	 * @param u
 	 *            defines the user who executes this command
 	 */
-	public XMLRPCCommandGetSessionWorks(URI uri, UserInterface u)
-			throws IOException {
+	public XMLRPCCommandGetSessionWorks(final URI uri, final UserInterface u) throws IOException {
 		this(uri);
 		setUser(u);
 	}
@@ -95,15 +94,14 @@ public class XMLRPCCommandGetSessionWorks extends XMLRPCCommand {
 	/**
 	 * This constructs a new object from XML attributes received from input
 	 * stream
-	 * 
+	 *
 	 * @param input
 	 *            is the input stream
 	 * @throws IOException
 	 *             on XML error
 	 * @see xtremweb.common.XMLReader#read(InputStream)
 	 */
-	public XMLRPCCommandGetSessionWorks(InputStream input) throws IOException,
-			SAXException, InvalidKeyException {
+	public XMLRPCCommandGetSessionWorks(final InputStream input) throws IOException, SAXException, InvalidKeyException {
 		this();
 		final XMLReader reader = new XMLReader(this);
 		reader.read(input);
@@ -111,7 +109,7 @@ public class XMLRPCCommandGetSessionWorks extends XMLRPCCommand {
 
 	/**
 	 * This sends this command to server and returns answer
-	 * 
+	 *
 	 * @param comm
 	 *            is the communication channel
 	 * @return always null since this expect no answer
@@ -119,8 +117,8 @@ public class XMLRPCCommandGetSessionWorks extends XMLRPCCommand {
 	 * @throws InvalidKeyException
 	 */
 	@Override
-	public XMLable exec(CommClient comm) throws IOException, SAXException,
-			InvalidKeyException, AccessControlException {
+	public XMLable exec(final CommClient comm)
+			throws IOException, SAXException, InvalidKeyException, AccessControlException {
 		return comm.getSessionWorks(this);
 	}
 
@@ -134,12 +132,11 @@ public class XMLRPCCommandGetSessionWorks extends XMLRPCCommand {
 	 * xtremweb.communications.XMLRPCCommandGetSessionWorks aConfigFile
 	 * [anXMLDescriptionFile]
 	 */
-	public static void main(String[] argv) {
+	public static void main(final String[] argv) {
 		try {
 			final XWConfigurator config = new XWConfigurator(argv[0], false);
 			final XMLRPCCommandGetSessionWorks cmd = new XMLRPCCommandGetSessionWorks(
-					new URI(config.getCurrentDispatcher(), new UID()),
-					config.getUser());
+					new URI(config.getCurrentDispatcher(), new UID()), config.getUser());
 			cmd.test(argv);
 		} catch (final Exception e) {
 			e.printStackTrace();

@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -122,7 +122,7 @@ public class UDPClient extends CommClient {
 
 	/**
 	 * This retreives this client port number
-	 * 
+	 *
 	 * @since 5.9.0
 	 */
 	@Override
@@ -136,13 +136,12 @@ public class UDPClient extends CommClient {
 	/**
 	 * This only sets the server name to connect to. This does not effectivly
 	 * connects to server
-	 * 
+	 *
 	 * @param uri
 	 *            is the URI to reach
 	 */
 	@Override
-	public void open(URI uri) throws UnknownHostException,
-			NoRouteToHostException, SSLHandshakeException,
+	public void open(final URI uri) throws UnknownHostException, NoRouteToHostException, SSLHandshakeException,
 			SocketTimeoutException, IOException {
 
 		final XWConfigurator config = getConfig();
@@ -191,8 +190,7 @@ public class UDPClient extends CommClient {
 			packet = new BytePacket();
 
 			final byte[] d = packet.getData();
-			serverPacket = new DatagramPacket(d, d.length, serverHost,
-					serverPort);
+			serverPacket = new DatagramPacket(d, d.length, serverHost, serverPort);
 		}
 		packet.reset();
 	}
@@ -206,7 +204,7 @@ public class UDPClient extends CommClient {
 
 	/**
 	 * This waits for a packet
-	 * 
+	 *
 	 * @see xtremweb.common.ByteStack#pack()
 	 */
 	protected void receive() throws IOException {
@@ -221,7 +219,7 @@ public class UDPClient extends CommClient {
 
 	/**
 	 * This first packs the packet then sends it
-	 * 
+	 *
 	 * @see xtremweb.common.ByteStack#pack()
 	 */
 	protected void send() throws IOException {
@@ -236,7 +234,7 @@ public class UDPClient extends CommClient {
 	 * This puts the UserInterface and the IrRpc code
 	 */
 	@Override
-	protected void write(XMLRPCCommand cmd) throws IOException {
+	protected void write(final XMLRPCCommand cmd) throws IOException {
 		packet.putObject(cmd);
 		send();
 	}
@@ -245,8 +243,7 @@ public class UDPClient extends CommClient {
 	 * This creates an object from channel
 	 */
 	@Override
-	protected Table newTableInterface() throws InvalidKeyException,
-			AccessControlException, IOException, SAXException {
+	protected Table newTableInterface() throws InvalidKeyException, AccessControlException, IOException, SAXException {
 		return super.newTableInterface(StreamIO.stream(packet.getString()));
 	}
 
@@ -254,8 +251,8 @@ public class UDPClient extends CommClient {
 	 * This creates an object from channel
 	 */
 	@Override
-	protected AppInterface newAppInterface() throws InvalidKeyException,
-			AccessControlException, IOException, SAXException {
+	protected AppInterface newAppInterface()
+			throws InvalidKeyException, AccessControlException, IOException, SAXException {
 		return super.newAppInterface(StreamIO.stream(packet.getString()));
 	}
 
@@ -263,8 +260,8 @@ public class UDPClient extends CommClient {
 	 * This creates an object from channel
 	 */
 	@Override
-	protected DataInterface newDataInterface() throws InvalidKeyException,
-			AccessControlException, IOException, SAXException {
+	protected DataInterface newDataInterface()
+			throws InvalidKeyException, AccessControlException, IOException, SAXException {
 		return super.newDataInterface(StreamIO.stream(packet.getString()));
 	}
 
@@ -272,8 +269,8 @@ public class UDPClient extends CommClient {
 	 * This creates an object from channel
 	 */
 	@Override
-	protected GroupInterface newGroupInterface() throws InvalidKeyException,
-			AccessControlException, IOException, SAXException {
+	protected GroupInterface newGroupInterface()
+			throws InvalidKeyException, AccessControlException, IOException, SAXException {
 		return super.newGroupInterface(StreamIO.stream(packet.getString()));
 	}
 
@@ -281,8 +278,8 @@ public class UDPClient extends CommClient {
 	 * This creates an object from channel
 	 */
 	@Override
-	protected HostInterface newHostInterface() throws InvalidKeyException,
-			AccessControlException, IOException, SAXException {
+	protected HostInterface newHostInterface()
+			throws InvalidKeyException, AccessControlException, IOException, SAXException {
 		return super.newHostInterface(StreamIO.stream(packet.getString()));
 	}
 
@@ -291,8 +288,7 @@ public class UDPClient extends CommClient {
 	 */
 	@Override
 	protected SessionInterface newSessionInterface()
-			throws InvalidKeyException, AccessControlException, IOException,
-			SAXException {
+			throws InvalidKeyException, AccessControlException, IOException, SAXException {
 		return super.newSessionInterface(StreamIO.stream(packet.getString()));
 	}
 
@@ -300,8 +296,8 @@ public class UDPClient extends CommClient {
 	 * This creates an object from channel
 	 */
 	@Override
-	protected TaskInterface newTaskInterface() throws InvalidKeyException,
-			AccessControlException, IOException, SAXException {
+	protected TaskInterface newTaskInterface()
+			throws InvalidKeyException, AccessControlException, IOException, SAXException {
 		return super.newTaskInterface(StreamIO.stream(packet.getString()));
 	}
 
@@ -309,8 +305,8 @@ public class UDPClient extends CommClient {
 	 * This creates an object from channel
 	 */
 	@Override
-	protected TraceInterface newTraceInterface() throws InvalidKeyException,
-			AccessControlException, IOException, SAXException {
+	protected TraceInterface newTraceInterface()
+			throws InvalidKeyException, AccessControlException, IOException, SAXException {
 		return super.newTraceInterface(StreamIO.stream(packet.getString()));
 	}
 
@@ -318,8 +314,8 @@ public class UDPClient extends CommClient {
 	 * This creates an object from channel
 	 */
 	@Override
-	protected UserInterface newUserInterface() throws InvalidKeyException,
-			AccessControlException, IOException, SAXException {
+	protected UserInterface newUserInterface()
+			throws InvalidKeyException, AccessControlException, IOException, SAXException {
 		return super.newUserInterface(StreamIO.stream(packet.getString()));
 	}
 
@@ -328,8 +324,7 @@ public class UDPClient extends CommClient {
 	 */
 	@Override
 	protected UserGroupInterface newUserGroupInterface()
-			throws InvalidKeyException, AccessControlException, IOException,
-			SAXException {
+			throws InvalidKeyException, AccessControlException, IOException, SAXException {
 		return super.newUserGroupInterface(StreamIO.stream(packet.getString()));
 	}
 
@@ -337,8 +332,8 @@ public class UDPClient extends CommClient {
 	 * This creates an object from channel
 	 */
 	@Override
-	protected WorkInterface newWorkInterface() throws InvalidKeyException,
-			AccessControlException, IOException, SAXException {
+	protected WorkInterface newWorkInterface()
+			throws InvalidKeyException, AccessControlException, IOException, SAXException {
 		return super.newWorkInterface(StreamIO.stream(packet.getString()));
 	}
 
@@ -346,8 +341,7 @@ public class UDPClient extends CommClient {
 	 * This creates an object from channel
 	 */
 	@Override
-	protected XMLVector newXMLVector() throws InvalidKeyException,
-			AccessControlException, IOException, SAXException {
+	protected XMLVector newXMLVector() throws InvalidKeyException, AccessControlException, IOException, SAXException {
 		return super.newXMLVector(StreamIO.stream(packet.getString()));
 	}
 
@@ -355,8 +349,7 @@ public class UDPClient extends CommClient {
 	 * This creates an object from channel
 	 */
 	@Override
-	protected Version newXMLVersion() throws InvalidKeyException,
-			AccessControlException, IOException, SAXException {
+	protected Version newXMLVersion() throws InvalidKeyException, AccessControlException, IOException, SAXException {
 		return super.newXMLVersion(StreamIO.stream(packet.getString()));
 	}
 
@@ -364,31 +357,31 @@ public class UDPClient extends CommClient {
 	 * This creates an object from channel
 	 */
 	@Override
-	protected XMLHashtable newXMLHashtable() throws InvalidKeyException,
-			AccessControlException, IOException, SAXException {
+	protected XMLHashtable newXMLHashtable()
+			throws InvalidKeyException, AccessControlException, IOException, SAXException {
 		return super.newXMLHashtable(StreamIO.stream(packet.getString()));
 	}
 
 	/**
 	 * This writes a file to socket
-	 * 
+	 *
 	 * @param f
 	 *            is the file to send
 	 */
 	@Override
-	public void writeFile(File f) throws IOException {
+	public void writeFile(final File f) throws IOException {
 		throw new IOException("UDP does not implement writeFile");
 	}
 
 	/**
 	 * This reads a file from socket This is typically needed after a
 	 * workRequest to get stdin and/or dirin files
-	 * 
+	 *
 	 * @param f
 	 *            is the file to store received bytes
 	 */
 	@Override
-	public void readFile(File f) throws IOException {
+	public void readFile(final File f) throws IOException {
 		throw new IOException("UDP does not implement readFile");
 	}
 

@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -30,7 +30,6 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
 import xtremweb.common.Logger;
-import xtremweb.common.StreamIO;
 import xtremweb.common.XMLEndParseException;
 import xtremweb.common.XMLReader;
 import xtremweb.common.XMLWriter;
@@ -40,9 +39,9 @@ import xtremweb.common.XWTools;
 
 /**
  * This class represents RPC response
- * 
+ *
  * @author Oleg Lodygensky
- * 
+ *
  */
 public final class XMLRPCResult extends XMLable {
 	private final Logger logger;
@@ -72,11 +71,11 @@ public final class XMLRPCResult extends XMLable {
 
 	/**
 	 * This sets this message
-	 * 
+	 *
 	 * @param msg
 	 *            is this message
 	 */
-	public void setMessage(String msg) {
+	public void setMessage(final String msg) {
 		setValueAt(MESSAGE, msg);
 	}
 
@@ -89,11 +88,11 @@ public final class XMLRPCResult extends XMLable {
 
 	/**
 	 * This sets this command URI
-	 * 
+	 *
 	 * @param uri
 	 *            is this command URI
 	 */
-	private void setTimeStamp(long t) {
+	private void setTimeStamp(final long t) {
 		setValueAt(TIMESTAMP, new Long(t));
 	}
 
@@ -106,11 +105,11 @@ public final class XMLRPCResult extends XMLable {
 
 	/**
 	 * This sets this command URI
-	 * 
+	 *
 	 * @param uri
 	 *            is this command URI
 	 */
-	private void setReturnCode(XWReturnCode r) {
+	private void setReturnCode(final XWReturnCode r) {
 		setValueAt(RETURNCODE, r);
 	}
 
@@ -136,13 +135,13 @@ public final class XMLRPCResult extends XMLable {
 
 	/**
 	 * This constructor sets this return code and message
-	 * 
+	 *
 	 * @param r
 	 *            is this return code
 	 * @param msg
 	 *            is this message
 	 */
-	public XMLRPCResult(XWReturnCode r, String msg) {
+	public XMLRPCResult(final XWReturnCode r, final String msg) {
 		this();
 		setMessage(msg);
 		setReturnCode(r);
@@ -150,7 +149,7 @@ public final class XMLRPCResult extends XMLable {
 
 	/**
 	 * This serializes this object to a String as an XML object<br />
-	 * 
+	 *
 	 * @return a String containing this object definition as XML
 	 * @see #fromXml(Attributes)
 	 */
@@ -161,12 +160,12 @@ public final class XMLRPCResult extends XMLable {
 
 	/**
 	 * This is called by XML parser
-	 * 
+	 *
 	 * @param attrs
 	 *            contains attributes XML representation
 	 */
 	@Override
-	public void fromXml(Attributes attrs) {
+	public void fromXml(final Attributes attrs) {
 
 		if (attrs == null) {
 			return;
@@ -178,8 +177,7 @@ public final class XMLRPCResult extends XMLable {
 			final String attribute = attrs.getQName(a);
 			final String value = attrs.getValue(a);
 
-			logger.finest("     attribute #" + a + ": name=\"" + attribute
-					+ "\"" + ", value=\"" + value + "\"");
+			logger.finest("     attribute #" + a + ": name=\"" + attribute + "\"" + ", value=\"" + value + "\"");
 
 			if (attribute.compareToIgnoreCase(getColumnLabel(MESSAGE)) == 0) {
 				logger.finest("creating message from " + value);
@@ -193,8 +191,7 @@ public final class XMLRPCResult extends XMLable {
 					setValueAt(TIMESTAMP, new Long(value));
 				} catch (final Exception e) {
 				}
-			} else if (attribute
-					.compareToIgnoreCase(getColumnLabel(RETURNCODE)) == 0) {
+			} else if (attribute.compareToIgnoreCase(getColumnLabel(RETURNCODE)) == 0) {
 				logger.finest("creating returncode from " + value);
 				try {
 					setValueAt(RETURNCODE, XWReturnCode.valueOf(value));
@@ -207,12 +204,12 @@ public final class XMLRPCResult extends XMLable {
 
 	/**
 	 * This is called to decode XML elements
-	 * 
+	 *
 	 * @see xtremweb.common.XMLReader#read(java.io.InputStream)
 	 */
 	@Override
-	public void xmlElementStart(String uri, String tag, String qname,
-			Attributes attrs) throws SAXException {
+	public void xmlElementStart(final String uri, final String tag, final String qname, final Attributes attrs)
+			throws SAXException {
 
 		try {
 			super.xmlElementStart(uri, tag, qname, attrs);
@@ -239,16 +236,15 @@ public final class XMLRPCResult extends XMLable {
 
 	/**
 	 * This retreives String representation
-	 * 
+	 *
 	 * @param csv
 	 *            tells whether CSV format is expected
 	 * @return this object String representation
 	 * @see xtremweb.common.Table#toString(boolean)
 	 */
 	@Override
-	public String toString(boolean csv) {
-		final String ret = new String("[" + getTimeStamp() + "] : "
-				+ getReturnCode() + "," + getMessage());
+	public String toString(final boolean csv) {
+		final String ret = new String("[" + getTimeStamp() + "] : " + getReturnCode() + "," + getMessage());
 
 		return ret;
 	}
@@ -260,10 +256,9 @@ public final class XMLRPCResult extends XMLable {
 	 * description and dumps it. <br />
 	 * Usage : java -cp xtremweb.jar xtremweb.common.TaskInterface [xmlFile]
 	 */
-	public static void main(String[] argv) {
+	public static void main(final String[] argv) {
 		try {
-			final XMLRPCResult itf = new XMLRPCResult(XWReturnCode.FATAL,
-					"pouet");
+			final XMLRPCResult itf = new XMLRPCResult(XWReturnCode.FATAL, "pouet");
 			if (argv.length > 0) {
 				try {
 					final XMLReader reader = new XMLReader(itf);

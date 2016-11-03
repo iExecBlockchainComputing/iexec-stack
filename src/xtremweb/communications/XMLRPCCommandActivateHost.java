@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -75,34 +75,33 @@ public final class XMLRPCCommandActivateHost extends XMLRPCCommand {
 
 	/**
 	 * This constructs a new command
-	 * 
+	 *
 	 * @param uri
 	 *            to connect to; it must contains the UID of the host to
 	 *            (de)activate
 	 */
-	protected XMLRPCCommandActivateHost(URI uri) throws IOException {
+	protected XMLRPCCommandActivateHost(final URI uri) throws IOException {
 		super(uri, IDRPC, ACTIVATION);
 		setColumnAt(ACTIVATION, "ACTIVATION");
 	}
 
 	/**
 	 * This constructs a new command
-	 * 
+	 *
 	 * @param uri
 	 *            to connect to; it must contains the UID of the host to
 	 *            (de)activate
 	 * @param flag
 	 *            is the activation flag
 	 */
-	protected XMLRPCCommandActivateHost(URI uri, boolean flag)
-			throws IOException {
+	protected XMLRPCCommandActivateHost(final URI uri, final boolean flag) throws IOException {
 		this(uri);
 		setActivation(flag);
 	}
 
 	/**
 	 * This constructs a new command
-	 * 
+	 *
 	 * @param uri
 	 *            to connect to; it must contains the UID of the host to
 	 *            (de)activate
@@ -111,15 +110,14 @@ public final class XMLRPCCommandActivateHost extends XMLRPCCommand {
 	 * @param flag
 	 *            is the activation flag
 	 */
-	public XMLRPCCommandActivateHost(URI uri, UserInterface u, boolean flag)
-			throws IOException {
+	public XMLRPCCommandActivateHost(final URI uri, final UserInterface u, final boolean flag) throws IOException {
 		this(uri, flag);
 		setUser(u);
 	}
 
 	/**
 	 * This constructs a new command setting the actiovation flag to false
-	 * 
+	 *
 	 * @since 8.2.2
 	 * @param uri
 	 *            to connect to; it must contains the UID of the host to
@@ -127,8 +125,7 @@ public final class XMLRPCCommandActivateHost extends XMLRPCCommand {
 	 * @param u
 	 *            defines the user who executes this command
 	 */
-	public XMLRPCCommandActivateHost(URI uri, UserInterface u)
-			throws IOException {
+	public XMLRPCCommandActivateHost(final URI uri, final UserInterface u) throws IOException {
 		this(uri);
 		setActivation(false);
 		setUser(u);
@@ -137,14 +134,13 @@ public final class XMLRPCCommandActivateHost extends XMLRPCCommand {
 	/**
 	 * This constructs a new object from XML attributes received from input
 	 * stream
-	 * 
+	 *
 	 * @param input
 	 *            is the input stream
 	 * @throws IOException
 	 *             on XML error
 	 */
-	public XMLRPCCommandActivateHost(InputStream input) throws IOException,
-			SAXException, InvalidKeyException {
+	public XMLRPCCommandActivateHost(final InputStream input) throws IOException, SAXException, InvalidKeyException {
 		this();
 		final XMLReader reader = new XMLReader(this);
 		reader.read(input);
@@ -152,7 +148,7 @@ public final class XMLRPCCommandActivateHost extends XMLRPCCommand {
 
 	/**
 	 * This retrieves the host UID
-	 * 
+	 *
 	 * @return the UID of the host to activate
 	 */
 	public UID getHostUID() {
@@ -161,7 +157,7 @@ public final class XMLRPCCommandActivateHost extends XMLRPCCommand {
 
 	/**
 	 * This retrieves this command activation flag
-	 * 
+	 *
 	 * @return the activation flag
 	 */
 	public boolean getActivation() {
@@ -171,28 +167,28 @@ public final class XMLRPCCommandActivateHost extends XMLRPCCommand {
 	/**
 	 * This sets this command activation flag
 	 */
-	public void setActivation(boolean b) {
+	public void setActivation(final boolean b) {
 		setActivation(new Boolean(b));
 	}
 
 	/**
 	 * This sets this command activation flag
-	 * 
+	 *
 	 * @since 8.2.0
 	 */
-	public void setActivation(Boolean b) {
+	public void setActivation(final Boolean b) {
 		setValueAt(ACTIVATION, b);
 	}
 
 	/**
 	 * This is called by XML parser This retrieves URI, hostUID and activation
 	 * params
-	 * 
+	 *
 	 * @param attrs
 	 *            contains attributes XML representation
 	 */
 	@Override
-	public void fromXml(Attributes attrs) {
+	public void fromXml(final Attributes attrs) {
 
 		if (attrs == null) {
 			return;
@@ -208,8 +204,7 @@ public final class XMLRPCCommandActivateHost extends XMLRPCCommand {
 					getLogger().error("not a valid URI " + value);
 					setURI(null);
 				}
-			} else if (attribute
-					.compareToIgnoreCase(getColumnLabel(ACTIVATION)) == 0) {
+			} else if (attribute.compareToIgnoreCase(getColumnLabel(ACTIVATION)) == 0) {
 				setActivation(Boolean.getBoolean(value));
 			}
 		}
@@ -217,7 +212,7 @@ public final class XMLRPCCommandActivateHost extends XMLRPCCommand {
 
 	/**
 	 * This sends this command to server and returns answer
-	 * 
+	 *
 	 * @param comm
 	 *            is the communication channel
 	 * @return always null
@@ -227,10 +222,9 @@ public final class XMLRPCCommandActivateHost extends XMLRPCCommand {
 	 *                is thrown on comm error
 	 * @since 9.0.0
 	 */
-	@Override 
-	public XMLable exec(final CommClient comm) throws IOException,
-	ClassNotFoundException, SAXException, InvalidKeyException,
-	AccessControlException	{
+	@Override
+	public XMLable exec(final CommClient comm)
+			throws IOException, ClassNotFoundException, SAXException, InvalidKeyException, AccessControlException {
 		comm.activateHost(this);
 		return null;
 	}
@@ -245,12 +239,11 @@ public final class XMLRPCCommandActivateHost extends XMLRPCCommand {
 	 * xtremweb.communications.XMLRPCCommandActivateHost aConfigFile
 	 * [anXMLDescriptionFile]
 	 */
-	public static void main(String[] argv) {
+	public static void main(final String[] argv) {
 		try {
 			final XWConfigurator config = new XWConfigurator(argv[0], false);
 			final XMLRPCCommandActivateHost cmd = new XMLRPCCommandActivateHost(
-					new URI(config.getCurrentDispatcher(), new UID()),
-					config.getUser(), false);
+					new URI(config.getCurrentDispatcher(), new UID()), config.getUser(), false);
 			cmd.test(argv);
 		} catch (final Exception e) {
 			e.printStackTrace();

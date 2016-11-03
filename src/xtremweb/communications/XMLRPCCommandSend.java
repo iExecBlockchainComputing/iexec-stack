@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -71,20 +71,20 @@ public class XMLRPCCommandSend extends XMLRPCCommand {
 
 	/**
 	 * This constructs a new command
-	 * 
+	 *
 	 * @param uri
 	 *            contains the URI to connect to
 	 * @param p
 	 *            defines the object to send
 	 */
-	public XMLRPCCommandSend(URI uri, Table p) throws IOException {
+	public XMLRPCCommandSend(final URI uri, final Table p) throws IOException {
 		super(uri, IDRPC);
 		setParameter(p);
 	}
 
 	/**
 	 * This constructs a new command
-	 * 
+	 *
 	 * @param uri
 	 *            contains the URI to connect to
 	 * @param u
@@ -92,8 +92,7 @@ public class XMLRPCCommandSend extends XMLRPCCommand {
 	 * @param p
 	 *            defines the object to send
 	 */
-	public XMLRPCCommandSend(URI uri, UserInterface u, Table p)
-			throws IOException {
+	public XMLRPCCommandSend(final URI uri, final UserInterface u, final Table p) throws IOException {
 
 		this(uri, p);
 		setUser(u);
@@ -102,14 +101,13 @@ public class XMLRPCCommandSend extends XMLRPCCommand {
 	/**
 	 * This constructs a new object from XML attributes received from input
 	 * stream
-	 * 
+	 *
 	 * @param input
 	 *            is the input stream
 	 * @throws InvalidKeyException
 	 * @see xtremweb.common.XMLReader#read(InputStream)
 	 */
-	public XMLRPCCommandSend(InputStream input) throws IOException,
-			SAXException, InvalidKeyException {
+	public XMLRPCCommandSend(final InputStream input) throws IOException, SAXException, InvalidKeyException {
 		this();
 		final XMLReader reader = new XMLReader(this);
 		reader.read(input);
@@ -117,7 +115,7 @@ public class XMLRPCCommandSend extends XMLRPCCommand {
 
 	/**
 	 * This sends this command to server and returns answer
-	 * 
+	 *
 	 * @param comm
 	 *            is the communication channel
 	 * @return always null
@@ -126,22 +124,21 @@ public class XMLRPCCommandSend extends XMLRPCCommand {
 	 * @exception RemoteException
 	 *                is thrown on comm error
 	 */
-	@Override 
-	public XMLable exec(final CommClient comm) throws IOException,
-	ClassNotFoundException, SAXException, InvalidKeyException,
-	AccessControlException	{
+	@Override
+	public XMLable exec(final CommClient comm)
+			throws IOException, ClassNotFoundException, SAXException, InvalidKeyException, AccessControlException {
 		comm.send(this);
 		return null;
 	}
 
 	/**
 	 * This is called on XML element open tag.
-	 * 
+	 *
 	 * @see xtremweb.common.XMLReader#read(InputStream)
 	 */
 	@Override
-	public void xmlElementStart(final String uri, final String thetag,
-			String qname, Attributes attrs) throws SAXException {
+	public void xmlElementStart(final String uri, final String thetag, final String qname, final Attributes attrs)
+			throws SAXException {
 
 		try {
 			xmlElementStartCheckUserAndHost(uri, thetag, qname, attrs);
@@ -149,9 +146,8 @@ public class XMLRPCCommandSend extends XMLRPCCommand {
 		} catch (final SAXException ioe) {
 		}
 
-		getLogger().finest(
-				"XMLRPCCommandSend#xmlElementStartCheckUser(" + uri + ", "
-						+ thetag + ", " + qname + ")  " + attrs.getLength());
+		getLogger().finest("XMLRPCCommandSend#xmlElementStartCheckUser(" + uri + ", " + thetag + ", " + qname + ")  "
+				+ attrs.getLength());
 
 		try {
 			final Table param = (Table) getParameter();
@@ -163,14 +159,13 @@ public class XMLRPCCommandSend extends XMLRPCCommand {
 				param.xmlElementStart(uri, thetag, qname, attrs);
 			}
 		} catch (final ClassNotFoundException e) {
-			throw new SAXException("XMLRPCCommandSend not a send command : "
-					+ e.getMessage());
+			throw new SAXException("XMLRPCCommandSend not a send command : " + e.getMessage());
 		}
 	}
 
 	/**
 	 * This is called on XML element close tag and sets the XML element value
-	 * 
+	 *
 	 * @see XMLable#characters(char[], int, int)
 	 * @see XMLReader#read(InputStream)
 	 * @exception SAXException
@@ -179,14 +174,12 @@ public class XMLRPCCommandSend extends XMLRPCCommand {
 	 * @since 9.0.0
 	 */
 	@Override
-	final public void xmlElementStop(String uri, String tag, String qname)
-			throws SAXException {
+	final public void xmlElementStop(final String uri, final String tag, final String qname) throws SAXException {
 
 		super.xmlElementStop(uri, tag, qname);
 
 		getLogger().finest(
-				"XMLRPCCommandSend#xmlElementStop " + uri + ", " + tag + ", "
-						+ qname + " = " + getCurrentValue());
+				"XMLRPCCommandSend#xmlElementStop " + uri + ", " + tag + ", " + qname + " = " + getCurrentValue());
 
 		try {
 			final Table param = (Table) getParameter();
@@ -208,11 +201,11 @@ public class XMLRPCCommandSend extends XMLRPCCommand {
 	 * Usage : java -cp xtremweb.jar xtremweb.communications.XMLRPCCommandSend
 	 * aConfigFile [anXMLDescriptionFile]
 	 */
-	public static void main(String[] argv) {
+	public static void main(final String[] argv) {
 		try {
 			final XWConfigurator config = new XWConfigurator(argv[0], false);
-			final XMLRPCCommandSend cmd = new XMLRPCCommandSend(new URI(
-					config.getCurrentDispatcher(), new UID()), config.getUser());
+			final XMLRPCCommandSend cmd = new XMLRPCCommandSend(new URI(config.getCurrentDispatcher(), new UID()),
+					config.getUser());
 			cmd.test(argv);
 		} catch (final Exception e) {
 			e.printStackTrace();

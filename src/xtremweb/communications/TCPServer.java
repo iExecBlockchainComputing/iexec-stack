@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -50,11 +50,11 @@ import xtremweb.common.XWPropertyDefs;
  * This class implements a generic TCP server<br />
  * This instanciates a new CommHandler on each new connection.
  * </p>
- * 
+ *
  * <p>
  * Created: Jun 7th, 2005
  * </p>
- * 
+ *
  * @see CommHandler
  * @author Oleg Lodygensky
  * @since RPCXW
@@ -64,7 +64,7 @@ public class TCPServer extends CommServer {
 
 	/**
 	 * This is this thread name if client auth is expected
-	 * 
+	 *
 	 * @since 7.4.0
 	 */
 	private static final String SNAME = "TCPSServer";
@@ -97,7 +97,7 @@ public class TCPServer extends CommServer {
 	 * This tells whether client authentication is expected. If true, this
 	 * server will listen on ConnectionTPCS. If false, this server will listen
 	 * on ConnectionTPC.
-	 * 
+	 *
 	 * @since 7.4.0
 	 * @see #Connection#TCP
 	 * @see #Connection#TCPS
@@ -106,11 +106,11 @@ public class TCPServer extends CommServer {
 
 	/**
 	 * This constructs a new instance
-	 * 
+	 *
 	 * @param label
 	 *            is this thread label
 	 */
-	protected TCPServer(String label) {
+	protected TCPServer(final String label) {
 		super(label);
 		nio = true;
 		needClientAuthentication = false;
@@ -119,13 +119,13 @@ public class TCPServer extends CommServer {
 	/**
 	 * This constructs a new instance. Depending on provided parameter, this
 	 * server will listen on different ports.
-	 * 
+	 *
 	 * @param needAuth
 	 *            is true if client authentication is expected
 	 * @since 7.4.0
 	 * @see #needClientAuthentication
 	 */
-	public TCPServer(boolean needAuth) {
+	public TCPServer(final boolean needAuth) {
 		this(NAME);
 		needClientAuthentication = needAuth;
 		if (needClientAuthentication) {
@@ -135,7 +135,7 @@ public class TCPServer extends CommServer {
 
 	/**
 	 * This calls this(false)
-	 * 
+	 *
 	 * @see #TCPServer(boolean)
 	 */
 	public TCPServer() {
@@ -144,12 +144,11 @@ public class TCPServer extends CommServer {
 
 	/**
 	 * This initializes communications
-	 * 
+	 *
 	 * @see CommServer#initComm(XWConfigurator, Handler)
 	 */
 	@Override
-	public void initComm(XWConfigurator prop, Handler handler)
-			throws RemoteException {
+	public void initComm(final XWConfigurator prop, final Handler handler) throws RemoteException {
 
 		super.initComm(prop, handler);
 
@@ -173,26 +172,19 @@ public class TCPServer extends CommServer {
 				if (nio) {
 					nioSocketServer = ServerSocketChannel.open();
 					nioSocketServer.configureBlocking(false);
-					nioSocketServer.socket().bind(
-							new InetSocketAddress(getPort()));
+					nioSocketServer.socket().bind(new InetSocketAddress(getPort()));
 					acceptSelector = SelectorProvider.provider().openSelector();
-					acceptKey = nioSocketServer.register(acceptSelector,
-							SelectionKey.OP_ACCEPT);
+					acceptKey = nioSocketServer.register(acceptSelector, SelectionKey.OP_ACCEPT);
 				} else {
-					sslSocketServer = (SSLServerSocket) new ServerSocket(
-							getPort());
+					sslSocketServer = (SSLServerSocket) new ServerSocket(getPort());
 				}
 			} else {
 				try {
-					final SSLContext sslContext = SSLContext
-							.getInstance("SSLv3");
-					sslContext.init(prop.getKeyManagerFactory()
-							.getKeyManagers(), null, null);
+					final SSLContext sslContext = SSLContext.getInstance("SSLv3");
+					sslContext.init(prop.getKeyManagerFactory().getKeyManagers(), null, null);
 
-					final SSLServerSocketFactory factory = sslContext
-							.getServerSocketFactory();
-					sslSocketServer = (SSLServerSocket) factory
-							.createServerSocket(getPort());
+					final SSLServerSocketFactory factory = sslContext.getServerSocketFactory();
+					sslSocketServer = (SSLServerSocket) factory.createServerSocket(getPort());
 
 					sslSocketServer.setNeedClientAuth(needClientAuthentication);
 
@@ -203,24 +195,21 @@ public class TCPServer extends CommServer {
 				}
 			}
 
-			Runtime.getRuntime().addShutdownHook(
-					new Thread(getName() + "Cleaner") {
-						@Override
-						public void run() {
-							cleanup();
-						}
-					});
+			Runtime.getRuntime().addShutdownHook(new Thread(getName() + "Cleaner") {
+				@Override
+				public void run() {
+					cleanup();
+				}
+			});
 		} catch (final Exception e) {
-			getLogger().fatal(
-					getName() + ": could not listen on port " + getPort()
-							+ " : " + e);
+			getLogger().fatal(getName() + ": could not listen on port " + getPort() + " : " + e);
 		}
 	}
 
 	/**
 	 * This indefinitly waits for incoming connections<br />
 	 * This uses the CommHandler to handle connections
-	 * 
+	 *
 	 * @see CommServer#handler
 	 */
 	@Override
@@ -251,17 +240,14 @@ public class TCPServer extends CommServer {
 							i.remove();
 							// The key indexes into the selector so you
 							// can retrieve the socket that's ready for I/O
-							final ServerSocketChannel nextReady = (ServerSocketChannel) sk
-									.channel();
+							final ServerSocketChannel nextReady = (ServerSocketChannel) sk.channel();
 
 							final CommHandler h = popConnection();
 							final Socket socket = nextReady.accept().socket();
 							setRemoteName(socket.getInetAddress().getHostName());
-							setRemoteIP(socket.getInetAddress()
-									.getHostAddress());
+							setRemoteIP(socket.getInetAddress().getHostAddress());
 							setRemotePort(socket.getPort());
-							socket.setSoTimeout(getConfig().getInt(
-									XWPropertyDefs.SOTIMEOUT));
+							socket.setSoTimeout(getConfig().getInt(XWPropertyDefs.SOTIMEOUT));
 							h.setCommServer(this);
 							h.setSocket(socket);
 							h.start();
@@ -270,13 +256,10 @@ public class TCPServer extends CommServer {
 				} else {
 					SSLSocket socket = null;
 
-					getLogger()
-							.debug(msgWithRemoteAddresse("Connection management : accepting ("
-									+ getId() + ")"));
+					getLogger().debug(msgWithRemoteAddresse("Connection management : accepting (" + getId() + ")"));
 					try {
 						socket = (SSLSocket) sslSocketServer.accept();
-						socket.setSoTimeout(getConfig().getInt(
-								XWPropertyDefs.SOTIMEOUT));
+						socket.setSoTimeout(getConfig().getInt(XWPropertyDefs.SOTIMEOUT));
 						setRemoteName(socket.getInetAddress().getHostName());
 						setRemoteIP(socket.getInetAddress().getHostAddress());
 						setRemotePort(socket.getPort());
@@ -291,10 +274,7 @@ public class TCPServer extends CommServer {
 						h.setCommServer(this);
 						h.setSocket(socket);
 					} catch (final Exception e) {
-						getLogger()
-								.exception(
-										msgWithRemoteAddresse("new connection exception"),
-										e);
+						getLogger().exception(msgWithRemoteAddresse("new connection exception"), e);
 						socket.close();
 						h.resetSockets();
 						pushConnection(h);

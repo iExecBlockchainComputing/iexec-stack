@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -41,10 +41,10 @@ import xtremweb.security.XWAccessRights;
 
 /**
  * XMLRPCCommandChmod.java
- * 
+ *
  * This class defines the XMLRPCCommand to change access rights if a given
  * object Created: Nov 11th, 2009
- * 
+ *
  * @author <a href="mailto:lodygens /a|t\ lal.in2p3.fr>Oleg Lodygensky</a>
  * @since 5.8.0
  */
@@ -74,49 +74,48 @@ public class XMLRPCCommandChmod extends XMLRPCCommand {
 
 	/**
 	 * This constructs a new command
-	 * 
+	 *
 	 * @param uri
 	 *            is the URI of the group to retreive
 	 */
-	protected XMLRPCCommandChmod(URI uri) throws IOException {
+	protected XMLRPCCommandChmod(final URI uri) throws IOException {
 		super(uri, IDRPC, ACCESSRIGHTS);
 		setColumnAt(ACCESSRIGHTS, "ACCESSRIGHTS");
 	}
 
 	/**
 	 * This constructs a new command
-	 * 
+	 *
 	 * @param uri
 	 *            is the URI of the group to retreive
 	 * @param r
 	 *            is the access rights to apply
 	 */
-	public XMLRPCCommandChmod(URI uri, XWAccessRights r) throws IOException {
+	public XMLRPCCommandChmod(final URI uri, final XWAccessRights r) throws IOException {
 		this(uri);
 		setValueAt(ACCESSRIGHTS, r);
 	}
 
 	/**
 	 * This constructs a new command
-	 * 
+	 *
 	 * @param uri
 	 *            is the URI of the group to retreive
 	 */
-	public XMLRPCCommandChmod(URI uri, UserInterface u) throws IOException {
+	public XMLRPCCommandChmod(final URI uri, final UserInterface u) throws IOException {
 		this(uri);
 		setUser(u);
 	}
 
 	/**
 	 * This constructs a new command
-	 * 
+	 *
 	 * @param r
 	 *            is the access rights to apply
 	 * @param uri
 	 *            is the URI of the group to retreive
 	 */
-	public XMLRPCCommandChmod(URI uri, UserInterface u, XWAccessRights r)
-			throws IOException {
+	public XMLRPCCommandChmod(final URI uri, final UserInterface u, final XWAccessRights r) throws IOException {
 		this(uri, u);
 		setValueAt(ACCESSRIGHTS, r);
 	}
@@ -124,15 +123,14 @@ public class XMLRPCCommandChmod extends XMLRPCCommand {
 	/**
 	 * This constructs a new object from XML attributes received from input
 	 * stream
-	 * 
+	 *
 	 * @param input
 	 *            is the input stream
 	 * @throws IOException
 	 *             on XML error
 	 * @see xtremweb.common.XMLReader#read(InputStream)
 	 */
-	public XMLRPCCommandChmod(InputStream input) throws IOException,
-			SAXException, InvalidKeyException {
+	public XMLRPCCommandChmod(final InputStream input) throws IOException, SAXException, InvalidKeyException {
 		this();
 		final XMLReader reader = new XMLReader(this);
 		reader.read(input);
@@ -141,12 +139,12 @@ public class XMLRPCCommandChmod extends XMLRPCCommand {
 	/**
 	 * This is called by XML parser This retreives URI, hostUID and activation
 	 * params
-	 * 
+	 *
 	 * @param attrs
 	 *            contains attributes XML representation
 	 */
 	@Override
-	public void fromXml(Attributes attrs) {
+	public void fromXml(final Attributes attrs) {
 
 		if (attrs == null) {
 			return;
@@ -160,11 +158,9 @@ public class XMLRPCCommandChmod extends XMLRPCCommand {
 				try {
 					setURI(new URI(value));
 				} catch (final URISyntaxException e) {
-					getLogger().error(
-							"URI syntax error ; this is not an URI " + value);
+					getLogger().error("URI syntax error ; this is not an URI " + value);
 				}
-			} else if (attribute
-					.compareToIgnoreCase(getColumnLabel(ACCESSRIGHTS)) == 0) {
+			} else if (attribute.compareToIgnoreCase(getColumnLabel(ACCESSRIGHTS)) == 0) {
 				try {
 					new XWAccessRights(value);
 					setValueAt(ACCESSRIGHTS, value);
@@ -178,7 +174,7 @@ public class XMLRPCCommandChmod extends XMLRPCCommand {
 
 	/**
 	 * This sends this command to server and returns answer
-	 * 
+	 *
 	 * @param comm
 	 *            is the communication channel
 	 * @return null
@@ -186,15 +182,15 @@ public class XMLRPCCommandChmod extends XMLRPCCommand {
 	 * @throws InvalidKeyException
 	 */
 	@Override
-	public XMLable exec(CommClient comm) throws IOException, SAXException,
-			InvalidKeyException, AccessControlException {
+	public XMLable exec(final CommClient comm)
+			throws IOException, SAXException, InvalidKeyException, AccessControlException {
 		comm.chmod(this);
 		return null;
 	}
 
 	/**
 	 * This retrieves access rights modifier
-	 * 
+	 *
 	 * @return the access rights modifier
 	 */
 	public XWAccessRights getModifier() {
@@ -203,10 +199,10 @@ public class XMLRPCCommandChmod extends XMLRPCCommand {
 
 	/**
 	 * This sets access rights modifier
-	 * 
+	 *
 	 * @since 8.2.0
 	 */
-	public void setModifier(XWAccessRights a) {
+	public void setModifier(final XWAccessRights a) {
 		setValueAt(ACCESSRIGHTS, a);
 	}
 
@@ -219,11 +215,10 @@ public class XMLRPCCommandChmod extends XMLRPCCommand {
 	 * Usage : java -cp xtremweb.jar xtremweb.communications.XMLRPCCommandChmod
 	 * aConfigFile [anXMLDescriptionFile]
 	 */
-	public static void main(String[] argv) {
+	public static void main(final String[] argv) {
 		try {
 			final XWConfigurator config = new XWConfigurator(argv[0], false);
-			final XMLRPCCommandChmod cmd = new XMLRPCCommandChmod(new URI(
-					config.getCurrentDispatcher(), new UID()),
+			final XMLRPCCommandChmod cmd = new XMLRPCCommandChmod(new URI(config.getCurrentDispatcher(), new UID()),
 					config.getUser(), XWAccessRights.DEFAULT);
 			cmd.test(argv);
 		} catch (final Exception e) {

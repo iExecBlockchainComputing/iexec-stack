@@ -1,11 +1,24 @@
 package xtremweb.communications;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.net.SocketAddress;
+import java.net.UnknownHostException;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.concurrent.TimeoutException;
+
+import javax.net.SocketFactory;
+
 /*
  * Copyrights     : CNRS
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -29,20 +42,6 @@ import ibis.smartsockets.virtual.VirtualServerSocket;
 import ibis.smartsockets.virtual.VirtualSocket;
 import ibis.smartsockets.virtual.VirtualSocketAddress;
 import ibis.smartsockets.virtual.VirtualSocketFactory;
-
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.net.SocketAddress;
-import java.net.UnknownHostException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.concurrent.TimeoutException;
-
-import javax.net.SocketFactory;
-
 import xtremweb.common.Logger;
 import xtremweb.common.XWPropertyDefs;
 import xtremweb.common.XWTools;
@@ -55,12 +54,12 @@ import xtremweb.common.XWTools;
  * running a server like job (listening to a port) so that such a job can be
  * reached from XWHEP client or workers. This mode may also be used by the XWHEP
  * client to receive connections from workers.
- * 
+ *
  * In client mode, this is the contrary. This listens from a local port and
  * forwards to a server through SmartSockets connections. This mode can be used
  * by the XWHEP client to connect to a server like job running on a XWHEP
  * worker. This mode may also be used by the XWHEP worker to connect to client.
- * 
+ *
  * @author Oleg Lodygensky
  * @since 8.0.0
  */
@@ -89,7 +88,7 @@ public final class SmartSocketsProxy extends Thread {
 
 		/**
 		 * This is the constructor
-		 * 
+		 *
 		 * @param n
 		 *            is this thread name
 		 * @param s
@@ -103,8 +102,8 @@ public final class SmartSocketsProxy extends Thread {
 		 * @throws UnknownHostException
 		 *             on connection error
 		 */
-		private ProxyThread(String n, Socket s, DataInputStream in,
-				DataOutputStream out) throws UnknownHostException, IOException {
+		private ProxyThread(final String n, final Socket s, final DataInputStream in, final DataOutputStream out)
+				throws UnknownHostException, IOException {
 			super(n);
 			this.socket = s;
 			this.vsocket = null;
@@ -114,7 +113,7 @@ public final class SmartSocketsProxy extends Thread {
 
 		/**
 		 * This is the constructor
-		 * 
+		 *
 		 * @param n
 		 *            is this thread name
 		 * @param s
@@ -128,8 +127,8 @@ public final class SmartSocketsProxy extends Thread {
 		 * @throws UnknownHostException
 		 *             on connection error
 		 */
-		private ProxyThread(String n, VirtualSocket vs, DataInputStream in,
-				DataOutputStream out) throws UnknownHostException, IOException {
+		private ProxyThread(final String n, final VirtualSocket vs, final DataInputStream in,
+				final DataOutputStream out) throws UnknownHostException, IOException {
 			super(n);
 			this.socket = null;
 			this.vsocket = vs;
@@ -139,7 +138,7 @@ public final class SmartSocketsProxy extends Thread {
 
 		/**
 		 * This tests if the incoming connection socket is closed
-		 * 
+		 *
 		 * @return incoming socket.isClised()
 		 */
 		private boolean isClosed() {
@@ -166,8 +165,7 @@ public final class SmartSocketsProxy extends Thread {
 			final byte[] buffer = new byte[XWTools.PACKETSIZE];
 			long start = -1;
 			long last = -1;
-			final long timeout = Long.parseLong(XWPropertyDefs.SOTIMEOUT
-					.defaultValue());
+			final long timeout = Long.parseLong(XWPropertyDefs.SOTIMEOUT.defaultValue());
 			{
 				final Date now = new Date();
 				start = now.getTime();
@@ -193,8 +191,7 @@ public final class SmartSocketsProxy extends Thread {
 						last = now.getTime();
 					}
 					if ((last - start) > timeout) {
-						throw new TimeoutException("Inactivity since "
-								+ (last - start));
+						throw new TimeoutException("Inactivity since " + (last - start));
 					}
 				} catch (final Exception e) {
 					logger.exception("run error", e);
@@ -256,7 +253,7 @@ public final class SmartSocketsProxy extends Thread {
 	 * This retrieve the port this proxy is listening to. This is only set for
 	 * "client" proxy, aiming to forward connections to a remote server
 	 * (typically running on client side).
-	 * 
+	 *
 	 * @return the port number, or -1 if not set
 	 */
 	public int getListenPort() {
@@ -303,7 +300,7 @@ public final class SmartSocketsProxy extends Thread {
 
 	/**
 	 * This retrieves the local address this is listening to
-	 * 
+	 *
 	 * @return this local address
 	 */
 	public SocketAddress getLocalAddress() {
@@ -312,7 +309,7 @@ public final class SmartSocketsProxy extends Thread {
 
 	/**
 	 * This retrieves the local address this is listening to
-	 * 
+	 *
 	 * @return this local address
 	 */
 	public SocketAddress getRemoteAddress() {
@@ -326,7 +323,7 @@ public final class SmartSocketsProxy extends Thread {
 
 	/**
 	 * This tells if this thread should stop
-	 * 
+	 *
 	 * @return true if this thread should exit its main loop in run() method
 	 */
 	private synchronized boolean mustStop() {
@@ -335,11 +332,11 @@ public final class SmartSocketsProxy extends Thread {
 
 	/**
 	 * This sets this thread main loop test
-	 * 
+	 *
 	 * @param continuer
 	 *            is true to tell this thread to exit its main loop
 	 */
-	public synchronized void setContinuer(boolean continuer) {
+	public synchronized void setContinuer(final boolean continuer) {
 		this.continuer = continuer;
 	}
 
@@ -348,7 +345,7 @@ public final class SmartSocketsProxy extends Thread {
 	 * mode this listen from a SmartSockets VirtualSocket and forwards to local
 	 * port. On client mode this listen from local port and forwards to a
 	 * SmartSockets VirtualSocket.
-	 * 
+	 *
 	 * @param hubAddr
 	 *            is the SmartSockets hub address
 	 * @param serverAddr
@@ -366,9 +363,8 @@ public final class SmartSocketsProxy extends Thread {
 	 * @throws IOException
 	 *             on I/O error
 	 */
-	public SmartSocketsProxy(String hubAddr, String serverAddr, int fport,
-			boolean server) throws MalformedAddressException,
-			InitializationException, IOException {
+	public SmartSocketsProxy(final String hubAddr, final String serverAddr, final int fport, final boolean server)
+			throws MalformedAddressException, InitializationException, IOException {
 
 		super(NAME + (server == true ? "Server" : "Client"));
 		this.continuer = true;
@@ -383,8 +379,7 @@ public final class SmartSocketsProxy extends Thread {
 		if (server) {
 			listenPort = -1;
 			forwardPort = fport;
-			vServerSocket = vSocketFactory.createServerSocket(0, 0,
-					connectProperties);
+			vServerSocket = vSocketFactory.createServerSocket(0, 0, connectProperties);
 			localAddress = vServerSocket.getLocalSocketAddress();
 			logger.debug(proxyName + "; forward port = " + forwardPort);
 		} else {
@@ -432,21 +427,17 @@ public final class SmartSocketsProxy extends Thread {
 			try {
 				incoming = vServerSocket.accept();
 
-				logger.debug("Incoming connection; forwarding to "
-						+ XWTools.getLocalHostName() + ":" + forwardPort);
-				outgoing = SocketFactory.getDefault().createSocket(
-						XWTools.getLocalHostName(), forwardPort);
+				logger.debug("Incoming connection; forwarding to " + XWTools.getLocalHostName() + ":" + forwardPort);
+				outgoing = SocketFactory.getDefault().createSocket(XWTools.getLocalHostName(), forwardPort);
 				incomingIn = new DataInputStream(incoming.getInputStream());
 				incomingOut = new DataOutputStream(incoming.getOutputStream());
 				outgoingIn = new DataInputStream(outgoing.getInputStream());
 				outgoingOut = new DataOutputStream(outgoing.getOutputStream());
 
-				reader = new ProxyThread(readerName, incoming, incomingIn,
-						outgoingOut);
+				reader = new ProxyThread(readerName, incoming, incomingIn, outgoingOut);
 				reader.start();
 
-				writer = new ProxyThread(writerName, outgoing, outgoingIn,
-						incomingOut);
+				writer = new ProxyThread(writerName, outgoing, outgoingIn, incomingOut);
 				writer.start();
 
 				logger.debug("Started");
@@ -498,21 +489,17 @@ public final class SmartSocketsProxy extends Thread {
 				final Socket incoming = socketServer.accept();
 
 				logger.debug("Incoming connection");
-				VirtualSocket outgoing = vSocketFactory.createClientSocket(vServerAddress,
-						Integer.parseInt(System
-								.getProperty(XWPropertyDefs.SOTIMEOUT
-										.toString())), connectProperties);
+				final VirtualSocket outgoing = vSocketFactory.createClientSocket(vServerAddress,
+						Integer.parseInt(System.getProperty(XWPropertyDefs.SOTIMEOUT.toString())), connectProperties);
 				final DataInputStream incomingIn = new DataInputStream(incoming.getInputStream());
 				final DataOutputStream incomingOut = new DataOutputStream(incoming.getOutputStream());
 				final DataInputStream outgoingIn = new DataInputStream(outgoing.getInputStream());
 				final DataOutputStream outgoingOut = new DataOutputStream(outgoing.getOutputStream());
 
-				reader = new ProxyThread(readerName, incoming, incomingIn,
-						outgoingOut);
+				reader = new ProxyThread(readerName, incoming, incomingIn, outgoingOut);
 				reader.start();
 
-				writer = new ProxyThread(writerName, outgoing, outgoingIn,
-						incomingOut);
+				writer = new ProxyThread(writerName, outgoing, outgoingIn, incomingOut);
 				writer.start();
 
 				logger.debug("Started");
@@ -526,14 +513,13 @@ public final class SmartSocketsProxy extends Thread {
 	 * This is for testing only Usage : java xtremweb.worker.ThreadProxy <hub
 	 * address> <server address> <port> <true|false>
 	 */
-	public static void main(String[] args) throws Exception {
+	public static void main(final String[] args) throws Exception {
 		SmartSocketsProxy proxy = null;
 		try {
-			proxy = new SmartSocketsProxy(args[0], args[1],
-					Integer.parseInt(args[2]), Boolean.parseBoolean(args[3]));
+			proxy = new SmartSocketsProxy(args[0], args[1], Integer.parseInt(args[2]), Boolean.parseBoolean(args[3]));
 		} catch (final ArrayIndexOutOfBoundsException e) {
-			System.out
-					.println("Usage : java -cp xtremweb.jar xtremweb.worker.SmartSocketsProxy <hub address> <server address> <port> <true|false>");
+			System.out.println(
+					"Usage : java -cp xtremweb.jar xtremweb.worker.SmartSocketsProxy <hub address> <server address> <port> <true|false>");
 			System.exit(1);
 		}
 		proxy.start();

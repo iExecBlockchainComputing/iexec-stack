@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -68,26 +68,25 @@ public class XMLRPCCommandGetGroupWorks extends XMLRPCCommand {
 
 	/**
 	 * This constructs a new command
-	 * 
+	 *
 	 * @param uri
 	 *            to connect to; it must contains the UID of the group to
 	 *            retreive works for
 	 */
-	protected XMLRPCCommandGetGroupWorks(URI uri) throws IOException {
+	protected XMLRPCCommandGetGroupWorks(final URI uri) throws IOException {
 		super(uri, IDRPC);
 	}
 
 	/**
 	 * This constructs a new command
-	 * 
+	 *
 	 * @param uri
 	 *            to connect to; it must contains the UID of the group to
 	 *            retreive works for
 	 * @param u
 	 *            is the user who executes this command
 	 */
-	public XMLRPCCommandGetGroupWorks(URI uri, UserInterface u)
-			throws IOException {
+	public XMLRPCCommandGetGroupWorks(final URI uri, final UserInterface u) throws IOException {
 		this(uri);
 		setUser(u);
 	}
@@ -95,15 +94,14 @@ public class XMLRPCCommandGetGroupWorks extends XMLRPCCommand {
 	/**
 	 * This constructs a new object from XML attributes received from input
 	 * stream
-	 * 
+	 *
 	 * @param input
 	 *            is the input stream
 	 * @throws IOException
 	 *             on XML error
 	 * @see xtremweb.common.XMLReader#read(InputStream)
 	 */
-	public XMLRPCCommandGetGroupWorks(InputStream input) throws IOException,
-			SAXException, InvalidKeyException {
+	public XMLRPCCommandGetGroupWorks(final InputStream input) throws IOException, SAXException, InvalidKeyException {
 		this();
 		final XMLReader reader = new XMLReader(this);
 		reader.read(input);
@@ -111,7 +109,7 @@ public class XMLRPCCommandGetGroupWorks extends XMLRPCCommand {
 
 	/**
 	 * This sends this command to server and returns answer
-	 * 
+	 *
 	 * @param comm
 	 *            is the communication channel
 	 * @return always null since this expect no answer
@@ -119,14 +117,14 @@ public class XMLRPCCommandGetGroupWorks extends XMLRPCCommand {
 	 * @throws InvalidKeyException
 	 */
 	@Override
-	public XMLable exec(CommClient comm) throws IOException, SAXException,
-			InvalidKeyException, AccessControlException {
+	public XMLable exec(final CommClient comm)
+			throws IOException, SAXException, InvalidKeyException, AccessControlException {
 		return comm.getGroupWorks(this);
 	}
 
 	/**
 	 * This retreives the group UID of this command
-	 * 
+	 *
 	 * @return the UID of the group
 	 */
 	public UID getGroup() {
@@ -148,12 +146,11 @@ public class XMLRPCCommandGetGroupWorks extends XMLRPCCommand {
 	 * xtremweb.communications.XMLRPCCommandGetGroupWorks aConfigFile
 	 * [anXMLDescriptionFile]
 	 */
-	public static void main(String[] argv) {
+	public static void main(final String[] argv) {
 		try {
 			final XWConfigurator config = new XWConfigurator(argv[0], false);
 			final XMLRPCCommandGetGroupWorks cmd = new XMLRPCCommandGetGroupWorks(
-					new URI(config.getCurrentDispatcher(), new UID()),
-					config.getUser());
+					new URI(config.getCurrentDispatcher(), new UID()), config.getUser());
 			cmd.test(argv);
 		} catch (final Exception e) {
 			e.printStackTrace();

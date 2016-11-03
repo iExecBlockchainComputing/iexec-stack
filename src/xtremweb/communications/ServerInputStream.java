@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -38,7 +38,7 @@ class ServerInputStream extends InputStream {
 
 	private final InputStream in;
 
-	public ServerInputStream(InputStream in, int available) {
+	public ServerInputStream(final InputStream in, final int available) {
 		this.in = in;
 		this.available = available;
 	}
@@ -55,12 +55,12 @@ class ServerInputStream extends InputStream {
 	}
 
 	@Override
-	public int read(byte b[]) throws IOException {
+	public int read(final byte b[]) throws IOException {
 		return read(b, 0, b.length);
 	}
 
 	@Override
-	public int read(byte b[], int off, int len) throws IOException {
+	public int read(final byte b[], final int off, int len) throws IOException {
 		if (available > 0) {
 			if (len > available) {
 				// shrink len
@@ -80,7 +80,7 @@ class ServerInputStream extends InputStream {
 	}
 
 	@Override
-	public long skip(long n) throws IOException {
+	public long skip(final long n) throws IOException {
 		final long skip = in.skip(n);
 		if (available > 0) {
 			available -= skip;

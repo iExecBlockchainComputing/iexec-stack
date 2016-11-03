@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -42,11 +42,11 @@ import xtremweb.common.XWTools;
  * This class implements a generic UDP server<br />
  * This instanciates a new CommHandler on each new connection.
  * </p>
- * 
+ *
  * <p>
  * Created: Jun 7th, 2005
  * </p>
- * 
+ *
  * @see CommHandler
  * @author Oleg Lodygensky
  * @since RPCXW
@@ -81,11 +81,11 @@ public class UDPServer extends CommServer {
 
 	/**
 	 * This initializes communications
-	 * 
+	 *
 	 * @see CommServer#initComm(XWConfigurator, Handler)
 	 */
 	@Override
-	public void initComm(XWConfigurator prop, Handler h) throws RemoteException {
+	public void initComm(final XWConfigurator prop, final Handler h) throws RemoteException {
 		super.initComm(prop, h);
 
 		setPort(Connection.UDPPORT.defaultPortValue());
@@ -121,16 +121,14 @@ public class UDPServer extends CommServer {
 				}
 			});
 		} catch (final Exception e) {
-			getLogger().fatal(
-					"UDPServer: Could not listen on port " + getPort() + " : "
-							+ e);
+			getLogger().fatal("UDPServer: Could not listen on port " + getPort() + " : " + e);
 		}
 	}
 
 	/**
 	 * This indefinitly waits for incoming connections. This uses the
 	 * CommHandler to handle connections. Packet size is set to util#PACKETSIZE
-	 * 
+	 *
 	 * @see xtremweb.common.XWTools#PACKETSIZE
 	 * @see CommServer#handler
 	 */
@@ -147,8 +145,7 @@ public class UDPServer extends CommServer {
 
 					while (true) {
 						buffer.getBuffer().clear();
-						final SocketAddress remote = nioServer.receive(buffer
-								.getBuffer());
+						final SocketAddress remote = nioServer.receive(buffer.getBuffer());
 
 						if (remote == null) {
 							try {
@@ -166,8 +163,7 @@ public class UDPServer extends CommServer {
 					}
 				} else {
 					final byte[] buf = new byte[XWTools.PACKETSIZE];
-					final DatagramPacket packet = new DatagramPacket(buf,
-							buf.length);
+					final DatagramPacket packet = new DatagramPacket(buf, buf.length);
 					ioServer.receive(packet);
 					boolean done = false;
 					int doing = 0;
@@ -179,12 +175,10 @@ public class UDPServer extends CommServer {
 							done = true;
 						} catch (final OutOfMemoryError ome) {
 							if (doing++ > 1000) {
-								getLogger()
-										.fatal("UDPServer memory error ; can't do more");
+								getLogger().fatal("UDPServer memory error ; can't do more");
 							}
 
-							getLogger().error(
-									"Still answering (" + doing + ") : " + ome);
+							getLogger().error("Still answering (" + doing + ") : " + ome);
 							sleep(100);
 						}
 					}

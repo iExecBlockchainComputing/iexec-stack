@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -68,25 +68,25 @@ public class XMLRPCCommandRemove extends XMLRPCCommand {
 
 	/**
 	 * This is the default constructor
-	 * 
+	 *
 	 * @param uri
 	 *            contains the URI to connect to; its path must contains the UID
 	 *            of the object to remove
 	 */
-	public XMLRPCCommandRemove(URI uri) throws IOException {
+	public XMLRPCCommandRemove(final URI uri) throws IOException {
 		super(uri, IDRPC);
 	}
 
 	/**
 	 * This constructs a new command
-	 * 
+	 *
 	 * @param uri
 	 *            contains the URI to connect to; its path must contains the UID
 	 *            of the object to remove
 	 * @param u
 	 *            is this command user definition
 	 */
-	public XMLRPCCommandRemove(URI uri, UserInterface u) throws IOException {
+	public XMLRPCCommandRemove(final URI uri, final UserInterface u) throws IOException {
 		this(uri);
 		setUser(u);
 	}
@@ -94,15 +94,14 @@ public class XMLRPCCommandRemove extends XMLRPCCommand {
 	/**
 	 * This constructs a new object from XML attributes received from input
 	 * stream
-	 * 
+	 *
 	 * @param input
 	 *            is the input stream
 	 * @throws IOException
 	 *             on XML error
 	 * @see xtremweb.common.XMLReader#read(InputStream)
 	 */
-	public XMLRPCCommandRemove(InputStream input) throws IOException,
-			SAXException, InvalidKeyException {
+	public XMLRPCCommandRemove(final InputStream input) throws IOException, SAXException, InvalidKeyException {
 		this();
 		final XMLReader reader = new XMLReader(this);
 		reader.read(input);
@@ -110,7 +109,7 @@ public class XMLRPCCommandRemove extends XMLRPCCommand {
 
 	/**
 	 * This sends this command to server and returns answer
-	 * 
+	 *
 	 * @param comm
 	 *            is the communication channel
 	 * @return always null
@@ -118,8 +117,7 @@ public class XMLRPCCommandRemove extends XMLRPCCommand {
 	 * @throws InvalidKeyException
 	 */
 	@Override
-	public XMLable exec(CommClient comm) throws IOException,
-			InvalidKeyException, AccessControlException {
+	public XMLable exec(final CommClient comm) throws IOException, InvalidKeyException, AccessControlException {
 		comm.remove(this);
 		return null;
 	}
@@ -133,11 +131,11 @@ public class XMLRPCCommandRemove extends XMLRPCCommand {
 	 * Usage : java -cp xtremweb.jar xtremweb.communications.XMLRPCCommandRemove
 	 * aConfigFile [anXMLDescriptionFile]
 	 */
-	public static void main(String[] argv) {
+	public static void main(final String[] argv) {
 		try {
 			final XWConfigurator config = new XWConfigurator(argv[0], false);
-			final XMLRPCCommandRemove cmd = new XMLRPCCommandRemove(new URI(
-					config.getCurrentDispatcher(), new UID()), config.getUser());
+			final XMLRPCCommandRemove cmd = new XMLRPCCommandRemove(new URI(config.getCurrentDispatcher(), new UID()),
+					config.getUser());
 			cmd.test(argv);
 		} catch (final Exception e) {
 			e.printStackTrace();

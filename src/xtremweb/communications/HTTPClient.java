@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -85,20 +85,18 @@ import xtremweb.common.XWTools;
 
 public class HTTPClient extends CommClient {
 
-	public class AuthSSLProtocolSocketFactory implements
-			SecureProtocolSocketFactory {
+	public class AuthSSLProtocolSocketFactory implements SecureProtocolSocketFactory {
 
 		private final TCPClient tcpClient;
 		private final String uriScheme;
 
-		public AuthSSLProtocolSocketFactory(final String scheme,
-				final KeyStore ks, final String passwd) {
+		public AuthSSLProtocolSocketFactory(final String scheme, final KeyStore ks, final String passwd) {
 			super();
 			uriScheme = scheme;
 			tcpClient = new TCPClient();
 		}
 
-		private URI newURI(String host, int port) throws URISyntaxException {
+		private URI newURI(final String host, final int port) throws URISyntaxException {
 			return new URI(uriScheme + "://" + host + ":" + port);
 		}
 
@@ -113,7 +111,7 @@ public class HTTPClient extends CommClient {
 		 * expires, the controller terminates and throws an
 		 * {@link ConnectTimeoutException}
 		 * </p>
-		 * 
+		 *
 		 * @param host
 		 *            the host name/IP
 		 * @param port
@@ -124,18 +122,18 @@ public class HTTPClient extends CommClient {
 		 *            the port on the local machine
 		 * @param params
 		 *            {@link HttpConnectionParams Http connection parameters}
-		 * 
+		 *
 		 * @return Socket a new socket
-		 * 
+		 *
 		 * @throws IOException
 		 *             if an I/O error occurs while creating the socket
 		 * @throws UnknownHostException
 		 *             if the IP address of the host cannot be determined
 		 */
-		public Socket createSocket(final String host, final int port,
-				final InetAddress localAddress, final int localPort,
-				final HttpConnectionParams params) throws IOException,
-				UnknownHostException, ConnectTimeoutException {
+		@Override
+		public Socket createSocket(final String host, final int port, final InetAddress localAddress,
+				final int localPort, final HttpConnectionParams params)
+				throws IOException, UnknownHostException, ConnectTimeoutException {
 			try {
 				tcpClient.open(newURI(host, port));
 			} catch (final URISyntaxException e) {
@@ -147,9 +145,9 @@ public class HTTPClient extends CommClient {
 		/**
 		 * @see SecureProtocolSocketFactory#createSocket(java.lang.String,int,java.net.InetAddress,int)
 		 */
-		public Socket createSocket(String host, int port,
-				InetAddress clientHost, int clientPort) throws IOException,
-				UnknownHostException {
+		@Override
+		public Socket createSocket(final String host, final int port, final InetAddress clientHost,
+				final int clientPort) throws IOException, UnknownHostException {
 			try {
 				tcpClient.open(newURI(host, port));
 			} catch (final URISyntaxException e) {
@@ -161,8 +159,8 @@ public class HTTPClient extends CommClient {
 		/**
 		 * @see SecureProtocolSocketFactory#createSocket(java.lang.String,int)
 		 */
-		public Socket createSocket(String host, int port) throws IOException,
-				UnknownHostException {
+		@Override
+		public Socket createSocket(final String host, final int port) throws IOException, UnknownHostException {
 			try {
 				tcpClient.open(newURI(host, port));
 			} catch (final URISyntaxException e) {
@@ -174,8 +172,9 @@ public class HTTPClient extends CommClient {
 		/**
 		 * @see SecureProtocolSocketFactory#createSocket(java.net.Socket,java.lang.String,int,boolean)
 		 */
-		public Socket createSocket(Socket socket, String host, int port,
-				boolean autoClose) throws IOException, UnknownHostException {
+		@Override
+		public Socket createSocket(final Socket socket, final String host, final int port, final boolean autoClose)
+				throws IOException, UnknownHostException {
 			try {
 				tcpClient.open(newURI(host, port));
 			} catch (final URISyntaxException e) {
@@ -200,7 +199,7 @@ public class HTTPClient extends CommClient {
 
 	/**
 	 * This retreives this client port number
-	 * 
+	 *
 	 * @since 5.9.0
 	 */
 	@Override
@@ -213,21 +212,19 @@ public class HTTPClient extends CommClient {
 
 	/**
 	 * This does nothing; everything is done in write()
-	 * 
+	 *
 	 * @throws IOException
 	 * @see #write(XMLRPCCommand)
 	 */
 	@Override
-	protected void open(URI uri) throws UnknownHostException,
-			NoRouteToHostException, SSLHandshakeException,
+	protected void open(URI uri) throws UnknownHostException, NoRouteToHostException, SSLHandshakeException,
 			SocketTimeoutException, IOException {
 
 		try {
 			String serverName = XWTools.getHostName(uri.getHost());
 			int serverPort = uri.getPort();
 
-			httpClient = new HttpClient(
-					new MultiThreadedHttpConnectionManager());
+			httpClient = new HttpClient(new MultiThreadedHttpConnectionManager());
 
 			Protocol xwssl = null;
 			final XWConfigurator config = getConfig();
@@ -238,13 +235,8 @@ public class HTTPClient extends CommClient {
 				if (serverPort == -1) {
 					serverPort = config.getPort(Connection.HTTPSPORT);
 				}
-				xwssl = new Protocol(
-						uri.getScheme(),
-						new AuthSSLProtocolSocketFactory(
-								uri.getScheme(),
-								keyStore,
-								config.getProperty(XWPropertyDefs.SSLKEYPASSWORD)),
-						serverPort);
+				xwssl = new Protocol(uri.getScheme(), new AuthSSLProtocolSocketFactory(uri.getScheme(), keyStore,
+						config.getProperty(XWPropertyDefs.SSLKEYPASSWORD)), serverPort);
 				Protocol.registerProtocol(uri.getScheme(), xwssl);
 			} else {
 				getLogger().warn("unsecured communications : not using SSL");
@@ -272,8 +264,7 @@ public class HTTPClient extends CommClient {
 			URI uri2 = null;
 			String struri2 = null;
 			try {
-				struri2 = new String(uri.getScheme()
-						+ Connection.schemeSeparator() + serverName);
+				struri2 = new String(uri.getScheme() + Connection.schemeSeparator() + serverName);
 				if (serverPort > 0) {
 					struri2 += ":" + serverPort;
 				}
@@ -290,8 +281,7 @@ public class HTTPClient extends CommClient {
 			uri2 = null;
 
 			mileStone("<open uri=\"" + uri + "\">");
-			httpClient.getHttpConnectionManager().getParams()
-					.setConnectionTimeout(30000);
+			httpClient.getHttpConnectionManager().getParams().setConnectionTimeout(30000);
 			final HostConfiguration hConfig = new HostConfiguration();
 			if (xwssl == null) {
 				hConfig.setHost(serverName, serverPort);
@@ -302,17 +292,14 @@ public class HTTPClient extends CommClient {
 
 			nio = false;
 
-			if (config.getBoolean(XWPropertyDefs.OPTIMIZENETWORK)
-					&& (OSEnum.getOs().isMacosx() == false)) {
-				final HttpConnectionManagerParams params = httpClient
-						.getHttpConnectionManager().getParams();
+			if (config.getBoolean(XWPropertyDefs.OPTIMIZENETWORK) && (OSEnum.getOs().isMacosx() == false)) {
+				final HttpConnectionManagerParams params = httpClient.getHttpConnectionManager().getParams();
 				params.setLinger(0); // don't wait on close
 				params.setTcpNoDelay(true); // don't wait to send
 			}
 
-			final HttpConnection connection = httpClient
-					.getHttpConnectionManager().getConnection(
-							httpClient.getHostConfiguration());
+			final HttpConnection connection = httpClient.getHttpConnectionManager()
+					.getConnection(httpClient.getHostConfiguration());
 
 			connection.open();
 		} catch (final Exception e) {
@@ -341,12 +328,12 @@ public class HTTPClient extends CommClient {
 
 	/**
 	 * This sends a command to server
-	 * 
+	 *
 	 * @param cmd
 	 *            is the command to send
 	 */
 	@Override
-	protected void write(XMLRPCCommand cmd) throws IOException {
+	protected void write(final XMLRPCCommand cmd) throws IOException {
 
 		mileStone("<write cmd='" + cmd.getIdRpc() + "'>");
 
@@ -359,26 +346,25 @@ public class HTTPClient extends CommClient {
 
 	/**
 	 * This creates an object from channel
-	 * 
+	 *
 	 * @throws AccessControlException
 	 * @throws InvalidKeyException
 	 */
 	@Override
-	protected Table newTableInterface() throws InvalidKeyException,
-			AccessControlException, IOException, SAXException {
+	protected Table newTableInterface() throws InvalidKeyException, AccessControlException, IOException, SAXException {
 
 		return super.newTableInterface(post.getResponseBodyAsStream());
 	}
 
 	/**
 	 * This creates an object from channel
-	 * 
+	 *
 	 * @throws AccessControlException
 	 * @throws InvalidKeyException
 	 */
 	@Override
-	protected AppInterface newAppInterface() throws InvalidKeyException,
-			AccessControlException, IOException, SAXException {
+	protected AppInterface newAppInterface()
+			throws InvalidKeyException, AccessControlException, IOException, SAXException {
 		return super.newAppInterface(post.getResponseBodyAsStream());
 	}
 
@@ -386,146 +372,144 @@ public class HTTPClient extends CommClient {
 	 * This creates an object from channel
 	 */
 	@Override
-	protected DataInterface newDataInterface() throws InvalidKeyException,
-			AccessControlException, IOException, SAXException {
+	protected DataInterface newDataInterface()
+			throws InvalidKeyException, AccessControlException, IOException, SAXException {
 		return super.newDataInterface(post.getResponseBodyAsStream());
 	}
 
 	/**
 	 * This creates an object from channel
-	 * 
+	 *
 	 * @throws AccessControlException
 	 * @throws InvalidKeyException
 	 */
 	@Override
-	protected GroupInterface newGroupInterface() throws IOException,
-			SAXException, InvalidKeyException, AccessControlException {
+	protected GroupInterface newGroupInterface()
+			throws IOException, SAXException, InvalidKeyException, AccessControlException {
 		return super.newGroupInterface(post.getResponseBodyAsStream());
 	}
 
 	/**
 	 * This creates an object from channel
-	 * 
+	 *
 	 * @throws AccessControlException
 	 * @throws InvalidKeyException
 	 */
 	@Override
-	protected HostInterface newHostInterface() throws IOException,
-			SAXException, InvalidKeyException, AccessControlException {
+	protected HostInterface newHostInterface()
+			throws IOException, SAXException, InvalidKeyException, AccessControlException {
 		return super.newHostInterface(post.getResponseBodyAsStream());
 	}
 
 	/**
 	 * This creates an object from channel
-	 * 
+	 *
 	 * @throws AccessControlException
 	 * @throws InvalidKeyException
 	 */
 	@Override
-	protected SessionInterface newSessionInterface() throws IOException,
-			SAXException, InvalidKeyException, AccessControlException {
+	protected SessionInterface newSessionInterface()
+			throws IOException, SAXException, InvalidKeyException, AccessControlException {
 		return super.newSessionInterface(post.getResponseBodyAsStream());
 	}
 
 	/**
 	 * This creates an object from channel
-	 * 
+	 *
 	 * @throws AccessControlException
 	 * @throws InvalidKeyException
 	 */
 	@Override
-	protected TaskInterface newTaskInterface() throws IOException,
-			SAXException, InvalidKeyException, AccessControlException {
+	protected TaskInterface newTaskInterface()
+			throws IOException, SAXException, InvalidKeyException, AccessControlException {
 		return super.newTaskInterface(post.getResponseBodyAsStream());
 	}
 
 	/**
 	 * This creates an object from channel
-	 * 
+	 *
 	 * @throws AccessControlException
 	 * @throws InvalidKeyException
 	 */
 	@Override
-	protected TraceInterface newTraceInterface() throws IOException,
-			SAXException, InvalidKeyException, AccessControlException {
+	protected TraceInterface newTraceInterface()
+			throws IOException, SAXException, InvalidKeyException, AccessControlException {
 		return super.newTraceInterface(post.getResponseBodyAsStream());
 	}
 
 	/**
 	 * This creates an object from channel
-	 * 
+	 *
 	 * @throws AccessControlException
 	 * @throws InvalidKeyException
 	 */
 	@Override
-	protected UserInterface newUserInterface() throws IOException,
-			SAXException, InvalidKeyException, AccessControlException {
+	protected UserInterface newUserInterface()
+			throws IOException, SAXException, InvalidKeyException, AccessControlException {
 		return super.newUserInterface(post.getResponseBodyAsStream());
 	}
 
 	/**
 	 * This creates an object from channel
-	 * 
+	 *
 	 * @throws AccessControlException
 	 * @throws InvalidKeyException
 	 */
 	@Override
-	protected UserGroupInterface newUserGroupInterface() throws IOException,
-			SAXException, InvalidKeyException, AccessControlException {
+	protected UserGroupInterface newUserGroupInterface()
+			throws IOException, SAXException, InvalidKeyException, AccessControlException {
 		return super.newUserGroupInterface(post.getResponseBodyAsStream());
 	}
 
 	/**
 	 * This creates an object from channel
-	 * 
+	 *
 	 * @throws AccessControlException
 	 * @throws InvalidKeyException
 	 */
 	@Override
-	protected WorkInterface newWorkInterface() throws IOException,
-			SAXException, InvalidKeyException, AccessControlException {
+	protected WorkInterface newWorkInterface()
+			throws IOException, SAXException, InvalidKeyException, AccessControlException {
 		return super.newWorkInterface(post.getResponseBodyAsStream());
 	}
 
 	/**
 	 * This creates an object from channel
-	 * 
+	 *
 	 * @throws AccessControlException
 	 * @throws InvalidKeyException
 	 */
 	@Override
-	protected XMLVector newXMLVector() throws IOException, SAXException,
-			InvalidKeyException, AccessControlException {
+	protected XMLVector newXMLVector() throws IOException, SAXException, InvalidKeyException, AccessControlException {
 		return super.newXMLVector(post.getResponseBodyAsStream());
 	}
 
 	/**
 	 * This creates an object from channel
-	 * 
+	 *
 	 * @throws AccessControlException
 	 * @throws InvalidKeyException
 	 */
 	@Override
-	protected Version newXMLVersion() throws IOException, SAXException,
-			InvalidKeyException, AccessControlException {
+	protected Version newXMLVersion() throws IOException, SAXException, InvalidKeyException, AccessControlException {
 		return super.newXMLVersion(post.getResponseBodyAsStream());
 	}
 
 	/**
 	 * This creates an object from channel
-	 * 
+	 *
 	 * @throws AccessControlException
 	 * @throws InvalidKeyException
 	 */
 	@Override
-	protected XMLHashtable newXMLHashtable() throws InvalidKeyException,
-			AccessControlException, IOException, SAXException {
+	protected XMLHashtable newXMLHashtable()
+			throws InvalidKeyException, AccessControlException, IOException, SAXException {
 		return super.newXMLHashtable(post.getResponseBodyAsStream());
 	}
 
 	/**
 	 * This uploads a data content to server
-	 * 
+	 *
 	 * @param command
 	 *            is the command to send to server
 	 * @param content
@@ -533,8 +517,7 @@ public class HTTPClient extends CommClient {
 	 * @since XWHEP 1.0.0
 	 */
 	@Override
-	public void uploadData(XMLRPCCommandUploadData command, File content)
-			throws IOException {
+	public void uploadData(final XMLRPCCommandUploadData command, final File content) throws IOException {
 
 		try {
 			mileStone("<uploadData>");
@@ -545,23 +528,18 @@ public class HTTPClient extends CommClient {
 
 			mileStone("Uploading " + command.toXml());
 
-			post = new PostMethod(httpClient.getHostConfiguration()
-					.getHostURL());
-			final Part[] parts = {
-					new StringPart(XWPostParams.XMLDESC.toString(),
-							command.toXml()),
+			post = new PostMethod(httpClient.getHostConfiguration().getHostURL());
+			final Part[] parts = { new StringPart(XWPostParams.XMLDESC.toString(), command.toXml()),
 					new FilePart(XWPostParams.XWUPLOAD.toString(), content) };
 
-			post.setRequestEntity(new MultipartRequestEntity(parts, post
-					.getParams()));
+			post.setRequestEntity(new MultipartRequestEntity(parts, post.getParams()));
 
 			final int status = httpClient.executeMethod(post);
 			if (status != HttpStatus.SC_OK) {
 				throw new IOException("can't upload data status = " + status);
 			}
 		} catch (final Exception e) {
-			mileStone("<error method='uploadData' msg='" + e.getMessage()
-					+ "' />");
+			mileStone("<error method='uploadData' msg='" + e.getMessage() + "' />");
 			getLogger().error("Upload error " + command.getURI() + " " + e);
 		} finally {
 			post.releaseConnection();
@@ -572,26 +550,25 @@ public class HTTPClient extends CommClient {
 
 	/**
 	 * This always throws an IOException. Please use uploadData instead
-	 * 
+	 *
 	 * @see #uploadData(XMLRPCCommandUploadData, File)
 	 * @deprecated
 	 */
 	@Deprecated
 	@Override
-	public void writeFile(File f) throws IOException {
-		throw new IOException(
-				"HTTPClient#writeFile() is not implemented; please use HTTPClient#uploadData()");
+	public void writeFile(final File f) throws IOException {
+		throw new IOException("HTTPClient#writeFile() is not implemented; please use HTTPClient#uploadData()");
 	}
 
 	/**
 	 * This reads a file from socket This is typically needed after a
 	 * workRequest to get stdin and/or dirin files
-	 * 
+	 *
 	 * @param f
 	 *            is the file to store received bytes
 	 */
 	@Override
-	public void readFile(File f) throws IOException {
+	public void readFile(final File f) throws IOException {
 		StreamIO io = null;
 		DataInputStream inputStream = null;
 
@@ -607,8 +584,7 @@ public class HTTPClient extends CommClient {
 			}
 			getLogger().exception(e);
 			inputStream = null;
-			mileStone("<error method='readFile' msg='" + e.getMessage()
-					+ "' />");
+			mileStone("<error method='readFile' msg='" + e.getMessage() + "' />");
 			throw new IOException(e.toString());
 		} finally {
 			mileStone("</readFile>");

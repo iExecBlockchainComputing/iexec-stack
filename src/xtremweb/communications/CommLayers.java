@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -53,7 +53,7 @@ public class CommLayers {
 		layersText[XMLRPC] = "XMLRPC";
 	}
 
-	public static String toString(int s) throws Exception {
+	public static String toString(final int s) throws Exception {
 
 		try {
 			return layersText[s];
@@ -62,7 +62,7 @@ public class CommLayers {
 		throw new Exception("unknown layers : " + s);
 	}
 
-	public static int fromString(String s) throws Exception {
+	public static int fromString(final String s) throws Exception {
 
 		for (int i = LAYERS_FIRST; i < LAYERS_MAX; i++) {
 			if (s.toUpperCase().compareTo(layersText[i]) == 0) {

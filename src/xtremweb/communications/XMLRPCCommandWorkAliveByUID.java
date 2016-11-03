@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -73,18 +73,18 @@ public class XMLRPCCommandWorkAliveByUID extends XMLRPCCommand {
 
 	/**
 	 * This constructs a new command
-	 * 
+	 *
 	 * @param uri
 	 *            contains the URI to connect to; its path must contain the UID
 	 *            of the job beeing computed
 	 */
-	public XMLRPCCommandWorkAliveByUID(URI uri) throws IOException {
+	public XMLRPCCommandWorkAliveByUID(final URI uri) throws IOException {
 		super(uri, IDRPC);
 	}
 
 	/**
 	 * This constructs a new command
-	 * 
+	 *
 	 * @param uri
 	 *            contains the URI to connect to; its path must contain the UID
 	 *            of the job beeing computed
@@ -93,8 +93,7 @@ public class XMLRPCCommandWorkAliveByUID extends XMLRPCCommand {
 	 * @param h
 	 *            defines the computing host
 	 */
-	public XMLRPCCommandWorkAliveByUID(URI uri, UserInterface u, HostInterface h)
-			throws IOException {
+	public XMLRPCCommandWorkAliveByUID(final URI uri, final UserInterface u, final HostInterface h) throws IOException {
 		this(uri);
 		setUser(u);
 		setHost(h);
@@ -103,15 +102,14 @@ public class XMLRPCCommandWorkAliveByUID extends XMLRPCCommand {
 	/**
 	 * This constructs a new object from XML attributes received from input
 	 * stream
-	 * 
+	 *
 	 * @param input
 	 *            is the input stream
 	 * @throws IOException
 	 *             on XML error
 	 * @see xtremweb.common.XMLReader#read(InputStream)
 	 */
-	public XMLRPCCommandWorkAliveByUID(InputStream input) throws IOException,
-			SAXException, InvalidKeyException {
+	public XMLRPCCommandWorkAliveByUID(final InputStream input) throws IOException, SAXException, InvalidKeyException {
 		this();
 		final XMLReader reader = new XMLReader(this);
 		reader.read(input);
@@ -121,14 +119,14 @@ public class XMLRPCCommandWorkAliveByUID extends XMLRPCCommand {
 	 * This is called to decode XML elements
 	 */
 	@Override
-	public void xmlElementStart(String uri, String tag, String qname,
-			Attributes attrs) throws SAXException {
+	public void xmlElementStart(final String uri, final String tag, final String qname, final Attributes attrs)
+			throws SAXException {
 		xmlElementStartCheckUserAndHost(uri, tag, qname, attrs);
 	}
 
 	/**
 	 * This sends this command to server and returns answer
-	 * 
+	 *
 	 * @param comm
 	 *            is the communication channel
 	 * @return always null
@@ -137,29 +135,25 @@ public class XMLRPCCommandWorkAliveByUID extends XMLRPCCommand {
 	 * @exception RemoteException
 	 *                is thrown on comm error
 	 */
-	@Override 
-	public XMLable exec(final CommClient comm) throws IOException,
-	ClassNotFoundException, SAXException, InvalidKeyException,
-	AccessControlException	{
+	@Override
+	public XMLable exec(final CommClient comm)
+			throws IOException, ClassNotFoundException, SAXException, InvalidKeyException, AccessControlException {
 		return comm.workAliveByUid(this);
 	}
 
 	/**
 	 * This is for testing only
 	 */
-	public static void main(String[] argv) {
+	public static void main(final String[] argv) {
 		try {
 			final XWConfigurator config = new XWConfigurator(argv[0], false);
 			XMLRPCCommandWorkAliveByUID cmd = new XMLRPCCommandWorkAliveByUID(
-					new URI(config.getCurrentDispatcher(), new UID()),
-					config.getUser(), config.getHost());
+					new URI(config.getCurrentDispatcher(), new UID()), config.getUser(), config.getHost());
 			if (argv.length > 1) {
-				cmd = new XMLRPCCommandWorkAliveByUID(new FileInputStream(
-						argv[1]));
+				cmd = new XMLRPCCommandWorkAliveByUID(new FileInputStream(argv[1]));
 			}
 			final Logger logger = cmd.getLogger();
-			logger.info(cmd.openXmlRootElement() + cmd.toXml()
-					+ cmd.closeXmlRootElement());
+			logger.info(cmd.openXmlRootElement() + cmd.toXml() + cmd.closeXmlRootElement());
 		} catch (final Exception e) {
 			e.printStackTrace();
 		}

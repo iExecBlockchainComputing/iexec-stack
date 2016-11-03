@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -68,13 +68,13 @@ public class XMLRPCCommandGetUsers extends XMLRPCCommand {
 
 	/**
 	 * This constructs a new command
-	 * 
+	 *
 	 * @param uri
 	 *            contains to URI to connect to
 	 * @param u
 	 *            define the user who executes this command
 	 */
-	public XMLRPCCommandGetUsers(URI uri, UserInterface u) throws IOException {
+	public XMLRPCCommandGetUsers(final URI uri, final UserInterface u) throws IOException {
 		super(uri, IDRPC);
 		setUser(u);
 	}
@@ -82,13 +82,12 @@ public class XMLRPCCommandGetUsers extends XMLRPCCommand {
 	/**
 	 * This constructs a new object from XML attributes received from input
 	 * stream
-	 * 
+	 *
 	 * @param input
 	 *            is the input stream
 	 * @see xtremweb.common.XMLReader#read(InputStream)
 	 */
-	public XMLRPCCommandGetUsers(InputStream input) throws IOException,
-			SAXException, InvalidKeyException {
+	public XMLRPCCommandGetUsers(final InputStream input) throws IOException, SAXException, InvalidKeyException {
 		this();
 		final XMLReader reader = new XMLReader(this);
 		reader.read(input);
@@ -96,7 +95,7 @@ public class XMLRPCCommandGetUsers extends XMLRPCCommand {
 
 	/**
 	 * This sends this command to server and returns answer
-	 * 
+	 *
 	 * @param comm
 	 *            is the communication channel
 	 * @return always null since this expect no answer
@@ -104,8 +103,8 @@ public class XMLRPCCommandGetUsers extends XMLRPCCommand {
 	 * @throws InvalidKeyException
 	 */
 	@Override
-	public XMLable exec(CommClient comm) throws IOException, SAXException,
-			InvalidKeyException, AccessControlException {
+	public XMLable exec(final CommClient comm)
+			throws IOException, SAXException, InvalidKeyException, AccessControlException {
 		return comm.getUsers(this);
 	}
 
@@ -119,12 +118,11 @@ public class XMLRPCCommandGetUsers extends XMLRPCCommand {
 	 * xtremweb.communications.XMLRPCCommandGetUsers aConfigFile
 	 * [anXMLDescriptionFile]
 	 */
-	public static void main(String[] argv) {
+	public static void main(final String[] argv) {
 		try {
 			final XWConfigurator config = new XWConfigurator(argv[0], false);
 			final XMLRPCCommandGetUsers cmd = new XMLRPCCommandGetUsers(
-					new URI(config.getCurrentDispatcher(), new UID()),
-					config.getUser());
+					new URI(config.getCurrentDispatcher(), new UID()), config.getUser());
 			cmd.test(argv);
 		} catch (final Exception e) {
 			e.printStackTrace();

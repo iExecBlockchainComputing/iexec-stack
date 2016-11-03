@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -36,49 +36,50 @@ import xtremweb.common.XWPropertyDefs;
 
 /**
  * Date : Nov 11th, 2014
+ *
  * @author Oleg Lodygensky (lodygens a t lal.in2p3.fr)
  *
  * @since 9.1.0
  */
 public class EmailSender {
 
-    String host = "aserver.org";
-    String from = "dontreply@xtremweb.hep";
-    String emailProtocol = "smtp";
-    boolean sessionDebug;
-    Session session;
-    final static String DEF_SUBJECT = "message from xtremweb-hep";
+	String host = "aserver.org";
+	String from = "dontreply@xtremweb.hep";
+	String emailProtocol = "smtp";
+	boolean sessionDebug;
+	Session session;
+	final static String DEF_SUBJECT = "message from xtremweb-hep";
 
-    public EmailSender() {
-        sessionDebug = false;
-        host = System.getProperty(XWPropertyDefs.MAILSERVERADDRESS.toString());
-        emailProtocol = System.getProperty(XWPropertyDefs.MAILPROTOCOL.toString());
-        Properties props = System.getProperties();
-        props.put("mail.host", host);
-        props.put("mail.transport.protocol",  emailProtocol);
-        session = Session.getDefaultInstance(props, null);
-    	session.setDebug(sessionDebug);
-        final String emailaddr = System.getProperty(XWPropertyDefs.MAILSENDERADDRESS.toString());
-        if((emailaddr != null) && (emailaddr.length() > 1)){
-        	from = emailaddr;
-        }
-    }
+	public EmailSender() {
+		sessionDebug = false;
+		host = System.getProperty(XWPropertyDefs.MAILSERVERADDRESS.toString());
+		emailProtocol = System.getProperty(XWPropertyDefs.MAILPROTOCOL.toString());
+		final Properties props = System.getProperties();
+		props.put("mail.host", host);
+		props.put("mail.transport.protocol", emailProtocol);
+		session = Session.getDefaultInstance(props, null);
+		session.setDebug(sessionDebug);
+		final String emailaddr = System.getProperty(XWPropertyDefs.MAILSENDERADDRESS.toString());
+		if ((emailaddr != null) && (emailaddr.length() > 1)) {
+			from = emailaddr;
+		}
+	}
 
-    public void send(final String to, final String txt) throws MessagingException {
-    	send(DEF_SUBJECT, to, txt);
-    }
+	public void send(final String to, final String txt) throws MessagingException {
+		send(DEF_SUBJECT, to, txt);
+	}
 
-    public void send(final String subject, final String to, final String txt) throws MessagingException {
-    	if((to == null)|| (to.length() < 1)) {
-    		throw new MessagingException("can't send mail");
-    	}
-    	Message msg = new MimeMessage(session);
-    	msg.setFrom(new InternetAddress(from));
-    	InternetAddress[] address = {new InternetAddress(to)};
-    	msg.setRecipients(Message.RecipientType.TO, address);
-    	msg.setSubject(subject == null ? "no subject" : subject);
-    	msg.setSentDate(new Date());
-    	msg.setText(txt == null ? "empty message" : txt);
-    	Transport.send(msg);
-    }
+	public void send(final String subject, final String to, final String txt) throws MessagingException {
+		if ((to == null) || (to.length() < 1)) {
+			throw new MessagingException("can't send mail");
+		}
+		final Message msg = new MimeMessage(session);
+		msg.setFrom(new InternetAddress(from));
+		final InternetAddress[] address = { new InternetAddress(to) };
+		msg.setRecipients(Message.RecipientType.TO, address);
+		msg.setSubject(subject == null ? "no subject" : subject);
+		msg.setSentDate(new Date());
+		msg.setText(txt == null ? "empty message" : txt);
+		Transport.send(msg);
+	}
 }

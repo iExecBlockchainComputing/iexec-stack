@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -49,7 +49,7 @@ import xtremweb.common.XWConfigurator;
 
 /**
  * This class defines the XMLRPCCommand to retrieve works UID
- * 
+ *
  * Since 8.2.0, we can provide a status so that we can retrieve running work,
  * error works etc.
  */
@@ -66,13 +66,13 @@ public class XMLRPCCommandGetWorks extends XMLRPCCommand {
 
 	/**
 	 * This is the status column index
-	 * 
+	 *
 	 * @since 8.2.0
 	 */
 	private static final int STATUS = URI + 1;
 	/**
 	 * This is the status column label
-	 * 
+	 *
 	 * @since 8.2.0
 	 */
 	private static final String STATUS_LABEL = "STATUS";
@@ -87,13 +87,13 @@ public class XMLRPCCommandGetWorks extends XMLRPCCommand {
 
 	/**
 	 * This constructs a new command to retrieve works for the given user
-	 * 
+	 *
 	 * @param uri
 	 *            contains the URI to connect to
 	 * @param u
 	 *            define the user who executes this command
 	 */
-	public XMLRPCCommandGetWorks(URI uri, UserInterface u) throws IOException {
+	public XMLRPCCommandGetWorks(final URI uri, final UserInterface u) throws IOException {
 		super(uri, IDRPC, STATUS);
 		setColumnAt(STATUS, STATUS_LABEL);
 		setUser(u);
@@ -101,13 +101,13 @@ public class XMLRPCCommandGetWorks extends XMLRPCCommand {
 
 	/**
 	 * This constructs a new command to retrieve works with the given status
-	 * 
+	 *
 	 * @param uri
 	 *            contains the URI to connect to
 	 * @param s
 	 *            is the work status
 	 */
-	protected XMLRPCCommandGetWorks(URI uri, StatusEnum s) throws IOException {
+	protected XMLRPCCommandGetWorks(final URI uri, final StatusEnum s) throws IOException {
 		this(uri, (UserInterface) null);
 		setStatus(s);
 	}
@@ -115,14 +115,13 @@ public class XMLRPCCommandGetWorks extends XMLRPCCommand {
 	/**
 	 * This constructs a new object from XML attributes received from input
 	 * stream
-	 * 
+	 *
 	 * @param input
 	 *            is the input stream
 	 * @throws InvalidKeyException
 	 * @see xtremweb.common.XMLReader#read(InputStream)
 	 */
-	public XMLRPCCommandGetWorks(InputStream input) throws IOException,
-			SAXException, InvalidKeyException {
+	public XMLRPCCommandGetWorks(final InputStream input) throws IOException, SAXException, InvalidKeyException {
 		this();
 		final XMLReader reader = new XMLReader(this);
 		reader.read(input);
@@ -130,7 +129,7 @@ public class XMLRPCCommandGetWorks extends XMLRPCCommand {
 
 	/**
 	 * This retrieves this command status flag
-	 * 
+	 *
 	 * @return the status flag
 	 * @since 8.2.0
 	 */
@@ -140,16 +139,16 @@ public class XMLRPCCommandGetWorks extends XMLRPCCommand {
 
 	/**
 	 * This setsthis command status flag
-	 * 
+	 *
 	 * @since 8.2.0
 	 */
-	public void setStatus(StatusEnum s) {
+	public void setStatus(final StatusEnum s) {
 		setValueAt(STATUS, s);
 	}
 
 	/**
 	 * This sends this command to server and returns answer
-	 * 
+	 *
 	 * @param comm
 	 *            is the communication channel
 	 * @return always null since this expect no answer
@@ -157,21 +156,21 @@ public class XMLRPCCommandGetWorks extends XMLRPCCommand {
 	 * @throws InvalidKeyException
 	 */
 	@Override
-	public XMLable exec(CommClient comm) throws IOException, SAXException,
-			InvalidKeyException, AccessControlException {
+	public XMLable exec(final CommClient comm)
+			throws IOException, SAXException, InvalidKeyException, AccessControlException {
 		return comm.getWorks(this);
 	}
 
 	/**
 	 * This is called by XML parser This retrieves URI, hostUID and activation
 	 * params
-	 * 
+	 *
 	 * @param attrs
 	 *            contains attributes XML representation
 	 * @since 8.2.0
 	 */
 	@Override
-	public void fromXml(Attributes attrs) {
+	public void fromXml(final Attributes attrs) {
 
 		if (attrs == null) {
 			return;
@@ -203,12 +202,11 @@ public class XMLRPCCommandGetWorks extends XMLRPCCommand {
 	 * xtremweb.communications.XMLRPCCommandGetWorks aConfigFile
 	 * [anXMLDescriptionFile]
 	 */
-	public static void main(String[] argv) {
+	public static void main(final String[] argv) {
 		try {
 			final XWConfigurator config = new XWConfigurator(argv[0], false);
 			final XMLRPCCommandGetWorks cmd = new XMLRPCCommandGetWorks(
-					new URI(config.getCurrentDispatcher(), new UID()),
-					config.getUser());
+					new URI(config.getCurrentDispatcher(), new UID()), config.getUser());
 			cmd.test(argv);
 		} catch (final Exception e) {
 			e.printStackTrace();

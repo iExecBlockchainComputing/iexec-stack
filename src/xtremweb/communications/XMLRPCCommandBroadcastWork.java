@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -69,26 +69,25 @@ public class XMLRPCCommandBroadcastWork extends XMLRPCCommand {
 
 	/**
 	 * This constructs a new command
-	 * 
+	 *
 	 * @param uri
 	 *            to connect to; it must contains the UID of the job to
 	 *            broadcast
 	 */
-	protected XMLRPCCommandBroadcastWork(URI uri) throws IOException {
+	protected XMLRPCCommandBroadcastWork(final URI uri) throws IOException {
 		super(uri, IDRPC);
 	}
 
 	/**
 	 * This constructs a new command
-	 * 
+	 *
 	 * @param uri
 	 *            to connect to; it must contains the UID of the job to
 	 *            broadcast
 	 * @param u
 	 *            defines the user who executes this command
 	 */
-	public XMLRPCCommandBroadcastWork(URI uri, UserInterface u)
-			throws IOException {
+	public XMLRPCCommandBroadcastWork(final URI uri, final UserInterface u) throws IOException {
 		this(uri);
 		setUser(u);
 	}
@@ -96,15 +95,14 @@ public class XMLRPCCommandBroadcastWork extends XMLRPCCommand {
 	/**
 	 * This constructs a new object from XML attributes received from input
 	 * stream
-	 * 
+	 *
 	 * @param input
 	 *            is the input stream
 	 * @throws IOException
 	 *             on XML error
 	 * @see xtremweb.common.XMLReader#read(InputStream)
 	 */
-	public XMLRPCCommandBroadcastWork(InputStream input) throws IOException,
-			SAXException, InvalidKeyException {
+	public XMLRPCCommandBroadcastWork(final InputStream input) throws IOException, SAXException, InvalidKeyException {
 		this();
 		final XMLReader reader = new XMLReader(this);
 		reader.read(input);
@@ -112,7 +110,7 @@ public class XMLRPCCommandBroadcastWork extends XMLRPCCommand {
 
 	/**
 	 * This retrieves this command work UID
-	 * 
+	 *
 	 * @return the UID of the work to broadcast
 	 */
 	public UID getWorkUID() {
@@ -126,7 +124,7 @@ public class XMLRPCCommandBroadcastWork extends XMLRPCCommand {
 
 	/**
 	 * This sends this command to server and returns answer
-	 * 
+	 *
 	 * @param comm
 	 *            is the communication channel
 	 * @return always null
@@ -135,10 +133,9 @@ public class XMLRPCCommandBroadcastWork extends XMLRPCCommand {
 	 * @exception RemoteException
 	 *                is thrown on comm error
 	 */
-	@Override 
-	public XMLable exec(final CommClient comm) throws IOException,
-	ClassNotFoundException, SAXException, InvalidKeyException,
-	AccessControlException	{
+	@Override
+	public XMLable exec(final CommClient comm)
+			throws IOException, ClassNotFoundException, SAXException, InvalidKeyException, AccessControlException {
 		comm.broadcast(this);
 		return null;
 	}
@@ -153,12 +150,11 @@ public class XMLRPCCommandBroadcastWork extends XMLRPCCommand {
 	 * xtremweb.communications.XMLRPCCommandBroadcastWork aConfigFile
 	 * [anXMLDescriptionFile]
 	 */
-	public static void main(String[] argv) {
+	public static void main(final String[] argv) {
 		try {
 			final XWConfigurator config = new XWConfigurator(argv[0], false);
 			final XMLRPCCommandBroadcastWork cmd = new XMLRPCCommandBroadcastWork(
-					new URI(config.getCurrentDispatcher(), new UID()),
-					config.getUser());
+					new URI(config.getCurrentDispatcher(), new UID()), config.getUser());
 			cmd.test(argv);
 		} catch (final Exception e) {
 			e.printStackTrace();

@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -70,14 +70,13 @@ public class XMLRPCCommandWorkRequest extends XMLRPCCommand {
 
 	/**
 	 * This constructs a new command
-	 * 
+	 *
 	 * @param uri
 	 *            is the URI to connect to
 	 * @param h
 	 *            defines the worker making this call
 	 */
-	public XMLRPCCommandWorkRequest(URI uri, HostInterface h)
-			throws IOException {
+	public XMLRPCCommandWorkRequest(final URI uri, final HostInterface h) throws IOException {
 		super(uri, IDRPC);
 		setHost(h);
 	}
@@ -85,13 +84,12 @@ public class XMLRPCCommandWorkRequest extends XMLRPCCommand {
 	/**
 	 * This constructs a new object from XML attributes received from input
 	 * stream
-	 * 
+	 *
 	 * @param input
 	 *            is the input stream
 	 * @see xtremweb.common.XMLReader#read(InputStream)
 	 */
-	public XMLRPCCommandWorkRequest(InputStream input) throws IOException,
-			SAXException, InvalidKeyException {
+	public XMLRPCCommandWorkRequest(final InputStream input) throws IOException, SAXException, InvalidKeyException {
 		this();
 		final XMLReader reader = new XMLReader(this);
 		reader.read(input);
@@ -99,18 +97,18 @@ public class XMLRPCCommandWorkRequest extends XMLRPCCommand {
 
 	/**
 	 * This is called to decode XML elements
-	 * 
+	 *
 	 * @see xtremweb.common.XMLReader#read(InputStream)
 	 */
 	@Override
-	public void xmlElementStart(String uri, String tag, String qname,
-			Attributes attrs) throws SAXException {
+	public void xmlElementStart(final String uri, final String tag, final String qname, final Attributes attrs)
+			throws SAXException {
 		xmlElementStartCheckUserAndHost(uri, tag, qname, attrs);
 	}
 
 	/**
 	 * This sends this command to server and returns answer
-	 * 
+	 *
 	 * @param comm
 	 *            is the communication channel
 	 * @return always null
@@ -119,22 +117,20 @@ public class XMLRPCCommandWorkRequest extends XMLRPCCommand {
 	 * @exception RemoteException
 	 *                is thrown on comm error
 	 */
-	@Override 
-	public XMLable exec(final CommClient comm) throws IOException,
-	ClassNotFoundException, SAXException, InvalidKeyException,
-	AccessControlException	{
+	@Override
+	public XMLable exec(final CommClient comm)
+			throws IOException, ClassNotFoundException, SAXException, InvalidKeyException, AccessControlException {
 		return comm.workRequest(this);
 	}
 
 	/**
 	 * This is for testing only
 	 */
-	public static void main(String[] argv) {
+	public static void main(final String[] argv) {
 		try {
 			final XWConfigurator config = new XWConfigurator(argv[0], false);
 			final XMLRPCCommandWorkRequest cmd = new XMLRPCCommandWorkRequest(
-					new URI(config.getCurrentDispatcher(), new UID()),
-					config.getHost());
+					new URI(config.getCurrentDispatcher(), new UID()), config.getHost());
 			cmd.test(argv);
 		} catch (final Exception e) {
 			e.printStackTrace();

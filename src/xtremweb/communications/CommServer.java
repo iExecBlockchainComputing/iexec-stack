@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -36,7 +36,7 @@ import xtremweb.common.XWPropertyDefs;
 
 /**
  * This is the communications server part. This listens to requests.
- * 
+ *
  * @author Oleg Lodygensky
  * @since RPCXW
  * @see CommHandler
@@ -77,7 +77,7 @@ public abstract class CommServer extends Thread {
 	private List connPool;
 	/**
 	 * This is the current amount of simultaneous connections
-	 * 
+	 *
 	 * @since 5.8.0
 	 */
 	private int nbConnections;
@@ -89,7 +89,7 @@ public abstract class CommServer extends Thread {
 	/**
 	 ** This is the only constructor
 	 */
-	protected CommServer(String n) {
+	protected CommServer(final String n) {
 		super(n);
 		setLogger(new Logger(this));
 		MAXCONNECTIONS = 0;
@@ -98,26 +98,24 @@ public abstract class CommServer extends Thread {
 
 	/**
 	 * This initializes communications
-	 * 
+	 *
 	 * @param p
 	 *            is a Properties object to retrieve configuration (ports...)
 	 * @param h
 	 *            is a CommHandler object to handle communications
 	 */
-	protected void initComm(XWConfigurator p, Handler h) throws RemoteException {
+	protected void initComm(final XWConfigurator p, final Handler h) throws RemoteException {
 
 		setHandler(h);
 		setConfig(p);
 		MAXCONNECTIONS = p.getInt(XWPropertyDefs.MAXCONNECTIONS);
 		connPool = Collections.synchronizedList(new LinkedList());
 		getLogger().config("MAXCONNECTIONS = " + MAXCONNECTIONS);
-		getLogger()
-				.finest("" + this + " CommServer#initComm() " + getHandler());
+		getLogger().finest("" + this + " CommServer#initComm() " + getHandler());
 
 		try {
 			for (int i = 0; i < MAXCONNECTIONS; i++) {
-				final CommHandler commHandler = (CommHandler) getHandler()
-						.getClass().newInstance();
+				final CommHandler commHandler = (CommHandler) getHandler().getClass().newInstance();
 				if (commHandler != null) {
 					commHandler.setCommServer(this);
 					commHandler.start();
@@ -131,19 +129,17 @@ public abstract class CommServer extends Thread {
 	}
 
 	protected String remoteAddresse() {
-		return new String("{" + getRemoteName() + "/" + getRemoteIP() + ":"
-				+ getRemotePort() + "}");
+		return new String("{" + getRemoteName() + "/" + getRemoteIP() + ":" + getRemotePort() + "}");
 	}
 
-	protected String msgWithRemoteAddresse(String msg) {
+	protected String msgWithRemoteAddresse(final String msg) {
 		return remoteAddresse() + " : " + msg;
 	}
 
 	/**
 	 * This creates a new communication handler
 	 */
-	private Handler getConnection() throws RemoteException,
-			InstantiationException, IllegalAccessException {
+	private Handler getConnection() throws RemoteException, InstantiationException, IllegalAccessException {
 
 		final Handler commHandler = getHandler().getClass().newInstance();
 		return commHandler;
@@ -152,46 +148,41 @@ public abstract class CommServer extends Thread {
 	/**
 	 * This waits until nbConnections &lt; MAXCONNECTIONS; then this increments
 	 * nbConnections and create a new Connection
-	 * 
+	 *
 	 * @see #nbConnections
 	 */
-	protected synchronized CommHandler popConnection() throws RemoteException,
-			InstantiationException, IllegalAccessException {
+	protected synchronized CommHandler popConnection()
+			throws RemoteException, InstantiationException, IllegalAccessException {
 
 		while (connPool.size() <= 0) {
 			try {
-				getLogger()
-						.debug(msgWithRemoteAddresse("popConnection sleeping ("
-								+ nbConnections + " > " + MAXCONNECTIONS + ")"));
+				getLogger().debug(msgWithRemoteAddresse(
+						"popConnection sleeping (" + nbConnections + " > " + MAXCONNECTIONS + ")"));
 				wait();
-				getLogger().debug(
-						msgWithRemoteAddresse("popConnection woken up"));
+				getLogger().debug(msgWithRemoteAddresse("popConnection woken up"));
 			} catch (final InterruptedException e) {
 			}
 		}
 		final CommHandler myhandler = (CommHandler) connPool.remove(0);
 		nbConnections++;
 		getLogger().debug(
-				msgWithRemoteAddresse("popConnection " + nbConnections + " ("
-						+ ((Thread) myhandler).getId() + ")"));
+				msgWithRemoteAddresse("popConnection " + nbConnections + " (" + ((Thread) myhandler).getId() + ")"));
 		notifyAll();
 		return myhandler;
 	}
 
 	/**
 	 * This decrements nbConnections
-	 * 
+	 *
 	 * @see #nbConnections
 	 */
-	public synchronized void pushConnection(CommHandler h) {
+	public synchronized void pushConnection(final CommHandler h) {
 		connPool.add(h);
 		nbConnections--;
 		if (nbConnections < 0) {
 			nbConnections = 0;
 		}
-		getLogger().debug(
-				msgWithRemoteAddresse("pushConnection " + nbConnections + " ("
-						+ ((Thread) h).getId() + ")"));
+		getLogger().debug(msgWithRemoteAddresse("pushConnection " + nbConnections + " (" + ((Thread) h).getId() + ")"));
 		notifyAll();
 	}
 
@@ -206,7 +197,7 @@ public abstract class CommServer extends Thread {
 	 * @param port
 	 *            the port to set
 	 */
-	public void setPort(int port) {
+	public void setPort(final int port) {
 		this.port = port;
 	}
 
@@ -221,7 +212,7 @@ public abstract class CommServer extends Thread {
 	 * @param logger
 	 *            the logger to set
 	 */
-	public void setLogger(Logger logger) {
+	public void setLogger(final Logger logger) {
 		this.logger = logger;
 	}
 
@@ -236,7 +227,7 @@ public abstract class CommServer extends Thread {
 	 * @param handler
 	 *            the handler to set
 	 */
-	public void setHandler(Handler handler) {
+	public void setHandler(final Handler handler) {
 		this.handler = handler;
 	}
 
@@ -251,7 +242,7 @@ public abstract class CommServer extends Thread {
 	 * @param config
 	 *            the config to set
 	 */
-	public void setConfig(XWConfigurator config) {
+	public void setConfig(final XWConfigurator config) {
 		this.config = config;
 	}
 
@@ -266,7 +257,7 @@ public abstract class CommServer extends Thread {
 	 * @param remoteName
 	 *            the remoteName to set
 	 */
-	public void setRemoteName(String remoteName) {
+	public void setRemoteName(final String remoteName) {
 		this.remoteName = remoteName;
 	}
 
@@ -281,7 +272,7 @@ public abstract class CommServer extends Thread {
 	 * @param remoteIP
 	 *            the remoteIP to set
 	 */
-	public void setRemoteIP(String remoteIP) {
+	public void setRemoteIP(final String remoteIP) {
 		this.remoteIP = remoteIP;
 	}
 
@@ -296,7 +287,7 @@ public abstract class CommServer extends Thread {
 	 * @param remotePort
 	 *            the remotePort to set
 	 */
-	public void setRemotePort(int remotePort) {
+	public void setRemotePort(final int remotePort) {
 		this.remotePort = remotePort;
 	}
 }

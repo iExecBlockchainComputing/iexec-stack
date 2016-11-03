@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -89,7 +89,7 @@ public abstract class CommClient implements ClientAPI {
 	/**
 	 * @since 7.0.0
 	 */
-	public void setLoggerLevel(LoggerLevel l) {
+	public void setLoggerLevel(final LoggerLevel l) {
 		logger.setLoggerLevel(l);
 	}
 
@@ -104,7 +104,7 @@ public abstract class CommClient implements ClientAPI {
 	 * (xtremweb.communications.Connection.XWSCHEME,
 	 * xtremweb.common.XWPropertyDefs.COMMLAYER)<br />
 	 * This is then filled as needs
-	 * 
+	 *
 	 * @see #getClient(URI)
 	 * @see xtremweb.communications.Connection#XWSCHEME
 	 * @see xtremweb.common.XWPropertyDefs#COMMHANDLERS
@@ -125,7 +125,7 @@ public abstract class CommClient implements ClientAPI {
 
 	/**
 	 * This is max amount of times we try on socket time out exception
-	 * 
+	 *
 	 * @since 7.4.0
 	 */
 	private static int socketRetries;
@@ -142,13 +142,13 @@ public abstract class CommClient implements ClientAPI {
 	 */
 	private final MileStone mileStone;
 
-	protected void mileStone(String msg) {
+	protected void mileStone(final String msg) {
 		mileStone.println(msg);
 	}
 
 	/**
 	 * This retrieve this client port number
-	 * 
+	 *
 	 * @since 5.9.0
 	 */
 	public abstract int getPort();
@@ -156,21 +156,20 @@ public abstract class CommClient implements ClientAPI {
 	/**
 	 * This creates a new URI to connect to current dispatcher The URI path
 	 * contains the UID (e.g. xw://monserver; xw://monserver/uid)
-	 * 
+	 *
 	 * @param uid
 	 *            is the uid used as path if the returned uri, if not null
 	 * @see xtremweb.communications.URI#URI(String, UID)
 	 */
-	public URI newURI(UID uid) throws URISyntaxException {
-		logger.finest("CommClient#newURI " + config.getCurrentDispatcher()
-				+ ":" + getPort() + "/" + uid);
+	public URI newURI(final UID uid) throws URISyntaxException {
+		logger.finest("CommClient#newURI " + config.getCurrentDispatcher() + ":" + getPort() + "/" + uid);
 		final URI ret = new URI(config.getCurrentDispatcher(), uid);
 		return ret;
 	}
 
 	/**
 	 * This call newURI(null)
-	 * 
+	 *
 	 * @see #newURI(UID)
 	 */
 	public URI newURI() throws URISyntaxException {
@@ -180,9 +179,8 @@ public abstract class CommClient implements ClientAPI {
 	/**
 	 * This opens communications channel
 	 */
-	protected abstract void open(URI u) throws UnknownHostException,
-	NoRouteToHostException, SSLHandshakeException,
-	SocketTimeoutException, IOException;
+	protected abstract void open(URI u) throws UnknownHostException, NoRouteToHostException, SSLHandshakeException,
+			SocketTimeoutException, IOException;
 
 	/**
 	 * This closes communications channel
@@ -193,7 +191,7 @@ public abstract class CommClient implements ClientAPI {
 	 * This tells whether communication channel should be automatically closed
 	 * or if this is left to the entity using this CommClient. Default is true :
 	 * communications are automatically closed
-	 * 
+	 *
 	 * @since 7.4.0
 	 */
 	private boolean autoClose = true;
@@ -207,10 +205,10 @@ public abstract class CommClient implements ClientAPI {
 
 	/**
 	 * This sets autoClose attribute
-	 * 
+	 *
 	 * @since 7.4.0
 	 */
-	public void setAutoClose(boolean c) {
+	public void setAutoClose(final boolean c) {
 		autoClose = c;
 	}
 
@@ -230,13 +228,13 @@ public abstract class CommClient implements ClientAPI {
 	 * @param opened
 	 *            the opened to set
 	 */
-	public void setOpened(boolean opened) {
+	public void setOpened(final boolean opened) {
 		this.opened = opened;
 	}
 
 	/*
 	 * this contains the amount of messages already sent
-	 * 
+	 *
 	 * @see util#MAXMESSAGES
 	 */
 	private int nbMessages = 0;
@@ -252,7 +250,7 @@ public abstract class CommClient implements ClientAPI {
 	 * @param nbMessages
 	 *            the nbMessages to set
 	 */
-	public void setNbMessages(int nbMessages) {
+	public void setNbMessages(final int nbMessages) {
 		this.nbMessages = nbMessages;
 	}
 
@@ -276,12 +274,12 @@ public abstract class CommClient implements ClientAPI {
 	/**
 	 * This does nothing if config is already set. Otherwise this calls
 	 * changeConfig(c)
-	 * 
+	 *
 	 * @see #changeConfig(XWConfigurator)
 	 * @exception IOException
 	 *                is thrown if cache directory can not be created
 	 */
-	public static void setConfig(XWConfigurator c) throws IOException {
+	public static void setConfig(final XWConfigurator c) throws IOException {
 		if (config != null) {
 			return;
 		}
@@ -292,13 +290,13 @@ public abstract class CommClient implements ClientAPI {
 	 * This configures this object : this extracts communication layers from
 	 * config file and instantiates communication handlers accordingly. This
 	 * also sets the cache
-	 * 
+	 *
 	 * @param c
 	 *            is the configuration
 	 * @exception IOException
 	 *                is thrown if cache directory can not be created
 	 */
-	public static void changeConfig(XWConfigurator c) throws IOException {
+	public static void changeConfig(final XWConfigurator c) throws IOException {
 
 		config = c;
 
@@ -306,8 +304,7 @@ public abstract class CommClient implements ClientAPI {
 
 		commHandlers = new Hashtable();
 
-		final Hashtable layers = (Hashtable) XWTools.hash(config
-				.getProperty(XWPropertyDefs.COMMHANDLERS));
+		final Hashtable layers = (Hashtable) XWTools.hash(config.getProperty(XWPropertyDefs.COMMHANDLERS));
 		final Enumeration enumLayers = layers.keys();
 
 		socketRetries = config.getInt(XWPropertyDefs.SORETRIES);
@@ -320,28 +317,24 @@ public abstract class CommClient implements ClientAPI {
 			try {
 				addHandler(key, value);
 			} catch (final Exception e) {
-				System.err.println("Init comm layers: ignoring (" + key + ", "
-						+ value + ") : " + e);
+				System.err.println("Init comm layers: ignoring (" + key + ", " + value + ") : " + e);
 			}
 		}
 
 		try {
 			if (commHandlers.get(Connection.xwScheme()) == null) {
-				final String defaultLayer = config
-				.getProperty(XWPropertyDefs.COMMLAYER);
+				final String defaultLayer = config.getProperty(XWPropertyDefs.COMMLAYER);
 
 				addHandler(Connection.xwScheme(), defaultLayer);
 			}
 			if (commHandlers.get(Connection.xwsScheme()) == null) {
-				addHandler(Connection.xwsScheme(),
-						config.getProperty(XWPropertyDefs.COMMLAYER));
+				addHandler(Connection.xwsScheme(), config.getProperty(XWPropertyDefs.COMMLAYER));
 			}
 			if (commHandlers.get(Connection.httpScheme()) == null) {
 				addHandler(Connection.httpScheme(), Connection.HTTPPORT.layer());
 			}
 			if (commHandlers.get(Connection.httpsScheme()) == null) {
-				addHandler(Connection.httpsScheme(),
-						Connection.HTTPPORT.layer());
+				addHandler(Connection.httpsScheme(), Connection.HTTPPORT.layer());
 			}
 		} catch (final Exception e) {
 			e.printStackTrace();
@@ -359,7 +352,7 @@ public abstract class CommClient implements ClientAPI {
 	/**
 	 * This adds or replaces a comm handler
 	 */
-	public static void addHandler(String schema, String className) {
+	public static void addHandler(final String schema, final String className) {
 
 		commHandlers.put(schema, className);
 	}
@@ -367,15 +360,14 @@ public abstract class CommClient implements ClientAPI {
 	/**
 	 * This constructs an object accordingly to the URI scheme; the URI schema
 	 * defines the object type
-	 * 
+	 *
 	 * @see #commHandlers
 	 * @param scheme
 	 *            is the URI scheme to retrieve client for
 	 * @throws InstantiationException
 	 *             if the class referred by the scheme can not be instantiated
 	 */
-	public static CommClient getClient(String scheme)
-	throws InstantiationException {
+	public static CommClient getClient(final String scheme) throws InstantiationException {
 
 		if (scheme == null) {
 			throw new InstantiationException("scheme is null");
@@ -384,8 +376,7 @@ public abstract class CommClient implements ClientAPI {
 			throw new InstantiationException("Comm Handlers not initialized");
 		}
 		try {
-			return (CommClient) (Class.forName((String) commHandlers
-					.get(scheme))).newInstance();
+			return (CommClient) (Class.forName((String) commHandlers.get(scheme))).newInstance();
 		} catch (final IllegalAccessException e) {
 			throw new InstantiationException(e.getMessage());
 		} catch (final ClassNotFoundException e) {
@@ -395,7 +386,7 @@ public abstract class CommClient implements ClientAPI {
 
 	/**
 	 * This calls getClient(uri.getScheme())
-	 * 
+	 *
 	 * @see #commHandlers
 	 * @see #getClient(String)
 	 * @param uri
@@ -403,13 +394,13 @@ public abstract class CommClient implements ClientAPI {
 	 * @throws InstantiationException
 	 *             if the class referred by the scheme can not be instantiated
 	 */
-	public static CommClient getClient(URI uri) throws InstantiationException {
+	public static CommClient getClient(final URI uri) throws InstantiationException {
 		return getClient(uri.getScheme());
 	}
 
 	/**
 	 * This retrieves the configuration
-	 * 
+	 *
 	 * @return this client configuration
 	 */
 	public XWConfigurator getConfig() {
@@ -420,7 +411,7 @@ public abstract class CommClient implements ClientAPI {
 	 * This sends an XMLRPC command to be executed on server side This uses
 	 * config._user, if cmd.getUser == null Since 2.2.0, all command needs an
 	 * answer : we don't close comm channel here
-	 * 
+	 *
 	 * @param cmd
 	 *            is the command to send
 	 * @throws IOException
@@ -429,9 +420,9 @@ public abstract class CommClient implements ClientAPI {
 	 * @throws SSLHandshakeException
 	 * @throws NoRouteToHostException
 	 */
-	public void sendCommand(XMLRPCCommand cmd) throws NoRouteToHostException,
-	SSLHandshakeException, SocketTimeoutException,
-	UnknownHostException, IOException {
+	@Override
+	public void sendCommand(final XMLRPCCommand cmd) throws NoRouteToHostException, SSLHandshakeException,
+			SocketTimeoutException, UnknownHostException, IOException {
 		try {
 			mileStone("<sendCommand idrpc='" + cmd.getIdRpc().toString() + "'>");
 
@@ -452,11 +443,12 @@ public abstract class CommClient implements ClientAPI {
 
 	/**
 	 * This sends (creates or updates) an object definition
-	 * 
+	 *
 	 * @since 5.0.0
 	 */
-	public void send(XMLRPCCommandSend command) throws InvalidKeyException,
-	AccessControlException, IOException, SAXException {
+	@Override
+	public void send(final XMLRPCCommandSend command)
+			throws InvalidKeyException, AccessControlException, IOException, SAXException {
 		try {
 			sendCommand(command);
 			newXMLVector();
@@ -468,114 +460,104 @@ public abstract class CommClient implements ClientAPI {
 	/**
 	 * This writes a file to output channel
 	 */
+	@Override
 	public abstract void writeFile(File f) throws IOException;
 
 	/**
 	 * This reads a file from input channel
 	 */
+	@Override
 	public abstract void readFile(File f) throws IOException;
 
 	/**
 	 * This creates an object from channel
 	 */
 	protected abstract AppInterface newAppInterface()
-	throws InvalidKeyException, AccessControlException, IOException,
-	SAXException;
+			throws InvalidKeyException, AccessControlException, IOException, SAXException;
 
 	/**
 	 * This creates an object from channel
 	 */
 	protected abstract DataInterface newDataInterface()
-	throws InvalidKeyException, AccessControlException, IOException,
-	SAXException;
+			throws InvalidKeyException, AccessControlException, IOException, SAXException;
 
 	/**
 	 * This creates an object from channel
 	 */
-	protected abstract Table newTableInterface() throws InvalidKeyException,
-	AccessControlException, IOException, SAXException;
+	protected abstract Table newTableInterface()
+			throws InvalidKeyException, AccessControlException, IOException, SAXException;
 
 	/**
 	 * This creates an object from channel
 	 */
 	protected abstract GroupInterface newGroupInterface()
-	throws InvalidKeyException, AccessControlException, IOException,
-	SAXException;
+			throws InvalidKeyException, AccessControlException, IOException, SAXException;
 
 	/**
 	 * This creates an object from channel
 	 */
 	protected abstract HostInterface newHostInterface()
-	throws InvalidKeyException, AccessControlException, IOException,
-	SAXException;
+			throws InvalidKeyException, AccessControlException, IOException, SAXException;
 
 	/**
 	 * This creates an object from channel
 	 */
 	protected abstract SessionInterface newSessionInterface()
-	throws InvalidKeyException, AccessControlException, IOException,
-	SAXException;
+			throws InvalidKeyException, AccessControlException, IOException, SAXException;
 
 	/**
 	 * This creates an object from channel
 	 */
 	protected abstract TaskInterface newTaskInterface()
-	throws InvalidKeyException, AccessControlException, IOException,
-	SAXException;
+			throws InvalidKeyException, AccessControlException, IOException, SAXException;
 
 	/**
 	 * This creates an object from channel
 	 */
 	protected abstract TraceInterface newTraceInterface()
-	throws InvalidKeyException, AccessControlException, IOException,
-	SAXException;
+			throws InvalidKeyException, AccessControlException, IOException, SAXException;
 
 	/**
 	 * This creates an object from channel
 	 */
 	protected abstract UserInterface newUserInterface()
-	throws InvalidKeyException, AccessControlException, IOException,
-	SAXException;
+			throws InvalidKeyException, AccessControlException, IOException, SAXException;
 
 	/**
 	 * This creates an object from channel
 	 */
 	protected abstract UserGroupInterface newUserGroupInterface()
-	throws InvalidKeyException, AccessControlException, IOException,
-	SAXException;
+			throws InvalidKeyException, AccessControlException, IOException, SAXException;
 
 	/**
 	 * This creates an object from channel
 	 */
 	protected abstract WorkInterface newWorkInterface()
-	throws InvalidKeyException, AccessControlException, IOException,
-	SAXException;
+			throws InvalidKeyException, AccessControlException, IOException, SAXException;
 
 	/**
 	 * This creates an object from channel
 	 */
-	protected abstract Version newXMLVersion() throws InvalidKeyException,
-	AccessControlException, IOException, SAXException;
+	protected abstract Version newXMLVersion()
+			throws InvalidKeyException, AccessControlException, IOException, SAXException;
 
 	/**
 	 * This creates an object from channel
 	 */
-	protected abstract XMLVector newXMLVector() throws InvalidKeyException,
-	AccessControlException, IOException, SAXException;
+	protected abstract XMLVector newXMLVector()
+			throws InvalidKeyException, AccessControlException, IOException, SAXException;
 
 	/**
 	 * This creates an object from channel
 	 */
 	protected abstract XMLHashtable newXMLHashtable()
-	throws InvalidKeyException, AccessControlException, IOException,
-	SAXException;
+			throws InvalidKeyException, AccessControlException, IOException, SAXException;
 
 	/**
 	 * This creates an object from channel
 	 */
-	protected Table newTableInterface(InputStream in)
-	throws InvalidKeyException, AccessControlException, IOException,
-	SAXException {
+	protected Table newTableInterface(final InputStream in)
+			throws InvalidKeyException, AccessControlException, IOException, SAXException {
 
 		final BufferedInputStream input = new BufferedInputStream(in);
 
@@ -638,16 +620,14 @@ public abstract class CommClient implements ClientAPI {
 			return newTraceInterface(input);
 		} catch (final SAXException e) {
 		}
-		throw new IOException(
-		"Unable to create new Interface from input stream");
+		throw new IOException("Unable to create new Interface from input stream");
 	}
 
 	/**
 	 * This creates an object from channel
 	 */
-	protected <T extends Table> T newTableInterface(T itf, InputStream input)
-	throws InvalidKeyException, AccessControlException, IOException,
-	SAXException {
+	protected <T extends Table> T newTableInterface(final T itf, final InputStream input)
+			throws InvalidKeyException, AccessControlException, IOException, SAXException {
 
 		try {
 			mileStone("<newTableInterface itf='" + itf.getClass() + "'>");
@@ -662,9 +642,8 @@ public abstract class CommClient implements ClientAPI {
 	/**
 	 * This creates an object from channel
 	 */
-	protected AppInterface newAppInterface(InputStream input)
-	throws InvalidKeyException, AccessControlException, IOException,
-	SAXException {
+	protected AppInterface newAppInterface(final InputStream input)
+			throws InvalidKeyException, AccessControlException, IOException, SAXException {
 		final AppInterface itf = new AppInterface();
 		return newTableInterface(itf, input);
 	}
@@ -672,9 +651,8 @@ public abstract class CommClient implements ClientAPI {
 	/**
 	 * This creates an object from channel
 	 */
-	protected DataInterface newDataInterface(InputStream input)
-	throws InvalidKeyException, AccessControlException, IOException,
-	SAXException {
+	protected DataInterface newDataInterface(final InputStream input)
+			throws InvalidKeyException, AccessControlException, IOException, SAXException {
 		final DataInterface itf = new DataInterface();
 		return newTableInterface(itf, input);
 	}
@@ -682,9 +660,8 @@ public abstract class CommClient implements ClientAPI {
 	/**
 	 * This creates an object from channel
 	 */
-	protected GroupInterface newGroupInterface(InputStream input)
-	throws InvalidKeyException, AccessControlException, IOException,
-	SAXException {
+	protected GroupInterface newGroupInterface(final InputStream input)
+			throws InvalidKeyException, AccessControlException, IOException, SAXException {
 		final GroupInterface itf = new GroupInterface();
 		return newTableInterface(itf, input);
 	}
@@ -692,9 +669,8 @@ public abstract class CommClient implements ClientAPI {
 	/**
 	 * This creates an object from channel
 	 */
-	protected HostInterface newHostInterface(InputStream input)
-	throws InvalidKeyException, AccessControlException, IOException,
-	SAXException {
+	protected HostInterface newHostInterface(final InputStream input)
+			throws InvalidKeyException, AccessControlException, IOException, SAXException {
 		final HostInterface itf = new HostInterface();
 		return newTableInterface(itf, input);
 	}
@@ -702,9 +678,8 @@ public abstract class CommClient implements ClientAPI {
 	/**
 	 * This creates an object from channel
 	 */
-	protected SessionInterface newSessionInterface(InputStream input)
-	throws InvalidKeyException, AccessControlException, IOException,
-	SAXException {
+	protected SessionInterface newSessionInterface(final InputStream input)
+			throws InvalidKeyException, AccessControlException, IOException, SAXException {
 		final SessionInterface itf = new SessionInterface();
 		return newTableInterface(itf, input);
 	}
@@ -712,9 +687,8 @@ public abstract class CommClient implements ClientAPI {
 	/**
 	 * This creates an object from channel
 	 */
-	protected TaskInterface newTaskInterface(InputStream input)
-	throws InvalidKeyException, AccessControlException, IOException,
-	SAXException {
+	protected TaskInterface newTaskInterface(final InputStream input)
+			throws InvalidKeyException, AccessControlException, IOException, SAXException {
 		final TaskInterface itf = new TaskInterface();
 		return newTableInterface(itf, input);
 	}
@@ -722,9 +696,8 @@ public abstract class CommClient implements ClientAPI {
 	/**
 	 * This creates an object from channel
 	 */
-	protected TraceInterface newTraceInterface(InputStream input)
-	throws InvalidKeyException, AccessControlException, IOException,
-	SAXException {
+	protected TraceInterface newTraceInterface(final InputStream input)
+			throws InvalidKeyException, AccessControlException, IOException, SAXException {
 		final TraceInterface itf = new TraceInterface();
 		return newTableInterface(itf, input);
 	}
@@ -732,9 +705,8 @@ public abstract class CommClient implements ClientAPI {
 	/**
 	 * This creates an object from channel
 	 */
-	protected UserInterface newUserInterface(InputStream input)
-	throws InvalidKeyException, AccessControlException, IOException,
-	SAXException {
+	protected UserInterface newUserInterface(final InputStream input)
+			throws InvalidKeyException, AccessControlException, IOException, SAXException {
 		final UserInterface itf = new UserInterface();
 		return newTableInterface(itf, input);
 	}
@@ -742,9 +714,8 @@ public abstract class CommClient implements ClientAPI {
 	/**
 	 * This creates an object from channel
 	 */
-	protected UserGroupInterface newUserGroupInterface(InputStream input)
-	throws InvalidKeyException, AccessControlException, IOException,
-	SAXException {
+	protected UserGroupInterface newUserGroupInterface(final InputStream input)
+			throws InvalidKeyException, AccessControlException, IOException, SAXException {
 		final UserGroupInterface itf = new UserGroupInterface();
 		return newTableInterface(itf, input);
 	}
@@ -752,9 +723,8 @@ public abstract class CommClient implements ClientAPI {
 	/**
 	 * This creates an object from channel
 	 */
-	protected WorkInterface newWorkInterface(InputStream input)
-	throws InvalidKeyException, AccessControlException, IOException,
-	SAXException {
+	protected WorkInterface newWorkInterface(final InputStream input)
+			throws InvalidKeyException, AccessControlException, IOException, SAXException {
 		final WorkInterface itf = new WorkInterface();
 		return newTableInterface(itf, input);
 	}
@@ -762,9 +732,8 @@ public abstract class CommClient implements ClientAPI {
 	/**
 	 * This creates an object from channel
 	 */
-	protected XMLVector newXMLVector(InputStream input)
-	throws InvalidKeyException, AccessControlException, IOException,
-	SAXException {
+	protected XMLVector newXMLVector(final InputStream input)
+			throws InvalidKeyException, AccessControlException, IOException, SAXException {
 		try {
 			mileStone("<newXMLVector>");
 			final XMLVector ret = new XMLVector();
@@ -779,9 +748,8 @@ public abstract class CommClient implements ClientAPI {
 	/**
 	 * This creates an object from channel
 	 */
-	protected Version newXMLVersion(InputStream input)
-	throws InvalidKeyException, AccessControlException, IOException,
-	SAXException {
+	protected Version newXMLVersion(final InputStream input)
+			throws InvalidKeyException, AccessControlException, IOException, SAXException {
 		try {
 			mileStone("<newXMLVersion>");
 			final Version ret = new Version();
@@ -796,9 +764,8 @@ public abstract class CommClient implements ClientAPI {
 	/**
 	 * This creates an object from channel
 	 */
-	protected XMLHashtable newXMLHashtable(InputStream input)
-	throws InvalidKeyException, AccessControlException, IOException,
-	SAXException {
+	protected XMLHashtable newXMLHashtable(final InputStream input)
+			throws InvalidKeyException, AccessControlException, IOException, SAXException {
 		try {
 			mileStone("<newXMLHashtable>");
 			final XMLHashtable ret = new XMLHashtable();
@@ -814,18 +781,18 @@ public abstract class CommClient implements ClientAPI {
 	 * This disconnects this client from current dispatcher. Disconnection
 	 * removes sessions from server
 	 */
-	public void disconnect() throws InvalidKeyException,
-	AccessControlException, IOException, SAXException,
-	URISyntaxException {
+	@Override
+	public void disconnect()
+			throws InvalidKeyException, AccessControlException, IOException, SAXException, URISyntaxException {
 		disconnect(new XMLRPCCommandDisconnect(newURI(), config.getUser()));
 	}
 
 	/**
 	 * This disconnects this client. Disconnection removes sessions from server
 	 */
-	public void disconnect(XMLRPCCommandDisconnect command)
-	throws InvalidKeyException, AccessControlException, IOException,
-	SAXException {
+	@Override
+	public void disconnect(final XMLRPCCommandDisconnect command)
+			throws InvalidKeyException, AccessControlException, IOException, SAXException {
 
 		try {
 			sendCommand(command);
@@ -838,82 +805,80 @@ public abstract class CommClient implements ClientAPI {
 	/**
 	 * This adds an URI to cache to be able to manage URL too
 	 */
-	public void addToCache(URI uri) throws IOException {
+	public void addToCache(final URI uri) throws IOException {
 		cache.add(uri);
 	}
 
 	/**
 	 * This sets the content file in cache for the given URI
-	 * 
+	 *
 	 * @since 8.0.1
 	 */
-	public void setContentFile(URI uri, File f) throws IOException {
+	public void setContentFile(final URI uri, final File f) throws IOException {
 		cache.setContentFile(uri, f);
 	}
 
 	/**
 	 * This adds an URI to cache to be able to manage URL too
-	 * 
+	 *
 	 * @since 4.2.0
 	 */
-	public void addToCache(Table itf, URI uri) throws IOException {
+	public void addToCache(final Table itf, final URI uri) throws IOException {
 		cache.add(itf, uri);
 	}
 
 	/**
 	 * This retrieves content file for the given UID The object must be already
 	 * cached
-	 * 
+	 *
 	 * @return a File where to store content for the cached object, null
 	 *         otherwise
 	 */
-	public File getContentFile(URI uri) throws IOException {
+	public File getContentFile(final URI uri) throws IOException {
 		return cache.getContentFile(uri);
 	}
 
 	/**
 	 * This locks an entry in the cache. The object must be already cached.
-	 * 
+	 *
 	 * @since 7.0.0
 	 * @see Cache#unlock(URI)
 	 */
-	public void lock(URI uri) throws IOException {
+	public void lock(final URI uri) throws IOException {
 		cache.lock(uri);
 	}
 
 	/**
 	 * This unlocks an entry in the cache.
-	 * 
+	 *
 	 * @since 7.0.0
 	 * @see Cache#lock(URI)
 	 */
-	public void unlock(URI uri) throws IOException {
+	public void unlock(final URI uri) throws IOException {
 		cache.unlock(uri);
 	}
 
 	/**
 	 * This retrieves server version
-	 * 
+	 *
 	 * @return a Version object
 	 * @since 5.6.1
 	 */
-	public Version version() throws InvalidKeyException,
-	AccessControlException, IOException, SAXException,
-	URISyntaxException {
+	public Version version()
+			throws InvalidKeyException, AccessControlException, IOException, SAXException, URISyntaxException {
 		return version(new XMLRPCCommandVersion(newURI()));
 	}
 
 	/**
 	 * This retrieves server version
-	 * 
+	 *
 	 * @param command
 	 *            is the VERSION command to send to server
 	 * @return a Version object
 	 * @since 5.6.1
 	 */
-	public Version version(XMLRPCCommandVersion command)
-	throws InvalidKeyException, AccessControlException, IOException,
-	SAXException {
+	public Version version(final XMLRPCCommandVersion command)
+			throws InvalidKeyException, AccessControlException, IOException, SAXException {
 
 		Version version = null;
 		try {
@@ -927,36 +892,35 @@ public abstract class CommClient implements ClientAPI {
 
 	/**
 	 * This calls get(newURI(uid))
-	 * 
+	 *
 	 * @param uid
 	 *            is the UID of the object to retreive
 	 * @see #get(URI)
 	 * @since 1.1.0
 	 */
-	public Table get(UID uid) throws InvalidKeyException,
-	AccessControlException, IOException, ClassNotFoundException,
-	SAXException, URISyntaxException {
+	@Override
+	public Table get(final UID uid) throws InvalidKeyException, AccessControlException, IOException,
+			ClassNotFoundException, SAXException, URISyntaxException {
 		final URI uri = newURI(uid);
 		return get(uri);
 	}
 
 	/**
 	 * This calls get(uri, true)
-	 * 
+	 *
 	 * @param uri
 	 *            is the URI to get the object from
 	 * @see #get(URI, boolean)
 	 * @since 4.2.0
 	 */
-	public Table get(URI uri) throws InvalidKeyException,
-	AccessControlException, IOException, ClassNotFoundException,
-	SAXException, URISyntaxException {
+	public Table get(final URI uri) throws InvalidKeyException, AccessControlException, IOException,
+			ClassNotFoundException, SAXException, URISyntaxException {
 		return get(uri, false);
 	}
 
 	/**
 	 * This calls get(new XMLRPCCommandGet(uri), bypass)
-	 * 
+	 *
 	 * @param uid
 	 *            is the UID of the object to retreive
 	 * @param bypass
@@ -964,16 +928,15 @@ public abstract class CommClient implements ClientAPI {
 	 * @see #get(URI, boolean)
 	 * @since 1.0.0
 	 */
-	public Table get(UID uid, boolean bypass) throws InvalidKeyException,
-	AccessControlException, IOException, ClassNotFoundException,
-	SAXException, URISyntaxException {
+	public Table get(final UID uid, final boolean bypass) throws InvalidKeyException, AccessControlException,
+			IOException, ClassNotFoundException, SAXException, URISyntaxException {
 		final URI uri = newURI(uid);
 		return get(uri, bypass);
 	}
 
 	/**
 	 * This calls get(new XMLRPCCommandGet(uri), bypass)
-	 * 
+	 *
 	 * @param uri
 	 *            is the URI of the object to get
 	 * @param bypass
@@ -981,30 +944,30 @@ public abstract class CommClient implements ClientAPI {
 	 * @see #get(XMLRPCCommandGet, boolean)
 	 * @since 4.2.0
 	 */
-	public Table get(URI uri, boolean bypass) throws InvalidKeyException,
-	AccessControlException, IOException, SAXException,
-	URISyntaxException {
+	public Table get(final URI uri, final boolean bypass)
+			throws InvalidKeyException, AccessControlException, IOException, SAXException, URISyntaxException {
 		final XMLRPCCommandGet cmd = new XMLRPCCommandGet(uri);
 		return get(cmd, bypass);
 	}
 
 	/**
 	 * This calls get(command, true)
-	 * 
+	 *
 	 * @param command
 	 *            is the GET command to send to server
 	 * @see #get(XMLRPCCommandGet, boolean)
 	 * @since 1.0.0
 	 */
-	public Table get(XMLRPCCommandGet command) throws InvalidKeyException,
-	AccessControlException, IOException, SAXException {
+	@Override
+	public Table get(final XMLRPCCommandGet command)
+			throws InvalidKeyException, AccessControlException, IOException, SAXException {
 		return get(command, true);
 	}
 
 	/**
 	 * This retrieves an object definition given its URI, from server or from
 	 * cache, if already in cache.
-	 * 
+	 *
 	 * @param command
 	 *            is the GET command to send to server
 	 * @param bypass
@@ -1014,9 +977,8 @@ public abstract class CommClient implements ClientAPI {
 	 * @return an object definition
 	 * @since 1.0.0
 	 */
-	public Table get(XMLRPCCommandGet command, boolean bypass)
-	throws InvalidKeyException, AccessControlException, IOException,
-	SAXException {
+	public Table get(final XMLRPCCommandGet command, final boolean bypass)
+			throws InvalidKeyException, AccessControlException, IOException, SAXException {
 
 		if (!bypass) {
 			final Table object = cache.get(command.getURI());
@@ -1039,21 +1001,20 @@ public abstract class CommClient implements ClientAPI {
 
 	/**
 	 * This calls get(new XMLRPCCommandGet(uri), bypass)
-	 * 
+	 *
 	 * @param uid
 	 *            is the UID of the object to retreive
 	 * @see #get(URI, boolean)
 	 * @since 1.0.0
 	 */
-	public Table getTask(UID uid) throws InvalidKeyException,
-	AccessControlException, IOException, ClassNotFoundException,
-	SAXException, URISyntaxException {
+	public Table getTask(final UID uid) throws InvalidKeyException, AccessControlException, IOException,
+			ClassNotFoundException, SAXException, URISyntaxException {
 		return getTask(uid, false);
 	}
 
 	/**
 	 * This calls get(new XMLRPCCommandGet(uri), bypass)
-	 * 
+	 *
 	 * @param uid
 	 *            is the UID of the object to retreive
 	 * @param bypass
@@ -1061,30 +1022,28 @@ public abstract class CommClient implements ClientAPI {
 	 * @see #get(URI, boolean)
 	 * @since 1.0.0
 	 */
-	public Table getTask(UID uid, boolean bypass) throws InvalidKeyException,
-	AccessControlException, IOException, ClassNotFoundException,
-	SAXException, URISyntaxException {
+	public Table getTask(final UID uid, final boolean bypass) throws InvalidKeyException, AccessControlException,
+			IOException, ClassNotFoundException, SAXException, URISyntaxException {
 		final URI uri = newURI(uid);
 		return getTask(uri, bypass);
 	}
 
 	/**
 	 * This calls get(uri, true)
-	 * 
+	 *
 	 * @param uri
 	 *            is the URI to get the object from
 	 * @see #get(URI, boolean)
 	 * @since 4.2.0
 	 */
-	public Table getTask(URI uri) throws InvalidKeyException,
-	AccessControlException, IOException, ClassNotFoundException,
-	SAXException, URISyntaxException {
+	public Table getTask(final URI uri) throws InvalidKeyException, AccessControlException, IOException,
+			ClassNotFoundException, SAXException, URISyntaxException {
 		return getTask(uri, false);
 	}
 
 	/**
 	 * This calls get(new XMLRPCCommandGet(uri), bypass)
-	 * 
+	 *
 	 * @param uri
 	 *            is the URI of the object to get
 	 * @param bypass
@@ -1092,24 +1051,22 @@ public abstract class CommClient implements ClientAPI {
 	 * @see #get(XMLRPCCommandGet, boolean)
 	 * @since 4.2.0
 	 */
-	public Table getTask(URI uri, boolean bypass) throws InvalidKeyException,
-	AccessControlException, IOException, SAXException,
-	URISyntaxException {
+	public Table getTask(final URI uri, final boolean bypass)
+			throws InvalidKeyException, AccessControlException, IOException, SAXException, URISyntaxException {
 		final XMLRPCCommandGetTask cmd = new XMLRPCCommandGetTask(uri);
 		return getTask(cmd, bypass);
 	}
 
 	/**
 	 * This calls get(command, true)
-	 * 
+	 *
 	 * @param command
 	 *            is the GET command to send to server
 	 * @see #get(XMLRPCCommandGet, boolean)
 	 * @since 1.0.0
 	 */
-	public Table getTask(XMLRPCCommandGetTask command)
-	throws InvalidKeyException, AccessControlException, IOException,
-	SAXException {
+	public Table getTask(final XMLRPCCommandGetTask command)
+			throws InvalidKeyException, AccessControlException, IOException, SAXException {
 		return get(command, true);
 	}
 
@@ -1117,21 +1074,20 @@ public abstract class CommClient implements ClientAPI {
 	 * This calls get(command, true) On Apr, 2012, we introduce this to easy
 	 * client usage. This aims to retrieve task from either its UID **or** its
 	 * WORKUID
-	 * 
+	 *
 	 * @param command
 	 *            is the GET command to send to server
 	 * @see #get(XMLRPCCommandGet, boolean)
 	 * @since 8.0.0
 	 */
-	public Table getTask(XMLRPCCommandGetTask command, boolean bypass)
-	throws InvalidKeyException, AccessControlException, IOException,
-	SAXException {
+	public Table getTask(final XMLRPCCommandGetTask command, final boolean bypass)
+			throws InvalidKeyException, AccessControlException, IOException, SAXException {
 		return get(command, bypass);
 	}
 
 	/**
 	 * This calls chmod(new XMLRPCCommandChmod(uri), bypass)
-	 * 
+	 *
 	 * @param uid
 	 *            is the UID of the object to retreive
 	 * @param r
@@ -1139,16 +1095,16 @@ public abstract class CommClient implements ClientAPI {
 	 * @see #chmod(URI, XWAccessRights)
 	 * @since 5.8.0
 	 */
-	public void chmod(UID uid, XWAccessRights r) throws InvalidKeyException,
-	SAXException, AccessControlException, IOException,
-	URISyntaxException {
+	@Override
+	public void chmod(final UID uid, final XWAccessRights r)
+			throws InvalidKeyException, SAXException, AccessControlException, IOException, URISyntaxException {
 		final URI uri = newURI(uid);
 		chmod(uri, r);
 	}
 
 	/**
 	 * This calls chmod(new XMLRPCCommandChmod(uri), bypass)
-	 * 
+	 *
 	 * @param uri
 	 *            is the URI of the object to chmod
 	 * @param r
@@ -1156,21 +1112,21 @@ public abstract class CommClient implements ClientAPI {
 	 * @see #chmod(XMLRPCCommandChmod)
 	 * @since 5.8.0
 	 */
-	public void chmod(URI uri, XWAccessRights r) throws InvalidKeyException,
-	AccessControlException, IOException, SAXException {
+	public void chmod(final URI uri, final XWAccessRights r)
+			throws InvalidKeyException, AccessControlException, IOException, SAXException {
 		chmod(new XMLRPCCommandChmod(uri, r));
 	}
 
 	/**
 	 * This retrieves an object definition given its URI, from server or from
 	 * cache, if already in cache.
-	 * 
+	 *
 	 * @param command
 	 *            is the CHMOD command to send to server
 	 * @since 5.8.0
 	 */
-	public void chmod(XMLRPCCommandChmod command) throws InvalidKeyException,
-	AccessControlException, IOException, SAXException {
+	public void chmod(final XMLRPCCommandChmod command)
+			throws InvalidKeyException, AccessControlException, IOException, SAXException {
 
 		try {
 			sendCommand(command);
@@ -1186,9 +1142,9 @@ public abstract class CommClient implements ClientAPI {
 	/**
 	 * This sends (creates or updates) an application definition
 	 */
-	public void send(Table obj) throws InvalidKeyException,
-	AccessControlException, IOException, ClassNotFoundException,
-	SAXException, URISyntaxException {
+	@Override
+	public void send(final Table obj) throws InvalidKeyException, AccessControlException, IOException,
+			ClassNotFoundException, SAXException, URISyntaxException {
 		final URI uri = newURI();
 		final XMLRPCCommandSend cmd = new XMLRPCCommandSend(uri, obj);
 		send(cmd);
@@ -1197,22 +1153,21 @@ public abstract class CommClient implements ClientAPI {
 	/**
 	 * This retrieves an application definition from server, given its name.
 	 * Application is always downloaded from server, even if on already in cache
-	 * 
+	 *
 	 * @param name
 	 *            is the name of the application
 	 * @return an application definition
 	 * @since 2.0.0
 	 */
-	public AppInterface getApp(String name) throws InvalidKeyException,
-	AccessControlException, IOException, ClassNotFoundException,
-	SAXException, URISyntaxException {
+	public AppInterface getApp(final String name) throws InvalidKeyException, AccessControlException, IOException,
+			ClassNotFoundException, SAXException, URISyntaxException {
 		return getApp(name, true);
 	}
 
 	/**
 	 * This retrieves an application definition from server, given its name. If
 	 * application is already in cache, it is not downloaded
-	 * 
+	 *
 	 * @param name
 	 *            is the name of the application
 	 * @param bypass
@@ -1221,9 +1176,8 @@ public abstract class CommClient implements ClientAPI {
 	 * @return an application definition
 	 * @since 2.0.0
 	 */
-	public AppInterface getApp(String name, boolean bypass)
-	throws InvalidKeyException, AccessControlException, IOException,
-	ClassNotFoundException, SAXException, URISyntaxException {
+	public AppInterface getApp(final String name, final boolean bypass) throws InvalidKeyException,
+			AccessControlException, IOException, ClassNotFoundException, SAXException, URISyntaxException {
 
 		if (!bypass) {
 			final AppInterface app = cache.appByName(name);
@@ -1234,8 +1188,8 @@ public abstract class CommClient implements ClientAPI {
 
 		Vector<XMLValue> appVector = getApps().getXmlValues();
 		try {
-			logger.finest("commClient#getApp(" + name + ") vector.size = "
-					+ appVector.size() + " " + appVector.toString());
+			logger.finest(
+					"commClient#getApp(" + name + ") vector.size = " + appVector.size() + " " + appVector.toString());
 
 			final Enumeration<XMLValue> myenum = appVector.elements();
 			for (; myenum.hasMoreElements();) {
@@ -1250,8 +1204,7 @@ public abstract class CommClient implements ClientAPI {
 
 				uid = null;
 
-				if ((theApp != null)
-						&& (theApp.getName().compareToIgnoreCase(name) == 0)) {
+				if ((theApp != null) && (theApp.getName().compareToIgnoreCase(name) == 0)) {
 					return theApp;
 				}
 			}
@@ -1264,26 +1217,25 @@ public abstract class CommClient implements ClientAPI {
 
 	/**
 	 * This retrieves all applications UID from server
-	 * 
+	 *
 	 * @return a vector of UIDs
 	 */
-	public XMLVector getApps() throws InvalidKeyException,
-	AccessControlException, IOException, SAXException,
-	URISyntaxException {
+	@Override
+	public XMLVector getApps()
+			throws InvalidKeyException, AccessControlException, IOException, SAXException, URISyntaxException {
 		final URI uri = newURI();
-		final XMLRPCCommandGetApps cmd = new XMLRPCCommandGetApps(uri,
-				config.getUser());
+		final XMLRPCCommandGetApps cmd = new XMLRPCCommandGetApps(uri, config.getUser());
 		return getApps(cmd);
 	}
 
 	/**
 	 * This retrieves all applications UID from server
-	 * 
+	 *
 	 * @return a vector of UIDs
 	 */
-	public XMLVector getApps(XMLRPCCommandGetApps command)
-	throws InvalidKeyException, AccessControlException, IOException,
-	SAXException {
+	@Override
+	public XMLVector getApps(final XMLRPCCommandGetApps command)
+			throws InvalidKeyException, AccessControlException, IOException, SAXException {
 
 		XMLVector xmlv = null;
 		try {
@@ -1297,23 +1249,23 @@ public abstract class CommClient implements ClientAPI {
 
 	/**
 	 * This removes an application from server
-	 * 
+	 *
 	 * @param uri
 	 *            is the URI of the object to remove
 	 */
-	public void remove(URI uri) throws IOException, InvalidKeyException,
-	AccessControlException {
+	@Override
+	public void remove(final URI uri) throws IOException, InvalidKeyException, AccessControlException {
 		remove(new XMLRPCCommandRemove(uri));
 	}
 
 	/**
 	 * This removes an object definition from server
-	 * 
+	 *
 	 * @param command
 	 *            is the command to use
 	 */
-	public void remove(XMLRPCCommandRemove command) throws InvalidKeyException,
-	AccessControlException, IOException {
+	public void remove(final XMLRPCCommandRemove command)
+			throws InvalidKeyException, AccessControlException, IOException {
 
 		try {
 			sendCommand(command);
@@ -1327,28 +1279,27 @@ public abstract class CommClient implements ClientAPI {
 
 	/**
 	 * This retrieves all datas UID from server
-	 * 
+	 *
 	 * @return a vector of UIDs
 	 * @since 2.0.0
 	 */
-	public XMLVector getDatas() throws InvalidKeyException,
-	AccessControlException, IOException, SAXException,
-	URISyntaxException {
+	@Override
+	public XMLVector getDatas()
+			throws InvalidKeyException, AccessControlException, IOException, SAXException, URISyntaxException {
 		final URI uri = newURI();
-		final XMLRPCCommandGetDatas cmd = new XMLRPCCommandGetDatas(uri,
-				config.getUser());
+		final XMLRPCCommandGetDatas cmd = new XMLRPCCommandGetDatas(uri, config.getUser());
 		return getDatas(cmd);
 	}
 
 	/**
 	 * This retrieves all datas UID from server
-	 * 
+	 *
 	 * @return a vector of UIDs
 	 * @since 2.0.0
 	 */
-	public XMLVector getDatas(XMLRPCCommandGetDatas command)
-	throws InvalidKeyException, AccessControlException, IOException,
-	SAXException {
+	@Override
+	public XMLVector getDatas(final XMLRPCCommandGetDatas command)
+			throws InvalidKeyException, AccessControlException, IOException, SAXException {
 
 		XMLVector xmlv = null;
 		try {
@@ -1362,46 +1313,46 @@ public abstract class CommClient implements ClientAPI {
 
 	/**
 	 * This uploads a data content to server
-	 * 
+	 *
 	 * @param uid
 	 *            is the UID of the data to upload
 	 * @param content
 	 *            represents a File to get data to upload
 	 * @since 2.0.0
 	 */
-	public void uploadData(UID uid, File content) throws InvalidKeyException,
-	AccessControlException, IOException, URISyntaxException,
-	SAXException {
+	public void uploadData(final UID uid, final File content)
+			throws InvalidKeyException, AccessControlException, IOException, URISyntaxException, SAXException {
 		final URI uri = newURI(uid);
 		uploadData(uri, content);
 	}
 
 	/**
 	 * This uploads a data content to server
-	 * 
+	 *
 	 * @param uri
 	 *            is the data URI to upload
 	 * @param content
 	 *            represents a File to get data to upload
 	 * @since 4.2.0
 	 */
-	public void uploadData(URI uri, File content) throws InvalidKeyException,
-	AccessControlException, IOException, SAXException {
+	public void uploadData(final URI uri, final File content)
+			throws InvalidKeyException, AccessControlException, IOException, SAXException {
 		final XMLRPCCommandUploadData cmd = new XMLRPCCommandUploadData(uri);
 		uploadData(cmd, content);
 	}
 
 	/**
 	 * This uploads a data content to server
-	 * 
+	 *
 	 * @param command
 	 *            is the command to send to server
 	 * @param content
 	 *            represents a File to get data to upload
 	 * @since 2.0.0
 	 */
-	public void uploadData(XMLRPCCommandUploadData command, File content)
-	throws InvalidKeyException, AccessControlException, IOException {
+	@Override
+	public void uploadData(final XMLRPCCommandUploadData command, final File content)
+			throws InvalidKeyException, AccessControlException, IOException {
 
 		if (!content.exists()) {
 			throw new IOException(content.getCanonicalPath() + " not found");
@@ -1422,57 +1373,59 @@ public abstract class CommClient implements ClientAPI {
 
 	/**
 	 * This uploads a data to server from a file which name is the data UID
-	 * 
+	 *
 	 * @param command
 	 *            is the XMLRPC command
 	 * @since 9.0.0
 	 */
-	public void uploadData(XMLRPCCommandUploadData command)
-	throws InvalidKeyException, AccessControlException, IOException {
+	public void uploadData(final XMLRPCCommandUploadData command)
+			throws InvalidKeyException, AccessControlException, IOException {
 		uploadData(command, new File(command.getURI().getUID().toString()));
 	}
 
 	/**
 	 * This downloads a data from server
-	 * 
+	 *
 	 * @param uid
 	 *            is the UID of the data to download
 	 * @param content
 	 *            represents a File to store downloaded data
 	 * @since 2.0.0
 	 */
-	public void downloadData(UID uid, File content) throws InvalidKeyException,
-	AccessControlException, IOException, URISyntaxException {
+	@Override
+	public void downloadData(final UID uid, final File content)
+			throws InvalidKeyException, AccessControlException, IOException, URISyntaxException {
 		final URI uri = newURI(uid);
 		downloadData(uri, content);
 	}
 
 	/**
 	 * This downloads a data from server
-	 * 
+	 *
 	 * @param uri
 	 *            is the URI of the data to download
 	 * @param content
 	 *            represents a File to store downloaded data
 	 * @since 4.2.0
 	 */
-	public void downloadData(URI uri, File content) throws InvalidKeyException,
-	AccessControlException, IOException {
+	public void downloadData(final URI uri, final File content)
+			throws InvalidKeyException, AccessControlException, IOException {
 		final XMLRPCCommandDownloadData cmd = new XMLRPCCommandDownloadData(uri);
 		downloadData(cmd, content);
 	}
 
 	/**
 	 * This downloads a data from server
-	 * 
+	 *
 	 * @param command
 	 *            is the XMLRPC command
 	 * @param content
 	 *            represents a File to store downloaded data
 	 * @since 2.0.0
 	 */
-	public void downloadData(XMLRPCCommandDownloadData command, File content)
-	throws InvalidKeyException, AccessControlException, IOException {
+	@Override
+	public void downloadData(final XMLRPCCommandDownloadData command, final File content)
+			throws InvalidKeyException, AccessControlException, IOException {
 		try {
 			sendCommand(command);
 			readFile(content);
@@ -1485,38 +1438,37 @@ public abstract class CommClient implements ClientAPI {
 
 	/**
 	 * This downloads a data from server to file which name is the data UID
-	 * 
+	 *
 	 * @param command
 	 *            is the XMLRPC command
 	 * @since 9.0.0
 	 */
-	public void downloadData(XMLRPCCommandDownloadData command)
-	throws InvalidKeyException, AccessControlException, IOException {
+	public void downloadData(final XMLRPCCommandDownloadData command)
+			throws InvalidKeyException, AccessControlException, IOException {
 		downloadData(command, new File(command.getURI().getUID().toString()));
 	}
 
 	/**
 	 * This retrieves all groups UID from server
-	 * 
+	 *
 	 * @return a vector of UIDs
 	 */
-	public XMLVector getGroups() throws InvalidKeyException,
-	AccessControlException, IOException, SAXException,
-	URISyntaxException {
+	@Override
+	public XMLVector getGroups()
+			throws InvalidKeyException, AccessControlException, IOException, SAXException, URISyntaxException {
 		final URI uri = newURI();
-		final XMLRPCCommandGetGroups cmd = new XMLRPCCommandGetGroups(uri,
-				config.getUser());
+		final XMLRPCCommandGetGroups cmd = new XMLRPCCommandGetGroups(uri, config.getUser());
 		return getGroups(cmd);
 	}
 
 	/**
 	 * This retrieves all groups UID from server
-	 * 
+	 *
 	 * @return a vector of UIDs
 	 */
-	public XMLVector getGroups(XMLRPCCommandGetGroups command)
-	throws InvalidKeyException, AccessControlException, IOException,
-	SAXException {
+	@Override
+	public XMLVector getGroups(final XMLRPCCommandGetGroups command)
+			throws InvalidKeyException, AccessControlException, IOException, SAXException {
 
 		XMLVector xmlv = null;
 		try {
@@ -1531,43 +1483,43 @@ public abstract class CommClient implements ClientAPI {
 	/**
 	 * This retrieves all works for the given group. This connect to current
 	 * dispatcher
-	 * 
+	 *
 	 * @param uid
 	 *            is the UID of the group to retreive works for
 	 * @return a Vector of UIDs
 	 * @see #newURI(UID)
 	 */
-	public XMLVector getGroupWorks(UID uid) throws InvalidKeyException,
-	AccessControlException, IOException, SAXException,
-	URISyntaxException {
+	@Override
+	public XMLVector getGroupWorks(final UID uid)
+			throws InvalidKeyException, AccessControlException, IOException, SAXException, URISyntaxException {
 		final URI uri = newURI(uid);
 		return getGroupWorks(uri);
 	}
 
 	/**
 	 * This retrieves all works for the given group
-	 * 
+	 *
 	 * @param uri
 	 *            is the URI to connect to ; its path must contains the UID of
 	 *            the group to retreive works for
 	 * @return a Vector of UIDs
 	 * @since 4.2.0
 	 */
-	public XMLVector getGroupWorks(URI uri) throws InvalidKeyException,
-	AccessControlException, IOException, SAXException {
-		final XMLRPCCommandGetGroupWorks cmd = new XMLRPCCommandGetGroupWorks(
-				uri);
+	@Override
+	public XMLVector getGroupWorks(final URI uri)
+			throws InvalidKeyException, AccessControlException, IOException, SAXException {
+		final XMLRPCCommandGetGroupWorks cmd = new XMLRPCCommandGetGroupWorks(uri);
 		return getGroupWorks(cmd);
 	}
 
 	/**
 	 * This retrieves all works for the given group
-	 * 
+	 *
 	 * @return a Vector of UIDs
 	 */
-	public XMLVector getGroupWorks(XMLRPCCommandGetGroupWorks command)
-	throws InvalidKeyException, AccessControlException, IOException,
-	SAXException {
+	@Override
+	public XMLVector getGroupWorks(final XMLRPCCommandGetGroupWorks command)
+			throws InvalidKeyException, AccessControlException, IOException, SAXException {
 
 		XMLVector xmlv = null;
 		try {
@@ -1581,27 +1533,26 @@ public abstract class CommClient implements ClientAPI {
 
 	/**
 	 * This retrieves all hosts from server
-	 * 
+	 *
 	 * @return a vector of host UIDs
 	 */
-	public XMLVector getHosts() throws InvalidKeyException,
-	AccessControlException, IOException, SAXException,
-	URISyntaxException {
+	@Override
+	public XMLVector getHosts()
+			throws InvalidKeyException, AccessControlException, IOException, SAXException, URISyntaxException {
 
 		final URI uri = newURI();
-		final XMLRPCCommandGetHosts cmd = new XMLRPCCommandGetHosts(uri,
-				config.getUser());
+		final XMLRPCCommandGetHosts cmd = new XMLRPCCommandGetHosts(uri, config.getUser());
 		return getHosts(cmd);
 	}
 
 	/**
 	 * This retrieves all hosts from server
-	 * 
+	 *
 	 * @return a vector of host UIDs
 	 */
-	public XMLVector getHosts(XMLRPCCommandGetHosts command)
-	throws InvalidKeyException, AccessControlException, IOException,
-	SAXException {
+	@Override
+	public XMLVector getHosts(final XMLRPCCommandGetHosts command)
+			throws InvalidKeyException, AccessControlException, IOException, SAXException {
 
 		XMLVector xmlv = null;
 		try {
@@ -1619,22 +1570,22 @@ public abstract class CommClient implements ClientAPI {
 	 * @see #send(XMLRPCCommandSend)
 	 */
 	@Deprecated
-	public void activateWorker(UID uid, boolean flag)
-	throws InvalidKeyException, AccessControlException, IOException,
-	URISyntaxException {
+	public void activateWorker(final UID uid, final boolean flag)
+			throws InvalidKeyException, AccessControlException, IOException, URISyntaxException {
 		activateHost(uid, flag);
 	}
 
 	/**
 	 * Set host active flag.<br />
-	 * 
+	 *
 	 * @param uid
 	 *            is the host uid
 	 * @param flag
 	 *            is the active flag
 	 */
-	public void activateHost(UID uid, boolean flag) throws InvalidKeyException,
-	AccessControlException, IOException, URISyntaxException {
+	@Override
+	public void activateHost(final UID uid, final boolean flag)
+			throws InvalidKeyException, AccessControlException, IOException, URISyntaxException {
 
 		final URI uri = newURI(uid);
 		final XMLRPCCommandActivateHost cmd = new XMLRPCCommandActivateHost(uri);
@@ -1643,12 +1594,13 @@ public abstract class CommClient implements ClientAPI {
 
 	/**
 	 * Set host active flag.<br />
-	 * 
+	 *
 	 * @param command
 	 *            is the command to send to server
 	 */
-	public void activateHost(XMLRPCCommandActivateHost command)
-	throws InvalidKeyException, AccessControlException, IOException {
+	@Override
+	public void activateHost(final XMLRPCCommandActivateHost command)
+			throws InvalidKeyException, AccessControlException, IOException {
 
 		try {
 			sendCommand(command);
@@ -1662,50 +1614,50 @@ public abstract class CommClient implements ClientAPI {
 	/**
 	 * This is not implemented yet
 	 */
-	public int setWorkersParameters(int nbWorkers, WorkerParameters p)
-	throws InvalidKeyException, AccessControlException, IOException {
-		throw new IOException(
-		"TCPClient#setWorkersParameters is not implemented yet");
+	@Override
+	public int setWorkersParameters(final int nbWorkers, final WorkerParameters p)
+			throws InvalidKeyException, AccessControlException, IOException {
+		throw new IOException("TCPClient#setWorkersParameters is not implemented yet");
 	}
 
 	/**
 	 * This is not implemented yet
 	 */
+	@Override
 	public WorkerParameters getWorkersParameters() throws IOException {
-		throw new IOException(
-		"TCPClient#getWorkersParameters is not implemented yet");
+		throw new IOException("TCPClient#getWorkersParameters is not implemented yet");
 	}
 
 	/**
 	 * This is not implemented yet
 	 */
-	public int setWorkersNb(int nb) throws IOException {
+	@Override
+	public int setWorkersNb(final int nb) throws IOException {
 		throw new IOException("TCPClient#setWorkersNb is not implemented yet");
 	}
 
 	/**
 	 * This retrieves all sessions from server
-	 * 
+	 *
 	 * @return a vector of UIDs
 	 */
-	public XMLVector getSessions() throws InvalidKeyException,
-	AccessControlException, IOException, SAXException,
-	URISyntaxException {
+	@Override
+	public XMLVector getSessions()
+			throws InvalidKeyException, AccessControlException, IOException, SAXException, URISyntaxException {
 
 		final URI uri = newURI();
-		final XMLRPCCommandGetSessions cmd = new XMLRPCCommandGetSessions(uri,
-				config.getUser());
+		final XMLRPCCommandGetSessions cmd = new XMLRPCCommandGetSessions(uri, config.getUser());
 		return getSessions(cmd);
 	}
 
 	/**
 	 * This retrieves all sessions from server
-	 * 
+	 *
 	 * @return a vector of UIDs
 	 */
-	public XMLVector getSessions(XMLRPCCommandGetSessions command)
-	throws InvalidKeyException, AccessControlException, IOException,
-	SAXException {
+	@Override
+	public XMLVector getSessions(final XMLRPCCommandGetSessions command)
+			throws InvalidKeyException, AccessControlException, IOException, SAXException {
 
 		XMLVector xmlv = null;
 		try {
@@ -1719,31 +1671,30 @@ public abstract class CommClient implements ClientAPI {
 
 	/**
 	 * This retrieves all works for the given session
-	 * 
+	 *
 	 * @param uid
 	 *            is the session UID to retreive works for
 	 * @return a Vector of UID
 	 */
-	public XMLVector getSessionWorks(UID uid) throws InvalidKeyException,
-	AccessControlException, IOException, SAXException,
-	URISyntaxException {
+	@Override
+	public XMLVector getSessionWorks(final UID uid)
+			throws InvalidKeyException, AccessControlException, IOException, SAXException, URISyntaxException {
 
 		final URI uri = newURI(uid);
-		final XMLRPCCommandGetSessionWorks cmd = new XMLRPCCommandGetSessionWorks(
-				uri);
+		final XMLRPCCommandGetSessionWorks cmd = new XMLRPCCommandGetSessionWorks(uri);
 		return getSessionWorks(cmd);
 	}
 
 	/**
 	 * This retrieves all works for the given session
-	 * 
+	 *
 	 * @param command
 	 *            is the command to send to server
 	 * @return a Vector of UID
 	 */
-	public XMLVector getSessionWorks(XMLRPCCommandGetSessionWorks command)
-	throws InvalidKeyException, AccessControlException, IOException,
-	SAXException {
+	@Override
+	public XMLVector getSessionWorks(final XMLRPCCommandGetSessionWorks command)
+			throws InvalidKeyException, AccessControlException, IOException, SAXException {
 
 		XMLVector xmlv = null;
 		try {
@@ -1757,27 +1708,26 @@ public abstract class CommClient implements ClientAPI {
 
 	/**
 	 * This retrieves all tasks from server
-	 * 
+	 *
 	 * @return a vector of UIDs
 	 */
-	public XMLVector getTasks() throws InvalidKeyException,
-	AccessControlException, IOException, SAXException,
-	URISyntaxException {
+	@Override
+	public XMLVector getTasks()
+			throws InvalidKeyException, AccessControlException, IOException, SAXException, URISyntaxException {
 
 		final URI uri = newURI();
-		final XMLRPCCommandGetTasks cmd = new XMLRPCCommandGetTasks(uri,
-				config.getUser());
+		final XMLRPCCommandGetTasks cmd = new XMLRPCCommandGetTasks(uri, config.getUser());
 		return getTasks(cmd);
 	}
 
 	/**
 	 * This retrieves all tasks from server
-	 * 
+	 *
 	 * @return a vector of UIDs
 	 */
-	public XMLVector getTasks(XMLRPCCommandGetTasks command)
-	throws InvalidKeyException, AccessControlException, IOException,
-	SAXException {
+	@Override
+	public XMLVector getTasks(final XMLRPCCommandGetTasks command)
+			throws InvalidKeyException, AccessControlException, IOException, SAXException {
 
 		XMLVector xmlv = null;
 		try {
@@ -1791,36 +1741,35 @@ public abstract class CommClient implements ClientAPI {
 
 	/**
 	 * This sends a work definition to server
-	 * 
+	 *
 	 * @see #send(Table)
 	 */
-	public void submit(WorkInterface work) throws InvalidKeyException,
-	AccessControlException, IOException, ClassNotFoundException,
-	SAXException, URISyntaxException {
+	public void submit(final WorkInterface work) throws InvalidKeyException, AccessControlException, IOException,
+			ClassNotFoundException, SAXException, URISyntaxException {
 		send(work);
 	}
 
 	/**
 	 * This requests a work from server
-	 * 
+	 *
 	 * @param h
 	 *            describes the worker making this call
 	 * @return a WorkInterface or null if no work available
 	 */
-	public WorkInterface workRequest(HostInterface h)
-	throws InvalidKeyException, AccessControlException, IOException,
-	SAXException, URISyntaxException {
+	@Override
+	public WorkInterface workRequest(final HostInterface h)
+			throws InvalidKeyException, AccessControlException, IOException, SAXException, URISyntaxException {
 		return workRequest(new XMLRPCCommandWorkRequest(newURI(), h));
 	}
 
 	/**
 	 * This requests a work from server
-	 * 
+	 *
 	 * @return a WorkInterface or null if no work available
 	 */
-	public WorkInterface workRequest(XMLRPCCommandWorkRequest command)
-	throws InvalidKeyException, AccessControlException, IOException,
-	SAXException {
+	@Override
+	public WorkInterface workRequest(final XMLRPCCommandWorkRequest command)
+			throws InvalidKeyException, AccessControlException, IOException, SAXException {
 
 		try {
 			sendCommand(command);
@@ -1832,27 +1781,26 @@ public abstract class CommClient implements ClientAPI {
 
 	/**
 	 * This retrieves all works from server
-	 * 
+	 *
 	 * @return a vector of UIDs
 	 */
-	public XMLVector getWorks() throws InvalidKeyException,
-	AccessControlException, IOException, SAXException,
-	URISyntaxException {
+	@Override
+	public XMLVector getWorks()
+			throws InvalidKeyException, AccessControlException, IOException, SAXException, URISyntaxException {
 
 		final URI uri = newURI();
-		final XMLRPCCommandGetWorks cmd = new XMLRPCCommandGetWorks(uri,
-				config.getUser());
+		final XMLRPCCommandGetWorks cmd = new XMLRPCCommandGetWorks(uri, config.getUser());
 		return getWorks(cmd);
 	}
 
 	/**
 	 * This retrieves all works from server
-	 * 
+	 *
 	 * @return a vector of UIDs
 	 */
-	public XMLVector getWorks(XMLRPCCommandGetWorks command)
-	throws InvalidKeyException, AccessControlException, IOException,
-	SAXException {
+	@Override
+	public XMLVector getWorks(final XMLRPCCommandGetWorks command)
+			throws InvalidKeyException, AccessControlException, IOException, SAXException {
 
 		XMLVector xmlv = null;
 		try {
@@ -1866,25 +1814,27 @@ public abstract class CommClient implements ClientAPI {
 
 	/**
 	 * This broadcasts a new work to all workers
-	 * 
+	 *
 	 * @param w
 	 *            is the work to broadcast to all workers
 	 */
-	public void broadcast(WorkInterface w) throws InvalidKeyException,
-	AccessControlException, IOException, URISyntaxException {
+	@Override
+	public void broadcast(final WorkInterface w)
+			throws InvalidKeyException, AccessControlException, IOException, URISyntaxException {
 		broadcast(w.getUID());
 	}
 
 	/**
 	 * This broadcasts a new work to all workers This connect to current
 	 * dispatcher
-	 * 
+	 *
 	 * @param uid
 	 *            defines the UID of the work to broadcast
 	 * @see #newURI(UID)
 	 */
-	public void broadcast(UID uid) throws InvalidKeyException,
-	AccessControlException, IOException, URISyntaxException {
+	@Override
+	public void broadcast(final UID uid)
+			throws InvalidKeyException, AccessControlException, IOException, URISyntaxException {
 
 		final URI uri = newURI(uid);
 		broadcast(uri);
@@ -1892,28 +1842,28 @@ public abstract class CommClient implements ClientAPI {
 
 	/**
 	 * This broadcasts a new work to all workers
-	 * 
+	 *
 	 * @param uri
 	 *            is the URI to connect to ; its path must contains the UID of
 	 *            the work to broadcast
 	 * @since 4.2.0
 	 */
-	public void broadcast(URI uri) throws InvalidKeyException,
-	AccessControlException, IOException {
+	@Override
+	public void broadcast(final URI uri) throws InvalidKeyException, AccessControlException, IOException {
 
-		final XMLRPCCommandBroadcastWork cmd = new XMLRPCCommandBroadcastWork(
-				uri);
+		final XMLRPCCommandBroadcastWork cmd = new XMLRPCCommandBroadcastWork(uri);
 		broadcast(cmd);
 	}
 
 	/**
 	 * This broadcasts a new work to all workers
-	 * 
+	 *
 	 * @param command
 	 *            is the command to send to server
 	 */
-	public void broadcast(XMLRPCCommandBroadcastWork command)
-	throws InvalidKeyException, AccessControlException, IOException {
+	@Override
+	public void broadcast(final XMLRPCCommandBroadcastWork command)
+			throws InvalidKeyException, AccessControlException, IOException {
 		try {
 			sendCommand(command);
 			newXMLVector();
@@ -1926,11 +1876,11 @@ public abstract class CommClient implements ClientAPI {
 
 	/**
 	 * This retrieves the SmartSockets hub address from server
-	 * 
+	 *
 	 * @return an hashtable containing some parameters
 	 */
-	public XMLHashtable getHubAddress() throws InvalidKeyException,
-	AccessControlException, IOException, SAXException {
+	@Override
+	public XMLHashtable getHubAddress() throws InvalidKeyException, AccessControlException, IOException, SAXException {
 
 		try {
 			final XMLRPCCommandGetHubAddr cmd = new XMLRPCCommandGetHubAddr();
@@ -1943,30 +1893,30 @@ public abstract class CommClient implements ClientAPI {
 
 	/**
 	 * This checks the provided work accordingly to the server status
-	 * 
+	 *
 	 * @param uid
 	 *            is the job UID
 	 * @return an hashtable containing some parameters
 	 */
-	public XMLHashtable workAlive(final UID uid) throws InvalidKeyException,
-	AccessControlException, IOException, SAXException,
-	URISyntaxException {
+	@Override
+	public XMLHashtable workAlive(final UID uid)
+			throws InvalidKeyException, AccessControlException, IOException, SAXException, URISyntaxException {
 
 		final URI uri = newURI(uid);
-		final XMLRPCCommandWorkAliveByUID cmd = new XMLRPCCommandWorkAliveByUID(
-				uri, config.getUser(), config.getHost());
+		final XMLRPCCommandWorkAliveByUID cmd = new XMLRPCCommandWorkAliveByUID(uri, config.getUser(),
+				config.getHost());
 		return workAliveByUid(cmd);
 	}
 
 	/**
 	 * This checks the provided work accordingly to the server status
-	 * 
+	 *
 	 * @param cmd
 	 *            is the command to send
 	 * @return an hashtable containing some parameters
 	 */
-	public XMLHashtable workAliveByUid(final XMLRPCCommandWorkAliveByUID cmd) throws InvalidKeyException,
-	AccessControlException, IOException, SAXException {
+	public XMLHashtable workAliveByUid(final XMLRPCCommandWorkAliveByUID cmd)
+			throws InvalidKeyException, AccessControlException, IOException, SAXException {
 
 		try {
 			sendCommand(cmd);
@@ -1978,19 +1928,18 @@ public abstract class CommClient implements ClientAPI {
 
 	/**
 	 * This synchronizes with the server
-	 * 
+	 *
 	 * @param p
 	 *            is the workAlive parameter
 	 * @return an hashtable containing some parameters
 	 */
-	public XMLHashtable workAlive(Hashtable p) throws InvalidKeyException,
-	AccessControlException, IOException, SAXException,
-	URISyntaxException {
+	@Override
+	public XMLHashtable workAlive(final Hashtable p)
+			throws InvalidKeyException, AccessControlException, IOException, SAXException, URISyntaxException {
 
 		try {
 			final URI uri = newURI();
-			final XMLRPCCommandWorkAlive cmd = new XMLRPCCommandWorkAlive(uri,
-					config.getUser(), config.getHost(), p);
+			final XMLRPCCommandWorkAlive cmd = new XMLRPCCommandWorkAlive(uri, config.getUser(), config.getHost(), p);
 			return workAlive(cmd);
 		} finally {
 			close();
@@ -1999,13 +1948,13 @@ public abstract class CommClient implements ClientAPI {
 
 	/**
 	 * This synchronizes with the server
-	 * 
+	 *
 	 * @param cmd
 	 *            is the command to send
 	 * @return an hahtable containing some parameters
 	 */
-	public XMLHashtable workAlive(final XMLRPCCommandWorkAlive cmd) throws InvalidKeyException,
-	AccessControlException, IOException, SAXException {
+	public XMLHashtable workAlive(final XMLRPCCommandWorkAlive cmd)
+			throws InvalidKeyException, AccessControlException, IOException, SAXException {
 
 		try {
 			sendCommand(cmd);
@@ -2018,8 +1967,7 @@ public abstract class CommClient implements ClientAPI {
 	/**
 	 * This pings the server
 	 */
-	public void ping() throws InvalidKeyException, AccessControlException,
-	IOException {
+	public void ping() throws InvalidKeyException, AccessControlException, IOException {
 
 		try {
 			final URI uri = newURI();
@@ -2034,8 +1982,7 @@ public abstract class CommClient implements ClientAPI {
 	/**
 	 * This pings the server
 	 */
-	public void ping(final XMLRPCCommandPing cmd) throws InvalidKeyException, AccessControlException,
-	IOException {
+	public void ping(final XMLRPCCommandPing cmd) throws InvalidKeyException, AccessControlException, IOException {
 
 		try {
 			sendCommand(cmd);
@@ -2048,27 +1995,26 @@ public abstract class CommClient implements ClientAPI {
 
 	/**
 	 * This retrieves all traces from server
-	 * 
+	 *
 	 * @return a vector of UIDs
 	 */
-	public XMLVector getTraces() throws InvalidKeyException,
-	AccessControlException, IOException, SAXException,
-	URISyntaxException {
+	@Override
+	public XMLVector getTraces()
+			throws InvalidKeyException, AccessControlException, IOException, SAXException, URISyntaxException {
 
 		final URI uri = newURI();
-		final XMLRPCCommandGetTraces cmd = new XMLRPCCommandGetTraces(uri,
-				config.getUser());
+		final XMLRPCCommandGetTraces cmd = new XMLRPCCommandGetTraces(uri, config.getUser());
 		return getTraces(cmd);
 	}
 
 	/**
 	 * This retrieves all traces from server
-	 * 
+	 *
 	 * @return a vector of UIDs
 	 */
-	public XMLVector getTraces(XMLRPCCommandGetTraces command)
-	throws InvalidKeyException, AccessControlException, IOException,
-	SAXException {
+	@Override
+	public XMLVector getTraces(final XMLRPCCommandGetTraces command)
+			throws InvalidKeyException, AccessControlException, IOException, SAXException {
 
 		XMLVector xmlv = null;
 		try {
@@ -2082,37 +2028,36 @@ public abstract class CommClient implements ClientAPI {
 
 	/**
 	 * Get all known traces.
-	 * 
+	 *
 	 * @return an vector of traces UID
 	 */
-	public XMLVector getTraces(Date since, Date before) throws IOException,
-	SAXException {
+	@Override
+	public XMLVector getTraces(final Date since, final Date before) throws IOException, SAXException {
 		throw new IOException("getTraces not implemented");
 	}
 
 	/**
 	 * This retrieves all usergroups from server
-	 * 
+	 *
 	 * @return a vector of UIDs
 	 */
-	public XMLVector getUserGroups() throws InvalidKeyException,
-	AccessControlException, IOException, SAXException,
-	URISyntaxException {
+	@Override
+	public XMLVector getUserGroups()
+			throws InvalidKeyException, AccessControlException, IOException, SAXException, URISyntaxException {
 
 		final URI uri = newURI();
-		final XMLRPCCommandGetUserGroups cmd = new XMLRPCCommandGetUserGroups(
-				uri, config.getUser());
+		final XMLRPCCommandGetUserGroups cmd = new XMLRPCCommandGetUserGroups(uri, config.getUser());
 		return getUserGroups(cmd);
 	}
 
 	/**
 	 * This retrieves all usergroups from server
-	 * 
+	 *
 	 * @return a vector of UIDs
 	 */
-	public XMLVector getUserGroups(XMLRPCCommandGetUserGroups command)
-	throws InvalidKeyException, AccessControlException, IOException,
-	SAXException {
+	@Override
+	public XMLVector getUserGroups(final XMLRPCCommandGetUserGroups command)
+			throws InvalidKeyException, AccessControlException, IOException, SAXException {
 
 		XMLVector xmlv = null;
 		IOException ioe = null;
@@ -2135,37 +2080,35 @@ public abstract class CommClient implements ClientAPI {
 	/**
 	 * This calls getUser(login, true)
 	 */
-	public UserInterface getUser(String login) throws InvalidKeyException,
-	AccessControlException, IOException, SAXException,
-	URISyntaxException {
+	@Override
+	public UserInterface getUser(final String login)
+			throws InvalidKeyException, AccessControlException, IOException, SAXException, URISyntaxException {
 		return getUser(login, true);
 	}
 
 	/**
 	 * This calls getUser(new XMLRPCCommandGetUserByLogin(login), bypass)
 	 */
-	public UserInterface getUser(String login, boolean bypass)
-	throws InvalidKeyException, AccessControlException, IOException,
-	SAXException, URISyntaxException {
+	public UserInterface getUser(final String login, final boolean bypass)
+			throws InvalidKeyException, AccessControlException, IOException, SAXException, URISyntaxException {
 
 		final URI uri = new URI(newURI().toString() + "/" + login);
-		final XMLRPCCommandGetUserByLogin cmd = new XMLRPCCommandGetUserByLogin(
-				uri);
+		final XMLRPCCommandGetUserByLogin cmd = new XMLRPCCommandGetUserByLogin(uri);
 		return getUser(cmd, bypass);
 	}
 
 	/**
 	 * This calls getUser(command, true)
 	 */
-	public UserInterface getUser(XMLRPCCommandGetUserByLogin command)
-	throws InvalidKeyException, AccessControlException, IOException,
-	SAXException {
+	@Override
+	public UserInterface getUser(final XMLRPCCommandGetUserByLogin command)
+			throws InvalidKeyException, AccessControlException, IOException, SAXException {
 		return getUser(command, true);
 	}
 
 	/**
 	 * This retrieves an user from server
-	 * 
+	 *
 	 * @param command
 	 *            is the command to send to server to retreive user
 	 * @param bypass
@@ -2173,9 +2116,8 @@ public abstract class CommClient implements ClientAPI {
 	 *            cache if false, user is only downloaded if not already in
 	 *            cache
 	 */
-	public UserInterface getUser(XMLRPCCommandGetUserByLogin command,
-			boolean bypass) throws InvalidKeyException, AccessControlException,
-			IOException, SAXException {
+	public UserInterface getUser(final XMLRPCCommandGetUserByLogin command, final boolean bypass)
+			throws InvalidKeyException, AccessControlException, IOException, SAXException {
 
 		UserInterface user = null;
 
@@ -2197,27 +2139,26 @@ public abstract class CommClient implements ClientAPI {
 
 	/**
 	 * This retrieves all users from server
-	 * 
+	 *
 	 * @return a vector of UIDs
 	 */
-	public XMLVector getUsers() throws InvalidKeyException,
-	AccessControlException, IOException, SAXException,
-	URISyntaxException {
+	@Override
+	public XMLVector getUsers()
+			throws InvalidKeyException, AccessControlException, IOException, SAXException, URISyntaxException {
 
 		final URI uri = newURI();
-		final XMLRPCCommandGetUsers cmd = new XMLRPCCommandGetUsers(uri,
-				config.getUser());
+		final XMLRPCCommandGetUsers cmd = new XMLRPCCommandGetUsers(uri, config.getUser());
 		return getUsers(cmd);
 	}
 
 	/**
 	 * This retrieves all users from server
-	 * 
+	 *
 	 * @return a vector of UIDs
 	 */
-	public XMLVector getUsers(XMLRPCCommandGetUsers command)
-	throws InvalidKeyException, AccessControlException, IOException,
-	SAXException {
+	@Override
+	public XMLVector getUsers(final XMLRPCCommandGetUsers command)
+			throws InvalidKeyException, AccessControlException, IOException, SAXException {
 
 		XMLVector xmlv = null;
 		try {
@@ -2232,7 +2173,7 @@ public abstract class CommClient implements ClientAPI {
 	/**
 	 * This creates a Mobile Work filled with worker software. It is used to
 	 * update worker as needed.
-	 * 
+	 *
 	 * @return a filled mobileWork
 	 */
 	public WorkInterface getWorkerBin() throws IOException {
@@ -2242,83 +2183,84 @@ public abstract class CommClient implements ClientAPI {
 	/*
 	 * Tracer
 	 */
-	public void tactivityMonitor(long start, long end, byte[] file)
-	throws IOException {
+	@Override
+	public void tactivityMonitor(final long start, final long end, final byte[] file) throws IOException {
 		throw new IOException("CommClient#tactivitymonotor not implemented yet");
 	}
 
 	/**
 	 * Get trusted addresses
-	 * 
+	 *
 	 * @return a string containing trused ip addresses separated by a white
 	 *         space.
 	 */
+	@Override
 	public String getTrustedAddresses() throws IOException {
-		throw new IOException(
-		"CommClient#getTrustedAddresses not implemented yet");
+		throw new IOException("CommClient#getTrustedAddresses not implemented yet");
 	}
 
 	/**
 	 * Add a trusted address
-	 * 
+	 *
 	 * @param ip
 	 *            new trusted IP
 	 */
-	public void addTrustedAddress(String ip) throws IOException {
-		throw new IOException(
-		"CommClient#addtrustedaddress not implemented yet");
+	@Override
+	public void addTrustedAddress(final String ip) throws IOException {
+		throw new IOException("CommClient#addtrustedaddress not implemented yet");
 	}
 
 	/**
 	 * Remove a trusted address
-	 * 
+	 *
 	 * @param ip
 	 *            trusted IP to remove
 	 */
-	public void removeTrustedAddress(String ip) throws IOException {
-		throw new IOException(
-		"CommClient#removeTrustedAddress not implemented yet");
+	@Override
+	public void removeTrustedAddress(final String ip) throws IOException {
+		throw new IOException("CommClient#removeTrustedAddress not implemented yet");
 	}
 
 	/**
 	 * Set workers trace flag.
-	 * 
+	 *
 	 * @param hosts
 	 *            is a hashtable which contains host name as key and their
 	 *            dedicated trace flag as value.
 	 */
-	public void traceWorkers(Hashtable hosts) throws IOException {
+	@Override
+	public void traceWorkers(final Hashtable hosts) throws IOException {
 		throw new IOException("CommClient#traceWorkers not implemented yet");
 	}
 
 	/**
 	 * This removes a set of jobs
-	 * 
+	 *
 	 * @param jobs
 	 *            is a Vector of URI
 	 * @exception IOException
 	 *                on connection error
 	 */
-	public void removeWorks(final Collection<URI> jobs) throws InvalidKeyException,
-	AccessControlException, IOException {
+	@Override
+	public void removeWorks(final Collection<URI> jobs)
+			throws InvalidKeyException, AccessControlException, IOException {
 
-		for (final Iterator<URI> li = jobs.iterator(); li.hasNext(); ) {
+		for (final Iterator<URI> li = jobs.iterator(); li.hasNext();) {
 			remove(li.next());
 		}
 	}
 
 	/**
 	 * This retrieves job status
-	 * 
+	 *
 	 * @param uid
 	 *            is the UID of the job to retreive status for
 	 * @return XWStatus.ERROR on error, job status otherwise
 	 * @exception IOException
 	 *                on connection error
 	 */
-	public StatusEnum jobStatus(UID uid) throws InvalidKeyException,
-	AccessControlException, IOException, ClassNotFoundException,
-	SAXException, URISyntaxException {
+	public StatusEnum jobStatus(final UID uid) throws InvalidKeyException, AccessControlException, IOException,
+			ClassNotFoundException, SAXException, URISyntaxException {
 
 		StatusEnum status = StatusEnum.ERROR;
 
@@ -2330,7 +2272,7 @@ public abstract class CommClient implements ClientAPI {
 
 	/**
 	 * This retrieves a group status
-	 * 
+	 *
 	 * @param group
 	 *            describes the group
 	 * @return XWStatus.ERROR on error, XWStatus.COMPLETED if all this group
@@ -2340,9 +2282,8 @@ public abstract class CommClient implements ClientAPI {
 	 * @exception IOException
 	 *                if the group UID is not set
 	 */
-	public StatusEnum groupStatus(GroupInterface group)
-	throws InvalidKeyException, AccessControlException, IOException,
-	ClassNotFoundException, SAXException, URISyntaxException {
+	public StatusEnum groupStatus(final GroupInterface group) throws InvalidKeyException, AccessControlException,
+			IOException, ClassNotFoundException, SAXException, URISyntaxException {
 
 		final XMLVector jobIDs = getGroupWorks(group.getUID());
 
@@ -2352,8 +2293,7 @@ public abstract class CommClient implements ClientAPI {
 
 		final Vector<XMLValue> v = jobIDs.getXmlValues();
 		try {
-			for (final Enumeration<XMLValue> e = v.elements(); e
-			.hasMoreElements();) {
+			for (final Enumeration<XMLValue> e = v.elements(); e.hasMoreElements();) {
 				final UID uid = (UID) e.nextElement().getValue();
 				final WorkInterface work = (WorkInterface) get(uid);
 				if (work.getStatus() != StatusEnum.COMPLETED) {
@@ -2368,7 +2308,7 @@ public abstract class CommClient implements ClientAPI {
 
 	/**
 	 * This retrieves a session status
-	 * 
+	 *
 	 * @param session
 	 *            describes the session
 	 * @return XWStatus.ERROR on error, XWStatus.COMPLETED if all results are
@@ -2378,9 +2318,8 @@ public abstract class CommClient implements ClientAPI {
 	 * @exception IOException
 	 *                if the session UID is not set
 	 */
-	public StatusEnum sessionStatus(SessionInterface session)
-	throws InvalidKeyException, AccessControlException, IOException,
-	ClassNotFoundException, SAXException, URISyntaxException {
+	public StatusEnum sessionStatus(final SessionInterface session) throws InvalidKeyException, AccessControlException,
+			IOException, ClassNotFoundException, SAXException, URISyntaxException {
 
 		final XMLVector jobIDs = getSessionWorks(session.getUID());
 
@@ -2390,8 +2329,7 @@ public abstract class CommClient implements ClientAPI {
 
 		final Vector<XMLValue> v = jobIDs.getXmlValues();
 		try {
-			for (final Enumeration<XMLValue> e = v.elements(); e
-			.hasMoreElements();) {
+			for (final Enumeration<XMLValue> e = v.elements(); e.hasMoreElements();) {
 				final UID uid = (UID) e.nextElement().getValue();
 				final WorkInterface work = (WorkInterface) get(uid);
 				if (work.getStatus() != StatusEnum.COMPLETED) {
@@ -2406,7 +2344,7 @@ public abstract class CommClient implements ClientAPI {
 
 	/**
 	 * This retrieves group results
-	 * 
+	 *
 	 * @return a Vector of MobileResult or null on error
 	 * @exception IOException
 	 *                on connection error
@@ -2418,21 +2356,21 @@ public abstract class CommClient implements ClientAPI {
 
 	/**
 	 * This retrieves group results
-	 * 
+	 *
 	 * @param uids
 	 *            is a Vector of UID
 	 * @return a Vector of MobileResult or null on error
 	 * @exception IOException
 	 *                on connection error
 	 */
-	public XMLVector getResults(XMLVector uids) throws IOException {
+	public XMLVector getResults(final XMLVector uids) throws IOException {
 
 		throw new IOException("CommClient::getResult() not implemented");
 	}
 
 	/**
 	 * This retrieves group results
-	 * 
+	 *
 	 * @param group
 	 *            describes the group to retreive results for
 	 * @return a Vector of MobileResult or null on error
@@ -2441,9 +2379,8 @@ public abstract class CommClient implements ClientAPI {
 	 * @exception IOException
 	 *                if the group UID is not set
 	 */
-	public XMLVector getGroupResults(GroupInterface group)
-	throws InvalidKeyException, AccessControlException, IOException,
-	SAXException, URISyntaxException {
+	public XMLVector getGroupResults(final GroupInterface group)
+			throws InvalidKeyException, AccessControlException, IOException, SAXException, URISyntaxException {
 
 		final XMLVector uids = getGroupWorks(group.getUID());
 		return getResults(uids);
@@ -2451,7 +2388,7 @@ public abstract class CommClient implements ClientAPI {
 
 	/**
 	 * This retrieves session results
-	 * 
+	 *
 	 * @param session
 	 *            describes the session to retreive results for
 	 * @return a Vector of MobileResult or null on error
@@ -2460,9 +2397,8 @@ public abstract class CommClient implements ClientAPI {
 	 * @exception IOException
 	 *                if the session UID is not set
 	 */
-	public XMLVector getSessionResults(SessionInterface session)
-	throws InvalidKeyException, AccessControlException, IOException,
-	SAXException, URISyntaxException {
+	public XMLVector getSessionResults(final SessionInterface session)
+			throws InvalidKeyException, AccessControlException, IOException, SAXException, URISyntaxException {
 
 		final XMLVector uids = getSessionWorks(session.getUID());
 		return getResults(uids);
@@ -2472,7 +2408,7 @@ public abstract class CommClient implements ClientAPI {
 	 * This method waits for works to complete, with a time out<br />
 	 * If time out is reached, this returns the works completed within the given
 	 * time
-	 * 
+	 *
 	 * @param works
 	 *            a Vector of UID
 	 * @param deltaT
@@ -2480,17 +2416,16 @@ public abstract class CommClient implements ClientAPI {
 	 * @exception IOException
 	 *                on connection error
 	 */
-	public void getCompletedWorks(Collection<UID> works, long deltaT)
-	throws InvalidKeyException, AccessControlException,
-	ClassNotFoundException, SAXException, URISyntaxException, IOException {
+	@Override
+	public void getCompletedWorks(final Collection<UID> works, final long deltaT) throws InvalidKeyException,
+			AccessControlException, ClassNotFoundException, SAXException, URISyntaxException, IOException {
 
 		final long t0 = System.currentTimeMillis();
 		int completeds = 0;
 
-		while ((completeds < works.size())
-				&& (deltaT > (System.currentTimeMillis() - t0))) {
+		while ((completeds < works.size()) && (deltaT > (System.currentTimeMillis() - t0))) {
 
-			for (final Iterator<UID> iterator = works.iterator(); iterator.hasNext(); ) {
+			for (final Iterator<UID> iterator = works.iterator(); iterator.hasNext();) {
 				try {
 					waitForCompletedWork(iterator.next(), deltaT);
 					completeds++;
@@ -2503,15 +2438,15 @@ public abstract class CommClient implements ClientAPI {
 	/**
 	 * This method waits (for ever) until all works are completed<br />
 	 * Keep in mind that this may never return
-	 * 
+	 *
 	 * @param works
 	 *            a Vector of UID
 	 * @exception IOException
 	 *                on connection error
 	 */
-	public void waitForCompletedWorks(Collection<UID> works)
-	throws InvalidKeyException, AccessControlException,
-	ClassNotFoundException, SAXException, URISyntaxException, IOException {
+	@Override
+	public void waitForCompletedWorks(final Collection<UID> works) throws InvalidKeyException, AccessControlException,
+			ClassNotFoundException, SAXException, URISyntaxException, IOException {
 		try {
 			waitForCompletedWorks(works, -1);
 		} catch (final InterruptedException e) {
@@ -2521,7 +2456,7 @@ public abstract class CommClient implements ClientAPI {
 	/**
 	 * This method waits until all works are completed, with a time out<br />
 	 * If time out is reached an InterruptedException is thrown
-	 * 
+	 *
 	 * @param works
 	 *            a Vector of UID
 	 * @param deltaT
@@ -2531,10 +2466,10 @@ public abstract class CommClient implements ClientAPI {
 	 * @exception InterruptedException
 	 *                if time out reached
 	 */
-	public void waitForCompletedWorks(Collection<UID> works, long deltaT)
-	throws InvalidKeyException, AccessControlException,
-	InterruptedException, ClassNotFoundException, SAXException, IOException,
-	URISyntaxException {
+	@Override
+	public void waitForCompletedWorks(final Collection<UID> works, long deltaT)
+			throws InvalidKeyException, AccessControlException, InterruptedException, ClassNotFoundException,
+			SAXException, IOException, URISyntaxException {
 
 		long t0 = System.currentTimeMillis();
 		int completeds = 0;
@@ -2542,11 +2477,10 @@ public abstract class CommClient implements ClientAPI {
 		while (completeds < works.size()) {
 
 			if (deltaT < (System.currentTimeMillis() - t0)) {
-				throw new InterruptedException("waitForCompletedWorks reached "
-						+ deltaT);
+				throw new InterruptedException("waitForCompletedWorks reached " + deltaT);
 			}
 
-			for (final Iterator<UID> iterator = works.iterator(); iterator.hasNext(); ) {
+			for (final Iterator<UID> iterator = works.iterator(); iterator.hasNext();) {
 				final UID uid = iterator.next();
 
 				logger.debug("Waiting completion for " + uid);
@@ -2562,23 +2496,23 @@ public abstract class CommClient implements ClientAPI {
 	/**
 	 * This method waits until the work is completed<br />
 	 * Keep in mind that this may never return
-	 * 
+	 *
 	 * @param uid
 	 *            is the UID of the expected work
 	 * @exception IOException
 	 *                on connection error
-	 * @throws InterruptedException 
+	 * @throws InterruptedException
 	 * @return the work found
 	 */
-	public WorkInterface waitForCompletedWork(final UID uid) throws InvalidKeyException,
-	AccessControlException, ClassNotFoundException, SAXException, IOException, 
-	URISyntaxException, InterruptedException {
+	@Override
+	public WorkInterface waitForCompletedWork(final UID uid) throws InvalidKeyException, AccessControlException,
+			ClassNotFoundException, SAXException, IOException, URISyntaxException, InterruptedException {
 		return waitForCompletedWork(uid, -1);
 	}
 
 	/**
 	 * This method waits until the work is completed, with a time out
-	 * 
+	 *
 	 * @param uid
 	 *            is the UID of the expected work
 	 * @param deltaT
@@ -2589,16 +2523,16 @@ public abstract class CommClient implements ClientAPI {
 	 *                if time out reached
 	 * @return the work found
 	 */
+	@Override
 	public WorkInterface waitForCompletedWork(final UID uid, final long deltaT)
-	throws InvalidKeyException, AccessControlException,
-	InterruptedException, ClassNotFoundException, SAXException,IOException,
-	URISyntaxException {
+			throws InvalidKeyException, AccessControlException, InterruptedException, ClassNotFoundException,
+			SAXException, IOException, URISyntaxException {
 		return waitForWork(StatusEnum.COMPLETED, uid, deltaT);
 	}
 
 	/**
 	 * This waits until a work has the given status within the given time
-	 * 
+	 *
 	 * @param status
 	 *            is the status to wait for
 	 * @param uid
@@ -2611,28 +2545,25 @@ public abstract class CommClient implements ClientAPI {
 	 *                on time out error
 	 * @return the work found
 	 */
+	@Override
 	public WorkInterface waitForWork(final StatusEnum status, final UID uid, final long deltaT)
-	throws InvalidKeyException, AccessControlException,
-	InterruptedException, ClassNotFoundException, IOException, SAXException,
-	URISyntaxException {
+			throws InvalidKeyException, AccessControlException, InterruptedException, ClassNotFoundException,
+			IOException, SAXException, URISyntaxException {
 
 		final long t0 = System.currentTimeMillis();
 
 		while (true) {
 
-			if ((deltaT > 0 ) && (deltaT < (System.currentTimeMillis() - t0))) {
-				throw new InterruptedException("waitForWork " + uid + ","
-						+ status + " reached " + deltaT);
+			if ((deltaT > 0) && (deltaT < (System.currentTimeMillis() - t0))) {
+				throw new InterruptedException("waitForWork " + uid + "," + status + " reached " + deltaT);
 			}
 			final WorkInterface work = (WorkInterface) get(uid, true);
 			if (work.getStatus() == status) {
 				return work;
 			}
-			getLogger().debug("Sleeping " + 
-					Math.max(100, Integer.parseInt(config
-							.getProperty(XWPropertyDefs.TIMEOUT))));
-			Thread.sleep(Math.max(100, Integer.parseInt(config
-					.getProperty(XWPropertyDefs.TIMEOUT))));
+			getLogger()
+					.debug("Sleeping " + Math.max(100, Integer.parseInt(config.getProperty(XWPropertyDefs.TIMEOUT))));
+			Thread.sleep(Math.max(100, Integer.parseInt(config.getProperty(XWPropertyDefs.TIMEOUT))));
 		}
 	}
 }

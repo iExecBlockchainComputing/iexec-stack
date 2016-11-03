@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -58,11 +58,11 @@ import xtremweb.common.XWRole;
  * <p>
  * This uses org.eclipse.jetty.Server where everything is done.<br />
  * </p>
- * 
+ *
  * <p>
  * Created: March 30th, 2006
  * </p>
- * 
+ *
  * @see CommServer
  * @author Oleg Lodygensky
  * @since RPCXW
@@ -73,7 +73,7 @@ public class HTTPServer extends CommServer {
 	/**
 	 * This is the Jetty HTTP server
 	 */
-	private Server httpServer;
+	private final Server httpServer;
 
 	/**
 	 * This only calls super()
@@ -85,12 +85,11 @@ public class HTTPServer extends CommServer {
 
 	/**
 	 * This initializes communications
-	 * 
+	 *
 	 * @see CommServer#initComm(XWConfigurator, Handler)
 	 */
 	@Override
-	public void initComm(XWConfigurator prop, Handler handler)
-			throws RemoteException {
+	public void initComm(final XWConfigurator prop, final Handler handler) throws RemoteException {
 
 		setPort(Connection.HTTPPORT.defaultPortValue());
 
@@ -98,34 +97,30 @@ public class HTTPServer extends CommServer {
 			setPort(Connection.HTTPWORKERPORT.defaultPortValue());
 		}
 		try {
-			final int httpPort = (prop.getRole() == XWRole.WORKER ? 
-					Integer.parseInt(prop.getProperty(Connection.HTTPPORT.toString())) :
-					Integer.parseInt(prop.getProperty(Connection.HTTPWORKERPORT.toString())));
+			final int httpPort = (prop.getRole() == XWRole.WORKER
+					? Integer.parseInt(prop.getProperty(Connection.HTTPPORT.toString()))
+					: Integer.parseInt(prop.getProperty(Connection.HTTPWORKERPORT.toString())));
 
 			setPort(httpPort);
 
 			final File keyFile = prop.getKeyStoreFile();
 
-			if ((keyFile == null) || (!keyFile.exists())
-					|| (prop.getRole() == XWRole.WORKER)) {
+			if ((keyFile == null) || (!keyFile.exists()) || (prop.getRole() == XWRole.WORKER)) {
 
 				getLogger().warn("unsecured communications : not using SSL");
 
 				final HttpConfiguration http_config = new HttpConfiguration();
-		        http_config.setSecureScheme("https");
-		        http_config.setSecurePort(8443);
-		        http_config.setOutputBufferSize(32768);
+				http_config.setSecureScheme("https");
+				http_config.setSecurePort(8443);
+				http_config.setOutputBufferSize(32768);
 
-		        final ServerConnector http = new ServerConnector(httpServer,
-		                new HttpConnectionFactory(http_config));
-		        http.setPort(getPort());
-		        http.setIdleTimeout(30000);
-		        httpServer.setConnectors(new Connector[] { http});
+				final ServerConnector http = new ServerConnector(httpServer, new HttpConnectionFactory(http_config));
+				http.setPort(getPort());
+				http.setIdleTimeout(30000);
+				httpServer.setConnectors(new Connector[] { http });
 			} else {
-				final String password = prop
-						.getProperty(XWPropertyDefs.SSLKEYPASSWORD);
-				final String passphrase = prop
-						.getProperty(XWPropertyDefs.SSLKEYPASSPHRASE);
+				final String password = prop.getProperty(XWPropertyDefs.SSLKEYPASSWORD);
+				final String passphrase = prop.getProperty(XWPropertyDefs.SSLKEYPASSPHRASE);
 				try {
 					final int httpsPort = Integer.parseInt(prop.getProperty(Connection.HTTPSPORT.toString()));
 					setPort(httpsPort);
@@ -135,10 +130,8 @@ public class HTTPServer extends CommServer {
 					final FileOutputStream sstore = new FileOutputStream(fstore);
 					final KeyStore store = prop.getKeyStore();
 					store.store(sstore, password.toCharArray());
-					getLogger().debug(
-							"HTTPS keystore = " + fstore.getCanonicalPath());
-					final SslContextFactory sslContextFactory = new SslContextFactory(
-							fstore.getCanonicalPath());
+					getLogger().debug("HTTPS keystore = " + fstore.getCanonicalPath());
+					final SslContextFactory sslContextFactory = new SslContextFactory(fstore.getCanonicalPath());
 					sslContextFactory.setKeyStorePassword(password);
 					sslContextFactory.setKeyManagerPassword(passphrase);
 					sslContextFactory.setTrustStore(store);
@@ -146,21 +139,21 @@ public class HTTPServer extends CommServer {
 					sslContextFactory.setWantClientAuth(true);
 
 					final HttpConfiguration http_config = new HttpConfiguration();
-			        http_config.setSecureScheme("https");
-			        http_config.setSecurePort(getPort());
-			        http_config.setOutputBufferSize(32768);
+					http_config.setSecureScheme("https");
+					http_config.setSecurePort(getPort());
+					http_config.setOutputBufferSize(32768);
 
-			        final HttpConfiguration https_config = new HttpConfiguration(http_config);
-			        final SecureRequestCustomizer src = new SecureRequestCustomizer();
-			        src.setStsMaxAge(2000);
-			        src.setStsIncludeSubDomains(true);
-			        https_config.addCustomizer(src);
-			        
-			        final ServerConnector https = new ServerConnector(httpServer,
-			        		new SslConnectionFactory(sslContextFactory,HttpVersion.HTTP_1_1.toString()),
-			        		new HttpConnectionFactory(https_config));
-			            https.setPort(getPort());
-			            https.setIdleTimeout(500000);
+					final HttpConfiguration https_config = new HttpConfiguration(http_config);
+					final SecureRequestCustomizer src = new SecureRequestCustomizer();
+					src.setStsMaxAge(2000);
+					src.setStsIncludeSubDomains(true);
+					https_config.addCustomizer(src);
+
+					final ServerConnector https = new ServerConnector(httpServer,
+							new SslConnectionFactory(sslContextFactory, HttpVersion.HTTP_1_1.toString()),
+							new HttpConnectionFactory(https_config));
+					https.setPort(getPort());
+					https.setIdleTimeout(500000);
 
 					httpServer.setConnectors(new Connector[] { https });
 
@@ -173,35 +166,31 @@ public class HTTPServer extends CommServer {
 			final HandlerCollection handlers = new HandlerCollection();
 			httpServer.setHandler(handlers);
 			this.addHandler("/", getHandler());
-			Runtime.getRuntime().addShutdownHook(
-					new Thread(getName() + "Cleaner") {
-						@Override
-						public void run() {
-							cleanup();
-						}
-					});
+			Runtime.getRuntime().addShutdownHook(new Thread(getName() + "Cleaner") {
+				@Override
+				public void run() {
+					cleanup();
+				}
+			});
 
 			getLogger().info("started, listening on port : " + getPort());
 		} catch (final Exception e) {
 			e.printStackTrace();
 			getLogger().exception(e);
-			getLogger().fatal(
-					getName() + ": could not listen on port " + getPort()
-					+ " : " + e);
+			getLogger().fatal(getName() + ": could not listen on port " + getPort() + " : " + e);
 		}
 	}
 
 	/**
 	 * This adds an handler
-	 * 
+	 *
 	 * @param h
 	 *            is the handler to add
 	 */
-	public void addHandler(Handler h) {
+	public void addHandler(final Handler h) {
 		try {
 			getLogger().debug("addHandler " + h.getClass());
-			final HandlerCollection handlers = (HandlerCollection) httpServer
-					.getHandler();
+			final HandlerCollection handlers = (HandlerCollection) httpServer.getHandler();
 			handlers.addHandler(h);
 		} catch (final Exception e) {
 			getLogger().exception("Can't add handler", e);
@@ -210,13 +199,13 @@ public class HTTPServer extends CommServer {
 
 	/**
 	 * This adds an resource handler which will answer from HTML files
-	 * 
+	 *
 	 * @param contextPath
 	 *            is the path of the url accessed
 	 * @param h
 	 *            is the handler to add
 	 */
-	public void addHandler(String contextPath, Handler h) {
+	public void addHandler(final String contextPath, final Handler h) {
 		final ContextHandler context = new ContextHandler();
 		context.setContextPath(contextPath);
 		context.setHandler(h);
@@ -225,28 +214,29 @@ public class HTTPServer extends CommServer {
 
 	/**
 	 * This adds an resource handler which will answer from HTML files
-	 * 
+	 *
 	 * @param contextPath
 	 *            is the path of the url accessed
 	 * @param lpath
 	 *            is the local path where to find HTML files
 	 */
-	public void addHandler(String contextPath, String lpath) {
+	public void addHandler(final String contextPath, final String lpath) {
 		final ContextHandler context = new ContextHandler();
 		context.setContextPath(contextPath);
 		context.setResourceBase(lpath);
 		context.setHandler(new ResourceHandler());
 		addHandler(context);
 	}
+
 	/**
 	 * This adds an resource handler which will answer from HTML files
-	 * 
+	 *
 	 * @param contextPath
 	 *            is the path of the url accessed
 	 * @param path
 	 *            is the local path where to find HTML files
 	 */
-	public void addHandler(String contextPath, File path) {
+	public void addHandler(final String contextPath, final File path) {
 		final ContextHandler context = new ContextHandler();
 		context.setContextPath(contextPath);
 		context.setResourceBase(path.getAbsolutePath());
