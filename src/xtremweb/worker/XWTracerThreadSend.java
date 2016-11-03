@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -66,13 +66,13 @@ public class XWTracerThreadSend extends Thread {
 
 	/**
 	 * This is the only constructor.
-	 * 
+	 *
 	 * @param start
 	 *            contains date when current traces has been started.
 	 * @param end
 	 *            contains date when current traces has been ended.
 	 */
-	XWTracerThreadSend(String fName, long start, long end) {
+	XWTracerThreadSend(final String fName, final long start, final long end) {
 
 		super("XWTracerThreadSend");
 		logger = new Logger(this);
@@ -108,10 +108,8 @@ public class XWTracerThreadSend extends Thread {
 		}
 
 		try {
-			CommManager.getInstance().tactivityMonitor(
-					Worker.getConfig().getHost().getName(),
-					Worker.getConfig().getUser().getLogin(), dateStart,
-					dateEnd, file);
+			CommManager.getInstance().tactivityMonitor(Worker.getConfig().getHost().getName(),
+					Worker.getConfig().getUser().getLogin(), dateStart, dateEnd, file);
 
 			logger.info("Trace results sent");
 		} catch (final Exception e) {

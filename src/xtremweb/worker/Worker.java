@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -44,7 +44,7 @@ import xtremweb.communications.HTTPServer;
  * This class describes the XtremWeb Worker. It has a single infinite loop,
  * where it creates a new <CODE>ThreadLaunch</CODE>, starts it and waits for it
  * to die.
- * 
+ *
  * @author Gilles Fedak, Oleg Lodygensky
  */
 
@@ -70,23 +70,21 @@ public class Worker {
 	 */
 	public Worker() {
 		if (System.getProperty(XWPropertyDefs.CACHEDIR.toString()) == null) {
-			System.setProperty(XWPropertyDefs.CACHEDIR.toString(), (new File(
-					"cache")).getAbsolutePath());
+			System.setProperty(XWPropertyDefs.CACHEDIR.toString(), (new File("cache")).getAbsolutePath());
 		}
 		logger = new Logger(this);
 	}
 
 	/**
 	 * This shows application usage
-	 * 
+	 *
 	 * @see xtremweb.common.CommandLineOptions#usage()
 	 */
 	private void usage() {
-		CommandLineParser.usage("XWHEP computing element.",
-				CommandLineOptions.CONFIG);
+		CommandLineParser.usage("XWHEP computing element.", CommandLineOptions.CONFIG);
 	}
 
-	public void initialize(String[] a) {
+	public void initialize(final String[] a) {
 		final String[] argv = a.clone();
 
 		try {
@@ -96,13 +94,10 @@ public class Worker {
 		}
 
 		try {
-			XWTools.checkDir(System.getProperty(XWPropertyDefs.CACHEDIR
-					.toString()));
-			XWTools.checkDir(System.getProperty(XWPropertyDefs.CACHEDIR
-					.toString()) + "/logs");
+			XWTools.checkDir(System.getProperty(XWPropertyDefs.CACHEDIR.toString()));
+			XWTools.checkDir(System.getProperty(XWPropertyDefs.CACHEDIR.toString()) + "/logs");
 		} catch (final IOException e) {
-			logger.fatal("Worker::initialize () : unrecoverable exception "
-					+ e.toString());
+			logger.fatal("Worker::initialize () : unrecoverable exception " + e.toString());
 		}
 		if (System.getProperty(XWPropertyDefs.ALONE.toString()) == null) {
 			status |= NEEDS_CHECK_ALONE;
@@ -113,7 +108,7 @@ public class Worker {
 	 * The <CODE>main</CODE> method contains a infinite loop to start and wait
 	 * for a single <CODE>ThreadLaunch</CODE>.
 	 */
-	public static void main(String[] argv) {
+	public static void main(final String[] argv) {
 		final Worker worker = new Worker();
 		worker.initialize(argv);
 		worker.run();
@@ -127,8 +122,7 @@ public class Worker {
 
 			try {
 
-				final InputStream def = this.getClass().getClassLoader()
-						.getResourceAsStream("data/config.defaults");
+				final InputStream def = this.getClass().getClassLoader().getResourceAsStream("data/config.defaults");
 
 				if (def == null) {
 
@@ -139,8 +133,7 @@ public class Worker {
 			}
 
 			try {
-				setConfig((XWConfigurator) args
-						.getOption(CommandLineOptions.CONFIG));
+				setConfig((XWConfigurator) args.getOption(CommandLineOptions.CONFIG));
 				getConfig().store();
 			} catch (final Exception e) {
 				logger.fatal("can retreive config file");
@@ -159,9 +152,7 @@ public class Worker {
 			configerrmsg = null;
 			try {
 				final String pass = getConfig().getUser().getPassword();
-				getConfig().setUser(
-						commThread.commClient().getUser(
-								getConfig().getUser().getLogin()));
+				getConfig().setUser(commThread.commClient().getUser(getConfig().getUser().getLogin()));
 				getConfig().getUser().setPassword(pass);
 				getConfig().getUser().setCertificate(null);
 
@@ -171,26 +162,20 @@ public class Worker {
 
 					if (configerror) {
 						throw new ConfigurationException(
-								"worker is outside any group;"
-										+ " can't manage jobs for \"" + project
-										+ "\"");
+								"worker is outside any group;" + " can't manage jobs for \"" + project + "\"");
 					}
 
-					final UserGroupInterface group = (UserGroupInterface) commThread
-							.commClient().get(groupuid);
+					final UserGroupInterface group = (UserGroupInterface) commThread.commClient().get(groupuid);
 					configerror = (group == null);
 					if (configerror) {
-						throw new ConfigurationException(
-								"can't retrieve worker group " + groupuid);
+						throw new ConfigurationException("can't retrieve worker group " + groupuid);
 					}
 
 					configerror = (project.compareTo(group.getLabel()) != 0);
 
 					if (configerror) {
-						throw new ConfigurationException(
-								"worker is in group \"" + group.getLabel()
-										+ "\";" + " can't manage jobs for \""
-										+ project + "\"");
+						throw new ConfigurationException("worker is in group \"" + group.getLabel() + "\";"
+								+ " can't manage jobs for \"" + project + "\"");
 					}
 				}
 				break;
@@ -209,9 +194,7 @@ public class Worker {
 			}
 		}
 		if (configerror) {
-			logger.fatal("Configuration error : can not compute jobs for the project \""
-					+ project
-					+ "\""
+			logger.fatal("Configuration error : can not compute jobs for the project \"" + project + "\""
 					+ (configerrmsg != null ? " (" + configerrmsg + ")" : ""));
 		}
 
@@ -244,9 +227,7 @@ public class Worker {
 				httpServer.addHandler(HTTPSharedDataHandler.PATH, new HTTPSharedDataHandler());
 				httpServer.start();
 			} catch (final Exception ex) {
-				logger.exception(
-						"Worker::run () can't init HTTP Server for the worker page",
-						ex);
+				logger.exception("Worker::run () can't init HTTP Server for the worker page", ex);
 			}
 		}
 
@@ -286,7 +267,7 @@ public class Worker {
 	 * @param config
 	 *            the config to set
 	 */
-	public static void setConfig(XWConfigurator config) {
+	public static void setConfig(final XWConfigurator config) {
 		Worker.config = config;
 	}
 }

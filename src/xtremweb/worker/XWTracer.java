@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -60,7 +60,7 @@ public class XWTracer extends Thread {
 	private static XWTracer instance = null;
 
 	/** This is the default constructor */
-	XWTracer(boolean r) {
+	XWTracer(final boolean r) {
 		super("XWTracerThreadSend");
 		logger = new Logger(this);
 		instance = this;
@@ -83,8 +83,7 @@ public class XWTracer extends Thread {
 		dateStart = System.currentTimeMillis();
 
 		try {
-			final WorkerParameters params = CommManager.getInstance()
-					.getWorkersParameters();
+			final WorkerParameters params = CommManager.getInstance().getWorkersParameters();
 			resultDelay = params.getResultDelay();
 			sendResultDelay = params.getSendResultDelay();
 		} catch (final Exception ex) {
@@ -127,13 +126,12 @@ public class XWTracer extends Thread {
 		logger.info("[XWTracer] terminating");
 	}
 
-	public void setConfig(boolean r, int rDelay, int sDelay) {
+	public void setConfig(final boolean r, final int rDelay, final int sDelay) {
 		if (instance == null) {
 			return;
 		}
 
-		if ((running && (r == false))
-				|| ((rDelay != -1) && (rDelay != resultDelay))
+		if ((running && (r == false)) || ((rDelay != -1) && (rDelay != resultDelay))
 				|| ((sDelay != -1) && (sDelay != sendResultDelay))) {
 
 			sendResult();
@@ -150,14 +148,13 @@ public class XWTracer extends Thread {
 		running = r;
 	}
 
-	public void setConfig(int rDelay, int sDelay) {
+	public void setConfig(final int rDelay, final int sDelay) {
 
 		if (instance == null) {
 			return;
 		}
 
-		if (((rDelay != -1) && (rDelay != resultDelay))
-				|| ((sDelay != -1) && (sDelay != sendResultDelay))) {
+		if (((rDelay != -1) && (rDelay != resultDelay)) || ((sDelay != -1) && (sDelay != sendResultDelay))) {
 			sendResult();
 		}
 
@@ -185,8 +182,8 @@ public class XWTracer extends Thread {
 		try {
 			final String fName = Worker.getConfig().getTmpDir() + "/sta.zip";
 
-			final TracerZipFile z = new TracerZipFile(fName, Worker.getConfig()
-					.getHost(), resultDelay, sendResultDelay);
+			final TracerZipFile z = new TracerZipFile(fName, Worker.getConfig().getHost(), resultDelay,
+					sendResultDelay);
 
 			try {
 				/*
@@ -196,8 +193,7 @@ public class XWTracer extends Thread {
 				z.addEntry("mask", Worker.getConfig().getTmpDir() + "/mask");
 				z.addEntry("state", Worker.getConfig().getTmpDir() + "/sta");
 				z.addEntry("config", Worker.getConfig().getTmpDir() + "/config");
-				z.addEntry("console", Worker.getConfig().getTmpDir()
-						+ "/console");
+				z.addEntry("console", Worker.getConfig().getTmpDir() + "/console");
 			} catch (final Exception e) {
 				try {
 					/*
