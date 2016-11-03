@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -34,7 +34,7 @@ import xtremweb.archdep.WinSaver;
  * Windows activator that checks if the screensaver is running to decide if the
  * worker can be started
  * </p>
- * 
+ *
  * @author Samuel Heriard
  */
 
@@ -43,7 +43,7 @@ public class WinSaverActivator extends PollingActivator {
 	/**
 	 * This tells whether the worker can start computing, accordingly to the
 	 * local activation policy
-	 * 
+	 *
 	 * @return true if the work can start computing
 	 */
 	@Override
@@ -54,7 +54,7 @@ public class WinSaverActivator extends PollingActivator {
 	/**
 	 * This tells whether the worker must stop computing, accordingly to the
 	 * local activation policy
-	 * 
+	 *
 	 * @return true if the work must stop computing
 	 */
 	@Override

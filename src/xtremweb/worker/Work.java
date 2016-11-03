@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -50,13 +50,13 @@ public final class Work extends WorkInterface {
 	public static final String workDescName = "workDesc";
 
 	/**
-	 * This is the directory where the work is stored which name is
-	 * <tmpDir>/XW.<userName>.<hostName>/works/<UID>/ This directory contains :
+	 * This is the directory where the work is stored which name is <tmpDir>/XW.
+	 * <userName>.<hostName>/works/<UID>/ This directory contains :
 	 * <li>workDesc file (a text file describing the work) so that work can be
-	 * resumed (see variable workDescName above); <li>scratch, the directory
-	 * where the work is run so that it finds its I/O files and directories
-	 * structure as eventually provided in its files; <li>the result file if
-	 * computation run successfully which name is UID.zip
+	 * resumed (see variable workDescName above);
+	 * <li>scratch, the directory where the work is run so that it finds its I/O
+	 * files and directories structure as eventually provided in its files;
+	 * <li>the result file if computation run successfully which name is UID.zip
 	 */
 	private File scratchDir;
 
@@ -64,7 +64,9 @@ public final class Work extends WorkInterface {
 	private final String SCRATCHNAME = "scratch";
 
 	/**
-	 * This is this work data package name (worker shared data used by the data driven scheduler)
+	 * This is this work data package name (worker shared data used by the data
+	 * driven scheduler)
+	 * 
 	 * @since 10.0.0
 	 */
 	private String dataPackageName;
@@ -73,21 +75,21 @@ public final class Work extends WorkInterface {
 	 * This creates a new work, providing its interface. This is typically
 	 * called as a new work is provided by the server. This writes all necessary
 	 * informations to disk, so that this work could be recreated, if necessary
-	 * 
+	 *
 	 * @see #Work(WorkInterface, boolean)
 	 * @param job
 	 *            describes this work
 	 * @exception IOException
 	 *                is thrown on disk I/O error
 	 */
-	public Work(WorkInterface job) throws IOException {
+	public Work(final WorkInterface job) throws IOException {
 		this(job, true);
 	}
 
 	/**
 	 * This creates a new work writing, or not, on disk. This is needed on I/O
 	 * problems so that we can send a ERROR message to the dispatcher
-	 * 
+	 *
 	 * @see PoolWork#addWork(WorkInterface)
 	 * @see CommManager#run()
 	 * @param job
@@ -98,7 +100,7 @@ public final class Work extends WorkInterface {
 	 * @exception IOException
 	 *                is thrown on disk I/O error
 	 */
-	public Work(WorkInterface job, boolean dir) throws IOException {
+	public Work(final WorkInterface job, final boolean dir) throws IOException {
 
 		super(job);
 
@@ -112,13 +114,15 @@ public final class Work extends WorkInterface {
 
 	/**
 	 * This creates needed directory structure accordingly to package, if any
-	 * @throws IOException 
+	 * 
+	 * @throws IOException
 	 */
-	public void prepareDir() throws IOException  {
+	public void prepareDir() throws IOException {
 		final String extension = "" + getUID().toString() + "_cwd";
-		final File root = dataPackageName != null ? Worker.getConfig().getDataPackageDir(dataPackageName) : Worker.getConfig().getWorksDir();
+		final File root = dataPackageName != null ? Worker.getConfig().getDataPackageDir(dataPackageName)
+				: Worker.getConfig().getWorksDir();
 		getLogger().debug("prepareDir packageName = " + dataPackageName + " ; " + root);
-		if(dataPackageName == null) {
+		if (dataPackageName == null) {
 			setScratchDir(new File(root, extension));
 		} else {
 			setScratchDir(root);
@@ -127,11 +131,13 @@ public final class Work extends WorkInterface {
 
 	/**
 	 * This creates needed directory structure
-	 * @param v is the base path
-	 * @throws IOException 
+	 * 
+	 * @param v
+	 *            is the base path
+	 * @throws IOException
 	 */
 	private synchronized void setScratchDir(final File v) throws IOException {
-		if(dataPackageName == null) {
+		if (dataPackageName == null) {
 			scratchDir = new File(v, SCRATCHNAME);
 		} else {
 			scratchDir = v;
@@ -143,6 +149,7 @@ public final class Work extends WorkInterface {
 
 	/**
 	 * This return the scratch directory
+	 * 
 	 * @return
 	 */
 	public File getScratchDir() {
@@ -151,6 +158,7 @@ public final class Work extends WorkInterface {
 
 	/**
 	 * This calls clean(true) to force cleaning
+	 * 
 	 * @see #clean(boolean)
 	 */
 	public void clean() {
@@ -159,10 +167,11 @@ public final class Work extends WorkInterface {
 
 	/**
 	 * This calls clean(scratchDir, force)
+	 * 
 	 * @see #clean(File, boolean)
 	 */
 	public void clean(final boolean force) {
-		if((force == false) && (hasPackage() == true)) {
+		if ((force == false) && (hasPackage() == true)) {
 			getLogger().debug("don't clean " + force + ", " + hasPackage());
 			return;
 		}
@@ -170,21 +179,26 @@ public final class Work extends WorkInterface {
 		try {
 			scratchDir.delete();
 			getLogger().debug("cleaning deleted " + scratchDir);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			getLogger().exception("Work clean can't delete scratchdir", e);
 		}
 		try {
 			scratchDir.getParentFile().delete();
 			getLogger().debug("cleaning deleted " + scratchDir.getParent());
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			getLogger().exception("Work clean can't delete scratchdir parent", e);
 		}
 	}
 
 	/**
-	 * This erases provided file/directory from disk, except if dataPacakgeName is set
-	 * @param dirWork is the directory to clean
-	 * @param force is true to remove provided file/directory, even if dataPackageName is set
+	 * This erases provided file/directory from disk, except if dataPacakgeName
+	 * is set
+	 * 
+	 * @param dirWork
+	 *            is the directory to clean
+	 * @param force
+	 *            is true to remove provided file/directory, even if
+	 *            dataPackageName is set
 	 * @see #dataPackageName
 	 */
 	private synchronized void clean(final File dirWork, final boolean force) {
@@ -192,7 +206,7 @@ public final class Work extends WorkInterface {
 			notifyAll();
 			return;
 		}
-		if((force == false) && (hasPackage() == true)) {
+		if ((force == false) && (hasPackage() == true)) {
 			getLogger().debug("do not clean " + force + ", " + hasPackage());
 			return;
 		}
@@ -200,16 +214,19 @@ public final class Work extends WorkInterface {
 		getLogger().debug("cleaning = " + dirWork);
 		try {
 			XWTools.deleteDir(dirWork);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			getLogger().exception("Work clean error", e);
 		}
 		notifyAll();
 	}
 
 	/**
-	 * This sets this work package name (worker shared data used by the data driven scheduler)
-	 * @param pkg is this work package name
-	 * @throws IOException 
+	 * This sets this work package name (worker shared data used by the data
+	 * driven scheduler)
+	 * 
+	 * @param pkg
+	 *            is this work package name
+	 * @throws IOException
 	 * @since 10.0.0
 	 */
 	public void setDataPackage(final String pkg) throws IOException {
@@ -217,8 +234,11 @@ public final class Work extends WorkInterface {
 		dataPackageName = pkg;
 		prepareDir();
 	}
+
 	/**
-	 * This retrieves this work package name (worker shared data used by the data driven scheduler)
+	 * This retrieves this work package name (worker shared data used by the
+	 * data driven scheduler)
+	 * 
 	 * @since 10.0.0
 	 */
 	public String getDataPackage() {
@@ -227,6 +247,7 @@ public final class Work extends WorkInterface {
 
 	/**
 	 * This checks if this work has a package name
+	 * 
 	 * @since 10.0.0
 	 * @return true if packageName attribute is set; false otherwise
 	 */
