@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -27,9 +27,9 @@ import xtremweb.common.Logger;
 
 /**
  * ThreadLock.java This Thread Launch the screen saver
- * 
+ *
  * Created: Thu Jun 29 17:47:11 2000
- * 
+ *
  * @author Gilles Fedak
  */
 
@@ -48,8 +48,7 @@ public class ThreadLock extends Thread {
 
 		logger.info("ThreadLock: started");
 
-		final String screensaverPath = Worker.getConfig().getProperty(
-				"activator.screensaver.path");
+		final String screensaverPath = Worker.getConfig().getProperty("activator.screensaver.path");
 		if (screensaverPath == null) {
 			logger.warn("ScreenSaver not found in the config file (key activator.screensaver.path)");
 			return;
