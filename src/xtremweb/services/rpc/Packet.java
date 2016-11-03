@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -64,12 +64,12 @@ import xtremweb.common.XWTools;
  * <li>4 bytes : one 32 bits integer : auxilary GID[(auxilary GIDs count) - 1]
  * <li>4 bytes : one 32 bits integer : verifier flavor
  * <li>4 bytes : one 32 bits integer : verifier length
- * 
+ *
  * <li>more bytes follow depending on method call
  * </ul>
- * 
+ *
  * <b>[3]</b> and <b>[4]</b> help to to determine RPC port
- * 
+ *
  */
 
 public class Packet {
@@ -77,18 +77,18 @@ public class Packet {
 	private final Logger logger;
 
 	private byte[] buffer;
-	private int[] integers;
-	private int xid;
-	private int msgType;
-	private int prog;
-	private int version;
-	private int proc;
+	private final int[] integers;
+	private final int xid;
+	private final int msgType;
+	private final int prog;
+	private final int version;
+	private final int proc;
 	private String hostName;
 
 	/**
 	 * This constructs a new MOUNT packet calling Packet (byte [], Level,
 	 * String) with a null third parameter
-	 * 
+	 *
 	 * @param inBuf
 	 *            is the packet datas
 	 * @param nbBytes
@@ -99,15 +99,14 @@ public class Packet {
 	 *            is the new credential host name
 	 * @see #Packet (byte [], Level, String)
 	 */
-	public Packet(byte[] inBuf, int nbBytes, LoggerLevel l, String h)
-			throws Exception {
+	public Packet(final byte[] inBuf, final int nbBytes, final LoggerLevel l, final String h) throws Exception {
 		this(inBuf, nbBytes, l, h, 0, 0);
 	}
 
 	/**
 	 * This constructs a new MOUNT packet and change its credential accordingly
 	 * to hostName parameter
-	 * 
+	 *
 	 * @param inBuf
 	 *            is the packet datas
 	 * @param nbBytes
@@ -121,8 +120,8 @@ public class Packet {
 	 * @param groupID
 	 *            is the group ID of the current process
 	 */
-	public Packet(byte[] inBuf, int nbBytes, LoggerLevel l, String h,
-			int userID, int groupID) throws Exception {
+	public Packet(final byte[] inBuf, final int nbBytes, final LoggerLevel l, final String h, final int userID,
+			final int groupID) throws Exception {
 
 		logger = new Logger(l);
 		;
@@ -144,7 +143,7 @@ public class Packet {
 	/**
 	 * This changes credential accordingly to parameter. If this packet is not a
 	 * request, this does nothing
-	 * 
+	 *
 	 * @param h
 	 *            is the new host name for the credential
 	 * @param userID
@@ -152,8 +151,7 @@ public class Packet {
 	 * @param groupID
 	 *            is the group ID of the current process
 	 */
-	protected void changeCredential(String h, int userID, int groupID)
-			throws Exception {
+	protected void changeCredential(final String h, final int userID, final int groupID) throws Exception {
 
 		if (msgType != rpcdefs.RPC_CALL) {
 			return;
@@ -193,12 +191,10 @@ public class Packet {
 		if (newPadLen == 4) {
 			newPadLen = 0;
 		}
-		final int newCredentialLength = (((credentialLength - credentialMachineNameLength) + newCredentialMachineNameLength)
-				- ((auxGids - newauxGids) * 4) - padLen)
-				+ newPadLen;
+		final int newCredentialLength = (((credentialLength - credentialMachineNameLength)
+				+ newCredentialMachineNameLength) - ((auxGids - newauxGids) * 4) - padLen) + newPadLen;
 
-		final int newNbBytes = (nbBytes - credentialLength)
-				+ newCredentialLength;
+		final int newNbBytes = (nbBytes - credentialLength) + newCredentialLength;
 		final byte[] newBuffer = new byte[newNbBytes];
 
 		// copy the 7 first 32 bits integer 'as is'
@@ -223,8 +219,7 @@ public class Packet {
 		// modify the credential machine name : following the 10th 32 bits
 		// integer
 		destOffset = 10 * 4;
-		System.arraycopy(hostName.getBytes(), 0, newBuffer, destOffset,
-				newCredentialMachineNameLength);
+		System.arraycopy(hostName.getBytes(), 0, newBuffer, destOffset, newCredentialMachineNameLength);
 
 		// add necessary padding '0' at the end of the credential machine name
 		if (newPadLen != 0) {
@@ -314,7 +309,7 @@ public class Packet {
 
 	/**
 	 * This dumps out a bytes array on debug mode only
-	 * 
+	 *
 	 * @param msg
 	 *            is a message to display first
 	 * @param datas
@@ -322,7 +317,7 @@ public class Packet {
 	 * @param len
 	 *            is the effective length to dump
 	 */
-	public final void dump(String msg, byte[] datas, int len) {
+	public final void dump(final String msg, final byte[] datas, final int len) {
 
 		if (logger.debug() == false) {
 			return;
@@ -336,24 +331,20 @@ public class Packet {
 			}
 		}
 
-		System.out.println("\n\n" + msg + "\n" + "dump() length =  " + len
-				+ "\n" + "datas\n" + dbg);
+		System.out.println("\n\n" + msg + "\n" + "dump() length =  " + len + "\n" + "datas\n" + dbg);
 
 		int[] ints;
 		ints = XWTools.bytes2integers(datas, datas.length);
 
 		logger.debug("   XID                         = " + ints[0]);
-		logger.debug("   Msg  type                   = " + ints[1] + "("
-				+ rpcdefs.RPC_TEXT[ints[1]] + ")");
+		logger.debug("   Msg  type                   = " + ints[1] + "(" + rpcdefs.RPC_TEXT[ints[1]] + ")");
 		logger.debug("   RPC  Version                = " + ints[2]);
 		switch (ints[3]) {
 		case rpcdefs.RPC_MOUNT:
-			logger.debug("   Prog Number                 = " + ints[3]
-					+ "(MOUNT)");
+			logger.debug("   Prog Number                 = " + ints[3] + "(MOUNT)");
 			break;
 		case rpcdefs.RPC_NFS:
-			logger.debug("   Prog Number                 = " + ints[3]
-					+ "(NFS)");
+			logger.debug("   Prog Number                 = " + ints[3] + "(NFS)");
 			break;
 		default:
 			logger.error("Unknown prog number : " + ints[3]);
@@ -361,18 +352,16 @@ public class Packet {
 		logger.debug("   Prog Version                = " + ints[4]);
 		try {
 			if (ints[3] == rpcdefs.RPC_MOUNT) {
-				logger.debug("   Method number               = " + ints[5]
-						+ "(" + rpcdefs.MOUNTPROC_TEXT[ints[5]] + ")");
+				logger.debug(
+						"   Method number               = " + ints[5] + "(" + rpcdefs.MOUNTPROC_TEXT[ints[5]] + ")");
 			} else if (ints[3] == rpcdefs.RPC_NFS) {
-				logger.debug("   Method number               = " + ints[5]
-						+ "(" + rpcdefs.NFSPROC_TEXT[ints[5]] + ")");
+				logger.debug("   Method number               = " + ints[5] + "(" + rpcdefs.NFSPROC_TEXT[ints[5]] + ")");
 			}
 		} catch (final Exception e) {
 			logger.error("Unknown method number : " + ints[5]);
 		}
 
-		logger.debug("   Credential flavor           = " + ints[6] + "("
-				+ rpcdefs.AUTH_TEXT[ints[6]] + ")");
+		logger.debug("   Credential flavor           = " + ints[6] + "(" + rpcdefs.AUTH_TEXT[ints[6]] + ")");
 		logger.debug("   Credential length           = " + ints[7]);
 		logger.debug("   Credential stamp            = " + ints[8]);
 		final int hostnameLength = ints[9];
@@ -402,8 +391,7 @@ public class Packet {
 			for (int i = 0; i < auxgidsCount; i++) {
 				offset += 4;
 				final int auxgid = ints[offset / 4];
-				logger.debug("   Aux GIDs [" + i + "]                 = "
-						+ auxgid);
+				logger.debug("   Aux GIDs [" + i + "]                 = " + auxgid);
 			}
 			offset += 4;
 
@@ -412,13 +400,11 @@ public class Packet {
 			final int verifierLength = ints[offset / 4];
 			logger.debug("   Verifier length             = " + verifierLength);
 			if (verifierLength != 0) {
-				logger.error("Don't known how to manage Verifier length = "
-						+ verifierLength);
+				logger.error("Don't known how to manage Verifier length = " + verifierLength);
 			}
 		}
 
-		if ((ints[3] == rpcdefs.RPC_MOUNT)
-				&& (ints[5] == rpcdefs.MOUNTPROC_MNT)) {
+		if ((ints[3] == rpcdefs.RPC_MOUNT) && (ints[5] == rpcdefs.MOUNTPROC_MNT)) {
 			offset += 4;
 			final String path = new String(datas, offset, ints[offset / 4]);
 			logger.debug("   Mount path length           = " + ints[offset / 4]);

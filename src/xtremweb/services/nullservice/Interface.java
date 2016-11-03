@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -26,7 +26,7 @@ package xtremweb.services.nullservice;
 /**
  * Date : Nov 20th, 2005 <br />
  * This package does nothing. This is only an XtremWeb service test
- * 
+ *
  * @author <a href="lodygens  a/\t  lal.in2p3.fr">Oleg Lodygensky</a>
  * @since RPCXW
  */

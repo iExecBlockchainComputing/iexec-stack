@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -44,7 +44,7 @@ import xtremweb.common.MileStone;
 
 /**
  * This class forwards RCP on UDP.
- * 
+ *
  * @see xtremweb.archdep.PortMapperItf
  */
 public class rpc implements Interface {
@@ -54,7 +54,7 @@ public class rpc implements Interface {
 	/**
 	 * This aims to display some time printlns
 	 */
-	private MileStone mileStone;
+	private final MileStone mileStone;
 	/**
 	 * This is the RPC port to forward client requests to This RPC server port
 	 * must be determined at runtime
@@ -126,32 +126,33 @@ public class rpc implements Interface {
 
 	/**
 	 * This calls the default constructor and set logger level
-	 * 
+	 *
 	 * @param l
 	 *            is the logger level
 	 * @see #rpc()
 	 */
-	public rpc(LoggerLevel l) {
+	public rpc(final LoggerLevel l) {
 		this();
 		logger.setLoggerLevel(l);
 	}
 
 	/**
 	 * This sets the logger level
-	 * 
+	 *
 	 * @param l
 	 *            is the logger level
 	 */
-	public void setLevel(LoggerLevel l) {
+	public void setLevel(final LoggerLevel l) {
 		logger.setLoggerLevel(l);
 	}
 
 	/**
 	 * This implements the Interface exec() method
-	 * 
+	 *
 	 * @see xtremweb.services.Interface
 	 */
-	public int exec(String cmdLine, byte[] stdin, byte[] dirin) {
+	@Override
+	public int exec(final String cmdLine, final byte[] stdin, final byte[] dirin) {
 
 		logger.debug("rpc.exec " + cmdLine + " " + stdin + " " + dirin);
 
@@ -182,10 +183,11 @@ public class rpc implements Interface {
 	/**
 	 * This implements the Interface getResult() method by returning the
 	 * <code>datas</code> member
-	 * 
+	 *
 	 * @see xtremweb.services.Interface
 	 * @see #datas
 	 */
+	@Override
 	public byte[] getResult() {
 		return datas;
 	}
@@ -193,16 +195,16 @@ public class rpc implements Interface {
 	/**
 	 * This connects RPC clients to RPC servers with a simple pipe. This is
 	 * called on UDP connections.<br />
-	 * 
+	 *
 	 * It first determines RPC server to connect to, thanks to client RPC
 	 * message, forwards packet to RPC and waits for an answer
-	 * 
+	 *
 	 * @param newDatas
 	 *            is the packet to forward to RPC
 	 * @return 0 on success, 1 on error (couldn't determine RPC service)
 	 * @see xtremweb.archdep.PortMapperItf
 	 */
-	protected int udp(byte[] newDatas) throws Exception {
+	protected int udp(final byte[] newDatas) throws Exception {
 
 		DatagramSocket serverSocket = null;
 		DatagramPacket serverPacket = null;
@@ -211,8 +213,8 @@ public class rpc implements Interface {
 
 		logger.debug("Callback length 00 = " + newDatas.length);
 
-		final Packet request = new Packet(newDatas, newDatas.length,
-				logger.getLoggerLevel(), hostName, userID, groupID);
+		final Packet request = new Packet(newDatas, newDatas.length, logger.getLoggerLevel(), hostName, userID,
+				groupID);
 
 		mileStone.println("XW RPC service packet ready");
 
@@ -243,8 +245,7 @@ public class rpc implements Interface {
 
 		logger.debug("newDatas.length = " + newDatas.length);
 		logger.debug("request.getLength() = " + request.getLength());
-		serverPacket = new DatagramPacket(request.getBuffer(),
-				request.getLength(), serverHost, rpcServerPort);
+		serverPacket = new DatagramPacket(request.getBuffer(), request.getLength(), serverHost, rpcServerPort);
 
 		logger.debug("writing to " + hostName + ":" + rpcServerPort);
 

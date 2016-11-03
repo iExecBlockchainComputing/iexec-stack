@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -25,7 +25,7 @@ package xtremweb.services.rpc;
 
 /**
  * Date : Mar 25th, 2005 Project : RPCXW / RPCXW-C File : rpcdefs.java
- * 
+ *
  * @author <a href="mailto:lodygens_a_lal.in2p3.fr">Oleg Lodygensky</a>
  * @version %I% %G%
  */
@@ -65,13 +65,10 @@ public class rpcdefs {
 	/**
 	 * This defines NFS proc in String, for debug purposes
 	 */
-	public final static String[] NFSPROC_TEXT = { "NFSPROC_NULL",
-			"NFSPROC_GETATTR", "NFSPROC_SETATTR", "NFSPROC_ROOT",
-			"NFSPROC_LOOKUP", "NFSPROC_READLINK", "NFSPROC_READ",
-			"NFSPROC_WRITECACHE", "NFSPROC_WRITE", "NFSPROC_CREATE",
-			"NFSPROC_REMOVE", "NFSPROC_RENAME", "NFSPROC_LINK",
-			"NFSPROC_SYMLINK", "NFSPROC_MKDIR", "NFSPROC_RMDIR",
-			"NFSPROC_READDIR", "NFSPROC_STATFS" };
+	public final static String[] NFSPROC_TEXT = { "NFSPROC_NULL", "NFSPROC_GETATTR", "NFSPROC_SETATTR", "NFSPROC_ROOT",
+			"NFSPROC_LOOKUP", "NFSPROC_READLINK", "NFSPROC_READ", "NFSPROC_WRITECACHE", "NFSPROC_WRITE",
+			"NFSPROC_CREATE", "NFSPROC_REMOVE", "NFSPROC_RENAME", "NFSPROC_LINK", "NFSPROC_SYMLINK", "NFSPROC_MKDIR",
+			"NFSPROC_RMDIR", "NFSPROC_READDIR", "NFSPROC_STATFS" };
 
 	/**
 	 * This defines the null MOUNT proc
@@ -106,9 +103,8 @@ public class rpcdefs {
 	/**
 	 * This defines MOUNT proc in String, for debug purposes
 	 */
-	public final static String[] MOUNTPROC_TEXT = { "MOUNTPROC_NULL",
-			"MOUNTPROC_MNT", "MOUNTPROC_DUMP", "MOUNTPROC_UMNT",
-			"MOUNTPROC_UMNTALL", "MOUNTPROC_EXPORT", "MOUNTPROC_EXPORTALL" };
+	public final static String[] MOUNTPROC_TEXT = { "MOUNTPROC_NULL", "MOUNTPROC_MNT", "MOUNTPROC_DUMP",
+			"MOUNTPROC_UMNT", "MOUNTPROC_UMNTALL", "MOUNTPROC_EXPORT", "MOUNTPROC_EXPORTALL" };
 
 	/**
 	 * This defines the null NFS service authentication
@@ -130,8 +126,7 @@ public class rpcdefs {
 	/**
 	 * This defines AUTH in String, for debug purposes
 	 */
-	public final static String[] AUTH_TEXT = { "AUTH_NULL", "AUTH_UNIX",
-			"AUTH_SHORT", "AUTH_DES" };
+	public final static String[] AUTH_TEXT = { "AUTH_NULL", "AUTH_UNIX", "AUTH_SHORT", "AUTH_DES" };
 
 	/**
 	 * This defines an RPC call

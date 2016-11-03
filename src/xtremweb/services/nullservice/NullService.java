@@ -3,7 +3,7 @@
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
  * Web            : http://www.xtremweb-hep.org
- * 
+ *
  *      This file is part of XtremWeb-HEP.
  *
  *    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -60,10 +60,11 @@ public class NullService implements Interface {
 	/**
 	 * This implements the Interface exec() method<br />
 	 * This does nothing
-	 * 
+	 *
 	 * @return always 0
 	 */
-	public int exec(String cmdLine, byte[] stdin, byte[] dirin) {
+	@Override
+	public int exec(final String cmdLine, final byte[] stdin, final byte[] dirin) {
 		mileStone.println("XW NullService started");
 		mileStone.println("XW NullService done");
 		return 0;
@@ -71,10 +72,11 @@ public class NullService implements Interface {
 
 	/**
 	 * This implements the Interface getResult() method
-	 * 
+	 *
 	 * @see xtremweb.services.Interface
 	 * @return always null
 	 */
+	@Override
 	public byte[] getResult() {
 		return null;
 	}
