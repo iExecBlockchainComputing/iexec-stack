@@ -3840,7 +3840,7 @@ public final class DBInterface {
 			throws IOException, InvalidKeyException, AccessControlException {
 
 		final DataInterface theData = data(theClient, uid);
-		if (theData != null) {
+		if ((theData != null) && (theData.getWork() != null)) {
 			deleteJob(theClient, theData.getWork());
 		}
 		return delete(theClient, theData);
@@ -3994,7 +3994,9 @@ public final class DBInterface {
 		if (workuids != null) {
 			for (final Enumeration<UID> enums = workuids.elements(); enums.hasMoreElements();) {
 				final UID workuid = enums.nextElement();
-				ret = deleteJob(theClient, workuid);
+				if(workuid != null) {
+					ret = deleteJob(theClient, workuid);
+				}
 				if (!ret) {
 					break;
 				}
@@ -4367,17 +4369,16 @@ public final class DBInterface {
 			throws IOException, InvalidKeyException, AccessControlException {
 
 		if (jobUID == null) {
-			System.out.println("jobuid is null");
+			logger.debug("jobuid is null");
 			return false;
 		}
 
 		final WorkInterface theWork = work(theClient, jobUID);
 		if (theWork == null) {
-			System.out.println("no work for jobuid " + jobUID);
+			logger.debug("no work for jobuid " + jobUID);
 			return false;
 		}
 		if ((theClient.getRights() == null) || (theClient.getRights().lowerThan(UserRightEnum.DELETEJOB))) {
-
 			throw new AccessControlException(theClient.getLogin() + " : not enough rights to delete job " + jobUID);
 		}
 
@@ -4491,7 +4492,7 @@ public final class DBInterface {
 
 		boolean result = true;
 
-		if ((jobs == null) || (jobs.size() < 1)) {
+		if ((jobs == null) || jobs.isEmpty()) {
 			return true;
 		}
 
@@ -4499,8 +4500,8 @@ public final class DBInterface {
 			final Iterator<UID> li = jobs.iterator();
 			while (li.hasNext()) {
 				final UID jobUID = li.next();
-				if (deleteJob(theClient, jobUID) == false) {
-					System.out.println("deletejob(" + jobUID + ") returned false");
+				if ((jobUID != null) && !deleteJob(theClient, jobUID)) {
+					logger.warn("deletejob(" + jobUID + ") returned false");
 					result = false;
 				}
 			}
