@@ -497,46 +497,8 @@ public class DBConnPoolThread extends Thread {
 	 * @param rows
 	 *            is the vector of rows to update
 	 */
-	public synchronized <T extends Table> void update(final Collection<T> rows) throws IOException {
+	public <T extends Table> void update(final Collection<T> rows) throws IOException {
 		update(rows, null);
-	}
-
-	/**
-	 * This updates objects in the database table
-	 *
-	 * @param rows
-	 *            is a vector of rows to update
-	 * @param _criterias
-	 *            is string to use in SQL SELECT WHERE clause if not null
-	 *            otherwise TableRow#criterias() is used
-	 */
-	public synchronized <T extends Table> void update(final Collection<T> rows, final String _criterias)
-			throws IOException {
-
-		try {
-			final Iterator<T> rowit = rows.iterator();
-			for (; rowit.hasNext();) {
-				final T row = rowit.next();
-				if (row == null) {
-					continue;
-				}
-				final String criterias = (_criterias != null ? _criterias : row.criteria());
-				final String rowset = row.toString();
-
-				if ((criterias == null) || (rowset == null)) {
-					throw new IOException("unable to get update criteria");
-				}
-
-				final String query = "UPDATE " + config.getProperty(XWPropertyDefs.DBNAME) + "." + row.tableName()
-						+ " SET " + rowset + " WHERE " + criterias;
-
-				updateFifo.add(query);
-				notify();
-			}
-		} catch (final Exception e) {
-			logger.exception(e);
-			throw new IOException(e.toString());
-		}
 	}
 
 	/**
@@ -549,40 +511,49 @@ public class DBConnPoolThread extends Thread {
 	}
 
 	/**
+	 * This updates objects in the database table
+	 *
+	 * @param rows
+	 *            is a vector of rows to update
+	 * @param criterias
+	 *            is string to use in SQL SELECT WHERE clause if not null
+	 *            otherwise TableRow#criterias() is used
+	 */
+	public <T extends Table> void update(final Collection<T> rows, final String criterias)
+			throws IOException {
+
+		try {
+			final Iterator<T> rowit = rows.iterator();
+			while (rowit.hasNext()) {
+				final T row = rowit.next();
+				if (row == null) {
+					continue;
+				}
+				update(row, criterias, true);
+			}
+		} catch (final Exception e) {
+			logger.exception(e);
+			throw new IOException(e.toString());
+		}
+	}
+
+	/**
 	 * This calls update(row, criteria, true)
 	 *
 	 * @see #update(Table, String, boolean)
 	 */
-	public synchronized <T extends Table> void update(final T row, final String criteria) throws IOException {
-		update(row, criteria, true);
-	}
-
-	/**
-	 * This updates this object in the database table, if needed
-	 *
-	 * @param row
-	 *            is the row to update
-	 * @param criteria
-	 *            is string to use in SQL SELECT WHERE clause if not null
-	 *            otherwise TableRow#criteria() is used
-	 * @param pool
-	 *            uses pool mode if true; execute query immediately if false
-	 */
-	public synchronized <T extends Table> void update(final T row, String criteria, final boolean pool)
-			throws IOException {
+	public synchronized <T extends Table> void update(final T row, final String criteria, final boolean pool) throws IOException {
 
 		try {
 			final String rowset = row.toString();
-			if (criteria == null) {
-				criteria = row.criteria();
-			}
+			final String theCriteria = criteria != null ? criteria : row .criteria();
 
-			if ((criteria == null) || (rowset == null)) {
+			if ((theCriteria == null) || (rowset == null)) {
 				throw new IOException("unable to get update criteria");
 			}
 
 			final String query = "UPDATE " + config.getProperty(XWPropertyDefs.DBNAME) + "." + row.tableName() + " SET "
-					+ rowset + " WHERE " + criteria;
+					+ rowset + " WHERE " + theCriteria;
 
 			if (pool == true) {
 				logger.finest("updateFifo.add(" + query + ")");
@@ -590,8 +561,8 @@ public class DBConnPoolThread extends Thread {
 			} else {
 				executeQuery(query, row);
 			}
-
 			notify();
+
 		} catch (final Exception e) {
 			logger.exception(e);
 			throw new IOException(e.toString());
@@ -630,10 +601,7 @@ public class DBConnPoolThread extends Thread {
 	public <T extends Type> T selectOne(final T row, final String criterias) throws IOException {
 
 		final Vector<T> v = (Vector<T>) select(row, criterias, 1);
-		if (v == null) {
-			return null;
-		}
-		return v.firstElement();
+		return v == null ? null : v.firstElement();
 	}
 
 	/**
@@ -749,7 +717,7 @@ public class DBConnPoolThread extends Thread {
 	 * @param row
 	 *            is the row to insert
 	 */
-	public <T extends Type> void insert(final T row) throws IOException {
+	public synchronized <T extends Type> void insert(final T row) throws IOException {
 
 		final String criteria = row.valuesToString();
 
@@ -760,7 +728,9 @@ public class DBConnPoolThread extends Thread {
 		final String query = "INSERT INTO " + config.getProperty(XWPropertyDefs.DBNAME) + "." + row.tableName() + ("(")
 				+ row.getColumns() + (") ") + " VALUES (" + criteria + ")";
 
-		executeQuery(query, row);
+//		executeQuery(query, row);
+		updateFifo.add(query);
+		notify();
 	}
 
 	/**
@@ -770,7 +740,7 @@ public class DBConnPoolThread extends Thread {
 	 * @param row
 	 *            is the to delete
 	 */
-	public <T extends Table> void delete(final T row) throws IOException {
+	public synchronized <T extends Table> void delete(final T row) throws IOException {
 
 		try {
 			final String criteria = row.criteria();
@@ -785,7 +755,9 @@ public class DBConnPoolThread extends Thread {
 
 			query = "DELETE FROM " + config.getProperty(XWPropertyDefs.DBNAME) + "." + row.tableName() + " WHERE "
 					+ criteria;
-			executeQuery(query, row);
+//			executeQuery(query, row);
+			updateFifo.add(query);
+			notify();
 		} catch (final Exception e) {
 			logger.exception(e);
 			throw new IOException(e.toString());
@@ -798,18 +770,18 @@ public class DBConnPoolThread extends Thread {
 	 * @param serverName
 	 *            is the server name
 	 */
-	public void unlockWorks(final String serverName) {
+	public synchronized void unlockWorks(final String serverName) {
 		try {
-			String query = "UPDATE " + config.getProperty(XWPropertyDefs.DBNAME) + ".works SET "
+			final String query = "UPDATE " + config.getProperty(XWPropertyDefs.DBNAME) + ".works SET "
 					+ WorkInterface.Columns.STATUS.toString() + "='" + StatusEnum.WAITING + "',"
 					+ WorkInterface.Columns.SERVER.toString() + "='NULL'  WHERE "
 					+ WorkInterface.Columns.SERVER.toString() + "='" + serverName + "' and(("
 					+ WorkInterface.Columns.STATUS.toString() + "='" + StatusEnum.WAITING + "' or "
-					+ WorkInterface.Columns.STATUS.toString() + "='" + StatusEnum.PENDING + "')";
+					+ WorkInterface.Columns.STATUS.toString() + "='" + StatusEnum.PENDING + "') OR ISNULL(status))";
 
-			query += " OR ISNULL(status))";
-
-			executeQuery(query, null);
+//			executeQuery(query, null);
+			updateFifo.add(query);
+			notify();
 		} catch (final Exception e) {
 			logger.exception(e);
 		}
