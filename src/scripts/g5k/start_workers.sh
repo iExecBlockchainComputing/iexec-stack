@@ -23,7 +23,7 @@ then
     if [ $N_WAITING -lt $MAX_WAITING ]
     then
 	echo "Creating new worker..."
-	oarsub -t allow_classic_ssh -t besteffort -l walltime=$WALLTIME ./launch_xw_worker.sh
+	oarsub -t allow_classic_ssh -t besteffort -l walltime=$WALLTIME ./launch_xw_worker_unix_and_darwin.sh
     else
 	echo "Too many workers are waiting already"
     fi

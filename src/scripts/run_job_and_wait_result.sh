@@ -13,6 +13,10 @@ XWSUBMIT="$XWHEPDIR/bin/xwsubmit"
 XWRM="$XWHEPDIR/bin/xwrm"
 XWRESULTS="$XWHEPDIR/bin/xwresults"
 APPNAME="apptest"
+STDIN=""
+DIRIN=""
+PARAMS=""
+USERJAVAOPTS=""
 
 
 #=============================================================================
@@ -47,6 +51,22 @@ fatal ()
 
 
 #=============================================================================
+#  Function  fatal (Message part, ...)
+#=============================================================================
+usage ()
+{
+  echo "$0 [ -v ] [ -h ] [ -a appName [ arg0 arg1 ...] ] [-i txtFile ] [ -p dirName ]"
+  echo "   -h : this help"
+  echo "   -v : verbose mode"
+  echo "   -a <appName>  : where appName  is the application name"
+  echo "                   arg0 arg1 ... are the application command line arguments"
+  echo "   -i <textFile> : where textFile is a text file name as standard input"
+  echo "   -p <dirName>  : where dirName  is a directory to send as job working directory" 
+  exit 0
+}
+
+
+#=============================================================================
 #  Function  extract_xw_attribute_value (attr_name, xml_content)
 #=============================================================================
 extract_xw_attribute_value ()
@@ -77,13 +97,38 @@ do
         -v | --verbose | --debug )
             VERBOSE=1
             ;;
+        -h | --help )
+            usage
+            ;;
+        -a  )
+            shift
+	    APPNAME=$1
+            ;;
+        -i  )
+            shift
+	    STDIN=$1
+            ;;
+        -p  )
+            shift
+	    DIRIN=$1
+            ;;
+        * )
+            echo $1 | grep -E "^-D" > /dev/null 2>&1
+	    if [ $? -eq 0 ] ; then
+		USERJAVAOPTS="$USERJAVAOPTS $1"
+	    else
+	        PARAMS=$PARAMS" "$1
+	    fi
+	    ;;
     esac
     shift
 done
 
 
-[ -z "$VERBOSE" ]  || echo "$XWSUBMIT $APPNAME"
-JOBURI=`$XWSUBMIT $APPNAME` || fatal "Can't submit job for $APPNAME"
+CMD="$XWSUBMIT $USERJAVAOPTS $APPNAME $PARAMS --xwstdin $STDIN --xwdirin $DIRIN"
+[ -z "$VERBOSE" ]  || echo "$CMD"
+exit 0
+JOBURI=`$CMD` || fatal "Can't submit job for $APPNAME"
 [ -z "$VERBOSE" ]  || echo $JOBURI
 JOBUID=$(echo "$JOBURI"  |  grep '^xw://'  |  sed -e 's=^.*/==')
 
