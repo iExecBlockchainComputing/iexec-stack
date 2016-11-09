@@ -684,6 +684,7 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 		r.write(response);
 		response.getWriter().flush();
 		response.setStatus(HttpServletResponse.SC_OK);
+		close();
 	}
 
 	/**
@@ -699,6 +700,7 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 		response.sendRedirect(res.getName());
 		baseRequest.setHandled(true);
+		close();
 	}
 
 	/**
@@ -1120,6 +1122,7 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 			user = null;
 			obj = null;
 			baseRequest.setHandled(true);
+			close();
 			notifyAll();
 		}
 	}
