@@ -49,6 +49,8 @@
   <property name="xwidl.dir" value="${src.java.dir}/XwIDL" />
   <property name="antlr.dir" value="${src.java.dir}/antlr" />
   <property name="install.www.dir" value="${build.dir}/WWW" />
+  <property name="debug" value="true" />
+  <property name="debuglevel" value="source,lines" />
 
   <!-- BUILD CONFIG -->
   <target name="configure" depends="version" >
