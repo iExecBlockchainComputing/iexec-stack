@@ -33,7 +33,7 @@
 
 <title>XtremWeb-HEP @XWVERSION@</title>
 
-<link  href="xwserver.css" rel="stylesheet" type="text/css" media="all">
+<link  href="/xwserver.css" rel="stylesheet" type="text/css" media="all">
 <script>
 /**********************************************************************
  **********************************************************************
@@ -3279,7 +3279,7 @@ function deleteFromServerStateChanged()
     
   <div class="titre">
     <div >
-      <img src="logo.jpg" height="100px" style="float:left;vertical-align:text-top" />
+      <img src="/logo.jpg" height="100px" style="float:left;vertical-align:text-top" />
       <!-- @XWVERSION@ is replaced at installation time in build.xml -->
       <br />XtremWeb-HEP @XWVERSION@
     </div>
@@ -3813,11 +3813,6 @@ google.loader.rpl({":scriptaculous":{"versions":{":1.8.3":{"uncompressed":"scrip
 <script>
 
 
-/**
- * This stores applications treemap data 
- */
-var appDataTreemap = null;
-var appDataTreemapLength = 0;
 
 	google.load("visualization", "1", {packages:["treemap"]});
 	google.setOnLoadCallback(drawAppTreemap);
@@ -3832,8 +3827,9 @@ var appDataTreemapLength = 0;
 
 function drawAppTreemap() {
 	// Create and populate the data table.
-    var data = google.visualization.arrayToDataTable(appDataTreemap);
 /*
+        var data = google.visualization.arrayToDataTable(appDataTreemap);
+
         var data = google.visualization.arrayToDataTable([
           ['Name', 'Parent', 'Pending', 'Completed'],
           ['Applications',    null,                 0,                               0],
@@ -3842,7 +3838,7 @@ function drawAppTreemap() {
           ['Mexico',    'Applications',            24,                              12],
           ['Canada',    'Applications',            16,                              23],
         ]);
-*/
+
     // Create and draw the visualization.
     var tree = new google.visualization.TreeMap(document.getElementById('chart_div'));
     tree.draw(data, {
@@ -3852,6 +3848,7 @@ function drawAppTreemap() {
           headerHeight: 15,
           fontColor: 'black',
           showScale: true});
+*/
 }
 
 </script>

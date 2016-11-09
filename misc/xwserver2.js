@@ -289,6 +289,17 @@ var actualUserUID;
 var co;
 
 /**
+ * This stores applications treemap data 
+ */
+var appDataTreemap = null;
+var appDataTreemapLength = 0;
+var workerDataTreemap = null;
+var workerDataTreemapLength = 0;
+var workDataTreemap = null;
+var workDataTreemapLength = 0;
+var overviewWorkerContent = new Array();
+
+/**
  * These are HTML element name in "sendForm" form 
  */
 var nameInputName     = "nameInput"; // data name, app name
@@ -1313,97 +1324,6 @@ function getAppStateChanged()
     }    	    	
 
 }
-
-/*function getAppBOOTSTRAPStateChanged(){
-	
-	for (var uid in hashtableGetApp) {
-
-	    if (hashtableGetApp.hasOwnProperty(uid) == false) {
-		    console.log("hashtableGetApp.hasOwnProperty(" + uid + ") = false");
-	    	continue;
-    	}
-    	
-	    var current = hashtableGetApp[uid];
-	     
-    	if (current.readyState!=4) {
-	        continue;
-    	}
-
-	    var xmlDoc = null;
-	    try {
-	    	if (xmlDoc=current.responseXML == null) {
-	    		if (current.status == 401) {
-		    		document.documentElement.innerHTML=current.responseText;
-		   			return;
-	    		}
-	    	}
-	    	xmlDoc=current.responseXML.documentElement;
-		}
-		catch(err) {
-			connectionError();
-			return;
-		}
-    	// get returns an app XML object
-		var xmlTagName = "app";
-
-    	delete hashtableGetApp[uid];
-		--appDataTreemapLength;
-
-	    if(rpcError(xmlDoc) == true) {
-	        continue;
-		}
-
-   		try {
-		    var name = xmlDoc.getElementsByTagName("name").item(0).firstChild.nodeValue;
-	    	var uid = xmlDoc.getElementsByTagName("uid").item(0).firstChild.nodeValue;
-		    var type = xmlDoc.getElementsByTagName("type").item(0).firstChild.nodeValue;
-		    
-		    var nbJobs = 0;
-		    try {
-		    	nbJobs = xmlDoc.getElementsByTagName("nbjobs").item(0).firstChild.nodeValue;
-		    }
-		    catch(err) {
-		    }
-		    var runningJobs = 0;
-		    try {
-		    	runningJobs = xmlDoc.getElementsByTagName("runningjobs").item(0).firstChild.nodeValue;
-		    }
-		    catch(err) {
-		    }
-		    var pendingJobs = 0;
-		    try {
-			    pendingJobs = xmlDoc.getElementsByTagName("pendingjobs").item(0).firstChild.nodeValue;
-		    }
-		    catch(err) {
-		    }
-
-			appDataTreemap.push(new Array(name, 'Applications', parseInt(nbJobs), parseInt(pendingJobs)));
-
-		    console.log("App " + name);
-
-        	/*document.getElementById(uid).innerHTML = "<span class=\"selectbutton\"><input type=\"checkbox\" name=\"" + uid + "\" /></span>" +
-        	    "<span class=\"firstvalue\" id=\"" + appuidheader + uid + "\">" + uid + "</span> </br>" +
-        		"<span class=\"value\" id=\"" + appnameheader + uid + "\">" + name + "</span></br>" +
-        		"<span class=\"lastvalue\">" + type + "</span></br>";
-		    
-		    document.getElementById(uid).innerHTML = "<td>" + name + "</td>" +
-			 "<td>" + uid + "</td>" +
-			 "<td>" + type + "</td>";
-		    	
-        	
-			if (overviewAppContent.length == 0) {
-				overviewAppContent.push(new Array('AppName', 'Parent', 'Completed', 'Running'));
-				overviewAppContent.push(new Array('Global' ,  null   ,  0         ,  0));
-			}
-			var appContent = new Array(name, 'Global', nbJobs, runningJobs + pendingJobs);
-			overviewAppContent.push(appContent);
-   		}
-   		catch(err){
-   		console.log(err);
-   		}
-    } 
-	
-}*/
 
 
 /**
@@ -3984,11 +3904,11 @@ function getWorkerStateChanged()
 		}
 	    
    		try {
-   			
+ /* 			
 		    var OS = xmlDoc.getElementsByTagName("os").item(0).firstChild.nodeValue;
 	    	var CPU = xmlDoc.getElementsByTagName("cputype").item(0).firstChild.nodeValue;
 	    	
-		    /*var nbJobs = 0;
+		    var nbJobs = 0;
 		    try {
 		    	nbJobs = xmlDoc.getElementsByTagName("nbjobs").item(0).firstChild.nodeValue;
 		    }
@@ -4009,11 +3929,11 @@ function getWorkerStateChanged()
 
 			workerDataTreemap.push(new Array(name, 'Applications', parseInt(nbJobs), parseInt(pendingJobs)));
 
-		    console.log("Worker " + name);*/
+		    console.log("Worker " + name);
 
-        	/*document.getElementById(uid).innerHTML =
+        	document.getElementById(uid).innerHTML =
         	    "<span class=\"firstvalue\" id=\"" + appuidheader + uid + "\">" + OS + "</span>" +"     "+
-        		"<span class=\"lastvalue\">" + CPU + "</span></br>";*/
+        		"<span class=\"lastvalue\">" + CPU + "</span></br>";
         	
         	actualOSes.push(OS);
         	actualCPUs.push(CPU);
@@ -4024,7 +3944,7 @@ function getWorkerStateChanged()
 			}
 			var workerContent = new Array(name, 'Global', nbJobs, runningJobs + pendingJobs);
 			overviewWorkerContent.push(workerContent);
-		    
+*/		    
    		}
    		catch(err){
    		console.log(err);
