@@ -310,6 +310,9 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 			if (reader == null) {
 				throw new IOException(getPath() + " not found");
 			}
+
+			response.setHeader(CONTENTLENGTHLABEL, Integer.toString(reader.available()));
+
 			final OutputStream out = response.getOutputStream();
 			final byte[] buf = new byte[10240];
 			for (int n = reader.read(buf); n > 0; n = reader.read(buf)) {
@@ -638,18 +641,22 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 		try {
 			response.setDateHeader("Date", new Date().getTime());
 			response.setContentType("text/xml;charset=UTF-8");
-			response.getWriter().println(XMLable.XMLHEADER + "<" + XMLable.ROOTTAG + ">");
+			String msg = XMLable.XMLHEADER + "<" + XMLable.ROOTTAG + ">";
+//			response.getWriter().println(XMLable.XMLHEADER + "<" + XMLable.ROOTTAG + ">");
 			if (answer != null) {
 				debug("HTTPHandler#write(" + answer.toXml() + ")");
-				response.getWriter().println(answer.toXml());
+//				response.getWriter().println(answer.toXml());
+				msg += answer.toXml();
 			}
+			msg += "</" + XMLable.ROOTTAG + ">";
+			response.setHeader(CONTENTLENGTHLABEL, Integer.toString(msg.length()));
+			response.getWriter().println(msg);
 		} catch (final Exception e) {
 			logger.exception(e);
 			mileStone("<error method='write' msg='" + e.getMessage() + "' />");
 			throw new IOException(e.toString());
 		} finally {
 			response.setStatus(HttpServletResponse.SC_OK);
-			response.getWriter().println("</" + XMLable.ROOTTAG + ">");
 			resetIdRpc();
 			mileStone("</write>");
 			notifyAll();
@@ -719,23 +726,29 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 			String msg = String.format(DEFAULT_ANSWER_HEAD,
 					client.getEMail() != null ? client.getEMail() : client.getLogin());
 			response.setContentType(TEXTHTML + ";charset=UTF-8");
-			writer.println(msg);
+//			writer.println(msg);
 
 			for (final IdRpc i : IdRpc.values()) {
-				writer.println("<li> <a href=\"" + baseUri + "/" + i + "\">" + baseUri + "/" + i + "</a> : "
-						+ i.helpRestApi());
+//				writer.println("<li> <a href=\"" + baseUri + "/" + i + "\">" + baseUri + "/" + i + "</a> : "
+//				+ i.helpRestApi());
+				msg += "<li> <a href=\"" + baseUri + "/" + i + "\">" + baseUri + "/" + i + "</a> : " + i.helpRestApi();
 			}
 
-			msg = String.format(DEFAULT_UPLOAD_FORM, baseUri);
+			msg += String.format(DEFAULT_UPLOAD_FORM, baseUri);
+//			msg = String.format(DEFAULT_UPLOAD_FORM, baseUri);
+//			writer.println(msg);
+			msg += String.format(DEFAULT_ANSWER_TAIL, baseUri);
+//			msg = String.format(DEFAULT_ANSWER_TAIL, baseUri);
+
+			response.setHeader(CONTENTLENGTHLABEL, "" + msg.length());
 			writer.println(msg);
-			msg = String.format(DEFAULT_ANSWER_TAIL, baseUri);
-			writer.println(msg);
+			response.setStatus(HttpServletResponse.SC_OK);
 		} catch (final Exception e) {
 			getLogger().exception(e);
 			mileStone("<error method='writeapi' msg='" + e.getMessage() + "' />");
 			throw new IOException(e.toString());
 		} finally {
-			response.setStatus(HttpServletResponse.SC_OK);
+			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			resetIdRpc();
 			mileStone("</writeApi>");
 			notifyAll();
