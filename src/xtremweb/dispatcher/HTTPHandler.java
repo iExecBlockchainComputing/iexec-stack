@@ -668,14 +668,12 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 	 *
 	 * @since 8.1.0
 	 */
-	private void usagePage(final UserInterface client) throws IOException {
+	private void sendDashboard(final UserInterface client) throws IOException {
 
-		response.setContentType(TEXTHTML);
 		final Cookie cookie = new Cookie(COOKIE_USERUID, client.getUID().toString());
 		getLogger().debug("setCookie " + COOKIE_USERUID + " = " + client.getUID().toString());
 		response.addCookie(cookie);
-		Resources.XWHTML.write(response);
-		response.setStatus(HttpServletResponse.SC_OK);
+		sendResource(Resources.DASHBOARDHTML);
 	}
 
 	/**
@@ -686,7 +684,11 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 	private void sendResource(final Resources r) throws IOException {
 
 		if (r.getMimeType() != null) {
+			getLogger().debug("sendind " + r + " ; " + r.getMimeType());
 			response.setContentType(r.getMimeType());
+		}
+		else {
+			getLogger().debug("sendind " + r + " ; unkown mime type");
 		}
 		r.write(response);
 		response.getWriter().flush();
@@ -884,7 +886,6 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 			 */
 			for (final Resources r : Resources.values()) {
 				if (r.getName().compareToIgnoreCase(target) == 0) {
-					logger.debug("Sending resource " + r.getName());
 					sendResource(r);
 					return;
 				}
@@ -988,7 +989,7 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 			}
 
 			if (target.equals(PATH)) {
-				usagePage(user);
+				sendDashboard(user);
 				baseRequest.setHandled(true);
 				return;
 			}
