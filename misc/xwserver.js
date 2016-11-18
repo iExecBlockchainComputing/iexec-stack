@@ -236,8 +236,6 @@ var appsTabID   = "tabApps";
 var datasTabID  = "tabDatas";
 var worksTabID  = "tabJobs";
 var botsTabID   = "tabBots";
-var helpTabID   = "tabHelp";
-var apiTabID    = "tabAPI";
 
 var overviewAppContent = new Array();
 
@@ -247,13 +245,11 @@ var overviewAppContent = new Array();
  * These are HTML element ID 
  */
 var overviewListID  = "overviewList";
-var appListID       = "appList";
+var appListID       = "appsList";
 var dataListID      = "dataList";
-var botListID       = "botList";
-var helpListID      = "helpList";
-var apiListID       = "apiList";
+var botListID       = "botsList";
 var detailListID    = "detailList";
-var worksListsID    = "jobsLists";
+var worksListsID    = "jobsList";
 var overviewCurrentUserID = "overviewCurrentUser";
 var overviewCurrentUserIntroID = "overviewCurrentUserIntro";
 var overviewAppsID  = "overviewApps";
@@ -268,8 +264,6 @@ var theDatasID      = "theDatas";
 var theWorksID      = "theJobs";
 var theBotsID       = "theBots";
 var theSubmitID     = "theSubmit";
-var theHelpID       = "theHelp";
-var theAPIID        = "theApi";
 
 var grilleInfoID	="grilleInfo";
 
@@ -291,12 +285,8 @@ var co;
 /**
  * This stores applications treemap data 
  */
-var appDataTreemap = null;
-var appDataTreemapLength = 0;
 var workerDataTreemap = null;
 var workerDataTreemapLength = 0;
-var workDataTreemap = null;
-var workDataTreemapLength = 0;
 var overviewWorkerContent = new Array();
 
 /**
@@ -677,6 +667,10 @@ function checkAll() {
  */
 function checkAllInForm(theID) {
 	var elem = document.getElementById(theID);
+	if(elem == null) {
+		console.log("theID does not exist");
+		return;
+	}
 	for (var i = 0; i < elem.length; i++) {
 		try {
 			if(elem[i].type == "checkbox")
@@ -719,6 +713,11 @@ function uncheckAll() {
  */
 function uncheckAllInForm(theID) {
 	var elem = document.getElementById(theID);
+	if(elem == null) {
+		console.log("theID does not exist");
+		return;
+	}
+	
 	for (var i = 0; i < elem.length; i++) {
 		try {
 			if(elem[i].type == "checkbox")
@@ -748,15 +747,16 @@ function showTab(theID, theTabID) {
 
 	uncheckAll();
 
+	var ele;
 	//
 	// hide buttons bars
 	//
-	var ele = document.getElementById(objectsBarID);
-    ele.style.display = "none";
-	ele = document.getElementById(overviewBarID);
-    ele.style.display = "none";
-	ele = document.getElementById(emptyBarID);
-    ele.style.display = "none";
+//	ele = document.getElementById(objectsBarID);
+//    ele.style.display = "none";
+//	ele = document.getElementById(overviewBarID);
+//    ele.style.display = "none";
+//	ele = document.getElementById(emptyBarID);
+//    ele.style.display = "none";
 
 	//
 	// hide all tabs
@@ -781,13 +781,13 @@ function showTab(theID, theTabID) {
     ele.style.display = "none";
 	ele = document.getElementById(botsTabID).setAttribute("class", "");
 
-	ele = document.getElementById(theAPIID);
-    ele.style.display = "none";
-	ele = document.getElementById(apiTabID).setAttribute("class", "");
-
-	ele = document.getElementById(theHelpID);
-    ele.style.display = "none";
-	ele = document.getElementById(helpTabID).setAttribute("class", "");
+//	ele = document.getElementById(theAPIID);
+//    ele.style.display = "none";
+//	ele = document.getElementById(apiTabID).setAttribute("class", "");
+//
+//	ele = document.getElementById(theHelpID);
+//    ele.style.display = "none";
+//	ele = document.getElementById(helpTabID).setAttribute("class", "");
 
 	ele = document.getElementById(theID);
     ele.style.display = "block";
@@ -798,14 +798,14 @@ function showTab(theID, theTabID) {
     	ele.style.display = "block";
 	}
 	else {
-		if((theID != theHelpID) && (theID != theAPIID)) {
-			ele = document.getElementById(objectsBarID);
-    		ele.style.display = "block";
-		}
-		else {
+//		if((theID != theHelpID) && (theID != theAPIID)) {
+//			ele = document.getElementById(objectsBarID);
+//    		ele.style.display = "block";
+//		}
+//		else {
 			ele = document.getElementById(emptyBarID);
     		ele.style.display = "block";
-		}
+//		}
 	}
 }
 
@@ -866,23 +866,17 @@ function getXmlHttpObject()
  * This retrieves objects from server
  */
 function refresh() {
+    
 	if(document.getElementById(overviewTabID).getAttribute("class") == "current") {
 
-		//document.getElementById(affichageID).innerHTML = actualOSes;
-		
-		
+		getCurrentUser();
 		getApps();
-		
 		getWorkers();
-		
 		drawOSesChart();
 		drawCPUsChart();
-		
-		getWorksBOOTSTRAP();
-		getCurrentUser();
-		
-        return;
+		return;
 	}
+
 	if(document.getElementById(appsTabID).getAttribute("class") == "current") {
 		getApps();
 		return;
@@ -899,7 +893,6 @@ function refresh() {
 		getBots();
 		return;
 	}
-
 }
 
 /**
@@ -1122,11 +1115,8 @@ function getApps()
     {
 		return;
     }
-
-	appDataTreemapLength = 0;
-	appDataTreemap = new Array();
-	appDataTreemap.push(new Array('Name', 'Parent', 'Completed', 'Pending'));
-	appDataTreemap.push(new Array('Applications', null, 0, 0));
+    
+    document.getElementById(appListID).innerHTML = "";
 
     var url="/getapps";
     xmlHttpConnectionGetApps.onreadystatechange=getAppsStateChanged;
@@ -1175,29 +1165,10 @@ function getAppsStateChanged()
         return;
 	}
 
-	/*document.getElementById(appListID).innerHTML = 
-		  "<div class=\"tupletitre\">"+
-		    "<span class=\"selectbutton\">Select</span>" +
-		    "<span class=\"firstvalue\">UID</span>" +
-		    "<span class=\"value\">Name</span>" +
-		    "<span class=\"value\">Type</span>" +
-		"</div>";*/
-
-	appDataTreemapLength = xmlDoc.getElementsByTagName(xmlTagName).length;
-
 	for (var i = 0; i < xmlDoc.getElementsByTagName(xmlTagName).length; i++) {
     	try {
 			// this is the UID of the application
 			var uid = xmlDoc.getElementsByTagName(xmlTagName)[i].getAttribute("value");
-
-			var color = colors[(i % 2)];
-				
-			// this creates a new DIV with the ID=uid
-        	/*document.getElementById(appListID).innerHTML += 
-        		"<div class=\"tuple\" style=\"background-color:" + color +
-        		"\" id=\"" + uid + "\"></div>";*/
-
-			
         	getApp(uid);
     	}
     	catch(err){
@@ -1266,14 +1237,13 @@ function getAppStateChanged()
 		var xmlTagName = "app";
 
     	delete hashtableGetApp[uid];
-		--appDataTreemapLength;
 
 	    if(rpcError(xmlDoc) == true) {
 	        continue;
 		}
 
    		try {
-		    var name = xmlDoc.getElementsByTagName("name").item(0).firstChild.nodeValue;
+		    var appName = xmlDoc.getElementsByTagName("name").item(0).firstChild.nodeValue;
 	    	var uid = xmlDoc.getElementsByTagName("uid").item(0).firstChild.nodeValue;
 		    var type = xmlDoc.getElementsByTagName("type").item(0).firstChild.nodeValue;
 		    
@@ -1295,28 +1265,29 @@ function getAppStateChanged()
 		    }
 		    catch(err) {
 		    }
-
-			appDataTreemap.push(new Array(name, 'Applications', parseInt(nbJobs), parseInt(pendingJobs)));
+		    var errorJobs = 0;
+		    try {
+			    errorJobs = xmlDoc.getElementsByTagName("errorjobs").item(0).firstChild.nodeValue;
+		    }
+		    catch(err) {
+		    }
 
 		    console.log("App " + name);
 
-/*        	document.getElementById(uid).innerHTML = "<span class=\"selectbutton\"><input type=\"checkbox\" name=\"" + uid + "\" /></span>" +
-        	    "<span class=\"firstvalue\" id=\"" + appuidheader + uid + "\">" + uid + "</span> </br>" +
-        		"<span class=\"value\" id=\"" + appnameheader + uid + "\">" + name + "</span></br>" +
-        		"<span class=\"lastvalue\">" + type + "</span></br>";
-        	*/
-           //alert("test");
-           //alert("contains : "+hashtableAppName.containsKey(uid));
-		   if(!(uid in hashtableAppName)){
-			   hashtableAppName[uid] = name;
-		   }
 
-			if (overviewAppContent.length == 0) {
-				overviewAppContent.push(new Array('AppName', 'Parent', 'Completed', 'Running'));
-				overviewAppContent.push(new Array('Global' ,  null   ,  0         ,  0));
-			}
-			var appContent = new Array(name, 'Global', nbJobs, runningJobs + pendingJobs);
-			overviewAppContent.push(appContent);
+      		document.getElementById(appListID).innerHTML += "<tr id=\"" + uid + "\">" + 
+      			"<td class=\"selectbutton\"><input type=\"checkbox\" name=\"" + uid + "\" /></td>" +
+      			"<td>" + uid + "</td>" +
+      			"<td>" + appName + "</td>" +
+      			"<td>" + type + "</td>" +
+		    	"<td>" + nbJobs + "</td>"+
+		    	"<td>" + runningJobs + "</td>"+
+		    	"<td>" + pendingJobs + "</td>"+
+		    	"<td>" + errorJobs + "</td></tr>";
+
+		   if(!(uid in hashtableAppName)){
+			   hashtableAppName[uid] = appName;
+		   }
    		}
    		catch(err){
    		console.log(err);
@@ -1338,6 +1309,7 @@ function getDatas()
 		return;
     }
 
+    document.getElementById(dataListID).innerHTML = "";
     var url="/getdatas";
     xmlHttpConnectionGetDatas.onreadystatechange=getDatasStateChanged;
     xmlHttpConnectionGetDatas.open("POST",url,true);
@@ -1382,25 +1354,10 @@ function getDatasStateChanged()
         return;
 	}
 
-	document.getElementById(dataListID).innerHTML = 
-		  "<div class=\"tupletitre\">"+
-		    "<span class=\"selectbutton\">Select</span>" +
-		    "<span class=\"firstvalue\">UID</span>" +
-		    "<span class=\"value\">Name</span>" +
-		    "<span class=\"value\">Status</span>" +
-			"</div>";
-
 	for (var i = 0; i < xmlDoc.getElementsByTagName(xmlTagName).length; i++) {
     	try {
 			// this is the UID of the data
 			var uid = xmlDoc.getElementsByTagName(xmlTagName)[i].getAttribute("value");
-
-			var color = colors[i % 2];
-				
-			// this creates a new DIV with the ID=uid
-        	document.getElementById(dataListID).innerHTML += 
-        		"<div class=\"tuple\" style=\"background-color:" + color +
-        		"\" id=\"" + uid + "\"></div>";
 
         	getData(uid);
     	}
@@ -1480,19 +1437,24 @@ function getDataStateChanged()
 			var datauriid = datauriheader + uid;
 
 		    console.log("Data " + name);
- 		    var dataref="<span class=\"value\" id=\"" + datanameheader + uid + "\" \>" + name + "</span>";
 			if(status == "AVAILABLE") {
-        		dataref = "<span class=\"value\"><a href=\"/downloaddata/" + uid +"\" download=\"" + name + "\" id=\"" + datanameheader + uid + "\">" + name + "</a></span>";
-			}
-        	document.getElementById(uid).innerHTML = "<span class=\"selectbutton\"><input type=\"checkbox\" name=\"" + uid + "\" /></span>" +
-        		"<span class=\"firstvalue\" id=\"" + datauidheader + uid + "\">" + uid + "</span>" +
-        		dataref +
-        		"<span class=\"value\">" + status + "</span>" +
-   				"<span class=\"value\" style=\"display:none\" id=\"" + datauriid + "\">" + uri + "</span>";
+		    	document.getElementById(dataListID).innerHTML += "<tr id=\"" + uid + "\"><td class=\"selectbutton\"><input type=\"checkbox\" name=\"" + uid + "\" /></td>" +
+		    		"<td>" + uid + "</td>" +
+		    		"<td>" + name + "</td>" +
+		    		"<td>" + status + "</td>" +
+		    		"<td><button class=\"btn btn-primary\" onclick=\"window.location.href='/downloaddata/" + uid + "'\" download=\"" + datauriid + "\">Download</button></td></tr>";
+		    }
+		    else{
+		    	document.getElementById(dataListID).innerHTML += "<tr id=\"" + uid + "\"><td class=\"selectbutton\"><input type=\"checkbox\" name=\"" + uid + "\" /></td>" +
+		    		"<td>" + uid + "</td>" +
+		    		"<td>" + name + "</td>" +
+		    		"<td>" + status + "</td>" +
+	    			"<td><button class=\"btn btn-danger disabled\">Disabled</button></td></tr>";
+		    }
    		}
    		catch(err){
-   		}
-    }    	    	
+   		}   	
+	}
 }
 
 /**
@@ -1543,33 +1505,20 @@ function getBotsStateChanged()
 		connectionError();
 		return;
 	}
-    // getdatas returns an XMLVECTOR containing some XMLVALUE
-	var xmlTagName = "XMLVALUE";
 
+	// getdatas returns an XMLVECTOR containing some XMLVALUE
+	var xmlTagName = "XMLVALUE";
 
     if(rpcError(xmlDoc) == true) {
         return;
 	}
 
-	document.getElementById(botListID).innerHTML = 
-		  "<div class=\"tupletitre\">"+
-		    "<span class=\"selectbutton\">Select</span>" +
-		    "<span class=\"firstvalue\">UID</span>" +
-		    "<span class=\"value\">Name</span>" +
-//		    "<span class=\"value\">Session</span>" +
-		"</div>";
+	document.getElementById(botListID).innerHTML = "";
+
 	for (var i = 0; i < xmlDoc.getElementsByTagName(xmlTagName).length; i++) {
     	try {
 			// this is the UID of the data
 			var uid = xmlDoc.getElementsByTagName(xmlTagName)[i].getAttribute("value");
-
-			var color = colors[i % 2];
-				
-			// this creates a new DIV with the ID=uid
-        	document.getElementById(botListID).innerHTML += 
-        		"<div class=\"tuple\" style=\"background-color:" + color +
-        		"\" id=\"" + uid + "\"></div>";
-
         	getBot(uid);
     	}
     	catch(err){
@@ -1631,7 +1580,6 @@ function getBotStateChanged()
 		}
     	// get returns a group XML object
 		var xmlTagName = "group";
-	
 
     	delete hashtableGetBot[uid];
 
@@ -1643,220 +1591,17 @@ function getBotStateChanged()
 		    var name = xmlDoc.getElementsByTagName("name").item(0).firstChild.nodeValue;
 	    	var uid  = xmlDoc.getElementsByTagName("uid").item(0).firstChild.nodeValue;
 
-		    console.log("Data " + name);
-			var divid = botjobsuidheader + uid;
-        	document.getElementById(uid).innerHTML = 
-        		"<span class=\"selectbutton\">" +
-        		"<input type=\"checkbox\" name=\"" + uid + "\" />" +
-        		"</span>" +
-        		"<span class=\"firstvalue\" id=\"" + botuidheader + uid + "\">" + uid + "</span>" +
-        		"<span class=\"value\">" + name + "</span>" +
-//        		"<span class=\"lastvalue\">" + sessionuid + "</span>" +
-	            "<span><a style=\"float:right;margin-right:15px;color:black\" href=\"javascript:showHide('" + divid + "');\" >show/hide</a></span>" +
-				"<div id=\"" + divid + "\" class=\"groupworks\" style=\"display:none\"></div>";
+		    console.log("BoT " + name);
+      		document.getElementById(botListID).innerHTML += "<tr id=\"" + uid + "\">" + 
+  			"<td class=\"selectbutton\"><input type=\"checkbox\" name=\"" + uid + "\" /></td>" +
+  			"<td>" + uid + "</td>" +
+  			"<td>" + name + "</td></tr>";
    		}
    		catch(err){
    		}
     }    	    	
 }
 
-/**
- * This retrieves registered work uid
- * This cancels all detail
- */
-function getWorks()
-{ 
-    xmlHttpConnectionGetWorks=getXmlHttpObject();
-    if (xmlHttpConnectionGetWorks==null)
-    {
-		return;
-    }
-
-    var url = "/getworks";
-	
-    xmlHttpConnectionGetWorks.onreadystatechange=getWorksStateChanged;
-    xmlHttpConnectionGetWorks.open("POST",url,true);
-    xmlHttpConnectionGetWorks.send(null);
-}
-
-/**
- * This handles getWorks events
- * For each retrieved work uid, this sets 
- * a new DIV with ID="the work uid".
- * This finally calls getWork("the work uid") 
- * which will fill the work DIV.
- *
- * getWorkStateChange() will finally fill the DIV
- *
- * @see getWork(uid)
- */
-function getWorksStateChanged()
-{ 
-	var current = xmlHttpConnectionGetWorks;
-    if (current.readyState!=4)
-    {
-        return;
-    }
-
-    var xmlDoc = null;
-    try {
-    	if (xmlDoc=current.responseXML == null) {
-    		if (current.status == 401) {
-	    		document.documentElement.innerHTML=current.responseText;
-	   			return;
-    		}
-    	}
-    	xmlDoc=current.responseXML.documentElement;
-	}
-	catch(err) {
-		connectionError();
-		return;
-	}
-    // getworks returns an XMLVECTOR containing some XMLVALUE
-	var xmlTagName = "XMLVALUE";
-
-
-    if(rpcError(xmlDoc) == true) {
-        return;
-	}
-
-	document.getElementById(pendingListID).innerHTML = 
-		  "<div class=\"tupletitre\">"+
-		    "<span class=\"selectbutton\">Select</span>" +
-		    "<span class=\"firstvalue\">UID</span>" +
-		    "<span class=\"value\">Application</span>" +
-		    "<span class=\"value\">Status</span>" +
-		    "<span class=\"value\">Label</span>" +
-		    "<span class=\"value\">Error Msg</span>" +
-		"</div>";
-	document.getElementById(runningListID).innerHTML = 
-		  "<div class=\"tupletitre\">"+
-		    "<span class=\"selectbutton\">Select</span>" +
-		    "<span class=\"firstvalue\">UID</span>" +
-		    "<span class=\"value\">Application</span>" +
-		    "<span class=\"value\">Status</span>" +
-		    "<span class=\"value\">Label</span>" +
-		    "<span class=\"value\">Error Msg</span>" +
-		"</div>";
-	document.getElementById(completedListID).innerHTML = 
-		  "<div class=\"tupletitre\">"+
-		    "<span class=\"selectbutton\">Select</span>" +
-		    "<span class=\"firstvalue\">UID</span>" +
-		    "<span class=\"value\">Application</span>" +
-		    "<span class=\"value\">Status</span>" +
-		    "<span class=\"value\">Label</span>" +
-		    "<span class=\"value\">Error Msg</span>" +
-		"</div>";
-	document.getElementById(errorListID).innerHTML = 
-		  "<div class=\"tupletitre\">"+
-		    "<span class=\"selectbutton\">Select</span>" +
-		    "<span class=\"firstvalue\">UID</span>" +
-		    "<span class=\"value\">Application</span>" +
-		    "<span class=\"value\">Status</span>" +
-		    "<span class=\"value\">Label</span>" +
-		    "<span class=\"value\">Error Msg</span>" +
-		"</div>";
-    
-    /*document.getElementById("listeJobsUser").innerHTML = "<table class=\"table table-striped\">" + 
-    "<thead>" +
-        "<tr>" +
-            "<th>Name</th>" +
-            "<th>UID</th>" +
-            "<th>Type</th>" +
-        "</tr>"+
-    "</thead>" +
-    "<tbody id=\"bodytableau\">" +
-    "</tbody>"+
-    "</table>";*/
-
-	for (var i = 0; i < xmlDoc.getElementsByTagName(xmlTagName).length; i++) {
-    	try {
-			// this is the UID of the work
-			var uid = xmlDoc.getElementsByTagName(xmlTagName)[i].getAttribute("value");
-
-			var color = colors[i % 2];
-				
-			// we don't know this work status yet
-			// just in case, we create a new DIV in each list
-			var pendingid   = pendingheader + uid;
-			var runningid   = runningheader + uid;
-			var completedid = completedheader + uid;
-			var errorid     = errorheader + uid;
-        	document.getElementById(pendingListID).innerHTML += 
-        		"<div class=\"tuple\" style=\"background-color:" + color +
-        		"\" id=\"" + pendingid + "\"></div>";
-        	hide(pendingid);			
-        	document.getElementById(runningListID).innerHTML += 
-        		"<div class=\"tuple\" style=\"background-color:" + color +
-        		"\" id=\"" + runningid + "\"></div>";
-        	hide(runningid);			
-        	document.getElementById(completedListID).innerHTML += 
-        		"<div class=\"tuple\" style=\"background-color:" + color +
-        		"\" id=\"" + completedid + "\"></div>";
-        	hide(completedid);			
-        	document.getElementById(errorListID).innerHTML += 
-        		"<div class=\"tuple\" style=\"background-color:" + color +
-        		"\" id=\"" + errorid + "\"></div>";
-        	hide(errorid);
-			
-			//document.getElementById("bodytableau").innerHTML += "<tr id=\""+uid+"\"></tr>";
-
-        	getWork(uid);
-    	}
-    	catch(err){
-    	}
-    }    	
-}
-
-/**
- * This retrieves registered work from XWHEP server, given its uid
- * @param uid the UID of the work to retrieve
- */
-function getWork(uid)
-{
-    var url="/get/" + uid;
-
-	var useWebWorker = 1;
-	
-	var elem = document.getElementById("useWebWorker");
-	try {
-		useWebWorker = elem.checked;
-	}
-	catch(err) {
-		console.log("getWork("+uid+") error " + err);
-	}
- 
-	if((useWebWorker == 1) && (typeof(Worker)!=="undefined"))
-	{
-/*
-    	window.URL = window.URL || window.webkiURL;
-    	var getURL = document.URL + url;
-    	console.log("getURL = " + getURL);
-		var blob = new Blob([document.querySelector('#webWorkerGetScript').textContent]);
-		webWorkerPool.queueJob(window.URL.createObjectURL(blob),
-						getURL,
-						webWorkerGetWorkOnMessage,
-                		this);
-*/
-		webWorkerPool.queueJob(new Worker('http://www.xtremweb-hep.org/lal/xwserver_webworker.js'),
-						getURL,
-						webWorkerGetWorkOnMessage,
-                		this);
-	  	return;
-	}
-	else
-	{
- 	   hashtableGetWork[uid]=getXmlHttpObject();
-    	if (hashtableGetWork[uid]==null)
-    	{
-			return;
-    	}
-
-   		hashtableGetWork[uid].onreadystatechange=getWorkStateChanged;
-	    hashtableGetWork[uid].open("POST",url,true);
-    	hashtableGetWork[uid].send(null);
-	}
-}
 
 /**
  * This is called by the WorkerPool
@@ -1879,47 +1624,6 @@ function webWorkerGetWorkOnMessage(worker,event) {
 		break;
 	}
 	return true;
-}
-
-/**
- * This handles getWork events
- * This displays the work informations in its DIV
- *
- * @see getWorksStateChanged()
- */
-function getWorkStateChanged()
-{
-	for (var uid in hashtableGetWork) {
-
-	    if (hashtableGetWork.hasOwnProperty(uid) == false) {
-		    console.log("hashtableGetWork.hasOwnProperty(" + uid + ") = false");
-	    	continue;
-    	}
-    	
-	    var current = hashtableGetWork[uid];
-	     
-    	if (current.readyState!=4) {
-	        continue;
-    	}
-
-	    var xmlDoc = null;
-	    try {
-	    	if (xmlDoc=current.responseXML == null) {
-	    		if (current.status == 401) {
-		    		document.documentElement.innerHTML=current.responseText;
-		   			return;
-	    		}
-	    	}
-	    	xmlDoc=current.responseXML.documentElement;
-		}
-		catch(err) {
-			connectionError();
-			return;
-		}
-
-    	delete hashtableGetWork[uid];
-    	displayWork(xmlDoc);
-	}
 }
 
 
@@ -2032,7 +1736,7 @@ function displayWork(xmlDoc)
 	}
 }
 
-function getWorksBOOTSTRAP()
+function getWorks()
 { 
     xmlHttpConnectionGetWorks=getXmlHttpObject();
     if (xmlHttpConnectionGetWorks==null)
@@ -2041,13 +1745,15 @@ function getWorksBOOTSTRAP()
     }
 
     var url = "/getworks";
-	
-    xmlHttpConnectionGetWorks.onreadystatechange=getWorksStateChangedBOOTSTRAP;
+
+    document.getElementById(worksListsID).innerHTML = "";
+
+    xmlHttpConnectionGetWorks.onreadystatechange=getWorksStateChanged;
     xmlHttpConnectionGetWorks.open("POST",url,true);
     xmlHttpConnectionGetWorks.send(null);
 }
 
-function getWorksStateChangedBOOTSTRAP()
+function getWorksStateChanged()
 { 
 	var current = xmlHttpConnectionGetWorks;
     if (current.readyState!=4)
@@ -2076,34 +1782,11 @@ function getWorksStateChangedBOOTSTRAP()
     if(rpcError(xmlDoc) == true) {
         return;
 	}
-    
-    document.getElementById("listeJobsUser").innerHTML = "<table class=\"table table-striped\">" + 
-    "<thead>" +
-        "<tr>" +
-            "<th>UID</th>" +
-            "<th>Application</th>" +
-            "<th>Status</th>" +
-            "<th>Downloads</th>" +
-        "</tr>"+
-    "</thead>" +
-    "<tbody id=\"bodytableau\">" +
-    "</tbody>"+
-    "</table>";
-
-	workDataTreemapLength = xmlDoc.getElementsByTagName(xmlTagName).length;
 
 	for (var i = 0; i < xmlDoc.getElementsByTagName(xmlTagName).length; i++) {
     	try {
-			// this is the UID of the application
 			var uid = xmlDoc.getElementsByTagName(xmlTagName)[i].getAttribute("value");
-
-			var color = colors[(i % 2)];
-				
-			// this creates a new DIV with the ID=uid
-			
-			//document.getElementById("bodytableau").innerHTML += "<tr id=\""+uid+"\"></tr>";
-
-        	getWorkBOOTSTRAP(uid);
+        	getWork(uid);
     	}
     	catch(err){
     	}
@@ -2114,22 +1797,32 @@ function getWorksStateChangedBOOTSTRAP()
     show("worksRefresh");	
 }
 
-function getWorkBOOTSTRAP(uid)
+function getWork(uid)
 { 
     hashtableGetWork[uid]=getXmlHttpObject();
     if (hashtableGetWork[uid]==null)
     {
 		return;
     }
+    /*
+	window.URL = window.URL || window.webkiURL;
+	var getURL = document.URL + url;
+	console.log("getURL = " + getURL);
+	var blob = new Blob([document.querySelector('#webWorkerGetScript').textContent]);
+	webWorkerPool.queueJob(window.URL.createObjectURL(blob),
+					getURL,
+					webWorkerGetWorkOnMessage,
+            		this);
+*/
 
     var url="/get/" + uid;
     
-    hashtableGetWork[uid].onreadystatechange=getWorkStateChangedBOOTSTRAP;
+    hashtableGetWork[uid].onreadystatechange=getWorkStateChanged;
     hashtableGetWork[uid].open("POST",url,true);
     hashtableGetWork[uid].send(null);
 }
 
-function getWorkStateChangedBOOTSTRAP(){
+function getWorkStateChanged(){
 	
 	for (var uid in hashtableGetWork) {
 
@@ -2159,214 +1852,70 @@ function getWorkStateChangedBOOTSTRAP(){
 			return;
 		}
 
-    	// get returns an app XML object
 		var xmlTagName = "work";
 		
     	delete hashtableGetWork[uid];
-		--workDataTreemapLength;
 
 	    if(rpcError(xmlDoc) == true) {
 	        continue;
 		}
-	    //document.getElementById(uid).innerHTML += "<td> TEST </td>";
 
 	    var resulturi = null;
+	    var completionDate = "";
 		var resultuid = null;
 	    
    		try {
-		    //var name = xmlDoc.getElementsByTagName("name").item(0).firstChild.nodeValue;
-   			
 	    	var uid = xmlDoc.getElementsByTagName("uid").item(0).firstChild.nodeValue;
 	    	var application = xmlDoc.getElementsByTagName("appuid").item(0).firstChild.nodeValue;
 	    	var ownerUID = xmlDoc.getElementsByTagName("owneruid").item(0).firstChild.nodeValue;
 		    var status = xmlDoc.getElementsByTagName("status").item(0).firstChild.nodeValue;
-		    
-		    var name = hashtableAppName[application];
+		    var arrivalDate = xmlDoc.getElementsByTagName("arrivaldate").item(0).firstChild.nodeValue;
+
+		    var appName = hashtableAppName[application];
 
 		    try {
 			    resulturi = xmlDoc.getElementsByTagName("resulturi").item(0).firstChild.nodeValue;
 			} catch(err) {
 			}
-		    
-		   /* var nbJobs = 0;
 		    try {
-		    	nbJobs = xmlDoc.getElementsByTagName("nbjobs").item(0).firstChild.nodeValue;
-		    }
-		    catch(err) {
-		    }
-		    var runningJobs = 0;
-		    try {
-		    	runningJobs = xmlDoc.getElementsByTagName("runningjobs").item(0).firstChild.nodeValue;
-		    }
-		    catch(err) {
-		    }
-		    var pendingJobs = 0;
-		    try {
-			    pendingJobs = xmlDoc.getElementsByTagName("pendingjobs").item(0).firstChild.nodeValue;
-		    }
-		    catch(err) {
-		    }
-
-			workDataTreemap.push(new Array(name, 'Applications', parseInt(nbJobs), parseInt(pendingJobs)));
-
-		    console.log("Work " + name);*/
+			    completionDate = xmlDoc.getElementsByTagName("completeddate").item(0).firstChild.nodeValue;
+			} catch(err) {
+			}
 
 			if((resulturi != null) && (resulturi.length > 0)) {
 				var lastindex = resulturi.lastIndexOf("/");
 				resultuid = resulturi.substring(lastindex + 1, resulturi.length);
 			}
-			var resultname = resultHeader + uid;
-			/*onclick=\"window.location.href='/downloaddata/" + resultuid + "\"download=\"" + resultname'"\" */
-			
-			
+			var resultName = resultHeader + uid;
+
 		    if(ownerUID == actualUserUID){
+
 		    	if(resultuid != null){
-		    		document.getElementById("bodytableau").innerHTML += "<tr><td>" + uid + "</td>" +
-		    		"<td>" + name + "</td>" +
-		    		"<td>" + status + "</td>"+
-		    		"<td><button class=\"btn btn-primary\" onclick=\"window.location.href='/downloaddata/" + resultuid + "'\" download=\"resultname\">Download</button></td></tr>";
+		    		document.getElementById(worksListsID).innerHTML += "<tr id=\"" + uid + "\"><td class=\"selectbutton\"><input type=\"checkbox\" name=\"" + uid + "\" /></td>" +
+	    			"<td>" + uid + "</td>" +
+		    		"<td>" + appName + "</td>" +
+		    		"<td>" + arrivalDate + "</td>" +
+		    		"<td>" + completionDate + "</td>" +
+		    		"<td>" + status + "</td>" +
+		    		"<td><button class=\"btn btn-primary\" onclick=\"window.location.href='/downloaddata/" + resultuid + "'\" download=\"" + resultName + "\">Download</button></td></tr>";
 		    	}
 		    	else{
-		    		document.getElementById("bodytableau").innerHTML += "<tr><td>" + uid + "</td>" +
-		    		"<td>" + name + "</td>" +
-		    		"<td>" + status + "</td>"+
-		    		"<td><button class=\"btn btn-danger disabled\">Disabled</button></td></tr>";
+		    		document.getElementById(worksListsID).innerHTML += "<tr id=\"" + uid + "\"><td class=\"selectbutton\"><input type=\"checkbox\" name=\"" + uid + "\" /></td>" +
+	    				"<td>" + uid + "</td>" +
+	    				"<td>" + appName + "</td>" +
+	    				"<td>" + arrivalDate + "</td>" +
+	    				"<td>" + completionDate + "</td>" +
+	    				"<td>" + status + "</td>" +
+	    				"<td><button class=\"btn btn-danger disabled\">Disabled</button></td></tr>";
 		    		
 		    	}
 		    }
-		   
-			/*if (overviewWorkContent.length == 0) {
-				overviewWorkContent.push(new Array('AppName', 'Parent', 'Completed', 'Running'));
-				overviewWorkContent.push(new Array('Global' ,  null   ,  0         ,  0));
-			}
-			var workContent = new Array(name, 'Global', nbJobs, runningJobs + pendingJobs);
-			overviewWorkContent.push(workContent);*/
    		}
    		catch(err){
    		console.log(err);
    		}
     }
 }
-
-/*function displayWorkBOOTSTRAP(xmlDoc)
-{
-	// get returns an work XML object
-	var xmlTagName = "work";
-
-    if(rpcError(xmlDoc) == true) {
-        return;
-	}
-
-	try {
-		
-		var name = xmlDoc.getElementsByTagName("name").item(0).firstChild.nodeValue;
-    	var uid = xmlDoc.getElementsByTagName("uid").item(0).firstChild.nodeValue;
-	    var type = xmlDoc.getElementsByTagName("type").item(0).firstChild.nodeValue;
-	    
-	    document.getElementById(uid).innerHTML = "<span class=\"selectbutton\"><input type=\"checkbox\" name=\"" + uid + "\" /></span>" +
-	    "<span class=\"firstvalue\" id=\"" + appuidheader + uid + "\">" + uid + "</span> </br>" +
-		"<span class=\"value\" id=\"" + appnameheader + uid + "\">" + name + "</span></br>" +
-		"<span class=\"lastvalue\">" + type + "</span></br>";
-	    
-		
-    	/*var uid  = xmlDoc.getElementsByTagName("uid").item(0).firstChild.nodeValue;
-		var pendingid   = pendingheader   + uid;
-		var runningid   = runningheader   + uid;
-		var completedid = completedheader + uid;
-		var datauriid   = datauriheader   + uid;
-		var errorid     = errorheader     + uid;
-    	var appuid      = xmlDoc.getElementsByTagName("appuid").item(0).firstChild.nodeValue;
-    	var appnameid = appnameheader + appuid;
-    	var appname = null;
-    	try {
-    		appname = document.getElementById(appnameid).innerHTML;
-		} catch(err) {
-		}
-    	var status = xmlDoc.getElementsByTagName("status").item(0).firstChild.nodeValue;
-	    var label = null;
-	    try {
-		    label = xmlDoc.getElementsByTagName("label").item(0).firstChild.nodeValue
-		} catch(err) {
-		}
-	    var error_msg = null;
-		try {
-		    error_msg = xmlDoc.getElementsByTagName("errormsg").item(0).firstChild.nodeValue;
-		} catch(err) {
-		}
-
-	    var groupuid = null;
-	    try {
-		    groupuid = xmlDoc.getElementsByTagName("groupuid").item(0).firstChild.nodeValue;
-		} catch(err) {
-		}
-
-		var groupdivid = null;
-		if((groupuid != null) && (groupuid != ""))
-			groupdivid = botjobsuidheader + groupuid;
-		var groupdiv = null;
-		if(groupdivid != null)
-			document.getElementById(groupdivid);
-		console.log("groupuid = " + groupuid + " groupdivid = " + groupdivid + " " + groupdiv);
-
-	    var resulturi = null;
-		var resultuid = null;
-	    try {
-		    resulturi = xmlDoc.getElementsByTagName("resulturi").item(0).firstChild.nodeValue;
-		} catch(err) {
-		}
-		    
-		if((resulturi != null) && (resulturi.length > 0)) {
-			var lastindex = resulturi.lastIndexOf("/");
-			resultuid = resulturi.substring(lastindex + 1, resulturi.length);
-		}
-		var resultname = resultHeader + uid;
-    	var datanameid = datanameheader + resultuid;
-    	var datauriid  = datauriheader + resultuid;
-	    if(document.getElementById(datanameid) != null)
-		    resultname = document.getElementById(datanameid).innerHTML;
-
-	    console.log("work " + uid + " " + groupuid + " " + appname + " " + status + " " + error_msg + " " + resultuid);
-
-		var id = pendingid;
-		var workbkgcolor = colorpending;
-		
-		switch(status) {
-			case "RUNNING":
-				id = runningid;
-				workbkgcolor = colorrunning;
-    		break;
-			case "COMPLETED":
-				id = completedid;
-				workbkgcolor = colorcompleted;
-    		break;
-			case "ERROR":
-				id = errorid;
-				workbkgcolor = colorerror;
-    		break;
-   		}
-
-   		var theBody =
-   			"<span class=\"firstvalue\">" + uid + "</span>" +
-			"<span class=\"value\" >" + (appname != null ? appname : appuid) + "</span>";
-		if(resultuid != null)
-			theBody += "<span class=\"value\"><a href=\"/downloaddata/" + resultuid +"\" download=\"" + resultname+ "\">" + status + "</a></span>";
-		else				
-			theBody += "<span class=\"value\">" + status + "</span>";
-		theBody += "<span class=\"value\">" + label + "</span>" +
-			"<span class=\"value\">" + error_msg + "</span>" +
-			"<span class=\"lastvalue\" style=\"display:none\" id=\"" + datauriid + "\">" + resulturi + "</span>";
-
-   		document.getElementById(id).innerHTML = "<span class=\"selectbutton\"><input type=\"checkbox\" name=\"" + uid + "\" /></span>" + theBody;
-		show(id);
-		if(groupdiv != null) {
-			groupdiv.innerHTML += "<div class=\"tuple\" style=\"background-color:" + workbkgcolor + "\">" + theBody + "</div>";
-			show(groupdivid);
-   		}
-	}
-	catch(err){
-		console.log("displayWork error " + err);
-	}
-}*/
 
 /**
  * This details all checked object
