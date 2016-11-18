@@ -160,11 +160,11 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 	public static final String LOGIN_HTML = "/login.html";
 	/**
 	 * This is JavaScript -extracted from xwserver.html- file name :
-	 * xwserver2.js
+	 * xwserver.js
 	 *
 	 * @since 10.2.0
 	 */
-	public static final String SCRIPTFILENAME_JS = "/xwserver2.js";
+	public static final String SCRIPTFILENAME_JS = "/xwserver.js";
 	/**
 	 * This is the favicon file name : favicon.ico
 	 *
