@@ -771,6 +771,8 @@ function showTab(theID, theTabID) {
 	ele = document.getElementById(theID);
     ele.style.display = "block";
 	ele = document.getElementById(theTabID).setAttribute("class", "current");
+
+	refresh();
 }
 
 

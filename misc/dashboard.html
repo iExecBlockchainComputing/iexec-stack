@@ -77,23 +77,33 @@
 			</div>
 
 			<div id="navbar" class="navbar-collapse collapse">
-				<ul class="nav navbar-nav navbar-right">
-					<li><a href="/logout.html">Logout</a></li>
-					<li><a href="/api" target="_blank">API</a></li>
-					<li><a
-						href="https://xtremweb-hep.lal.in2p3.fr/2014/06/20/documentations/"
-						target="_blank">Help</a></li>
-					<li id="processMessageText"></li>
+				<ul class="nav navbar-nav">
+					<li id="tabOverview" class="current"><a href="javascript:showTab(theOverviewID, overviewTabID);">Overview</a></li>
+					<li id="tabJobs"><a href="javascript:showTab(theWorksID, worksTabID)">Jobs</a></li>
+					<li id="tabBots"><a href="javascript:showTab(theBotsID, botsTabID)">Bag of Jobs</a></li>
+					<li id="tabApps"><a href="javascript:showTab(theAppsID, appsTabID)">Applications</a></li>
+					<li id="tabDatas"><a href="javascript:showTab(theDatasID, datasTabID)">Data</a></li>
+					<li id="tabWorkers"><a href="javascript:showTab(theWorkersID, workersTabID)">Computing ressources</a></li>
 				</ul>
+					
+				<ul class="nav navbar-nav navbar-right">
+					<li><a href="/api" target="_blank">API</a></li>
+					<li><a href="https://xtremweb-hep.lal.in2p3.fr/2014/06/20/documentations/"
+							target="_blank">Help</a></li>
+     				<li><a href="/logout.html"><span class="glyphicon glyphicon-log-out"></span>Logout</a></li>
+				</ul>
+
+<!--
 				<form class="navbar-form navbar-right" action="">
 					<input type="text" class="form-control" placeholder="Search...">
 				</form>
+-->
 			</div>
 		</div>
 	</nav>
 
 	<div class="container-fluid">
-		<div class="row">
+<!--
 			<div class="col-sm-3 col-md-2 sidebar" data-spy="affix" style="padding-top:50px;text-align:center;border-width:1px">
 				<ul class="nav nav-sidebar">
 					<li id="tabOverview" class="current"><a href="javascript:showTab(theOverviewID, overviewTabID);">Overview</a></li>
@@ -113,8 +123,14 @@
 				</button>
 
 			</div>
+-->
+
 			<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main"
 				style="position: absolute; padding-top: 50px">
+
+<!--
+			    <button class="btn btn-success navbar-btn float-lg-right" onclick="refresh()">Refresh</button>
+-->
 
 				<div class="row placeholders" id="theOverview" style="display:block">
 				<h1 class="page-header">Dashboard</h1>
@@ -288,18 +304,13 @@
 					</div>
 				</div>
 
+				<div class="row placeholders" style="background-color:#d9d9d9;font-size:14px;position:relative;left:-75px;margin:7px;padding:7px">
+				    <span style=";float:left">Web interface (v&nbsp;2.0)</span>
+				    <a href="http://www.xtremweb-hep.org" style="float:right">XtremWeb-HEP 10.5.0</a>
+				</div>
 			</div>
 
-		</div>
-
 	</div>
-
-
-  <div class="basdepage">
-    <span style="font-size:14px;padding-left:50px;padding-top:5px;;float:left">Web interface (v&nbsp;2.0)</span>
-    <a href="http://www.xtremweb-hep.org" style="color:#050064;font-size:18px;float: right">XtremWeb-Hep.org</a>
-  </div>
-
 
   <!-- Modal -->
   <div class="modal fade" id="pleaseWaitModal" role="dialog">
