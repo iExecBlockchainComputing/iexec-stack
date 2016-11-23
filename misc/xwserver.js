@@ -188,12 +188,6 @@ var fileReader;
  */
 var uploadFile;
 
-/**
- * These are button bars ID 
- */
-var emptyBarID    = "emptyBar";
-var overviewBarID = "overviewBar";
-var objectsBarID  = "objectsBar";
 
 /**
  * These are form ID 
@@ -231,11 +225,12 @@ var JobTabTitle = "jobTabTitle";
 /**
  * These are tab ID 
  */
-var overviewTabID   = "tabOverview";
 var appsTabID   = "tabApps";
-var datasTabID  = "tabDatas";
-var worksTabID  = "tabJobs";
 var botsTabID   = "tabBots";
+var datasTabID  = "tabDatas";
+var overviewTabID = "tabOverview";
+var workersTabID  = "tabWorkers";
+var worksTabID  = "tabJobs";
 
 var overviewAppContent = new Array();
 
@@ -249,7 +244,8 @@ var appListID       = "appsList";
 var dataListID      = "dataList";
 var botListID       = "botsList";
 var detailListID    = "detailList";
-var worksListsID    = "jobsList";
+var worksListID    = "jobsList";
+var workersListID    = "workersList";
 var overviewCurrentUserID = "overviewCurrentUser";
 var overviewCurrentUserIntroID = "overviewCurrentUserIntro";
 var overviewAppsID  = "overviewApps";
@@ -262,20 +258,16 @@ var theOverviewID   = "theOverview";
 var theAppsID       = "theApplications";
 var theDatasID      = "theDatas";
 var theWorksID      = "theJobs";
+var theWorkersID    = "theWorkers";
 var theBotsID       = "theBots";
 var theSubmitID     = "theSubmit";
 
 var grilleInfoID	="grilleInfo";
 
-var workerListID = "workerList";
-
 var affichageID ="affichage";
 
-var actualOSes = [];
-var actualCPUs = [];
-
-var retourDataWorkerOSes = false;
-var retourDataWorkerCPUs = false;
+var knownOSes = new Object();
+var knownCPUs = new Object();
 
 var hashtableGlobalUID = new Object();
 var actualUserUID;
@@ -285,8 +277,6 @@ var co;
 /**
  * This stores applications treemap data 
  */
-var workerDataTreemap = null;
-var workerDataTreemapLength = 0;
 var overviewWorkerContent = new Array();
 
 /**
@@ -548,6 +538,7 @@ function connectionError() {
  * This displays an error modal box
  */
 function error(theMsg) {
+	$('#pleaseWaitModal').modal('hide');
 	var theBody = "<div class=\"modalContent\" style=\"display:block\">" +
 		"<div class=\"modalpane\">" +
 	    "<div class=\"modaltitreerror\">" +
@@ -748,19 +739,11 @@ function showTab(theID, theTabID) {
 	uncheckAll();
 
 	var ele;
-	//
-	// hide buttons bars
-	//
-//	ele = document.getElementById(objectsBarID);
-//    ele.style.display = "none";
-//	ele = document.getElementById(overviewBarID);
-//    ele.style.display = "none";
-//	ele = document.getElementById(emptyBarID);
-//    ele.style.display = "none";
 
 	//
 	// hide all tabs
 	//
+
 	ele = document.getElementById(theOverviewID);
     ele.style.display = "none";
 	ele = document.getElementById(overviewTabID).setAttribute("class", "");
@@ -777,36 +760,17 @@ function showTab(theID, theTabID) {
     ele.style.display = "none";
 	ele = document.getElementById(worksTabID).setAttribute("class", "");
 
+	ele = document.getElementById(theWorkersID);
+    ele.style.display = "none";
+	ele = document.getElementById(workersTabID).setAttribute("class", "");
+
 	ele = document.getElementById(theBotsID);
     ele.style.display = "none";
 	ele = document.getElementById(botsTabID).setAttribute("class", "");
 
-//	ele = document.getElementById(theAPIID);
-//    ele.style.display = "none";
-//	ele = document.getElementById(apiTabID).setAttribute("class", "");
-//
-//	ele = document.getElementById(theHelpID);
-//    ele.style.display = "none";
-//	ele = document.getElementById(helpTabID).setAttribute("class", "");
-
 	ele = document.getElementById(theID);
     ele.style.display = "block";
 	ele = document.getElementById(theTabID).setAttribute("class", "current");
-
-	if(theID == theOverviewID) {
-		ele = document.getElementById(overviewBarID);
-    	ele.style.display = "block";
-	}
-	else {
-//		if((theID != theHelpID) && (theID != theAPIID)) {
-//			ele = document.getElementById(objectsBarID);
-//    		ele.style.display = "block";
-//		}
-//		else {
-			ele = document.getElementById(emptyBarID);
-    		ele.style.display = "block";
-//		}
-	}
 }
 
 
@@ -866,19 +830,18 @@ function getXmlHttpObject()
  * This retrieves objects from server
  */
 function refresh() {
-    
-	if(document.getElementById(overviewTabID).getAttribute("class") == "current") {
 
+	if(document.getElementById(overviewTabID).getAttribute("class") == "current") {
 		getCurrentUser();
-		getApps();
-		getWorkers();
-		drawOSesChart();
-		drawCPUsChart();
 		return;
 	}
 
 	if(document.getElementById(appsTabID).getAttribute("class") == "current") {
 		getApps();
+		return;
+	}
+	if(document.getElementById(workersTabID).getAttribute("class") == "current") {
+		getWorkers();
 		return;
 	}
 	if(document.getElementById(datasTabID).getAttribute("class") == "current") {
@@ -1174,10 +1137,6 @@ function getAppsStateChanged()
     	catch(err){
     	}
     }
-
-	// now, the user can get its jobs
-	hide("worksRefreshInfo");
-    show("worksRefresh");	
 }
 
 /**
@@ -1309,6 +1268,7 @@ function getDatas()
 		return;
     }
 
+	$('#pleaseWaitModal').modal('show');
     document.getElementById(dataListID).innerHTML = "";
     var url="/getdatas";
     xmlHttpConnectionGetDatas.onreadystatechange=getDatasStateChanged;
@@ -1363,7 +1323,8 @@ function getDatasStateChanged()
     	}
     	catch(err){
     	}
-    }    	
+    }
+	$('#pleaseWaitModal').modal('hide');
 }
 
 /**
@@ -1469,6 +1430,7 @@ function getBots()
 		return;
     }
 
+	$('#pleaseWaitModal').modal('show');
     var url="/getgroups";
     xmlHttpConnectionGetBots.onreadystatechange=getBotsStateChanged;
     xmlHttpConnectionGetBots.open("POST",url,true);
@@ -1524,6 +1486,7 @@ function getBotsStateChanged()
     	catch(err){
     	}
     }    	
+	$('#pleaseWaitModal').modal('hide');
 }
 
 /**
@@ -1746,7 +1709,8 @@ function getWorks()
 
     var url = "/getworks";
 
-    document.getElementById(worksListsID).innerHTML = "";
+	$('#pleaseWaitModal').modal('show');
+    document.getElementById(worksListID).innerHTML = "";
 
     xmlHttpConnectionGetWorks.onreadystatechange=getWorksStateChanged;
     xmlHttpConnectionGetWorks.open("POST",url,true);
@@ -1792,9 +1756,7 @@ function getWorksStateChanged()
     	}
     }
 
-	// now, the user can get its jobs
-	hide("worksRefreshInfo");
-    show("worksRefresh");	
+	$('#pleaseWaitModal').modal('hide');
 }
 
 function getWork(uid)
@@ -1891,7 +1853,7 @@ function getWorkStateChanged(){
 		    if(ownerUID == actualUserUID){
 
 		    	if(resultuid != null){
-		    		document.getElementById(worksListsID).innerHTML += "<tr id=\"" + uid + "\"><td class=\"selectbutton\"><input type=\"checkbox\" name=\"" + uid + "\" /></td>" +
+		    		document.getElementById(worksListID).innerHTML += "<tr id=\"" + uid + "\"><td class=\"selectbutton\"><input type=\"checkbox\" name=\"" + uid + "\" /></td>" +
 	    			"<td>" + uid + "</td>" +
 		    		"<td>" + appName + "</td>" +
 		    		"<td>" + arrivalDate + "</td>" +
@@ -1900,7 +1862,7 @@ function getWorkStateChanged(){
 		    		"<td><button class=\"btn btn-primary\" onclick=\"window.location.href='/downloaddata/" + resultuid + "'\" download=\"" + resultName + "\">Download</button></td></tr>";
 		    	}
 		    	else{
-		    		document.getElementById(worksListsID).innerHTML += "<tr id=\"" + uid + "\"><td class=\"selectbutton\"><input type=\"checkbox\" name=\"" + uid + "\" /></td>" +
+		    		document.getElementById(worksListID).innerHTML += "<tr id=\"" + uid + "\"><td class=\"selectbutton\"><input type=\"checkbox\" name=\"" + uid + "\" /></td>" +
 	    				"<td>" + uid + "</td>" +
 	    				"<td>" + appName + "</td>" +
 	    				"<td>" + arrivalDate + "</td>" +
@@ -3305,28 +3267,26 @@ function deleteFromServerStateChanged()
 
 function getWorkers()
 {
-	
     xmlHttpConnectionGetWorkers=getXmlHttpObject();
     if (xmlHttpConnectionGetWorkers==null)
     {
 		return;
     }
 
-	workerDataTreemapLength = 0;
-	workerDataTreemap = new Array();
-	workerDataTreemap.push(new Array('Name', 'Parent', 'Completed', 'Pending'));
-	workerDataTreemap.push(new Array('Applications', null, 0, 0));
+    $("osesChart").innerHTML = "";
+    knownOSes = new Object();
+    knownCPUs = new Object();
 
+	$('#pleaseWaitModal').modal('show');
+	document.getElementById(workersListID).innerHTML = "";
     var url="/gethosts";
     xmlHttpConnectionGetWorkers.onreadystatechange=getWorkersStateChanged;
     xmlHttpConnectionGetWorkers.open("POST",url,true);
     xmlHttpConnectionGetWorkers.send(null);
-    
 }
 
 function getWorkersStateChanged()
 { 
-	
 	var current = xmlHttpConnectionGetWorkers;
     if (current.readyState!=4)
     {
@@ -3349,51 +3309,24 @@ function getWorkersStateChanged()
 	}
 
 	var xmlTagName = "XMLVALUE";
-	
 
     if(rpcError(xmlDoc) == true) {
         return;
 	}
 
-	/*document.getElementById(workerListID).innerHTML = 
-		  "<div class=\"tupletitre\">"+
-		    "<span class=\"value\">OS</span>" + " " +
-		    "<span class=\"value\">Proco</span>" +
-		"</div>";*/
-
-	workerDataTreemapLength = xmlDoc.getElementsByTagName(xmlTagName).length;
-
-	console.log("getWorkersStateChanged#workerDataTreemapLength = " + workerDataTreemapLength);
+	console.log("getWorkersLength = " + xmlDoc.getElementsByTagName(xmlTagName).length);
 
 	for (var i = 0; i < xmlDoc.getElementsByTagName(xmlTagName).length; i++) {
     	try {
 			// this is the UID of the worker
 			var uid = xmlDoc.getElementsByTagName(xmlTagName)[i].getAttribute("value");
-
-			var color = colors[(i % 2)];
-				
-			// this creates a new DIV with the ID=uid
-        	/*document.getElementById(workerListID).innerHTML += 
-        		"<div class=\"tuple\" style=\"background-color:" + color +
-        		"\" id=\"" + uid + "\"></div>";*/
-        	
         	getWorker(uid);
     	}
     	catch(err){
     	}
     }
-	
 
-
-	// now, the user can get its jobs
-	hide("worksRefreshInfo");
-    show("worksRefresh");
-    
-    retourDataWorkerOSes = true;
-    retourDataWorkerCPUs = true;
-    
-    //refresh();
-	
+	$('#pleaseWaitModal').modal('hide');
 }
 
 function getWorker(uid)
@@ -3404,26 +3337,25 @@ function getWorker(uid)
 		return;
     }
 
+    console.log("get Worker " + uid);
+
     var url="/get/" + uid;
     hashtableGetWorker[uid].onreadystatechange=getWorkerStateChanged;
     hashtableGetWorker[uid].open("POST",url,true);
     hashtableGetWorker[uid].send(null);
-   
-
 }
 
 function getWorkerStateChanged()
 {
-	
 	for (var uid in hashtableGetWorker) {
 
 	    if (hashtableGetWorker.hasOwnProperty(uid) == false) {
 		    console.log("hashtableGetWorker.hasOwnProperty(" + uid + ") = false");
 	    	continue;
     	}
-    	
+
 	    var current = hashtableGetWorker[uid];
-	     
+
     	if (current.readyState!=4) {
 	        continue;
     	}
@@ -3442,291 +3374,210 @@ function getWorkerStateChanged()
 			connectionError();
 			return;
 		}
-    	// get returns an app XML object
-		var xmlTagName = "worker";
+
+		var xmlTagName = "host";
 
     	delete hashtableGetWorker[uid];
-		--workerDataTreemapLength;
 
-	    if(rpcError(xmlDoc) == true) {
+    	if(rpcError(xmlDoc) == true) {
 	        continue;
 		}
-	    
+
    		try {
- /* 			
-		    var OS = xmlDoc.getElementsByTagName("os").item(0).firstChild.nodeValue;
-	    	var CPU = xmlDoc.getElementsByTagName("cputype").item(0).firstChild.nodeValue;
-	    	
-		    var nbJobs = 0;
-		    try {
-		    	nbJobs = xmlDoc.getElementsByTagName("nbjobs").item(0).firstChild.nodeValue;
+		    var name = xmlDoc.getElementsByTagName("name").item(0).firstChild.nodeValue;
+	    	var os = xmlDoc.getElementsByTagName("os").item(0).firstChild.nodeValue;
+		    var cputype = xmlDoc.getElementsByTagName("cputype").item(0).firstChild.nodeValue;
+		    var lastalive = xmlDoc.getElementsByTagName("lastalive").item(0).firstChild.nodeValue;
+		    var nbjobs = xmlDoc.getElementsByTagName("nbjobs").item(0).firstChild.nodeValue;
+
+		    if (knownOSes[os] == null) {
+		    	knownOSes[os] = 1;
+		    } 
+		    else {
+		    	knownOSes[os]++;
 		    }
-		    catch(err) {
+		    
+		    if (knownCPUs[cputype] == null) {
+		    	knownCPUs[cputype] = 1;
 		    }
-		    var runningJobs = 0;
-		    try {
-		    	runningJobs = xmlDoc.getElementsByTagName("runningjobs").item(0).firstChild.nodeValue;
-		    }
-		    catch(err) {
-		    }
-		    var pendingJobs = 0;
-		    try {
-			    pendingJobs = xmlDoc.getElementsByTagName("pendingjobs").item(0).firstChild.nodeValue;
-		    }
-		    catch(err) {
+		    else {
+		    	knownCPUs[cputype]++;
 		    }
 
-			workerDataTreemap.push(new Array(name, 'Applications', parseInt(nbJobs), parseInt(pendingJobs)));
+		    console.log("got Worker " + uid + ": " + os + "," + cputype + " (" + knownOSes[os] + "," + knownCPUs[cputype] + ")");
 
-		    console.log("Worker " + name);
-
-        	document.getElementById(uid).innerHTML =
-        	    "<span class=\"firstvalue\" id=\"" + appuidheader + uid + "\">" + OS + "</span>" +"     "+
-        		"<span class=\"lastvalue\">" + CPU + "</span></br>";
-        	
-        	actualOSes.push(OS);
-        	actualCPUs.push(CPU);
-        		
-			if (overviewWorkerContent.length == 0) {
-				overviewWorkerContent.push(new Array('WorkerName', 'Parent', 'Completed', 'Running'));
-				overviewWorkerContent.push(new Array('Global' ,  null   ,  0         ,  0));
-			}
-			var workerContent = new Array(name, 'Global', nbJobs, runningJobs + pendingJobs);
-			overviewWorkerContent.push(workerContent);
-*/		    
-   		}
-   		catch(err){
-   		console.log(err);
+      		document.getElementById(workersListID).innerHTML += "<tr id=\"" + uid + "\">" + 
+      			"<td class=\"selectbutton\"><input type=\"checkbox\" name=\"" + uid + "\" /></td>" +
+      			"<td>" + uid + "</td>" +
+      			"<td>" + name + "</td>" +
+      			"<td>" + os + "</td>" +
+		    	"<td>" + cputype + "</td>"+
+		    	"<td>" + lastalive + "</td>" +
+		    	"<td>" + nbjobs + "</td></tr>";
+   		} catch(err){
+   			console.log(err);
    		}
     }
-    
+	drawOSesChart();
+	drawCPUsChart();
 }
 
-/*
- * FONCTIONS RECUPERATION NOMBRE OS
- */
-
-function countMACOSX(){
-	
-	var countMACOSX = 0;
-	for (var i in actualOSes){
-		if(actualOSes[i] == "MACOSX"){
-			countMACOSX += 1;
-		}	
-	}
-	return countMACOSX;
-}
-
-function countLINUX(){
-	var countLINUX = 0;
-	for (var i in actualOSes){
-		if(actualOSes[i] == "LINUX"){
-			countLINUX++;
-		}	
-	}
-	return countLINUX;
-}
-
-function countWIN32(){
-	var countWIN32 = 0;
-	for (var i in actualOSes){
-		if(actualOSes[i] == "WIN32"){
-			countWIN32++;
-		}	
-	}
-	return countWIN32;
-}
-
-function countOSF1(){
-	var countOSF1 = 0;
-	for (var i in actualOSes){
-		if(actualOSes[i] == "OSF1"){
-			countOSF1++;
-		}	
-	}
-	return countOSF1;
-}
-
-function countJAVA(){
-	var countJAVA = 0;
-	for (var i in actualOSes){
-		if(actualOSes[i] == "JAVA"){
-			countJAVA++;
-		}	
-	}
-	return countJAVA;
-}
-
-function countSOLARIS(){
-	var countSOLARIS = 0;
-	for (var i in actualOSes){
-		if(actualOSes[i] == "SOLARIS"){
-			countSOLARIS++;
-		}	
-	}
-	return countSOLARIS;
-}
-
-/*
- * FIN FONCTIONS RECUPERATION NOMBRE OS
- */
-
-/*
- * FONCTIONS RECUPERATION NOMBRE CPU
- */
-
-function countX86_64(){
-	var countX86_64 = 0;
-	for (var i in actualCPUs){
-		if(actualCPUs[i] == "X86_64"){
-			countX86_64++;
-		}
-	}
-	return countX86_64;
-}
-
-function countARM(){
-	var countARM = 0;
-	for (var i in actualCPUs){
-		if(actualCPUs[i] == "ARM"){
-			countARM++;
-		}
-	}
-	return countARM;
-}
-
-function countIX86(){
-	var countIX86 = 0;
-	for (var i in actualCPUs){
-		if(actualCPUs[i] == "IX86"){
-			countIX86++;
-		}
-	}
-	return countIX86;
-}
-
-function countIA64(){
-	var countIA64 = 0;
-	for (var i in actualCPUs){
-		if(actualCPUs[i] == "IA64"){
-			countIA64++;
-		}
-	}
-	return countIA64;
-}
-
-function countPPC(){
-	var countPPC = 0;
-	for (var i in actualCPUs){
-		if(actualCPUs[i] == "PPC"){
-			countPPC++;
-		}
-	}
-	return countPPC;
-}
-
-function countSPARC(){
-	var countSPARC = 0;
-	for (var i in actualCPUs){
-		if(actualCPUs[i] == "SPARC"){
-			countSPARC++;
-		}
-	}
-	return countSPARC;
-}
-
-function countALPHA(){
-	var countALPHA = 0;
-	for (var i in actualCPUs){
-		if(actualCPUs[i] == "ALPHA"){
-			countALPHA++;
-		}
-	}
-	return countALPHA;
-}
-
-function countAMD64(){
-	var countAMD64 = 0;
-	for (var i in actualCPUs){
-		if(actualCPUs[i] == "AMD64"){
-			countAMD64++;
-		}
-	}
-	return countAMD64;
-}
-/*
- * FIN FONCTIONS RECUPERATION NOMBRE CPU
- */
-
-/*
- * OSes chart
- */
-
-google.charts.load("current", {packages:["corechart"]});
+google.charts.load('current', {'packages':['corechart']});
+google.charts.setOnLoadCallback(drawOSesChart);
+google.charts.setOnLoadCallback(drawCPUsChart);
 
 function drawOSesChart() {	
 	
-  if(retourDataWorkerOSes == false){
-	  return;
-  }
-  else{
-  var osesData = google.visualization.arrayToDataTable([
-      ['OSes', 'OS types'],
-      ['LINUX', countLINUX()],
-      ['WIN32', countWIN32()],
-      ['MACOSX', countMACOSX()],
-      ['OSF1', countOSF1()],
-      ['SOLARIS', countSOLARIS()],
-      ['JAVA', countJAVA()]
-    		  ]);
+	var linux = 0;
+	try {
+		linux = knownOSes["LINUX"];
+	}
+	catch(err) {
+	}
+	if (linux == undefined) {
+		linux = 0
+	}
+	var win32 = 0;
+	try {
+		win32 = knownOSes["WIN32"];
+	}
+	catch(err) {
+	}
+	if (win32 == undefined) {
+		win32 = 0
+	}
+	var win64 = 0;
+	try {
+		win64 = knownOSes["WIN64"];
+	}
+	catch(err) {
+	}
+	if (win64 == undefined) {
+		win64 = 0
+	}
+	var java = 0;
+	try {
+		java = knownOSes["JAVA"];
+	}
+	catch(err) {
+	}
+	if (java == undefined) {
+		java = 0
+	}
+	var macosx = 0;
+	try {
+		macosx = knownOSes["MACOSX"];
+	}
+	catch(err) {
+	}
+	if (macosx == undefined) {
+		macosx = 0
+	}
+
+	console.log("linux " + linux);
+	console.log("win32 " + win32);
+	console.log("win64 " + win64);
+	console.log("macosx " + macosx);
+	console.log("java " + java);
+	var osesData = google.visualization.arrayToDataTable([
+  ['OSes', 'OS types'],
+  ['LINUX', linux],
+  ['WINDOWS', win32 + win64],
+  ['MACOSX', macosx],
+  ['JAVA', java]
+		  ]);
 
   var osesChartOptions = {
-      pieHole: 0.4,
-      legend: 'none'
+      title: 'Operating Systems'
   };
 
   var osesChart = new google.visualization.PieChart(document.getElementById('osesChart'));
   osesChart.draw(osesData, osesChartOptions);
-  actualOSes = [];
-  //alert("est false OSes");
-  retourDataWorkerOSes = false;
-  }
-}
-                
-/*
- * CPUs chart
- */
 
-function drawCPUsChart(Array) {
+}
+
+function drawCPUsChart() {	
 	
-	if(retourDataWorkerCPUs == false){
-		return;
+	var amd64 = 0;
+	try {
+		amd64 = knownCPUs["AMD64"];
 	}
-	else{
-	var cpusData = google.visualization.arrayToDataTable([
-    					['CPUs', 'CPU types'],
-						['IX86', countIX86()],
-						['X86_64', countX86_64()],
-						['IA64', countIA64()],
-						['PPC', countPPC()],
-						['SPARC', countSPARC()],
-						['ALPHA', countALPHA()],
-						['AMD64', countAMD64()],
-						['ARM', countARM()]
-	]);
- 
-    var cpuChartOptions = {
-    	pieHole: 0.4,
-        legend: 'none'
-    };
+	catch(err) {
+	}
+	if (amd64 == undefined) {
+		amd64 = 0
+	}
+	console.log("amd64 " + amd64);
+	var ia64 = 0;
+	try {
+		aia64 = knownCPUs["IA64"];
+	}
+	catch(err) {
+	}
+	if (ia64 == undefined) {
+		ia64 = 0
+	}
+	console.log("ia64 " + ia64);
+	var arm = 0;
+	try {
+		arm = knownCPUs["ARM"];
+	}
+	catch(err) {
+	}
+	if (arm == undefined) {
+		arm = 0
+	}
+	console.log("arm " + arm);
+	var ix86 = 0;
+	try {
+		ix86 = knownCPUs["IX86"];
+	}
+	catch(err) {
+	}
+	if (ix86 == undefined) {
+		ix86 = 0
+	}
+	console.log("ix86 " + ix86);
+	var ppc = 0;
+	try {
+		ppc = knownCPUs["PPC"];
+	}
+	catch(err) {
+	}
+	if (ppc == undefined) {
+		ppc = 0
+	}
+	console.log("ppc " + ppc);
+	var x86_64 = 0;
+	try {
+		x86_64 = knownCPUs["X86_64"];
+	}
+	catch(err) {
+	}
+	if (x86_64 == undefined) {
+		x86_64 = 0
+	}
+	console.log("x86_64 " + x86_64);
 
-    var cpusChart = new google.visualization.PieChart(document.getElementById('cpusChart'));
-    cpusChart.draw(cpusData, cpuChartOptions);
-    actualCPUs = [];
-    //alert("set false CPUs");
-    retourDataWorkerCPUs = false;
-	}
+	var cpusData = google.visualization.arrayToDataTable([
+  ['CPUs', 'CPU types'],
+  ['AMD64', amd64],
+  ['IA64', ia64],
+  ['IX86', ix86],
+  ['PPC', ppc],
+  ['X86_64', x86_64],
+  ['ARM', arm],
+		  ]);
+
+  var cpusChartOptions = {
+      title: 'CPU types'
+  };
+
+  var cpusChart = new google.visualization.PieChart(document.getElementById('cpusChart'));
+  cpusChart.draw(cpusData, cpusChartOptions);
+
 }
+
 
 /*********************
  * End of scripts    *
