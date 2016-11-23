@@ -127,32 +127,6 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 	 */
 	public static final String DASHBOARDFILENAME_CSS = "/dashboard.css";
 	/**
-	 * This is the Bootstrap carousel HTML file name : carousel.html
-	 *
-	 * @since 10.2.0
-	 */
-	public static final String CAROUSELFILENAME_HTML = "/carousel.html";
-	/**
-	 * This is the Bootstrap carousel CSS file name : carousel.css
-	 *
-	 * @since 10.2.0
-	 */
-	public static final String CAROUSELFILENAME_CSS = "/carousel.css";
-	/**
-	 * This is the HTML file name : xwserver.html
-	 */
-	public static final String RESOURCEFILENAME_HTML = "/xwserver.html";
-	/**
-	 * This is the CSS file name : xwserver.css
-	 */
-	public static final String RESOURCEFILENAME_CSS = "/xwserver.css";
-	/**
-	 * This is a new HTML without JavaScript file name : xwserver2.html
-	 *
-	 * @since 10.2.0
-	 */
-	public static final String RESOURCEFILENAME2_HTML = "/xwserver2.html";
-	/**
 	 * This is the login page
 	 *
 	 * @since 10.2.0
@@ -177,15 +151,10 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 	public static final String RESOURCEFILENAME_LOGO = "/logo.jpg";
 
 	private static final String[] names = {
-			RESOURCEFILENAME_HTML,
-			RESOURCEFILENAME_CSS,
 			DASHBOARDFILENAME_HTML,
 			DASHBOARDFILENAME_CSS,
-			CAROUSELFILENAME_HTML,
-			CAROUSELFILENAME_CSS,
 			FAVICOFILENAME_ICO,
 			RESOURCEFILENAME_LOGO,
-			RESOURCEFILENAME2_HTML,
 			SCRIPTFILENAME_JS,
 			LOGIN_HTML
 	};
@@ -197,13 +166,8 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 	private static final String[] mimeTypes = {
 			TEXTHTML,
 			TEXTCSS,
-			TEXTHTML,
-			TEXTCSS,
-			TEXTHTML,
-			TEXTCSS,
 			IMAGEXICON,
 			IMAGEJPEG,
-			TEXTHTML,
 			APPJS,
 			TEXTHTML 
 	};
@@ -215,8 +179,6 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 	 * @since 8.3.0
 	 */
 	public enum Resources {
-		XWHTML,
-		XWCSS,
 		/**
 		 * This is the Bootstrap dashboard HTML
 		 *
@@ -230,30 +192,12 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 		 */
 		DASHBOARDCSS,
 		/**
-		 * This is the Bootstrap dashboard CSS
-		 *
-		 * @since 10.2.0
-		 */
-		CAROUSELHTML,
-		/**
-		 * This is the Bootstrap dashboard CSS
-		 *
-		 * @since 10.2.0
-		 */
-		CAROUSELCSS,
-		/**
 		 * This is the favicon resource
 		 *
 		 * @since 10.2.0
 		 */
 		FAVICON,
 		LOGO,
-		/**
-		 * This is a new HTML without JavaScript
-		 *
-		 * @since 10.2.0
-		 */
-		XWHTML2,
 		/**
 		 * This is JavaScript, extracted from xwserver.html
 		 *
