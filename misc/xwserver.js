@@ -1236,7 +1236,7 @@ function getAppStateChanged()
 
       		document.getElementById(appListID).innerHTML += "<tr id=\"" + uid + "\">" + 
       			"<td class=\"selectbutton\"><input type=\"checkbox\" name=\"" + uid + "\" /></td>" +
-      			"<td>" + uid + "</td>" +
+      			"<td><a href=\"javascript:getDetail('" + uid + "')\">" + uid + "</a></td>" +
       			"<td>" + appName + "</td>" +
       			"<td>" + type + "</td>" +
 		    	"<td>" + nbJobs + "</td>"+
@@ -1400,14 +1400,14 @@ function getDataStateChanged()
 		    console.log("Data " + name);
 			if(status == "AVAILABLE") {
 		    	document.getElementById(dataListID).innerHTML += "<tr id=\"" + uid + "\"><td class=\"selectbutton\"><input type=\"checkbox\" name=\"" + uid + "\" /></td>" +
-		    		"<td>" + uid + "</td>" +
+		    		"<td><a href=\"javascript:getDetail('" + uid + "')\">" + uid + "</a></td>" +
 		    		"<td>" + name + "</td>" +
 		    		"<td>" + status + "</td>" +
 		    		"<td><button class=\"btn btn-primary\" onclick=\"window.location.href='/downloaddata/" + uid + "'\" download=\"" + datauriid + "\">Download</button></td></tr>";
 		    }
 		    else{
 		    	document.getElementById(dataListID).innerHTML += "<tr id=\"" + uid + "\"><td class=\"selectbutton\"><input type=\"checkbox\" name=\"" + uid + "\" /></td>" +
-		    		"<td>" + uid + "</td>" +
+		    		"<td><a href=\"javascript:getDetail('" + uid + "')\">" + uid + "</a></td>" +
 		    		"<td>" + name + "</td>" +
 		    		"<td>" + status + "</td>" +
 	    			"<td><button class=\"btn btn-danger disabled\">Disabled</button></td></tr>";
@@ -1557,7 +1557,7 @@ function getBotStateChanged()
 		    console.log("BoT " + name);
       		document.getElementById(botListID).innerHTML += "<tr id=\"" + uid + "\">" + 
   			"<td class=\"selectbutton\"><input type=\"checkbox\" name=\"" + uid + "\" /></td>" +
-  			"<td>" + uid + "</td>" +
+  			"<td><a href=\"javascript:getDetail('" + uid + "')\">" + uid + "</a></td>" +
   			"<td>" + name + "</td></tr>";
    		}
    		catch(err){
@@ -1854,16 +1854,16 @@ function getWorkStateChanged(){
 
 		    	if(resultuid != null){
 		    		document.getElementById(worksListID).innerHTML += "<tr id=\"" + uid + "\"><td class=\"selectbutton\"><input type=\"checkbox\" name=\"" + uid + "\" /></td>" +
-	    			"<td>" + uid + "</td>" +
-		    		"<td>" + appName + "</td>" +
-		    		"<td>" + arrivalDate + "</td>" +
-		    		"<td>" + completionDate + "</td>" +
-		    		"<td>" + status + "</td>" +
-		    		"<td><button class=\"btn btn-primary\" onclick=\"window.location.href='/downloaddata/" + resultuid + "'\" download=\"" + resultName + "\">Download</button></td></tr>";
+		      			"<td><a href=\"javascript:getDetail('" + uid + "')\">" + uid + "</a></td>" +
+			    		"<td>" + appName + "</td>" +
+			    		"<td>" + arrivalDate + "</td>" +
+			    		"<td>" + completionDate + "</td>" +
+			    		"<td>" + status + "</td>" +
+			    		"<td><button class=\"btn btn-primary\" onclick=\"window.location.href='/downloaddata/" + resultuid + "'\" download=\"" + resultName + "\">Download</button></td></tr>";
 		    	}
 		    	else{
 		    		document.getElementById(worksListID).innerHTML += "<tr id=\"" + uid + "\"><td class=\"selectbutton\"><input type=\"checkbox\" name=\"" + uid + "\" /></td>" +
-	    				"<td>" + uid + "</td>" +
+		    			"<td><a href=\"javascript:getDetail('" + uid + "')\">" + uid + "</a></td>" +
 	    				"<td>" + appName + "</td>" +
 	    				"<td>" + arrivalDate + "</td>" +
 	    				"<td>" + completionDate + "</td>" +
@@ -1877,51 +1877,6 @@ function getWorkStateChanged(){
    		console.log(err);
    		}
     }
-}
-
-/**
- * This details all checked object
- */
-function details() {
-
-	var theBody = "<div class=\"modalContent\">" +
-    "<div class=\"modalpane\">" +
-      "<div class=\"modaltitre\"><span >Details</span></div>" +
-      "<div id=\"" + detailListID + "\" style=\"display:block\">" +
-      "</div><div class=\"modaltrailer\">&nbsp;</div>" +
-    "</div></div>";
-
-	var formElem = getCurrentForm();
-
-	var count = 0;
-	for (var i = 0; i < formElem.length; i++) {
-		try {
-			if(formElem[i].checked == false) {
-				continue;
-			}
-
-			if(count > 0) {
-				theBody = warningContent("You have selected more than one row.<br />" +
-						"This displays one row only");
-			  	break;
-		   	}
-
-			count++;
-			var uid = formElem[i].name;
-			getDetail(uid);
-		}
-		catch(err) {
-		}
-	}
-
-	console.log("count = " + count);
-	if(count < 1) {
-		error("You must select a row");
-		return;
-	}
-	var pop = new myPop();
-    pop.popOut(theBody);
-	pop = null;
 }
 
 /**
@@ -1985,9 +1940,8 @@ function getDetailStateChanged()
     	}
 
    		try {
-			var theBody = "";
-			var colorcounter = 0;
-			var color = colors[colorcounter++ % 2];
+			var theBody = "<table class=\"table table-striped\">" +
+							"<thead><tr><th>Key</th><th>Value</th></thead><tbody>";
 			
 			if(document.getElementById(appsTabID).getAttribute("class") == "current") {
 
@@ -1998,24 +1952,15 @@ function getDetailStateChanged()
 			    var accessrights = xmlDoc.getElementsByTagName("accessrights").item(0).firstChild.nodeValue;
 			    var type = xmlDoc.getElementsByTagName("type").item(0).firstChild.nodeValue;
 
-        		theBody = "<div class=\"tupledetail\" style=\"background-color:" + color + "\"><span class=\"firstdetail\">UID</span>" +
-        			"<span class=\"lastdetail\">" + uid + "</span></div>";
-				color = colors[colorcounter++ % 2];
-        		theBody += "<div class=\"tupledetail\" style=\"background-color:" + color + "\"><span class=\"firstdetail\">Name</span>" + 
-	        		"<span class=\"lastdetail\">" + name + "</span></div>";
-				color = colors[colorcounter++ % 2];
-        		theBody += "<div class=\"tupledetail\" style=\"background-color:" + color + "\"><span class=\"firstdetail\">Access Rights</span>" + 
-	        		"<span class=\"lastdetail\">" + accessrights + "</span></div>";
-				color = colors[colorcounter++ % 2];
-        		theBody += "<div class=\"tupledetail\" style=\"background-color:" + color + "\"><span class=\"firstdetail\">Type</span>" + 
-	        		"<span class=\"lastdetail\">" + type + "</span></div>";
+        		theBody += "<tr><td>UID</td><td>" + uid + "</td></tr>";
+        		theBody += "<tr><td>Name</td><td>" + name + "</td></tr>";
+        		theBody += "<tr><td>Access Rights</td><td>" + accessrights + "</td></tr>";
+        		theBody += "<tr><td>Type</td><td>" + type + "</td></tr>";
 
 				try {
 			    	var thedata = xmlDoc.getElementsByTagName("linux_ix86uri").item(0).firstChild.nodeValue;
 			    	if((thedata != null) && (thedata != "")) {
-						color = colors[colorcounter++ % 2];
-	        			theBody += "<div class=\"tupledetail\" style=\"background-color:" + color + "\"><span class=\"firstdetail\">Linux ix86</span>" + 
-		        			"<span class=\"lastdetail\">Yes</span></div>";
+	        			theBody += "<tr><td>Linux ix86</td><td>Yes</td></tr>";
 			   		}
 		   		}
 		   		catch(err) {
@@ -2023,9 +1968,7 @@ function getDetailStateChanged()
 				try {
 			    	var thedata = xmlDoc.getElementsByTagName("linux_amd64uri").item(0).firstChild.nodeValue;
 			    	if((thedata != null) && (thedata != "")) {
-						color = colors[colorcounter++ % 2];
-		        		theBody += "<div class=\"tupledetail\" style=\"background-color:" + color + "\"><span class=\"firstdetail\">Linux amd64</span>" + 
-			        		"<span class=\"lastdetail\">Yes</span></div>";
+	        			theBody += "<tr><td>Linux amd86</td><td>Yes</td></tr>";
 			   		}
 		   		}
 		   		catch(err) {
@@ -2033,9 +1976,7 @@ function getDetailStateChanged()
 				try {
 					var thedata = xmlDoc.getElementsByTagName("linux_x86_64uri").item(0).firstChild.nodeValue;
 			    	if((thedata != null) && (thedata != "")) {
-						color = colors[colorcounter++ % 2];
-		        		theBody += "<div class=\"tupledetail\" style=\"background-color:" + color + "\"><span class=\"firstdetail\">Linux x86_64</span>" + 
-			        		"<span class=\"lastdetail\">Yes</span></div>";
+	        			theBody += "<tr><td>Linux x86_86</td><td>Yes</td></tr>";
 			   		}
 		   		}
 		   		catch(err) {
@@ -2043,9 +1984,7 @@ function getDetailStateChanged()
 				try {
 					var thedata = xmlDoc.getElementsByTagName("linux_ia64uri").item(0).firstChild.nodeValue;
 			    	if((thedata != null) && (thedata != "")) {
-						color = colors[colorcounter++ % 2];
-		        		theBody += "<div class=\"tupledetail\" style=\"background-color:" + color + "\"><span class=\"firstdetail\">Linux ia64</span>" + 
-			        		"<span class=\"lastdetail\">Yes</span></div>";
+	        			theBody += "<tr><td>Linux ia64</td><td>Yes</td></tr>";
 			   		}
 		   		}
 		   		catch(err) {
@@ -2053,9 +1992,7 @@ function getDetailStateChanged()
 				try {
 					var thedata = xmlDoc.getElementsByTagName("linux_ppcuri").item(0).firstChild.nodeValue;
 			    	if((thedata != null) && (thedata != "")) {
-						color = colors[colorcounter++ % 2];
-	    	    		theBody += "<div class=\"tupledetail\" style=\"background-color:" + color + "\"><span class=\"firstdetail\">Linux PPC</span>" + 
-			        		"<span class=\"lastdetail\">Yes</span></div>";
+	        			theBody += "<tr><td>Linux PPC</td><td>Yes</td></tr>";
 			   		}
 		   		}
 		   		catch(err) {
@@ -2063,9 +2000,7 @@ function getDetailStateChanged()
 				try {
 					var thedata = xmlDoc.getElementsByTagName("macos_ix86uri").item(0).firstChild.nodeValue;
 			    	if((thedata != null) && (thedata != "")) {
-						color = colors[colorcounter++ % 2];
-		        		theBody += "<div class=\"tupledetail\" style=\"background-color:" + color + "\"><span class=\"firstdetail\">Mac OS ix86</span>" + 
-			        		"<span class=\"lastdetail\">Yes</span></div>";
+	        			theBody += "<tr><td>Mac OS ix86</td><td>Yes</td></tr>";
 			   		}
 		   		}
 		   		catch(err) {
@@ -2073,9 +2008,7 @@ function getDetailStateChanged()
 				try {
 					var thedata = xmlDoc.getElementsByTagName("macos_x86_64uri").item(0).firstChild.nodeValue;
 			    	if((thedata != null) && (thedata != "")) {
-						color = colors[colorcounter++ % 2];
-	    	    		theBody += "<div class=\"tupledetail\" style=\"background-color:" + color + "\"><span class=\"firstdetail\">Mac OS x86_64</span>" + 
-			        		"<span class=\"lastdetail\">Yes</span></div>";
+	        			theBody += "<tr><td>Mac OS x86_64</td><td>Yes</td></tr>";
 			   		}
 		   		}
 		   		catch(err) {
@@ -2083,9 +2016,7 @@ function getDetailStateChanged()
 				try {
 					var thedata = xmlDoc.getElementsByTagName("macos_ppcuri").item(0).firstChild.nodeValue;
 			    	if((thedata != null) && (thedata != "")) {
-						color = colors[colorcounter++ % 2];
-	    	    		theBody += "<div class=\"tupledetail\" style=\"background-color:" + color + "\"><span class=\"firstdetail\">Mac OS PPC</span>" + 
-			        		"<span class=\"lastdetail\">Yes</span></div>";
+	        			theBody += "<tr><td>Mac OS PPC</td><td>Yes</td></tr>";
 			   		}
 		   		}
 		   		catch(err) {
@@ -2093,9 +2024,7 @@ function getDetailStateChanged()
 				try {
 					var thedata = xmlDoc.getElementsByTagName("win32_ix86uri").item(0).firstChild.nodeValue;
 			    	if((thedata != null) && (thedata != "")) {
-						color = colors[colorcounter++ % 2];
-	    	    		theBody += "<div class=\"tupledetail\" style=\"background-color:" + color + "\"><span class=\"firstdetail\">Win32 ix86</span>" + 
-			        		"<span class=\"lastdetail\">Yes</span></div>";
+	        			theBody += "<tr><td>Win32 ix86</td><td>Yes</td></tr>";
 			   		}
 		   		}
 		   		catch(err) {
@@ -2103,9 +2032,7 @@ function getDetailStateChanged()
 				try {
 					var thedata = xmlDoc.getElementsByTagName("win32_amd64uri").item(0).firstChild.nodeValue;
 			    	if((thedata != null) && (thedata != "")) {
-						color = colors[colorcounter++ % 2];
-	    	    		theBody += "<div class=\"tupledetail\" style=\"background-color:" + color + "\"><span class=\"firstdetail\">Win32 amd64</span>" + 
-			        		"<span class=\"lastdetail\">Yes</span></div>";
+	        			theBody += "<tr><td>Win32 amd64</td><td>Yes</td></tr>";
 			   		}
 		   		}
 		   		catch(err) {
@@ -2113,9 +2040,7 @@ function getDetailStateChanged()
 				try {
 					var thedata = xmlDoc.getElementsByTagName("win32_x86_64uri").item(0).firstChild.nodeValue;
 			    	if((thedata != null) && (thedata != "")) {
-						color = colors[colorcounter++ % 2];
-	    	    		theBody += "<div class=\"tupledetail\" style=\"background-color:" + color + "\"><span class=\"firstdetail\">Win32 x86_64</span>" + 
-			        		"<span class=\"lastdetail\">Yes</span></div>";
+	        			theBody += "<tr><td>Win32 x86_64</td><td>Yes</td></tr>";
 			   		}
 		   		}
 		   		catch(err) {
@@ -2123,9 +2048,7 @@ function getDetailStateChanged()
 				try {
 					var thedata = xmlDoc.getElementsByTagName("javauri").item(0).firstChild.nodeValue;
 			    	if((thedata != null) && (thedata != "")) {
-						color = colors[colorcounter++ % 2];
-	    	    		theBody += "<div class=\"tupledetail\" style=\"background-color:" + color + "\"><span class=\"firstdetail\">Java</span>" + 
-			        		"<span class=\"lastdetail\">Yes</span></div>";
+	        			theBody += "<tr><td>Java</td><td>Yes</td></tr>";
 			   		}
 		   		}
 		   		catch(err) {
@@ -2136,227 +2059,150 @@ function getDetailStateChanged()
 
 				var xmlTagName = "data";
 
-			    var name   = xmlDoc.getElementsByTagName("name").item(0).firstChild.nodeValue;
-		    	var uid    = xmlDoc.getElementsByTagName("uid").item(0).firstChild.nodeValue;
-		    	var type   = xmlDoc.getElementsByTagName("type").item(0).firstChild.nodeValue;
-		    	var os     = xmlDoc.getElementsByTagName("os").item(0).firstChild.nodeValue;
-		    	var cpu    = xmlDoc.getElementsByTagName("cpu").item(0).firstChild.nodeValue;
 		    	var status = xmlDoc.getElementsByTagName("status").item(0).firstChild.nodeValue;
 		    	var links  = xmlDoc.getElementsByTagName("links").item(0).firstChild.nodeValue;
 		    	var accessrights = xmlDoc.getElementsByTagName("accessrights").item(0).firstChild.nodeValue;
-		    	var accessdate   = xmlDoc.getElementsByTagName("mtime").item(0).firstChild.nodeValue;
 
-				color = colors[colorcounter++ % 2];
-        		theBody = "<div class=\"tupledetail\" style=\"background-color:" + color + "\"><span class=\"firstdetail\">UID</span>" +
-        			"<span class=\"lastdetail\">" + uid + "</span></div>";
-				color = colors[colorcounter++ % 2];
-        		theBody += "<div class=\"tupledetail\" style=\"background-color:" + color + "\"><span class=\"firstdetail\">Name</span>" + 
-	        		"<span class=\"lastdetail\">" + name + "</span></div>";
-				color = colors[colorcounter++ % 2];
-        		theBody += "<div class=\"tupledetail\" style=\"background-color:" + color + "\"><span class=\"firstdetail\">Status</span>" + 
-	        		"<span class=\"lastdetail\">" + status + "</span></div>";
-				color = colors[colorcounter++ % 2];
-        		theBody += "<div class=\"tupledetail\" style=\"background-color:" + color + "\"><span class=\"firstdetail\">Access Rights</span>" + 
-	        		"<span class=\"lastdetail\">" + accessrights + "</span></div>";
-				color = colors[colorcounter++ % 2];
-        		theBody += "<div class=\"tupledetail\" style=\"background-color:" + color + "\"><span class=\"firstdetail\">Last access</span>" + 
-	        		"<span class=\"lastdetail\">" + accessdate + "</span></div>";
-				color = colors[colorcounter++ % 2];
-        		theBody += "<div class=\"tupledetail\" style=\"background-color:" + color + "\"><span class=\"firstdetail\">Links</span>" + 
-	        		"<span class=\"lastdetail\">" + links + "</span></div>";
-        		if((type != null) && (type != "")) {
-					color = colors[colorcounter++ % 2];
-        			theBody += "<div class=\"tupledetail\" style=\"background-color:" + color + "\"><span class=\"firstdetail\">Type</span>" + 
-	        			"<span class=\"lastdetail\">" + type + "</span></div>";
-		   		}
-        		if((os != null) && (os != "")) {
-					color = colors[colorcounter++ % 2];
-        			theBody += "<div class=\"tupledetail\" style=\"background-color:" + color + "\"><span class=\"firstdetail\">OS</span>" + 
-	        			"<span class=\"lastdetail\">" + os + "</span></div>";
-		   		}
-        		if((cpu != null) && (cpu != "")) {
-					color = colors[colorcounter++ % 2];
-        			theBody += "<div class=\"tupledetail\" style=\"background-color:" + color + "\"><span class=\"firstdetail\">CPU</span>" + 
-	        			"<span class=\"lastdetail\">" + cpu + "</span></div>";
-		   		}
+        		theBody += "<tr><td>UID</td><td>" + xmlDoc.getElementsByTagName("uid").item(0).firstChild.nodeValue + "</td></tr>";
+        		theBody += "<tr><td>Name</td><td>" + xmlDoc.getElementsByTagName("name").item(0).firstChild.nodeValue + "</td></tr>";
+        		theBody += "<tr><td>Status</td><td>" + status + "</td></tr>";
+        		theBody += "<tr><td>Access rights</td><td>" + accessrights + "</td></tr>";
+        		theBody += "<tr><td>Links</td><td>" + links + "</td></tr>";
+
+        		try {
+        			var accessdate   = xmlDoc.getElementsByTagName("mtime").item(0).firstChild.nodeValue;
+        			if((accessdate != null) && (type != "")) {
+        				theBody += "<tr><td>Last access</td><td>" + accessdate + "</td></tr>";
+        			}
+        		}
+        		catch(err) {
+        		}
+        		try {
+        			var type   = xmlDoc.getElementsByTagName("type").item(0).firstChild.nodeValue;
+        			if((type != null) && (type != "")) {
+        				theBody += "<tr><td>Type</td><td>" + type + "</td></tr>";
+        			}
+        		}
+        		catch(err) {
+        		}
+        		try {
+    		    	var os     = xmlDoc.getElementsByTagName("os").item(0).firstChild.nodeValue;
+        			if((os != null) && (os != "")) {
+        				theBody += "<tr><td>OS</td><td>" + os + "</td></tr>";
+        			}
+        		}
+        		catch(err) {
+        		}
+        		try {
+    		    	var cpu    = xmlDoc.getElementsByTagName("cpu").item(0).firstChild.nodeValue;
+        			if((cpu != null) && (cpu != "")) {
+        			theBody += "<tr><td>CPU</td><td>" + cpu + "</td></tr>";
+        			}
+        		}
+        		catch(err) {
+        		}
 	   		}
 
 			if(document.getElementById(worksTabID).getAttribute("class") == "current") {
 
 				var xmlTagName = "work";
 
-		    	var uid    = xmlDoc.getElementsByTagName("uid").item(0).firstChild.nodeValue;
 		    	var appuid = xmlDoc.getElementsByTagName("appuid").item(0).firstChild.nodeValue;
-		    	var appnameid = appnameheader + appuid;
-		    	var appname = document.getElementById(appnameid).innerHTML;
+			    var appName = hashtableAppName[appuid];
 
-				color = colors[colorcounter++ % 2];
-        		theBody = "<div class=\"tupledetail\" style=\"background-color:" + color + "\"><span class=\"firstdetail\">UID</span>" +
-        			"<span class=\"lastdetail\">" + uid + "</span></div>";
-				color = colors[colorcounter++ % 2];
-        		theBody += "<div class=\"tupledetail\" style=\"background-color:" + color + "\"><span class=\"firstdetail\">Access Rights</span>" + 
-	        		"<span class=\"lastdetail\">" + 
-	        		xmlDoc.getElementsByTagName("accessrights").item(0).firstChild.nodeValue +
-	        		 "</span></div>";
-				color = colors[colorcounter++ % 2];
-        		theBody += "<div class=\"tupledetail\" style=\"background-color:" + color + "\"><span class=\"firstdetail\">Application</span>" + 
-	        		"<span class=\"lastdetail\">" + appname + "</span></div>";
-				color = colors[colorcounter++ % 2];
-        		theBody += "<div class=\"tupledetail\" style=\"background-color:" + color + "\"><span class=\"firstdetail\">Status</span>" + 
-	        		"<span class=\"lastdetail\">" + 
-	        		xmlDoc.getElementsByTagName("status").item(0).firstChild.nodeValue +
-	        		 "</span></div>";
+        		theBody += "<tr><td>UID</td><td>" + xmlDoc.getElementsByTagName("uid").item(0).firstChild.nodeValue + "</td></tr>";
+        		theBody += "<tr><td>Application</td><td>" + appName + "</td></tr>";
+        		theBody += "<tr><td>Status</td><td>" + xmlDoc.getElementsByTagName("status").item(0).firstChild.nodeValue + "</td></tr>";
 
 				try {
-					var thedata = xmlDoc.getElementsByTagName("sessionuid").item(0).firstChild.nodeValue;
-					if(thedata != null) {
-						color = colors[colorcounter++ % 2];
-		        		theBody += "<div class=\"tupledetail\" style=\"background-color:" +
-		        			 		color + "\"><span class=\"firstdetail\">Session</span>" + 
-			        		"<span class=\"lastdetail\">" + thedata + "</span></div>";
+					var sessionuid = xmlDoc.getElementsByTagName("sessionuid").item(0).firstChild.nodeValue;
+					if(sessionuid != null) {
+		        		theBody += "<tr><td>Session</td><td>" + sessionuid + "</td></tr>";
 			   		}
 		   		}
 		   		catch(err) {
 		   		}
 				try {
-					var thedata = xmlDoc.getElementsByTagName("groupuid").item(0).firstChild.nodeValue;
-					if(thedata != null) {
-						color = colors[colorcounter++ % 2];
-	        			theBody += "<div class=\"tupledetail\" style=\"background-color:" +
-	        				 		color + "\"><span class=\"firstdetail\">Group of jobs</span>" + 
-		    	    		"<span class=\"lastdetail\">" + thedata + "</span></div>";
+					var groupuid = xmlDoc.getElementsByTagName("groupuid").item(0).firstChild.nodeValue;
+					if(groupuid != null) {
+		        		theBody += "<tr><td>Group of jobs</td><td>" + groupuid + "</td></tr>";
 			   		}
 		   		}
 		   		catch(err) {
 		   		}
 				try {
-					var thedata = xmlDoc.getElementsByTagName("listenport").item(0).firstChild.nodeValue;
-					if(thedata != null) {
-						color = colors[colorcounter++ % 2];
-		        		theBody += "<div class=\"tupledetail\" style=\"background-color:" +
-		        			 		color + "\"><span class=\"firstdetail\">Listen port</span>" + 
-			        		"<span class=\"lastdetail\">" + thedata + "</span></div>";
+					var listenport = xmlDoc.getElementsByTagName("listenport").item(0).firstChild.nodeValue;
+					if(listenport != null) {
+		        		theBody += "<tr><td>Listen port</td><td>" + listenport + "</td></tr>";
 			   		}
 		   		}
 		   		catch(err) {
 		   		}
 				try {
-					var thedata = xmlDoc.getElementsByTagName("smartsocketaddr").item(0).firstChild.nodeValue;
-					if(thedata != null) {
-						color = colors[colorcounter++ % 2];
-		        		theBody += "<div class=\"tupledetail\" style=\"background-color:" +
-		        			 		color + "\"><span class=\"firstdetail\">Smartsocket server address</span>" + 
-			        		"<span class=\"lastdetail\">" + thedata + "</span></div>";
+					var smartsocketaddr = xmlDoc.getElementsByTagName("smartsocketaddr").item(0).firstChild.nodeValue;
+					if(smartsocketaddr != null) {
+		        		theBody += "<tr><td>Smartsocket server address</td><td>" + smartsocketaddr + "</td></tr>";
 			   		}
 		   		}
 		   		catch(err) {
 		   		}
 				try {
-					var thedata = xmlDoc.getElementsByTagName("smartsocketclient").item(0).firstChild.nodeValue;
-					if(thedata != null) {
-						color = colors[colorcounter++ % 2];
-		        		theBody += "<div class=\"tupledetail\" style=\"background-color:" +
-		        			 		color + "\"><span class=\"firstdetail\">Smartsocket client address</span>" + 
-			        		"<span class=\"lastdetail\">" + thedata + "</span></div>";
+					var smartsocketaddr = xmlDoc.getElementsByTagName("smartsocketclient").item(0).firstChild.nodeValue;
+					if(smartsocketaddr != null) {
+		        		theBody += "<tr><td>Smartsocket client address</td><td>" + smartsocketaddr + "</td></tr>";
 			   		}
 		   		}
 		   		catch(err) {
 		   		}
 				try {
-					var thedata = xmlDoc.getElementsByTagName("label").item(0).firstChild.nodeValue;
-					if(thedata != null) {
-						color = colors[colorcounter++ % 2];
-		        		theBody += "<div class=\"tupledetail\" style=\"background-color:" +
-		        			 		color + "\"><span class=\"firstdetail\">Label</span>" + 
-			        		"<span class=\"lastdetail\">" + thedata + "</span></div>";
+					var label = xmlDoc.getElementsByTagName("label").item(0).firstChild.nodeValue;
+					if(label != null) {
+		        		theBody += "<tr><td>Label</td><td>" + label + "</td></tr>";
 			   		}
 		   		}
 		   		catch(err) {
 		   		}
 				try {
-					var thedata = xmlDoc.getElementsByTagName("errormsg").item(0).firstChild.nodeValue;
-					if(thedata != null) {
-						color = colors[colorcounter++ % 2];
-		        		theBody += "<div class=\"tupledetail\" style=\"background-color:" +
-		        			 		color + "\"><span class=\"firstdetail\">Error msg</span>" + 
-			        		"<span class=\"lastdetail\">" + thedata + "</span></div>";
+					var errormsg = xmlDoc.getElementsByTagName("errormsg").item(0).firstChild.nodeValue;
+					if(errormsg != null) {
+		        		theBody += "<tr><td>Error msg</td><td>" + errormsg + "</td></tr>";
 			   		}
 		   		}
 		   		catch(err) {
 		   		}
 				try {
-					var thedata = xmlDoc.getElementsByTagName("arrivaldate").item(0).firstChild.nodeValue;
-					if(thedata != null) {
-						color = colors[colorcounter++ % 2];
-		        		theBody += "<div class=\"tupledetail\" style=\"background-color:" +
-		        			 		color + "\"><span class=\"firstdetail\">Arrival date</span>" + 
-			        		"<span class=\"lastdetail\">" + thedata + "</span></div>";
+					var arrivaldate = xmlDoc.getElementsByTagName("arrivaldate").item(0).firstChild.nodeValue;
+					if(arrivaldate != null) {
+		        		theBody += "<tr><td>Arrival date</td><td>" + arrivaldate + "</td></tr>";
 			   		}
 		   		}
 		   		catch(err) {
 		   		}
 				try {
-					var thedata = xmlDoc.getElementsByTagName("readydate").item(0).firstChild.nodeValue;
-					if(thedata != null) {
-						color = colors[colorcounter++ % 2];
-		        		theBody += "<div class=\"tupledetail\" style=\"background-color:" +
-		        					color + "\"><span class=\"firstdetail\">Ready date</span>" + 
-			        		"<span class=\"lastdetail\">" + thedata + "</span></div>";
+					var completeddate = xmlDoc.getElementsByTagName("completeddate").item(0).firstChild.nodeValue;
+					if(completeddate != null) {
+		        		theBody += "<tr><td>Completed date</td><td>" + completeddate + "</td></tr>";
 			   		}
 		   		}
 		   		catch(err) {
 		   		}
+	   		}
+
+			if(document.getElementById(workersTabID).getAttribute("class") == "current") {
+
+				var xmlTagName = "host";
+
+        		theBody += "<tr><td>UID</td><td>" + xmlDoc.getElementsByTagName("uid").item(0).firstChild.nodeValue + "</td></tr>";
+        		theBody += "<tr><td>Name</td><td>" + xmlDoc.getElementsByTagName("name").item(0).firstChild.nodeValue + "</td></tr>";
+        		theBody += "<tr><td>OS</td><td>" + xmlDoc.getElementsByTagName("os").item(0).firstChild.nodeValue + "</td></tr>";
+        		theBody += "<tr><td>CPU</td><td>" + xmlDoc.getElementsByTagName("cputype").item(0).firstChild.nodeValue + "</td></tr>";
+        		theBody += "<tr><td>Work pool size</td><td>" + xmlDoc.getElementsByTagName("poolworksize").item(0).firstChild.nodeValue + "</td></tr>";
+        		theBody += "<tr><td>Compledted jobs</td><td>" + xmlDoc.getElementsByTagName("nbjobs").item(0).firstChild.nodeValue + "</td></tr>";
+
 				try {
-					var thedata = xmlDoc.getElementsByTagName("datareadydate").item(0).firstChild.nodeValue;
-					if(thedata != null) {
-						color = colors[colorcounter++ % 2];
-		        		theBody += "<div class=\"tupledetail\" style=\"background-color:" +
-		        					color + "\"><span class=\"firstdetail\">Data ready date</span>" + 
-			        		"<span class=\"lastdetail\">" + thedata + "</span></div>";
-			   		}
-		   		}
-		   		catch(err) {
-		   		}
-				try {
-					var thedata = xmlDoc.getElementsByTagName("compstartdate").item(0).firstChild.nodeValue;
-					if(thedata != null) {
-						color = colors[colorcounter++ % 2];
-		        		theBody += "<div class=\"tupledetail\" style=\"background-color:" +
-		        					color + "\"><span class=\"firstdetail\">Computation start date</span>" + 
-			        		"<span class=\"lastdetail\">" +  thedata + "</span></div>";
-			   		}
-		   		}
-		   		catch(err) {
-		   		}
-				try {
-					var thedata = xmlDoc.getElementsByTagName("compenddate").item(0).firstChild.nodeValue;
-					if(thedata != null) {
-						color = colors[colorcounter++ % 2];
-		        		theBody += "<div class=\"tupledetail\" style=\"background-color:" +
-		        					color + "\"><span class=\"firstdetail\">Computation end date</span>" + 
-			        		"<span class=\"lastdetail\">" + thedata + "</span></div>";
-			   		}
-		   		}
-		   		catch(err) {
-		   		}
-				try {
-					var thedata = xmlDoc.getElementsByTagName("completeddate").item(0).firstChild.nodeValue;
-					if(thedata != null) {
-						color = colors[colorcounter++ % 2];
-		        		theBody += "<div class=\"tupledetail\" style=\"background-color:" +
-		        					color + "\"><span class=\"firstdetail\">Completion date</span>" + 
-			        		"<span class=\"lastdetail\">" +  thedata + "</span></div>";
-			   		}
-		   		}
-		   		catch(err) {
-		   		}
-				try {
-					var thedata = xmlDoc.getElementsByTagName("resultdate").item(0).firstChild.nodeValue;
-					if(thedata != null) {
-						color = colors[colorcounter++ % 2];
-		        		theBody += "<div class=\"tupledetail\" style=\"background-color:" +
-		        					color + "\"><span class=\"firstdetail\">Result date</span>" + 
-			        		"<span class=\"lastdetail\">" +  thedata + "</span></div>";
+					var project = xmlDoc.getElementsByTagName("project").item(0).firstChild.nodeValue;
+					if(project != null) {
+		        		theBody += "<tr><td>Project</td><td>" + project + "</td></tr>";
 			   		}
 		   		}
 		   		catch(err) {
@@ -2370,33 +2216,22 @@ function getDetailStateChanged()
 			    var name = xmlDoc.getElementsByTagName("name").item(0).firstChild.nodeValue;
 		    	var uid = xmlDoc.getElementsByTagName("uid").item(0).firstChild.nodeValue;
 
-				color = colors[colorcounter++ % 2];
-        		theBody = "<div class=\"tupledetail\" style=\"background-color:" + color + "\"><span class=\"firstdetail\">UID</span>" +
-        			"<span class=\"lastdetail\">" + uid + "</span></div>";
-				color = colors[colorcounter++ % 2];
-        		theBody += "<div class=\"tupledetail\" style=\"background-color:" + color + "\"><span class=\"firstdetail\">Access Rights</span>" + 
-	        		"<span class=\"lastdetail\">" + 
-	        		xmlDoc.getElementsByTagName("accessrights").item(0).firstChild.nodeValue  + 
-	        		 "</span></div>";
-				color = colors[colorcounter++ % 2];
-        		theBody += "<div class=\"tupledetail\" style=\"background-color:" + color + "\"><span class=\"firstdetail\">Name</span>" + 
-	        		"<span class=\"lastdetail\">" + name + "</span></div>";
-				color = colors[colorcounter++ % 2];
+        		theBody += "<tr><td>UID</td><td>" + uid + "</td></tr>";
+        		theBody += "<tr><td>Name</td><td>" + name + "</td></tr>";
 
 				try {
-					var thedata = xmlDoc.getElementsByTagName("sessionuid").item(0).firstChild.nodeValue;
-					if(thedata != null) {
-						color = colors[colorcounter++ % 2];
-		        		theBody += "<div class=\"tupledetail\" style=\"background-color:" +
-		        			 		color + "\"><span class=\"firstdetail\">Session</span>" + 
-			        		"<span class=\"lastdetail\">" + thedata + "</span></div>";
+					var sessionuid = xmlDoc.getElementsByTagName("sessionuid").item(0).firstChild.nodeValue;
+					if(sessionuid != null) {
+		        		theBody += "<tr><td>Session</td><td>" + sessionuid + "</td></tr>";
 			   		}
 		   		}
 		   		catch(err) {
 		   		}
 	   		}
-
-        	document.getElementById(detailListID).innerHTML = theBody;
+			theBody += "</tbody></table>";
+	        $('#messageModal').find('.modal-title').html("Details");
+	        $('#messageModal').find('.modal-body').html(theBody);
+        	$('#messageModal').modal('show');
    		}
    		catch(err){
    		}
@@ -2544,7 +2379,6 @@ function sendData() {
 
 	var pop = new myPop("Send", sendDataToServer);
     pop.popOut(theBody);
-	pop = null;
 }
 
 /**
@@ -3408,7 +3242,7 @@ function getWorkerStateChanged()
 
       		document.getElementById(workersListID).innerHTML += "<tr id=\"" + uid + "\">" + 
       			"<td class=\"selectbutton\"><input type=\"checkbox\" name=\"" + uid + "\" /></td>" +
-      			"<td>" + uid + "</td>" +
+      			"<td><a href=\"javascript:getDetail('" + uid + "')\">" + uid + "</a></td>" +
       			"<td>" + name + "</td>" +
       			"<td>" + os + "</td>" +
 		    	"<td>" + cputype + "</td>"+
