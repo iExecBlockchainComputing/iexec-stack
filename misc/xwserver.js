@@ -39,34 +39,6 @@
  **********************************************************************
  **********************************************************************/
 
-/**
- * This cancels background color
- * @param thediv is the div to reset background color to
- */
-
-function resetBgColor(thediv)
-{
-  if (thediv) {
-     thediv.style.backgroundColor="";
-  }
-}
-
-/**
- * This sets background color from green to red according to idx
- * @param thediv is the div to set background color to
- * @param idx is the div index
- */
-function setBgColor(thediv, idx)
-{
-  var hslColor = (1 - (0.125 * idx)) * 120;
-  console.log("hslColor = " + hslColor);
-  if (thediv) {
-     thediv.style.backgroundColor="hsl(" + hslColor + ", 100%, 50%)";
-  }
-  else {
-    console.log("setBgColor() : thediv is not set");
-  }
-}
 
 /**
  * This retrieves a cookie
@@ -114,6 +86,14 @@ function setCookie(c_name,value,exdays)
   document.cookie=c_name + "=" + c_value;
 }
 
+/**
+ * This resets the USERUID cookie and reload to login.html
+ */
+function logout() {
+	document.cookie = "USERUID=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
+	document.cookie = "JSESSIONID=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
+    window.location.assign("/login.html")
+}
 
 /**
  * These variables aim to colorize informations
@@ -381,7 +361,6 @@ function WorkerPool(size) {
                 worker = new Worker(job.url);
 				var mydivid= "worker" + workers;
 				var mydiv = document.getElementById(mydivid);
-                setBgColor(mydiv, workers);
                 workers++;
                 worker.addEventListener('message', function(e) {
                     if (job.cb.call(job.ctx, worker, e)) {
@@ -389,7 +368,6 @@ function WorkerPool(size) {
 						worker.terminate();
 						var mydivid= "worker" + workers;
 						var mydiv = document.getElementById(mydivid);
-						resetBgColor(mydiv);
                         workers--;
                         nextJob();
                     };
