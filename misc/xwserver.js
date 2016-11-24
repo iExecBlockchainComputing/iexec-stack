@@ -1215,7 +1215,7 @@ function getAppStateChanged()
 
 
       		document.getElementById(appListID).innerHTML += "<tr id=\"" + uid + "\">" + 
-      			"<td class=\"selectbutton\"><input type=\"checkbox\" name=\"" + uid + "\" /></td>" +
+//      			"<td class=\"selectbutton\"><input type=\"checkbox\" name=\"" + uid + "\" /></td>" +
       			"<td><a href=\"javascript:getDetail('" + uid + "')\">" + uid + "</a></td>" +
       			"<td>" + appName + "</td>" +
       			"<td>" + type + "</td>" +
@@ -1379,14 +1379,16 @@ function getDataStateChanged()
 
 		    console.log("Data " + name);
 			if(status == "AVAILABLE") {
-		    	document.getElementById(dataListID).innerHTML += "<tr id=\"" + uid + "\"><td class=\"selectbutton\"><input type=\"checkbox\" name=\"" + uid + "\" /></td>" +
+		    	document.getElementById(dataListID).innerHTML +=
+//		    		"<tr id=\"" + uid + "\"><td class=\"selectbutton\"><input type=\"checkbox\" name=\"" + uid + "\" /></td>" +
 		    		"<td><a href=\"javascript:getDetail('" + uid + "')\">" + uid + "</a></td>" +
 		    		"<td>" + name + "</td>" +
 		    		"<td>" + status + "</td>" +
 		    		"<td><button class=\"btn btn-primary\" onclick=\"window.location.href='/downloaddata/" + uid + "'\" download=\"" + datauriid + "\">Download</button></td></tr>";
 		    }
 		    else{
-		    	document.getElementById(dataListID).innerHTML += "<tr id=\"" + uid + "\"><td class=\"selectbutton\"><input type=\"checkbox\" name=\"" + uid + "\" /></td>" +
+		    	document.getElementById(dataListID).innerHTML += 
+//		    		"<tr id=\"" + uid + "\"><td class=\"selectbutton\"><input type=\"checkbox\" name=\"" + uid + "\" /></td>" +
 		    		"<td><a href=\"javascript:getDetail('" + uid + "')\">" + uid + "</a></td>" +
 		    		"<td>" + name + "</td>" +
 		    		"<td>" + status + "</td>" +
@@ -1536,7 +1538,7 @@ function getBotStateChanged()
 
 		    console.log("BoT " + name);
       		document.getElementById(botListID).innerHTML += "<tr id=\"" + uid + "\">" + 
-  			"<td class=\"selectbutton\"><input type=\"checkbox\" name=\"" + uid + "\" /></td>" +
+//  			"<td class=\"selectbutton\"><input type=\"checkbox\" name=\"" + uid + "\" /></td>" +
   			"<td><a href=\"javascript:getDetail('" + uid + "')\">" + uid + "</a></td>" +
   			"<td>" + name + "</td></tr>";
    		}
@@ -1833,7 +1835,8 @@ function getWorkStateChanged(){
 		    if(ownerUID == actualUserUID){
 
 		    	if(resultuid != null){
-		    		document.getElementById(worksListID).innerHTML += "<tr id=\"" + uid + "\"><td class=\"selectbutton\"><input type=\"checkbox\" name=\"" + uid + "\" /></td>" +
+		    		document.getElementById(worksListID).innerHTML += 
+//		    			"<tr id=\"" + uid + "\"><td class=\"selectbutton\"><input type=\"checkbox\" name=\"" + uid + "\" /></td>" +
 		      			"<td><a href=\"javascript:getDetail('" + uid + "')\">" + uid + "</a></td>" +
 			    		"<td>" + appName + "</td>" +
 			    		"<td>" + arrivalDate + "</td>" +
@@ -1842,7 +1845,8 @@ function getWorkStateChanged(){
 			    		"<td><button class=\"btn btn-primary\" onclick=\"window.location.href='/downloaddata/" + resultuid + "'\" download=\"" + resultName + "\">Download</button></td></tr>";
 		    	}
 		    	else{
-		    		document.getElementById(worksListID).innerHTML += "<tr id=\"" + uid + "\"><td class=\"selectbutton\"><input type=\"checkbox\" name=\"" + uid + "\" /></td>" +
+		    		document.getElementById(worksListID).innerHTML +=
+//		    			"<tr id=\"" + uid + "\"><td class=\"selectbutton\"><input type=\"checkbox\" name=\"" + uid + "\" /></td>" +
 		    			"<td><a href=\"javascript:getDetail('" + uid + "')\">" + uid + "</a></td>" +
 	    				"<td>" + appName + "</td>" +
 	    				"<td>" + arrivalDate + "</td>" +
@@ -3221,7 +3225,7 @@ function getWorkerStateChanged()
 		    console.log("got Worker " + uid + ": " + os + "," + cputype + " (" + knownOSes[os] + "," + knownCPUs[cputype] + ")");
 
       		document.getElementById(workersListID).innerHTML += "<tr id=\"" + uid + "\">" + 
-      			"<td class=\"selectbutton\"><input type=\"checkbox\" name=\"" + uid + "\" /></td>" +
+//      			"<td class=\"selectbutton\"><input type=\"checkbox\" name=\"" + uid + "\" /></td>" +
       			"<td><a href=\"javascript:getDetail('" + uid + "')\">" + uid + "</a></td>" +
       			"<td>" + name + "</td>" +
       			"<td>" + os + "</td>" +
