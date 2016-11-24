@@ -127,12 +127,6 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 	 */
 	public static final String DASHBOARDFILENAME_CSS = "/dashboard.css";
 	/**
-	 * This is the login page
-	 *
-	 * @since 10.2.0
-	 */
-	public static final String LOGIN_HTML = "/login.html";
-	/**
 	 * This is JavaScript -extracted from xwserver.html- file name :
 	 * xwserver.js
 	 *
@@ -155,8 +149,7 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 			DASHBOARDFILENAME_CSS,
 			FAVICOFILENAME_ICO,
 			RESOURCEFILENAME_LOGO,
-			SCRIPTFILENAME_JS,
-			LOGIN_HTML
+			SCRIPTFILENAME_JS
 	};
 	private static final String TEXTHTML = "text/html";
 	private static final String TEXTCSS = "text/css";
@@ -168,8 +161,7 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 			TEXTCSS,
 			IMAGEXICON,
 			IMAGEJPEG,
-			APPJS,
-			TEXTHTML 
+			APPJS 
 	};
 
 	/**
@@ -203,13 +195,7 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 		 *
 		 * @since 10.2.0
 		 */
-		XWJS,
-		/**
-		 * This is the login page
-		 *
-		 * @since 10.2.0
-		 */
-		LOGINPAGE;
+		XWJS;
 
 		/**
 		 * This retrieves the resource name started with a slash. This is both
@@ -882,7 +868,7 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 		if (user == null) {
 			resetIdRpc();
 			logger.debug("no credential found");
-			redirectPage(baseRequest, Resources.LOGINPAGE);
+			redirectPage(baseRequest, Resources.DASHBOARDHTML);
 			return;
 		}
 
