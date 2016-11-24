@@ -92,7 +92,7 @@ function setCookie(c_name,value,exdays)
 function logout() {
 	document.cookie = "USERUID=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
 	document.cookie = "JSESSIONID=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
-    window.location.assign("/dashboard.html")
+	window.location.assign("/dashboard.html")
 }
 
 /**
@@ -851,6 +851,8 @@ function getCurrentUser()
     	$('#loginModal').modal('show');
 		return;
 	}
+
+    document.getElementById("connectionButtons").innerHTML = '<a href="javascript:logout()"><span class="glyphicon glyphicon-log-out"></span>Logout</a>';
 
     xmlHttpConnectionGetCurrentUser=getXmlHttpObject();
     if (xmlHttpConnectionGetCurrentUser==null)
