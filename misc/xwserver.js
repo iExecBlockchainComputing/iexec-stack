@@ -853,7 +853,7 @@ function getCurrentUser()
 	}
 
     document.getElementById("connectionButtons").innerHTML = '<a href="javascript:logout()"><span class="glyphicon glyphicon-log-out"></span>Logout</a>';
-
+    document.getElementById("notLoggedIn").style.display = "none";
     xmlHttpConnectionGetCurrentUser=getXmlHttpObject();
     if (xmlHttpConnectionGetCurrentUser==null)
     {
