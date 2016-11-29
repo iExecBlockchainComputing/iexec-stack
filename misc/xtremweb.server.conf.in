@@ -110,7 +110,7 @@ DBPASS= @DBPASSWORD@
 
 #
 # This is necessary to delegate authentication via OAuth
-# The facebook application ID
+# The facebook application KEY
 # @since 9.1.1
 #
 #FACEBOOKAPPKEY=
@@ -124,10 +124,38 @@ DBPASS= @DBPASSWORD@
 
 #
 # This is necessary to delegate authentication via OAuth
-# The google application ID
+# The google application KEY
 # @since 9.1.1
 #
 #GOOGLEAPPKEY=
+
+#
+# This is necessary to delegate authentication via OAuth
+# The twitter application ID
+# @since 10.5.0
+#
+#TWITTERAPPID=
+
+#
+# This is necessary to delegate authentication via OAuth
+# The twitter application KEY
+# @since 10.5.0
+#
+#TWITTERAPPKEY=
+
+#
+# This is necessary to delegate authentication via OAuth
+# The yahoo application ID
+# @since 10.5.0
+#
+#YAHOOAPPID=
+
+#
+# This is necessary to delegate authentication via OAuth
+# The yahoo application KEY
+# @since 10.5.0
+#
+#YAHOOAPPKEY=
 
 #
 # This is an integer containing the amount of seconds a user can stay connected to the web interface

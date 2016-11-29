@@ -55,7 +55,7 @@ import xtremweb.communications.Connection;
 import xtremweb.communications.XWPostParams;
 
 /**
- * This handles HTTP request to /oauth/
+ * This handles HTTP request to /oauth2/
  *
  * Created: 19 fevrier 2013
  *
@@ -189,7 +189,7 @@ public class HTTPOAuthHandler extends Thread implements org.eclipse.jetty.server
 	/**
 	 * This is the path handled by this handler
 	 */
-	public static final String handlerPath = "/oauth";
+	public static final String handlerPath = "/oauth2";
 	/**
 	 * This is the facebook operator name
 	 */
