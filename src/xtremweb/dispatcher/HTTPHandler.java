@@ -86,6 +86,7 @@ import xtremweb.communications.XMLRPCCommandChmod;
 import xtremweb.communications.XMLRPCCommandWorkAlive;
 import xtremweb.communications.XWPostParams;
 import xtremweb.database.SQLRequest;
+import xtremweb.dispatcher.HTTPOAuthHandler.Operator;
 import xtremweb.security.XWAccessRights;
 
 /**
@@ -105,9 +106,17 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 
 	public static final String APIPATH = "/api";
 	/**
-	 * This is the name of the cookie containing the ser UID
+	 * This is the name of the cookie containing the user UID
 	 */
 	public static final String COOKIE_USERUID = "USERUID";
+	/**
+	 * This is the name of the cookie containing the google app id
+	 */
+	public static final String COOKIE_GOOGLEAPP = "XWGOOGLEAPP";
+	/**
+	 * This is the name of the cookie containing the yahoo app id
+	 */
+	public static final String COOKIE_YAHOOAPP = "XWYAHOOAPP";
 
 	/**
 	 * This is the resource path in the xtremweb java archive (xtremweb.jar) :
@@ -594,15 +603,54 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 	}
 
 	/**
+	 * This sets google application cookie
+	 *
+	 * @since 10.5.0
+	 */
+	private void setGoogleAppCookie() {
+		String googleAppID = Dispatcher.getConfig().getProperty(XWPropertyDefs.GOOGLEAPPID); 
+		boolean googleApp = (googleAppID != null) && (googleAppID.length() > 0); 
+		if (googleApp) {
+			final Cookie cookieGoogle = new Cookie(COOKIE_GOOGLEAPP, googleAppID);
+			getLogger().debug(COOKIE_GOOGLEAPP + " = " + googleAppID);
+			response.addCookie(cookieGoogle);
+		}
+	}
+	/**
+	 * This sets yahoo application cookie
+	 *
+	 * @since 10.5.0
+	 */
+	private void setYahooAppCookie() {
+		String yahooAppID = Dispatcher.getConfig().getProperty(XWPropertyDefs.YAHOOAPPID); 
+		boolean yahooApp = (yahooAppID != null) && (yahooAppID.length() > 0); 
+		if (yahooApp) {
+			final Cookie cookieYahoo = new Cookie(COOKIE_YAHOOAPP, yahooAppID);
+			getLogger().debug(COOKIE_YAHOOAPP + " = " + yahooAppID);
+			response.addCookie(cookieYahoo);
+		}
+	}
+	/**
+	 * This sets application cookie
+	 *
+	 * @since 10.5.0
+	 */
+	private void setAppCookies() {
+		setGoogleAppCookie();
+		setYahooAppCookie();
+	}
+
+	/**
 	 * This sends the HTML page to the client
 	 *
 	 * @since 8.1.0
 	 */
 	private void sendDashboard(final UserInterface client) throws IOException {
 
-		final Cookie cookie = new Cookie(COOKIE_USERUID, client.getUID().toString());
+		final Cookie cookieUser = new Cookie(COOKIE_USERUID, client.getUID().toString());
 		getLogger().debug("setCookie " + COOKIE_USERUID + " = " + client.getUID().toString());
-		response.addCookie(cookie);
+		response.addCookie(cookieUser);
+		setAppCookies();
 		sendResource(Resources.DASHBOARDHTML);
 	}
 
@@ -634,6 +682,7 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 	 */
 	private void redirectPage(final Request baseRequest, final Resources res) throws IOException {
 		getLogger().debug("redirectPage " + res);
+		setAppCookies();
 		response.setContentType(TEXTHTML);
 		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 		response.sendRedirect(res.getName());

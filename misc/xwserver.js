@@ -811,6 +811,19 @@ function getXmlHttpObject()
  */
 function refresh() {
 
+	var googleApp = getCookie("XWGOOGLEAPP");
+	console.log("XWGOOGLEAPP = " + googleApp);
+	if (googleApp == null || googleApp == "")
+	{
+	    document.getElementById("googleApp").innerHTML = '<i>Google is not configured for this server</i>';
+	}
+	var yahooApp = getCookie("XWYAHOOAPP");
+	console.log("XWYAHOOAPP = " + yahooApp);
+	if (yahooApp == null || yahooApp == "")
+	{
+	    document.getElementById("yahooApp").innerHTML = '<i>Yahoo is not configured for this server</i>';
+	}
+
 	if(document.getElementById(overviewTabID).getAttribute("class") == "current") {
 		getCurrentUser();
 		return;
