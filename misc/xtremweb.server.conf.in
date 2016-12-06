@@ -114,6 +114,24 @@ DBPASS= @DBPASSWORD@
 # @since 9.1.1
 #
 #FACEBOOKAPPKEY=
+#
+# This is necessary to delegate authentication via OAuth
+# The facebook auth URI
+# @since 10.5.0
+#
+#FACEBOOKAUTHURI=
+#
+# This is necessary to delegate authentication via OAuth
+# The facebook scope
+# @since 10.5.0
+#
+#FACEBOOKSCOPE=
+#
+# This is necessary to delegate authentication via OAuth
+# The facebook callback url
+# @since 10.5.0
+#
+#FACEBOOKCALLBACKURL=
 
 #
 # This is necessary to delegate authentication via OAuth
@@ -128,6 +146,24 @@ DBPASS= @DBPASSWORD@
 # @since 9.1.1
 #
 #GOOGLEAPPKEY=
+#
+# This is necessary to delegate authentication via OAuth
+# The google auth URI
+# @since 10.5.0
+#
+#GOOGLEAUTHURI=
+#
+# This is necessary to delegate authentication via OAuth
+# The google scope
+# @since 10.5.0
+#
+#GOOGLESCOPE=
+#
+# This is necessary to delegate authentication via OAuth
+# The google callback url
+# @since 10.5.0
+#
+#GOOGLECALLBACKURL=
 
 #
 # This is necessary to delegate authentication via OAuth
@@ -142,6 +178,24 @@ DBPASS= @DBPASSWORD@
 # @since 10.5.0
 #
 #TWITTERAPPKEY=
+#
+# This is necessary to delegate authentication via OAuth
+# The twitter auth URI
+# @since 10.5.0
+#
+#TWITTERAUTHURI=
+#
+# This is necessary to delegate authentication via OAuth
+# The twitter scope
+# @since 10.5.0
+#
+#TWITTERSCOPE=
+#
+# This is necessary to delegate authentication via OAuth
+# The twitter callback url
+# @since 10.5.0
+#
+#TWITTERCALLBACKURL=
 
 #
 # This is necessary to delegate authentication via OAuth
@@ -156,6 +210,24 @@ DBPASS= @DBPASSWORD@
 # @since 10.5.0
 #
 #YAHOOAPPKEY=
+#
+# This is necessary to delegate authentication via OAuth
+# The yahoo auth URI
+# @since 10.5.0
+#
+#YAHOOAUTHURI=
+#
+# This is necessary to delegate authentication via OAuth
+# The yahoo scope
+# @since 10.5.0
+#
+#YAHOOSCOPE=
+#
+# This is necessary to delegate authentication via OAuth
+# The yahoo callback url
+# @since 10.5.0
+#
+#YAHOOCALLBACKURL=
 
 #
 # This is an integer containing the amount of seconds a user can stay connected to the web interface

@@ -29,6 +29,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintStream;
 import java.lang.reflect.Method;
 import java.net.DatagramSocket;
 import java.net.ServerSocket;
@@ -48,6 +49,12 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.Vector;
+
+import javax.net.SocketFactory;
+import javax.net.ssl.SSLSocket;
+import javax.net.ssl.SSLSocketFactory;
+
+import xtremweb.dispatcher.HTTPOpenIdHandler;
 
 /**
  *
@@ -794,6 +801,49 @@ public class XWTools {
 			data[i / 2] = (byte) ((Character.digit(s.charAt(i), 16) << 4) + Character.digit(s.charAt(i + 1), 16));
 		}
 		return data;
+	}
+
+	/**
+	 * This retrieves CA paths for the given host
+	 *
+	 * @param host
+	 *            is the host name
+	 * @param sav
+	 *            if true, public key is stored to local FS
+	 * @return an array of certificates
+	 * @throws IOException
+	 * @throws UnknownHostException
+	 * @throws CertificateEncodingException
+	 */
+	public static final X509Certificate[] retrieveCertificates(final String host, final boolean sav)
+			throws UnknownHostException, IOException, CertificateEncodingException {
+		final int port = 443;
+
+		final SocketFactory factory = SSLSocketFactory.getDefault();
+		final SSLSocket socket = (SSLSocket) factory.createSocket(host, port);
+
+		socket.startHandshake();
+
+		final X509Certificate[] certs = (X509Certificate[]) socket.getSession().getPeerCertificates();
+		final Logger logger = new Logger(HTTPOpenIdHandler.class);
+		logger.info(host + " : certs retrieved = " + certs.length);
+		int i = 0;
+		for (final X509Certificate cert : certs) {
+			PrintStream out = System.out;
+			logger.info("CN        = " + cert.getSubjectX500Principal().getName());
+			logger.info("Issuer CN = " + cert.getIssuerX500Principal().getName());
+			if (sav) {
+				logger.info("Saving to " + host + "_" + i + ".pem");
+				out = new PrintStream(new File(host + "_" + i++ + ".pem"));
+			}
+			out.println("-----BEGIN CERTIFICATE-----");
+			out.println(new sun.misc.BASE64Encoder().encode(cert.getEncoded()));
+			out.println("-----END CERTIFICATE-----");
+			if (sav) {
+				out.close();
+			}
+		}
+		return certs;
 	}
 
 	public static void main(final String[] argv) {

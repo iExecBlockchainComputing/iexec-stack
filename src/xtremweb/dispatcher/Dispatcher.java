@@ -211,7 +211,7 @@ public class Dispatcher {
 				// OAuth Handler needs HTTP session
 				final SessionHandler oauth_sessionHandler = new SessionHandler();
 				final HTTPOAuthHandler oah = new HTTPOAuthHandler();
-				HTTPOAuthHandler.setCACertificateEntries(getConfig().getKeyStore());
+				HTTPOpenIdHandler.setCACertificateEntries(getConfig().getKeyStore());
 				oauth_sessionHandler.setHandler(oah);
 				httpServer.addHandler(HTTPOAuthHandler.handlerPath, oauth_sessionHandler);
 

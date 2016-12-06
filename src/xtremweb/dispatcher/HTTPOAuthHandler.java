@@ -40,11 +40,15 @@ import javax.servlet.http.HttpSession;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
 import org.expressme.openid.Authentication;
-import org.scribe.builder.api.FacebookApi;
-import org.scribe.builder.api.GoogleApi;
-import org.scribe.builder.api.TwitterApi;
-import org.scribe.builder.api.YahooApi;
-import org.scribe.oauth.OAuthService;
+import com.github.scribejava.apis.FacebookApi;
+import com.github.scribejava.apis.GoogleApi20;
+import com.github.scribejava.apis.TwitterApi;
+import com.github.scribejava.apis.YahooApi;
+import com.github.scribejava.core.builder.ServiceBuilder;
+import com.github.scribejava.core.model.Token;
+import com.github.scribejava.core.oauth.OAuth10aService;
+import com.github.scribejava.core.oauth.OAuth20Service;
+import com.github.scribejava.core.oauth.OAuthService;
 
 import xtremweb.common.Logger;
 import xtremweb.common.LoggerLevel;
@@ -83,7 +87,7 @@ public class HTTPOAuthHandler extends Thread implements org.eclipse.jetty.server
 		GOOGLE {
 			@Override
 			public Class getScribeClass() {
-				return GoogleApi.class;
+				return GoogleApi20.class;
 			}
 		},
 		TWITTER {
@@ -110,6 +114,24 @@ public class HTTPOAuthHandler extends Thread implements org.eclipse.jetty.server
 		 * This is the OAuth scope
 		 */
 		protected String scope;
+		/**
+		 * This is the callback url
+		 */
+		protected String callbackUrl;
+		/**
+		 * This is the OAuth uri
+		 * @since 10.5.0
+		 */
+		protected String authUri;
+		/**
+		 * This is the server address
+		 * @since 10.5.0
+		 */
+		protected String serverAddress;
+		/**
+		 * This is the service
+		 */
+		private OAuthService service;
 
 		/**
 		 * This retrieves the operator class from scribe library
@@ -149,7 +171,6 @@ public class HTTPOAuthHandler extends Thread implements org.eclipse.jetty.server
 		public String getAppKey() {
 			return this.appKey;
 		}
-
 		/**
 		 * This sets the OAuth service scope
 		 */
@@ -165,7 +186,72 @@ public class HTTPOAuthHandler extends Thread implements org.eclipse.jetty.server
 		public String getScope() {
 			return this.scope;
 		}
+		/**
+		 * This sets the OAuth callback url
+		 */
+		public void setCallbackUrl(final String key) {
+			this.callbackUrl = key;
+		}
 
+		/**
+		 * This retrieves the callback url
+		 *
+		 * @return the application identifier
+		 */
+		public String getCallbackUrl() {
+			return this.callbackUrl;
+		}
+
+		/**
+		 * This sets the OAuth URI
+		 * @since 10.5.0
+		 */
+		public void setOAuthUri(final String key) {
+			this.authUri = key;
+		}
+
+		/**
+		 * This retrieves the OAuth URI
+		 * @since 10.5.0
+		 * @return the auth URI
+		 */
+		public String getOAuthUri() {
+			return this.authUri;
+		}
+
+		/**
+		 * This sets the server address
+		 * @since 10.5.0
+		 */
+		public void setServerAddress(final String key) {
+			this.serverAddress = key;
+		}
+
+		/**
+		 * This retrieves the server address
+		 * @since 10.5.0
+		 * @return the auth URI
+		 */
+		public String getServerAddress() {
+			return this.serverAddress;
+		}
+		/**
+		 * This sets the service
+		 * @since 10.5.0
+		 */
+		public void setService(final OAuthService key) {
+			this.service = key;
+		}
+
+		/**
+		 * This retrieves the service
+		 * @since 10.5.0
+		 * @return the auth URI
+		 */
+		public OAuthService getService() {
+			return this.service;
+		}
+		
 		/**
 		 * This retrieves the operator from its name
 		 *
@@ -199,7 +285,6 @@ public class HTTPOAuthHandler extends Thread implements org.eclipse.jetty.server
 	// &state=SOME_ARBITRARY_BUT_UNIQUE_STRING
 	public static final String OP_FACEBOOK = "Facebook";
 	public static final String FACEBOOK_SERVER_ADDR = "www.facebook.com";
-	static final String FACEBOOK_SCOPE = "";
 
 	/**
 	 * These are the google informations
@@ -207,23 +292,18 @@ public class HTTPOAuthHandler extends Thread implements org.eclipse.jetty.server
 	// https://accounts.google.com/o/oauth2/auth?scope=https://www.googleapis.com/auth/userinfo.email&response_type=code&client_id=1078690626706-rb5lpg7bhofsbmklqtmgjcvfjch64s8r.apps.googleusercontent.com&redirect_uri=https://xwservpub.lal.in2p3.fr:4324/oauth
 	public static final String OP_GOOGLE = "Google";
 	public static final String GOOGLE_SERVER_ADDR = "www.google.com";
-	static final String GOOGLE_SCOPE = "https://www.googleapis.com/auth/userinfo.email";
 
 	/**
 	 * These are the yahoo informations
 	 */
 	public static final String OP_YAHOO = "Yahoo";
 	public static final String YAHOO_SERVER_ADDR = "www.yahoo.com";
-	static final String YAHOO_SCOPE = "";
 
 	/**
 	 * These are the twitter informations
 	 */
 	public static final String OP_TWITTER = "Twitter";
 	public static final String TWITTER_SERVER_ADDR = "www.twitter.com";
-	static final String TWITTER_SCOPE = "https://api.twitter.com/oauth2/token";
-
-	private OAuthService oauthService;
 
 	/**
 	 * This is the client host name; for debug purposes only
@@ -269,24 +349,85 @@ public class HTTPOAuthHandler extends Thread implements org.eclipse.jetty.server
 
 		Operator.FACEBOOK.setAppId(Dispatcher.getConfig().getProperty(XWPropertyDefs.FACEBOOKAPPID));
 		Operator.FACEBOOK.setAppKey(Dispatcher.getConfig().getProperty(XWPropertyDefs.FACEBOOKAPPKEY));
-		Operator.GOOGLE.setScope(FACEBOOK_SCOPE);
-
+		Operator.FACEBOOK.setOAuthUri(Dispatcher.getConfig().getProperty(XWPropertyDefs.FACEBOOKAUTHURI));
+		Operator.FACEBOOK.setScope(Dispatcher.getConfig().getProperty(XWPropertyDefs.FACEBOOKSCOPE));
+		Operator.FACEBOOK.setServerAddress(FACEBOOK_SERVER_ADDR);
+		Operator.FACEBOOK.setCallbackUrl(Dispatcher.getConfig().getProperty(XWPropertyDefs.FACEBOOKCALLBACKURL));
+		try {
+			Operator.FACEBOOK.setService(new ServiceBuilder()
+					.apiKey(Operator.FACEBOOK.getAppId())
+					.apiSecret(Operator.FACEBOOK.getAppKey())
+	                .callback(Operator.FACEBOOK.getCallbackUrl())
+	                .scope(Operator.FACEBOOK.getScope())
+	                .build(FacebookApi.instance()));
+		}
+		catch(final Exception e) {
+			logger.warn(Operator.FACEBOOK.toString() + " : " + e.toString());
+		}
 		Operator.GOOGLE.setAppId(Dispatcher.getConfig().getProperty(XWPropertyDefs.GOOGLEAPPID));
 		Operator.GOOGLE.setAppKey(Dispatcher.getConfig().getProperty(XWPropertyDefs.GOOGLEAPPKEY));
-		Operator.GOOGLE.setScope(GOOGLE_SCOPE);
+		Operator.GOOGLE.setOAuthUri(Dispatcher.getConfig().getProperty(XWPropertyDefs.GOOGLEAUTHURI));
+		Operator.GOOGLE.setScope(Dispatcher.getConfig().getProperty(XWPropertyDefs.GOOGLESCOPE));
+		Operator.GOOGLE.setServerAddress(GOOGLE_SERVER_ADDR);
+		Operator.GOOGLE.setCallbackUrl(Dispatcher.getConfig().getProperty(XWPropertyDefs.GOOGLECALLBACKURL));
+		try {
+			Operator.GOOGLE.setService(new ServiceBuilder()
+                .apiKey(Operator.GOOGLE.getAppId())
+                .apiSecret(Operator.GOOGLE.getAppKey())
+                .callback(Operator.GOOGLE.getCallbackUrl())
+                .scope(Operator.GOOGLE.getScope())
+                .build(GoogleApi20.instance()));
+		}
+		catch(final Exception e) {
+			logger.warn(Operator.GOOGLE.toString() + " : " + e.toString());
+		}
 
 		Operator.TWITTER.setAppId(Dispatcher.getConfig().getProperty(XWPropertyDefs.TWITTERAPPID));
 		Operator.TWITTER.setAppKey(Dispatcher.getConfig().getProperty(XWPropertyDefs.TWITTERAPPKEY));
-		Operator.TWITTER.setScope(TWITTER_SCOPE);
+		Operator.TWITTER.setOAuthUri(Dispatcher.getConfig().getProperty(XWPropertyDefs.TWITTERAUTHURI));
+		Operator.TWITTER.setScope(Dispatcher.getConfig().getProperty(XWPropertyDefs.TWITTERSCOPE));
+		Operator.TWITTER.setServerAddress(TWITTER_SERVER_ADDR);
+		Operator.TWITTER.setCallbackUrl(Dispatcher.getConfig().getProperty(XWPropertyDefs.TWITTERCALLBACKURL));
+		try {
+			Operator.TWITTER.setService(new ServiceBuilder()
+                .apiKey(Operator.TWITTER.getAppId())
+                .apiSecret(Operator.TWITTER.getAppKey())
+                .callback(Operator.TWITTER.getCallbackUrl())
+                .scope(Operator.TWITTER.getScope())
+                .build(TwitterApi.instance()));
+		}
+		catch(final Exception e) {
+			logger.warn(Operator.TWITTER.toString() + " : " + e.toString());
+		}
 
 		Operator.YAHOO.setAppId(Dispatcher.getConfig().getProperty(XWPropertyDefs.YAHOOAPPID));
 		Operator.YAHOO.setAppKey(Dispatcher.getConfig().getProperty(XWPropertyDefs.YAHOOAPPKEY));
-		Operator.YAHOO.setScope(YAHOO_SCOPE);
+		Operator.YAHOO.setOAuthUri(Dispatcher.getConfig().getProperty(XWPropertyDefs.YAHOOAUTHURI));
+		Operator.YAHOO.setScope(Dispatcher.getConfig().getProperty(XWPropertyDefs.YAHOOSCOPE));
+		Operator.YAHOO.setServerAddress(YAHOO_SERVER_ADDR);
+		Operator.YAHOO.setCallbackUrl(Dispatcher.getConfig().getProperty(XWPropertyDefs.YAHOOCALLBACKURL));
+		try {
+			Operator.YAHOO.setService(new ServiceBuilder()
+                .apiKey(Operator.YAHOO.getAppId())
+                .apiSecret(Operator.YAHOO.getAppKey())
+                .callback(Operator.YAHOO.getCallbackUrl())
+                .scope(Operator.YAHOO.getScope())
+                .build(YahooApi.instance()));
+		}
+		catch(final Exception e) {
+			logger.warn(Operator.YAHOO.toString() + " : " + e.toString());
+		}
 
 		for (final Operator op : Operator.values()) {
+			if (op.getService() == null) { 
+				continue;
+			}
+			logger.info("" + op + " server   = " + op.getServerAddress());
+			logger.info("" + op + " auth uri = " + op.getOAuthUri());
 			logger.info("" + op + " scope    = " + op.getScope());
 			logger.info("" + op + " app id   = " + op.getAppId());
-			logger.info("" + op + " app ikey = " + op.getAppKey());
+			logger.info("" + op + " app key  = " + op.getAppKey());
+			logger.info("" + op + " service  = " + op.getService());
 		}
 	}
 
@@ -495,17 +636,28 @@ public class HTTPOAuthHandler extends Thread implements org.eclipse.jetty.server
 		if (operator == null) {
 			throw new OAuthException("operator is null");
 		}
+
+		if (operator.getService() == null) {
+			throw new OAuthException(operator.toString() + " : auth uri is null");
+		}
+
 		final String newState = newState(operator);
 		logger.debug("newState = " + newState);
 
-		final String oauthUrl = "to be filled";
+		final String oauthUrl = operator.getOAuthUri();
 		logger.debug("oathUrl = " + oauthUrl);
 
 		final HttpSession session = request.getSession(true);
 		session.setAttribute(XWPostParams.AUTH_STATE.toString(), newState);
 		session.setAttribute(XWPostParams.AUTH_OPERATOR.toString(), operator.toString());
 
-		response.sendRedirect(oauthUrl);
+//		response.sendRedirect(oauthUrl);
+		if (operator.getService().getClass() == OAuth10aService.class) {
+			response.sendRedirect(((OAuth10aService)operator.getService()).getAuthorizationUrl(null));
+		}
+		if (operator.getService().getClass() == OAuth20Service.class) {
+			response.sendRedirect(((OAuth20Service)operator.getService()).getAuthorizationUrl(null));
+		}
 	}
 
 	/**
@@ -604,16 +756,17 @@ public class HTTPOAuthHandler extends Thread implements org.eclipse.jetty.server
 		}
 		final Logger logger = new Logger();
 		try {
-			final X509Certificate[] gcerts = HTTPOpenIdHandler
-					.retrieveCertificates(HTTPOAuthHandler.FACEBOOK_SERVER_ADDR, false);
-			for (int i = 0; i < gcerts.length; i++) {
-				final X509Certificate cert = gcerts[i];
-				try {
-					final String alias = cert.getSubjectDN().toString();
-					logger.finest("KeyStore set entry= " + alias + "; KeyStore.size = " + store.size());
-					store.setCertificateEntry(alias, cert);
-				} catch (final Exception e) {
-					logger.exception("Can't add new entry to keystore", e);
+			for (final Operator op : Operator.values()) {
+				final X509Certificate[] gcerts = XWTools.retrieveCertificates(op.getServerAddress(), false);
+				for (int i = 0; i < gcerts.length; i++) {
+					final X509Certificate cert = gcerts[i];
+					try {
+						final String alias = cert.getSubjectDN().toString();
+						logger.finest("KeyStore set entry= " + alias + "; KeyStore.size = " + store.size());
+						store.setCertificateEntry(alias, cert);
+					} catch (final Exception e) {
+						logger.exception("Can't add new entry to keystore", e);
+					}
 				}
 			}
 		} catch (final Exception e) {
@@ -635,7 +788,7 @@ public class HTTPOAuthHandler extends Thread implements org.eclipse.jetty.server
 			i = 1;
 		}
 		for (; i < args.length; i++) {
-			HTTPOpenIdHandler.retrieveCertificates(args[i], sav);
+			XWTools.retrieveCertificates(args[i], sav);
 		}
 	}
 }

@@ -94,6 +94,33 @@ public enum XWPropertyDefs {
 	 */
 	FACEBOOKAPPKEY,
 	/**
+	 * Server : the facebook auth uri
+	 * <p>
+	 * Property type : string
+	 * </p>
+	 *
+	 * @since 10.5.0
+	 */
+	FACEBOOKAUTHURI,
+	/**
+	 * Server : the facebook scope
+	 * <p>
+	 * Property type : string
+	 * </p>
+	 *
+	 * @since 10.5.0
+	 */
+	FACEBOOKSCOPE,
+	/**
+	 * Server : the facebook callback url
+	 * <p>
+	 * Property type : string
+	 * </p>
+	 *
+	 * @since 10.5.0
+	 */
+	FACEBOOKCALLBACKURL,
+	/**
 	 * Server : the google application ID for OAuth
 	 * <p>
 	 * Property type : string
@@ -111,6 +138,33 @@ public enum XWPropertyDefs {
 	 * @since 9.1.1
 	 */
 	GOOGLEAPPKEY,
+	/**
+	 * Server : the google auth uri
+	 * <p>
+	 * Property type : string
+	 * </p>
+	 *
+	 * @since 10.5.0
+	 */
+	GOOGLEAUTHURI,
+	/**
+	 * Server : the google scope
+	 * <p>
+	 * Property type : string
+	 * </p>
+	 *
+	 * @since 10.5.0
+	 */
+	GOOGLESCOPE,
+	/**
+	 * Server : the google callback url
+	 * <p>
+	 * Property type : string
+	 * </p>
+	 *
+	 * @since 10.5.0
+	 */
+	GOOGLECALLBACKURL,
 	/**
 	 * Server : the twitter application ID for OAuth
 	 * <p>
@@ -130,6 +184,33 @@ public enum XWPropertyDefs {
 	 */
 	TWITTERAPPKEY,
 	/**
+	 * Server : the twitter auth uri
+	 * <p>
+	 * Property type : string
+	 * </p>
+	 *
+	 * @since 10.5.0
+	 */
+	TWITTERAUTHURI,
+	/**
+	 * Server : the twitter scope
+	 * <p>
+	 * Property type : string
+	 * </p>
+	 *
+	 * @since 10.5.0
+	 */
+	TWITTERSCOPE,
+	/**
+	 * Server : the twitter callback url
+	 * <p>
+	 * Property type : string
+	 * </p>
+	 *
+	 * @since 10.5.0
+	 */
+	TWITTERCALLBACKURL,
+	/**
 	 * Server : the yahoo application ID for OAuth
 	 * <p>
 	 * Property type : string
@@ -147,6 +228,33 @@ public enum XWPropertyDefs {
 	 * @since 9.1.1
 	 */
 	YAHOOAPPKEY,
+	/**
+	 * Server : the yahoo auth uri
+	 * <p>
+	 * Property type : string
+	 * </p>
+	 *
+	 * @since 10.5.0
+	 */
+	YAHOOAUTHURI,
+	/**
+	 * Server : the yahoo scope
+	 * <p>
+	 * Property type : string
+	 * </p>
+	 *
+	 * @since 10.5.0
+	 */
+	YAHOOSCOPE,
+	/**
+	 * Server : the yahoo callback url
+	 * <p>
+	 * Property type : string
+	 * </p>
+	 *
+	 * @since 10.5.0
+	 */
+	YAHOOCALLBACKURL,
 	/**
 	 * All : os version
 	 * <p>

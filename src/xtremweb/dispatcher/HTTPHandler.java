@@ -110,9 +110,17 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 	 */
 	public static final String COOKIE_USERUID = "USERUID";
 	/**
+	 * This is the name of the cookie containing the facebook app id
+	 */
+	public static final String COOKIE_FACEBOOKAPP = "XWFACEBOOKAPP";
+	/**
 	 * This is the name of the cookie containing the google app id
 	 */
 	public static final String COOKIE_GOOGLEAPP = "XWGOOGLEAPP";
+	/**
+	 * This is the name of the cookie containing the twitter app id
+	 */
+	public static final String COOKIE_TWITTERAPP = "XWTWITTERAPP";
 	/**
 	 * This is the name of the cookie containing the yahoo app id
 	 */
@@ -607,7 +615,27 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 	 *
 	 * @since 10.5.0
 	 */
+	private void setFacebookAppCookie() {
+		if (HTTPOAuthHandler.Operator.FACEBOOK.getAppId() == null) {
+			return;
+		}
+		String facebookAppID = Dispatcher.getConfig().getProperty(XWPropertyDefs.FACEBOOKAPPID); 
+		boolean facebookApp = (facebookAppID != null) && (facebookAppID.length() > 0); 
+		if (facebookApp) {
+			final Cookie cookiefacebook = new Cookie(COOKIE_FACEBOOKAPP, facebookAppID);
+			getLogger().debug(COOKIE_FACEBOOKAPP + " = " + facebookAppID);
+			response.addCookie(cookiefacebook);
+		}
+	}
+	/**
+	 * This sets google application cookie
+	 *
+	 * @since 10.5.0
+	 */
 	private void setGoogleAppCookie() {
+		if (HTTPOAuthHandler.Operator.GOOGLE.getAppId() == null) {
+			return;
+		}
 		String googleAppID = Dispatcher.getConfig().getProperty(XWPropertyDefs.GOOGLEAPPID); 
 		boolean googleApp = (googleAppID != null) && (googleAppID.length() > 0); 
 		if (googleApp) {
@@ -617,11 +645,31 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 		}
 	}
 	/**
+	 * This sets twitter application cookie
+	 *
+	 * @since 10.5.0
+	 */
+	private void setTwitterAppCookie() {
+		if (HTTPOAuthHandler.Operator.TWITTER.getAppId() == null) {
+			return;
+		}
+		String twitterAppID = Dispatcher.getConfig().getProperty(XWPropertyDefs.TWITTERAPPID); 
+		boolean twitterApp = (twitterAppID != null) && (twitterAppID.length() > 0); 
+		if (twitterApp) {
+			final Cookie cookieTwitter = new Cookie(COOKIE_TWITTERAPP, twitterAppID);
+			getLogger().debug(COOKIE_TWITTERAPP + " = " + twitterAppID);
+			response.addCookie(cookieTwitter);
+		}
+	}
+	/**
 	 * This sets yahoo application cookie
 	 *
 	 * @since 10.5.0
 	 */
 	private void setYahooAppCookie() {
+		if (HTTPOAuthHandler.Operator.YAHOO.getAppId() == null) {
+			return;
+		}
 		String yahooAppID = Dispatcher.getConfig().getProperty(XWPropertyDefs.YAHOOAPPID); 
 		boolean yahooApp = (yahooAppID != null) && (yahooAppID.length() > 0); 
 		if (yahooApp) {
@@ -636,7 +684,9 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 	 * @since 10.5.0
 	 */
 	private void setAppCookies() {
+		setFacebookAppCookie();
 		setGoogleAppCookie();
+		setTwitterAppCookie();
 		setYahooAppCookie();
 	}
 

@@ -462,49 +462,6 @@ public class HTTPOpenIdHandler extends Thread implements org.eclipse.jetty.serve
 	}
 
 	/**
-	 * This retrieves CA paths for the given host
-	 *
-	 * @param host
-	 *            is the host name
-	 * @param sav
-	 *            if true, public key is stored to local FS
-	 * @return an array of certificates
-	 * @throws IOException
-	 * @throws UnknownHostException
-	 * @throws CertificateEncodingException
-	 */
-	public static final X509Certificate[] retrieveCertificates(final String host, final boolean sav)
-			throws UnknownHostException, IOException, CertificateEncodingException {
-		final int port = 443;
-
-		final SocketFactory factory = SSLSocketFactory.getDefault();
-		final SSLSocket socket = (SSLSocket) factory.createSocket(host, port);
-
-		socket.startHandshake();
-
-		final X509Certificate[] certs = (X509Certificate[]) socket.getSession().getPeerCertificates();
-		final Logger logger = new Logger(HTTPOpenIdHandler.class);
-		logger.info(host + " : certs retrieved = " + certs.length);
-		int i = 0;
-		for (final X509Certificate cert : certs) {
-			PrintStream out = System.out;
-			logger.info("CN        = " + cert.getSubjectX500Principal().getName());
-			logger.info("Issuer CN = " + cert.getIssuerX500Principal().getName());
-			if (sav) {
-				logger.info("Saving to " + host + "_" + i + ".pem");
-				out = new PrintStream(new File(host + "_" + i++ + ".pem"));
-			}
-			out.println("-----BEGIN CERTIFICATE-----");
-			out.println(new sun.misc.BASE64Encoder().encode(cert.getEncoded()));
-			out.println("-----END CERTIFICATE-----");
-			if (sav) {
-				out.close();
-			}
-		}
-		return certs;
-	}
-
-	/**
 	 * This inserts all known CA certificates to the provided keystore
 	 *
 	 * @param store
@@ -519,7 +476,7 @@ public class HTTPOpenIdHandler extends Thread implements org.eclipse.jetty.serve
 		}
 		final Logger logger = new Logger();
 		try {
-			final X509Certificate[] gcerts = retrieveCertificates(HTTPOpenIdHandler.GOOGLE_ADDR, false);
+			final X509Certificate[] gcerts = XWTools.retrieveCertificates(HTTPOpenIdHandler.GOOGLE_ADDR, false);
 			for (int i = 0; i < gcerts.length; i++) {
 				final X509Certificate cert = gcerts[i];
 				try {
@@ -530,7 +487,7 @@ public class HTTPOpenIdHandler extends Thread implements org.eclipse.jetty.serve
 					logger.exception("Can't add new entry to keystore", e);
 				}
 			}
-			final X509Certificate[] ycerts = retrieveCertificates(HTTPOpenIdHandler.YAHOO_ADDR, false);
+			final X509Certificate[] ycerts = XWTools.retrieveCertificates(HTTPOpenIdHandler.YAHOO_ADDR, false);
 			for (int i = 0; i < ycerts.length; i++) {
 				final X509Certificate cert = ycerts[i];
 				try {
@@ -560,7 +517,7 @@ public class HTTPOpenIdHandler extends Thread implements org.eclipse.jetty.serve
 			i = 1;
 		}
 		for (; i < args.length; i++) {
-			HTTPOpenIdHandler.retrieveCertificates(args[i], sav);
+			XWTools.retrieveCertificates(args[i], sav);
 		}
 	}
 }
