@@ -164,6 +164,6 @@ public class SQLRequestWorkStatus extends SQLRequest {
 	@Override
 	public String criterias() throws IOException {
 		final String mc = getMoreCriterias();
-		return String.format(getCriterias(), status.ordinal()) + (mc == null ? "" : " AND " + mc);
+		return String.format(getCriterias(), status.toString()) + (mc == null ? "" : " AND " + mc);
 	}
 }
