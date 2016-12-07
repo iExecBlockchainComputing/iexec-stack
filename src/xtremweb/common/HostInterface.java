@@ -1195,6 +1195,7 @@ public final class HostInterface extends Table {
 			getLogger().exception(e);
 			throw new IOException(e.toString());
 		}
+		setDirty(false);
 	}
 
 	/**

@@ -261,6 +261,7 @@ public final class GroupInterface extends xtremweb.common.Table {
 			setSession((UID) Columns.SESSIONUID.fromResultSet(rs));
 		} catch (final Exception e) {
 		}
+		setDirty(false);
 	}
 
 	/**

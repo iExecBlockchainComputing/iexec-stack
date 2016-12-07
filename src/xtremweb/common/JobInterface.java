@@ -575,8 +575,7 @@ public class JobInterface extends Table {
 
 	@Override
 	public void fill(final ResultSet rs) throws IOException {
-		// TODO Auto-generated method stub
-
+		setDirty(false);
 	}
 
 	@Override

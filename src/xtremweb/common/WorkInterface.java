@@ -865,6 +865,7 @@ public class WorkInterface extends Table {
 			setCompletedDate((Date) Columns.COMPLETEDDATE.fromResultSet(rs));
 		} catch (final Exception e) {
 		}
+		setDirty(false);
 	}
 
 	/**
@@ -2119,6 +2120,20 @@ public class WorkInterface extends Table {
 	public final boolean setExpectedReplications(final int v) {
 		final Integer b = new Integer(v);
 		return setValue(Columns.REPLICATIONS, b);
+	}
+
+	/**
+	 * This set work to WAITING status
+	 *
+	 * @param uid
+	 *            is the work uid
+	 */
+	public void unlockWork() throws IOException {
+		if (!isWaiting()) {
+			setWaiting();
+			setErrorMsg("reschedulled");
+			update();
+		}
 	}
 
 	/**

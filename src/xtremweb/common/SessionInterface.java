@@ -238,6 +238,7 @@ public final class SessionInterface extends xtremweb.common.Table {
 		} catch (final Exception e) {
 			throw new IOException(e.toString());
 		}
+		setDirty(false);
 	}
 
 	/**
