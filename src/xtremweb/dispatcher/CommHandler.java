@@ -965,44 +965,37 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 	public Hashtable workAlive(final UserInterface _user, final HostInterface _host, final UID jobUID)
 			throws IOException, InvalidKeyException, AccessControlException {
 
-		TaskInterface theTask = null;
 		boolean keepWorking = false;
 
-		HostInterface theHost = null;
 		mileStone("<workAlive host=" + _host != null ? _host.getName() : "null" + ">");
 		final UserInterface user = DBInterface.getInstance().checkClient(_user, UserRightEnum.GETJOB);
 
-		try {
-			_host.setIPAddr(remoteIP);
-			theHost = DBInterface.getInstance().hostRegister(user, _host);
-		} catch (final IOException e) {
-		}
+		_host.setIPAddr(remoteIP);
+		final HostInterface theHost = DBInterface.getInstance().hostRegister(user, _host);
 
 		if (theHost == null) {
 			throw new IOException("workAlive : can't find host ");
 		}
 		final boolean isActive = _host.isActive();
 
-		try {
-			logger.debug("retrieving current computing job");
-			theHost = DBInterface.getInstance().host(_host.getUID());
-			final WorkInterface theWork = DBInterface.getInstance().work(jobUID);
-			theTask = DBInterface.getInstance().task(theWork, theHost);
-		} catch (final Exception e) {
-		}
+		logger.debug("retrieving current computing job");
+//		theHost = DBInterface.getInstance().host(_host.getUID());
+		final WorkInterface theWork = DBInterface.getInstance().work(jobUID);
+		final TaskInterface theTask = DBInterface.getInstance().task(theWork, theHost);
 
 		if (theTask != null) {
 			if (!isActive) {
-				DBInterface.getInstance().unlockWork(jobUID);
+				theWork.unlockWork();
+				theTask.setError();
 				keepWorking = false;
 			} else {
 				try {
 					keepWorking = theTask.setAlive(_host.getUID());
-					theTask.update();
 				} catch (final Exception e) {
 					error(e);
 				}
 			}
+			theTask.update();
 		} else {
 			logger.finest("work is not in the dispatcher pool. Send back 'abort'");
 			keepWorking = false;
@@ -1013,8 +1006,6 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 		}
 		final Hashtable result = new Hashtable();
 		result.put("keepWorking", new Boolean(keepWorking));
-		theTask = null;
-		theHost = null;
 		mileStone("</workAlive>");
 		return result;
 

@@ -2306,6 +2306,7 @@ public final class DBInterface {
 	 * @since 5.8.0
 	 */
 	public Collection<WorkInterface> works(final StatusEnum s) throws IOException {
+		logger.debug("DBInterface#works(" + s + ")");
 		final SQLRequestWorkStatus r = new SQLRequestWorkStatus(s);
 		final WorkInterface row = new WorkInterface(r);
 		return selectAll(row);
@@ -2797,24 +2798,6 @@ public final class DBInterface {
 			DBConnPoolThread.getInstance().unlockWorks(serverName);
 		} catch (final Exception e) {
 			logger.exception(e);
-		}
-	}
-
-	/**
-	 * This set work to WAITING status
-	 *
-	 * @param uid
-	 *            is the work uid
-	 */
-	public void unlockWork(final UID uid) {
-		try {
-			final WorkInterface work = work(uid);
-			if (!work.isWaiting()) {
-				work.setWaiting();
-				update(work);
-			}
-		} catch (final Exception e) {
-			e.printStackTrace();
 		}
 	}
 

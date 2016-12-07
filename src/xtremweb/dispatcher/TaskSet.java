@@ -83,6 +83,7 @@ public abstract class TaskSet extends Thread {
 			int timeout = Integer.parseInt(Dispatcher.getConfig().getProperty(XWPropertyDefs.ALIVEPERIOD));
 			timeout *= 1000;
 
+			logger.info("TaskSet started (" + timeout + ")");
 			while (true) {
 				detectAbortedTasks();
 				refill();

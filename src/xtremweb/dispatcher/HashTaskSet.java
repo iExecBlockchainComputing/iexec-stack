@@ -67,8 +67,11 @@ public class HashTaskSet extends TaskSet {
 
 			final Collection<WorkInterface> works = Dispatcher.getScheduler().retrieve();
 			if (works == null) {
+				getLogger().debug("refill works is null");
 				return;
 			}
+
+			getLogger().debug("refill size = " + works.size());
 
 			for (final Iterator<WorkInterface> worksEnum = works.iterator(); worksEnum.hasNext();) {
 
@@ -77,6 +80,8 @@ public class HashTaskSet extends TaskSet {
 					if (theWork == null) {
 						continue;
 					}
+
+					getLogger().debug("refill = " + theWork.getUID());
 
 					theWork.setPending();
 
