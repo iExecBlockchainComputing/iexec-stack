@@ -26,7 +26,14 @@
 
 #  Installation under ubuntu16: sudo apt-get install libdbi-perl libclass-dbi-mysql-perl
 #
-# SET GLOBAL sql_mode = '';
+# Depending on mysql version, you may have the following error
+# Couldn't execute statement: Expression #1 of SELECT list is not in GROUP BY clause 
+# and contains nonaggregated column 'xtremweb.hosts.uid' which is not functionally
+# dependent on columns in GROUP BY clause; 
+# this is incompatible with sql_mode=only_full_group_by at ./bin/xtremweb.gmond.pl line 299.
+#
+# The next command solves this issue (to be run in mysql):
+#       SET GLOBAL sql_mode = '';
 #
 # File    : gmond.pl
 # Author  : Oleg Lodygens (lodygens at lal.in2p3.fr)
@@ -296,7 +303,7 @@ while(1) {
 
 #	    my $reqWorker = $dbHandler->prepare("select uid, os as osrelease, cpunb, cpuspeed, cputype as machinetype, totalswap as swaptotal, totalmem as memtotal,name, totaltmp,freetmp,ipaddr, unix_timestamp(now())-unix_timestamp(lastalive) as delai,active,available,pilotjob,nbjobs,pendingjobs,runningjobs,errorjobs from hosts where isdeleted='false' and (unix_timestamp(now())-unix_timestamp(lastalive) < 1000)")
 #		or die "Couldn't prepare statement: " . $dbHandler->errstr;
-	    my $reqWorker = $dbHandler->prepare("select uid,lastalive, os as osrelease, cpunb, sum(poolworksize) as poolworksize, cpuspeed, cputype as machinetype, totalswap as swaptotal, totalmem as memtotal,name, totaltmp,freetmp,ipaddr,natedipaddr ,unix_timestamp(now())-unix_timestamp(lastalive) as delai,active,available,pilotjob,sum(nbjobs) as nbjobs,sum(pendingjobs) as pendingjobs,sum(runningjobs) as runningjobs ,sum(errorjobs) as errorjobs from hosts where isdeleted='false' and (unix_timestamp(now())-unix_timestamp(lastalive) < 4000) group by name order by lastalive")
+	    my $reqWorker = $dbHandler->prepare("select uid,lastalive, os as osrelease, cpunb, max(poolworksize) as poolworksize, cpuspeed, cputype as machinetype, totalswap as swaptotal, totalmem as memtotal,name, totaltmp,freetmp,ipaddr,natedipaddr ,unix_timestamp(now())-unix_timestamp(lastalive) as delai,active,available,pilotjob,sum(nbjobs) as nbjobs,sum(pendingjobs) as pendingjobs,sum(runningjobs) as runningjobs ,sum(errorjobs) as errorjobs from hosts where isdeleted='false' and (unix_timestamp(now())-unix_timestamp(lastalive) < 4000) group by name order by lastalive")
 		or die "Couldn't prepare statement: " . $dbHandler->errstr;
 	    $reqWorker->execute()
 		or die "Couldn't execute statement: " . $reqWorker->errstr;
