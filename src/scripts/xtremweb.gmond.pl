@@ -24,7 +24,9 @@
 
 
 
-
+#  Installation under ubuntu16: sudo apt-get install libdbi-perl libclass-dbi-mysql-perl
+#
+# SET GLOBAL sql_mode = '';
 #
 # File    : gmond.pl
 # Author  : Oleg Lodygens (lodygens at lal.in2p3.fr)
