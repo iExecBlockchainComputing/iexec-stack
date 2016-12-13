@@ -288,9 +288,11 @@ public class HTTPOAuthHandler extends Thread implements org.eclipse.jetty.server
 
 	/**
 	 * These are the google informations
+	 *
+	 * scope=https://www.googleapis.com/auth/userinfo.email
+	 * redirect_uri=https://xwservpub.lal.in2p3.fr/oauth2/google
+	 *
 	 */
-	// https://accounts.google.com/o/oauth2/auth?scope=https://www.googleapis.com/auth/userinfo.email&response_type=code&client_id=1078690626706-rb5lpg7bhofsbmklqtmgjcvfjch64s8r.apps.googleusercontent.com&redirect_uri=https://xwservpub.lal.in2p3.fr:4324/oauth
-	public static final String OP_GOOGLE = "Google";
 	public static final String GOOGLE_SERVER_ADDR = "www.google.com";
 
 	/**
