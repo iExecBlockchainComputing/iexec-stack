@@ -1401,7 +1401,8 @@ function getDataStateChanged()
 		    		"<td><a href=\"javascript:getDetail('" + uid + "')\">" + uid + "</a></td>" +
 		    		"<td>" + name + "</td>" +
 		    		"<td>" + status + "</td>" +
-		    		"<td><button class=\"btn btn-primary\" onclick=\"window.location.href='/downloaddata/" + uid + "'\" download=\"" + datauriid + "\">Download</button></td></tr>";
+		    		"<td><a href=\"/downloaddata/" + uid +"\" download=\"" + name + "\">Download</a></td></tr>";
+//		    		"<td><button class=\"btn btn-primary\" onclick=\"window.location.href='/downloaddata/" + uid + "'\" download=\"" + datauriid + "\">Download</button></td></tr>";
 		    }
 		    else{
 		    	document.getElementById(dataListID).innerHTML += 
@@ -1409,7 +1410,7 @@ function getDataStateChanged()
 		    		"<td><a href=\"javascript:getDetail('" + uid + "')\">" + uid + "</a></td>" +
 		    		"<td>" + name + "</td>" +
 		    		"<td>" + status + "</td>" +
-	    			"<td><button class=\"btn btn-danger disabled\">Disabled</button></td></tr>";
+	    			"<td>&nbsp;</td></tr>";
 		    }
    		}
    		catch(err){
@@ -1859,8 +1860,9 @@ function getWorkStateChanged(){
 			    		"<td>" + arrivalDate + "</td>" +
 			    		"<td>" + completionDate + "</td>" +
 			    		"<td>" + status + "</td>" +
-			    		"<td><button class=\"btn btn-primary\" onclick=\"window.location.href='/downloaddata/" + resultuid + "'\" download=\"" + resultName + "\">Download</button></td></tr>";
-		    	}
+//			    		"<td><button class=\"btn btn-primary\" onclick=\"window.location.href='/downloaddata/" + resultuid + "'\" download=\"" + resultName + "\">Download</button></td></tr>";
+			    		"<td><a href=\"/downloaddata/" + resultuid +"\" download=\"" + resultName+ "\">Download</a></td></tr>";
+			    }
 		    	else{
 		    		document.getElementById(worksListID).innerHTML +=
 //		    			"<tr id=\"" + uid + "\"><td class=\"selectbutton\"><input type=\"checkbox\" name=\"" + uid + "\" /></td>" +
@@ -1869,7 +1871,7 @@ function getWorkStateChanged(){
 	    				"<td>" + arrivalDate + "</td>" +
 	    				"<td>" + completionDate + "</td>" +
 	    				"<td>" + status + "</td>" +
-	    				"<td><button class=\"btn btn-danger disabled\">Disabled</button></td></tr>";
+	    				"<td>&nbsp;</td></tr>";
 		    		
 		    	}
 		    }
