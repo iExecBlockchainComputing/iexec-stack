@@ -2883,8 +2883,7 @@ cp -Rf $rpmDir/* $INSTALLERSDIR/linux/dpkg/xwhep.server/ > /dev/null 2>&1 || fat
 find $INSTALLERSDIR/linux/dpkg/ -type d | xargs chmod 755
 chmod 755 $INSTALLERSDIR/linux/dpkg/xwhep.server/DEBIAN/pre*
 chmod 755 $INSTALLERSDIR/linux/dpkg/xwhep.server/DEBIAN/post*
-
-if [ $DEBIANOS -eq 1 -o $MACOS -eq 1 ] ; then
+if [ "$PKGS" = "YES" -a $DEBIANOS -eq 1 -o $MACOS -eq 1 ] ; then
     dpkg-deb --build $INSTALLERSDIR/linux/dpkg/xwhep.server xwhep-server-$VERSION.deb
     if [ $? -ne 0 ] ; then
 
@@ -2932,7 +2931,7 @@ find $INSTALLERSDIR/linux/dpkg/ -type d | xargs chmod 755
 chmod 755 $INSTALLERSDIR/linux/dpkg/xwhep.server.conf/DEBIAN/pre*
 chmod 755 $INSTALLERSDIR/linux/dpkg/xwhep.server.conf/DEBIAN/post*
 
-if [ $DEBIANOS -eq 1 -o $MACOS -eq 1 ] ; then
+if [ "$PKGS" = "YES" -a $DEBIANOS -eq 1 -o $MACOS -eq 1 ] ; then
     dpkg-deb --build $INSTALLERSDIR/linux/dpkg/xwhep.server.conf xwhep-server-conf-$VERSION.deb
     if [ $? -ne 0 ] ; then
 
@@ -3200,7 +3199,7 @@ cp -Rf $rpmDir/* $INSTALLERSDIR/linux/dpkg/xwhep.bridgedgsg/ > /dev/null 2>&1 ||
 find $INSTALLERSDIR/linux/dpkg/ -type d | xargs chmod 755
 chmod 755 $INSTALLERSDIR/linux/dpkg/xwhep.bridgedgsg/DEBIAN/pre*
 chmod 755 $INSTALLERSDIR/linux/dpkg/xwhep.bridgedgsg/DEBIAN/post*
-if [ $DEBIANOS -eq 1 -o $MACOS -eq 1 ] ; then
+if [ "$PKGS" = "YES" -a $DEBIANOS -eq 1 -o $MACOS -eq 1 ] ; then
     dpkg-deb --build $INSTALLERSDIR/linux/dpkg/xwhep.bridgedgsg xwhep-bridgedgsg-$VERSION.deb
     if [ $? -ne 0 ] ; then
 
@@ -3306,6 +3305,7 @@ else
     echo "password=$XWADMINPASSWORD" >> $TMPFILE1
 fi
 
+rm -f $TMPFILE2
 mv -f $TMPFILE1 $RPMBRIDGECONFFILE
 
 printf "."
@@ -3386,7 +3386,7 @@ cp -Rf $rpmDir/* $INSTALLERSDIR/linux/dpkg/xwhep.bridgesgdg/ > /dev/null 2>&1 ||
 find $INSTALLERSDIR/linux/dpkg/ -type d | xargs chmod 755
 chmod 755 $INSTALLERSDIR/linux/dpkg/xwhep.bridgesgdg/DEBIAN/pre*
 chmod 755 $INSTALLERSDIR/linux/dpkg/xwhep.bridgesgdg/DEBIAN/post*
-if [ $DEBIANOS -eq 1 -o $MACOS -eq 1 ] ; then
+if [ "$PKGS" = "YES" -a $DEBIANOS -eq 1 -o $MACOS -eq 1 ] ; then
     dpkg-deb --build $INSTALLERSDIR/linux/dpkg/xwhep.bridgesgdg xwhep-bridgesgdg-$VERSION.deb
     if [ $? -ne 0 ] ; then
 
@@ -3573,7 +3573,7 @@ cp -Rf $rpmDir/* $INSTALLERSDIR/linux/dpkg/xwhep.client/ > /dev/null 2>&1 || fat
 find $INSTALLERSDIR/linux/dpkg/ -type d | xargs chmod 755
 chmod 755 $INSTALLERSDIR/linux/dpkg/xwhep.client/DEBIAN/pre*
 chmod 755 $INSTALLERSDIR/linux/dpkg/xwhep.client/DEBIAN/post*
-if [ $DEBIANOS -eq 1 -o $MACOS -eq 1 ] ; then
+if [ "$PKGS" = "YES" -a $DEBIANOS -eq 1 -o $MACOS -eq 1 ] ; then
     dpkg-deb --build $INSTALLERSDIR/linux/dpkg/xwhep.client xwhep-client-$VERSION.deb
     if [ $? -ne 0 ] ; then
 
@@ -3778,7 +3778,7 @@ cp -Rf $rpmDir/* $INSTALLERSDIR/linux/dpkg/xwhep.worker/ > /dev/null 2>&1 || fat
 find $INSTALLERSDIR/linux/dpkg/ -type d | xargs chmod 755
 chmod 755 $INSTALLERSDIR/linux/dpkg/xwhep.worker/DEBIAN/pre*
 chmod 755 $INSTALLERSDIR/linux/dpkg/xwhep.worker/DEBIAN/post*
-if [ $DEBIANOS -eq 1 -o $MACOS -eq 1 ] ; then
+if [ "$PKGS" = "YES" -a  $DEBIANOS -eq 1 -o $MACOS -eq 1 ] ; then
     dpkg-deb --build $INSTALLERSDIR/linux/dpkg/xwhep.worker xwhep-worker-$VERSION.deb
     if [ $? -ne 0 ] ; then
 
