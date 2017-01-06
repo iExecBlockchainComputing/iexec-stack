@@ -791,29 +791,7 @@
 
     <delete file="${install.www.dir}/download/xwhep.client-${version}.zip" failonerror="false" />
 
-    <delete includeEmptyDirs="true" >
-      <fileset dir="${build.dir}/stand-alone" >
-        <include name="COM/**" />
-        <include name="META-INF/**" />
-        <include name="antlr/**" />
-        <include name="com/**" />
-        <include name="data/**" />
-        <include name="javax/**" />
-        <include name="org/**" />
-        <include name="uk/**" />
-        <include name="xtremweb/**" />
-        <include name="CHANGELOG" />
-        <include name="openid-providers.properties" />
-        <include name="plugin.properties" />
-        <include name="License**" />
-        <include name="${JARFILE}" />
-      </fileset>
-    </delete>
-    
     <!-- make install must copy the files (jni shared libraries) in ${dist.lib} -->
-    <exec dir="${build.dir}/stand-alone" executable="make" failonerror="true">
-      <arg line="clean" />
-    </exec>
     <exec dir="${src.c.dir}" executable="make">
       <arg line="-f &apos;${build.dir}/natif.mk&apos; clean" />
     </exec>
