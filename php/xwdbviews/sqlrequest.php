@@ -16,7 +16,7 @@
     /* Database connection information */
     $gaSql['user']       = "root";
     $gaSql['password']   = "";
-    $gaSql['db']         = "xtremweb";
+    $gaSql['dbname']         = "xtremweb";
     $gaSql['server']     = "127.0.0.1";
      
      
@@ -38,17 +38,11 @@
     /*
      * MySQL connection
      */
-    if ( ! $gaSql['link'] = mysql_pconnect( $gaSql['server'], $gaSql['user'], $gaSql['password']  ) )
+    if ( ! $gaSql['link'] = new mysqli( $gaSql['server'], $gaSql['user'], $gaSql['password'], $gaSql['dbname']  ) )
     {
         fatal_error( 'Could not open connection to server' );
     }
  
-    if ( ! mysql_select_db( $gaSql['db'], $gaSql['link'] ) )
-    {
-        fatal_error( 'Could not select database ' );
-    }
-     
-     
     /*
      * Paging
      */
@@ -139,24 +133,42 @@
 	    print $sQuery . "<br>";
 	}
 
-    $rResult = mysql_query( $sQuery, $gaSql['link'] ) or fatal_error( 'MySQL Error: ' . $sQuery . ' '  . mysql_errno() );
+    $rResult = $gaSql['link']->query( $sQuery ) or fatal_error( 'MySQL Error: ' . $sQuery . ' '  . mysql_errno() );
      
     /* Data set length after filtering */
     $sQuery = "
         SELECT FOUND_ROWS()
     ";
-    $rResultFilterTotal = mysql_query( $sQuery, $gaSql['link'] ) or fatal_error( 'MySQL Error: ' . mysql_errno() );
-    $aResultFilterTotal = mysql_fetch_array($rResultFilterTotal);
-    $iFilteredTotal = $aResultFilterTotal[0];
+
+    if ( isset( $_GET['DEBUG'] )) {
+	    print $sQuery . "<br>";
+	}
+    
+    $rResultFilterTotal = $gaSql['link']->query( $sQuery ) or fatal_error( 'MySQL Error: ' . mysql_errno() );
+    $rResultFilterTotal->data_seek(0);
+    $iFilteredTotal = $rResultFilterTotal->fetch_assoc()["FOUND_ROWS()"] ;
+
+    if ( isset( $_GET['DEBUG'] )) {
+	    print $iFilteredTotal . "<br>";
+	}
      
     /* Total data set length */
     $sQuery = "
         SELECT COUNT(".$sIndexColumn.")
         FROM   $sTable
     ";
-    $rResultTotal = mysql_query( $sQuery, $gaSql['link'] ) or fatal_error( '02 MySQL Error: ' . mysql_errno() );
-    $aResultTotal = mysql_fetch_array($rResultTotal);
-    $iTotal = $aResultTotal[0];
+
+    if ( isset( $_GET['DEBUG'] )) {
+	    print $sQuery . "<br>";
+	}
+
+    $rResultTotal = $gaSql['link']->query( $sQuery ) or fatal_error( '02 MySQL Error: ' . mysql_errno() );
+    $rResultFilterTotal->data_seek(0);
+    $iTotal = $rResultFilterTotal->fetch_assoc()["FOUND_ROWS()"] ;
+
+    if ( isset( $_GET['DEBUG'] )) {
+	    print $iTotal . "<br>";
+	}
      
      
     /*
@@ -171,7 +183,7 @@
     );
 	*/
      
-    while ( $aRow = mysql_fetch_array( $rResult ) )
+    while ( $aRow = $rResult->fetch_assoc() )
     {
         $row = array();
         for ( $i=0 ; $i<count($columns) ; $i++ )
@@ -189,6 +201,12 @@
         }
         $output['aaData'][] = $row;
     }
-     
+
+     if ( isset( $_GET['DEBUG'] )) {
+	    print $output . "<br>";
+	}
+
+    $gaSql['link']->close();
+
     echo json_encode( $output );
 ?>
