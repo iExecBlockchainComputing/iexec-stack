@@ -92,7 +92,7 @@
         {
             if ( isset($_GET['bSearchable_'.$i]) && $_GET['bSearchable_'.$i] == "true" )
             {
-                $sWhere .= $columns[$i]." LIKE '%".mysql_real_escape_string( $_GET['sSearch'] )."%' OR ";
+                $sWhere .= $columns[$i]." LIKE '%". $gaSql['link']->real_escape_string( $_GET['sSearch'] )."%' OR ";
             }
         }
         $sWhere = substr_replace( $sWhere, "", -3 );
@@ -112,7 +112,7 @@
             {
                 $sWhere .= " AND ";
             }
-            $sWhere .= $columns[$i]." LIKE '%".mysql_real_escape_string($_GET['sSearch_'.$i])."%' ";
+            $sWhere .= $columns[$i]." LIKE '%". $gaSql['link']->real_escape_string($_GET['sSearch_'.$i])."%' ";
         }
     }
      
