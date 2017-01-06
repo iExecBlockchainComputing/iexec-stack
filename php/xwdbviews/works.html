@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+
+<meta name="viewport" content="initial-scale=1.0, maximum-scale=2.0">
+<link rel="stylesheet" type="text/css" href="css/jquery.dataTables.css">
+<script type="text/javascript" language="javascript" src="js/jquery.js"></script>
+<script type="text/javascript" language="javascript" src="js/jquery.dataTables.js"></script>
+<script type="text/javascript" language="javascript" class="init">
+
+$(document).ready(function() {
+$('#works').dataTable( {
+ "aProcessing": true,
+ "aServerSide": true,
+"ajax": "/xwdbviews/works.php"
+// ,
+// "columnDefs" : [ 
+//              {
+//             	 "targets": 3,
+//             	 "data" : null,
+//             	 "render": function ( data, type, full, meta ) {
+// 								return ' '+meta;
+// 							}
+//              }
+//               ]
+} );
+} );
+
+</script>
+</head>
+
+<body class="dt-example">
+<table id="works" class="display" cellspacing="0" width="100%">
+<thead>
+<tr>
+<th>uid</th>
+<th>application</th>
+<th>status</th>
+<th>arrivaldate</th>
+<th>completeddate</th>
+</tr>
+</thead>
+</table>
+
+
+</body>
+</html>
