@@ -2142,6 +2142,7 @@ cp $ROOTDIR/License.smartsockets-1.4 $cptodir > /dev/null 2>&1 || fatal "Can't c
 
 SOURCE=$LIBDIR/xtremweb.jar
 DEST=$INSTALLERSDIR/macosx/xwhep.worker/installer/PckRoot/private/etc/xwhep.worker/lib/
+mkdir -p $INSTALLERSDIR/macosx/xwhep.worker/installer/PckRoot/private/etc/xwhep.worker/lib/
 cp $SOURCE $DEST > /dev/null 2>&1 || fatal "Can't copy $SOURCE to $DEST"
 SOURCE=$LIBDIR/bcprov-jdk16-140.jar
 cp $SOURCE $DEST > /dev/null 2>&1 || fatal "Can't copy $SOURCE to $DEST"
