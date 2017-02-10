@@ -30,10 +30,12 @@
 # Couldn't execute statement: Expression #1 of SELECT list is not in GROUP BY clause 
 # and contains nonaggregated column 'xtremweb.hosts.uid' which is not functionally
 # dependent on columns in GROUP BY clause; 
-# this is incompatible with sql_mode=only_full_group_by at ./bin/xtremweb.gmond.pl line 299.
+# this is incompatible with sql_mode=only_full_group_by
 #
 # The next command solves this issue (to be run in mysql):
 #       SET GLOBAL sql_mode = '';
+# or
+#       set global sql_mode="STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION";
 #
 # File    : gmond.pl
 # Author  : Oleg Lodygens (lodygens at lal.in2p3.fr)
