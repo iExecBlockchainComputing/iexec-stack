@@ -98,7 +98,7 @@ function logout() {
 /**
  * These variables aim to colorize informations
  */
-var colors = new Array("#b0b0b0", "#e0e0e0");
+var colors = ["#b0b0b0", "#e0e0e0"];
 var colorpending   = "#F8F8F8";
 var colorrunning   = "#0099ff";
 var colorcompleted = "#00cc66";
@@ -142,15 +142,15 @@ var xmlHttpConnectionUpload;
  * These are used to retrieve objects given their UID from server
  * These are hashtables having UID as key and xmlHttpConnection as value
  */
-var hashtableGetApp    = new Object();
-var hashtableGetData   = new Object();
-var hashtableGetBot    = new Object();
-var hashtableGetWork   = new Object();
-var hashtableGetDetail = new Object();
-var hashtableDelete    = new Object();
-var hashtableGetWorker    = new Object();
+var hashtableGetApp    = {};
+var hashtableGetData   = {};
+var hashtableGetBot    = {};
+var hashtableGetWork   = {};
+var hashtableGetDetail = {};
+var hashtableDelete    = {};
+var hashtableGetWorker = {};
 
-var hashtableAppName = new Object();
+var hashtableAppName = {};
 
 /**
  * This is the URL to upload data
@@ -212,7 +212,7 @@ var overviewTabID = "tabOverview";
 var workersTabID  = "tabWorkers";
 var worksTabID  = "tabJobs";
 
-var overviewAppContent = new Array();
+var overviewAppContent = [];
 
 
 
@@ -246,10 +246,10 @@ var grilleInfoID	="grilleInfo";
 
 var affichageID ="affichage";
 
-var knownOSes = new Object();
-var knownCPUs = new Object();
+var knownOSes = {};
+var knownCPUs = {};
 
-var hashtableGlobalUID = new Object();
+var hashtableGlobalUID = {};
 var actualUserUID;
 
 var co;
@@ -257,7 +257,7 @@ var co;
 /**
  * This stores applications treemap data 
  */
-var overviewWorkerContent = new Array();
+var overviewWorkerContent = [];
 
 /**
  * These are HTML element name in "sendForm" form 
@@ -874,7 +874,7 @@ function getCurrentUser()
     }
 
     var url="/get/" + uid;
-    xmlHttpConnectionGetCurrentUser.onreadystatechange=getCurrentUserBOOTSTRAPStateChanged;
+    xmlHttpConnectionGetCurrentUser.onreadystatechange=getCurrentUserStateChanged;
     xmlHttpConnectionGetCurrentUser.open("POST",url,true);
     xmlHttpConnectionGetCurrentUser.send(null);
 }
@@ -957,97 +957,6 @@ function getCurrentUserStateChanged()
          try {
        		document.getElementById(divID).innerHTML +=
               "<span class=\"overviewleft\">Completed jobs</span><span class=\"overviewright\" id=\"overviewUserJobs\">" + xmlDoc.getElementsByTagName("nbjobs").item(0).firstChild.nodeValue + "</span></br>"; 
-         } catch(err) {
-         } 
-
-       	var pendings   = parseInt(xmlDoc.getElementsByTagName("pendingjobs").item(0).firstChild.nodeValue);
-       	var runnings   = parseInt(xmlDoc.getElementsByTagName("runningjobs").item(0).firstChild.nodeValue);
-       	var completeds = parseInt(xmlDoc.getElementsByTagName("nbjobs").item(0).firstChild.nodeValue);
-       	var errors     = parseInt(xmlDoc.getElementsByTagName("errorjobs").item(0).firstChild.nodeValue);
-
-	var propertyNames = ["pending", "running", "completed", "errors"];
-		addData("graph", {"id":new Date().getTime(), "pending":pendings, "running":runnings, "completed":completeds, "errors":errors});
-	}
-	catch(err){
-		console.log("getCurrentUserStateChanged err " + err);
-   	}
-}
-
-function getCurrentUserBOOTSTRAPStateChanged()
-{
-	var current = xmlHttpConnectionGetCurrentUser;
-   	if (current.readyState!=4) {
-        return;
-   	}
-
-	var uid = getCookie("USERUID");
-	console.log("getCurrentUserStateChanged#USERUID = " + uid);
-	if (uid == null || uid == "")
-	{
-		return;
-	}
-
-    var xmlDoc = null;
-    try {
-    	if (xmlDoc=current.responseXML == null) {
-    		if (current.status == 401) {
-	    		document.documentElement.innerHTML=current.responseText;
-	   			return;
-    		}
-    	}
-    	xmlDoc=current.responseXML.documentElement;
-	}
-	catch(err) {
-		connectionError();
-		return;
-	}
-
-	var divID = grilleInfoID;
-
-    if(rpcError(xmlDoc) == true) {
-		return;
-	}
-
-	try { //les balises br en fin de lignes sont pour des tests 
-		var uid = xmlDoc.getElementsByTagName("uid").item(0).firstChild.nodeValue;
-		actualUserUID = uid;
-       	document.getElementById(divID).innerHTML =
-       	      "<div class=\"col-sm-6 placeholder\" >Login</div><div class=\"col-sm-6 placeholder\">"+xmlDoc.getElementsByTagName("login").item(0).firstChild.nodeValue + "</div>"
-       	      +"<div class=\"col-sm-6 placeholder\" >UID</div><div class=\"col-sm-6 placeholder\">"+ xmlDoc.getElementsByTagName("uid").item(0).firstChild.nodeValue + "</div>" 
-              + "<div class=\"col-sm-6 placeholder\" >Email</div><div class=\"col-sm-6 placeholder\">"+ xmlDoc.getElementsByTagName("email").item(0).firstChild.nodeValue + "</div>" 
-              + "<div class=\"col-sm-6 placeholder\">Rights</div><div class=\"col-sm-6 placeholder\">" + xmlDoc.getElementsByTagName("rights").item(0).firstChild.nodeValue + "</div>"; 
-		try {
-       		document.getElementById(divID).innerHTML +=
-            	"<div class=\"col-sm-6 placeholder\">First Name</div><div class=\"col-sm-6 placeholder\">" +xmlDoc.getElementsByTagName("fname").item(0).firstChild.nodeValue + "</div>";
-         } catch(err) {
-         } 
-         try {
-       		document.getElementById(divID).innerHTML +=
-             	"<div class=\"col-sm-6 placeholder\">Last Name</div><div class=\"col-sm-6 placeholder\">" +xmlDoc.getElementsByTagName("lname").item(0).firstChild.nodeValue + "</div>";
-         } catch(err) {
-         } 
-
-   		document.getElementById(divID).innerHTML +=
-              "<div class=\"col-sm-6 placeholder\">&nbsp;</div><div class=\"col-sm-6 placeholder\">&nbsp;</div>";
-
-         try {
-       		document.getElementById(divID).innerHTML +=
-              "<div class=\"col-sm-6 placeholder\">Pending jobs</div><div class=\"col-sm-6 placeholder\">" + xmlDoc.getElementsByTagName("pendingjobs").item(0).firstChild.nodeValue + "</div>"; 
-         } catch(err) {
-         } 
-         try {
-       		document.getElementById(divID).innerHTML +=
-              "<div class=\"col-sm-6 placeholder\">Running jobs</div><div class=\"col-sm-6 placeholder\">" + xmlDoc.getElementsByTagName("runningjobs").item(0).firstChild.nodeValue + "</div>"; 
-         } catch(err) {
-         } 
-         try {
-       		document.getElementById(divID).innerHTML +=
-              "<div class=\"col-sm-6 placeholder\">Error jobs</div><div class=\"col-sm-6 placeholder\">" + xmlDoc.getElementsByTagName("errorjobs").item(0).firstChild.nodeValue + "</div>"; 
-         } catch(err) {
-         } 
-         try {
-       		document.getElementById(divID).innerHTML +=
-              "<div class=\"col-sm-6 placeholder\">Completed jobs</div><div class=\"col-sm-6 placeholder\">" + xmlDoc.getElementsByTagName("nbjobs").item(0).firstChild.nodeValue + "</div>"; 
          } catch(err) {
          } 
 
@@ -3103,8 +3012,8 @@ function getWorkers()
     }
 
     $("osesChart").innerHTML = "";
-    knownOSes = new Object();
-    knownCPUs = new Object();
+    knownOSes = {};
+    knownCPUs = {};
 
 	$('#pleaseWaitModal').modal('show');
 	document.getElementById(workersListID).innerHTML = "";
