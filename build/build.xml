@@ -835,7 +835,10 @@
 	<!-- Sonar -->
 	<!--       -->
 	
+    <!-- You may wish to change this one -->
+	<property name="sonar.host.url" value="${sonar.host.url}" />
 
+    <!-- Next should not be changed -->
 	<property name="sonar.root.dir" value="${build.dir}/.sonar" />
 	<property name="sonar.reports.dir" value="${build.dir}/sonar-reports" />
 	<property name="sonar.jacoco.itReportPath" value="${sonar.reports.dir}/jacoco.exec" />
