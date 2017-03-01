@@ -836,7 +836,7 @@
 	<!--       -->
 	
     <!-- You may wish to change this one -->
-	<property name="sonar.host.url" value="${sonar.host.url}" />
+	<property name="sonar.host.url" value="http://localhost:9000" />
 
     <!-- Next should not be changed -->
 	<property name="sonar.root.dir" value="${build.dir}/.sonar" />
