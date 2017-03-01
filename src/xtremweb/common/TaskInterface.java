@@ -457,6 +457,7 @@ public final class TaskInterface extends xtremweb.common.Table {
 		setWork(w.getUID());
 		setStatus(w.getStatus());
 		setAccessRights(w.getAccessRights());
+		setInsertionDate();
 		try {
 			insert();
 		} catch (final Exception e) {
@@ -715,6 +716,7 @@ public final class TaskInterface extends xtremweb.common.Table {
 	 */
 	public void setCompleted() {
 		setStatus(StatusEnum.COMPLETED);
+		setRemovalDate();
 	}
 
 	/**
@@ -767,6 +769,7 @@ public final class TaskInterface extends xtremweb.common.Table {
 	 */
 	public void setError() {
 		setStatus(StatusEnum.ERROR);
+		setRemovalDate();
 	}
 
 	/**
@@ -803,6 +806,14 @@ public final class TaskInterface extends xtremweb.common.Table {
 
 	/**
 	 * This sets the date when this task has been created
+	 * @since 10.5.1
+	 */
+	public boolean setInsertionDate() {
+		final Date date = new Date();
+		return setInsertionDate(date);
+	}
+	/**
+	 * This sets the date when this task has been created
 	 */
 	public boolean setInsertionDate(final Date v) {
 		return setValue(Columns.INSERTIONDATE, v);
@@ -829,6 +840,14 @@ public final class TaskInterface extends xtremweb.common.Table {
 		return setValue(Columns.LASTALIVE, v);
 	}
 
+	/**
+	 * This sets the removal date
+	 * @since 10.5.1
+	 */
+	public boolean setRemovalDate() {
+		final Date date = new Date();
+		return setRemovalDate(date);
+	}
 	/**
 	 * This sets the removal date
 	 */
