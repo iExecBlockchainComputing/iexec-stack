@@ -2918,6 +2918,7 @@ EOF
 		fi
     fi
 fi
+[ -f xwhep-server-$VERSION.deb ] && cp xwhep-server-$VERSION.deb $ROOTDIR/docker/server/ 
 echo "Server Debian package ready"
 
 #############################################################################################################################################
@@ -2966,6 +2967,7 @@ EOF
 		fi
     fi
 fi
+[ -f xwhep-server-conf-$VERSION.deb ] && cp xwhep-server-conf-$VERSION.deb $ROOTDIR/docker/server/ 
 echo "Server Configuration Debian package ready"
 
 #
@@ -3608,6 +3610,7 @@ EOF
 		fi
     fi
 fi
+[ -f xwhep-client-$VERSION.deb ] && cp xwhep-client-$VERSION.deb $ROOTDIR/docker/client/ 
 
 echo "Client Debian package ready"
 
@@ -3815,6 +3818,7 @@ EOF
 		fi
     fi
 fi
+[ -f xwhep-worker-$VERSION.deb ] && cp xwhep-worker-$VERSION.deb $ROOTDIR/docker/worker/ 
 
 echo "Worker Debian package ready"
 
