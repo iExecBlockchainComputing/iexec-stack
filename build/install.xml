@@ -64,6 +64,7 @@
   <property name="xwidl.dir" value="${src.java.dir}/XwIDL" />
   <property name="antlr.dir" value="${src.java.dir}/antlr" />
   <property name="doc.dir" value="${basedir}/doc"/>
+  <property name="docker.dir" value="${basedir}/docker"/>
 
     <!-- NEED TO CHANGE THE VERSION ? -->
     <condition property="version.changed">
@@ -393,6 +394,12 @@ version=${version}
           filtering="no" overwrite="yes">
       <fileset dir="${doc.dir}">
 	<patternset refid="XW-DOC" />
+      </fileset>
+    </copy>
+    <copy todir="${dist.dir}/docker/"
+          filtering="no" overwrite="yes">
+      <fileset dir="${docker.dir}" >
+        <include name="**"/>
       </fileset>
     </copy>
     
