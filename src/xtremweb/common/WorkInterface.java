@@ -2029,8 +2029,8 @@ public class WorkInterface extends Table {
 	 * @return true if value has changed, false otherwise
 	 * @since 8.0.0
 	 */
-	public final boolean setCompEndDate(final Date v) {
-		return setValue(Columns.COMPENDDATE, v);
+	public final boolean setCompEndDate(final Date d) {
+		return setValue(Columns.COMPENDDATE, d);
 	}
 
 	/**
@@ -2039,18 +2039,19 @@ public class WorkInterface extends Table {
 	 * @return true if value has changed, false otherwise
 	 */
 	public final boolean setCompletedDate() {
-		final Date v = new Date();
-		return setCompletedDate(v);
+		final Date d = new Date();
+		return setCompletedDate(d);
 	}
 	/**
 	 * This sets the completion date
 	 *
 	 * @return true if value has changed, false otherwise
 	 */
-	public final boolean setCompletedDate(final Date v) {
-		Date val = v;
-		if (val.before(getArrivalDate())) {
-			getLogger().error("completedDate : " + v.toString() + " < " + getArrivalDate());
+	public final boolean setCompletedDate(final Date d) {
+		Date val = d;
+		final Date arrivaldate = getArrivalDate(); 
+		if ((val != null) && (arrivaldate != null) && (val.before(arrivaldate))) {
+			getLogger().error("completedDate : " + d.toString() + " < " + arrivaldate);
 			Date start = getCompStartDate();
 			Date end = getCompEndDate();
 			if ((start != null) && (end != null)) {
@@ -2068,9 +2069,9 @@ public class WorkInterface extends Table {
 	/**
 	 * @return true if value has changed, false otherwise
 	 */
-	public final boolean setSendToClient(final boolean v) {
-		final Boolean b = new Boolean(v);
-		return setValue(Columns.SENDTOCLIENT, b);
+	public final boolean setSendToClient(final boolean b) {
+		final Boolean bool = new Boolean(b);
+		return setValue(Columns.SENDTOCLIENT, bool);
 	}
 
 	/**
