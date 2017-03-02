@@ -30,9 +30,10 @@ PROG="xtremweb.worker"
 LAUNCHNAME="fr.in2p3.lal.xwhep.worker"
 
 USRBIN=/usr/bin
-XWCREATEVDI=$USRBIN/xwcreatevdi
+USRBINXWCREATEVDI=$USRBIN/xwcreatevdi
 USRLOCALBIN=/usr/local/bin
 CREATEVDI=$USRLOCALBIN/createvdi
+CREATEISO=$USRLOCALBIN/createiso
 
 HOST=`uname -a | cut -d ' ' -f 2`
 LOGFILENAME=$PROG-$HOST.log
@@ -77,7 +78,8 @@ sudo rm -f  /Library/LaunchDaemons/$PKG.plist >> $LOGFILE 2>&1
 sudo rm -f  /Library/LaunchDaemons/$LAUNCHNAME.plist >> $LOGFILE 2>&1
 sudo rm -Rf  /Applications/$PKG >> $LOGFILE 2>&1
 sudo rm -f $CREATEVDI >> $LOGFILE  2>&1 
-sudo rm -f $XWCREATEVDI >> $LOGFILE  2>&1 
+sudo rm -f $CREATEISO >> $LOGFILE  2>&1 
+sudo rm -f $USRBINXWCREATEVDI >> $LOGFILE  2>&1 
 
 echo "* [`date`] [$PROG] INFO : $PROG successfully uninstalled"  >> $LOGFILE 2>&1
 echo "*****************************" >> $LOGFILE 2>&1
