@@ -182,8 +182,12 @@ XWCREATEVDISCRIPTNAME=xwcreatevdi
 # next is the path when installed from installation package
 CREATEVDI="/usr/bin/$XWCREATEVDISCRIPTNAME"
 # next is the path when using the source package
+[ ! -x $CREATEVDI ] && CREATEVDI="/usr/local/bin/$CREATEVDISCRIPTNAME"
 [ ! -x $CREATEVDI ] && CREATEVDI="$ROOTDIR/$CREATEVDISCRIPTNAME"
-[ ! -x $CREATEVDI ] && fatal "can't find $XWCREATEVDISCRIPTNAME"
+if [ ! -x $CREATEVDI ] ; then
+  echo  "`date`  $SCRIPTNAME  FATAL : can't find $XWCREATEVDISCRIPTNAME"
+  exit 1
+fi
 
 #####################################################################
 #
