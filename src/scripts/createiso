@@ -132,22 +132,24 @@ fi
 # The all trick is here
 #
 
-case $OSTYPE in
+THISOS=`uname -s`
 
-  darwin* )
+case $THISOS in
+
+  Darwin )
 	echo "hdiutil makehybrid -iso -o $ISO_FILENAME $SOURCE" >> $LOGFILE 2>&1
 	hdiutil makehybrid -iso -o $ISO_FILENAME $SOURCE >> $LOGFILE 2>&1
 	[ $? -ne 0 ] && fatal "Can't create ISO from $SOURCE"
     ;;
   
-  linux* )
+  Linux )
 	echo "mkisofs -d -J -l -o $ISO_FILENAME $SOURCE" >> $LOGFILE 2>&1
 	mkisofs -d -J -l -o $ISO_FILENAME $SOURCE >> $LOGFILE 2>&1
 	[ $? -ne 0 ] && fatal "Can't create ISO from $SOURCE"
     ;;
   
   * )
-    fatal "$OSTYPE not supported"
+    fatal "OS not supported ($THISOS)"
     ;;
   
 esac

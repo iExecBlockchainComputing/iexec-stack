@@ -84,13 +84,15 @@ clean()
   echo "$(date "$DATE_FORMAT")  $0  FATAL:  $1"      >> $LOGFILE 2>&1
   echo "$(date "$DATE_FORMAT")  $0  Trying to clean" >> $LOGFILE 2>&1
 
-  case $OSTYPE in
+  THISOS=`uname -s`
+
+  case $THISOS in
   
-    darwin* )
+    Darwin )
       ( set -x;  hdiutil  detach  "$MOUNT_POINT" ) >> $LOGFILE 2>&1
       ;;
     
-    linux* )
+    Linux )
       echo +  umount            "$LINUX_DEVICE" >> $LOGFILE 2>&1
       sudo    umount            "$LINUX_DEVICE" >> $LOGFILE 2>&1
       echo +  /sbin/losetup  -d "$LINUX_DEVICE" >> $LOGFILE 2>&1
@@ -114,20 +116,23 @@ trap fatal SIGINT SIGTERM
 #  -  The date format
 #  -  VB_MGT as the VirtualBox management command
 #-----------------------------------------------------------------------------
-case $OSTYPE in
+
+THISOS=`uname -s`
+
+case $THISOS in
   
-  darwin* )
+  Darwin )
     DATE_FORMAT='+%Y-%m-%d %H:%M:%S%z'
     VB_MGT=/Applications/VirtualBox.app/Contents/MacOS/VBoxManage
     ;;
   
-  linux* )
+  Linux )
     DATE_FORMAT='--rfc-3339=seconds'
     VB_MGT=/usr/bin/vboxmanage
     ;;
   
   * )
-    fatal "$OSTYPE not supported"
+    fatal  "OS not supported ($THISOS)" 
     ;;
   
 esac
@@ -277,12 +282,14 @@ fi
 echo "$(date "$DATE_FORMAT")  $0  INFO:  Creating '$VDI_NAME'"  \
      " with $DISK_SIZE_MB Mb" >> $LOGFILE 2>&1
 
-case $OSTYPE in
+THISOS=`uname -s`
+
+case $THISOS in
   
   #---------------------------------------------------------------------------
   #  Mac OS X :  Use the 'hdiutil' command
   #---------------------------------------------------------------------------
-  darwin* )
+  Darwin )
     
     #-------------------------------------------------------------------------
     #  Create an empty disk in FAT32
@@ -324,7 +331,7 @@ case $OSTYPE in
   #  Linux :  Use the 'dd', 'losetup', 'mkfs' and 'mount' commands.
   #           This requires to be sudoer.
   #---------------------------------------------------------------------------
-  linux* )
+  Linux )
     
     #-------------------------------------------------------------------------
     #  Verify access to sudo
