@@ -237,9 +237,11 @@ SSHGUESTPORT=22
 HTTPLOCALPORT=
 HTTPGUESTPORT=80
 
-case "$OSTYPE" in
+THISOS=`uname -s`
+
+case "$THISOS" in
   
-  darwin* )
+  Darwin )
     DATE_FORMAT='+%Y-%m-%d %H:%M:%S%z'
     VBROOT=/Applications/VirtualBox.app/Contents/MacOS/
     VBMGT="$VBROOT/VBoxManage"
@@ -250,7 +252,7 @@ case "$OSTYPE" in
     VBHDIR="$HOME/Library/VirtualBox/HardDisks"
     ;;
   
-  linux* )
+  Linux )
     DATE_FORMAT='--rfc-3339=seconds'
     VBROOT=/usr/bin
     VBMGT="$VBROOT/vboxmanage"
@@ -263,7 +265,7 @@ case "$OSTYPE" in
     ;;
   
   * )
-    fatal  "$OSTYPE not supported"  TRUE
+    fatal  "OS not supported ($THISOS)"  TRUE
     ;;
   
 esac
