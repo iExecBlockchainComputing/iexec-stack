@@ -324,7 +324,7 @@
     	includeAntRuntime="false"
     	destdir="${build.classes}"
 	   srcdir="${src.java.dir}"
-	   source="1.7"
+	   source="1.8"
 	   deprecation="on">
       <patternset>
         <include name="XwIDL/**/*.java" />
@@ -340,7 +340,7 @@
     	includeAntRuntime="false"
 	   destdir="${build.classes}"
 	   srcdir="${src.java.dir}"
-	   source="1.7"
+	   source="1.8"
 	   deprecation="on">
       <patternset>
         <include name="obj/**/*.java" />
@@ -356,7 +356,7 @@
     	includeAntRuntime="false"
 	   destdir="${build.classes}"
 	   srcdir="${src.java.dir}"
-	   source="1.7"
+	   source="1.8"
 	   deprecation="on">
       <patternset>
         <include name="iface/**/*.java" />
@@ -376,7 +376,7 @@
     	includeAntRuntime="false"
 	   destdir="${build.classes}"
 	   srcdir="${src.java.dir}"
-	   source="1.7"
+	   source="1.8"
 	   deprecation="on">
       <patternset>
         <include name="**/*.java" />
@@ -396,7 +396,7 @@
     	includeAntRuntime="false"
 	   destdir="${build.classes}" 
 	   srcdir="${src.java.dir}"
-	   source="1.7"
+	   source="1.8"
 	   deprecation="on">
       <patternset>
         <include name="communications/**/*.java" />
@@ -412,7 +412,7 @@
     	includeAntRuntime="false"
 	   destdir="${build.classes}" 
 	   srcdir="${src.java.dir}"
-	   source="1.7"
+	   source="1.8"
 	   deprecation="on">
       <patternset>
         <include name="services/**/*.java" />
@@ -498,7 +498,7 @@
     	includeAntRuntime="false"
 	   destdir="${build.classes}" 
 	   srcdir="${src.java.dir}"
-	   source="1.7"
+	   source="1.8"
 	   deprecation="on">
       <patternset><include name="archdep/**" /></patternset> 
     </javac>
@@ -514,7 +514,7 @@
 	    	includeAntRuntime="false"
 		   destdir="${build.classes}" 
 		   srcdir="${src.java.test.dir}"
-		   source="1.7"
+		   source="1.8"
 		   deprecation="on">
 	      <patternset>
 	        <include name="**" />
@@ -532,7 +532,7 @@
     	includeAntRuntime="false"
 	   destdir="${build.classes}" 
 	   srcdir="${src.java.dir}"
-	   source="1.7"
+	   source="1.8"
 	   deprecation="on">
       <patternset>
         <include name="dispatcher/**" />
@@ -552,7 +552,7 @@
     	includeAntRuntime="false"
 	   destdir="${build.classes}"
 	   srcdir="${src.java.dir}"
-	   source="1.7"
+	   source="1.8"
 	   deprecation="on">
       <patternset>
 	<include name="worker/**" />
@@ -620,7 +620,7 @@
     	includeAntRuntime="false"
 	     destdir="${build.classes}" 
 	     srcdir="${src.java.dir}"
-	     source="1.7"
+	     source="1.8"
 	     deprecation="on">
         <patternset>
           <include name="data/**" />
@@ -641,7 +641,7 @@
     	includeAntRuntime="false"
 	     destdir="${build.classes}" 
 	     srcdir="${src.java.dir}"
-	     source="1.7"
+	     source="1.8"
 	     deprecation="on">
         <patternset>
 	  <include name="rpcd/**" />
@@ -686,7 +686,7 @@
     	includeAntRuntime="false"
 	     destdir="${build.classes}" 
 	     srcdir="${src.java.dir}"
-	     source="1.7"
+	     source="1.8"
 	     deprecation="on">
         <patternset>
 	  <include name="rpcv/**" />
@@ -704,7 +704,7 @@
     	includeAntRuntime="false"
 	     destdir="${build.classes}" 
 	     srcdir="${src.java.dir}"
-	     source="1.7"
+	     source="1.8"
 	     deprecation="on">
         <patternset>
 	  <include name="monitor/**" />
@@ -723,7 +723,7 @@
     	includeAntRuntime="false"
 	   destdir="${build.classes}" 
 	   srcdir="${src.java.dir}"
-	   source="1.7"
+	   source="1.8"
 	   deprecation="on">
       <patternset>
 	<include name="EP/**" />
@@ -741,7 +741,7 @@
     	includeAntRuntime="false"
 	   destdir="${build.classes}" 
 	   srcdir="${src.java.dir}"
-	   source="1.7"
+	   source="1.8"
 	   deprecation="on">
       <patternset>
         <include name="upgrade/**" />
