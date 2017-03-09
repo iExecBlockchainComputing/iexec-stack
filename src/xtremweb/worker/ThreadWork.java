@@ -201,15 +201,6 @@ public class ThreadWork extends Thread {
 	/**
 	 * This manages processes
 	 *
-	 * @deprecated since we now use exec variable
-	 * @see #exec
-	 */
-	@Deprecated
-	private final Runtime machine = Runtime.getRuntime();
-
-	/**
-	 * This manages processes
-	 *
 	 * @see xtremweb.exec.Executor
 	 */
 	private Executor exec;
@@ -285,7 +276,7 @@ public class ThreadWork extends Thread {
 	@Override
 	public void run() {
 
-		StatusEnum status = StatusEnum.RUNNING;
+		StatusEnum status;
 
 		while (true) {
 			try {
@@ -309,7 +300,7 @@ public class ThreadWork extends Thread {
 
 					addEnvVar(XWSCRATCHNAME, currentWork.getScratchDirName());
 
-					String jobuid = currentWork.getUID().toString();
+					final String jobuid = currentWork.getUID().toString();
 					addEnvVar(XWJOBUIDNAME, jobuid);
 					addEnvVar(XWCPULOADNAME, "" + Worker.getConfig().getHost().getCpuLoad());
 					if (currentWork.getDiskSpace() > 0) {
@@ -318,7 +309,6 @@ public class ThreadWork extends Thread {
 					if (currentWork.getMinMemory() > 0) {
 						addEnvVar(XWRAMSIZENAME, "" + currentWork.getMinMemory());
 					}
-					jobuid = null;
 					status = executeJob();
 				} catch (final Throwable e) {
 					killed = true;
@@ -399,8 +389,18 @@ public class ThreadWork extends Thread {
 					exec = null;
 
 					ThreadLaunch.getInstance().raz();
-				} catch (final Exception e) {
-					logger.error("ThreadWork.stopProcess() error " + e);
+				} catch (final ExecutorLaunchException e) {
+					logger.exception("ThreadWork.stopProcess() error ", e);
+				} catch (InvalidKeyException e) {
+					logger.exception("ThreadWork.stopProcess() error ", e);
+				} catch (ClassNotFoundException e) {
+					logger.exception("ThreadWork.stopProcess() error ", e);
+				} catch (IOException e) {
+					logger.exception("ThreadWork.stopProcess() error ", e);
+				} catch (SAXException e) {
+					logger.exception("ThreadWork.stopProcess() error ", e);
+				} catch (URISyntaxException e) {
+					logger.exception("ThreadWork.stopProcess() error ", e);
 				}
 			} else {
 				logger.warn("ThreadWork.stopProcess() : nothing to stop");
@@ -429,8 +429,8 @@ public class ThreadWork extends Thread {
 	 * @throws InvalidKeyException
 	 * @since 8.0.0
 	 */
-	private void startProxy(final String hubAddr) throws InvalidKeyException, AccessControlException, ConnectException,
-			UnknownHostException, IOException, ClassNotFoundException, SAXException, URISyntaxException {
+	private void startProxy(final String hubAddr) throws InvalidKeyException,
+			IOException, ClassNotFoundException, SAXException, URISyntaxException {
 
 		if (Worker.getConfig().getBoolean(XWPropertyDefs.INCOMINGCONNECTIONS) == false) {
 			logger.info("Incoming connections not allowed");
@@ -487,7 +487,7 @@ public class ThreadWork extends Thread {
 						} else {
 							ports += ",";
 						}
-						ports += "" + fport;
+						ports += "" + Integer.toString(fport);
 					} catch (final Exception e) {
 						XWTools.releasePort(fport);
 						logger.exception("Can't start new SmartSocket server proxy", e);
@@ -524,6 +524,8 @@ public class ThreadWork extends Thread {
 						smartSocketsProxy.start();
 					} catch (final Exception e) {
 						logger.exception("Can't start new SmartSocket client proxy", e);
+					}
+					finally {
 						smartSocketsProxy = null;
 					}
 				}
@@ -575,7 +577,9 @@ public class ThreadWork extends Thread {
 				XWTools.releasePort(listenPort);
 				smartSocketsProxy = null;
 				try {
-					s.close();
+					if (s != null) {
+						s.close();
+					}
 				} catch (final IOException io) {
 				}
 				s = null;
@@ -607,35 +611,31 @@ public class ThreadWork extends Thread {
 		try {
 			final String[] envVars = getEnvVars();
 			final File scratchDir = currentWork.getScratchDir();
-			FileOutputStream out = new FileOutputStream(new File(scratchDir, "unloadout.txt"));
-			FileOutputStream err = new FileOutputStream(new File(scratchDir, "unloaderr.txt"));
+			final FileOutputStream out = new FileOutputStream(new File(scratchDir, "unloadout.txt"));
+			final FileOutputStream err = new FileOutputStream(new File(scratchDir, "unloaderr.txt"));
 			final Executor unloader = new Executor(command, envVars, currentWork.getScratchDirName(), null, out, err,
 					Long.parseLong(Worker.getConfig().getProperty(XWPropertyDefs.TIMEOUT)));
 			try {
 				unloader.startAndWait();
-			} catch (final Throwable e) {
-				logger.error(e.toString());
+			} catch (final InterruptedException e) {
+				logger.exception(e);
+			} catch (ExecutorLaunchException e) {
+				logger.exception(e);
 			}
 
 			try {
 				out.flush();
-			} catch (final Throwable t) {
-			}
-			try {
 				out.close();
-			} catch (final Throwable t) {
+			} catch (final IOException e) {
+				logger.exception(e);
 			}
-			out = null;
 			try {
 				err.flush();
-			} catch (final Throwable t) {
-			}
-			try {
 				err.close();
-			} catch (final Throwable t) {
+			} catch (final IOException e) {
+				logger.exception(e);
 			}
-			err = null;
-		} catch (final Exception e) {
+		} catch (final IOException e) {
 			logger.exception("ThreadWork#unload()", e);
 		} finally {
 			command = null;
@@ -730,7 +730,7 @@ public class ThreadWork extends Thread {
 		try {
 			unload();
 		} catch (final Exception e) {
-			logger.warn("unload error" + e.toString());
+			logger.exception("unload error", e);
 		}
 
 		ThreadLaunch.getInstance().raz();
@@ -852,52 +852,41 @@ public class ThreadWork extends Thread {
 	 */
 	protected String getLaunchScriptPath()
 			throws IOException, ClassNotFoundException, SAXException, URISyntaxException, InvalidKeyException {
-		File scriptPath = null;
+		
 		String ret = null;
 
-		UID workApp = currentWork.getApplication();
+		final UID workApp = currentWork.getApplication();
 
 		if (workApp == null) {
 			throw new IOException("work has no application");
 		}
-		AppInterface app = (AppInterface) CommManager.getInstance().commClient().get(workApp, false);
+		final AppInterface app = (AppInterface) CommManager.getInstance().commClient().get(workApp, false);
 
 		if (app == null) {
-			workApp = null;
 			throw new IOException("can`t find application " + workApp);
 		}
 
-		workApp = null;
-
-		URI scriptUri = app.getLaunchScript(Worker.getConfig().getHost().getOs());
+		final URI scriptUri = app.getLaunchScript(Worker.getConfig().getHost().getOs());
 		if (scriptUri == null) {
-			app = null;
 			return null;
 		}
 
-		app = null;
-
 		CommManager.getInstance().commClient().get(scriptUri);
 
-		scriptPath = CommManager.getInstance().commClient().getContentFile(scriptUri);
-
-		scriptUri = null;
+		final File scriptPath = CommManager.getInstance().commClient().getContentFile(scriptUri);
 
 		if (scriptPath != null) {
 			if (scriptPath.exists() == false) {
-				scriptPath = null;
 				throw new IOException("can find local script " + scriptPath);
 			}
 			ret = scriptPath.getCanonicalPath();
 		}
 
-		scriptPath = null;
-
 		return ret;
 	}
 
 	/**
-	 * This retreives the unload script path
+	 * This retrieves the unload script path
 	 *
 	 * @return the work launch script, if any; if not, this returns the
 	 *         application launch script, if any. This returns null otherwise
@@ -906,47 +895,35 @@ public class ThreadWork extends Thread {
 	protected String getUnloadScriptPath()
 			throws IOException, ClassNotFoundException, SAXException, URISyntaxException, InvalidKeyException {
 
-		File scriptPath = null;
 		String ret = null;
 
-		UID workApp = currentWork.getApplication();
+		final UID workApp = currentWork.getApplication();
 
 		if (workApp == null) {
 			throw new IOException("work has no application");
 		}
-		AppInterface app = (AppInterface) CommManager.getInstance().commClient().get(workApp, false);
+		final AppInterface app = (AppInterface) CommManager.getInstance().commClient().get(workApp, false);
 
 		if (app == null) {
-			workApp = null;
 			throw new IOException("can find application " + workApp);
 		}
 
-		workApp = null;
-
-		URI scriptUri = app.getUnloadScript(Worker.getConfig().getHost().getOs());
+		final URI scriptUri = app.getUnloadScript(Worker.getConfig().getHost().getOs());
 		if (scriptUri == null) {
-			app = null;
 			return null;
 		}
 
-		app = null;
-
 		CommManager.getInstance().commClient().get(scriptUri);
 
-		scriptPath = CommManager.getInstance().commClient().getContentFile(scriptUri);
-
-		scriptUri = null;
+		final File scriptPath = CommManager.getInstance().commClient().getContentFile(scriptUri);
 
 		if (scriptPath != null) {
 			if (scriptPath.exists() == false) {
-				scriptPath = null;
 				throw new IOException("can find local script " + scriptPath);
 			}
 			scriptPath.setExecutable(true);
 			ret = scriptPath.getCanonicalPath();
 		}
-
-		scriptPath = null;
 
 		return ret;
 	}
@@ -1041,19 +1018,16 @@ public class ThreadWork extends Thread {
 		}
 		javajar = null;
 
-		String path = appBinPath.getCanonicalPath();
+		final String path = appBinPath.getCanonicalPath();
 		ret += " " + path;
 		addEnvVar(XWBINPATHNAME, path);
-		path = null;
-		appBinPath = null;
-
 		appBinPath = null;
 
 		return ret;
 	}
 
 	/**
-	 * This retreives the current process command line
+	 * This retrieves the current process command line
 	 *
 	 * @throws AccessControlException
 	 * @throws InvalidKeyException
@@ -1063,21 +1037,18 @@ public class ThreadWork extends Thread {
 
 		Collection<String> ret = null;
 
-		String binPath = getBinPath();
+		final String binPath = getBinPath();
 
 		ret = XWTools.split(binPath);
-		binPath = null;
 
-		String wcmdline = currentWork.getCmdLine();
+		final String wcmdline = currentWork.getCmdLine();
 		if (wcmdline != null) {
-			Collection<String> wcmdvector = XWTools.split(wcmdline);
+			final Collection<String> wcmdvector = XWTools.split(wcmdline);
 			if (ret == null) {
 				ret = wcmdvector;
 			} else {
 				ret.addAll(wcmdvector);
 			}
-			wcmdline = null;
-			wcmdvector = null;
 		}
 		return ret;
 	}
@@ -1127,7 +1098,9 @@ public class ThreadWork extends Thread {
 				CommManager.getInstance().commClient().unlock(throughUri);
 			}
 			try {
-				reader.close();
+				if (reader != null) {
+					reader.close();
+				}
 			} catch (final IOException io) {
 			}
 			reader = null;
@@ -1296,9 +1269,8 @@ public class ThreadWork extends Thread {
 		final URI basedirinuri = app.getBaseDirin();
 		if (basedirinuri != null) {
 			logger.debug("prepareWorkingDirectory : using base app dirin");
-			File baseDirinFile = installFile(basedirinuri, currentWork.getScratchDir());
+			final File baseDirinFile = installFile(basedirinuri, currentWork.getScratchDir());
 			addEnvVar(XWDIRINPATHNAME, baseDirinFile.getCanonicalPath());
-			baseDirinFile = null;
 		}
 
 		zipper.resetFilesList();
@@ -1315,7 +1287,7 @@ public class ThreadWork extends Thread {
 	 * @return the file containing the job result
 	 */
 	public synchronized File zipResult() throws IOException, ClassNotFoundException, SAXException, URISyntaxException,
-			InvalidKeyException, AccessControlException {
+			InvalidKeyException {
 
 		boolean islocked = false;
 
@@ -1441,7 +1413,7 @@ public class ThreadWork extends Thread {
 	 * @throws ExecutorLaunchException
 	 */
 	protected void executeNativeJob(final Collection<String> cmdLine)
-			throws IOException, InvalidKeyException, AccessControlException, ClassNotFoundException, SAXException,
+			throws IOException, InvalidKeyException, ClassNotFoundException, SAXException,
 			URISyntaxException, ExecutorLaunchException, InterruptedException {
 
 		final UID workUID = currentWork.getUID();
@@ -1473,18 +1445,11 @@ public class ThreadWork extends Thread {
 		final FileInputStream in = (stdin != null ? new FileInputStream(stdin) : null);
 		final FileOutputStream out = new FileOutputStream(new File(scratchDir, XWTools.STDOUT));
 		final FileOutputStream err = new FileOutputStream(new File(scratchDir, XWTools.STDERR));
-		try {
-			final String[] envvarsArray = getEnvVars();
-			exec = new Executor(command, envvarsArray, currentWork.getScratchDirName(), in, out, err,
-					Long.parseLong(Worker.getConfig().getProperty(XWPropertyDefs.TIMEOUT)));
-			exec.setMaxWallClockTime(currentWork.getMaxWallClockTime());
-		} catch (final Throwable e) {
-			if (logger.debug()) {
-				e.printStackTrace();
-			}
-			logger.error(e.toString());
-		}
 
+		final String[] envvarsArray = getEnvVars();
+		exec = new Executor(command, envvarsArray, currentWork.getScratchDirName(), in, out, err,
+				Long.parseLong(Worker.getConfig().getProperty(XWPropertyDefs.TIMEOUT)));
+		exec.setMaxWallClockTime(currentWork.getMaxWallClockTime());
 		exec.setLoggerLevel(logger.getLoggerLevel());
 
 		try {
@@ -1500,24 +1465,34 @@ public class ThreadWork extends Thread {
 			}
 		} finally {
 			try {
-				out.flush();
-			} catch (final Throwable t) {
+				if (out != null) {
+					out.flush();
+				}
+			} catch (final IOException t) {
 			}
 			try {
-				out.close();
-			} catch (final Throwable t) {
+				if (out != null) {
+					out.close();
+				}
+			} catch (final IOException t) {
 			}
 			try {
-				in.close();
-			} catch (final Throwable t) {
+				if (in != null) {
+					in.close();
+				}
+			} catch (final IOException t) {
 			}
 			try {
-				err.flush();
-			} catch (final Throwable t) {
+				if (err != null) {
+					err.flush();
+				}
+			} catch (final IOException t) {
 			}
 			try {
-				err.close();
-			} catch (final Throwable t) {
+				if (err != null) {
+					err.close();
+				}
+			} catch (final IOException t) {
 			}
 
 			exec = null;
