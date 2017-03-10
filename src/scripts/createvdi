@@ -94,9 +94,9 @@ clean()
     
     Linux )
       echo +  umount            "$LINUX_DEVICE" >> $LOGFILE 2>&1
-      sudo    umount            "$LINUX_DEVICE" >> $LOGFILE 2>&1
+      umount            "$LINUX_DEVICE" >> $LOGFILE 2>&1
       echo +  /sbin/losetup  -d "$LINUX_DEVICE" >> $LOGFILE 2>&1
-      sudo    /sbin/losetup  -d "$LINUX_DEVICE" >> $LOGFILE 2>&1
+      /sbin/losetup  -d "$LINUX_DEVICE" >> $LOGFILE 2>&1
       ;;
     
   esac
@@ -334,11 +334,6 @@ case $THISOS in
   Linux )
     
     #-------------------------------------------------------------------------
-    #  Verify access to sudo
-    #-------------------------------------------------------------------------
-    ( set -x;  sudo -v ) >> $LOGFILE 2>&1  ||  fatal "NOT sudoer"
-    
-    #-------------------------------------------------------------------------
     #  Create an unformatted disk
     #-------------------------------------------------------------------------
     MEGA_BYTE=$(expr 1024 '*' 1024)
@@ -350,26 +345,31 @@ case $THISOS in
     #-------------------------------------------------------------------------
     #  Find a free loop device
     #-------------------------------------------------------------------------
-    LINUX_DEVICE="$(sudo  /sbin/losetup  -f)"
+    /sbin/losetup -f >> /dev/null 2>&1   ||  \
+      fatal "Can NOT losetup -f"
+
+    LINUX_DEVICE="$(/sbin/losetup  -f)"
     echo +  /sbin/losetup  "$LINUX_DEVICE"  "$TMP_DISK" >> $LOGFILE 2>&1
-    sudo    /sbin/losetup  "$LINUX_DEVICE"  "$TMP_DISK" >> $LOGFILE 2>&1
+    /sbin/losetup  "$LINUX_DEVICE"  "$TMP_DISK" >> $LOGFILE 2>&1   ||  \
+      fatal "Can NOT losetup '$LINUX_DEVICE'"
     
+
     #-------------------------------------------------------------------------
     #  Format the disk in 'ext3'
     #-------------------------------------------------------------------------
     echo +  /sbin/mkfs  -t ext3  -L "$VOLNAME"  "$LINUX_DEVICE" >> $LOGFILE 2>&1
-    sudo    /sbin/mkfs  -t ext3  -L "$VOLNAME"  "$LINUX_DEVICE" >> $LOGFILE 2>&1 ||  \
+    /sbin/mkfs  -t ext3  -L "$VOLNAME"  "$LINUX_DEVICE" >> $LOGFILE 2>&1 ||  \
       clean "Can NOT format '$LINUX_DEVICE' in 'ext3' successfully"
 
     #-------------------------------------------------------------------------
     #  Mount the disk
     #-------------------------------------------------------------------------
     MOUNT_POINT="/mnt/$DISK_NAME"
-    sudo  mkdir  -p  "$MOUNT_POINT" >> $LOGFILE 2>&1 ||  \
+    mkdir  -p  "$MOUNT_POINT" >> $LOGFILE 2>&1 ||  \
       clean "Can NOT execute 'mkdir' on '$MOUNT_POINT' successfully"
     
     echo +  mount  -t auto  "$LINUX_DEVICE"  "$MOUNT_POINT" >> $LOGFILE 2>&1
-    sudo    mount  -t auto  "$LINUX_DEVICE"  "$MOUNT_POINT" >> $LOGFILE 2>&1 ||  \
+    mount  -t auto  "$LINUX_DEVICE"  "$MOUNT_POINT" >> $LOGFILE 2>&1 ||  \
       clean "Can NOT mount '$LINUX_DEVICE' on '$MOUNT_POINT' successfully"
     
     #-------------------------------------------------------------------------
@@ -378,10 +378,10 @@ case $THISOS in
 	if [ -n "$SOURCE" ] ; then
 	    if [ -f "$SOURCE" ]; then
     		echo +  cp  -v -f -p     "$SOURCE"    "$MOUNT_POINT/" >> $LOGFILE 2>&1
-      		sudo    cp  -v -f -p     "$SOURCE"    "$MOUNT_POINT/" >> $LOGFILE 2>&1
+      		cp  -v -f -p     "$SOURCE"    "$MOUNT_POINT/" >> $LOGFILE 2>&1
 	    else
     		echo +  cp  -v -f -p -r  "$SOURCE"/*  "$MOUNT_POINT/" >> $LOGFILE 2>&1
-      		sudo    cp  -v -f -p -r  "$SOURCE"/*  "$MOUNT_POINT/" >> $LOGFILE 2>&1
+      		cp  -v -f -p -r  "$SOURCE"/*  "$MOUNT_POINT/" >> $LOGFILE 2>&1
     	fi  ||  \
       clean "Can NOT copy '$SOURCE' on '$MOUNT_POINT' successfully"
     fi
@@ -389,14 +389,14 @@ case $THISOS in
     #  Unmount the disk
     #-------------------------------------------------------------------------
     echo +  umount  "$MOUNT_POINT" >> $LOGFILE 2>&1
-    sudo    umount  "$MOUNT_POINT" >> $LOGFILE 2>&1 ||  \
+    umount  "$MOUNT_POINT" >> $LOGFILE 2>&1 ||  \
       clean "Can NOT umount '$MOUNT_POINT' successfully"
     
     #-------------------------------------------------------------------------
     #  Release the loop device
     #-------------------------------------------------------------------------
     echo +  /sbin/losetup  -d "$LINUX_DEVICE" >> $LOGFILE 2>&1
-    sudo    /sbin/losetup  -d "$LINUX_DEVICE" >> $LOGFILE 2>&1  ||  \
+    /sbin/losetup  -d "$LINUX_DEVICE" >> $LOGFILE 2>&1  ||  \
       clean "Can NOT release loop device '$LINUX_DEVICE' successfully"
     
     ;;
