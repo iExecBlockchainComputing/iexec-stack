@@ -413,4 +413,5 @@ rm  -f  "$TMP_DISK"
 
 echo "$(date "$DATE_FORMAT")  $0  INFO:  Successfully created '$VDI_NAME'"  >> $LOGFILE 2>&1
 
+chmod 644 $VDI_NAME 
 echo $VDI_NAME
