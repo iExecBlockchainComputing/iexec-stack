@@ -413,5 +413,9 @@ rm  -f  "$TMP_DISK"
 
 echo "$(date "$DATE_FORMAT")  $0  INFO:  Successfully created '$VDI_NAME'"  >> $LOGFILE 2>&1
 
-chmod 644 $VDI_NAME 
+if [ -n "$SUDO_USER" ] ; then
+	chown $SUDO_USER $VDI_NAME
+else
+	chmod 644 $VDI_NAME
+fi
 echo $VDI_NAME
