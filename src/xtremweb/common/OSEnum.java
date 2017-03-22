@@ -36,7 +36,7 @@ package xtremweb.common;
 
 public enum OSEnum {
 
-	NONE, LINUX, WIN32, MACOSX, OSF1, SOLARIS, JAVA;
+	NONE, LINUX, WIN32, MACOSX, SOLARIS, JAVA;
 
 	public static final OSEnum LAST = JAVA;
 	public static final int SIZE = LAST.ordinal() + 1;
@@ -151,13 +151,6 @@ public enum OSEnum {
 	}
 
 	/**
-	 * This tests whether OS is Solaris
-	 */
-	public boolean isOsf1() {
-		return (OSEnum.valueOf(getOsName()) == OSF1);
-	}
-
-	/**
 	 * This tests whether OS is Mac OS
 	 */
 	public boolean isMacosx() {
@@ -171,10 +164,9 @@ public enum OSEnum {
 	 * @since 6.0.0
 	 */
 	public static final String[] sandboxes = { null, // NONE
-			null, // LINUX
+			"/usr/bin/lxc", // LINUX
 			null, // WIN32
 			"/usr/bin/sandbox-exec", // MACOSX
-			null, // OSF1
 			null, // SOLARIS
 			null // JAVA
 	};
@@ -198,10 +190,9 @@ public enum OSEnum {
 	 * @since 6.0.0
 	 */
 	public static final String[] classpathes = { null, // NONE
-			"/opt/XWHEP-worker-" + CommonVersion.getCurrent().rev() + "/lib", // LINUX
+			"/opt/xwhep-worker-" + CommonVersion.getCurrent().rev() + "/lib", // LINUX
 			"c:\\Program Files\\CNRS\\XWHEP\\worker\\lib", // WIN32
 			"/private/etc/xwhep.worker", // MACOSX
-			null, // OSF1
 			null, // SOLARIS
 			null // JAVA
 	};
