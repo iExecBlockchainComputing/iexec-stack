@@ -53,10 +53,50 @@ public enum AppTypeEnum {
 	 * On Dec 2nd, 2011, this denotes our 1st shared application. This denotes
 	 * VirtualBox as shared application
 	 */
-	VIRTUALBOX;
+	VIRTUALBOX {
+		@Override
+		public String getPathName() {
+			return virtualboxpaths[OSEnum.getOs().ordinal()];
+		}
+		/**
+		 * This retrieves application default pathname
+		 *
+		 * @return application binary path for the current OS
+		 * @throws FileNotFoundException
+		 *             if no application binary path found for the current OS
+		 * @see xtremweb.common.OSEnum#getOs(String)
+		 * @since 8.0.0 (FG)
+		 */
+		public File getPath() throws FileNotFoundException {
+			final String filePath = virtualboxpaths[OSEnum.getOs().ordinal()];
+			if (filePath == null) {
+				throw new FileNotFoundException("no binary path for " + this);
+			}
+			final File f = new File(filePath);
+			if (f.exists()) {
+				return f;
+			}
+			throw new FileNotFoundException("no binary path for " + this);
+		}
+	};
 
 	public static final AppTypeEnum LAST = VIRTUALBOX;
 	public static final int SIZE = LAST.ordinal() + 1;
+
+	/**
+	 * This array stores default VirtualBox pathnames (one entry per OS). Each
+	 * entry is a semicolon separated paths list Defaults are Oracle VirtualBox
+	 * paths
+	 *
+	 * @since 8.0.0 (FG)
+	 */
+	private static String[] virtualboxpaths = { null, // NONE
+			"/usr/bin/VBoxHeadless", // LINUX
+			"c:\\Program Files\\Oracle\\VirtualBox\\VBoxHeadless.exe;c:\\Program Files\\VirtualBox\\VBoxHeadless.exe;c:\\Program Files (x86)\\Oracle\\VirtualBox\\VBoxHeadless.exe;c:\\Program Files (x86)\\VirtualBox\\VBoxHeadless.exe", // WIN32
+			"/Applications/VirtualBox.app/Contents/MacOS/VBoxHeadless", // MACOSX
+			null, // SOLARIS
+			null // JAVA
+	};
 
 	/**
 	 * This retrieves an OS from its ordinal value
@@ -87,22 +127,6 @@ public enum AppTypeEnum {
 	}
 
 	/**
-	 * This array stores default VirtualBox pathnames (one entry per OS). Each
-	 * entry is a semicolon separated paths list Defaults are Oracle VirtualBox
-	 * paths
-	 *
-	 * @since 8.0.0 (FG)
-	 */
-	private static String[] virtualboxpaths = { null, // NONE
-			"/usr/bin/VBoxHeadless", // LINUX
-			"c:\\Program Files\\Oracle\\VirtualBox\\VBoxHeadless.exe;c:\\Program Files\\VirtualBox\\VBoxHeadless.exe;c:\\Program Files (x86)\\Oracle\\VirtualBox\\VBoxHeadless.exe;c:\\Program Files (x86)\\VirtualBox\\VBoxHeadless.exe", // WIN32
-			"/Applications/VirtualBox.app/Contents/MacOS/VBoxHeadless", // MACOSX
-			null, // OSF1
-			null, // SOLARIS
-			null // JAVA
-	};
-
-	/**
 	 * This retrieves application default pathname
 	 *
 	 * @param t
@@ -114,7 +138,7 @@ public enum AppTypeEnum {
 	 * @since 8.0.0 (FG)
 	 */
 	public String getPathName() {
-		return virtualboxpaths[OSEnum.getOs().ordinal()];
+		return null;
 	}
 
 	/**
@@ -127,14 +151,6 @@ public enum AppTypeEnum {
 	 * @since 8.0.0 (FG)
 	 */
 	public File getPath() throws FileNotFoundException {
-		final String filePath = virtualboxpaths[OSEnum.getOs().ordinal()];
-		if (filePath == null) {
-			throw new FileNotFoundException("no binary path for " + this);
-		}
-		final File f = new File(filePath);
-		if (f.exists()) {
-			return f;
-		}
 		throw new FileNotFoundException("no binary path for " + this);
 	}
 
