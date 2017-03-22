@@ -716,44 +716,6 @@ public final class AppInterface extends Table {
 			}
 		},
 		/**
-		 * This is the column index of the OSF1 alpha library, if any.
-		 */
-		LDOSF1_ALPHAURI {
-			/**
-			 * This creates an object from String representation for this column
-			 * value
-			 *
-			 * @param v
-			 *            the String representation
-			 * @return an URI representing the column value
-			 * @throws Exception
-			 *             is thrown on instantiation error
-			 */
-			@Override
-			public URI fromString(final String v) throws URISyntaxException {
-				return new URI(v);
-			}
-		},
-		/**
-		 * This is the column index of the OSF1 alpha library, if any.
-		 */
-		LDOSF1_SPARCURI {
-			/**
-			 * This creates an object from String representation for this column
-			 * value
-			 *
-			 * @param v
-			 *            the String representation
-			 * @return an URI representing the column value
-			 * @throws Exception
-			 *             is thrown on instantiation error
-			 */
-			@Override
-			public URI fromString(final String v) throws URISyntaxException {
-				return new URI(v);
-			}
-		},
-		/**
 		 * This is the column index of the SOLARIS alpha library, if any.
 		 */
 		LDSOLARIS_ALPHAURI {
@@ -1008,44 +970,6 @@ public final class AppInterface extends Table {
 		 * This is the column index of the Java binary, if any.
 		 */
 		JAVAURI {
-			/**
-			 * This creates an object from String representation for this column
-			 * value
-			 *
-			 * @param v
-			 *            the String representation
-			 * @return an URI representing the column value
-			 * @throws Exception
-			 *             is thrown on instantiation error
-			 */
-			@Override
-			public URI fromString(final String v) throws URISyntaxException {
-				return new URI(v);
-			}
-		},
-		/**
-		 * This is the column index of the OSF1 alpha binary, if any.
-		 */
-		OSF1_ALPHAURI {
-			/**
-			 * This creates an object from String representation for this column
-			 * value
-			 *
-			 * @param v
-			 *            the String representation
-			 * @return an URI representing the column value
-			 * @throws Exception
-			 *             is thrown on instantiation error
-			 */
-			@Override
-			public URI fromString(final String v) throws URISyntaxException {
-				return new URI(v);
-			}
-		},
-		/**
-		 * This is the column index of the OSF1 alpha binary, if any.
-		 */
-		OSF1_SPARCURI {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
@@ -1322,14 +1246,6 @@ public final class AppInterface extends Table {
 			} catch (final Exception e) {
 			}
 			try {
-				setOsf1_sparc((URI) Columns.OSF1_SPARCURI.fromResultSet(rs));
-			} catch (final Exception e) {
-			}
-			try {
-				setOsf1_alpha((URI) Columns.OSF1_ALPHAURI.fromResultSet(rs));
-			} catch (final Exception e) {
-			}
-			try {
 				setSolaris_sparc((URI) Columns.SOLARIS_SPARCURI.fromResultSet(rs));
 			} catch (final Exception e) {
 			}
@@ -1379,14 +1295,6 @@ public final class AppInterface extends Table {
 			}
 			try {
 				setLDMacos_ppc((URI) Columns.LDMACOS_PPCURI.fromResultSet(rs));
-			} catch (final Exception e) {
-			}
-			try {
-				setLDOsf1_sparc((URI) Columns.LDOSF1_SPARCURI.fromResultSet(rs));
-			} catch (final Exception e) {
-			}
-			try {
-				setLDOsf1_alpha((URI) Columns.LDOSF1_ALPHAURI.fromResultSet(rs));
 			} catch (final Exception e) {
 			}
 			try {
@@ -1622,7 +1530,6 @@ public final class AppInterface extends Table {
 		switch (os) {
 		case LINUX:
 		case MACOSX:
-		case OSF1:
 		case SOLARIS:
 			return getLaunchScriptSh();
 		case WIN32:
@@ -1650,7 +1557,6 @@ public final class AppInterface extends Table {
 		switch (os) {
 		case LINUX:
 		case MACOSX:
-		case OSF1:
 		case SOLARIS:
 			return getUnloadScriptSh();
 		case WIN32:
@@ -1722,22 +1628,12 @@ public final class AppInterface extends Table {
 				break;
 			}
 			break;
-		case OSF1:
+		case SOLARIS:
 			switch (cpu) {
 			case SPARC:
 				return getSolarisSparc();
 			case ALPHA:
 				return getSolarisAlpha();
-			default:
-				break;
-			}
-			break;
-		case SOLARIS:
-			switch (cpu) {
-			case SPARC:
-				return getOsf1Sparc();
-			case ALPHA:
-				return getOsf1Alpha();
 			default:
 				break;
 			}
@@ -1806,22 +1702,12 @@ public final class AppInterface extends Table {
 				break;
 			}
 			break;
-		case OSF1:
+		case SOLARIS:
 			switch (cpu) {
 			case SPARC:
 				return Columns.SOLARIS_SPARCURI.toString();
 			case ALPHA:
 				return Columns.SOLARIS_ALPHAURI.toString();
-			default:
-				break;
-			}
-			break;
-		case SOLARIS:
-			switch (cpu) {
-			case SPARC:
-				return Columns.OSF1_SPARCURI.toString();
-			case ALPHA:
-				return Columns.OSF1_ALPHAURI.toString();
 			default:
 				break;
 			}
@@ -1894,16 +1780,6 @@ public final class AppInterface extends Table {
 				return getLDSolarisSparc();
 			case ALPHA:
 				return getLDSolarisAlpha();
-			default:
-				break;
-			}
-			break;
-		case OSF1:
-			switch (cpu) {
-			case SPARC:
-				return getLDOsf1Sparc();
-			case ALPHA:
-				return getLDOsf1Alpha();
 			default:
 				break;
 			}
@@ -2045,24 +1921,6 @@ public final class AppInterface extends Table {
 	}
 
 	/**
-	 * This retrieves the URI to get application binary for osf1 sparc
-	 *
-	 * @return a data URI
-	 */
-	public URI getOsf1Sparc() {
-		return (URI) getValue(Columns.OSF1_SPARCURI);
-	}
-
-	/**
-	 * This retrieves the URI to get application binary for osf1 alpha
-	 *
-	 * @return a data URI
-	 */
-	public URI getOsf1Alpha() {
-		return (URI) getValue(Columns.OSF1_ALPHAURI);
-	}
-
-	/**
 	 * This retrieves the URI to get application library for linux ix86
 	 *
 	 * @return a data URI
@@ -2180,24 +2038,6 @@ public final class AppInterface extends Table {
 	 */
 	public URI getLDSolarisAlpha() {
 		return (URI) getValue(Columns.LDSOLARIS_ALPHAURI);
-	}
-
-	/**
-	 * This retrieves the URI to get application library for osf1 sparc
-	 *
-	 * @return a data URI
-	 */
-	public URI getLDOsf1Sparc() {
-		return (URI) getValue(Columns.LDOSF1_SPARCURI);
-	}
-
-	/**
-	 * This retrieves the URI to get application library for osf1 alpha
-	 *
-	 * @return a data URI
-	 */
-	public URI getLDOsf1Alpha() {
-		return (URI) getValue(Columns.LDOSF1_ALPHAURI);
 	}
 
 	/**
@@ -2521,22 +2361,12 @@ public final class AppInterface extends Table {
 				break;
 			}
 			break;
-		case OSF1:
+		case SOLARIS:
 			switch (cpu) {
 			case SPARC:
 				return setSolaris_sparc(v);
 			case ALPHA:
 				return setSolaris_alpha(v);
-			default:
-				break;
-			}
-			break;
-		case SOLARIS:
-			switch (cpu) {
-			case SPARC:
-				return setOsf1_sparc(v);
-			case ALPHA:
-				return setOsf1_alpha(v);
 			default:
 				break;
 			}
@@ -2610,22 +2440,12 @@ public final class AppInterface extends Table {
 				break;
 			}
 			break;
-		case OSF1:
+		case SOLARIS:
 			switch (cpu) {
 			case SPARC:
 				return setLDSolaris_sparc(v);
 			case ALPHA:
 				return setLDSolaris_alpha(v);
-			default:
-				break;
-			}
-			break;
-		case SOLARIS:
-			switch (cpu) {
-			case SPARC:
-				return setLDOsf1_sparc(v);
-			case ALPHA:
-				return setLDOsf1_alpha(v);
 			default:
 				break;
 			}
@@ -2767,24 +2587,6 @@ public final class AppInterface extends Table {
 	}
 
 	/**
-	 * This sets the URI to retrieve application binary for osf1 sparc
-	 *
-	 * @return true if value has changed, false otherwise
-	 */
-	public boolean setOsf1_sparc(final URI v) {
-		return setValue(Columns.OSF1_SPARCURI, v);
-	}
-
-	/**
-	 * This sets the URI to retrieve application binary for osf1 alpha
-	 *
-	 * @return true if value has changed, false otherwise
-	 */
-	public boolean setOsf1_alpha(final URI v) {
-		return setValue(Columns.OSF1_ALPHAURI, v);
-	}
-
-	/**
 	 * This sets the URI to retrieve application binary for linux ix86
 	 *
 	 * @return true if value has changed, false otherwise
@@ -2901,24 +2703,6 @@ public final class AppInterface extends Table {
 	 */
 	public boolean setLDSolaris_alpha(final URI v) {
 		return setValue(Columns.LDSOLARIS_ALPHAURI, v);
-	}
-
-	/**
-	 * This sets the URI to retrieve application binary for osf1 sparc
-	 *
-	 * @return true if value has changed, false otherwise
-	 */
-	public boolean setLDOsf1_sparc(final URI v) {
-		return setValue(Columns.LDOSF1_SPARCURI, v);
-	}
-
-	/**
-	 * This sets the URI to retrieve application binary for osf1 alpha
-	 *
-	 * @return true if value has changed, false otherwise
-	 */
-	public boolean setLDOsf1_alpha(final URI v) {
-		return setValue(Columns.LDOSF1_ALPHAURI, v);
 	}
 
 	/**
