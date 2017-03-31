@@ -87,6 +87,8 @@ IBISHUBCLASS="ibis.smartsockets.util.HubStarter"
 IBISHUBPORTNAME="SMARTSOCKETSPORT"
 IBISHUBPORTDEFAULT=4329
 IBISHUBPORT=4329
+IBISHUBADDRESSNAME="SMARTSOCKETSEXTERNALADDRESS"
+IBISHUBADDRESS=""
 IBISLOG=$LOGDIR/xwhep-ibishub.log
 touch $IBISLOG
 
@@ -418,6 +420,8 @@ LOGGERLEVEL=`grep -i -E "^[[:space:]]*loggerlevel" $CFGFILE | cut -d '=' -f2 | s
 IBISHUBPORT=`grep -i -E "^[[:space:]]*$IBISHUBPORTNAME" $CFGFILE | cut -d '=' -f2 | sed "s/[[:space:]][[:space:]]*//g" | tr [:upper:] [:lower:]`
 [ "X$IBISHUBPORT" = "X" ] && IBISHUBPORT=$IBISHUBPORTDEFAULT
 
+IBISHUBADDRESS=`grep -i -E "^[[:space:]]*$IBISHUBADDRESSNAME" $CFGFILE | cut -d '=' -f2 | sed "s/[[:space:]][[:space:]]*//g" | tr [:upper:] [:lower:]`
+
 JAVANETDEBUG=""
 #if [ "X$LOGGERLEVEL" = "Xfinest" ]; then
 #    JAVANETDEBUG="-Djavax.net.debug=all"
@@ -615,8 +619,11 @@ esac
 
 JAVACMD="$JAVA -DHWMEM=$HWMEM $JAVAOPTS $JAVANETDEBUG $JETTYDEBUG $JAVATRUSTKEY $PROFILER -cp $MAINJAR:$XW_CLASSES:$PROFCLASS"
 JAVA="$JAVACMD $MAINCLASS --xwconfig $CFGFILE $XWVERBOSE $XWDOWNLOAD $XWFORMAT $XWSTATUS $PARAMS"
-IBISHUB="$JAVACMD -Dsmartsockets.hub.port=$IBISHUBPORT $IBISHUBCLASS"
-
+if [ "X$IBISHUBADDRESS" = "X" ] ; then
+	IBISHUB="$JAVACMD -Dsmartsockets.hub.port=$IBISHUBPORT $IBISHUBCLASS"
+else
+	IBISHUB="$JAVACMD -Dsmartsockets.hub.port=$IBISHUBPORT -Dsmartsockets.external.manual=$IBISHUBADDRESS $IBISHUBCLASS"
+fi
 
 #
 # End Of File
