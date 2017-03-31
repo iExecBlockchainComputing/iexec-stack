@@ -103,6 +103,15 @@ public enum XWPropertyDefs {
 	 */
 	FACEBOOKAUTHURI,
 	/**
+	 * Server : the facebook discovery uri
+	 * <p>
+	 * Property type : URI
+	 * </p>
+	 *
+	 * @since 10.5.0
+	 */
+	FACEBOOK_DISCOVERYURI,
+	/**
 	 * Server : the facebook scope
 	 * <p>
 	 * Property type : string
@@ -120,6 +129,24 @@ public enum XWPropertyDefs {
 	 * @since 10.5.0
 	 */
 	FACEBOOKCALLBACKURL,
+	/**
+	 * Server : the google discovery uri
+	 * <p>
+	 * Property type : URI
+	 * </p>
+	 *
+	 * @since 10.5.0
+	 */
+	GOOGLE_DISCOVERYURI,
+	/**
+	 * Server : the google user info uri
+	 * <p>
+	 * Property type : URI
+	 * </p>
+	 *
+	 * @since 10.5.0
+	 */
+	GOOGLE_USERINFOURI,
 	/**
 	 * Server : the google application ID for OAuth
 	 * <p>
@@ -141,7 +168,7 @@ public enum XWPropertyDefs {
 	/**
 	 * Server : the google auth uri
 	 * <p>
-	 * Property type : string
+	 * Property type : URI
 	 * </p>
 	 *
 	 * @since 10.5.0
@@ -193,6 +220,15 @@ public enum XWPropertyDefs {
 	 */
 	TWITTERAUTHURI,
 	/**
+	 * Server : the twitter discovery uri
+	 * <p>
+	 * Property type : URI
+	 * </p>
+	 *
+	 * @since 10.5.0
+	 */
+	TWITTER_DISCOVERYURI,
+	/**
 	 * Server : the twitter scope
 	 * <p>
 	 * Property type : string
@@ -237,6 +273,15 @@ public enum XWPropertyDefs {
 	 * @since 10.5.0
 	 */
 	YAHOOAUTHURI,
+	/**
+	 * Server : the yahoo discovery uri
+	 * <p>
+	 * Property type : URI
+	 * </p>
+	 *
+	 * @since 10.5.0
+	 */
+	YAHOO_DISCOVERYURI,
 	/**
 	 * Server : the yahoo scope
 	 * <p>
@@ -565,6 +610,21 @@ public enum XWPropertyDefs {
 	 * @since 8.0.0
 	 */
 	SMARTSOCKETSHUBADDR,
+	/**
+	 * Server: SmartSocket Hub may need its public IP.
+	 * e.g. in a VM, external IP may not be known.
+	 * <p>
+	 * <p>
+	 * Property type : string
+	 * </p>
+	 * </p>
+	 * <p>
+	 * Default : null
+	 * </p>
+	 *
+	 * @since 10.5.1
+	 */
+	SMARTSOCKETSEXTERNALADDRESS,
 	/**
 	 * Worker : this tells if several workers can run on a single host
 	 * <p>
