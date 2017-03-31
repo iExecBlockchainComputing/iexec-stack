@@ -321,6 +321,11 @@ WORKERUID=
 # default value : 4329
 ## SMARTSOCKETSPORT=4329
 
+# next is the SmartSockets hub external address
+# this may be needed if running inside an EC2 VM that don't know its public IP
+# default value : null
+## SMARTSOCKETSEXTERNALADDRESS=
+
 # next is proxy port
 # default value : -1 (means don't used)
 # since 7.3.0
