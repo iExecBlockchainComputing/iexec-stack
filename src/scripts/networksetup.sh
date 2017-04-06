@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #=============================================================================
 #
 #  Copyright (C) 2011-2013 O. LODYGENSKY
@@ -126,7 +126,7 @@ create()
 
 	touch $OUTPUT 
 
-	for ((i = 0 ; i < $MAX_ALIASES ; i++)) ; do
+	for ((i=0 ; i < $MAX_ALIASES ; i++)) ; do
 
 		NEWIP3=`expr $IP3 + $i`
 		ALIASIP="$IP0.$IP1.$IP2.$NEWIP3"
