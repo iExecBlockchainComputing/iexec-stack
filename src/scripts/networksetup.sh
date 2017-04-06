@@ -132,6 +132,8 @@ create()
 		ALIASIP="$IP0.$IP1.$IP2.$NEWIP3"
 		ALIASSUBNET="$IP0.$IP1.$IP2.255"
 
+echo $NEWIP3 $ALIASIP $ALIASSUBNET
+
 		case $OSTYPE in
 	   	darwin* )
 			ALIASITF="$ALIASBASENAME$NEWIP3"
@@ -147,7 +149,9 @@ create()
 
     	linux* )
 			ALIASITF="$ITF:$NEWIP3"
-			ifconfig $ITF $ALIASIP
+			echo $ALIASITF >> $OUTPUT 
+			echo "ifconfig $ALIASITF $ALIASIP"
+			ifconfig $ALIASITF $ALIASIP
       	;;
 
 		* )
