@@ -71,7 +71,9 @@ XWSETUPDBSQL_QUERY_FOR_TABLE_VIEWS=$SQL_SCRIPTS_DIR/xwhep-core-tables-query-for-
 XWSETUPDBSQL_QUERY_FOR_USERS_VIEWS=$SQL_SCRIPTS_DIR/xwhep-core-tables-query-for-create-users-views.sql
 XWSETUPDBSQL_VIEWS_FOR_TABLES=$SQL_SCRIPTS_DIR/xwhep-core-tables-create-views-for-tables.sql
 XWSETUPDBSQL_VIEWS_FOR_USERS=$SQL_SCRIPTS_DIR/xwhep-core-tables-create-users-views.sql
-XWSETUPDBSQL_VIEWS_LIST="$SQL_SCRIPTS_DIR/xwhep-core-tables-create-views-for-sessions-and-groups.sql   \
+XWSETUPDBSQL_VIEWS_LIST="$XWSETUPDBSQL_VIEWS_FOR_TABLES  \
+                         $XWSETUPDBSQL_VIEWS_FOR_USERS   \
+                         $SQL_SCRIPTS_DIR/xwhep-core-tables-create-views-for-sessions-and-groups.sql   \
                          $SQL_SCRIPTS_DIR/xwhep-core-tables-create-views-for-relationships.sql         \
                          $SQL_SCRIPTS_DIR/xwhep-core-tables-create-views-for-offering-and-billing.sql  \
                          $SQL_SCRIPTS_DIR/xwhep-core-tables-create-views-hosts-matching-works.sql"
