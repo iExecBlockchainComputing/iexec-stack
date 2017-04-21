@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Copyrights     : CNRS
 # Author         : Oleg Lodygensky
@@ -135,6 +135,6 @@ APP_TYPE="DEPLOYABLE"
 
 mysql $MYSQLOPTS -B -e "insert into apps (uid,name,owneruid,accessrights,type, apptypeid)       \
 							values (\"$APP_UID\",\"$APPNAME\", \"$OWNER_UID\",'1877', \"$APP_TYPE\", \
-			               			(select apptypeid from apptypes where apptypename = \"$APP_TYPE\"))"
+			               			(select apptypeid from appTypes where apptypename = \"$APP_TYPE\"))"
 
 mysql $MYSQLOPTS -e "select works.uid,works.status,apps.name,users.login from works,apps,users where works.appuid=apps.uid and works.owneruid=users.uid"
