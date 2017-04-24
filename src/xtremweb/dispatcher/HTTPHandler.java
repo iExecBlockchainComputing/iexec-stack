@@ -617,6 +617,7 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 	 */
 	private void setFacebookAppCookie() {
 		if (HTTPOAuthHandler.Operator.FACEBOOK.getAppId() == null) {
+			getLogger().debug("Facebook AppId not set");
 			return;
 		}
 		String facebookAppID = Dispatcher.getConfig().getProperty(XWPropertyDefs.FACEBOOKAPPID); 
@@ -634,9 +635,11 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 	 */
 	private void setGoogleAppCookie() {
 		if (HTTPOAuthHandler.Operator.GOOGLE.getAppId() == null) {
+			getLogger().debug("Google AppId not set");
 			return;
 		}
 		String googleAppID = Dispatcher.getConfig().getProperty(XWPropertyDefs.GOOGLEAPPID); 
+		getLogger().debug("googleAppID = " + googleAppID);
 		boolean googleApp = (googleAppID != null) && (googleAppID.length() > 0); 
 		if (googleApp) {
 			final Cookie cookieGoogle = new Cookie(COOKIE_GOOGLEAPP, googleAppID);
@@ -651,6 +654,7 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 	 */
 	private void setTwitterAppCookie() {
 		if (HTTPOAuthHandler.Operator.TWITTER.getAppId() == null) {
+			getLogger().debug("Twitter AppId not set");
 			return;
 		}
 		String twitterAppID = Dispatcher.getConfig().getProperty(XWPropertyDefs.TWITTERAPPID); 
@@ -668,6 +672,7 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 	 */
 	private void setYahooAppCookie() {
 		if (HTTPOAuthHandler.Operator.YAHOO.getAppId() == null) {
+			getLogger().debug("Yahoo AppId not set");
 			return;
 		}
 		String yahooAppID = Dispatcher.getConfig().getProperty(XWPropertyDefs.YAHOOAPPID); 
@@ -909,10 +914,12 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 		}
 
 		if (request.getParameterMap().size() <= 0) {
-			/*
-			 * if(target.equals(PATH) == true){ redirectPage(baseRequest,
-			 * Resources.XWHTML); return; }
-			 */
+
+			if (target.equals(PATH)) {
+				redirectPage(baseRequest,Resources.DASHBOARDHTML); 
+				return;
+			}
+
 			for (final Resources r : Resources.values()) {
 				if (r.getName().compareToIgnoreCase(target) == 0) {
 					sendResource(r);
@@ -921,6 +928,25 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 			}
 		}
 
+		
+		
+		final HttpSession session = request.getSession(true);
+		final String authState = request.getParameter(XWPostParams.AUTH_STATE.toString()) != null
+				? request.getParameter(XWPostParams.AUTH_STATE.toString())
+				: (String) session.getAttribute(XWPostParams.AUTH_STATE.toString());
+		final String authEmail = request.getParameter(XWPostParams.AUTH_EMAIL.toString()) != null
+				? request.getParameter(XWPostParams.AUTH_EMAIL.toString())
+				: (String) session.getAttribute(XWPostParams.AUTH_EMAIL.toString());
+		final String authId = request.getParameter(XWPostParams.AUTH_IDENTITY.toString()) != null
+				? request.getParameter(XWPostParams.AUTH_IDENTITY.toString())
+				: (String) session.getAttribute(XWPostParams.AUTH_IDENTITY.toString());
+				
+		getLogger().debug("oauthState = " + authState);
+		getLogger().debug("oauthEmail= " + authEmail);
+		getLogger().debug("oauthId= " + authId);
+
+		
+		
 		UserInterface user = null;
 
 		user = userFromCertificate(request);
@@ -953,7 +979,7 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 			return;
 		}
 
-		if (target.equals(PATH) == false) {
+		if (!target.equals(PATH)) {
 			try {
 				final IdRpc i = IdRpc.valueOf(paths.elementAt(0).toUpperCase());
 				waitIdRpc(i);
@@ -971,6 +997,7 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 			return;
 		}
 
+		logger.debug("User    = " + user.toString());
 		try {
 
 			final boolean isMultipart = ServletFileUpload.isMultipartContent(request);
@@ -1253,6 +1280,7 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 
 	/**
 	 * This retrieves the user from a remove OpenId server
+	 * @deprecated since 10.5.0, OAuth is preferred
 	 */
 	private UserInterface userFromOpenId(final HttpServletRequest request) throws IOException {
 
@@ -1320,6 +1348,7 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 			session.setAttribute(XWPostParams.AUTH_NONCE.toString(), authNonce);
 			session.setAttribute(XWPostParams.AUTH_EMAIL.toString(), authEmail);
 		} catch (final Exception e) {
+			getLogger().exception("openid delegation error", e);
 			throw new IOException("openid delegation error : " + e.getMessage());
 		}
 
@@ -1336,9 +1365,6 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 								+ Dispatcher.getConfig().getProperty(XWPropertyDefs.ADMINLOGIN) + "'");
 
 		final HttpSession session = request.getSession(true);
-		final String authNonce = request.getParameter(XWPostParams.AUTH_NONCE.toString()) != null
-				? request.getParameter(XWPostParams.AUTH_NONCE.toString())
-				: (String) session.getAttribute(XWPostParams.AUTH_NONCE.toString());
 		final String authState = request.getParameter(XWPostParams.AUTH_STATE.toString()) != null
 				? request.getParameter(XWPostParams.AUTH_STATE.toString())
 				: (String) session.getAttribute(XWPostParams.AUTH_STATE.toString());
@@ -1348,6 +1374,10 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 		final String authId = request.getParameter(XWPostParams.AUTH_IDENTITY.toString()) != null
 				? request.getParameter(XWPostParams.AUTH_IDENTITY.toString())
 				: (String) session.getAttribute(XWPostParams.AUTH_IDENTITY.toString());
+				
+		getLogger().debug("oauthState = " + authState);
+		getLogger().debug("oauthEmail= " + authEmail);
+		getLogger().debug("oauthId= " + authId);
 
 		if ((authState == null) || (authEmail == null)) {
 			return null;
@@ -1355,7 +1385,7 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 
 		UserInterface ret = null;
 		try {
-			HTTPOpenIdHandler.getInstance().verifyNonce(authNonce);
+			HTTPOAuthHandler.getInstance().checkState(authState);
 			ret = DBInterface.getInstance().user(UserInterface.Columns.EMAIL.toString() + "= '" + authEmail + "'");
 			if (ret == null) {
 				if (Dispatcher.getConfig().getBoolean(XWPropertyDefs.DELEGATEDREGISTRATION) == false) {
@@ -1379,9 +1409,11 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 					ret = client;
 				}
 			}
-			session.setAttribute(XWPostParams.AUTH_NONCE.toString(), authNonce);
 			session.setAttribute(XWPostParams.AUTH_EMAIL.toString(), authEmail);
+			session.setAttribute(XWPostParams.AUTH_STATE.toString(), authState);
+			session.setAttribute(XWPostParams.AUTH_IDENTITY.toString(), authId);
 		} catch (final Exception e) {
+			getLogger().exception("openid delegation error", e);
 			throw new IOException("openid delegation error : " + e.getMessage());
 		}
 

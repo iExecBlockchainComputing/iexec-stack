@@ -202,11 +202,11 @@ public class Dispatcher {
 				httpServer.addHandler(HTTPHandler.PATH, main_sessionHandler);
 
 				// OpenId Handler needs HTTP session
-				final SessionHandler opid_sessionHandler = new SessionHandler();
-				final HTTPOpenIdHandler oh = new HTTPOpenIdHandler();
-				HTTPOpenIdHandler.setCACertificateEntries(getConfig().getKeyStore());
-				opid_sessionHandler.setHandler(oh);
-				httpServer.addHandler(HTTPOpenIdHandler.handlerPath, opid_sessionHandler);
+//				final SessionHandler opid_sessionHandler = new SessionHandler();
+//				final HTTPOpenIdHandler oh = new HTTPOpenIdHandler();
+//				HTTPOpenIdHandler.setCACertificateEntries(getConfig().getKeyStore());
+//				opid_sessionHandler.setHandler(oh);
+//				httpServer.addHandler(HTTPOpenIdHandler.handlerPath, opid_sessionHandler);
 
 				// OAuth Handler needs HTTP session
 				final SessionHandler oauth_sessionHandler = new SessionHandler();
