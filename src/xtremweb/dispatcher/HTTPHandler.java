@@ -283,10 +283,10 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 	/** This is the last modified label HTTP header */
 	private static final String LASTMODIFIEDLABEL = "Last-Modified";
 
-	private final String DEFAULT_ANSWER_HEAD = "<html><head><title>XtremWeb-HEP API</title></head>"
+	private static final String DEFAULT_ANSWER_HEAD = "<html><head><title>XtremWeb-HEP API</title></head>"
 			+ "<body><center><h1>XtremWeb-HEP API</h1><br /><h3>You are logged as \"%s\"</h3></center><br /><br /><a href=\"/\">Go to the client interface</a><br /><br />"
 			+ "Available interface commands :<br /><ul>";
-	private final String DEFAULT_UPLOAD_FORM = "<form action=\"%s/" + IdRpc.UPLOADDATA + "\""
+	private static final String DEFAULT_UPLOAD_FORM = "<form action=\"%s/" + IdRpc.UPLOADDATA + "\""
 			+ " enctype=\"multipart/form-data\" method=\"post\">"
 			+ "<div style=\"margin:10px;padding:10px;background-color:lightgrey\"><p><h2>Upload form</h2></p>"
 			+ "<p style=\"color:red\">You must have registered your data first</p>" + "<p>Registered Data UID:<br>"
@@ -297,7 +297,7 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 			+ "<input type=\"file\" name=\"" + XWPostParams.DATAFILE + "\" size=\"45\"></p><div>"
 			+ "<input type=\"submit\" value=\"Send\"></div></form>";
 
-	private final String DEFAULT_ANSWER_TAIL = "</ul><br /><ul><li> to retrieve a specific objet : %s/get/a_specific_uid</ul></body></html>";
+	private static final String DEFAULT_ANSWER_TAIL = "</ul><br /><ul><li> to retrieve a specific objet : %s/get/a_specific_uid</ul></body></html>";
 
 	private IdRpc idRpc;
 
@@ -762,19 +762,13 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 			String msg = String.format(DEFAULT_ANSWER_HEAD,
 					client.getEMail() != null ? client.getEMail() : client.getLogin());
 			response.setContentType(TEXTHTML + ";charset=UTF-8");
-//			writer.println(msg);
 
 			for (final IdRpc i : IdRpc.values()) {
-//				writer.println("<li> <a href=\"" + baseUri + "/" + i + "\">" + baseUri + "/" + i + "</a> : "
-//				+ i.helpRestApi());
 				msg += "<li> <a href=\"" + baseUri + "/" + i + "\">" + baseUri + "/" + i + "</a> : " + i.helpRestApi();
 			}
 
 			msg += String.format(DEFAULT_UPLOAD_FORM, baseUri);
-//			msg = String.format(DEFAULT_UPLOAD_FORM, baseUri);
-//			writer.println(msg);
 			msg += String.format(DEFAULT_ANSWER_TAIL, baseUri);
-//			msg = String.format(DEFAULT_ANSWER_TAIL, baseUri);
 
 			response.setHeader(CONTENTLENGTHLABEL, "" + msg.length());
 			writer.println(msg);
@@ -801,23 +795,19 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 		}
 		mileStone("<writeRows>");
 
-		Collection<T> rows = null;
-		Iterator<T> rowsEnum = null;
-
 		try {
-			rows = DBInterface.getInstance().selectAllPublic(row);
+			final Collection<T> rows = DBInterface.getInstance().selectAllPublic(row);
 
 			if (rows != null) {
-				rowsEnum = rows.iterator();
+				final Iterator<T> rowsEnum = rows.iterator();
 
 				while (rowsEnum.hasNext()) {
-					T r = rowsEnum.next();
+					final T r = rowsEnum.next();
 					if (r instanceof UserInterface) {
 						((UserInterface) r).setCertificate("****");
 						((UserInterface) r).setPassword("****");
 					}
 					response.getWriter().println(r.toXml());
-					r = null;
 				}
 			}
 		} catch (final Exception e) {
@@ -826,8 +816,6 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 			getLogger().error(e.toString());
 			throw new IOException(e.toString());
 		} finally {
-			rows = null;
-			rowsEnum = null;
 			response.setStatus(HttpServletResponse.SC_OK);
 			mileStone("</writeRows>");
 			notifyAll();
@@ -842,12 +830,12 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 	 */
 	@Override
 	public synchronized void writeFile(final File f) throws IOException {
-		try {
+		try(final StreamIO io = new StreamIO(new DataOutputStream(response.getOutputStream()), null, false)) {
 			mileStone("<writeFile file='" + f + "'>");
 			//
 			// 2 dec 2007 : we force nio to false
 			//
-			final StreamIO io = new StreamIO(new DataOutputStream(response.getOutputStream()), null, false);
+//			final StreamIO io = new StreamIO(new DataOutputStream(response.getOutputStream()), null, false);
 			io.writeFileContent(f);
 		} catch (final Exception e) {
 			getLogger().exception(e);
@@ -878,7 +866,6 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 	public synchronized void handle(final String target, final Request baseRequest, final HttpServletRequest _request,
 			final HttpServletResponse _response) throws IOException, ServletException {
 
-		final boolean answered = false;
 		XMLRPCCommand command = null;
 		final Logger logger = getLogger();
 		Table obj = null;
@@ -887,7 +874,7 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 		request = _request;
 		response = _response;
 
-		String reqUri = baseRequest.getRequestURI().toString();
+		String reqUri = baseRequest.getRequestURI();
 
 		if (request.getUserPrincipal() == null) {
 			logger.debug("Handling user principal = null");
@@ -969,7 +956,7 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 					+ request.getServerPort());
 		} catch (final URISyntaxException e) {
 			resetIdRpc();
-			throw new IOException(e.getMessage());
+			throw new IOException(e);
 		}
 
 		if (target.compareToIgnoreCase(APIPATH) == 0) {
@@ -1181,9 +1168,7 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 
 				super.run(command);
 			} else {
-				if (answered == false) {
-					write((XMLable) null);
-				}
+				write((XMLable) null);
 			}
 		} finally {
 			command = null;
@@ -1282,6 +1267,7 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 	 * This retrieves the user from a remove OpenId server
 	 * @deprecated since 10.5.0, OAuth is preferred
 	 */
+	@Deprecated
 	private UserInterface userFromOpenId(final HttpServletRequest request) throws IOException {
 
 		final HttpSession session = request.getSession(true);
@@ -1507,16 +1493,15 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 			theData.setStatus(StatusEnum.AVAILABLE);
 			theData.update();
 			ret = dFile.length();
-		} catch (final InvalidKeyException e) {
-			mileStone("<error method='uploadData' msg='" + e.getMessage() + "' />");
-			throw e;
-		} catch (final AccessControlException e) {
+		} catch (final InvalidKeyException | AccessControlException e) {
 			mileStone("<error method='uploadData' msg='" + e.getMessage() + "' />");
 			throw e;
 		} catch (final Exception e) {
 			try {
-				theData.setStatus(StatusEnum.ERROR);
-				theData.update();
+				if (theData != null) {
+					theData.setStatus(StatusEnum.ERROR);
+					theData.update();
+				}
 			} catch (final Exception e2) {
 				getLogger().exception(e2);
 			}
