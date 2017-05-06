@@ -33,6 +33,7 @@ import java.io.PrintStream;
 import java.lang.reflect.Method;
 import java.net.DatagramSocket;
 import java.net.ServerSocket;
+import java.net.URL;
 import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 import java.security.cert.CertificateEncodingException;
@@ -53,6 +54,9 @@ import java.util.Vector;
 import javax.net.SocketFactory;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
+
+import org.json.JSONObject;
+import org.json.JSONTokener;
 
 import xtremweb.dispatcher.HTTPOpenIdHandler;
 
@@ -845,7 +849,36 @@ public class XWTools {
 		}
 		return certs;
 	}
+	/**
+	 * This extracts a JSon value from an URL 
+	 * @param u is the URL to retrieve JSon content
+	 * @param key is the JSon key name to retrieve 
+	 * @throws IOException on connection error
+	 * @since 10.5.0
+	 */
+	public static String jsonValueFromURL (final String u, final String key) throws IOException {
+		final URL url = new URL(u);
+		try (final InputStream is = url.openStream();) {
+			final JSONTokener jst = new JSONTokener(is);
+			final JSONObject obj = new JSONObject(jst);
+			return obj.getString(key);
+		}
+	}
+	/**
+	 * This extracts a JSon value from an URL 
+	 * @param s contains the JSon representation
+	 * @param key is the JSon key name to retrieve 
+	 * @since 10.5.0
+	 */
+	public static String jsonValueFromString (final String s, final String key)  {
+		final JSONTokener jst = new JSONTokener(s);
+		final JSONObject obj = new JSONObject(jst);
+		return obj.getString(key);
+	}
 
+	/**
+	 * This is for testing only
+	 */
 	public static void main(final String[] argv) {
 		try {
 			UID uid = null;
