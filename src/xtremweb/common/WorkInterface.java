@@ -1777,7 +1777,7 @@ public class WorkInterface extends Table {
 
 		try {
 			if (getCompletedDate() == null) {
-				setCompletedDate(new Date());
+				setCompletedDate();
 			}
 		} catch (final Exception e) {
 			getLogger().exception(e);
@@ -2029,25 +2029,49 @@ public class WorkInterface extends Table {
 	 * @return true if value has changed, false otherwise
 	 * @since 8.0.0
 	 */
-	public final boolean setCompEndDate(final Date v) {
-		return setValue(Columns.COMPENDDATE, v);
+	public final boolean setCompEndDate(final Date d) {
+		return setValue(Columns.COMPENDDATE, d);
 	}
 
+	/**
+	 * This sets the completion date
+	 * @since 10.5.1
+	 * @return true if value has changed, false otherwise
+	 */
+	public final boolean setCompletedDate() {
+		final Date d = new Date();
+		return setCompletedDate(d);
+	}
 	/**
 	 * This sets the completion date
 	 *
 	 * @return true if value has changed, false otherwise
 	 */
-	public final boolean setCompletedDate(final Date v) {
-		return setValue(Columns.COMPLETEDDATE, v);
+	public final boolean setCompletedDate(final Date d) {
+		Date val = d;
+		final Date arrivaldate = getArrivalDate(); 
+		if ((val != null) && (arrivaldate != null) && (val.before(arrivaldate))) {
+			getLogger().error("completedDate : " + d.toString() + " < " + arrivaldate);
+			Date start = getCompStartDate();
+			Date end = getCompEndDate();
+			if ((start != null) && (end != null)) {
+				long diff = end.getTime() - start.getTime();
+				if (diff > 0) {
+					val = new Date();
+					val.setTime(val.getTime() + diff);
+					getLogger().warn("completedDate forced to " + val);
+				}
+			}
+		}
+		return setValue(Columns.COMPLETEDDATE, val);
 	}
 
 	/**
 	 * @return true if value has changed, false otherwise
 	 */
-	public final boolean setSendToClient(final boolean v) {
-		final Boolean b = new Boolean(v);
-		return setValue(Columns.SENDTOCLIENT, b);
+	public final boolean setSendToClient(final boolean b) {
+		final Boolean bool = new Boolean(b);
+		return setValue(Columns.SENDTOCLIENT, bool);
 	}
 
 	/**
