@@ -25,13 +25,16 @@ package xtremweb.dispatcher;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.security.KeyStore;
 import java.security.cert.X509Certificate;
 import java.util.Enumeration;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.Set;
 
+import javax.naming.AuthenticationException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -40,12 +43,22 @@ import javax.servlet.http.HttpSession;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
 import org.expressme.openid.Authentication;
+import org.json.JSONObject;
+import org.json.JSONTokener;
+
 import com.github.scribejava.apis.FacebookApi;
 import com.github.scribejava.apis.GoogleApi20;
 import com.github.scribejava.apis.TwitterApi;
 import com.github.scribejava.apis.YahooApi;
 import com.github.scribejava.core.builder.ServiceBuilder;
+import com.github.scribejava.core.builder.api.BaseApi;
+import com.github.scribejava.core.builder.api.DefaultApi20;
+import com.github.scribejava.core.model.OAuth1RequestToken;
+import com.github.scribejava.core.model.OAuth2AccessToken;
+import com.github.scribejava.core.model.OAuthRequest;
+import com.github.scribejava.core.model.Response;
 import com.github.scribejava.core.model.Token;
+import com.github.scribejava.core.model.Verb;
 import com.github.scribejava.core.oauth.OAuth10aService;
 import com.github.scribejava.core.oauth.OAuth20Service;
 import com.github.scribejava.core.oauth.OAuthService;
@@ -117,12 +130,27 @@ public class HTTPOAuthHandler extends Thread implements org.eclipse.jetty.server
 		/**
 		 * This is the callback url
 		 */
-		protected String callbackUrl;
+		protected URL callbackUrl;
 		/**
 		 * This is the OAuth uri
 		 * @since 10.5.0
 		 */
-		protected String authUri;
+		protected URI authUri;
+		/**
+		 * This is the userinfo uri
+		 * @since 10.5.0
+		 */
+		protected URI userinfoEndpointUri;
+		/**
+		 * This is the user email attribute name
+		 * @since 10.5.0
+		 */
+		protected String emailAttrName;
+		/**
+		 * This is the user id attribute name
+		 * @since 10.5.0
+		 */
+		protected String idAttrName;
 		/**
 		 * This is the server address
 		 * @since 10.5.0
@@ -131,7 +159,8 @@ public class HTTPOAuthHandler extends Thread implements org.eclipse.jetty.server
 		/**
 		 * This is the service
 		 */
-		private OAuthService service;
+		private ServiceBuilder serviceBuilder;
+		private BaseApi api;
 
 		/**
 		 * This retrieves the operator class from scribe library
@@ -154,6 +183,21 @@ public class HTTPOAuthHandler extends Thread implements org.eclipse.jetty.server
 		 */
 		public String getAppId() {
 			return this.appId;
+		}
+		/**
+		 * This sets the api
+		 */
+		public void setApi(final BaseApi _api) {
+			this.api = _api;
+		}
+
+		/**
+		 * This retrieves the String representing the application ID
+		 *
+		 * @return the application identifier
+		 */
+		public BaseApi getApi() {
+			return this.api;
 		}
 
 		/**
@@ -189,7 +233,7 @@ public class HTTPOAuthHandler extends Thread implements org.eclipse.jetty.server
 		/**
 		 * This sets the OAuth callback url
 		 */
-		public void setCallbackUrl(final String key) {
+		public void setCallbackUrl(final URL key) {
 			this.callbackUrl = key;
 		}
 
@@ -198,7 +242,7 @@ public class HTTPOAuthHandler extends Thread implements org.eclipse.jetty.server
 		 *
 		 * @return the application identifier
 		 */
-		public String getCallbackUrl() {
+		public URL getCallbackUrl() {
 			return this.callbackUrl;
 		}
 
@@ -206,7 +250,7 @@ public class HTTPOAuthHandler extends Thread implements org.eclipse.jetty.server
 		 * This sets the OAuth URI
 		 * @since 10.5.0
 		 */
-		public void setOAuthUri(final String key) {
+		public void setOAuthUri(final URI key) {
 			this.authUri = key;
 		}
 
@@ -215,8 +259,57 @@ public class HTTPOAuthHandler extends Thread implements org.eclipse.jetty.server
 		 * @since 10.5.0
 		 * @return the auth URI
 		 */
-		public String getOAuthUri() {
+		public URI getOAuthUri() {
 			return this.authUri;
+		}
+
+		/**
+		 * This sets the user info URI
+		 * @since 10.5.0
+		 */
+		public void setUserInfoEndpointUri(final URI key) {
+			this.userinfoEndpointUri = key;
+		}
+
+		/**
+		 * This retrieves the user info URI
+		 * @since 10.5.0
+		 * @return the auth URI
+		 */
+		public URI getUserInfoEndpointUri() {
+			return this.userinfoEndpointUri;
+		}
+		/**
+		 * This sets the user info URI
+		 * @since 10.5.0
+		 */
+		public void setEmailAttrName(final String key) {
+			this.emailAttrName = key;
+		}
+
+		/**
+		 * This retrieves the user info URI
+		 * @since 10.5.0
+		 * @return the auth URI
+		 */
+		public String getEmailAttrName() {
+			return this.emailAttrName;
+		}
+		/**
+		 * This sets the user info URI
+		 * @since 10.5.0
+		 */
+		public void setIdAttrName(final String key) {
+			this.idAttrName = key;
+		}
+
+		/**
+		 * This retrieves the user info URI
+		 * @since 10.5.0
+		 * @return the auth URI
+		 */
+		public String getIdAttrName() {
+			return this.idAttrName;
 		}
 
 		/**
@@ -239,8 +332,8 @@ public class HTTPOAuthHandler extends Thread implements org.eclipse.jetty.server
 		 * This sets the service
 		 * @since 10.5.0
 		 */
-		public void setService(final OAuthService key) {
-			this.service = key;
+		public void setServiceBuilder(final ServiceBuilder key) {
+			this.serviceBuilder = key;
 		}
 
 		/**
@@ -248,10 +341,10 @@ public class HTTPOAuthHandler extends Thread implements org.eclipse.jetty.server
 		 * @since 10.5.0
 		 * @return the auth URI
 		 */
-		public OAuthService getService() {
-			return this.service;
+		public ServiceBuilder getServiceBuilder() {
+			return this.serviceBuilder;
 		}
-		
+
 		/**
 		 * This retrieves the operator from its name
 		 *
@@ -285,6 +378,9 @@ public class HTTPOAuthHandler extends Thread implements org.eclipse.jetty.server
 	// &state=SOME_ARBITRARY_BUT_UNIQUE_STRING
 	public static final String OP_FACEBOOK = "Facebook";
 	public static final String FACEBOOK_SERVER_ADDR = "www.facebook.com";
+	public static final String FACEBOOK_USERINFO_ATTR_NAME = "userinfo_endpoint";
+	public static final String FACEBOOK_USEREMAIL_ATTR_NAME = "email";
+	public static final String FACEBOOK_USERID_ATTR_NAME = "id";
 
 	/**
 	 * These are the google informations
@@ -294,18 +390,27 @@ public class HTTPOAuthHandler extends Thread implements org.eclipse.jetty.server
 	 *
 	 */
 	public static final String GOOGLE_SERVER_ADDR = "www.google.com";
+	public static final String GOOGLE_USERINFO_ENDPOINT_ATTR_NAME = "userinfo_endpoint";
+	public static final String GOOGLE_USEREMAIL_ATTR_NAME = "email";
+	public static final String GOOGLE_USERID_ATTR_NAME = "sub";
 
 	/**
 	 * These are the yahoo informations
 	 */
 	public static final String OP_YAHOO = "Yahoo";
 	public static final String YAHOO_SERVER_ADDR = "www.yahoo.com";
+	public static final String YAHOO_USERINFO_ATTR_NAME = "userinfo_endpoint";
+	public static final String YAHOO_USERID_ATTR_NAME = "id";
+	public static final String YAHOO_USEREMAIL_ATTR_NAME = "email";
 
 	/**
 	 * These are the twitter informations
 	 */
 	public static final String OP_TWITTER = "Twitter";
 	public static final String TWITTER_SERVER_ADDR = "www.twitter.com";
+	public static final String TWITTER_USERINFO_ATTR_NAME = "userinfo_endpoint";
+	public static final String TWITTER_USEREMAIL_ATTR_NAME = "email";
+	public static final String TWITTER_USERID_ATTR_NAME = "id";
 
 	/**
 	 * This is the client host name; for debug purposes only
@@ -349,87 +454,100 @@ public class HTTPOAuthHandler extends Thread implements org.eclipse.jetty.server
 		}
 		instance = this;
 
-		Operator.FACEBOOK.setAppId(Dispatcher.getConfig().getProperty(XWPropertyDefs.FACEBOOKAPPID));
-		Operator.FACEBOOK.setAppKey(Dispatcher.getConfig().getProperty(XWPropertyDefs.FACEBOOKAPPKEY));
-		Operator.FACEBOOK.setOAuthUri(Dispatcher.getConfig().getProperty(XWPropertyDefs.FACEBOOKAUTHURI));
-		Operator.FACEBOOK.setScope(Dispatcher.getConfig().getProperty(XWPropertyDefs.FACEBOOKSCOPE));
-		Operator.FACEBOOK.setServerAddress(FACEBOOK_SERVER_ADDR);
-		Operator.FACEBOOK.setCallbackUrl(Dispatcher.getConfig().getProperty(XWPropertyDefs.FACEBOOKCALLBACKURL));
 		try {
-			Operator.FACEBOOK.setService(new ServiceBuilder()
+			Operator.FACEBOOK.setAppId(Dispatcher.getConfig().getProperty(XWPropertyDefs.FACEBOOKAPPID));
+			Operator.FACEBOOK.setAppKey(Dispatcher.getConfig().getProperty(XWPropertyDefs.FACEBOOKAPPKEY));
+			Operator.FACEBOOK.setOAuthUri(new URI(Dispatcher.getConfig().getProperty(XWPropertyDefs.FACEBOOKAUTHURI)));
+			Operator.FACEBOOK.setScope(Dispatcher.getConfig().getProperty(XWPropertyDefs.FACEBOOKSCOPE));
+			Operator.FACEBOOK.setServerAddress(FACEBOOK_SERVER_ADDR);
+			Operator.FACEBOOK.setCallbackUrl(new URL(Dispatcher.getConfig().getProperty(XWPropertyDefs.FACEBOOKCALLBACKURL)));
+			Operator.FACEBOOK.setApi(FacebookApi.instance());
+			Operator.FACEBOOK.setUserInfoEndpointUri(new URI( XWTools.jsonValueFromURL(Dispatcher.getConfig().getProperty(XWPropertyDefs.FACEBOOK_DISCOVERYURI), FACEBOOK_USERINFO_ATTR_NAME)));
+			Operator.FACEBOOK.setEmailAttrName(FACEBOOK_USEREMAIL_ATTR_NAME);
+			Operator.FACEBOOK.setIdAttrName(FACEBOOK_USERID_ATTR_NAME);
+			Operator.FACEBOOK.setServiceBuilder(new ServiceBuilder()
 					.apiKey(Operator.FACEBOOK.getAppId())
 					.apiSecret(Operator.FACEBOOK.getAppKey())
-	                .callback(Operator.FACEBOOK.getCallbackUrl())
-	                .scope(Operator.FACEBOOK.getScope())
-	                .build(FacebookApi.instance()));
+					.callback(Operator.FACEBOOK.getCallbackUrl().toString())
+					.scope(Operator.FACEBOOK.getScope()));
 		}
 		catch(final Exception e) {
 			logger.warn(Operator.FACEBOOK.toString() + " : " + e.toString());
 		}
-		Operator.GOOGLE.setAppId(Dispatcher.getConfig().getProperty(XWPropertyDefs.GOOGLEAPPID));
-		Operator.GOOGLE.setAppKey(Dispatcher.getConfig().getProperty(XWPropertyDefs.GOOGLEAPPKEY));
-		Operator.GOOGLE.setOAuthUri(Dispatcher.getConfig().getProperty(XWPropertyDefs.GOOGLEAUTHURI));
-		Operator.GOOGLE.setScope(Dispatcher.getConfig().getProperty(XWPropertyDefs.GOOGLESCOPE));
-		Operator.GOOGLE.setServerAddress(GOOGLE_SERVER_ADDR);
-		Operator.GOOGLE.setCallbackUrl(Dispatcher.getConfig().getProperty(XWPropertyDefs.GOOGLECALLBACKURL));
 		try {
-			Operator.GOOGLE.setService(new ServiceBuilder()
-                .apiKey(Operator.GOOGLE.getAppId())
-                .apiSecret(Operator.GOOGLE.getAppKey())
-                .callback(Operator.GOOGLE.getCallbackUrl())
-                .scope(Operator.GOOGLE.getScope())
-                .build(GoogleApi20.instance()));
+			Operator.GOOGLE.setAppId(Dispatcher.getConfig().getProperty(XWPropertyDefs.GOOGLEAPPID));
+			Operator.GOOGLE.setAppKey(Dispatcher.getConfig().getProperty(XWPropertyDefs.GOOGLEAPPKEY));
+			Operator.GOOGLE.setOAuthUri(new URI(Dispatcher.getConfig().getProperty(XWPropertyDefs.GOOGLEAUTHURI)));
+			Operator.GOOGLE.setScope(Dispatcher.getConfig().getProperty(XWPropertyDefs.GOOGLESCOPE));
+			Operator.GOOGLE.setServerAddress(GOOGLE_SERVER_ADDR);
+			Operator.GOOGLE.setCallbackUrl(new URL(Dispatcher.getConfig().getProperty(XWPropertyDefs.GOOGLECALLBACKURL)));
+			Operator.GOOGLE.setApi(GoogleApi20.instance());
+			Operator.GOOGLE.setUserInfoEndpointUri(new URI( XWTools.jsonValueFromURL(Dispatcher.getConfig().getProperty(XWPropertyDefs.GOOGLE_DISCOVERYURI), GOOGLE_USERINFO_ENDPOINT_ATTR_NAME)));
+			Operator.GOOGLE.setEmailAttrName(GOOGLE_USEREMAIL_ATTR_NAME);
+			Operator.GOOGLE.setIdAttrName(GOOGLE_USERID_ATTR_NAME);
+			Operator.GOOGLE.setServiceBuilder(new ServiceBuilder()
+					.apiKey(Operator.GOOGLE.getAppId())
+					.apiSecret(Operator.GOOGLE.getAppKey())
+					.callback(Operator.GOOGLE.getCallbackUrl().toString())
+					.scope(Operator.GOOGLE.getScope()));
 		}
 		catch(final Exception e) {
 			logger.warn(Operator.GOOGLE.toString() + " : " + e.toString());
 		}
 
-		Operator.TWITTER.setAppId(Dispatcher.getConfig().getProperty(XWPropertyDefs.TWITTERAPPID));
-		Operator.TWITTER.setAppKey(Dispatcher.getConfig().getProperty(XWPropertyDefs.TWITTERAPPKEY));
-		Operator.TWITTER.setOAuthUri(Dispatcher.getConfig().getProperty(XWPropertyDefs.TWITTERAUTHURI));
-		Operator.TWITTER.setScope(Dispatcher.getConfig().getProperty(XWPropertyDefs.TWITTERSCOPE));
-		Operator.TWITTER.setServerAddress(TWITTER_SERVER_ADDR);
-		Operator.TWITTER.setCallbackUrl(Dispatcher.getConfig().getProperty(XWPropertyDefs.TWITTERCALLBACKURL));
 		try {
-			Operator.TWITTER.setService(new ServiceBuilder()
-                .apiKey(Operator.TWITTER.getAppId())
-                .apiSecret(Operator.TWITTER.getAppKey())
-                .callback(Operator.TWITTER.getCallbackUrl())
-                .scope(Operator.TWITTER.getScope())
-                .build(TwitterApi.instance()));
+			Operator.TWITTER.setAppId(Dispatcher.getConfig().getProperty(XWPropertyDefs.TWITTERAPPID));
+			Operator.TWITTER.setAppKey(Dispatcher.getConfig().getProperty(XWPropertyDefs.TWITTERAPPKEY));
+			Operator.TWITTER.setOAuthUri(new URI(Dispatcher.getConfig().getProperty(XWPropertyDefs.TWITTERAUTHURI)));
+			Operator.TWITTER.setScope(Dispatcher.getConfig().getProperty(XWPropertyDefs.TWITTERSCOPE));
+			Operator.TWITTER.setServerAddress(TWITTER_SERVER_ADDR);
+			Operator.TWITTER.setCallbackUrl(new URL(Dispatcher.getConfig().getProperty(XWPropertyDefs.TWITTERCALLBACKURL)));
+			Operator.TWITTER.setApi(TwitterApi.instance());
+			Operator.TWITTER.setUserInfoEndpointUri(new URI( XWTools.jsonValueFromURL(Dispatcher.getConfig().getProperty(XWPropertyDefs.TWITTER_DISCOVERYURI), TWITTER_USERINFO_ATTR_NAME)));
+			Operator.TWITTER.setEmailAttrName(TWITTER_USEREMAIL_ATTR_NAME);
+			Operator.TWITTER.setIdAttrName(TWITTER_USERID_ATTR_NAME);
+			Operator.TWITTER.setServiceBuilder(new ServiceBuilder()
+					.apiKey(Operator.TWITTER.getAppId())
+					.apiSecret(Operator.TWITTER.getAppKey())
+					.callback(Operator.TWITTER.getCallbackUrl().toString())
+					.scope(Operator.TWITTER.getScope()));
 		}
 		catch(final Exception e) {
 			logger.warn(Operator.TWITTER.toString() + " : " + e.toString());
 		}
 
-		Operator.YAHOO.setAppId(Dispatcher.getConfig().getProperty(XWPropertyDefs.YAHOOAPPID));
-		Operator.YAHOO.setAppKey(Dispatcher.getConfig().getProperty(XWPropertyDefs.YAHOOAPPKEY));
-		Operator.YAHOO.setOAuthUri(Dispatcher.getConfig().getProperty(XWPropertyDefs.YAHOOAUTHURI));
-		Operator.YAHOO.setScope(Dispatcher.getConfig().getProperty(XWPropertyDefs.YAHOOSCOPE));
-		Operator.YAHOO.setServerAddress(YAHOO_SERVER_ADDR);
-		Operator.YAHOO.setCallbackUrl(Dispatcher.getConfig().getProperty(XWPropertyDefs.YAHOOCALLBACKURL));
 		try {
-			Operator.YAHOO.setService(new ServiceBuilder()
-                .apiKey(Operator.YAHOO.getAppId())
-                .apiSecret(Operator.YAHOO.getAppKey())
-                .callback(Operator.YAHOO.getCallbackUrl())
-                .scope(Operator.YAHOO.getScope())
-                .build(YahooApi.instance()));
+			Operator.YAHOO.setAppId(Dispatcher.getConfig().getProperty(XWPropertyDefs.YAHOOAPPID));
+			Operator.YAHOO.setAppKey(Dispatcher.getConfig().getProperty(XWPropertyDefs.YAHOOAPPKEY));
+			Operator.YAHOO.setOAuthUri(new URI(Dispatcher.getConfig().getProperty(XWPropertyDefs.YAHOOAUTHURI)));
+			Operator.YAHOO.setScope(Dispatcher.getConfig().getProperty(XWPropertyDefs.YAHOOSCOPE));
+			Operator.YAHOO.setServerAddress(YAHOO_SERVER_ADDR);
+			Operator.YAHOO.setCallbackUrl(new URL(Dispatcher.getConfig().getProperty(XWPropertyDefs.YAHOOCALLBACKURL)));
+			Operator.YAHOO.setApi(YahooApi.instance());
+			Operator.YAHOO.setUserInfoEndpointUri(new URI( XWTools.jsonValueFromURL(Dispatcher.getConfig().getProperty(XWPropertyDefs.YAHOO_DISCOVERYURI), YAHOO_USERINFO_ATTR_NAME)));
+			Operator.YAHOO.setEmailAttrName(YAHOO_USEREMAIL_ATTR_NAME);
+			Operator.YAHOO.setIdAttrName(YAHOO_USERID_ATTR_NAME);
+			Operator.YAHOO.setServiceBuilder(new ServiceBuilder()
+					.apiKey(Operator.YAHOO.getAppId())
+					.apiSecret(Operator.YAHOO.getAppKey())
+					.callback(Operator.YAHOO.getCallbackUrl().toString())
+					.scope(Operator.YAHOO.getScope()));
 		}
 		catch(final Exception e) {
 			logger.warn(Operator.YAHOO.toString() + " : " + e.toString());
 		}
 
 		for (final Operator op : Operator.values()) {
-			if (op.getService() == null) { 
+			if (op.getServiceBuilder() == null) { 
 				continue;
 			}
 			logger.info("" + op + " server   = " + op.getServerAddress());
 			logger.info("" + op + " auth uri = " + op.getOAuthUri());
+			logger.info("" + op + " userinfo uri = " + op.getUserInfoEndpointUri());
 			logger.info("" + op + " scope    = " + op.getScope());
 			logger.info("" + op + " app id   = " + op.getAppId());
 			logger.info("" + op + " app key  = " + op.getAppKey());
-			logger.info("" + op + " service  = " + op.getService());
+			logger.info("" + op + " service  = " + op.getServiceBuilder());
 		}
 	}
 
@@ -572,6 +690,10 @@ public class HTTPOAuthHandler extends Thread implements org.eclipse.jetty.server
 			logger.debug("Handling parameter size = " + request.getParameterMap().size());
 			logger.debug("Handling query string   = " + request.getQueryString());
 			logger.debug("Handling method         = " + request.getMethod());
+			logger.debug("Requested Session ID    = " + request.getRequestedSessionId());
+			logger.debug("Auth type               = " + request.getAuthType());
+			logger.debug("Remot host              = " + request.getRemoteHost());
+			logger.debug("Server name             = " + request.getServerName());
 
 			remoteName = request.getRemoteHost();
 			remoteIP = request.getRemoteAddr();
@@ -593,6 +715,7 @@ public class HTTPOAuthHandler extends Thread implements org.eclipse.jetty.server
 			baseRequest.setHandled(true);
 		} catch (final Exception e) {
 			logger.exception(e);
+			baseRequest.setHandled(false);
 		}
 		response.getWriter().flush();
 	}
@@ -603,24 +726,78 @@ public class HTTPOAuthHandler extends Thread implements org.eclipse.jetty.server
 	private void oauthRequest(final HttpServletRequest request, final HttpServletResponse response)
 			throws IOException, OAuthException {
 
-		final String op = request.getParameter(XWPostParams.AUTH_OPERATOR.toString());
-		if (op == null) {
+		try {
+			final String code = request.getParameter(XWPostParams.AUTH_CODE.toString());
+			if((code == null) || (code.length() < 1)) {
+				throw new OAuthException("no code found");
+			}
+			logger.debug("code = " + code);
+			//Token accessToken = service.getAccessToken(state);
 			final String state = request.getParameter(XWPostParams.AUTH_STATE.toString());
+			logger.debug("state = " + state);
+			final HttpSession session = request.getSession(false);
+			if(session == null) {
+				throw new OAuthException("no session found");
+			}
+			logger.debug("session = " + session.getId());
+
 			checkState(state);
-			final Authentication auth = getAuthentication(request);
+			final OAuthService service = getState(state);
+			if (service == null) {
+				throw new OAuthException("can't retrieve service for " + state);
+			}
+			Token accessToken = null;
+			if (service.getClass() == OAuth20Service.class) {
+				accessToken = ((OAuth20Service)service).getAccessToken(code);
+			}
+
+			final Operator op = operatorFromRequest(request);
+			logger.debug("userinfo_endpoint " + op.getUserInfoEndpointUri());
+			logger.debug("accessTocken " + accessToken + ", " + accessToken.getRawResponse());
+			final OAuthRequest oauthRequest = new OAuthRequest(Verb.GET, "https://www.googleapis.com/oauth2/v3/userinfo", service);
+			service.signRequest(accessToken, oauthRequest);
+			final Response oauthResponse = oauthRequest.send();
+
+			if (oauthResponse.getCode() != 200) {
+				throw new OAuthException("OAuth code error : " + oauthResponse.getCode());
+			}
+			final String json = oauthResponse.getBody();
+
+			final JSONTokener jst = new JSONTokener(json);
+			final JSONObject obj = new JSONObject(jst);
+			final Authentication auth = getAuthentication(op, session, obj);
+
 			final String url = localRootUrl + "?" + XWPostParams.AUTH_STATE + "=" + state
-					+ request.getParameter(XWPostParams.AUTH_STATE.toString()) + "&" + XWPostParams.AUTH_EMAIL + "="
+					+ "&" + XWPostParams.AUTH_EMAIL + "="
 					+ auth.getEmail() + "&" + XWPostParams.AUTH_IDENTITY + "=" + auth.getIdentity();
+			logger.debug("sendRedirectUrm = " + url);
 			response.sendRedirect(url);
 			return;
-		}
+		} catch(final OAuthException e) {
 
+			try {
+				final Operator op = operatorFromRequest(request);
+				oauthRequestForOPerator(request, op, response);
+			} catch (final Exception e2) {
+				throw new OAuthException("Unsupported operator : " + e);
+			}
+		}
+	}
+	/**
+	 * This retrieves the operator from the request
+	 * @param request is the HTTP request
+	 * @return the found operator
+	 * @throws OAuthException is no operator found
+	 */
+	private Operator operatorFromRequest(final HttpServletRequest request) throws OAuthException {
 		try {
-			final Operator operator = Operator.fromString(op);
+			final String operatorName = request.getParameter(XWPostParams.AUTH_OPERATOR.toString());
+			final String path = request.getPathInfo(); 
+			final Operator op = operatorName != null ? Operator.valueOf(operatorName) : Operator.valueOf(path.substring(1).toUpperCase()); 
 			logger.debug("operator = " + op);
-			oauthRequestForOPerator(request, operator, response);
+			return op;
 		} catch (final Exception e) {
-			throw new OAuthException("Unsupported OP: " + op + "; " + e);
+			throw new OAuthException("can't retrieve operator from request : " + e);
 		}
 	}
 
@@ -639,53 +816,44 @@ public class HTTPOAuthHandler extends Thread implements org.eclipse.jetty.server
 			throw new OAuthException("operator is null");
 		}
 
-		if (operator.getService() == null) {
+		if (operator.getServiceBuilder() == null) {
 			throw new OAuthException(operator.toString() + " : auth uri is null");
 		}
 
 		final String newState = newState(operator);
 		logger.debug("newState = " + newState);
 
-		final String oauthUrl = operator.getOAuthUri();
-		logger.debug("oathUrl = " + oauthUrl);
+		final URI oauthUri = operator.getOAuthUri();
+		logger.debug("oathUrl = " + oauthUri);
 
 		final HttpSession session = request.getSession(true);
+		logger.debug("session id = " + session.getId());
 		session.setAttribute(XWPostParams.AUTH_STATE.toString(), newState);
 		session.setAttribute(XWPostParams.AUTH_OPERATOR.toString(), operator.toString());
 
-//		response.sendRedirect(oauthUrl);
-		if (operator.getService().getClass() == OAuth10aService.class) {
-			response.sendRedirect(((OAuth10aService)operator.getService()).getAuthorizationUrl(null));
+		final OAuthService service = operator.getServiceBuilder().state(newState).build(operator.getApi());
+		storeState(newState, service);
+
+		if (service.getClass() == OAuth10aService.class) {
+			final OAuth1RequestToken token = ((OAuth10aService)service).getRequestToken();
+			response.sendRedirect(((OAuth10aService)service).getAuthorizationUrl(token));
 		}
-		if (operator.getService().getClass() == OAuth20Service.class) {
-			response.sendRedirect(((OAuth20Service)operator.getService()).getAuthorizationUrl(null));
+		if (service.getClass() == OAuth20Service.class) {
+			response.sendRedirect(((OAuth20Service)service).getAuthorizationUrl());
 		}
 	}
 
 	/**
-	 * This generates a new state (a random string) and stores it in stateDb
-	 *
-	 * @return the new generated state
-	 */
-	private String newState(final Operator op) {
-		final MD5 md5 = new MD5(op.getAppId() + System.currentTimeMillis() + Math.random());
-		final String ret = md5.asHex();
-		storeState(ret);
-		return ret;
-	}
-
-	/**
-	 * This retrieves authentication from openid server response
+	 * This retrieves authentication from OAuth server response
 	 *
 	 * @param request
 	 *            is the HTTP request
 	 * @return the authentication if found; null otherwise
 	 */
-	private Authentication getAuthentication(final HttpServletRequest request) throws OAuthException {
-		final HttpSession session = request.getSession(false);
+	private Authentication getAuthentication(final Operator op, final HttpSession session, final JSONObject obj) throws OAuthException {
 
-		String email = request.getParameter(XWPostParams.AUTH_EMAIL.toString());
-		String id = request.getParameter(XWPostParams.AUTH_IDENTITY.toString());
+		String email = obj.getString(op.getEmailAttrName());
+		String id = obj.getString(op.getIdAttrName());
 
 		if ((email == null) && (session != null)) {
 			email = (String) session.getAttribute(XWPostParams.AUTH_EMAIL.toString());
@@ -706,7 +874,17 @@ public class HTTPOAuthHandler extends Thread implements org.eclipse.jetty.server
 	/**
 	 * This simulates a database that store all states:
 	 */
-	private final Set<String> stateDb = new HashSet<String>();
+	private final Hashtable<String, OAuthService> stateDb = new Hashtable<String, OAuthService>();
+
+	/**
+	 * This generates a new state (a random string) and stores it in stateDb
+	 *
+	 * @return the new generated state
+	 */
+	private String newState(final Operator op) {
+		final MD5 md5 = new MD5(op.getAppId() + System.currentTimeMillis() + Math.random());
+		return md5.asHex();
+	}
 
 	/**
 	 * This tests if state exist in database:
@@ -716,7 +894,7 @@ public class HTTPOAuthHandler extends Thread implements org.eclipse.jetty.server
 	 *             is thrown if provided state does not exist
 	 */
 	void checkState(final String state) throws OAuthException {
-		if (stateDb.contains(state) == false) {
+		if (!stateExists(state)) {
 			throw new OAuthException("invalid state");
 		}
 	}
@@ -728,19 +906,25 @@ public class HTTPOAuthHandler extends Thread implements org.eclipse.jetty.server
 	 * @return true if state exists
 	 */
 	boolean stateExists(final String state) {
-		return stateDb.contains(state);
+		return stateDb.containsKey(state);
 	}
-
+	/**
+	 * This tests if state exist in database:
+	 *
+	 * @param state
+	 * @return true if state exists
+	 */
+	OAuthService getState(final String state) {
+		return stateDb.get(state);
+	}
 	/**
 	 * This stores state in database, if not already stored
 	 *
 	 * @param state
 	 *            is the state to store
 	 */
-	void storeState(final String state) {
-		if (stateDb.contains(state) == false) {
-			stateDb.add(state);
-		}
+	void storeState(final String state, final OAuthService s) {
+		stateDb.put(state, s);
 	}
 
 	/**
