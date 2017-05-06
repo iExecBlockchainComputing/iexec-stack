@@ -3430,12 +3430,6 @@ public final class DBInterface {
 				useData(theClient, appitf.getLDSolarisAlpha());
 				removeData(theClient, theApp.getLDSolarisAlpha());
 				theApp.setLDSolaris_alpha(appitf.getLDSolarisAlpha());
-				useData(theClient, appitf.getLDOsf1Sparc());
-				removeData(theClient, theApp.getLDOsf1Sparc());
-				theApp.setLDOsf1_sparc(appitf.getLDOsf1Sparc());
-				useData(theClient, appitf.getLDOsf1Alpha());
-				removeData(theClient, theApp.getLDOsf1Alpha());
-				theApp.setLDOsf1_alpha(appitf.getLDOsf1Alpha());
 				useData(theClient, appitf.getJava());
 				useData(theClient, theApp.getJava());
 				theApp.setJava(appitf.getJava());
@@ -3463,15 +3457,6 @@ public final class DBInterface {
 				useData(theClient, appitf.getSolarisSparc());
 				removeData(theClient, theApp.getSolarisSparc());
 				theApp.setSolaris_sparc(appitf.getSolarisSparc());
-				useData(theClient, appitf.getSolarisAlpha());
-				removeData(theClient, theApp.getSolarisAlpha());
-				theApp.setSolaris_alpha(appitf.getSolarisAlpha());
-				useData(theClient, appitf.getOsf1Sparc());
-				removeData(theClient, theApp.getOsf1Sparc());
-				theApp.setOsf1_sparc(appitf.getOsf1Sparc());
-				useData(theClient, appitf.getOsf1Alpha());
-				removeData(theClient, theApp.getOsf1Alpha());
-				theApp.setOsf1_alpha(appitf.getOsf1Alpha());
 
 				if (theClient.getRights().lowerThan(UserRightEnum.ADVANCED_USER)) {
 					logger.debug("set app AR to USERALL");
@@ -3543,8 +3528,6 @@ public final class DBInterface {
 		useData(theClient, appitf.getLDMacosPpc());
 		useData(theClient, appitf.getLDSolarisSparc());
 		useData(theClient, appitf.getLDSolarisAlpha());
-		useData(theClient, appitf.getLDOsf1Sparc());
-		useData(theClient, appitf.getLDOsf1Alpha());
 		useData(theClient, appitf.getJava());
 		useData(theClient, appitf.getLinuxIX86());
 		useData(theClient, appitf.getLinuxPpc());
@@ -3554,9 +3537,6 @@ public final class DBInterface {
 		useData(theClient, appitf.getMacosIX86());
 		useData(theClient, appitf.getMacosPpc());
 		useData(theClient, appitf.getSolarisSparc());
-		useData(theClient, appitf.getSolarisAlpha());
-		useData(theClient, appitf.getOsf1Sparc());
-		useData(theClient, appitf.getOsf1Alpha());
 	}
 
 	/**
@@ -3785,9 +3765,6 @@ public final class DBInterface {
 		removeData(theClient, theApp.getMacosX8664());
 		removeData(theClient, theApp.getJava());
 		removeData(theClient, theApp.getSolarisSparc());
-		removeData(theClient, theApp.getSolarisAlpha());
-		removeData(theClient, theApp.getOsf1Sparc());
-		removeData(theClient, theApp.getOsf1Alpha());
 		removeData(theClient, theApp.getLDLinuxIX86());
 		removeData(theClient, theApp.getLDLinuxAmd64());
 		removeData(theClient, theApp.getLDLinuxPpc());
@@ -3798,8 +3775,6 @@ public final class DBInterface {
 		removeData(theClient, theApp.getLDMacosX8664());
 		removeData(theClient, theApp.getLDSolarisSparc());
 		removeData(theClient, theApp.getLDSolarisAlpha());
-		removeData(theClient, theApp.getLDOsf1Sparc());
-		removeData(theClient, theApp.getLDOsf1Alpha());
 
 		return delete(theClient, theApp);
 	}
