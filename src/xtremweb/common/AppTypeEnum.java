@@ -67,16 +67,17 @@ public enum AppTypeEnum {
 		 * @see xtremweb.common.OSEnum#getOs(String)
 		 * @since 8.0.0 (FG)
 		 */
+		@Override
 		public File getPath() throws FileNotFoundException {
 			final String filePath = virtualboxpaths[OSEnum.getOs().ordinal()];
 			if (filePath == null) {
-				throw new FileNotFoundException("no binary path for " + this);
+				throw new FileNotFoundException(NOBINPATH + this);
 			}
 			final File f = new File(filePath);
 			if (f.exists()) {
 				return f;
 			}
-			throw new FileNotFoundException("no binary path for " + this);
+			throw new FileNotFoundException(NOBINPATH + this);
 		}
 	};
 
@@ -98,6 +99,7 @@ public enum AppTypeEnum {
 			null // JAVA
 	};
 
+	private static final String NOBINPATH = "no binary path for ";
 	/**
 	 * This retrieves an OS from its ordinal value
 	 *
@@ -151,7 +153,7 @@ public enum AppTypeEnum {
 	 * @since 8.0.0 (FG)
 	 */
 	public File getPath() throws FileNotFoundException {
-		throw new FileNotFoundException("no binary path for " + this);
+		throw new FileNotFoundException(NOBINPATH + this);
 	}
 
 	/**
