@@ -89,7 +89,7 @@ public class AccessLogger {
 	/**
 	 * This is the directory name where access logs are stored
 	 */
-	private final String DIRNAME = "xwAccessLogs";
+	private static final String DIRNAME = "xwAccessLogs";
 	/**
 	 * This is the logger
 	 */
@@ -181,7 +181,8 @@ public class AccessLogger {
 				}
 
 				logDate = currentDate;
-				out = new PrintStream(new FileOutputStream(new File(logPath, getCurrentLogFileName()), true));
+				final FileOutputStream fos = new FileOutputStream(new File(logPath, getCurrentLogFileName()), true);
+				out = new PrintStream(fos);
 			}
 		} catch (final Exception e) {
 			throw new IOException(e.toString());
