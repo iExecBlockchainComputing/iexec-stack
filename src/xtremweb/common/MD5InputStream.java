@@ -170,7 +170,8 @@ public class MD5InputStream extends FilterInputStream {
 			// Use the default MD5 implementation that comes with Java
 
 			if (useDefaultMd5) {
-				final InputStream in = new BufferedInputStream(new FileInputStream(filename));
+				final FileInputStream fis = new FileInputStream(filename);
+				final InputStream in = new BufferedInputStream(fis);
 				final java.security.MessageDigest digest = java.security.MessageDigest.getInstance("MD5");
 				while ((num_read = in.read(buf)) != -1) {
 					digest.update(buf, 0, num_read);

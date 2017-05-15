@@ -127,14 +127,11 @@ public class MD5OutputStream extends FilterOutputStream {
 	 * here.
 	 **/
 	public static void main(final String[] arg) {
-		try {
-			final MD5OutputStream out = new MD5OutputStream(new NullOutputStream());
-			final InputStream in = new BufferedInputStream(new FileInputStream(arg[0]));
+		try (final MD5OutputStream out = new MD5OutputStream(new NullOutputStream());
+				final InputStream in = new BufferedInputStream(new FileInputStream(arg[0]))){
 			final byte[] buf = new byte[65536];
 			int numRead;
-			long totalRead = 0;
 			while ((numRead = in.read(buf)) != -1) {
-				totalRead += numRead;
 				out.write(buf, 0, numRead);
 			}
 			System.out.println(MD5.asHex(out.hash()) + "  " + arg[0]);
