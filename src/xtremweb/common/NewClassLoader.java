@@ -65,12 +65,11 @@ public class NewClassLoader extends MultiClassLoader {
 
 	protected byte[] getClassFromAddedClassPaths(final String className) {
 
-		byte result[] = null;
-		final byte block[] = null;
+		byte[] result = null;
 		int rb, chunk, size;
+		final String fsep = System.getProperty("file.separator");
 
 		try {
-			final String fsep = System.getProperty("file.separator");
 			final String fileName = formatClassName(className);
 
 			// Lookup the class into all the added class paths
