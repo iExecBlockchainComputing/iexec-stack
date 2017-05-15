@@ -90,7 +90,7 @@ public final class UID extends XMLable {
 	/**
 	 * This is the unic identifier
 	 */
-	private UUID uid;
+	private UUID uuid;
 	/**
 	 * This is the UID column index
 	 *
@@ -103,7 +103,7 @@ public final class UID extends XMLable {
 	 */
 	public UID() {
 		super(THISTAG, UID);
-		this.uid = UUID.randomUUID();
+		this.uuid = UUID.randomUUID();
 		setColumnAt(UID, "UID");
 	}
 
@@ -176,13 +176,13 @@ public final class UID extends XMLable {
 	 * This return this objet hash code.
 	 *
 	 * @return uid.hashCode() if uid is not null, NULLUID.hashCode() otherwise
-	 * @see #uid
+	 * @see #uuid
 	 * @see #NULLUID
 	 */
 	@Override
 	public int hashCode() {
-		if (uid != null) {
-			return uid.hashCode();
+		if (uuid != null) {
+			return uuid.hashCode();
 		} else {
 			return NULLUID.hashCode();
 		}
@@ -205,7 +205,7 @@ public final class UID extends XMLable {
 	@Override
 	public String toString(final boolean csv) {
 		try {
-			return uid.toString();
+			return uuid.toString();
 		} catch (final NullPointerException e) {
 		}
 		return null;
@@ -233,9 +233,9 @@ public final class UID extends XMLable {
 		}
 		final String v = value.trim();
 		if (v.compareToIgnoreCase(NULLUID_LABEL) == 0) {
-			this.uid = UUID.fromString(NULLUID.toString());
+			this.uuid = UUID.fromString(NULLUID.toString());
 		} else {
-			this.uid = UUID.fromString(v);
+			this.uuid = UUID.fromString(v);
 		}
 	}
 
