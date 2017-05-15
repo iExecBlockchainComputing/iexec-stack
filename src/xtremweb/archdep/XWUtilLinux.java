@@ -82,8 +82,7 @@ public class XWUtilLinux extends XWUtilImpl {
 			return;
 		}
 
-		try {
-			final BufferedReader bufferFile = new BufferedReader(new FileReader(procStats));
+		try (final BufferedReader bufferFile = new BufferedReader(new FileReader(procStats))) {
 			String line = "";
 
 			line = bufferFile.readLine();
@@ -173,19 +172,15 @@ public class XWUtilLinux extends XWUtilImpl {
 		}
 
 		try {
-			BufferedReader bufferFile = null;
 			String line = "";
 
-			try {
-				bufferFile = new BufferedReader(new FileReader(procStat));
+			try (BufferedReader bufferFile = new BufferedReader(new FileReader(procStat))) {
 				line = bufferFile.readLine();
 			} catch (final Throwable b) {
 				b.printStackTrace();
 				logger.error("XWUtilLinux::getProcessGroup () 00 : " + b);
 				return -1;
 			}
-
-			bufferFile.close();
 
 			final StringTokenizer tokenizer = new StringTokenizer(line, "\t ");
 
@@ -195,13 +190,7 @@ public class XWUtilLinux extends XWUtilImpl {
 				tokenizer.nextToken();
 			}
 
-			try {
-				return new Integer(tokenizer.nextToken()).intValue();
-			} catch (final Throwable e) {
-				e.printStackTrace();
-				logger.error("XWUtilLinux::getProcessGroup () 01 : " + e);
-				return -1;
-			}
+			return Integer.parseInt(tokenizer.nextToken());
 		} catch (final Throwable e) {
 			e.printStackTrace();
 			logger.error("XWUtilLinux::getProcessGroup () 02: " + e);
@@ -246,19 +235,15 @@ public class XWUtilLinux extends XWUtilImpl {
 			}
 
 			try {
-				BufferedReader bufferFile = null;
 				String line = "";
 
-				try {
-					bufferFile = new BufferedReader(new FileReader(procStats));
+				try (BufferedReader bufferFile = new BufferedReader(new FileReader(procStats))){
 					line = bufferFile.readLine();
 				} catch (final Throwable b) {
 					b.printStackTrace();
 					logger.error("XWUtilLinux::getProcessFamily () 00 : " + b);
 					return null;
 				}
-
-				bufferFile.close();
 
 				final StringTokenizer tokenizer = new StringTokenizer(line, "\t ");
 
@@ -300,11 +285,9 @@ public class XWUtilLinux extends XWUtilImpl {
 		}
 
 		try {
-			BufferedReader bufferFile = null;
 			String line = "";
 
-			try {
-				bufferFile = new BufferedReader(new FileReader(procStats));
+			try (BufferedReader bufferFile = new BufferedReader(new FileReader(procStats))){
 				line = bufferFile.readLine();
 			} catch (final Throwable b) {
 				b.printStackTrace();
@@ -312,21 +295,13 @@ public class XWUtilLinux extends XWUtilImpl {
 				return 0;
 			}
 
-			bufferFile.close();
-
 			final StringTokenizer tokenizer = new StringTokenizer(line, "\t ");
 
 			for (int i = 0; i < 13; i++) {
 				tokenizer.nextToken();
 			}
 
-			try {
-				return new Long(tokenizer.nextToken()).intValue();
-			} catch (final Throwable e) {
-				e.printStackTrace();
-				logger.error("XWUtilLinux::getProcessUser () 01 : " + e);
-				return 0;
-			}
+			return new Long(tokenizer.nextToken()).intValue();
 		} catch (final Throwable e) {
 			e.printStackTrace();
 			logger.error("XWUtilLinux::getProcessUser () 02 : " + e);
@@ -388,8 +363,7 @@ public class XWUtilLinux extends XWUtilImpl {
 			return 0;
 		}
 
-		try {
-			final BufferedReader bufferFile = new BufferedReader(new FileReader(procInterrupts));
+		try (final BufferedReader bufferFile = new BufferedReader(new FileReader(procInterrupts))) {
 			String l = "";
 
 			while ((l != null) && (valStr == null)) {
@@ -424,8 +398,7 @@ public class XWUtilLinux extends XWUtilImpl {
 			return new String();
 		}
 
-		try {
-			final BufferedReader bufferFile = new BufferedReader(new FileReader(procInterrupts));
+		try (final BufferedReader bufferFile = new BufferedReader(new FileReader(procInterrupts))) {
 			String l = "";
 
 			while ((l != null) && (valStr == null)) {
@@ -447,7 +420,7 @@ public class XWUtilLinux extends XWUtilImpl {
 		if (valStr != null) {
 			return valStr;
 		}
-		return new String();
+		return "";
 	}
 
 	/**
@@ -463,8 +436,7 @@ public class XWUtilLinux extends XWUtilImpl {
 			return 0;
 		}
 
-		try {
-			final BufferedReader bufferFile = new BufferedReader(new FileReader(procInterrupts));
+		try (final BufferedReader bufferFile = new BufferedReader(new FileReader(procInterrupts))) {
 			String l = "";
 
 			while ((l != null) && (valStr == null)) {
@@ -502,8 +474,7 @@ public class XWUtilLinux extends XWUtilImpl {
 			return 0;
 		}
 
-		try {
-			final BufferedReader bufferFile = new BufferedReader(new FileReader(procInterrupts));
+		try (final BufferedReader bufferFile = new BufferedReader(new FileReader(procInterrupts))) {
 			String l = "";
 
 			while ((l != null) && (valStr == null)) {
