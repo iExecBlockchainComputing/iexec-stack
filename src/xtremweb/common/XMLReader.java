@@ -47,7 +47,7 @@ import xtremweb.communications.XWCommException;
  * @since 5.8.0
  */
 
-public class XMLReader {
+public class XMLReader implements AutoCloseable {
 
 	private final Logger logger;
 
@@ -58,9 +58,12 @@ public class XMLReader {
 	 */
 	public XMLReader(final XMLable o) {
 		LoggerLevel logLevel = LoggerLevel.DEBUG;
-		try {
-			logLevel = LoggerLevel.valueOf(System.getProperty(XWPropertyDefs.LOGGERLEVEL.toString()));
-		} catch (final Exception e) {
+		final String p = System.getProperty(XWPropertyDefs.LOGGERLEVEL.toString());
+		if (p != null) {
+			logLevel = LoggerLevel.valueOf(p);
+		}
+		else {
+			logLevel = LoggerLevel.INFO;
 		}
 		logger = new Logger(logLevel);
 		xmlObject = o;
@@ -101,8 +104,7 @@ public class XMLReader {
 					final DescriptionHandler handler = new DescriptionHandler(dtd);
 					parser.parse(input, handler);
 				} catch (final ParserConfigurationException e) {
-					logger.exception(e);
-					throw new IOException(e.toString());
+					throw new IOException(e);
 				} catch (final SAXException e2) {
 					if (e2 instanceof XMLEndParseException) {
 						final XWCommException xwce = new XWCommException(theresult);
@@ -159,5 +161,9 @@ public class XMLReader {
 		public void endElement(final String uri, final String tag, final String qname) throws SAXException {
 			xmlObject.xmlElementStop(uri, tag, qname);
 		}
+	}
+
+	@Override
+	public void close() {
 	}
 }
