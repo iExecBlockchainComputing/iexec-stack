@@ -140,7 +140,7 @@ public final class CommManager extends Thread {
 		try {
 			initWorkTimeOut = Worker.getConfig().getInt(XWPropertyDefs.TIMEOUT);
 			nullWorkTimeOut = initWorkTimeOut;
-			maxWorkTimeOut = Worker.getConfig().maxTimeout();
+			maxWorkTimeOut = Worker.getConfig().getMaxTimeout();
 		} finally {
 			notify();
 		}
