@@ -61,14 +61,14 @@ public class ViewDialog extends JDialog implements ActionListener {
 	public static final String EDIT = "Edit";
 	public static final String CANCEL = "Cancel";
 	public static final String HELP = "Help";
-	private final JFrame parent;
+	private final JFrame _parent;
 
 	/**
 	 * @return the textPane
 	 */
 	@Override
 	public JFrame getParent() {
-		return parent;
+		return _parent;
 	}
 
 	private JPanel textPane = null;
@@ -134,7 +134,7 @@ public class ViewDialog extends JDialog implements ActionListener {
 		editing = false;
 		setEdited(false);
 
-		parent = f;
+		_parent = f;
 		setFields(new Hashtable());
 		columns = cc;
 
@@ -282,7 +282,7 @@ public class ViewDialog extends JDialog implements ActionListener {
 						helpViewer.setVisible(false);
 					}
 				});
-				JOptionPane.showMessageDialog(parent, helpViewer.getPane(), "XWHEP help",
+				JOptionPane.showMessageDialog(_parent, helpViewer.getPane(), "XWHEP help",
 						JOptionPane.INFORMATION_MESSAGE);
 
 			} catch (final Exception ex) {

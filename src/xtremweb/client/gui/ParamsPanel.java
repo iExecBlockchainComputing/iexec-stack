@@ -79,14 +79,12 @@ public class ParamsPanel extends JPanel {
 	 */
 	private final JTextField paramsNbWorkers;
 
-	private final MainFrame parent;
 
 	/**
 	 * This constructs a new panel with GUI to manage XtremWeb parameters
 	 */
 	public ParamsPanel(final MainFrame p) {
 
-		parent = p;
 		final JTabbedPane tabbedPane = new JTabbedPane();
 		final GridBagLayout gbLayout = new GridBagLayout();
 		final GridBagConstraints gbConstraints = new GridBagConstraints();

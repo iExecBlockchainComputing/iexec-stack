@@ -35,6 +35,7 @@ package xtremweb.client.gui;
 
 import java.io.IOException;
 import java.net.ConnectException;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
@@ -64,8 +65,8 @@ class UsersTableModel extends TableModel {
 	private static final String UID = "UID";
 	private static final String GROUP = "User group";
 	private static final String LOGIN = "Login";
-	private static final String PASSWORD = "Password";
-	private static final String PASSWORD2 = "Confirm password";
+	private static final String p = "Password";
+	private static final String p2 = "Confirm password";
 	private static final String EMAIL = "E-mail";
 	private static final String FNAME = "First name";
 	private static final String LNAME = "Last name";
@@ -75,12 +76,12 @@ class UsersTableModel extends TableModel {
 	/**
 	 * These defines submission parameter labels
 	 */
-	private static final String[] labels = { UID, GROUP, LOGIN, PASSWORD, PASSWORD2, EMAIL, FNAME, LNAME, TEAM, COUNTRY,
+	private static final String[] labels = { UID, GROUP, LOGIN, p, p2, EMAIL, FNAME, LNAME, TEAM, COUNTRY,
 			RIGHTS };
 
 	private static final String HELPSTRING = "<u>" + GROUP + "</u> : select an user group (this is optionnal)<br>"
 			+ "<u>" + LOGIN + "</u> : a login must be unic in the platform; reusing an existing login updates user<br>"
-			+ "<u>" + PASSWORD + "</u> : please provide a password <br>" + "<u>" + PASSWORD2
+			+ "<u>" + p + "</u> : please provide a password <br>" + "<u>" + p2
 			+ "</u> : please confirm the password<br>" + "<u>" + EMAIL + "</u> : a valid email address is required<br>"
 			+ "<u>" + FNAME + "</u> first name<br>" + "<u>" + LNAME + "</u> last name<br>" + "<u>" + RIGHTS
 			+ "</u> select a user rights from drop down menu";
@@ -111,7 +112,7 @@ class UsersTableModel extends TableModel {
 	 */
 	@Override
 	public void add() {
-		final Vector newRow = new Vector();
+		final ArrayList newRow = new ArrayList();
 		final UID uid = new UID();
 		newRow.add(uid); // UID
 
@@ -141,21 +142,21 @@ class UsersTableModel extends TableModel {
 
 		newRow.add(groupLabels); // group labels
 
-		newRow.add(new String()); // login
+		newRow.add(""); // login
 		newRow.add(new JPasswordField()); // password
 		newRow.add(new JPasswordField()); // verify password
-		newRow.add(new String()); // email
-		newRow.add(new String()); // first name
-		newRow.add(new String()); // last name
-		newRow.add(new String()); // team
-		newRow.add(new String()); // country
+		newRow.add(""); // email
+		newRow.add(""); // first name
+		newRow.add(""); // last name
+		newRow.add(""); // team
+		newRow.add(""); // country
 
-		final String[] URLABELS = new String[UserRightEnum.SIZE];
+		final String[] urlLabels = new String[UserRightEnum.SIZE];
 		for (final UserRightEnum c : UserRightEnum.values()) {
-			URLABELS[c.ordinal()] = c.toString();
+			urlLabels[c.ordinal()] = c.toString();
 		}
 
-		newRow.add(URLABELS); // rights
+		newRow.add(urlLabels); // rights
 
 		final ViewDialog dlg = new ViewDialog(getParent(), "Create new user", labels, newRow, true);
 
@@ -165,7 +166,7 @@ class UsersTableModel extends TableModel {
 		dlg.setHelpString(HELPSTRING);
 		dlg.setVisible(true);
 
-		if (dlg.isCancelled() == true) {
+		if (dlg.isCancelled()) {
 			return;
 		}
 
@@ -186,9 +187,9 @@ class UsersTableModel extends TableModel {
 				return;
 			}
 
-			jtf = (JTextField) dlg.getFields().get(PASSWORD);
+			jtf = (JTextField) dlg.getFields().get(p);
 			final String password = jtf.getText();
-			jtf = (JTextField) dlg.getFields().get(PASSWORD2);
+			jtf = (JTextField) dlg.getFields().get(p2);
 			final String password2 = jtf.getText();
 
 			if (password2.compareTo(password) != 0) {

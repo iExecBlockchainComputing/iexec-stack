@@ -85,7 +85,7 @@ public final class MainPanel extends JPanel {
 	/**
 	 * This is the parent frame
 	 */
-	private final MainFrame parent;
+	private final MainFrame _parent;
 
 	/**
 	 * This is the tabbed pane containing all panes
@@ -155,22 +155,22 @@ public final class MainPanel extends JPanel {
 	 */
 	public MainPanel(final MainFrame p) {
 
-		parent = p;
+		_parent = p;
 
 		tabbedPane = new JTabbedPane();
 		logger = new Logger(this);
 
 		try {
-			jobsTableModel = new JobsTableModel(parent);
-			groupsTableModel = new GroupsTableModel(parent);
-			sessionsTableModel = new SessionsTableModel(parent);
-			datasTableModel = new DatasTableModel(parent);
-			appsTableModel = new AppsTableModel(parent);
-			usersTableModel = new UsersTableModel(parent);
-			usergroupsTableModel = new UsergroupsTableModel(parent);
-			hostsTableModel = new HostsTableModel(parent);
-			tasksTableModel = new TasksTableModel(parent);
-			worksTableModel = new WorksTableModel(parent);
+			jobsTableModel = new JobsTableModel(_parent);
+			groupsTableModel = new GroupsTableModel(_parent);
+			sessionsTableModel = new SessionsTableModel(_parent);
+			datasTableModel = new DatasTableModel(_parent);
+			appsTableModel = new AppsTableModel(_parent);
+			usersTableModel = new UsersTableModel(_parent);
+			usergroupsTableModel = new UsergroupsTableModel(_parent);
+			hostsTableModel = new HostsTableModel(_parent);
+			tasksTableModel = new TasksTableModel(_parent);
+			worksTableModel = new WorksTableModel(_parent);
 
 			tabbedPane.addTab("Jobs", new TablePanel(jobsTableModel));
 			tabbedPane.setMnemonicAt(Tabs.JOBS.ordinal(), KeyEvent.VK_J);
@@ -200,8 +200,8 @@ public final class MainPanel extends JPanel {
 				public void stateChanged(final ChangeEvent evt) {
 					final JTabbedPane pane = (JTabbedPane) evt.getSource();
 					final TablePanel tab = (TablePanel) pane.getSelectedComponent();
-					parent.setTotalLines(tab.getRowCount());
-					parent.setSelectedLines(tab.getTable().getSelectedRows().length);
+					_parent.setTotalLines(tab.getRowCount());
+					_parent.setSelectedLines(tab.getTable().getSelectedRows().length);
 				}
 			});
 		} catch (final Exception e) {
@@ -216,7 +216,7 @@ public final class MainPanel extends JPanel {
 
 		setMinimumSize(new Dimension(500, 450));
 
-		setLoggerLevel(parent.getLoggerLevel());
+		setLoggerLevel(_parent.getLoggerLevel());
 
 	}
 
