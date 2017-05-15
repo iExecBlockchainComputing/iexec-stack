@@ -357,7 +357,9 @@ public final class XMLtuple extends XMLable {
 			XMLtuple tuple = new XMLtuple(new Integer(1), new String("un"));
 
 			if (argv.length == 1) {
-				tuple = new XMLtuple(new DataInputStream(new FileInputStream(argv[0])));
+				final FileInputStream fis = new FileInputStream(argv[0]);
+				final DataInputStream dis = new DataInputStream(fis);
+				tuple = new XMLtuple(dis);
 			}
 
 			System.out.println(tuple.toXml());
