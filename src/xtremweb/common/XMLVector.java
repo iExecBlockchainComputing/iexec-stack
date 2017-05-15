@@ -94,7 +94,6 @@ public final class XMLVector extends XMLValue {
 	 * @since 5.8.0
 	 * @see #clear()
 	 */
-	@Override
 	protected void finalize() {
 		clear();
 	}
@@ -226,7 +225,7 @@ public final class XMLVector extends XMLValue {
 		String ret = "<" + getXMLTag() + " " + getColumnLabel(SIZE) + "=\"" + ((Vector<XMLValue>) value).size()
 				+ "\" >";
 
-		Enumeration<XMLValue> myenum = ((Vector<XMLValue>) value).elements();
+		final Enumeration<XMLValue> myenum = ((Vector<XMLValue>) value).elements();
 
 		for (; myenum.hasMoreElements();) {
 			final XMLValue v = myenum.nextElement();
@@ -234,8 +233,6 @@ public final class XMLVector extends XMLValue {
 		}
 
 		ret += "</" + getXMLTag() + ">";
-
-		myenum = null;
 
 		return ret;
 	}
@@ -249,32 +246,23 @@ public final class XMLVector extends XMLValue {
 	@Override
 	public void toXml(final DataOutputStream o) throws IOException {
 
-		String ret;
-		byte[] strb = null;
 		final Object value = getValue();
 		if (value == null) {
-			ret = "<" + getXMLTag() + " " + getColumnLabel(SIZE) + "=\"0\" ></" + getXMLTag() + ">";
-			strb = ret.getBytes(XWTools.UTF8);
-			o.write(strb);
-			strb = null;
+			final String strHead = "<" + getXMLTag() + " " + getColumnLabel(SIZE) + "=\"0\" ></" + getXMLTag() + ">";
+			o.write(strHead.getBytes(XWTools.UTF8));
 			return;
 		}
-		ret = "<" + getXMLTag() + " " + getColumnLabel(SIZE) + "=\"" + ((Vector<XMLValue>) value).size() + "\" >";
-		strb = ret.getBytes(XWTools.UTF8);
-		o.write(strb);
-		strb = null;
+		final String strBody = "<" + getXMLTag() + " " + getColumnLabel(SIZE) + "=\"" + ((Vector<XMLValue>) value).size() + "\" >";
+		o.write(strBody.getBytes(XWTools.UTF8));
 
-		Enumeration<XMLValue> myenum = ((Vector<XMLValue>) value).elements();
+		final Enumeration<XMLValue> myenum = ((Vector<XMLValue>) value).elements();
 
-		for (; myenum.hasMoreElements();) {
+		while (myenum.hasMoreElements()) {
 			final XMLValue v = myenum.nextElement();
 			v.toXml(o);
 		}
-		ret = "</" + getXMLTag() + ">";
-		strb = ret.getBytes(XWTools.UTF8);
-		o.write(strb);
-		strb = null;
-		myenum = null;
+		final String strTail = "</" + getXMLTag() + ">";
+		o.write(strTail.getBytes(XWTools.UTF8));
 	}
 
 	/**
@@ -423,7 +411,7 @@ public final class XMLVector extends XMLValue {
 	 * The dummy or read representation is finally dumped
 	 */
 	public static void main(final String[] argv) {
-		try {
+		try (final FileInputStream fis = new FileInputStream(argv[0])){
 			final Vector v = new Vector();
 			final Vector v2 = new Vector();
 			v.add(new String("un"));
@@ -437,9 +425,8 @@ public final class XMLVector extends XMLValue {
 			h.put(new String("deux"), new Integer(2));
 			v.add(h);
 			XMLVector xmlv = new XMLVector(v);
-
 			if (argv.length == 1) {
-				xmlv = new XMLVector(new DataInputStream(new FileInputStream(argv[0])));
+				xmlv = new XMLVector(new DataInputStream(fis));
 			}
 
 			System.out.println(xmlv.toXml());
@@ -461,7 +448,6 @@ public final class XMLVector extends XMLValue {
 			}
 		} catch (final Exception e) {
 			e.printStackTrace();
-			System.exit(1);
 		}
 	}
 
