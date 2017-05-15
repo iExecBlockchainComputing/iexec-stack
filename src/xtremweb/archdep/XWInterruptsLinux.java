@@ -60,8 +60,8 @@ public class XWInterruptsLinux implements XWInterrupts {
 	@Override
 	public int readKey() {
 
-		try {
-			final BufferedReader bufferFile = new BufferedReader(new FileReader("/proc/interrupts"));
+		try (final BufferedReader bufferFile = new BufferedReader(new FileReader("/proc/interrupts"))) {
+			
 			String l = "";
 
 			while (l != null) {
@@ -89,8 +89,7 @@ public class XWInterruptsLinux implements XWInterrupts {
 	/** Read /proc/interrupts to get the number binded to mouse */
 	@Override
 	public int readMouse() {
-		try {
-			final BufferedReader bufferFile = new BufferedReader(new FileReader("/proc/interrupts"));
+		try (final BufferedReader bufferFile = new BufferedReader(new FileReader("/proc/interrupts"))) {
 			String l = "";
 
 			while (l != null) {
