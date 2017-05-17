@@ -1001,18 +1001,12 @@ public abstract class XMLRPCCommand extends XMLable {
 	 */
 	public static void main(final String[] argv) {
 		final Logger logger = new Logger();
-		try {
-			XMLRPCCommand cmd;
-			if (argv.length > 1) {
-				final StreamIO streamIO = new StreamIO(null, new DataInputStream(new FileInputStream(argv[1])));
-
-				cmd = XMLRPCCommand.newCommand(streamIO);
-				cmd.getLogger().info(cmd.openXmlRootElement() + cmd.toXml() + cmd.closeXmlRootElement());
-			}
+		try (final StreamIO streamIO = new StreamIO(null, new DataInputStream(new FileInputStream(argv[1])))){
+			XMLRPCCommand cmd = XMLRPCCommand.newCommand(streamIO);
+			cmd.getLogger().info(cmd.openXmlRootElement() + cmd.toXml() + cmd.closeXmlRootElement());
 		} catch (final Exception e) {
 			logger.exception("Usage : java -cp " + XWTools.JARFILENAME
 					+ " xtremweb.communications.XMLRPCCommand <aConfigFile> <anXMLDescriptionFile>", e);
-			System.exit(1);
 		}
 	}
 
