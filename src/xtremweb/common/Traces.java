@@ -328,7 +328,7 @@ public class Traces {
 	 *
 	 * @return an hashtable, as as getCPU ()
 	 */
-	public Data[] swapFree() {
+	public Data[] getSwapFree() {
 		return swap(false);
 	}
 
