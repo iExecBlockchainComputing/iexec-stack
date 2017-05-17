@@ -27,7 +27,9 @@ package xtremweb.archdep;
 //  Created : Mon Mar 25 2002.
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Hashtable;
 import java.util.Map;
@@ -54,7 +56,7 @@ import xtremweb.common.XWPropertyDefs;
 public class ArchDepFactory {
 
 	private final Logger logger;
-	
+
 	private static final String JAVALIBPATH="java.library.path";
 
 	/** Mapping between interface and implementations */
@@ -197,18 +199,7 @@ public class ArchDepFactory {
 			}
 
 			final String resname = "jni/" + libResName;
-			final InputStream ls = getClass().getClassLoader().getResourceAsStream(resname);
-			if ((ls != null) && (ls.available() > 0)) {
-				final byte[] buf = new byte[1024];
-				final FileOutputStream lf = new FileOutputStream(f);
-				for (int n = ls.read(buf); n > 0; n = ls.read(buf)) {
-					lf.write(buf, 0, n);
-				}
-				ls.close();
-				lf.close();
-			} else {
-				logger.finest("Archive does not contains " + resname);
-			}
+			writeRes(resname, f);
 
 			if (f.exists()) {
 				try {
@@ -231,6 +222,21 @@ public class ArchDepFactory {
 			logger.warn(" can't load " + s + " : " + e);
 		}
 		return loaded;
+	}
+
+	private void writeRes(final String resName, final File f) throws IOException {
+		
+		try (final FileOutputStream lf = new FileOutputStream(f);
+				final InputStream ls = getClass().getClassLoader().getResourceAsStream(resName)){
+			if ((ls != null) && (ls.available() > 0)) {
+				final byte[] buf = new byte[1024];
+				for (int n = ls.read(buf); n > 0; n = ls.read(buf)) {
+					lf.write(buf, 0, n);
+				}
+			} else {
+				logger.finest("Archive does not contains " + resName);
+			}
+		}
 	}
 
 	/**
