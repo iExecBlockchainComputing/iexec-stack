@@ -33,6 +33,7 @@ package xtremweb.rpcd.client;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.util.ArrayList;
 import java.util.Vector;
 
 import xtremweb.common.AppInterface;
@@ -42,6 +43,7 @@ import xtremweb.common.MileStone;
 import xtremweb.common.SessionInterface;
 import xtremweb.common.UID;
 import xtremweb.common.XMLValue;
+import xtremweb.common.XMLable;
 import xtremweb.common.XWConfigurator;
 import xtremweb.common.XWPropertyDefs;
 import xtremweb.communications.CommClient;
@@ -252,11 +254,11 @@ public class Callback {
 					// 14 nov 2005 : to ease deployment, we now take
 					// the first worker found as NFS server
 					logger.warn("Looking for any server");
-					final Vector<XMLValue> workers = comm.getHosts().getXmlValues();
+					final ArrayList<XMLable> workers = comm.getHosts().getXmlValues();
 					if ((workers == null) || (workers.size() < 1)) {
 						logger.fatal("can't find any server");
 					}
-					serverUID = (UID) workers.elementAt(0).getValue();
+					serverUID = (UID) ((XMLValue)workers.get(0)).getValue();
 				}
 				final HostInterface host = (HostInterface) comm.get(serverUID);
 				if (host == null) {
