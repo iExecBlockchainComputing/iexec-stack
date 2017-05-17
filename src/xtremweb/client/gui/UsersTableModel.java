@@ -51,6 +51,7 @@ import xtremweb.common.UserInterface;
 import xtremweb.common.UserRightEnum;
 import xtremweb.common.XMLValue;
 import xtremweb.common.XMLVector;
+import xtremweb.common.XMLable;
 
 /**
  * This class defines a swing table model to display XtremWeb informations<br />
@@ -123,15 +124,14 @@ class UsersTableModel extends TableModel {
 
 		try {
 			final XMLVector groups = getParent().commClient().getUserGroups();
-			final Vector<XMLValue> vgroups = groups.getXmlValues();
-			final Enumeration<XMLValue> enums = vgroups.elements();
+			final ArrayList<XMLable> vgroups = groups.getXmlValues();
 
 			groupLabels = new String[vgroups.size() + 1];
 			int i = 0;
 			groupLabels[i++] = new String(SELECT);
 
-			while (enums.hasMoreElements()) {
-				final UID groupUID = (UID) enums.nextElement().getValue();
+			for(int idx = 0; idx < vgroups.size(); idx++) {
+				final UID groupUID = (UID) vgroups.get(idx);
 				final UserGroupInterface group = (UserGroupInterface) getParent().commClient().get(groupUID, false);
 				groupLabels[i++] = group.getLabel();
 				groupsUID.put(group.getLabel(), groupUID);
