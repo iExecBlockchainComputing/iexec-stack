@@ -66,7 +66,7 @@ public class URI extends XMLable {
 	 *
 	 * @see XMLable#columns
 	 */
-	private static final int URI = FIRST_ATTRIBUTE;
+	private static final int URIIDX = FIRST_ATTRIBUTE;
 
 	/**
 	 * This tests if this contains a null UID If this does not contain an XWHEP
@@ -87,9 +87,9 @@ public class URI extends XMLable {
 	 * This constructs a new empty object
 	 */
 	private URI() {
-		super(THISTAG, URI);
+		super(THISTAG, URIIDX);
 		this.uri = null;
-		setColumnAt(URI, "URI");
+		setColumnAt(URIIDX, "URI");
 		uri = null;
 	}
 
@@ -142,7 +142,7 @@ public class URI extends XMLable {
 	 */
 	public URI(final String server, final int port, final UID uid) throws URISyntaxException {
 		this();
-		uri = new java.net.URI(Connection.xwScheme() + Connection.schemeSeparator() + server
+		uri = new java.net.URI(Connection.xwScheme() + Connection.getSchemeSeparator() + server
 				+ (port > 0 ? ":" + port : "") + (uid != null ? "/" + uid.toString() : ""));
 		uri.normalize();
 	}
@@ -387,9 +387,9 @@ public class URI extends XMLable {
 			final String attribute = attrs.getQName(a);
 			final String value = attrs.getValue(a);
 			getLogger().finest("     attribute #" + a + ": name=\"" + attribute + "\"" + ", value=\"" + value + "\""
-					+ "getColumnLabel(URI) = " + getColumnLabel(URI));
+					+ "getColumnLabel(URI) = " + getColumnLabel(URIIDX));
 
-			if (attribute.compareToIgnoreCase(getColumnLabel(URI)) == 0) {
+			if (attribute.compareToIgnoreCase(getColumnLabel(URIIDX)) == 0) {
 				try {
 					fromString(value);
 				} catch (final Exception e) {

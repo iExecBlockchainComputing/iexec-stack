@@ -307,7 +307,7 @@ public enum Connection {
 	 *
 	 * @return SCHEMESEPARATOR
 	 */
-	public static String schemeSeparator() {
+	public static String getSchemeSeparator() {
 		return SCHEMESEPARATOR;
 	}
 
