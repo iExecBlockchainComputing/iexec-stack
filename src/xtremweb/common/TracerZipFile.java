@@ -78,7 +78,8 @@ public class TracerZipFile {
 			final int sendResultDelay) {
 
 		try {
-			outfile = new ZipOutputStream(new FileOutputStream(filename));
+			final FileOutputStream fos = new FileOutputStream(filename);
+			outfile = new ZipOutputStream(fos);
 
 			ZipEntry zipEntry;
 
@@ -111,10 +112,9 @@ public class TracerZipFile {
 
 			outfile.closeEntry();
 		} catch (final Exception e) {
-			System.err.println(e.toString());
 		}
 
-	} // TracerZipFile ()
+	}
 
 	public void close() {
 		try {
@@ -138,24 +138,18 @@ public class TracerZipFile {
 	 *            is the name of the data file.
 	 */
 	public void addEntry(final String entryName, final String fileName) throws Exception {
-		try {
 
-			final File file = new File(fileName);
-			final FileInputStream dataIn = new FileInputStream(file);
-			ZipEntry zipEntry;
+		final File file = new File(fileName);
 
-			zipEntry = new ZipEntry(entryName);
+		try(final FileInputStream dataIn = new FileInputStream(file)) {
+			final ZipEntry zipEntry = new ZipEntry(entryName);
 			outfile.putNextEntry(zipEntry);
 
 			while (dataIn.available() != 0) {
 				outfile.write(dataIn.read());
 			}
 
-			dataIn.close();
 			outfile.closeEntry();
-		} catch (final Exception e) {
-			e.printStackTrace();
-			throw e;
 		}
 
 	} // addEntry()
