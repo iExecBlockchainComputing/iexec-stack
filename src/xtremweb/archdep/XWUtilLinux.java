@@ -26,7 +26,9 @@ package xtremweb.archdep;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
@@ -48,7 +50,7 @@ public class XWUtilLinux extends XWUtilImpl {
 
 	private long totalPidUserOld = 0;
 
-	private Vector pids = null;
+	private LinkedList<Integer> pids = null;
 	private final Logger logger;
 
 	public XWUtilLinux() {
@@ -62,7 +64,7 @@ public class XWUtilLinux extends XWUtilImpl {
 	 */
 	@Override
 	public void raz() {
-		pids = getProcessFamily(getPid());
+		pids = (LinkedList<Integer>)getProcessFamily(getPid());
 		if (pids == null) {
 			logger.error("XWUtilLinux::raz () : can't pids");
 		}
@@ -97,39 +99,33 @@ public class XWUtilLinux extends XWUtilImpl {
 
 				tokenizer.nextToken();
 
-				try {
-					final long machineUserTmp = machineUser;
-					final long machineNiceTmp = machineNice;
-					final long machineSysTmp = machineSys;
-					final long machineIdleTmp = machineIdle;
+				final long machineUserTmp = machineUser;
+				final long machineNiceTmp = machineNice;
+				final long machineSysTmp = machineSys;
+				final long machineIdleTmp = machineIdle;
 
-					final long machineTotalTmp = machineTotal;
+				final long machineTotalTmp = machineTotal;
 
-					machineUser = new Long(tokenizer.nextToken()).longValue();
-					machineNice = new Long(tokenizer.nextToken()).longValue();
-					machineSys = new Long(tokenizer.nextToken()).longValue();
-					machineIdle = new Long(tokenizer.nextToken()).longValue();
+				machineUser = new Long(tokenizer.nextToken()).longValue();
+				machineNice = new Long(tokenizer.nextToken()).longValue();
+				machineSys = new Long(tokenizer.nextToken()).longValue();
+				machineIdle = new Long(tokenizer.nextToken()).longValue();
 
-					machineTotal = machineUser + machineNice + machineSys + machineIdle;
+				machineTotal = machineUser + machineNice + machineSys + machineIdle;
 
-					machineUserOld = machineUserTmp;
-					machineNiceOld = machineNiceTmp;
-					machineSysOld = machineSysTmp;
-					machineIdleOld = machineIdleTmp;
+				machineUserOld = machineUserTmp;
+				machineNiceOld = machineNiceTmp;
+				machineSysOld = machineSysTmp;
+				machineIdleOld = machineIdleTmp;
 
-					machineTotalOld = machineTotalTmp;
-
-				} catch (final Exception e) {
-					logger.error(" Exception: " + e);
-					return;
-				}
+				machineTotalOld = machineTotalTmp;
 
 			} else {
 				logger.error("can't find cpu line in /proc/stat");
 			}
 
 		} catch (final Exception e) {
-			logger.error(" Exception: " + e);
+			logger.exception(e);
 		}
 
 		return;
@@ -171,20 +167,11 @@ public class XWUtilLinux extends XWUtilImpl {
 			return -1;
 		}
 
-		try {
+		try (BufferedReader bufferFile = new BufferedReader(new FileReader(procStat))) {
+
 			String line = "";
-
-			try (BufferedReader bufferFile = new BufferedReader(new FileReader(procStat))) {
-				line = bufferFile.readLine();
-			} catch (final Throwable b) {
-				b.printStackTrace();
-				logger.error("XWUtilLinux::getProcessGroup () 00 : " + b);
-				return -1;
-			}
-
+			line = bufferFile.readLine();
 			final StringTokenizer tokenizer = new StringTokenizer(line, "\t ");
-
-			final int thisChildPid = new Integer(tokenizer.nextToken()).intValue();
 
 			for (int j = 0; j < 3; j++) {
 				tokenizer.nextToken();
@@ -192,8 +179,7 @@ public class XWUtilLinux extends XWUtilImpl {
 
 			return Integer.parseInt(tokenizer.nextToken());
 		} catch (final Throwable e) {
-			e.printStackTrace();
-			logger.error("XWUtilLinux::getProcessGroup () 02: " + e);
+			logger.error("XWUtilLinux::getProcessGroup () 02 : " + e);
 		}
 
 		return -1;
@@ -208,9 +194,9 @@ public class XWUtilLinux extends XWUtilImpl {
 	 *            is the process PID
 	 * @see #getProcessGroup (int)
 	 */
-	private Vector getProcessFamily(final int parent) {
+	private Collection<Integer> getProcessFamily(final int parent) {
 
-		Vector ret = new Vector();
+		LinkedList<Integer> ret = new LinkedList<Integer>();
 		final File dir = new File("/proc/");
 		final int grp = getProcessGroup(parent);
 
@@ -234,35 +220,19 @@ public class XWUtilLinux extends XWUtilImpl {
 				continue;
 			}
 
-			try {
-				String line = "";
-
-				try (BufferedReader bufferFile = new BufferedReader(new FileReader(procStats))){
-					line = bufferFile.readLine();
-				} catch (final Throwable b) {
-					b.printStackTrace();
-					logger.error("XWUtilLinux::getProcessFamily () 00 : " + b);
-					return null;
-				}
+			try (BufferedReader bufferFile = new BufferedReader(new FileReader(procStats))){
+				String line = bufferFile.readLine();
 
 				final StringTokenizer tokenizer = new StringTokenizer(line, "\t ");
-
 				final int thisChildPid = new Integer(tokenizer.nextToken()).intValue();
+				final int thisChildGid = getProcessGroup(thisChildPid);
 
-				try {
-					final int thisChildGid = getProcessGroup(thisChildPid);
-
-					if (thisChildGid == grp) {
-						ret.add(new Integer(thisChildPid));
-					}
-				} catch (final Throwable e) {
-					e.printStackTrace();
-					logger.error("XWUtilLinux::getProcessFamily () 01 : " + e);
-					return null;
+				if (thisChildGid == grp) {
+					ret.add(new Integer(thisChildPid));
 				}
 			} catch (final Throwable e) {
 				e.printStackTrace();
-				logger.error("XWUtilLinux::getProcessFamily () 02 : " + e);
+				logger.error("XWUtilLinux::getProcessFamily ()" + e);
 				ret = null;
 			}
 		}
@@ -284,17 +254,10 @@ public class XWUtilLinux extends XWUtilImpl {
 			return 0;
 		}
 
-		try {
+		try (BufferedReader bufferFile = new BufferedReader(new FileReader(procStats))){
+
 			String line = "";
-
-			try (BufferedReader bufferFile = new BufferedReader(new FileReader(procStats))){
-				line = bufferFile.readLine();
-			} catch (final Throwable b) {
-				b.printStackTrace();
-				logger.error("XWUtilLinux::getProcessUser () 00 : " + b);
-				return 0;
-			}
-
+			line = bufferFile.readLine();
 			final StringTokenizer tokenizer = new StringTokenizer(line, "\t ");
 
 			for (int i = 0; i < 13; i++) {
@@ -319,7 +282,6 @@ public class XWUtilLinux extends XWUtilImpl {
 	public int getProcessLoad() {
 
 		long diffMachineTotal = machineTotal - machineTotalOld;
-		final long diffMachineUser = machineUser - machineUserOld;
 
 		long totalPidUser = 0;
 
@@ -328,11 +290,11 @@ public class XWUtilLinux extends XWUtilImpl {
 			return 0;
 		}
 
-		final Iterator theIterator = pids.iterator();
+		final Iterator<Integer> theIterator = pids.iterator();
 
 		while (theIterator.hasNext()) {
 
-			final int pid = ((Integer) theIterator.next()).intValue();
+			final int pid = theIterator.next().intValue();
 
 			totalPidUser = totalPidUser + processUser(pid);
 		}
@@ -414,7 +376,7 @@ public class XWUtilLinux extends XWUtilImpl {
 			bufferFile.close();
 		} catch (final Exception e) {
 			logger.error(" Exception: " + e);
-			return new String();
+			return "";
 		}
 
 		if (valStr != null) {
@@ -512,7 +474,7 @@ public class XWUtilLinux extends XWUtilImpl {
 			final int cpuLoad = cpu.getCpuLoad();
 			if (args.length > 0) {
 				try {
-					cpu.pids = cpu.getProcessFamily(new Integer(args[0]).intValue());
+					cpu.pids = (LinkedList<Integer>) cpu.getProcessFamily(new Integer(args[0]).intValue());
 					final int processLoad = cpu.getProcessLoad();
 					System.out.print("%CPU = " + cpuLoad);
 					System.out.print("  %CPU [" + args[0] + "] = " + processLoad);
