@@ -87,8 +87,8 @@ public final class XWConfigurator extends Properties {
 	 * This is the logger
 	 */
 	private final Logger logger;
-	
-	private final String LOCALHOST = "localhost";
+
+	private static final String LOCALHOST = "localhost";
 	/**
 	 * This contains worker volunteer applications. This contains application
 	 * types.
@@ -603,7 +603,7 @@ public final class XWConfigurator extends Properties {
 			final String[] stdLoc = {
 					getProperty(XWPropertyDefs.USERHOMEDIR) + File.separator + ".xtremweb" + File.separator + fname,
 					getProperty(XWPropertyDefs.USERHOMEDIR) + File.separator + ".xtremweb" + File.separator
-							+ "config.defaults",
+					+ "config.defaults",
 					"/etc/" + fname, getProperty(XWPropertyDefs.CONFIGFILE) };
 			for (int i = 0; i < stdLoc.length; i++) {
 				try {
@@ -1115,7 +1115,6 @@ public final class XWConfigurator extends Properties {
 		}
 
 		_host.setAcceptBin(getBoolean(XWPropertyDefs.ACCEPTBIN));
-
 		if (ArchDepFactory.xwutil() != null) {
 			try {
 				_host.setCpuNb(Runtime.getRuntime().availableProcessors());
@@ -1141,8 +1140,8 @@ public final class XWConfigurator extends Properties {
 			logger.fatal("can't load xwutil library");
 		}
 
-		String localAppsProperty = getProperty(XWPropertyDefs.SHAREDAPPS).toUpperCase();
-		String localAppNames = new String();
+		final String localAppsProperty = getProperty(XWPropertyDefs.SHAREDAPPS).toUpperCase();
+		final StringBuilder localAppNames = new StringBuilder();
 
 		logger.debug("localAppsProperty = " + localAppsProperty);
 
@@ -1160,7 +1159,7 @@ public final class XWConfigurator extends Properties {
 					try {
 						final AppTypeEnum at = AppTypeEnum.valueOf(apptype);
 						if (at.available()) {
-							localAppNames += apptype + " ";
+							localAppNames.append(apptype + " ");
 						}
 					} catch (final Exception e) {
 						logger.exception("Invalid application type : " + apptype, e);
@@ -1168,11 +1167,7 @@ public final class XWConfigurator extends Properties {
 					}
 				}
 			}
-			localAppNames = localAppNames.trim();
-			localAppNames = localAppNames.replace(' ', ',');
-			_host.setSharedApps(localAppNames);
-			localAppNames = null;
-			localAppsProperty = null;
+			_host.setSharedApps(localAppNames.toString().trim().replace(' ', ','));
 		}
 
 		final String localPkgsProperty = getProperty(XWPropertyDefs.SHAREDPACKAGES);
