@@ -44,7 +44,7 @@ import org.xml.sax.SAXException;
  * This class (un)marshal java.lang.Object to/from XML Objects must be single
  * ones; nor a Vector, neither Hashtable etc.
  */
-public abstract class XMLObject extends XMLable {
+public class XMLObject extends XMLable {
 
 	public static final String XMLTYPE = "type";
 	public static final String XMLVALUE = "value";
@@ -239,5 +239,10 @@ public abstract class XMLObject extends XMLable {
 	@Override
 	public String toString() {
 		return type.toString() + " " + value.toString();
+	}
+
+	@Override
+	public String toString(boolean csv) {
+		return toString();
 	}
 }
