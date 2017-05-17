@@ -199,7 +199,7 @@ public final class XMLHashtable extends XMLValue {
 		try {
 			reader.read(input);
 		} catch (final InvalidKeyException e) {
-			e.printStackTrace();
+			getLogger().exception(e);
 		}
 	}
 
@@ -216,14 +216,6 @@ public final class XMLHashtable extends XMLValue {
 		this(new Hashtable());
 		setEmpty(false);
 		fromXml(attrs);
-	}
-
-	private String spaces() {
-		String ret = new String();
-		for (int i = 0; i <= (nested + 1); i++) {
-			ret += " ";
-		}
-		return ret;
 	}
 
 	/**
@@ -365,10 +357,8 @@ public final class XMLHashtable extends XMLValue {
 			nested--;
 		}
 
-		if (qname.compareToIgnoreCase(XMLtuple.THISTAG) == 0) {
-			if (nested <= 0) {
-				currentIndex++;
-			}
+		if ((qname.compareToIgnoreCase(XMLtuple.THISTAG) == 0) && (nested <= 0)) {
+			currentIndex++;
 		}
 
 		getLogger().finest("xmlElementStop (" + qname + ") " + "size = " + size + "  currentIndex = " + currentIndex
@@ -445,7 +435,10 @@ public final class XMLHashtable extends XMLValue {
 			XMLHashtable xmlh = new XMLHashtable(h);
 
 			if (argv.length == 1) {
-				xmlh = new XMLHashtable(new DataInputStream(new FileInputStream(argv[0])));
+				try (FileInputStream fis = new FileInputStream(argv[0])) {
+					xmlh = new XMLHashtable(new DataInputStream(fis));
+				} finally {
+				}
 			}
 
 			System.out.println(xmlh.toXml());
