@@ -25,6 +25,8 @@ package xtremweb.common;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -66,44 +68,43 @@ public class NewClassLoader extends MultiClassLoader {
 	protected byte[] getClassFromAddedClassPaths(final String className) {
 
 		byte[] result = null;
-		int rb, chunk, size;
 		final String fsep = System.getProperty("file.separator");
 
-		try {
-			final String fileName = formatClassName(className);
+		final String fileName = formatClassName(className);
 
-			// Lookup the class into all the added class paths
-			for (int i = 0; i < paths.size(); i++) {
-				final String path = paths.get(i);
+		// Lookup the class into all the added class paths
+		for (int i = 0; i < paths.size(); i++) {
+			final String path = paths.get(i);
 
-				final File f = new File(path + fsep + fileName);
-				if (f.exists()) {
-					final FileInputStream fis = new FileInputStream(f);
-
-					size = (int) f.length();
-					result = new byte[size];
-					rb = 0;
-					chunk = 0;
-					while ((size - rb) > 0) {
-						chunk = fis.read(result, rb, size - rb);
-						if (chunk == -1) {
-							break;
-						}
-						rb += chunk;
-					}
-
-					break;
-				}
+			final File f = new File(path + fsep + fileName);
+			if (!f.exists()) {
+				return result;
 			}
-		} catch (final Exception e) {
+
+			try (final FileInputStream fis = new FileInputStream(f)) {
+
+				int size = (int) f.length();
+				result = new byte[size];
+				int rb = 0;
+				int chunk = 0;
+				while ((size - rb) > 0) {
+					chunk = fis.read(result, rb, size - rb);
+					if (chunk == -1) {
+						break;
+					}
+					rb += chunk;
+				}
+
+				break;
+			} catch (IOException e) {
+			}
 		}
 		return result;
 	}
 
 	@Override
 	protected byte[] loadClassBytes(final String className) {
-
 		return (getClassFromAddedClassPaths(className));
 	}
 
-} // End of Class NewClassLoader.
+}
