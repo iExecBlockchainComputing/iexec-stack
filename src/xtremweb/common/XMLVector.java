@@ -29,9 +29,11 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.InvalidKeyException;
-import java.util.Enumeration;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Hashtable;
-import java.util.Vector;
+import java.util.Iterator;
+import java.util.List;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -106,7 +108,7 @@ public final class XMLVector extends XMLValue {
 	@Override
 	protected void clear() {
 		if (getValue() != null) {
-			((Vector<XMLValue>) getValue()).clear();
+			((ArrayList<XMLValue>) getValue()).clear();
 		}
 		super.clear();
 	}
@@ -114,14 +116,14 @@ public final class XMLVector extends XMLValue {
 	/**
 	 */
 	public XMLVector() {
-		this((Vector) null);
+		this((Collection<XMLable>) null);
 	}
 
 	/**
 	 * @param v
 	 *            is the vector to (un)marshal
 	 */
-	public XMLVector(final Vector v) {
+	public XMLVector(final Collection <XMLable>v) {
 		super(THISTAG, 0);
 
 		setEmpty(false);
@@ -138,27 +140,27 @@ public final class XMLVector extends XMLValue {
 
 		expectedSize = v.size();
 
-		setValue(new Vector<XMLValue>());
+		setValue(new ArrayList<XMLValue>());
 
-		Enumeration myenum = v.elements();
+		Iterator myIterator = v.iterator();
 
-		for (; myenum.hasMoreElements();) {
+		while (myIterator.hasNext()) {
 
-			final Object obj = myenum.nextElement();
+			final Object obj = myIterator.next();
 
 			if (obj == null) {
 				continue;
 			}
-			final Vector<XMLValue> value = (Vector<XMLValue>) getValue();
+			final ArrayList<XMLValue> value = (ArrayList<XMLValue>) getValue();
 			if (obj instanceof Hashtable) {
 				value.add(new XMLHashtable((Hashtable) obj));
-			} else if (obj instanceof Vector) {
-				value.add(new XMLVector((Vector) obj));
+			} else if (obj instanceof ArrayList) {
+				value.add(new XMLVector((ArrayList) obj));
 			} else {
 				value.add(new XMLValue(obj));
 			}
 		}
-		myenum = null;
+		myIterator = null;
 	}
 
 	/**
@@ -171,7 +173,7 @@ public final class XMLVector extends XMLValue {
 	 *             on XML error
 	 */
 	public XMLVector(final DataInputStream input) throws IOException, SAXException {
-		this(new Vector());
+		this(new ArrayList());
 		setEmpty(false);
 		final XMLReader reader = new XMLReader(this);
 		try {
@@ -204,7 +206,7 @@ public final class XMLVector extends XMLValue {
 	 *             on XML error
 	 */
 	public XMLVector(final Attributes attrs) {
-		this(new Vector());
+		this(new ArrayList<XMLable>());
 		setEmpty(false);
 		fromXml(attrs);
 	}
@@ -222,13 +224,13 @@ public final class XMLVector extends XMLValue {
 			return "<" + getXMLTag() + " " + getColumnLabel(SIZE) + "=\"0\" ></" + getXMLTag() + ">";
 		}
 
-		String ret = "<" + getXMLTag() + " " + getColumnLabel(SIZE) + "=\"" + ((Vector<XMLValue>) value).size()
+		String ret = "<" + getXMLTag() + " " + getColumnLabel(SIZE) + "=\"" + ((ArrayList<XMLable>) value).size()
 				+ "\" >";
 
-		final Enumeration<XMLValue> myenum = ((Vector<XMLValue>) value).elements();
+		final Iterator<XMLable> myenum = ((ArrayList<XMLable>) value).iterator();
 
-		for (; myenum.hasMoreElements();) {
-			final XMLValue v = myenum.nextElement();
+		while (myenum.hasNext()) {
+			final XMLable v = myenum.next();
 			ret += v.toXml();
 		}
 
@@ -252,13 +254,13 @@ public final class XMLVector extends XMLValue {
 			o.write(strHead.getBytes(XWTools.UTF8));
 			return;
 		}
-		final String strBody = "<" + getXMLTag() + " " + getColumnLabel(SIZE) + "=\"" + ((Vector<XMLValue>) value).size() + "\" >";
+		final String strBody = "<" + getXMLTag() + " " + getColumnLabel(SIZE) + "=\"" + ((ArrayList<XMLable>) value).size() + "\" >";
 		o.write(strBody.getBytes(XWTools.UTF8));
 
-		final Enumeration<XMLValue> myenum = ((Vector<XMLValue>) value).elements();
+		final Iterator<XMLable> myenum = ((ArrayList<XMLable>) value).iterator();
 
-		while (myenum.hasMoreElements()) {
-			final XMLValue v = myenum.nextElement();
+		while (myenum.hasNext()) {
+			final XMLable v = myenum.next();
 			v.toXml(o);
 		}
 		final String strTail = "</" + getXMLTag() + ">";
@@ -290,9 +292,9 @@ public final class XMLVector extends XMLValue {
 
 		final Object value = getValue();
 		if (value != null) {
-			((Vector<XMLValue>) value).clear();
+			((ArrayList<XMLable>) value).clear();
 		}
-		setValue(new Vector<XMLValue>());
+		setValue(new ArrayList<XMLable>());
 		currentIndex = 0;
 	}
 
@@ -314,10 +316,10 @@ public final class XMLVector extends XMLValue {
 		final Logger logger = getLogger();
 		final Object value = getValue();
 		logger.finest("xmlElementStart (" + qname + ") " + "expectedSize = " + expectedSize + "  values.size = "
-				+ (value != null ? ((Vector<XMLValue>) value).size() : 0) + "  currentIndex = " + currentIndex
+				+ (value != null ? ((ArrayList<XMLable>) value).size() : 0) + "  currentIndex = " + currentIndex
 				+ "  nested = " + nested);
 
-		if (((value == null) || (((Vector<XMLValue>) value).size() == 0))
+		if (((value == null) || (((ArrayList<XMLable>) value).size() == 0))
 				&& (qname.compareToIgnoreCase(getXMLTag()) == 0)) {
 			logger.finest("" + qname + ".fromXml(attrs)");
 			fromXml(attrs);
@@ -333,18 +335,18 @@ public final class XMLVector extends XMLValue {
 				nested++;
 			}
 
-			if (currentIndex >= ((Vector<XMLValue>) value).size()) {
+			if (currentIndex >= ((ArrayList<XMLable>) value).size()) {
 				logger.finest("values[" + currentIndex + "]  = new XMValue(" + qname + ")");
 				if (qname.compareToIgnoreCase(XMLHashtable.THISTAG) == 0) {
-					((Vector<XMLValue>) value).add(new XMLHashtable(attrs));
+					((ArrayList<XMLable>) value).add(new XMLHashtable(attrs));
 				} else if (qname.compareToIgnoreCase(XMLVector.THISTAG) == 0) {
-					((Vector<XMLValue>) value).add(new XMLVector(attrs));
+					((ArrayList<XMLable>) value).add(new XMLVector(attrs));
 				} else if (qname.compareToIgnoreCase(XMLValue.THISTAG) == 0) {
-					((Vector<XMLValue>) value).add(new XMLValue(attrs));
+					((ArrayList<XMLable>) value).add(new XMLValue(attrs));
 				}
 			} else {
 				logger.debug("values[" + currentIndex + "].xmlElementStart(" + qname + ")");
-				((Vector<XMLValue>) value).elementAt(currentIndex).xmlElementStart(uri, tag, qname, attrs);
+				((ArrayList<XMLable>) value).get(currentIndex).xmlElementStart(uri, tag, qname, attrs);
 			}
 		}
 	}
@@ -359,8 +361,8 @@ public final class XMLVector extends XMLValue {
 	public void xmlElementStop(final String uri, final String tag, final String qname) throws SAXException {
 
 		final Object value = getValue();
-		if (currentIndex < ((Vector<XMLValue>) value).size()) {
-			((Vector<XMLValue>) value).elementAt(currentIndex).xmlElementStop(uri, tag, qname);
+		if (currentIndex < ((ArrayList<XMLable>) value).size()) {
+			((ArrayList<XMLable>) value).get(currentIndex).xmlElementStop(uri, tag, qname);
 		}
 
 		if ((qname.compareToIgnoreCase(XMLHashtable.THISTAG) == 0)
@@ -384,7 +386,7 @@ public final class XMLVector extends XMLValue {
 	}
 
 	/**
-	 * This retreives this object String representation
+	 * This retrieves this object String representation
 	 *
 	 * @return this object XML String representation
 	 */
@@ -398,8 +400,8 @@ public final class XMLVector extends XMLValue {
 	 *
 	 * @see XMLObject#value
 	 */
-	public Vector<XMLValue> getXmlValues() {
-		return (Vector<XMLValue>) ((Vector<XMLValue>) getValue()).clone();
+	public List<XMLable> getXmlValues() {
+		return (List<XMLable>) ((ArrayList<XMLable>) getValue()).clone();
 	}
 
 	/**
@@ -412,18 +414,18 @@ public final class XMLVector extends XMLValue {
 	 */
 	public static void main(final String[] argv) {
 		try (final FileInputStream fis = new FileInputStream(argv[0])){
-			final Vector v = new Vector();
-			final Vector v2 = new Vector();
-			v.add(new String("un"));
-			v.add(new Integer(2));
+			final ArrayList<XMLable> v = new ArrayList<>();
+			final ArrayList<XMLable> v2 = new ArrayList<>();
+			v.add(new XMLObject(new String("un")));
+			v.add(new XMLObject(new Integer(2)));
 			v.add(UID.NULLUID);
-			v2.add(new String("dix"));
-			v2.add(new String("cent"));
-			v.add(v2);
+			v2.add(new XMLObject(new String("dix")));
+			v2.add(new XMLObject(new String("cent")));
+			v.add(new XMLVector(v2));
 			final Hashtable h = new Hashtable();
-			h.put(new Integer(1), new String("un"));
+			h.put(new Integer(1), "un");
 			h.put(new String("deux"), new Integer(2));
-			v.add(h);
+			v.add(new XMLHashtable(h));
 			XMLVector xmlv = new XMLVector(v);
 			if (argv.length == 1) {
 				xmlv = new XMLVector(new DataInputStream(fis));
@@ -433,12 +435,11 @@ public final class XMLVector extends XMLValue {
 
 			xmlv.getLogger().setLoggerLevel(LoggerLevel.DEBUG);
 
-			final Vector<XMLValue> ret = xmlv.getXmlValues();
+			final ArrayList<XMLable> ret = (ArrayList<XMLable>)xmlv.getXmlValues();
 			System.out.println(ret);
-			final Enumeration<XMLValue> myenum = ret.elements();
-			for (; myenum.hasMoreElements();) {
+			for (int i = 0; i < xmlv.size(); i++) {
 
-				final Object k = myenum.nextElement().getValue();
+				final Object k = ret.get(i);
 
 				if (k == null) {
 					continue;
