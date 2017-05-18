@@ -1964,7 +1964,6 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 			final ArrayList<UID> ret = (ArrayList<UID>) DBInterface.getInstance().getUsers(client);
 			XMLVector v = null;
 			if (ret != null) {
-				System.out.println("CommHandler#getUsers()           " + ret.getClass().toString());
 				v = new XMLVector((Collection)ret);
 			}
 			return v;
