@@ -254,7 +254,7 @@ public class Callback {
 					// 14 nov 2005 : to ease deployment, we now take
 					// the first worker found as NFS server
 					logger.warn("Looking for any server");
-					final ArrayList<XMLable> workers = comm.getHosts().getXmlValues();
+					final ArrayList<XMLable> workers = (ArrayList<XMLable>)comm.getHosts().getXmlValues();
 					if ((workers == null) || (workers.size() < 1)) {
 						logger.fatal("can't find any server");
 					}

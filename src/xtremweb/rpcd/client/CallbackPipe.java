@@ -64,6 +64,7 @@ public class CallbackPipe extends Callback {
 		super(argv, c);
 
 		// let preload library now
+		@SuppressWarnings("unused")
 		final int rpcServerPort = ArchDepFactory.portMap().getudpport(0, 0);
 		final String sn = getServerName();
 		try {
@@ -168,7 +169,6 @@ public class CallbackPipe extends Callback {
 			clientSocket.send(clientPacket);
 
 			logger.debug("CallbackPipe;" + proc + " answered;" + new Date().getTime());
-		} finally {
 		}
 	}
 }
