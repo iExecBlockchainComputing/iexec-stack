@@ -36,7 +36,6 @@ package xtremweb.client.gui;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
 
@@ -49,7 +48,6 @@ import xtremweb.common.UID;
 import xtremweb.common.UserGroupInterface;
 import xtremweb.common.UserInterface;
 import xtremweb.common.UserRightEnum;
-import xtremweb.common.XMLValue;
 import xtremweb.common.XMLVector;
 import xtremweb.common.XMLable;
 
@@ -124,7 +122,7 @@ class UsersTableModel extends TableModel {
 
 		try {
 			final XMLVector groups = getParent().commClient().getUserGroups();
-			final ArrayList<XMLable> vgroups = groups.getXmlValues();
+			final ArrayList<XMLable> vgroups = (ArrayList<XMLable>)groups.getXmlValues();
 
 			groupLabels = new String[vgroups.size() + 1];
 			int i = 0;

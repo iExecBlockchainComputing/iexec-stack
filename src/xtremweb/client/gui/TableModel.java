@@ -44,7 +44,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.net.ConnectException;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
 
@@ -63,7 +62,6 @@ import xtremweb.common.Logger;
 import xtremweb.common.LoggerLevel;
 import xtremweb.common.Table;
 import xtremweb.common.UID;
-import xtremweb.common.XMLValue;
 import xtremweb.common.XMLVector;
 import xtremweb.common.XMLable;
 import xtremweb.communications.URI;
@@ -667,7 +665,7 @@ public abstract class TableModel extends DefaultTableModel {
 
 		rows.clear();
 		final XMLVector datas = getRows();
-		final ArrayList<XMLable> vdatas = datas.getXmlValues();
+		final ArrayList<XMLable> vdatas = (ArrayList<XMLable>)datas.getXmlValues();
 
 		getParent().setProgressStringPainted(true);
 		getParent().setProgressValue(0);
