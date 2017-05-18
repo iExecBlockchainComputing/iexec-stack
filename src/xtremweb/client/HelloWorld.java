@@ -27,7 +27,6 @@ import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -42,7 +41,6 @@ import xtremweb.common.StatusEnum;
 import xtremweb.common.UID;
 import xtremweb.common.WorkInterface;
 import xtremweb.common.XMLObject;
-import xtremweb.common.XMLValue;
 import xtremweb.common.XMLVector;
 import xtremweb.common.XMLable;
 import xtremweb.common.XWConfigurator;
@@ -160,7 +158,7 @@ public final class HelloWorld {
 			//
 			final XMLRPCCommandGetApps cmd = new XMLRPCCommandGetApps(uri, config.getUser());
 			final XMLVector xmluids = (XMLVector) cmd.exec(client);
-			final ArrayList<XMLable> uids = xmluids.getXmlValues();
+			final ArrayList<XMLable> uids = (ArrayList<XMLable>)xmluids.getXmlValues();
 			if ((uids == null) || (uids.isEmpty())) {
 				logger.warn("no application found");
 				return;
