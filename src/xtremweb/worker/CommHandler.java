@@ -111,14 +111,6 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 	private final boolean TESTRESULTRECOVERY = false;
 
 	/**
-	 * This tells how many tests on results recovery should be made. It is only
-	 * used if <CODE>TESTRESULTRECOVERY</CODE> is true.
-	 *
-	 * @since v1r2-rc0 (RPC-V)
-	 */
-	private final int RESULTTRY = 2;
-
-	/**
 	 * This is the test results recovery counter. It is only used if <CODE>
 	 * TESTRESULTRECOVERY</CODE> is true.
 	 *
