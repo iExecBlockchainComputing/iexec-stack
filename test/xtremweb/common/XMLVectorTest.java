@@ -29,40 +29,31 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.util.Vector;
 
 import org.junit.Test;
 
 import xtremweb.common.Logger;
 import xtremweb.common.LoggerLevel;
 import xtremweb.common.StreamIO;
-import xtremweb.common.Table;
+import xtremweb.common.XMLVector;
 import xtremweb.common.UID;
 import xtremweb.common.XMLReader;
 
 /**
  * This tests XML serialization
  * 
- * Created: 15 novembre 2012
+ * Created: 18 mai 2017
  * 
  * @author Oleg Lodygensky
  * @version 1.0
  */
 
-public abstract class TableInterfaceTest {
+public class XMLVectorTest {
 	private final Logger logger;
-	/**
-	 * This is written to disk
-	 */
-	private Table itf;
-	/**
-	 * This is read from disk and must equal itf
-	 */
-	private Table itf2;
 
-	protected TableInterfaceTest() {
+	public XMLVectorTest() {
 		logger = new Logger(this);
-		setItf(null);
-		setItf2(null);
 	}
 
 	/**
@@ -70,53 +61,24 @@ public abstract class TableInterfaceTest {
 	 */
 	@Test
 	public void start() {
-
 		try {
+			final XMLVector v1 = new XMLVector();
+			final XMLVector v2 = new XMLVector();
+
 			final File temp = File.createTempFile("xw-junit", "itf");
 			final FileOutputStream fout = new FileOutputStream(temp);
 			final DataOutputStream out = new DataOutputStream(fout);
-			getItf().setUID(UID.getMyUid());
-			getItf().setLoggerLevel(LoggerLevel.DEBUG);
-			getItf().setDUMPNULLS(true);
+			v1.setLoggerLevel(LoggerLevel.DEBUG);
+			v1.setDUMPNULLS(true);
 			final XMLWriter writer = new XMLWriter(out);
-			writer.write(getItf());
+			writer.write(v1);
 
-			final XMLReader reader = new XMLReader(getItf2());
+			final XMLReader reader = new XMLReader(v2);
 			reader.read(new FileInputStream(temp));
-			getItf2().setDUMPNULLS(true);
-			assertTrue(getItf().toXml().equals(getItf2().toXml()));
+			v2.setDUMPNULLS(true);
+			assertTrue(v1.toXml().equals(v2.toXml()));
 		} catch (final Exception e) {
 			logger.exception(e);
 		}
-	}
-
-	/**
-	 * @return the itf
-	 */
-	public Table getItf() {
-		return itf;
-	}
-
-	/**
-	 * @param itf
-	 *            the itf to set
-	 */
-	public void setItf(Table itf) {
-		this.itf = itf;
-	}
-
-	/**
-	 * @return the itf2
-	 */
-	public Table getItf2() {
-		return itf2;
-	}
-
-	/**
-	 * @param itf2
-	 *            the itf2 to set
-	 */
-	public void setItf2(Table itf2) {
-		this.itf2 = itf2;
 	}
 }

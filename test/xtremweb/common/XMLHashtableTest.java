@@ -29,40 +29,33 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.util.Collection;
+import java.util.Hashtable;
+import java.util.Vector;
 
 import org.junit.Test;
 
 import xtremweb.common.Logger;
 import xtremweb.common.LoggerLevel;
 import xtremweb.common.StreamIO;
-import xtremweb.common.Table;
+import xtremweb.common.XMLHashtable;
 import xtremweb.common.UID;
 import xtremweb.common.XMLReader;
 
 /**
  * This tests XML serialization
  * 
- * Created: 15 novembre 2012
+ * Created: 18 mai 2017
  * 
  * @author Oleg Lodygensky
  * @version 1.0
  */
 
-public abstract class TableInterfaceTest {
+public class XMLHashtableTest {
 	private final Logger logger;
-	/**
-	 * This is written to disk
-	 */
-	private Table itf;
-	/**
-	 * This is read from disk and must equal itf
-	 */
-	private Table itf2;
 
-	protected TableInterfaceTest() {
+	public XMLHashtableTest () {
 		logger = new Logger(this);
-		setItf(null);
-		setItf2(null);
 	}
 
 	/**
@@ -70,53 +63,40 @@ public abstract class TableInterfaceTest {
 	 */
 	@Test
 	public void start() {
-
 		try {
+			final Collection v = new Vector();
+			v.add(new String("a string in vector"));
+			v.add(new Integer(100));
+			v.add(new Boolean("true"));
+			final Hashtable h = new Hashtable();
+			final Hashtable subHash = new Hashtable();
+			h.put(new Integer(1), new String("un"));
+			h.put(new String("deux"), new Integer(2));
+			h.put(new String("a vector"), v);
+			h.put(new String("a null UID"), UID.NULLUID);
+			h.put(new String("a false boolean"), new Boolean("false"));
+			subHash.put(new Integer(10), new String("dix"));
+			subHash.put(new String("dix"), new Integer(10));
+			subHash.put(new String("a vector"), v);
+			h.put(new String("an hashtable"), subHash);
+
+			final XMLHashtable hRead = new XMLHashtable();
+			final XMLHashtable hWrite = new XMLHashtable(h);
+
 			final File temp = File.createTempFile("xw-junit", "itf");
 			final FileOutputStream fout = new FileOutputStream(temp);
 			final DataOutputStream out = new DataOutputStream(fout);
-			getItf().setUID(UID.getMyUid());
-			getItf().setLoggerLevel(LoggerLevel.DEBUG);
-			getItf().setDUMPNULLS(true);
+			hWrite.setLoggerLevel(LoggerLevel.DEBUG);
+			hWrite.setDUMPNULLS(true);
 			final XMLWriter writer = new XMLWriter(out);
-			writer.write(getItf());
+			writer.write(hWrite);
 
-			final XMLReader reader = new XMLReader(getItf2());
+			final XMLReader reader = new XMLReader(hRead);
 			reader.read(new FileInputStream(temp));
-			getItf2().setDUMPNULLS(true);
-			assertTrue(getItf().toXml().equals(getItf2().toXml()));
+			hRead.setDUMPNULLS(true);
+			assertTrue(hWrite.toXml().equals(hRead.toXml()));
 		} catch (final Exception e) {
 			logger.exception(e);
 		}
-	}
-
-	/**
-	 * @return the itf
-	 */
-	public Table getItf() {
-		return itf;
-	}
-
-	/**
-	 * @param itf
-	 *            the itf to set
-	 */
-	public void setItf(Table itf) {
-		this.itf = itf;
-	}
-
-	/**
-	 * @return the itf2
-	 */
-	public Table getItf2() {
-		return itf2;
-	}
-
-	/**
-	 * @param itf2
-	 *            the itf2 to set
-	 */
-	public void setItf2(Table itf2) {
-		this.itf2 = itf2;
 	}
 }
