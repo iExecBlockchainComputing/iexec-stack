@@ -40,12 +40,12 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Vector;
 
 import xtremweb.common.Logger;
 import xtremweb.common.MileStone;
@@ -142,7 +142,7 @@ public class DBConnPoolThread extends Thread {
 		className = getClass().getName();
 
 		logger.config("dburl      = '" + dburl + "' " + "dbuser     = '" + config.getProperty(XWPropertyDefs.DBUSER)
-				+ "' dbpassword = '" + config.getProperty(XWPropertyDefs.DBPASS) + "'");
+		+ "' dbpassword = '" + config.getProperty(XWPropertyDefs.DBPASS) + "'");
 
 		connPool = Collections.synchronizedList(new LinkedList<Connection>());
 		updateFifo = Collections.synchronizedList(new LinkedList<String>());
@@ -227,7 +227,7 @@ public class DBConnPoolThread extends Thread {
 			} catch (final InterruptedException e) {
 			}
 			try {
-				while (updateFifo.size() > 0) {
+				while (!updateFifo.isEmpty()) {
 					executeQuery(updateFifo.remove(0), null);
 				}
 			} catch (final Exception e) {
@@ -277,6 +277,10 @@ public class DBConnPoolThread extends Thread {
 	protected final synchronized <T extends Type> Collection<T> executeQuery(final Connection conn, final String query,
 			final T row) throws IOException {
 
+//		if (row == null) {
+//			Thread.currentThread().dumpStack();
+//			throw new IOException("executeQuery : row is null");
+//		}
 		MileStone mileStone = new MileStone(xtremweb.database.DBConnPoolThread.class);
 
 		// remove comma from milestone to be able to generate CSV files
@@ -293,13 +297,11 @@ public class DBConnPoolThread extends Thread {
 				logger.fatal(e.toString());
 			}
 		}
-		Vector<T> ret = null;
 
 		ResultSet rs = null;
-		Statement stmt = null;
 
-		try {
-			stmt = dbConn.createStatement();
+		try (final Statement stmt = dbConn.createStatement()){
+			ArrayList<T> ret = null;
 
 			logger.finest(query);
 
@@ -314,34 +316,9 @@ public class DBConnPoolThread extends Thread {
 				notifyAll();
 				throw new IOException("can't get SQL results");
 			}
-		} catch (final Exception ex2) {
-			logger.exception("ExecuteQuery  (" + query + ")", ex2);
-			try {
-				stmt.close();
-			} catch (final Exception e) {
-				logger.exception(e);
-			}
-			stmt = null;
-			try {
-				if (rs != null) {
-					rs.close();
-				}
-			} catch (final Exception e) {
-				logger.exception(e);
-			}
 
-			if (conn == null) {
-				pushConnection(dbConn);
-			}
-
-			notifyAll();
-			mileStone.println("<executeQueryError /></executeQuery>");
-			throw new IOException(ex2.toString());
-		}
-
-		try {
-			if (row != null) {
-				ret = new Vector<T>();
+			ret = new ArrayList<T>();
+			if(row != null) {
 				while (rs.next()) {
 					@SuppressWarnings("unchecked")
 					final T theRow = (T) row.getClass().newInstance();
@@ -349,39 +326,27 @@ public class DBConnPoolThread extends Thread {
 					ret.add(theRow);
 				}
 			}
-		} catch (final Exception e) {
-			logger.exception(e);
-		}
-		if ((ret != null) && (ret.size() == 0)) {
-			ret = null;
-		}
 
-		try {
-			if (rs != null) {
-				rs.close();
+			return ret;
+
+		} catch (final Exception ex2) {
+			logger.exception("ExecuteQuery  (" + query + ")", ex2);
+			mileStone.println("<executeQueryError />");
+			throw new IOException(ex2);
+		} finally {
+			try {
+				if (rs != null) {
+					rs.close();
+				}
+			} catch (final Exception e) {
+				logger.exception(e);
 			}
-		} catch (final Exception e) {
-			logger.exception(e);
-		}
-		rs = null;
-
-		try {
-			if (stmt != null) {
-				stmt.close();
+			if (conn == null) {
+				pushConnection(dbConn);
 			}
-		} catch (final Exception e) {
-			logger.exception(e);
+			mileStone.println("</executeQuery>");
+			notifyAll();
 		}
-		stmt = null;
-
-		if (conn == null) {
-			pushConnection(dbConn);
-		}
-
-		notifyAll();
-		mileStone.println("</executeQuery>");
-		mileStone = null;
-		return ret;
 	}
 
 	/**
@@ -391,9 +356,9 @@ public class DBConnPoolThread extends Thread {
 	 *            is the SQL query to execute
 	 * @return a vector of rows found in DB, or null if no row found
 	 */
-	protected synchronized Vector<UID> queryUID(final String query) throws IOException {
+	protected synchronized Collection<UID> queryUID(final String query) throws IOException {
 
-		MileStone mileStone = new MileStone(xtremweb.database.DBConnPoolThread.class);
+		final MileStone mileStone = new MileStone(xtremweb.database.DBConnPoolThread.class);
 
 		if (query.length() < 80) {
 			mileStone.println("<executeQuery>" + query);
@@ -408,13 +373,10 @@ public class DBConnPoolThread extends Thread {
 			logger.exception(e);
 			logger.fatal(e.toString());
 		}
-		Vector<UID> ret = null;
 
 		ResultSet rs = null;
-		Statement stmt = null;
 
-		try {
-			stmt = dbConn.createStatement();
+		try (Statement stmt = dbConn.createStatement()){
 
 			logger.finest(query);
 
@@ -424,70 +386,40 @@ public class DBConnPoolThread extends Thread {
 			if (rs == null) {
 				rs = stmt.getGeneratedKeys();
 			}
-			if (rs == null) {
-				mileStone.println("<executeQueryError /><executeQuery>");
-				notifyAll();
-				throw new IOException("can't get SQL results");
+
+			ArrayList<UID> ret = new ArrayList<UID>();
+
+			while (rs.next()) {
+				ret.add(new UID(rs.getString("theuid")));
 			}
-		} catch (final Exception ex2) {
-			logger.exception("ExecuteQuery  (" + query + ")", ex2);
-			try {
-				stmt.close();
-			} catch (final Exception e) {
-				logger.exception(e);
-			}
-			stmt = null;
+
 			try {
 				rs.close();
 			} catch (final Exception e) {
 				logger.exception(e);
 			}
 
-			pushConnection(dbConn);
+			System.out.println("DBConnPoolThread#queryUID           " + ret.getClass().toString());
 
-			mileStone.println("<executeQueryError /><executeQuery>");
-			notifyAll();
-			throw new IOException(ex2.toString());
-		}
+			return ret;
+		} catch (final Exception e) {
+			logger.exception("ExecuteQuery  (" + query + ")", e);
 
-		try {
-			ret = new Vector<UID>();
-			while (rs.next()) {
-				try {
-					ret.add(new UID(rs.getString("theuid")));
-				} catch (final Exception e) {
-					throw new IOException("Can't find UID from result set");
+			mileStone.println("<executeQueryError />");
+			throw new IOException(e);
+		} finally {
+			try {
+				if(rs != null) {
+					rs.close();
 				}
+			} catch (final Exception e2) {
+				logger.exception(e2);
 			}
-		} catch (final Exception e) {
-			logger.exception(e);
+
+			pushConnection(dbConn);
+			mileStone.println("</executeQuery>");
+			notifyAll();
 		}
-
-		if ((ret != null) && (ret.size() == 0)) {
-			ret = null;
-		}
-
-		try {
-			rs.close();
-		} catch (final Exception e) {
-			logger.exception(e);
-		}
-		rs = null;
-
-		try {
-			stmt.close();
-		} catch (final Exception e) {
-			logger.exception(e);
-		}
-		stmt = null;
-
-		pushConnection(dbConn);
-
-		mileStone.println("</executeQuery>");
-		mileStone = null;
-		notifyAll();
-
-		return ret;
 	}
 
 	/**
@@ -584,7 +516,7 @@ public class DBConnPoolThread extends Thread {
 			throw new IOException("row is null ?!?!");
 		}
 		return config.getProperty(XWPropertyDefs.DBNAME) + "."
-				+ row.fromTableNames().replaceAll(",", "," + config.getProperty(XWPropertyDefs.DBNAME) + ".");
+		+ row.fromTableNames().replaceAll(",", "," + config.getProperty(XWPropertyDefs.DBNAME) + ".");
 	}
 
 	/**
@@ -600,8 +532,13 @@ public class DBConnPoolThread extends Thread {
 	 */
 	public <T extends Type> T selectOne(final T row, final String criterias) throws IOException {
 
-		final Vector<T> v = (Vector<T>) select(row, criterias, 1);
-		return v == null ? null : v.firstElement();
+		final ArrayList<T> v = (ArrayList<T>) select(row, criterias, 1);
+		System.out.println("**********       " + v.size());
+		if(v.size() >0) {
+			System.out.println("**********       " + v.get(0));
+			return v.get(0);
+		}
+		return null;
 	}
 
 	/**
@@ -635,30 +572,24 @@ public class DBConnPoolThread extends Thread {
 	public <T extends Type> Collection<T> select(final T row, final String criterias, final int limit)
 			throws IOException {
 
-		try {
-			final String groupBy = row.groupBy();
-			final String rowcriteria = row.criteria();
-			String conditions = null;
-			if (rowcriteria != null) {
-				conditions = rowcriteria;
-				if (criterias != null) {
-					conditions += " AND " + criterias;
-				}
-			} else {
-				if (criterias != null) {
-					conditions = criterias;
-				}
+		final String groupBy = row.groupBy();
+		final String rowcriteria = row.criteria();
+		String conditions = null;
+		if (rowcriteria != null) {
+			conditions = rowcriteria;
+			if (criterias != null) {
+				conditions += " AND " + criterias;
 			}
-			final String query = "SELECT " + row.rowSelection() + " FROM " + rowTableNames(row)
-					+ (conditions == null ? "" : " WHERE " + conditions)
-					+ (groupBy == null ? "" : " GROUP BY " + groupBy) + " LIMIT " + limit;
-			// + " LIMIT " + config.requestLimit();
-
-			return executeQuery(query, row);
-		} catch (final Exception e) {
-			logger.exception(e);
-			throw new IOException(e.toString());
+		} else {
+			if (criterias != null) {
+				conditions = criterias;
+			}
 		}
+		final String query = "SELECT " + row.rowSelection() + " FROM " + rowTableNames(row)
+		+ (conditions == null ? "" : " WHERE " + conditions)
+		+ (groupBy == null ? "" : " GROUP BY " + groupBy) + " LIMIT " + limit;
+
+		return executeQuery(query, row);
 	}
 
 	/**
@@ -681,7 +612,7 @@ public class DBConnPoolThread extends Thread {
 	 *            otherwise TableInterface#criteria() is used
 	 * @see Table#criteria()
 	 */
-	public <T extends Table> Vector<UID> selectUID(final T row, final String criterias) throws IOException {
+	public <T extends Table> Collection<UID> selectUID(final T row, final String criterias) throws IOException {
 
 		if (row.criteria() == null) {
 			throw new IOException("row.criteria == null ?!?");
@@ -701,9 +632,10 @@ public class DBConnPoolThread extends Thread {
 				}
 			}
 			final String query = "SELECT " + row.rowSelection() + " FROM " + rowTableNames(row)
-					+ (conditions == null ? "" : " WHERE " + conditions) + " LIMIT " + config.requestLimit();
+			+ (conditions == null ? "" : " WHERE " + conditions) + " LIMIT " + config.requestLimit();
 
-			final Vector<UID> ret = queryUID(query);
+			final ArrayList<UID> ret = (ArrayList<UID>)queryUID(query);
+			System.out.println("DBConnPoolThread#selectUID()           " + ret.getClass().toString());
 			return ret;
 		} catch (final Exception e) {
 			logger.exception(e);
@@ -728,7 +660,7 @@ public class DBConnPoolThread extends Thread {
 		final String query = "INSERT INTO " + config.getProperty(XWPropertyDefs.DBNAME) + "." + row.tableName() + ("(")
 				+ row.getColumns() + (") ") + " VALUES (" + criteria + ")";
 
-//		executeQuery(query, row);
+		//		executeQuery(query, row);
 		updateFifo.add(query);
 		notify();
 	}
@@ -749,13 +681,13 @@ public class DBConnPoolThread extends Thread {
 			}
 
 			String query = "INSERT INTO " + config.getProperty(XWPropertyDefs.DBNAME) + "." + row.tableName()
-					+ HISTORYSUFFIX + " SELECT * FROM " + config.getProperty(XWPropertyDefs.DBNAME) + "."
-					+ row.tableName() + " WHERE " + criteria;
+			+ HISTORYSUFFIX + " SELECT * FROM " + config.getProperty(XWPropertyDefs.DBNAME) + "."
+			+ row.tableName() + " WHERE " + criteria;
 			executeQuery(query, row);
 
 			query = "DELETE FROM " + config.getProperty(XWPropertyDefs.DBNAME) + "." + row.tableName() + " WHERE "
 					+ criteria;
-//			executeQuery(query, row);
+			//			executeQuery(query, row);
 			updateFifo.add(query);
 			notify();
 		} catch (final Exception e) {
@@ -779,7 +711,7 @@ public class DBConnPoolThread extends Thread {
 					+ WorkInterface.Columns.STATUS.toString() + "='" + StatusEnum.WAITING + "' or "
 					+ WorkInterface.Columns.STATUS.toString() + "='" + StatusEnum.PENDING + "') OR ISNULL(status))";
 
-//			executeQuery(query, null);
+			//			executeQuery(query, null);
 			updateFifo.add(query);
 			notify();
 		} catch (final Exception e) {
