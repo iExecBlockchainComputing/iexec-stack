@@ -30,7 +30,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.StringTokenizer;
-import java.util.Vector;
 
 import xtremweb.common.Logger;
 import xtremweb.common.LoggerLevel;
