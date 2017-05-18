@@ -399,8 +399,6 @@ public class DBConnPoolThread extends Thread {
 				logger.exception(e);
 			}
 
-			System.out.println("DBConnPoolThread#queryUID           " + ret.getClass().toString());
-
 			return ret;
 		} catch (final Exception e) {
 			logger.exception("ExecuteQuery  (" + query + ")", e);
@@ -533,9 +531,7 @@ public class DBConnPoolThread extends Thread {
 	public <T extends Type> T selectOne(final T row, final String criterias) throws IOException {
 
 		final ArrayList<T> v = (ArrayList<T>) select(row, criterias, 1);
-		System.out.println("**********       " + v.size());
-		if(v.size() >0) {
-			System.out.println("**********       " + v.get(0));
+		if (!v.isEmpty()) {
 			return v.get(0);
 		}
 		return null;
@@ -635,7 +631,6 @@ public class DBConnPoolThread extends Thread {
 			+ (conditions == null ? "" : " WHERE " + conditions) + " LIMIT " + config.requestLimit();
 
 			final ArrayList<UID> ret = (ArrayList<UID>)queryUID(query);
-			System.out.println("DBConnPoolThread#selectUID()           " + ret.getClass().toString());
 			return ret;
 		} catch (final Exception e) {
 			logger.exception(e);
