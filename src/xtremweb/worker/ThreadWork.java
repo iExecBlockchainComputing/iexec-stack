@@ -154,11 +154,18 @@ public class ThreadWork extends Thread {
 	private static final String XWCPULOADNAME = "XWCPULOAD";
 	/**
 	 * This is the name of the XWPORTS env var which contains a comma separated
-	 * list of ports
+	 * list of ports the process is listening
 	 *
 	 * @since 8.0.0
 	 */
-	private static final String XWPORTSNAME = "XWPORTS";
+	private static final String XWLISTENINGPORTSNAME = "XWLISTENINGPORTS";
+	/**
+	 * This is the name of the XWPORTS env var which contains a comma separated
+	 * list of ports the proxy is listening (to connect to client SmartSocket proxy)
+	 *
+	 * @since 10.6.0
+	 */
+	private static final String XWFORWARDINGPORTSNAME = "XWFORWARDINGPORTS";
 	/**
 	 * This is contains environment variables
 	 *
@@ -430,7 +437,7 @@ public class ThreadWork extends Thread {
 	 * @since 8.0.0
 	 */
 	private void startProxy(final String hubAddr) throws InvalidKeyException,
-			IOException, ClassNotFoundException, SAXException, URISyntaxException {
+	IOException, ClassNotFoundException, SAXException, URISyntaxException {
 
 		if (Worker.getConfig().getBoolean(XWPropertyDefs.INCOMINGCONNECTIONS) == false) {
 			logger.info("Incoming connections not allowed");
@@ -444,7 +451,7 @@ public class ThreadWork extends Thread {
 		//
 		// Let 1st set SmartSockets proxies for server like job
 		//
-		String sport = currentWork.getListenPort();
+		final String sport = currentWork.getListenPort();
 		if (sport != null) {
 			final Collection<String> sports = XWTools.split(sport, ",");
 
@@ -494,7 +501,7 @@ public class ThreadWork extends Thread {
 					}
 				}
 
-				addEnvVar(XWPORTSNAME, ports);
+				addEnvVar(XWLISTENINGPORTSNAME, ports);
 
 				currentWork.setSmartSocketAddr(addresses);
 			}
@@ -504,10 +511,10 @@ public class ThreadWork extends Thread {
 		// Then let set SmartSockets proxies to connect to
 		// server like application running on client side
 		//
-		sport = currentWork.getSmartSocketClient();
-		if (sport != null) {
+		final String sport2 = currentWork.getSmartSocketClient();
+		if (sport2 != null) {
 
-			final Hashtable<String, String> serverAddresses = (Hashtable<String, String>) XWTools.hash(sport, ";", ",");
+			final Hashtable<String, String> serverAddresses = (Hashtable<String, String>) XWTools.hash(sport2, ";", ",");
 			if (serverAddresses != null) {
 				final Enumeration<String> addressesenum = serverAddresses.keys();
 
@@ -600,45 +607,28 @@ public class ThreadWork extends Thread {
 
 		stopProxy();
 
-		String command = getUnloadScriptPath();
-		if (command == null) {
+		final StringBuilder command = new StringBuilder(getUnloadScriptPath());
+		if (command.length() == 0) {
 			return;
 		}
-		command += " " + currentWork.getCmdLine();
+		command.append(" " + currentWork.getCmdLine());
 
 		logger.config("unload");
 
-		try {
+		final File scratchDir = currentWork.getScratchDir();
+		try (final FileOutputStream out = new FileOutputStream(new File(scratchDir, "unloadout.txt"));
+				final FileOutputStream err = new FileOutputStream(new File(scratchDir, "unloaderr.txt"))){
+
 			final String[] envVars = getEnvVars();
-			final File scratchDir = currentWork.getScratchDir();
-			final FileOutputStream out = new FileOutputStream(new File(scratchDir, "unloadout.txt"));
-			final FileOutputStream err = new FileOutputStream(new File(scratchDir, "unloaderr.txt"));
-			final Executor unloader = new Executor(command, envVars, currentWork.getScratchDirName(), null, out, err,
+			final Executor unloader = new Executor(command.toString(), envVars, currentWork.getScratchDirName(), null, out, err,
 					Long.parseLong(Worker.getConfig().getProperty(XWPropertyDefs.TIMEOUT)));
 			try {
 				unloader.startAndWait();
-			} catch (final InterruptedException e) {
-				logger.exception(e);
-			} catch (ExecutorLaunchException e) {
+			} catch (final ExecutorLaunchException | InterruptedException e) {
 				logger.exception(e);
 			}
 
-			try {
-				out.flush();
-				out.close();
-			} catch (final IOException e) {
-				logger.exception(e);
-			}
-			try {
-				err.flush();
-				err.close();
-			} catch (final IOException e) {
-				logger.exception(e);
-			}
-		} catch (final IOException e) {
-			logger.exception("ThreadWork#unload()", e);
 		} finally {
-			command = null;
 		}
 	}
 
@@ -790,7 +780,7 @@ public class ThreadWork extends Thread {
 	 * @since 8.0.0 (FG)
 	 */
 	protected String[] getEnvVars() throws IOException, InvalidKeyException, AccessControlException,
-			ClassNotFoundException, SAXException, URISyntaxException {
+	ClassNotFoundException, SAXException, URISyntaxException {
 
 		final UID workApp = currentWork.getApplication();
 
@@ -852,7 +842,7 @@ public class ThreadWork extends Thread {
 	 */
 	protected String getLaunchScriptPath()
 			throws IOException, ClassNotFoundException, SAXException, URISyntaxException, InvalidKeyException {
-		
+
 		String ret = null;
 
 		final UID workApp = currentWork.getApplication();
@@ -937,7 +927,7 @@ public class ThreadWork extends Thread {
 	 * @throws InvalidKeyException
 	 */
 	protected String getBinPath() throws IOException, ClassNotFoundException, SAXException, URISyntaxException,
-			InvalidKeyException, AccessControlException {
+	InvalidKeyException, AccessControlException {
 		File sbBinPath = null;
 		File appBinPath = null;
 		String sbArgs = null;
@@ -1033,7 +1023,7 @@ public class ThreadWork extends Thread {
 	 * @throws InvalidKeyException
 	 */
 	protected Collection<String> getCmdLine() throws IOException, ClassNotFoundException, SAXException,
-			URISyntaxException, InvalidKeyException, AccessControlException {
+	URISyntaxException, InvalidKeyException, AccessControlException {
 
 		Collection<String> ret = null;
 
@@ -1068,21 +1058,16 @@ public class ThreadWork extends Thread {
 
 		File ret = null;
 		boolean islocked = false;
-		BufferedReader reader = null;
 
-		try {
+		final File fData = CommManager.getInstance().commClient().getContentFile(throughUri);
+		try (BufferedReader reader = new BufferedReader(new FileReader(fData))) {
 			CommManager.getInstance().commClient().lock(throughUri);
 			islocked = true;
-			final File fData = CommManager.getInstance().commClient().getContentFile(throughUri);
-			reader = new BufferedReader(new FileReader(fData));
 			while (true) {
 				String line = null;
-				try {
-					logger.debug("uriPassThrough 00 line = " + line);
-					line = reader.readLine();
-					logger.debug("uriPassThrough 01 line = " + line);
-				} catch (final Exception e) {
-				}
+				logger.debug("uriPassThrough 00 line = " + line);
+				line = reader.readLine();
+				logger.debug("uriPassThrough 01 line = " + line);
 				if (line == null) {
 					break;
 				}
@@ -1091,19 +1076,12 @@ public class ThreadWork extends Thread {
 				logger.debug("uriPassThrough uri = " + line);
 				ret = installFile(uri, home);
 			}
-		} catch (final Exception e) {
-			throw new IOException(e.getMessage());
+		} catch (final URISyntaxException e) {
+			throw new IOException(e);
 		} finally {
 			if (islocked) {
 				CommManager.getInstance().commClient().unlock(throughUri);
 			}
-			try {
-				if (reader != null) {
-					reader.close();
-				}
-			} catch (final IOException io) {
-			}
-			reader = null;
 		}
 		return ret;
 	}
@@ -1121,7 +1099,6 @@ public class ThreadWork extends Thread {
 	 */
 	protected File installFile(final URI uri, final File home) throws IOException {
 
-		File ret = null;
 		File fData = null;
 		DataInterface theData = null;
 		boolean islocked = false;
@@ -1141,44 +1118,32 @@ public class ThreadWork extends Thread {
 			return null;
 		}
 
-		StreamIO io = null;
+		logger.debug("installFile = " + fData);
 
+		zipper.setFileName(fData.getCanonicalPath());
 		try {
-			logger.debug("installFile = " + fData);
-
-			zipper.setFileName(fData.getCanonicalPath());
-			boolean unzipped = false;
-			try {
-				unzipped = zipper.unzip(home.getCanonicalPath());
-				ret = home;
-			} catch (final Exception e) {
-				logger.exception(e);
-				unzipped = false;
-			}
-
-			if (unzipped == false) {
-				// this is not a zip file
-				// copy content from cache to pwd
-				final File fout = new File(home,
-						theData.getName() != null ? theData.getName() : theData.getUID().toString());
-				XWTools.checkDir(fout.getParent());
-				logger.debug("installFile = " + fData + " is not a zip file; just copy it to PWD : " + fout);
-				ret = fout;
-				final FileOutputStream fos = new FileOutputStream(fout);
-				final DataOutputStream output = new DataOutputStream(fos);
-				io = new StreamIO(output, null, 10240, Worker.getConfig().nio());
-				io.writeFileContent(fData);
-			}
-		} finally {
-			if (islocked) {
-				CommManager.getInstance().commClient().unlock(uri);
-			}
-			if (io != null) {
-				io.close();
-			}
-			io = null;
+			zipper.unzip(home.getCanonicalPath());
+			return home;
+		} catch (final Exception e) {
+			logger.exception(e);
 		}
-		return ret;
+
+		// this is not a zip file
+		// copy content from cache to pwd
+		final File fout = new File(home,
+				theData.getName() != null ? theData.getName() : theData.getUID().toString());
+		XWTools.checkDir(fout.getParent());
+
+		try (final FileOutputStream fos = new FileOutputStream(fout);
+				final DataOutputStream output = new DataOutputStream(fos);
+				final StreamIO io = new StreamIO(output, null, 10240, Worker.getConfig().nio())){
+
+			logger.debug("installFile = " + fData + " is not a zip file; just copy it to PWD : " + fout);
+			io.writeFileContent(fData);
+			return fout;
+		} finally {
+			CommManager.getInstance().commClient().unlock(uri);
+		}
 	}
 
 	/**
@@ -1287,7 +1252,7 @@ public class ThreadWork extends Thread {
 	 * @return the file containing the job result
 	 */
 	public synchronized File zipResult() throws IOException, ClassNotFoundException, SAXException, URISyntaxException,
-			InvalidKeyException {
+	InvalidKeyException {
 
 		boolean islocked = false;
 
