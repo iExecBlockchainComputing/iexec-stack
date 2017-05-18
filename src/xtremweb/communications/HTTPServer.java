@@ -25,8 +25,12 @@ package xtremweb.communications;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.rmi.RemoteException;
 import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
 
 import org.apache.commons.httpclient.HttpVersion;
 import org.eclipse.jetty.server.Connector;
@@ -99,7 +103,7 @@ public class HTTPServer extends CommServer {
 		try {
 			final int httpPort = (prop.getRole() == XWRole.WORKER
 					? Integer.parseInt(prop.getProperty(Connection.HTTPPORT.toString()))
-					: Integer.parseInt(prop.getProperty(Connection.HTTPWORKERPORT.toString())));
+							: Integer.parseInt(prop.getProperty(Connection.HTTPWORKERPORT.toString())));
 
 			setPort(httpPort);
 
@@ -109,57 +113,17 @@ public class HTTPServer extends CommServer {
 
 				getLogger().warn("unsecured communications : not using SSL");
 
-				final HttpConfiguration http_config = new HttpConfiguration();
-				http_config.setSecureScheme("https");
-				http_config.setSecurePort(8443);
-				http_config.setOutputBufferSize(32768);
+				final HttpConfiguration httpConfig = new HttpConfiguration();
+				httpConfig.setSecureScheme("https");
+				httpConfig.setSecurePort(8443);
+				httpConfig.setOutputBufferSize(32768);
 
-				final ServerConnector http = new ServerConnector(httpServer, new HttpConnectionFactory(http_config));
+				final ServerConnector http = new ServerConnector(httpServer, new HttpConnectionFactory(httpConfig));
 				http.setPort(getPort());
 				http.setIdleTimeout(30000);
 				httpServer.setConnectors(new Connector[] { http });
 			} else {
-				final String password = prop.getProperty(XWPropertyDefs.SSLKEYPASSWORD);
-				final String passphrase = prop.getProperty(XWPropertyDefs.SSLKEYPASSPHRASE);
-				try {
-					final int httpsPort = Integer.parseInt(prop.getProperty(Connection.HTTPSPORT.toString()));
-					setPort(httpsPort);
-
-					final File fstore = File.createTempFile("xwcacert", null);
-					fstore.deleteOnExit();
-					final FileOutputStream sstore = new FileOutputStream(fstore);
-					final KeyStore store = prop.getKeyStore();
-					store.store(sstore, password.toCharArray());
-					getLogger().debug("HTTPS keystore = " + fstore.getCanonicalPath());
-					final SslContextFactory sslContextFactory = new SslContextFactory(fstore.getCanonicalPath());
-					sslContextFactory.setKeyStorePassword(password);
-					sslContextFactory.setKeyManagerPassword(passphrase);
-					sslContextFactory.setTrustStore(store);
-					sslContextFactory.setTrustStorePassword(password);
-					sslContextFactory.setWantClientAuth(true);
-
-					final HttpConfiguration http_config = new HttpConfiguration();
-					http_config.setSecureScheme("https");
-					http_config.setSecurePort(getPort());
-					http_config.setOutputBufferSize(32768);
-
-					final HttpConfiguration https_config = new HttpConfiguration(http_config);
-					final SecureRequestCustomizer src = new SecureRequestCustomizer();
-					src.setStsMaxAge(2000);
-					src.setStsIncludeSubDomains(true);
-					https_config.addCustomizer(src);
-
-					final ServerConnector https = new ServerConnector(httpServer,
-							new SslConnectionFactory(sslContextFactory, HttpVersion.HTTP_1_1.toString()),
-							new HttpConnectionFactory(https_config));
-					https.setPort(getPort());
-					https.setIdleTimeout(500000);
-
-					httpServer.setConnectors(new Connector[] { https });
-
-				} catch (final Exception e) {
-					getLogger().exception("Can't init SSL layer", e);
-				}
+				initSecuredLayer(prop);
 			}
 
 			setHandler(handler);
@@ -175,12 +139,58 @@ public class HTTPServer extends CommServer {
 
 			getLogger().info("started, listening on port : " + getPort());
 		} catch (final Exception e) {
-			e.printStackTrace();
 			getLogger().exception(e);
 			getLogger().fatal(getName() + ": could not listen on port " + getPort() + " : " + e);
 		}
 	}
+	/**
+	 * This initializes the secured layer
+	 * @param prop
+	 * @throws IOException
+	 * @throws CertificateException
+	 * @throws NoSuchAlgorithmException
+	 * @throws KeyStoreException
+	 */
+	private void initSecuredLayer(final XWConfigurator prop) throws IOException, CertificateException, NoSuchAlgorithmException, KeyStoreException {
+		final String password = prop.getProperty(XWPropertyDefs.SSLKEYPASSWORD);
+		final String passphrase = prop.getProperty(XWPropertyDefs.SSLKEYPASSPHRASE);
+		final File fstore = File.createTempFile("xwcacert", null);
+		try (final FileOutputStream sstore = new FileOutputStream(fstore)){
+			final int httpsPort = Integer.parseInt(prop.getProperty(Connection.HTTPSPORT.toString()));
+			setPort(httpsPort);
 
+			fstore.deleteOnExit();
+			final KeyStore store = prop.getKeyStore();
+			store.store(sstore, password.toCharArray());
+			getLogger().debug("HTTPS keystore = " + fstore.getCanonicalPath());
+			final SslContextFactory sslContextFactory = new SslContextFactory(fstore.getCanonicalPath());
+			sslContextFactory.setKeyStorePassword(password);
+			sslContextFactory.setKeyManagerPassword(passphrase);
+			sslContextFactory.setTrustStore(store);
+			sslContextFactory.setTrustStorePassword(password);
+			sslContextFactory.setWantClientAuth(true);
+
+			final HttpConfiguration http_config = new HttpConfiguration();
+			http_config.setSecureScheme("https");
+			http_config.setSecurePort(getPort());
+			http_config.setOutputBufferSize(32768);
+
+			final HttpConfiguration https_config = new HttpConfiguration(http_config);
+			final SecureRequestCustomizer src = new SecureRequestCustomizer();
+			src.setStsMaxAge(2000);
+			src.setStsIncludeSubDomains(true);
+			https_config.addCustomizer(src);
+
+			final ServerConnector https = new ServerConnector(httpServer,
+					new SslConnectionFactory(sslContextFactory, HttpVersion.HTTP_1_1.toString()),
+					new HttpConnectionFactory(https_config));
+			https.setPort(getPort());
+			https.setIdleTimeout(500000);
+
+			httpServer.setConnectors(new Connector[] { https });
+
+		}
+	}
 	/**
 	 * This adds an handler
 	 *
