@@ -277,7 +277,6 @@ public class Zipper {
 						while ((len = in.read(buffer)) >= 0) {
 							out.write(buffer, 0, len);
 						}
-					} finally {
 					}
 					in.close();
 
@@ -286,7 +285,6 @@ public class Zipper {
 				}
 
 				return true;
-			} finally {
 			}
 
 		} catch (final ZipException z) {
