@@ -57,7 +57,7 @@ public final class SessionInterface extends xtremweb.common.Table {
 	 *
 	 * @since 9.0.0
 	 */
-	public static final String TABLENAME = ("sessions");
+	public static final String TABLENAME = "sessions";
 	/**
 	 * This is the XML tag
 	 */
@@ -174,27 +174,6 @@ public final class SessionInterface extends xtremweb.common.Table {
 	private static final int ENUMSIZE = Columns.values().length;
 
 	/**
-	 * This retrieves column label from enum Columns. This takes cares of this
-	 * version. If this version is null, this version is prior to 5.8.0. Before
-	 * 5.8.0, OWNERUID was known as CLIENTUID and ACCESSRIGHTS did not exist.
-	 *
-	 * @param i
-	 *            is an ordinal of an Columns
-	 * @since 5.8.0
-	 * @return null if((version == null) &amp;&amp; (i ==
-	 *         ACCESSRIGHTS.ordinal())); "CLIENTUID" if((version == null)
-	 *         &amp;&amp; (i == OWNERUID.ordinal())); column label otherwise
-	 */
-	@Override
-	public String getColumnLabel(final int i) throws IndexOutOfBoundsException {
-		try {
-			return TableColumns.fromInt(i).toString();
-		} catch (final Exception e) {
-		}
-		return Columns.fromInt(i).toString();
-	}
-
-	/**
 	 * This is the default constructor
 	 */
 	public SessionInterface() {
@@ -217,28 +196,6 @@ public final class SessionInterface extends xtremweb.common.Table {
 	public SessionInterface(final ResultSet rs) throws IOException {
 		this();
 		fill(rs);
-	}
-
-	/**
-	 * This fills columns from DB
-	 *
-	 * @since 9.0.0
-	 * @param rs
-	 *            is the SQL data set
-	 * @throws IOException
-	 */
-	@Override
-	public void fill(final ResultSet rs) throws IOException {
-
-		try {
-			setUID((UID) TableColumns.UID.fromResultSet(rs));
-			setOwner((UID) TableColumns.OWNERUID.fromResultSet(rs));
-			setAccessRights((XWAccessRights) TableColumns.ACCESSRIGHTS.fromResultSet(rs));
-			setName((String) Columns.NAME.fromResultSet(rs));
-		} catch (final Exception e) {
-			throw new IOException(e.toString());
-		}
-		setDirty(false);
 	}
 
 	/**
@@ -305,6 +262,48 @@ public final class SessionInterface extends xtremweb.common.Table {
 	public SessionInterface(final Attributes attrs) {
 		this();
 		super.fromXml(attrs);
+	}
+
+	/**
+	 * This fills columns from DB
+	 *
+	 * @since 9.0.0
+	 * @param rs
+	 *            is the SQL data set
+	 * @throws IOException
+	 */
+	@Override
+	public void fill(final ResultSet rs) throws IOException {
+
+		try {
+			setUID((UID) TableColumns.UID.fromResultSet(rs));
+			setOwner((UID) TableColumns.OWNERUID.fromResultSet(rs));
+			setAccessRights((XWAccessRights) TableColumns.ACCESSRIGHTS.fromResultSet(rs));
+			setName((String) Columns.NAME.fromResultSet(rs));
+		} catch (final Exception e) {
+			throw new IOException(e.toString());
+		}
+		setDirty(false);
+	}
+	/**
+	 * This retrieves column label from enum Columns. This takes cares of this
+	 * version. If this version is null, this version is prior to 5.8.0. Before
+	 * 5.8.0, OWNERUID was known as CLIENTUID and ACCESSRIGHTS did not exist.
+	 *
+	 * @param i
+	 *            is an ordinal of an Columns
+	 * @since 5.8.0
+	 * @return null if((version == null) &amp;&amp; (i ==
+	 *         ACCESSRIGHTS.ordinal())); "CLIENTUID" if((version == null)
+	 *         &amp;&amp; (i == OWNERUID.ordinal())); column label otherwise
+	 */
+	@Override
+	public String getColumnLabel(final int i) throws IndexOutOfBoundsException {
+		try {
+			return TableColumns.fromInt(i).toString();
+		} catch (final Exception e) {
+		}
+		return Columns.fromInt(i).toString();
 	}
 
 	/**

@@ -76,11 +76,9 @@ public class XMLKey extends XMLObject {
 	 *             on XML error
 	 */
 	public XMLKey(final DataInputStream input) throws IOException, SAXException {
-		final XMLReader reader = new XMLReader(this);
-		try {
+		try (final XMLReader reader = new XMLReader(this)) {
 			reader.read(input);
 		} catch (final InvalidKeyException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

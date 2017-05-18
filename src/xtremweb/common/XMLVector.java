@@ -34,6 +34,7 @@ import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Vector;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -67,15 +68,11 @@ public final class XMLVector extends XMLValue {
 	 *
 	 * @see xtremweb.common.XMLable#columns
 	 */
-	private final int SIZE = 0;
+	private static final int SIZE = 0;
 	/**
 	 * This is this vector size
 	 */
 	private int expectedSize;
-
-	public int size() {
-		return expectedSize;
-	}
 
 	/**
 	 * This count nested elements since this vector may content hashtables and
@@ -89,29 +86,6 @@ public final class XMLVector extends XMLValue {
 	 * This is the values index
 	 */
 	private int currentIndex;
-
-	/**
-	 * This is called by the GC; this calls clear();
-	 *
-	 * @since 5.8.0
-	 * @see #clear()
-	 */
-	protected void finalize() {
-		clear();
-	}
-
-	/**
-	 * This clears this vector
-	 *
-	 * @since 5.8.0
-	 */
-	@Override
-	protected void clear() {
-		if (getValue() != null) {
-			((ArrayList<XMLValue>) getValue()).clear();
-		}
-		super.clear();
-	}
 
 	/**
 	 */
@@ -211,6 +185,32 @@ public final class XMLVector extends XMLValue {
 		fromXml(attrs);
 	}
 
+	public int size() {
+		return expectedSize;
+	}
+
+	/**
+	 * This is called by the GC; this calls clear();
+	 *
+	 * @since 5.8.0
+	 * @see #clear()
+	 */
+	protected void finalize() {
+		clear();
+	}
+
+	/**
+	 * This clears this vector
+	 *
+	 * @since 5.8.0
+	 */
+	@Override
+	protected void clear() {
+		if (getValue() != null) {
+			((ArrayList<XMLValue>) getValue()).clear();
+		}
+		super.clear();
+	}
 	/**
 	 * This serializes this object to a String as an XML object<br />
 	 *
@@ -224,19 +224,19 @@ public final class XMLVector extends XMLValue {
 			return "<" + getXMLTag() + " " + getColumnLabel(SIZE) + "=\"0\" ></" + getXMLTag() + ">";
 		}
 
-		String ret = "<" + getXMLTag() + " " + getColumnLabel(SIZE) + "=\"" + ((ArrayList<XMLable>) value).size()
-				+ "\" >";
+		final StringBuilder ret = new StringBuilder("<" + getXMLTag() + " " + getColumnLabel(SIZE) + "=\"" + ((ArrayList<XMLable>) value).size()
+				+ "\" >");
 
 		final Iterator<XMLable> myenum = ((ArrayList<XMLable>) value).iterator();
 
 		while (myenum.hasNext()) {
 			final XMLable v = myenum.next();
-			ret += v.toXml();
+			ret.append(v.toXml());
 		}
 
-		ret += "</" + getXMLTag() + ">";
+		ret.append("</" + getXMLTag() + ">");
 
-		return ret;
+		return ret.toString();
 	}
 
 	/**
@@ -413,42 +413,43 @@ public final class XMLVector extends XMLValue {
 	 * The dummy or read representation is finally dumped
 	 */
 	public static void main(final String[] argv) {
-		try (final FileInputStream fis = new FileInputStream(argv[0])){
-			final ArrayList<XMLable> v = new ArrayList<>();
-			final ArrayList<XMLable> v2 = new ArrayList<>();
-			v.add(new XMLObject(new String("un")));
-			v.add(new XMLObject(new Integer(2)));
-			v.add(UID.NULLUID);
-			v2.add(new XMLObject(new String("dix")));
-			v2.add(new XMLObject(new String("cent")));
-			v.add(new XMLVector(v2));
-			final Hashtable h = new Hashtable();
-			h.put(new Integer(1), "un");
-			h.put(new String("deux"), new Integer(2));
-			v.add(new XMLHashtable(h));
-			XMLVector xmlv = new XMLVector(v);
-			if (argv.length == 1) {
+
+		final Vector v = new Vector();
+		final Vector v2 = new Vector();
+		v.add(new String("un"));
+		v.add(new Integer(2));
+		v.add(UID.NULLUID);
+		v2.add(new String("dix"));
+		v2.add(new String("cent"));
+		v.add(new XMLVector(v2));
+		final Hashtable h = new Hashtable();
+		h.put(new Integer(1), new String("un"));
+		h.put(new String("deux"), new Integer(2));
+		v.add(new XMLHashtable(h));
+		XMLVector xmlv = new XMLVector(v);
+
+		if (argv.length == 1) {
+			try (final FileInputStream fis = new FileInputStream(argv[0])){
 				xmlv = new XMLVector(new DataInputStream(fis));
+			} catch (final Exception e) {
+				e.printStackTrace();
+			}
+		}
+		System.out.println(xmlv.toXml());
+
+		xmlv.getLogger().setLoggerLevel(LoggerLevel.DEBUG);
+
+		final ArrayList<XMLable> ret = (ArrayList<XMLable>)xmlv.getXmlValues();
+		System.out.println(ret);
+		for (int i = 0; i < xmlv.size(); i++) {
+
+			final Object k = ret.get(i);
+
+			if (k == null) {
+				continue;
 			}
 
-			System.out.println(xmlv.toXml());
-
-			xmlv.getLogger().setLoggerLevel(LoggerLevel.DEBUG);
-
-			final ArrayList<XMLable> ret = (ArrayList<XMLable>)xmlv.getXmlValues();
-			System.out.println(ret);
-			for (int i = 0; i < xmlv.size(); i++) {
-
-				final Object k = ret.get(i);
-
-				if (k == null) {
-					continue;
-				}
-
-				xmlv.getLogger().debug("[" + k + "] " + k.getClass());
-			}
-		} catch (final Exception e) {
-			e.printStackTrace();
+			xmlv.getLogger().debug("[" + k + "] " + k.getClass());
 		}
 	}
 

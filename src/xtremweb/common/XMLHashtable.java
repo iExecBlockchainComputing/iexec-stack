@@ -91,38 +91,6 @@ public final class XMLHashtable extends XMLValue {
 	private XMLtuple[] tuples;
 
 	/**
-	 * This is called by the GC; this calls clear();
-	 *
-	 * @since 5.8.0
-	 * @see #clear()
-	 */
-	@Override
-	protected void finalize() {
-		clear();
-		super.finalize();
-	}
-
-	/**
-	 * This clears this hashtable
-	 *
-	 * @since 5.8.0
-	 */
-	@Override
-	protected void clear() {
-		if (tuples == null) {
-			return;
-		}
-
-		for (int i = 0; i < size; i++) {
-			tuples[i].clear();
-			tuples[i] = null;
-		}
-		tuples = null;
-		size = 0;
-		nested = 0;
-	}
-
-	/**
 	 */
 	public XMLHashtable() {
 		this((Hashtable) null);
@@ -195,8 +163,7 @@ public final class XMLHashtable extends XMLValue {
 	public XMLHashtable(final DataInputStream input) throws IOException, SAXException {
 		this(new Hashtable());
 		setEmpty(false);
-		final XMLReader reader = new XMLReader(this);
-		try {
+		try (final XMLReader reader = new XMLReader(this)) {
 			reader.read(input);
 		} catch (final InvalidKeyException e) {
 			getLogger().exception(e);
@@ -216,6 +183,37 @@ public final class XMLHashtable extends XMLValue {
 		this(new Hashtable());
 		setEmpty(false);
 		fromXml(attrs);
+	}
+	/**
+	 * This is called by the GC; this calls clear();
+	 *
+	 * @since 5.8.0
+	 * @see #clear()
+	 */
+	@Override
+	protected void finalize() {
+		clear();
+		super.finalize();
+	}
+
+	/**
+	 * This clears this hashtable
+	 *
+	 * @since 5.8.0
+	 */
+	@Override
+	protected void clear() {
+		if (tuples == null) {
+			return;
+		}
+
+		for (int i = 0; i < size; i++) {
+			tuples[i].clear();
+			tuples[i] = null;
+		}
+		tuples = null;
+		size = 0;
+		nested = 0;
 	}
 
 	/**
@@ -277,7 +275,7 @@ public final class XMLHashtable extends XMLValue {
 			getLogger().finest("     attribute #" + a + ": name=\"" + attribute + "\"" + ", value=\"" + value + "\"");
 
 			if (attribute.compareToIgnoreCase(getColumnLabel(SIZEIDX)) == 0) {
-				size = new Integer(value).intValue();
+				size = Integer.parseInt(value);
 			}
 		}
 		if (size > 0) {

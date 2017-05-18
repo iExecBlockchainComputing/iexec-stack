@@ -57,65 +57,12 @@ public class XMLObject extends XMLable {
 	 * This stores this object value
 	 */
 	private Object value;
-
-	/**
-	 * This retrieve this object value
-	 */
-	public Object getValue() {
-		return value;
-	}
-
-	/**
-	 * @param value
-	 *            the value to set
-	 */
-	public void setValue(final Object value) {
-		this.value = value;
-	}
-
 	/**
 	 * This defines an empty object by default (i.e. an XML object like
 	 * "<XMLObject ... />") If false this object is not empty (i.e. an XML
 	 * object like "<XMLObject> ... </XMLObject >")
 	 */
 	private boolean empty;
-
-	/**
-	 * @param empty
-	 *            the empty to set
-	 */
-	public void setEmpty(final boolean empty) {
-		this.empty = empty;
-	}
-
-	/**
-	 * @return the empty
-	 */
-	public boolean isEmpty() {
-		return empty;
-	}
-
-	/**
-	 * This is called by the GC; this calls clear();
-	 *
-	 * @since 5.8.0
-	 * @see #clear()
-	 */
-	@Override
-	protected void finalize() {
-		clear();
-	}
-
-	/**
-	 * This clears this hashtable
-	 *
-	 * @since 5.8.0
-	 */
-	@Override
-	protected void clear() {
-		type = null;
-		value = null;
-	}
 
 	/**
 	 */
@@ -158,11 +105,9 @@ public class XMLObject extends XMLable {
 	 *             on XML error
 	 */
 	protected XMLObject(final DataInputStream input) throws IOException, SAXException {
-		final XMLReader reader = new XMLReader(this);
-		try {
+		try (final XMLReader reader = new XMLReader(this)){
 			reader.read(input);
 		} catch (final InvalidKeyException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -174,6 +119,58 @@ public class XMLObject extends XMLable {
 		this();
 		fromXml(attrs);
 	}
+	/**
+	 * This retrieve this object value
+	 */
+	public Object getValue() {
+		return value;
+	}
+
+	/**
+	 * @param value
+	 *            the value to set
+	 */
+	public void setValue(final Object value) {
+		this.value = value;
+	}
+
+	/**
+	 * @param empty
+	 *            the empty to set
+	 */
+	public void setEmpty(final boolean empty) {
+		this.empty = empty;
+	}
+
+	/**
+	 * @return the empty
+	 */
+	public boolean isEmpty() {
+		return empty;
+	}
+
+	/**
+	 * This is called by the GC; this calls clear();
+	 *
+	 * @since 5.8.0
+	 * @see #clear()
+	 */
+	@Override
+	protected void finalize() {
+		clear();
+	}
+
+	/**
+	 * This clears this hashtable
+	 *
+	 * @since 5.8.0
+	 */
+	@Override
+	protected void clear() {
+		type = null;
+		value = null;
+	}
+
 
 	/**
 	 * This serializes this object to a String as an XML object<br />
@@ -184,14 +181,13 @@ public class XMLObject extends XMLable {
 	@Override
 	public String toXml() {
 
-		String ret = new String("<" + getXMLTag() + " ");
+		final StringBuilder ret = new StringBuilder( "<" + getXMLTag() + " ");
 		if (empty) {
-			ret += XMLTYPE + "=\"" + type.getName() + "\" " + XMLVALUE + "=\"" + value.toString() + "\" />";
+			ret.append(XMLTYPE + "=\"" + type.getName() + "\" " + XMLVALUE + "=\"" + value.toString() + "\" />");
 		} else {
-			ret += XMLTYPE + "=\"" + type.getName() + "\">" + ((XMLObject) value).toXml() + "</" + getXMLTag() + ">";
+			ret.append(XMLTYPE + "=\"" + type.getName() + "\">" + ((XMLObject) value).toXml() + "</" + getXMLTag() + ">");
 		}
-
-		return ret;
+		return ret.toString();
 	}
 
 	/**
