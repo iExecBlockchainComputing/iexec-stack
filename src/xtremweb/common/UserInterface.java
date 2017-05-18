@@ -110,17 +110,17 @@ public final class UserInterface extends Table {
 			@Override
 			public String fromString(final String v) {
 				String val = v;
-				val = val.replaceAll(X509Proxy.BEGINCERT, X509Proxy.BEGINCERT_);
-				val = val.replaceAll(X509Proxy.ENDCERT, X509Proxy.ENDCERT_);
-				val = val.replaceAll(X509Proxy.BEGINPRIVATEKEY, X509Proxy.BEGINPRIVATEKEY_);
-				val = val.replaceAll(X509Proxy.ENDPRIVATEKEY, X509Proxy.ENDPRIVATEKEY_);
+				val = val.replaceAll(X509Proxy.BEGINCERT, X509Proxy.BEGINCERT_NOSPACE);
+				val = val.replaceAll(X509Proxy.ENDCERT, X509Proxy.ENDCERT_NOSPACE);
+				val = val.replaceAll(X509Proxy.BEGINPRIVATEKEY, X509Proxy.BEGINPRIVATEKEY_NOSPACE);
+				val = val.replaceAll(X509Proxy.ENDPRIVATEKEY, X509Proxy.ENDPRIVATEKEY_NOSPACE);
 
 				val = val.replaceAll("\\s", "\n");
 
-				val = val.replaceAll(X509Proxy.BEGINCERT_, X509Proxy.BEGINCERT);
-				val = val.replaceAll(X509Proxy.ENDCERT_, X509Proxy.ENDCERT);
-				val = val.replaceAll(X509Proxy.BEGINPRIVATEKEY_, X509Proxy.BEGINPRIVATEKEY);
-				val = val.replaceAll(X509Proxy.ENDPRIVATEKEY_, X509Proxy.ENDPRIVATEKEY);
+				val = val.replaceAll(X509Proxy.BEGINCERT_NOSPACE, X509Proxy.BEGINCERT);
+				val = val.replaceAll(X509Proxy.ENDCERT_NOSPACE, X509Proxy.ENDCERT);
+				val = val.replaceAll(X509Proxy.BEGINPRIVATEKEY_NOSPACE, X509Proxy.BEGINPRIVATEKEY);
+				val = val.replaceAll(X509Proxy.ENDPRIVATEKEY_NOSPACE, X509Proxy.ENDPRIVATEKEY);
 				return val;
 			}
 		},
