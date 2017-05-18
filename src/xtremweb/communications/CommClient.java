@@ -43,6 +43,7 @@ import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.security.AccessControlException;
 import java.security.InvalidKeyException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Enumeration;
@@ -77,6 +78,7 @@ import xtremweb.common.XMLHashtable;
 import xtremweb.common.XMLReader;
 import xtremweb.common.XMLValue;
 import xtremweb.common.XMLVector;
+import xtremweb.common.XMLable;
 import xtremweb.common.XWConfigurator;
 import xtremweb.common.XWPropertyDefs;
 import xtremweb.common.XWTools;
@@ -1186,31 +1188,26 @@ public abstract class CommClient implements ClientAPI {
 			}
 		}
 
-		Vector<XMLValue> appVector = getApps().getXmlValues();
+		final ArrayList<XMLable> apps = (ArrayList<XMLable>)getApps().getXmlValues();
 		try {
 			logger.finest(
-					"commClient#getApp(" + name + ") vector.size = " + appVector.size() + " " + appVector.toString());
+					"commClient#getApp(" + name + ") vector.size = " + apps.size() + " " + apps.toString());
 
-			final Enumeration<XMLValue> myenum = appVector.elements();
-			for (; myenum.hasMoreElements();) {
+			for (int i = 0; i< apps.size(); i++) {
 
-				AppInterface theApp = null;
-				UID uid = (UID) myenum.nextElement().getValue();
+				final UID uid = (UID) ((XMLValue)apps.get(i)).getValue();
 				if (uid == null) {
 					continue;
 				}
 
-				theApp = (AppInterface) get(uid);
-
-				uid = null;
+				final AppInterface theApp = (AppInterface) get(uid);
 
 				if ((theApp != null) && (theApp.getName().compareToIgnoreCase(name) == 0)) {
 					return theApp;
 				}
 			}
 		} finally {
-			appVector.clear();
-			appVector = null;
+			apps.clear();
 		}
 		return null;
 	}
@@ -2291,10 +2288,10 @@ public abstract class CommClient implements ClientAPI {
 			return StatusEnum.ERROR;
 		}
 
-		final Vector<XMLValue> v = jobIDs.getXmlValues();
+		final ArrayList<XMLable> v = (ArrayList<XMLable>)jobIDs.getXmlValues();
 		try {
-			for (final Enumeration<XMLValue> e = v.elements(); e.hasMoreElements();) {
-				final UID uid = (UID) e.nextElement().getValue();
+			for (int i = 0; i < v.size(); i++) {
+				final UID uid = (UID) v.get(i);
 				final WorkInterface work = (WorkInterface) get(uid);
 				if (work.getStatus() != StatusEnum.COMPLETED) {
 					return StatusEnum.WAITING;
@@ -2327,10 +2324,10 @@ public abstract class CommClient implements ClientAPI {
 			return StatusEnum.ERROR;
 		}
 
-		final Vector<XMLValue> v = jobIDs.getXmlValues();
+		final ArrayList<XMLable> v = (ArrayList<XMLable>)jobIDs.getXmlValues();
 		try {
-			for (final Enumeration<XMLValue> e = v.elements(); e.hasMoreElements();) {
-				final UID uid = (UID) e.nextElement().getValue();
+			for (int i = 0; i < v.size(); i++) {
+				final UID uid = (UID) v.get(i);
 				final WorkInterface work = (WorkInterface) get(uid);
 				if (work.getStatus() != StatusEnum.COMPLETED) {
 					return StatusEnum.WAITING;
