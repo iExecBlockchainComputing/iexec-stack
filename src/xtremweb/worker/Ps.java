@@ -59,10 +59,9 @@ public class Ps {
 			id = 0;
 			while (input.ready()) {
 				ligne = input.readLine();
-				try {
+				pid[id] = Integer.valueOf(ligne).intValue();
+				try (final BufferedReader pidstat = new BufferedReader(new FileReader("/proc/" + pid[id] + "/stat"))){
 					// on ne garde que ce qui est numerique (i.e. pid)
-					pid[id] = Integer.valueOf(ligne).intValue();
-					final BufferedReader pidstat = new BufferedReader(new FileReader("/proc/" + pid[id] + "/stat"));
 					ligne = pidstat.readLine();
 					pidstat.close();
 					index = 0;
@@ -70,9 +69,9 @@ public class Ps {
 						index = ligne.indexOf(' ', index + 1);
 					}
 					// on recupere les jiffies user et system du process
-					us[id] = Integer.valueOf(ligne.substring(index, ligne.indexOf(' ', index + 1)).trim()).intValue();
+					us[id] = Integer.parseInt(ligne.substring(index, ligne.indexOf(' ', index + 1)).trim());
 					index = ligne.indexOf(' ', index + 1);
-					sy[id] = Integer.valueOf(ligne.substring(index, ligne.indexOf(' ', index + 1)).trim()).intValue();
+					sy[id] = Integer.parseInt(ligne.substring(index, ligne.indexOf(' ', index + 1)).trim());
 					id++;
 
 				} catch (final Exception e) {
