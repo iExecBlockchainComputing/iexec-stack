@@ -44,9 +44,7 @@ public class XWUtilSolaris extends XWUtilDummy {
 	public int getSpeedProc() {
 		final Logger logger = new Logger(this);
 		String valStr = null;
-		Process workProcess = null;
-		final int i = 0;
-		int processReturnCode = 0;
+		Process workProcess;
 
 		File tempFile = null;
 		try {
@@ -68,16 +66,15 @@ public class XWUtilSolaris extends XWUtilDummy {
 		}
 
 		try {
-			processReturnCode = workProcess.waitFor();
+			workProcess.waitFor();
 		} catch (final InterruptedException e) {
-			logger.error("ThreadLaunch in executeNativeJob: cannot wait for the end of the job ?!?" + e);
+			logger.exception("ThreadLaunch in executeNativeJob: cannot wait for the end of the job ?!?", e);
 			return -1;
 		}
 
-		try {
-			final BufferedReader bufferFile = new BufferedReader(new FileReader(tempFile));
-			String l = "";
+		try (final BufferedReader bufferFile = new BufferedReader(new FileReader(tempFile))){
 
+			String l = "";
 			while ((l != null) && (valStr == null)) {
 				// each processor section has
 				// operates at xxx MHz
@@ -89,9 +86,8 @@ public class XWUtilSolaris extends XWUtilDummy {
 				}
 				l = bufferFile.readLine();
 			}
-			bufferFile.close();
 		} catch (final Exception e) {
-			logger.error(" Exception: " + e);
+			logger.exception(e);
 			return 0;
 		}
 

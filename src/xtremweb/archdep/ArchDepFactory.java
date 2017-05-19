@@ -28,6 +28,7 @@ package xtremweb.archdep;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Hashtable;
 import java.util.Map;
@@ -54,6 +55,8 @@ import xtremweb.common.XWPropertyDefs;
 public class ArchDepFactory {
 
 	private final Logger logger;
+
+	private static final String JAVALIBPATH="java.library.path";
 
 	/** Mapping between interface and implementations */
 	private final Map<String, Map<OSEnum, String>> ifmap;
@@ -117,12 +120,12 @@ public class ArchDepFactory {
 		uniqueInstances = new Hashtable<String, Object>(10);
 
 		// force libraries loading at startup
-		String loading_message = "";
+		final StringBuilder loadingMessage = new StringBuilder();
 		final String[] librairies = { "XWUtil", "XWInterrupts", "XwTracer", "XWExecJNI", "PortMapper" };
 		for (int i = 0; i < librairies.length; i++) {
-			loading_message += librairies[i] + ":" + (loadLibrary(librairies[i]) ? "Loaded; " : "Missing; ");
+			loadingMessage.append(librairies[i] + ":" + (loadLibrary(librairies[i]) ? "Loaded; " : "Missing; "));
 		}
-		logger.info(loading_message);
+		logger.info(loadingMessage.toString());
 	}
 
 	/**
@@ -174,10 +177,10 @@ public class ArchDepFactory {
 
 			logger.finest("Copying " + libResName + " to " + f.getCanonicalPath());
 
-			String libpath = System.getProperty("java.library.path");
+			String libpath = System.getProperty(JAVALIBPATH);
 
 			if (libpath == null) {
-				libpath = new String();
+				libpath = "";
 			}
 
 			if ((System.getProperty(XWPropertyDefs.CACHEDIR.toString()) != null)
@@ -187,26 +190,15 @@ public class ArchDepFactory {
 						+ f.getParentFile().getCanonicalPath());
 			}
 
-			System.setProperty("java.library.path", libpath);
-			logger.finest("java.library.path = " + System.getProperty("java.library.path"));
+			System.setProperty(JAVALIBPATH, libpath);
+			logger.finest("java.library.path = " + System.getProperty(JAVALIBPATH));
 
 			if (f.exists()) {
 				f.delete();
 			}
 
 			final String resname = "jni/" + libResName;
-			final InputStream ls = getClass().getClassLoader().getResourceAsStream(resname);
-			if ((ls != null) && (ls.available() > 0)) {
-				final byte[] buf = new byte[1024];
-				final FileOutputStream lf = new FileOutputStream(f);
-				for (int n = ls.read(buf); n > 0; n = ls.read(buf)) {
-					lf.write(buf, 0, n);
-				}
-				ls.close();
-				lf.close();
-			} else {
-				logger.finest("Archive does not contains " + resname);
-			}
+			writeRes(resname, f);
 
 			if (f.exists()) {
 				try {
@@ -229,6 +221,21 @@ public class ArchDepFactory {
 			logger.warn(" can't load " + s + " : " + e);
 		}
 		return loaded;
+	}
+
+	private void writeRes(final String resName, final File f) throws IOException {
+		
+		try (final FileOutputStream lf = new FileOutputStream(f);
+				final InputStream ls = getClass().getClassLoader().getResourceAsStream(resName)){
+			if ((ls != null) && (ls.available() > 0)) {
+				final byte[] buf = new byte[1024];
+				for (int n = ls.read(buf); n > 0; n = ls.read(buf)) {
+					lf.write(buf, 0, n);
+				}
+			} else {
+				logger.finest("Archive does not contains " + resName);
+			}
+		}
 	}
 
 	/**
