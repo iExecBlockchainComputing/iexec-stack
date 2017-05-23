@@ -626,7 +626,7 @@ public enum IdRpc {
 		@Override
 		public String helpClient() {
 			return this.toString()
-					+ " <application name | URI | UID> [ --xwcert <X.509 cert or proxy> ] [ --xwenv <dirinFile | URI | UID> ] [ '<' <stdinFile> ] [--xwsession <UID | URI>] [--xwgroup <UID | URI>]";
+					+ " <application name | URI | UID> [ --xwcert <X.509 cert or proxy> ] [ --xwenv <dirinFile | URI | UID> ] [ --xwstdin <stdinFile> ] [--xwsession <UID | URI>] [--xwgroup <UID | URI>]";
 		}
 
 		@Override

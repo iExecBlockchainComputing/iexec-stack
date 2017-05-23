@@ -163,8 +163,8 @@ public final class SmartSocketsProxy extends Thread {
 			}
 
 			final byte[] buffer = new byte[XWTools.PACKETSIZE];
-			long start = -1;
-			long last = -1;
+			long start;
+			long last;
 			final long timeout = Long.parseLong(XWPropertyDefs.SOTIMEOUT.defaultValue());
 			{
 				final Date now = new Date();
@@ -172,7 +172,7 @@ public final class SmartSocketsProxy extends Thread {
 			}
 			while (!isClosed()) {
 				try {
-					int n = 0;
+					int n;
 					do {
 						n = inputStream.read(buffer);
 						if (n != -1) {
@@ -186,10 +186,9 @@ public final class SmartSocketsProxy extends Thread {
 							}
 						}
 					} while (n > 0);
-					{
-						final Date now = new Date();
-						last = now.getTime();
-					}
+
+					final Date now = new Date();
+					last = now.getTime();
 					if ((last - start) > timeout) {
 						throw new TimeoutException("Inactivity since " + (last - start));
 					}
@@ -418,55 +417,27 @@ public final class SmartSocketsProxy extends Thread {
 		while (!mustStop()) {
 			logger.debug("Server waiting for connections");
 
-			VirtualSocket incoming = null;
-			Socket outgoing = null;
-			DataInputStream incomingIn = null;
-			DataOutputStream incomingOut = null;
-			DataInputStream outgoingIn = null;
-			DataOutputStream outgoingOut = null;
 			try {
-				incoming = vServerSocket.accept();
+				VirtualSocket incoming = vServerSocket.accept();
+				final Socket outgoing = SocketFactory.getDefault().createSocket(XWTools.getLocalHostName(), forwardPort);
 
-				logger.debug("Incoming connection; forwarding to " + XWTools.getLocalHostName() + ":" + forwardPort);
-				outgoing = SocketFactory.getDefault().createSocket(XWTools.getLocalHostName(), forwardPort);
-				incomingIn = new DataInputStream(incoming.getInputStream());
-				incomingOut = new DataOutputStream(incoming.getOutputStream());
-				outgoingIn = new DataInputStream(outgoing.getInputStream());
-				outgoingOut = new DataOutputStream(outgoing.getOutputStream());
+				try (final DataInputStream incomingIn = new DataInputStream(incoming.getInputStream());
+						final DataOutputStream incomingOut = new DataOutputStream(incoming.getOutputStream());
+						final DataInputStream outgoingIn = new DataInputStream(outgoing.getInputStream());
+						final DataOutputStream outgoingOut = new DataOutputStream(outgoing.getOutputStream());) {
 
-				reader = new ProxyThread(readerName, incoming, incomingIn, outgoingOut);
-				reader.start();
+					logger.debug("Incoming connection; forwarding to " + XWTools.getLocalHostName() + ":" + forwardPort);
 
-				writer = new ProxyThread(writerName, outgoing, outgoingIn, incomingOut);
-				writer.start();
+					reader = new ProxyThread(readerName, incoming, incomingIn, outgoingOut);
+					reader.start();
 
-				logger.debug("Started");
+					writer = new ProxyThread(writerName, outgoing, outgoingIn, incomingOut);
+					writer.start();
+
+					logger.debug("Started");
+				}
 			} catch (final IOException e) {
 				logger.exception("SmartSockets server proxy", e);
-				try {
-					incomingIn.close();
-				} catch (final Exception e1) {
-				}
-				try {
-					incomingOut.flush();
-					incomingOut.close();
-				} catch (final Exception e2) {
-				}
-				try {
-					outgoingIn.close();
-				} catch (final Exception e1) {
-				}
-				try {
-					outgoingOut.flush();
-					outgoingOut.close();
-				} catch (final Exception e2) {
-				}
-			} finally {
-				incoming = null;
-				incomingIn = null;
-				incomingOut = null;
-				outgoingIn = null;
-				outgoingOut = null;
 			}
 		}
 	}
@@ -486,25 +457,27 @@ public final class SmartSocketsProxy extends Thread {
 			logger.debug("Client waiting for connections");
 
 			try {
-				final Socket incoming = socketServer.accept();
-
-				logger.debug("Incoming connection");
 				final VirtualSocket outgoing = vSocketFactory.createClientSocket(vServerAddress,
 						Integer.parseInt(System.getProperty(XWPropertyDefs.SOTIMEOUT.toString())), connectProperties);
-				final DataInputStream incomingIn = new DataInputStream(incoming.getInputStream());
-				final DataOutputStream incomingOut = new DataOutputStream(incoming.getOutputStream());
-				final DataInputStream outgoingIn = new DataInputStream(outgoing.getInputStream());
-				final DataOutputStream outgoingOut = new DataOutputStream(outgoing.getOutputStream());
 
-				reader = new ProxyThread(readerName, incoming, incomingIn, outgoingOut);
-				reader.start();
+				try (final Socket incoming = socketServer.accept();
+						final DataInputStream incomingIn = new DataInputStream(incoming.getInputStream());
+						final DataOutputStream incomingOut = new DataOutputStream(incoming.getOutputStream());
+						final DataInputStream outgoingIn = new DataInputStream(outgoing.getInputStream());
+						final DataOutputStream outgoingOut = new DataOutputStream(outgoing.getOutputStream());){
 
-				writer = new ProxyThread(writerName, outgoing, outgoingIn, incomingOut);
-				writer.start();
+					logger.debug("Incoming connection");
 
-				logger.debug("Started");
+					reader = new ProxyThread(readerName, incoming, incomingIn, outgoingOut);
+					reader.start();
+
+					writer = new ProxyThread(writerName, outgoing, outgoingIn, incomingOut);
+					writer.start();
+
+					logger.debug("Started");
+				}
 			} catch (final IOException e) {
-				logger.exception("SmartSockets server proxy", e);
+				logger.exception("SmartSockets client proxy", e);
 			}
 		}
 	}

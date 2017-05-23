@@ -725,26 +725,17 @@ public final class Cache extends XMLable {
 		logger.finest("read()");
 
 		if ((cacheFile != null) && (cacheFile.exists())) {
-			try {
-
-				final FileInputStream fis = new FileInputStream(cacheFile);
+			try (final FileInputStream fis = new FileInputStream(cacheFile)) {
 				final DataInputStream input = new DataInputStream(fis);
-				try {
-					final XMLReader reader = new XMLReader(this);
-					try {
-						reader.read(input);
-					} catch (final InvalidKeyException e) {
-						e.printStackTrace();
-					}
-				} catch (final EOFException e) {
+				try (final XMLReader reader = new XMLReader(this)) {
+					reader.read(input);
+				} catch (final InvalidKeyException | EOFException  e) {
 					if (streamer != null) {
 						streamer.close();
 					}
 					logger.finest("XWHEP Cache : " + cache.size() + " objects cached");
 				}
-			} catch (final IOException e) {
-				logger.exception(e);
-			} catch (final SAXException e) {
+			} catch (final IOException | SAXException e) {
 				logger.exception(e);
 			}
 		}
@@ -760,9 +751,8 @@ public final class Cache extends XMLable {
 		logger.finest("write()");
 
 		if (cacheFile != null) {
-			try {
+			try (final FileOutputStream fos = new FileOutputStream(cacheFile)) {
 				if (streamer == null) {
-					final FileOutputStream fos = new FileOutputStream(cacheFile);
 					final DataOutputStream output = new DataOutputStream(fos);
 					streamer = new StreamIO(output, null, 10240, config.nio());
 				}
@@ -770,15 +760,19 @@ public final class Cache extends XMLable {
 				final String header = new String("<" + THISTAG + " " + "SIZE=\"" + cache.size() + "\" >");
 				streamer.writeBytes(header);
 				for (final CacheEntry entry : cache.values()) {
-					try {
-						write(entry);
-					} catch (final Exception e) {
-						logger.exception(e);
-					}
+					writeEntry(entry);
 				}
 			} catch (final IOException e) {
 				logger.exception(e);
 			}
+		}
+	}
+
+	private void writeEntry(CacheEntry entry) {
+		try {
+			write(entry);
+		} catch (final Exception e) {
+			getLogger().exception(e);
 		}
 	}
 

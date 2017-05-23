@@ -67,10 +67,13 @@ BuildRoot: %{_builddir}/%{name}-%{version}
 %define VBHL /usr/bin/vboxheadless
 %define VBAPPNAME virtualbox
 %define USRBIN /usr/bin
-%define XWCREATEVDI %{USRBIN}/xwcreatevdi
+%define USRLOCALBIN /usr/local/bin
+%define USRBINXWCREATEVDI %{USRBIN}/xwcreatevdi
+%define USRLOCALBINCREATEVDI %{USRLOCALBIN}/createvdi
 %define CREATEVDI %{XW_BINDIR}/createvdi
 %define SUDOERS /etc/sudoers
-%define SUDOERSENTRY "%{SYSLOGIN} ALL=NOPASSWD: %{XWCREATEVDI}"
+%define SUDOERSENTRY "%{SYSLOGIN} ALL=NOPASSWD: %{USRBINXWCREATEVDI}"
+%define SUDOERSENTRY2 "%{SYSLOGIN} ALL=NOPASSWD: %{USRLOCALBINCREATEVDI}"
 
 %description
 XWHEP is a Distributed Computing Plateform. It allows to set up
@@ -122,8 +125,10 @@ ln -s %{XWWORKER_PATH} %{INITDWORKER} >> %{LOG}  2>&1
 rm -f %{INITDMONITOR} >> %{LOG}  2>&1 
 ln -s %{XWMONITOR_PATH} %{INITDMONITOR} >> %{LOG}  2>&1 
 
-rm -f %{XWCREATEVDI} >> %{LOG}  2>&1 
-ln -s %{CREATEVDI} %{XWCREATEVDI} >> %{LOG}  2>&1 
+rm -f %{USRBINXWCREATEVDI} >> %{LOG}  2>&1 
+ln -s %{CREATEVDI} %{USRBINXWCREATEVDI} >> %{LOG}  2>&1 
+rm -f %{USRLOCALBINCREATEVDI} >> %{LOG}  2>&1 
+ln -s %{CREATEVDI} %{USRLOCALBINCREATEVDI} >> %{LOG}  2>&1 
 
 if [ -f %{SUDOERS} ] ; then
 	cp -f %{SUDOERS} /etc/sudoers-without-xwhep
@@ -142,7 +147,8 @@ if [ "X%{SYSLOGIN}" != "X" ] ; then
     /usr/sbin/groupadd %{SYSLOGIN} >> %{LOG}  2>&1 
     /usr/sbin/useradd %{SYSLOGIN} -d /home/%{SYSLOGIN} -s /bin/bash -g %{SYSLOGIN} -m >> %{LOG}  2>&1 
     chown -R %{SYSLOGIN}.%{SYSLOGIN} %{XW_INSTALLDIR} >> %{LOG}  2>&1 
-    chown -R %{SYSLOGIN}.%{SYSLOGIN} %{XWCREATEVDI} >> %{LOG}  2>&1 
+    chown -R %{SYSLOGIN}.%{SYSLOGIN} %{USRBINXWCREATEVDI} >> %{LOG}  2>&1 
+    chown -R %{SYSLOGIN}.%{SYSLOGIN} %{USRLOCALBINCREATEVDI} >> %{LOG}  2>&1 
 else
     echo "[`date`] [%{name}] SYSLOGIN variable is not set; this package will run as root; this is not a good idea" >> %{LOG} 2>&1
 fi
@@ -210,7 +216,8 @@ if [ $1 = 0 ] ; then
 	ls -l %{INITDMONITOR} | grep %{version} 2>&1
 	[ $? -eq 0 ] && rm -f %{INITDMONITOR} >> %{LOG}  2>&1 
 
-	rm -f %{XWCREATEVDI} >> %{LOG}  2>&1
+	rm -f %{USRBINXWCREATEVDI} >> %{LOG}  2>&1
+	rm -f %{USRLOCALBINCREATEVDI} >> %{LOG}  2>&1
 
 	cat %{SUDOERS} | grep -v %{SYSLOGIN} > /tmp/xwsudoers
 	mv -f /tmp/xwsudoers %{SUDOERS}
@@ -242,7 +249,6 @@ echo "[`date`] [%{name}] RPM preun done" >> %{LOG} 2>&1
 %{XW_BINDIR}/createvdi
 %{XW_BINDIR}/xtremweb.monitor
 %{XW_BINDIR}/xtremweb.monitor.pl
-%{XW_BINDIR}/createvdi
 %{XW_KEYDIR}/xwhepworker.keys
 %config %{XW_CONFDIR}/xtremweb.worker.conf
 #%doc %{XW_DOCDIR}/

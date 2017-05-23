@@ -361,60 +361,41 @@ public class ThreadAlive extends Thread {
 			final String keystoreUriStr = (String) rmiResults.get(XWPostParams.KEYSTOREURI.toString());
 			if ((keystoreUriStr != null) && (keystoreUriStr.length() > 0)) {
 				logger.info("ThreadAlive() KEYSTOREURI : " + keystoreUriStr);
-				URI keystoreUri = null;
-				File currentKeystoreFile = null;
-				File newKeystoreFile = null;
-				DataOutputStream output = null;
-				FileOutputStream foutput = null;
-				StreamIO io = null;
-				DataInterface newKeystoreData = null;
-				String currentKeystoreMD5 = null;
 				boolean newkeystore = false;
-				try {
-					keystoreUri = new URI(keystoreUriStr);
-					currentKeystoreFile = new File(System.getProperty(XWPropertyDefs.JAVAKEYSTORE.toString()));
-					logger.debug("currentKeystoreFile : " + currentKeystoreFile + " length = "
-							+ currentKeystoreFile.length());
+				final URI keystoreUri = new URI(keystoreUriStr);
+				final File currentKeystoreFile = new File(System.getProperty(XWPropertyDefs.JAVAKEYSTORE.toString()));
+				logger.debug("currentKeystoreFile : " + currentKeystoreFile + " length = "
+						+ currentKeystoreFile.length());
 
-					newKeystoreData = CommManager.getInstance().getData(keystoreUri);
-					if (newKeystoreData == null) {
-						throw new IOException("Can't retrieve new keystore data " + keystoreUri);
-					}
+				final DataInterface newKeystoreData = CommManager.getInstance().getData(keystoreUri);
+				if (newKeystoreData == null) {
+					throw new IOException("Can't retrieve new keystore data " + keystoreUri);
+				}
 
-					currentKeystoreMD5 = MD5.asHex(MD5.getHash(currentKeystoreFile));
+				final String currentKeystoreMD5 = MD5.asHex(MD5.getHash(currentKeystoreFile));
 
-					if (newKeystoreData.getMD5().compareTo(currentKeystoreMD5) != 0) {
-						logger.info("Downloading new keystore");
-						CommManager.getInstance().downloadData(keystoreUri);
-						newKeystoreFile = CommManager.getInstance().commClient(keystoreUri).getContentFile(keystoreUri);
-						foutput = new FileOutputStream(currentKeystoreFile);
-						output = new DataOutputStream(foutput);
+				if (newKeystoreData.getMD5().compareTo(currentKeystoreMD5) != 0) {
+					logger.info("Downloading new keystore");
+					CommManager.getInstance().downloadData(keystoreUri);
+					final File newKeystoreFile = CommManager.getInstance().commClient(keystoreUri).getContentFile(keystoreUri);
+
+					try (final FileOutputStream foutput = new FileOutputStream(currentKeystoreFile);
+							final DataOutputStream output = new DataOutputStream(foutput); 
+							final StreamIO io = new StreamIO(output, null, false)) {
+
 						logger.debug("newKeystoreFile : " + newKeystoreFile + " length = " + newKeystoreFile.length());
-
-						io = new StreamIO(output, null, false);
 						io.writeFileContent(newKeystoreFile);
 						newkeystore = true;
-					}
-				} catch (final Exception e) {
-					logger.exception("can't download KEYSTOREURI", e);
-				} finally {
-					if (io != null) {
-						io.close();
-					}
-					io = null;
-					currentKeystoreFile = null;
-					currentKeystoreMD5 = null;
-					newKeystoreData = null;
-					newKeystoreFile = null;
-					keystoreUri = null;
-					output = null;
-					foutput = null;
-					if (newkeystore == true) {
-						logger.info("**********  **********  **********");
-						logger.info("New keystore received");
-						logger.info("Restarting now");
-						logger.info("**********  **********  **********");
-						System.exit(XWReturnCode.RESTART.ordinal());
+					} catch (final Exception e) {
+						logger.exception("can't download KEYSTOREURI", e);
+					} finally {
+						if (newkeystore == true) {
+							logger.info("**********  **********  **********");
+							logger.info("New keystore received");
+							logger.info("Restarting now");
+							logger.info("**********  **********  **********");
+							System.exit(XWReturnCode.RESTART.ordinal());
+						}
 					}
 				}
 			}

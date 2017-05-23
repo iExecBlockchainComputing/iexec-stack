@@ -52,19 +52,11 @@ import java.util.zip.ZipOutputStream;
  */
 
 public class Zipper {
-	static final int BUFFER = 2048;
+	static final int BUFFERSIZE = 2048;
 
 	private final Logger logger;
 
 	protected static final String NAME = "ZIPPER";
-
-	/**
-	 * This sets the logger level. This also sets the logger levels checkboxes
-	 * menu item.
-	 */
-	public void setLoggerLevel(final LoggerLevel l) {
-		logger.setLoggerLevel(l);
-	}
 
 	/**
 	 * This is the ZIP archive file name used to create/read archive
@@ -90,6 +82,14 @@ public class Zipper {
 	private boolean creation;
 
 	private final byte[] buffer = new byte[1024];
+
+	/**
+	 * This sets the logger level. This also sets the logger levels checkboxes
+	 * menu item.
+	 */
+	public void setLoggerLevel(final LoggerLevel l) {
+		logger.setLoggerLevel(l);
+	}
 
 	/**
 	 * This is the default constructor.
@@ -131,7 +131,7 @@ public class Zipper {
 		fileName = fn;
 
 		if (!fileName.startsWith(File.separator) && !fileName.startsWith(".") && (fileName.charAt(1) != ':')) {// win32
-																												// specific
+			// specific
 
 			fileName = "." + File.separator + fileName;
 		}
@@ -248,56 +248,49 @@ public class Zipper {
 		final File outputDir = new File(outDir);
 		XWTools.checkDir(outputDir);
 
-		ZipFile zipFile = null;
-		Enumeration entries = null;
 		try {
 			logger.debug("Unzipping : " + fileName + " to " + outDir);
 			final File file = new File(fileName);
 			if (!file.exists()) {
 				logger.warn(fileName + " does not exist");
 			}
-			zipFile = new ZipFile(file);
-			entries = zipFile.entries();
+			try (final ZipFile zipFile = new ZipFile(file)) {
+				final Enumeration entries = zipFile.entries();
+				while (entries.hasMoreElements()) {
+
+					final ZipEntry entry = (ZipEntry) entries.nextElement();
+
+					final InputStream in = zipFile.getInputStream(entry);
+					final File f = new File(outDir, entry.getName());
+					XWTools.checkDir(f.getParent());
+					// amazing : I had such a case...
+					// because a file name contained a french accentuation
+					// :(
+					if ((in == null) || (entry.isDirectory())) {
+						logger.finest("Unzipping " + fileName + " : " + entry.getName() + " is not unzipped ...");
+						continue;
+					}
+
+					try (final FileOutputStream out = new FileOutputStream(f)) {
+
+						int len;
+						while ((len = in.read(buffer)) >= 0) {
+							out.write(buffer, 0, len);
+						}
+					}
+					in.close();
+
+					filesList.put(entry.getName(), new Long(f.lastModified()));
+					logger.finest("Extracted file: " + entry.getName());
+				}
+
+				return true;
+			}
+
 		} catch (final ZipException z) {
-			logger.warn("not a zip file ? trying unzipNew");
+			logger.exception("not a zip file ? trying unzipNew", z);
 			return unzipNew(outDir);
 		}
-
-		while (entries.hasMoreElements()) {
-
-			final ZipEntry entry = (ZipEntry) entries.nextElement();
-
-			final InputStream in = zipFile.getInputStream(entry);
-			// amazing : I had such a case...
-			// because a file name contained a french accentuation
-			// :(
-			if (in == null) {
-				logger.finest("Unzipping " + fileName + " : " + entry.getName() + " is not unzipped ...");
-				continue;
-			}
-
-			final File f = new File(outDir, entry.getName());
-			XWTools.checkDir(f.getParent());
-			if (entry.isDirectory()) {
-				continue;
-			}
-
-			final FileOutputStream out = new FileOutputStream(f);
-
-			int len;
-			while ((len = in.read(buffer)) >= 0) {
-				out.write(buffer, 0, len);
-			}
-			in.close();
-			out.close();
-
-			filesList.put(entry.getName(), new Long(f.lastModified()));
-			logger.finest("Extracted file: " + entry.getName());
-		}
-
-		zipFile.close();
-
-		return true;
 	}
 
 	/**
@@ -330,17 +323,14 @@ public class Zipper {
 
 		filesList = new HashMap();
 
-		BufferedOutputStream dest = null;
-		FileInputStream fis = null;
+		BufferedOutputStream dest;
 		ZipInputStream zis = null;
 		ZipEntry entry;
 
-		try {
-			fis = new FileInputStream(fileName);
+		try (final FileInputStream fis = new FileInputStream(fileName) ){
 			zis = new ZipInputStream(new BufferedInputStream(fis));
 		} catch (final Exception z) {
-			logger.exception(z);
-			logger.warn("definitly not a zip file " + z.toString());
+			logger.exception("definitly not a zip file ", z);
 			return false;
 		}
 
@@ -349,23 +339,23 @@ public class Zipper {
 			ret = true;
 
 			int count;
-			final byte data[] = new byte[BUFFER];
+			final byte[] data = new byte[BUFFERSIZE];
 
 			FileOutputStream fos = null;
 			try {
 				final File f = new File(outDir, entry.getName());
 				XWTools.checkDir(f.getParent());
 				if (entry.isDirectory()) {
-					continue;
+					throw new IOException();
 				}
 				fos = new FileOutputStream(f);
 			} catch (final Exception e) {
-				logger.info("Unzipping " + fileName + " : " + entry.getName() + " is not unzipped ...");
+				logger.exception("Unzipping " + fileName + " : " + entry.getName() + " is not unzipped ...", e);
 				continue;
 			}
 
-			dest = new BufferedOutputStream(fos, BUFFER);
-			while ((count = zis.read(data, 0, BUFFER)) != -1) {
+			dest = new BufferedOutputStream(fos, BUFFERSIZE);
+			while ((count = zis.read(data, 0, BUFFERSIZE)) != -1) {
 				dest.write(data, 0, count);
 			}
 			dest.flush();
@@ -441,17 +431,15 @@ public class Zipper {
 
 		boolean atleastone = false;
 
-		try {
+		try (final FileOutputStream fos = new FileOutputStream(new File(fileName));
+				final ZipOutputStream zipFile = new ZipOutputStream(fos)){
 			logger.debug("zipping to " + fileName);
-			final ZipOutputStream zipFile = new ZipOutputStream(new FileOutputStream(new File(fileName)));
 
 			for (int i = 0; i < inputs.length; i++) {
 				logger.finest("*** " + inputs[i]);
 				scratch = inputs[i];
 				atleastone = zip(zipFile, inputs[i]);
 			}
-
-			zipFile.close();
 		} catch (final ZipException ze) {
 			if (atleastone) {
 				throw ze;
@@ -482,7 +470,7 @@ public class Zipper {
 		}
 
 		final File inputFile = new File(input);
-		String[] tmpFiles = null;
+		String[] tmpFiles;
 		int loop;
 		boolean atleastone = false;
 
@@ -503,7 +491,7 @@ public class Zipper {
 		if (tmpFiles.length == 0) {
 			final int nLen = scratch.length();
 			final String withoutScratch = input.substring(nLen);
-			String entryName = null;
+			String entryName;
 
 			if (withoutScratch.length() == 0) {
 				entryName = input;
@@ -547,7 +535,7 @@ public class Zipper {
 				} catch (final StringIndexOutOfBoundsException e) {
 					withoutScratch = input.substring(nLen);
 				}
-				String entryName = null;
+				String entryName;
 
 				if (withoutScratch.length() == 0) {
 					entryName = tmpFiles[loop];
@@ -636,12 +624,9 @@ public class Zipper {
 
 	/**
 	 * This main method is for test purposes only
+	 * @throws IOException 
 	 */
-	public static void main(final String[] argv) {
-		try {
-			Zipper.test(argv[0]);
-		} catch (final Exception e) {
-			e.printStackTrace();
-		}
+	public static void main(final String[] argv) throws IOException {
+		Zipper.test(argv[0]);
 	}
 }

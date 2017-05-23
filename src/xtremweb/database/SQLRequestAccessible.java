@@ -55,7 +55,7 @@ public abstract class SQLRequestAccessible extends SQLRequest {
 	/**
 	 * This contains criteria for the WHERE part of the SQL request.
 	 */
-	public static final String CRITERIAS = UserInterface.TABLENAME + ".uid='%s'" + " AND users.isdeleted='false'"
+	public static final String SQLCRITERIAS = UserInterface.TABLENAME + ".uid='%s'" + " AND users.isdeleted='false'"
 			+ " AND (" + " users.uid=maintable.uid" // only for "users" table :
 													// a user can retrieve
 													// itself
@@ -103,7 +103,7 @@ public abstract class SQLRequestAccessible extends SQLRequest {
 	 * This is the equivalent of CRITERIAS for HyperSQL This is because HSQLDB
 	 * does not accept '&amp;' as bitwise operator :(
 	 *
-	 * @see #CRITERIAS
+	 * @see #SQLCRITERIAS
 	 */
 	public static final String CRITERIAS_HSQL = UserInterface.TABLENAME + ".uid='%s'" + " AND users.isdeleted='false'"
 			+ " AND (" + " users.uid=maintable.uid" + " OR users.uid=" + "maintable.owneruid" + " OR users.rights='"
@@ -127,7 +127,7 @@ public abstract class SQLRequestAccessible extends SQLRequest {
 		if (getHsqldb()) {
 			setCriterias(CRITERIAS_HSQL);
 		} else {
-			setCriterias(CRITERIAS);
+			setCriterias(SQLCRITERIAS);
 		}
 		setOtherAccess(XWAccessRights.NONE_INT);
 		setGroupAccess(XWAccessRights.NONE_INT);

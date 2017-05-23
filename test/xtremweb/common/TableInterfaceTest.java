@@ -85,7 +85,6 @@ public abstract class TableInterfaceTest {
 			reader.read(new FileInputStream(temp));
 			getItf2().setDUMPNULLS(true);
 			assertTrue(getItf().toXml().equals(getItf2().toXml()));
-			logger.info("JUnit test passed : " + this.getClass().toString());
 		} catch (final Exception e) {
 			logger.exception(e);
 		}

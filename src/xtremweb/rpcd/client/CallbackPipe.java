@@ -64,6 +64,7 @@ public class CallbackPipe extends Callback {
 		super(argv, c);
 
 		// let preload library now
+		@SuppressWarnings("unused")
 		final int rpcServerPort = ArchDepFactory.portMap().getudpport(0, 0);
 		final String sn = getServerName();
 		try {
@@ -88,8 +89,6 @@ public class CallbackPipe extends Callback {
 	@Override
 	protected void udp(final DatagramSocket clientSocket, final DatagramPacket clientPacket) throws Exception {
 
-		DatagramSocket serverSocket = null;
-		DatagramPacket serverPacket = null;
 		final Logger logger = getLogger();
 		final String serverName = getServerName();
 		final Packet request = new Packet(clientPacket.getData(), clientPacket.getLength(), logger.getLoggerLevel(),
@@ -132,43 +131,44 @@ public class CallbackPipe extends Callback {
 
 		logger.info("prog " + prog + " version " + version);
 
-		serverSocket = new DatagramSocket();
+		try (final DatagramSocket serverSocket = new DatagramSocket()){
 
-		logger.info("newDatas.length = " + newDatas.length);
-		logger.info("request.getLength() = " + request.getLength());
-		final InetAddress serverHost = getServerHost();
-		serverPacket = new DatagramPacket(newDatas, request.getLength(), serverHost, rpcServerPort);
+			logger.info("newDatas.length = " + newDatas.length);
+			logger.info("request.getLength() = " + request.getLength());
+			final InetAddress serverHost = getServerHost();
+			DatagramPacket serverPacket = new DatagramPacket(newDatas, request.getLength(), serverHost, rpcServerPort);
 
-		logger.info("writing to " + serverName + ":" + rpcServerPort);
+			logger.info("writing to " + serverName + ":" + rpcServerPort);
 
-		//
-		// Sending the job
-		//
+			//
+			// Sending the job
+			//
 
-		logger.debug("RPCXW;" + proc + " sending;" + new Date().getTime());
+			logger.debug("RPCXW;" + proc + " sending;" + new Date().getTime());
 
-		serverSocket.send(serverPacket);
+			serverSocket.send(serverPacket);
 
-		logger.debug("RPCXW;" + proc + " sent;" + new Date().getTime());
+			logger.debug("RPCXW;" + proc + " sent;" + new Date().getTime());
 
-		final byte[] buf = new byte[BUFSIZE];
-		serverPacket.setData(buf);
-		logger.info("waiting answer from " + serverName + ":" + rpcServerPort);
+			final byte[] buf = new byte[BUFSIZE];
+			serverPacket.setData(buf);
+			logger.info("waiting answer from " + serverName + ":" + rpcServerPort);
 
-		serverSocket.receive(serverPacket);
+			serverSocket.receive(serverPacket);
 
-		logger.debug("RPCXW;" + proc + " got result;" + new Date().getTime());
+			logger.debug("RPCXW;" + proc + " got result;" + new Date().getTime());
 
-		final int nbBytes = serverPacket.getLength();
+			final int nbBytes = serverPacket.getLength();
 
-		logger.debug("CallbackPipe;" + proc + " forwarded;" + new Date().getTime());
+			logger.debug("CallbackPipe;" + proc + " forwarded;" + new Date().getTime());
 
-		datas = new byte[nbBytes];
-		System.arraycopy(serverPacket.getData(), 0, datas, 0, nbBytes);
+			datas = new byte[nbBytes];
+			System.arraycopy(serverPacket.getData(), 0, datas, 0, nbBytes);
 
-		clientPacket.setData(datas);
-		clientSocket.send(clientPacket);
+			clientPacket.setData(datas);
+			clientSocket.send(clientPacket);
 
-		logger.debug("CallbackPipe;" + proc + " answered;" + new Date().getTime());
+			logger.debug("CallbackPipe;" + proc + " answered;" + new Date().getTime());
+		}
 	}
 }

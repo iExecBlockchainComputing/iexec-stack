@@ -38,7 +38,7 @@ import xtremweb.common.Table;
 
 public class UserDialog extends ViewDialog implements ActionListener {
 
-	private static String PASSWORD = "Change password";
+	private static String p = "Change password";
 
 	/**
 	 * This constructor does everything
@@ -59,9 +59,9 @@ public class UserDialog extends ViewDialog implements ActionListener {
 
 		super(f, title, columns, row.toVector(), editable);
 
-		final JButton passwordButton = new JButton(PASSWORD);
+		final JButton passwordButton = new JButton(p);
 
-		passwordButton.setActionCommand(PASSWORD);
+		passwordButton.setActionCommand(p);
 		passwordButton.addActionListener(this);
 
 		getTextPane().add(passwordButton);
@@ -73,13 +73,13 @@ public class UserDialog extends ViewDialog implements ActionListener {
 	public void actionPerformed(final ActionEvent e) {
 
 		super.actionPerformed(e);
-		if (isVisible() == false) {
+		if (!isVisible()) {
 			return;
 		}
 
 		final String cmd = e.getActionCommand();
 
-		if (PASSWORD.equals(cmd)) {
+		if (p.equals(cmd)) {
 			final JTextField jlogin = (JTextField) getFields().get("LOGIN");
 			final PasswordDialog dlgPassword = new PasswordDialog(getParent(), jlogin.getText());
 			dlgPassword.setVisible(true);

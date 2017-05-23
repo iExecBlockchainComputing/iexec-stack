@@ -44,9 +44,11 @@ import java.security.InvalidKeyException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateExpiredException;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
@@ -226,6 +228,7 @@ public final class Client {
 			try {
 				client = config.getCommClient(uri);
 			} catch (final InstantiationException e) {
+				logger.exception(e);
 				throw new IOException("can't get client for " + uri);
 			}
 		}
@@ -258,11 +261,11 @@ public final class Client {
 	 *            is the URI of the data to retrieve
 	 * @param display
 	 *            tells to write data description to stdout
-	 * @return
+	 * @return the found data
 	 * @throws IOException
 	 * @throws IllegalAccessException
 	 * @throws SAXException
-	 * @throws ClassNotFoundException
+	 * @throws ClassNotFoundException if data is not found
 	 * @throws AccessControlException
 	 * @throws InvalidKeyException
 	 * @throws URISyntaxException
@@ -323,11 +326,6 @@ public final class Client {
 		// insure data is in cache
 		final DataInterface data = getData(uri);
 
-		if (data == null) {
-			logger.error("Cant retrieve data " + uri);
-			return;
-		}
-
 		if (download == false) {
 			return;
 		}
@@ -363,7 +361,6 @@ public final class Client {
 			}
 		}
 		final File fdata = new File(fpath, fname);
-		fpath = null;
 		logger.debug("Download uri = " + uri + " fdata = " + fdata);
 		commClient.downloadData(uri, fdata);
 		if (data.getMD5().compareTo(MD5.asHex(MD5.getHash(fdata))) != 0) {
@@ -434,7 +431,7 @@ public final class Client {
 	/**
 	 * This hashtable stores comm clients for each schema
 	 */
-	private final Hashtable<String, CommClient> commClients;
+	private final HashMap<String, CommClient> commClients;
 
 	/**
 	 * This is the default constructor
@@ -450,7 +447,7 @@ public final class Client {
 		macroLineNumber = 0;
 		macroFile = null;
 		zipper = new Zipper();
-		commClients = new Hashtable<String, CommClient>();
+		commClients = new HashMap<String, CommClient>();
 
 		args = new CommandLineParser(argv);
 
@@ -466,7 +463,7 @@ public final class Client {
 			if (args.getOption(CommandLineOptions.GUI) == null) {
 				logger.fatal("You must provide a config file, using \"--xwconfig\" !");
 			} else {
-				new MileStone(XWTools.split(new String()));
+				new MileStone(XWTools.split(""));
 				mileStone = new MileStone(Client.class);
 			}
 		}
@@ -500,7 +497,7 @@ public final class Client {
 		}
 
 		if (shellRunning == false) {
-			System.exit(XWReturnCode.PARSING.ordinal());
+			exit("", XWReturnCode.PARSING);
 		}
 	}
 
@@ -583,11 +580,10 @@ public final class Client {
 
 		final String zFileName = zipper != null ? zipper.getFileName() : null;
 		if (newZip && (args.getOption(CommandLineOptions.KEEPZIP) == null) && (zFileName != null)) {
-			File file = new File(zFileName);
+			final File file = new File(zFileName);
 			if (file.exists()) {
 				file.delete();
 			}
-			file = null;
 		}
 
 		if (code != XWReturnCode.SUCCESS) {
@@ -603,6 +599,7 @@ public final class Client {
 			client.setAutoClose(true);
 			commClient().close();
 		} catch (final Exception e) {
+			logger.exception(e);
 		}
 		if (shellRunning == false) {
 			System.exit(code.ordinal());
@@ -831,7 +828,7 @@ public final class Client {
 		final String modstr = (String) enumParams.next();
 
 		while (enumParams.hasNext()) {
-			Object param = enumParams.next();
+			final Object param = enumParams.next();
 			URI uri = null;
 			if (param instanceof UID) {
 				uri = commClient().newURI((UID) param);
@@ -840,20 +837,16 @@ public final class Client {
 				uri = (URI) param;
 			}
 			if (uri == null) {
-				param = null;
 				throw new ParseException("uri is null", 0);
 			}
 
-			Table obj = get(uri, false, true);
+			final Table obj = get(uri, false, true);
 			if (obj != null) {
-				XWAccessRights rights = obj.getAccessRights();
+				final XWAccessRights rights = obj.getAccessRights();
 				rights.chmod(modstr);
 				obj.setAccessRights(rights);
 				commClient().send(new XMLRPCCommandSend(uri, obj));
-				rights = null;
 			}
-			obj = null;
-			param = null;
 		}
 
 		params.clear();
@@ -912,7 +905,7 @@ public final class Client {
 			bypass = true;
 		}
 
-		final Vector<UID> replicatedWorkUIDs = new Vector<UID>();
+		final ArrayList<UID> replicatedWorkUIDs = new ArrayList<UID>();
 		final Iterator theEnum = params.iterator();
 		while (theEnum.hasNext()) {
 			final Object param = theEnum.next();
@@ -1001,10 +994,6 @@ public final class Client {
 			default:
 				break;
 			}
-
-			dataUri = null;
-			jobStatus = null;
-			obj = null;
 		}
 
 		if (args.getOption(CommandLineOptions.NOERASE) == null) {
@@ -1099,7 +1088,7 @@ public final class Client {
 			InvalidKeyException, AccessControlException, SAXException, URISyntaxException, InstantiationException {
 
 		final CommClient commClient = commClient();
-		Table ret = null;
+		Table ret;
 
 		if ((args.command() == IdRpc.GETTASKS) || (args.command() == IdRpc.GETTASK)) {
 			ret = commClient.getTask(uri, bypass);
@@ -1112,14 +1101,13 @@ public final class Client {
 
 		if (display) {
 			startLine();
-			String str = null;
+			String str;
 			if (args.xml()) {
 				str = ret.toXml();
 			} else {
 				str = ret.toString(args.csv() || args.html(), args.shortFormat());
 			}
 			println(true, str);
-			str = null;
 			endLine();
 		}
 		return ret;
@@ -1161,7 +1149,7 @@ public final class Client {
 	 * @throws InvalidKeyException
 	 * @see #getApps(boolean)
 	 */
-	public Collection<XMLValue> getApps() throws InvalidKeyException, AccessControlException, URISyntaxException,
+	public Collection<XMLable> getApps() throws InvalidKeyException, AccessControlException, URISyntaxException,
 			IOException, InstantiationException, ClassNotFoundException, SAXException, IllegalAccessException {
 		return getApps(false);
 	}
@@ -1181,14 +1169,14 @@ public final class Client {
 	 * @throws AccessControlException
 	 * @throws InvalidKeyException
 	 */
-	private Collection<XMLValue> getApps(final boolean display)
+	private Collection<XMLable> getApps(final boolean display)
 			throws URISyntaxException, IOException, InstantiationException, InvalidKeyException, AccessControlException,
 			ClassNotFoundException, SAXException, IllegalAccessException {
 
 		final URI uri = commClient().newURI();
 		final XMLRPCCommandGetApps cmd = new XMLRPCCommandGetApps(uri, config.getUser());
 		final XMLVector xmluids = (XMLVector) sendCommand(cmd, false);
-		final Collection<XMLValue> uids = xmluids.getXmlValues();
+		final Collection<XMLable> uids = xmluids.getXmlValues();
 		get(uids, display);
 		return uids;
 	}
@@ -1214,7 +1202,7 @@ public final class Client {
 
 		final List appParams = (List) args.commandParams();
 
-		AppInterface app = null;
+		AppInterface app;
 		final File xmlFile = (File) args.getOption(CommandLineOptions.XML);
 
 		if (xmlFile != null) {
@@ -1224,9 +1212,7 @@ public final class Client {
 				throw new IOException("application name cannot be null");
 			}
 			if (app.getUID() == null) {
-				UID uid = new UID();
-				app.setUID(uid);
-				uid = null;
+				app.setUID(new UID());
 			}
 		} else {
 			if (appParams == null) {
@@ -1244,9 +1230,7 @@ public final class Client {
 				}
 			}
 			if (app == null) {
-				UID uid = new UID();
-				app = new AppInterface(uid);
-				uid = null;
+				app = new AppInterface(new UID());
 				app.setName((String) appParams.get(0));
 			} else {
 				// let see if we can modify this app
@@ -1352,7 +1336,6 @@ public final class Client {
 					}
 					binaryUri = sendData(os, cpu, type, accessRights,
 							new URI("file://" + binaryFile.getCanonicalPath()), binaryFile.getName());
-					type = null;
 				} else {
 					logger.warn("no binary found (no URI, no file)");
 				}
@@ -1362,18 +1345,10 @@ public final class Client {
 			app.setBinary(cpu, os, binaryUri);
 			app.setAccessRights(accessRights);
 			app.setType(apptype);
-
-			binaryFile = null;
-			binaryUri = null;
-			cpu = null;
-			os = null;
-			accessRights = null;
-			apptype = null;
 		}
 
 		commClient().send(app);
 		println(commClient().newURI(app.getUID()));
-		app = null;
 	}
 
 	/**
@@ -1401,9 +1376,7 @@ public final class Client {
 				remove((UID) param);
 			} catch (final ClassCastException e) {
 				remove((URI) param);
-			} catch (final InvalidKeyException e) {
-				throw e;
-			} catch (final AccessControlException e) {
+			} catch (final InvalidKeyException | AccessControlException e) {
 				throw e;
 			} catch (final Exception e) {
 				throw new IOException(e.getMessage());
@@ -1456,7 +1429,7 @@ public final class Client {
 	 * @throws InstantiationException
 	 * @see #getDatas(boolean)
 	 */
-	public Collection<XMLValue> getDatas() throws IOException, ClassNotFoundException, SAXException, URISyntaxException,
+	public Collection<XMLable> getDatas() throws IOException, ClassNotFoundException, SAXException, URISyntaxException,
 			InvalidKeyException, AccessControlException, InstantiationException, IllegalAccessException {
 		return getDatas(false);
 	}
@@ -1473,14 +1446,14 @@ public final class Client {
 	 * @throws IllegalAccessException
 	 * @see #getDatas()
 	 */
-	private Collection<XMLValue> getDatas(final boolean display)
+	private Collection<XMLable> getDatas(final boolean display)
 			throws IOException, ClassNotFoundException, SAXException, URISyntaxException, InvalidKeyException,
 			AccessControlException, InstantiationException, IllegalAccessException {
 
 		final URI uri = commClient().newURI();
 		final XMLRPCCommandGetDatas cmd = new XMLRPCCommandGetDatas(uri, config.getUser());
 		final XMLVector xmluids = (XMLVector) sendCommand(cmd, false);
-		final Collection<XMLValue> uids = xmluids.getXmlValues();
+		final Collection<XMLable> uids = xmluids.getXmlValues();
 		get(uids, display);
 		return uids;
 	}
@@ -1517,11 +1490,11 @@ public final class Client {
 		CPUEnum cpu = null;
 		OSEnum os = null;
 		XWAccessRights accessRights = null;
-		DataTypeEnum DataTypeEnum = null;
+		DataTypeEnum dataTypeEnum = null;
 		URI dataUri = null;
 		UID uid = new UID();
 
-		DataInterface data = null;
+		DataInterface data;
 		final File xmlFile = (File) args.getOption(CommandLineOptions.XML);
 
 		if (xmlFile != null) {
@@ -1589,7 +1562,7 @@ public final class Client {
 					logger.debug("not an access right");
 				}
 				try {
-					DataTypeEnum = (DataTypeEnum) dataParams.get(i);
+					dataTypeEnum = (DataTypeEnum) dataParams.get(i);
 					continue;
 				} catch (final Exception e) {
 					logger.debug("not a data type");
@@ -1617,13 +1590,13 @@ public final class Client {
 			}
 			data.setName(dataName);
 
-			if ((DataTypeEnum == null) && (dataFile != null)) {
+			if ((dataTypeEnum == null) && (dataFile != null)) {
 				data.setType(xtremweb.common.DataTypeEnum.getFileType(dataFile));
 			}
 
-			if (DataTypeEnum != null) {
-				data.setType(DataTypeEnum);
-				if (DataTypeEnum == xtremweb.common.DataTypeEnum.X509) {
+			if (dataTypeEnum != null) {
+				data.setType(dataTypeEnum);
+				if (dataTypeEnum == xtremweb.common.DataTypeEnum.X509) {
 					if (dataFile != null) {
 						XWTools.checkCertificate(dataFile);
 						accessRights = XWAccessRights.USERREADWRITE;
@@ -1660,7 +1633,6 @@ public final class Client {
 		}
 		if (newZip) {
 			data.setType(xtremweb.common.DataTypeEnum.ZIP);
-			dataFile = null;
 			dataFile = new File(zipper.getFileName());
 		}
 		sendData(data, dataFile);
@@ -1676,15 +1648,6 @@ public final class Client {
 			dataUri = commClient().newURI(data.getUID());
 		}
 		println(dataUri);
-
-		dataFile = null;
-		dataName = null;
-		cpu = null;
-		os = null;
-		accessRights = null;
-		DataTypeEnum = null;
-		dataUri = null;
-		uid = null;
 	}
 
 	/**
@@ -1714,17 +1677,16 @@ public final class Client {
 		data.setAccessRights(accessRights);
 		data.setURI(commClient().newURI(data.getUID()));
 
-		if (uri != null) {
-			if (uri.isFile()) {
-				dataFile = new File(uri.getPath());
-				data.setName(dataFile.getName());
-				final DataTypeEnum thisType = DataTypeEnum.getFileType(dataFile);
-				if ((thisType == DataTypeEnum.TEXT) && (type == DataTypeEnum.URIPASSTHROUGH)) {
-					data.setType(type);
-				}
-				if (thisType == DataTypeEnum.X509) {
-					data.setAccessRights(XWAccessRights.USERALL);
-				}
+		if ((uri != null) &&
+				(uri.isFile())) {
+			dataFile = new File(uri.getPath());
+			data.setName(dataFile.getName());
+			final DataTypeEnum thisType = DataTypeEnum.getFileType(dataFile);
+			if ((thisType == DataTypeEnum.TEXT) && (type == DataTypeEnum.URIPASSTHROUGH)) {
+				data.setType(type);
+			}
+			if (thisType == DataTypeEnum.X509) {
+				data.setAccessRights(XWAccessRights.USERALL);
 			}
 		}
 
@@ -1773,7 +1735,7 @@ public final class Client {
 		if (dataFile == null) {
 			data.setStatus(StatusEnum.AVAILABLE);
 		} else {
-			if (dataFile.exists() == false) {
+			if (!dataFile.exists()) {
 				throw new IOException(dataFile.getName() + " does not exist");
 			}
 			data.setStatus(StatusEnum.UNAVAILABLE);
@@ -1812,7 +1774,7 @@ public final class Client {
 	 * @throws InstantiationException
 	 * @see #getGroups(boolean)
 	 */
-	public Collection<XMLValue> getGroups()
+	public Collection<XMLable> getGroups()
 			throws IOException, ClassNotFoundException, SAXException, URISyntaxException, InvalidKeyException,
 			AccessControlException, InstantiationException, IllegalAccessException {
 		return getGroups(false);
@@ -1833,13 +1795,13 @@ public final class Client {
 	 * @throws InvalidKeyException
 	 * @throws IllegalAccessException
 	 */
-	private Collection<XMLValue> getGroups(final boolean display)
+	private Collection<XMLable> getGroups(final boolean display)
 			throws InvalidKeyException, AccessControlException, IOException, ClassNotFoundException, SAXException,
 			InstantiationException, URISyntaxException, IllegalAccessException {
 
 		final XMLVector xmluids = (XMLVector) sendCommand(
 				new XMLRPCCommandGetGroups(commClient().newURI(), config.getUser()), false);
-		final Collection<XMLValue> uids = xmluids.getXmlValues();
+		final Collection<XMLable> uids = xmluids.getXmlValues();
 		get(uids, display);
 		return uids;
 	}
@@ -1861,16 +1823,13 @@ public final class Client {
 			try (FileInputStream fis = new FileInputStream(xmlFile)) {
 				group = (GroupInterface) Table.newInterface(fis);
 			} catch (final Exception e) {
-				throw new IOException(e.getMessage());
+				throw new IOException(e);
 			}
 			if (group.getUID() == null) {
 				group.setUID(uid);
 			}
-			if (group.getName() == null) {
-				throw new IOException("group name can not be null");
-			}
-			if (group.getOwner() == null) {
-				throw new IOException("group owner can not be null");
+			if ((group.getName() == null) ||  (group.getOwner() == null)) {
+				throw new IOException("group and/or group owner can not be null");
 			}
 		} else {
 			group = new GroupInterface(uid);
@@ -1909,7 +1868,7 @@ public final class Client {
 	 * @throws InstantiationException
 	 * @see #getHosts(boolean)
 	 */
-	public Collection<XMLValue> getHosts() throws IOException, ClassNotFoundException, SAXException, URISyntaxException,
+	public Collection<XMLable> getHosts() throws IOException, ClassNotFoundException, SAXException, URISyntaxException,
 			InvalidKeyException, AccessControlException, InstantiationException {
 		return getHosts(false);
 	}
@@ -1930,12 +1889,12 @@ public final class Client {
 	 * @throws IllegalAccessException
 	 * @see #getHosts
 	 */
-	private Collection<XMLValue> getHosts(final boolean display) throws InvalidKeyException, AccessControlException,
+	private Collection<XMLable> getHosts(final boolean display) throws InvalidKeyException, AccessControlException,
 			IOException, ClassNotFoundException, SAXException, URISyntaxException, InstantiationException {
 
 		final XMLVector xmluids = (XMLVector) sendCommand(
 				new XMLRPCCommandGetHosts(commClient().newURI(), config.getUser()), false);
-		final Collection<XMLValue> uids = xmluids.getXmlValues();
+		final Collection<XMLable> uids = xmluids.getXmlValues();
 		get(uids, display);
 		return uids;
 	}
@@ -1951,23 +1910,6 @@ public final class Client {
 	}
 
 	/**
-	 * This retrieves command line parameter and writes session description
-	 *
-	 * @return an SessionInterface
-	 * @throws AccessControlException
-	 * @throws InvalidKeyException
-	 * @throws InstantiationException
-	 * @see #getSession(UID, boolean)
-	 */
-	private void getSession() throws IOException, ClassNotFoundException, SAXException, URISyntaxException,
-			InvalidKeyException, AccessControlException, InstantiationException {
-
-		final Collection params = (Collection) args.commandParams();
-		get(params, true);
-		params.clear();
-	}
-
-	/**
 	 * This retrieves, stores and displays sessions installed in XtremWeb
 	 * server.
 	 *
@@ -1976,7 +1918,7 @@ public final class Client {
 	 * @throws InstantiationException
 	 * @see #getSessions(boolean)
 	 */
-	public Collection<XMLValue> getSessions() throws IOException, ClassNotFoundException, SAXException,
+	public Collection<XMLable> getSessions() throws IOException, ClassNotFoundException, SAXException,
 			URISyntaxException, InvalidKeyException, AccessControlException, InstantiationException {
 		return getSessions(false);
 	}
@@ -1992,12 +1934,12 @@ public final class Client {
 	 * @throws InstantiationException
 	 * @see #getSessions
 	 */
-	private Collection<XMLValue> getSessions(final boolean display) throws IOException, ClassNotFoundException,
+	private Collection<XMLable> getSessions(final boolean display) throws IOException, ClassNotFoundException,
 			SAXException, URISyntaxException, InvalidKeyException, AccessControlException, InstantiationException {
 
 		final XMLVector xmluids = (XMLVector) sendCommand(
 				new XMLRPCCommandGetSessions(commClient().newURI(), config.getUser()), false);
-		final Collection<XMLValue> uids = xmluids.getXmlValues();
+		final Collection<XMLable> uids = xmluids.getXmlValues();
 		get(uids, display);
 		return uids;
 	}
@@ -2024,7 +1966,7 @@ public final class Client {
 			try (FileInputStream fis = new FileInputStream(xmlFile)) {
 				session = (SessionInterface) Table.newInterface(fis);
 			} catch (final Exception e) {
-				throw new IOException(e.getMessage());
+				throw new IOException(e);
 			}
 			if (session.getUID() == null) {
 				session.setUID(uid);
@@ -2063,7 +2005,7 @@ public final class Client {
 	 * @throws InstantiationException
 	 * @see #getTasks(boolean)
 	 */
-	public Collection<XMLValue> getTasks() throws IOException, ClassNotFoundException, SAXException, URISyntaxException,
+	public Collection<XMLable> getTasks() throws IOException, ClassNotFoundException, SAXException, URISyntaxException,
 			InvalidKeyException, AccessControlException, InstantiationException {
 		return getTasks(false);
 	}
@@ -2079,30 +2021,14 @@ public final class Client {
 	 * @throws InstantiationException
 	 * @see #getTasks
 	 */
-	private Collection<XMLValue> getTasks(final boolean display) throws IOException, ClassNotFoundException,
+	private Collection<XMLable> getTasks(final boolean display) throws IOException, ClassNotFoundException,
 			SAXException, URISyntaxException, InvalidKeyException, AccessControlException, InstantiationException {
 
 		final XMLVector xmluids = (XMLVector) sendCommand(
 				new XMLRPCCommandGetTasks(commClient().newURI(), config.getUser()), false);
-		final Collection<XMLValue> uids = xmluids.getXmlValues();
+		final Collection<XMLable> uids = xmluids.getXmlValues();
 		get(uids, display);
 		return uids;
-	}
-
-	/**
-	 * This retrieves command line parameter and writes trace description
-	 *
-	 * @return an TraceInterface
-	 * @throws AccessControlException
-	 * @throws InvalidKeyException
-	 * @throws InstantiationException
-	 * @see #getTrace(UID, boolean)
-	 */
-	private void getTrace() throws IOException, ClassNotFoundException, SAXException, URISyntaxException,
-			InvalidKeyException, AccessControlException, InstantiationException {
-		final Collection params = (Collection) args.commandParams();
-		get(params, true);
-		params.clear();
 	}
 
 	/**
@@ -2113,7 +2039,7 @@ public final class Client {
 	 * @throws InstantiationException
 	 * @see #getTraces(boolean)
 	 */
-	public Collection<XMLValue> getTraces() throws IOException, ClassNotFoundException, SAXException,
+	public Collection<XMLable> getTraces() throws IOException, ClassNotFoundException, SAXException,
 			URISyntaxException, InvalidKeyException, AccessControlException, InstantiationException {
 		return getTraces(false);
 	}
@@ -2129,12 +2055,12 @@ public final class Client {
 	 * @throws InstantiationException
 	 * @see #getTraces
 	 */
-	private Collection<XMLValue> getTraces(final boolean display) throws IOException, ClassNotFoundException,
+	private Collection<XMLable> getTraces(final boolean display) throws IOException, ClassNotFoundException,
 			SAXException, URISyntaxException, InvalidKeyException, AccessControlException, InstantiationException {
 
 		final XMLVector xmluids = (XMLVector) sendCommand(
 				new XMLRPCCommandGetTraces(commClient().newURI(), config.getUser()), false);
-		final Collection<XMLValue> uids = xmluids.getXmlValues();
+		final Collection<XMLable> uids = xmluids.getXmlValues();
 		get(uids, display);
 		return uids;
 	}
@@ -2150,22 +2076,6 @@ public final class Client {
 	}
 
 	/**
-	 * This retrieves command line parameter and writes user group description
-	 *
-	 * @return an UserGroupInterface
-	 * @throws AccessControlException
-	 * @throws InvalidKeyException
-	 * @throws InstantiationException
-	 * @see #getUserGroup(UID, boolean)
-	 */
-	private void getUserGroup() throws IOException, ClassNotFoundException, SAXException, URISyntaxException,
-			InvalidKeyException, AccessControlException, InstantiationException {
-		final Collection params = (Collection) args.commandParams();
-		get(params, true);
-		params.clear();
-	}
-
-	/**
 	 * This retrieves, stores and displays userGroups installed in XtremWeb
 	 * server.
 	 *
@@ -2174,7 +2084,7 @@ public final class Client {
 	 * @throws InstantiationException
 	 * @see #getUserGroups(boolean)
 	 */
-	public Collection<XMLValue> getUserGroups() throws IOException, ClassNotFoundException, SAXException,
+	public Collection<XMLable> getUserGroups() throws IOException, ClassNotFoundException, SAXException,
 			URISyntaxException, InvalidKeyException, AccessControlException, InstantiationException {
 		return getUserGroups(false);
 	}
@@ -2191,12 +2101,12 @@ public final class Client {
 	 * @throws InstantiationException
 	 * @see #getUserGroups
 	 */
-	public Collection<XMLValue> getUserGroups(final boolean display) throws IOException, ClassNotFoundException,
+	public Collection<XMLable> getUserGroups(final boolean display) throws IOException, ClassNotFoundException,
 			SAXException, URISyntaxException, InvalidKeyException, AccessControlException, InstantiationException {
 
 		final XMLVector xmluids = (XMLVector) sendCommand(
 				new XMLRPCCommandGetUserGroups(commClient().newURI(), config.getUser()), false);
-		final Collection<XMLValue> uids = xmluids.getXmlValues();
+		final Collection<XMLable> uids = xmluids.getXmlValues();
 		get(uids, display);
 		return uids;
 	}
@@ -2346,15 +2256,8 @@ public final class Client {
 
 		if (display) {
 			startLine();
-			String str = null;
-			if (args.xml()) {
-				str = user.toXml();
-			} else {
-				str = user.toString(args.csv() || args.html());
-			}
+			final String str = args.xml() ? user.toXml() : user.toString(args.csv() || args.html());
 			println(true, str);
-			str = null;
-
 			endLine();
 		}
 		return user;
@@ -2368,7 +2271,7 @@ public final class Client {
 	 * @throws InstantiationException
 	 * @see #getUsers(boolean)
 	 */
-	public Collection<XMLValue> getUsers() throws IOException, ClassNotFoundException, SAXException, URISyntaxException,
+	public Collection<XMLable> getUsers() throws IOException, ClassNotFoundException, SAXException, URISyntaxException,
 			InvalidKeyException, AccessControlException, InstantiationException {
 		return getUsers(false);
 	}
@@ -2384,13 +2287,13 @@ public final class Client {
 	 * @throws InstantiationException
 	 * @see #get(Vector, boolean)
 	 */
-	private Collection<XMLValue> getUsers(final boolean display) throws IOException, ClassNotFoundException,
+	private Collection<XMLable> getUsers(final boolean display) throws IOException, ClassNotFoundException,
 			SAXException, URISyntaxException, InvalidKeyException, AccessControlException, InstantiationException {
 
 		final URI uri = commClient().newURI();
 		final XMLRPCCommandGetUsers cmd = new XMLRPCCommandGetUsers(uri, config.getUser());
 		final XMLVector xmluids = (XMLVector) sendCommand(cmd, false);
-		final Collection<XMLValue> uids = xmluids.getXmlValues();
+		final Collection<XMLable> uids = xmluids.getXmlValues();
 		get(uids, display);
 		return uids;
 	}
@@ -2415,7 +2318,7 @@ public final class Client {
 			try (FileInputStream fis = new FileInputStream(xmlFile)) {
 				user = (UserInterface) Table.newInterface(fis);
 			} catch (final Exception e) {
-				throw new IOException(e.getMessage());
+				throw new IOException(e);
 			}
 			if (user.getLogin() == null) {
 				throw new ParseException("user login can not be null", 0);
@@ -2534,23 +2437,6 @@ public final class Client {
 	}
 
 	/**
-	 * This retrieves command line parameter and writes work description This
-	 * always download work from server; this does not use cache
-	 *
-	 * @return an WorkInterface
-	 * @throws AccessControlException
-	 * @throws InvalidKeyException
-	 * @throws InstantiationException
-	 * @see #getWork(UID, boolean)
-	 */
-	private void getWork() throws IOException, ClassNotFoundException, SAXException, URISyntaxException,
-			InvalidKeyException, AccessControlException, InstantiationException {
-		final Collection params = (Collection) args.commandParams();
-		get(params, true);
-		params.clear();
-	}
-
-	/**
 	 * This retrieves, stores and displays works installed in XtremWeb server.
 	 *
 	 * @throws AccessControlException
@@ -2558,7 +2444,7 @@ public final class Client {
 	 * @throws InstantiationException
 	 * @see #getWorks(boolean)
 	 */
-	public Collection<XMLValue> getWorks() throws IOException, ClassNotFoundException, SAXException, URISyntaxException,
+	public Collection<XMLable> getWorks() throws IOException, ClassNotFoundException, SAXException, URISyntaxException,
 			InvalidKeyException, AccessControlException, InstantiationException {
 		return getWorks(false);
 	}
@@ -2574,14 +2460,14 @@ public final class Client {
 	 * @throws InstantiationException
 	 * @see #getWorks
 	 */
-	private Collection<XMLValue> getWorks(final boolean display) throws IOException, ClassNotFoundException,
+	private Collection<XMLable> getWorks(final boolean display) throws IOException, ClassNotFoundException,
 			SAXException, URISyntaxException, InvalidKeyException, AccessControlException, InstantiationException {
 
 		final StatusEnum status = (StatusEnum) args.getOption(CommandLineOptions.STATUS);
 		final XMLRPCCommandGetWorks cmd = new XMLRPCCommandGetWorks(commClient().newURI(), config.getUser());
 		cmd.setStatus(status);
 		final XMLVector xmluids = (XMLVector) sendCommand(cmd, false);
-		final Collection<XMLValue> uids = xmluids.getXmlValues();
+		final Collection<XMLable> uids = xmluids.getXmlValues();
 		get(uids, display);
 		return uids;
 	}
@@ -2597,7 +2483,7 @@ public final class Client {
 	 * @throws InstantiationException
 	 * @see #getWorks
 	 */
-	private Collection<XMLValue> getGroupWorks(final boolean display) throws IOException, ClassNotFoundException,
+	private Collection<XMLable> getGroupWorks(final boolean display) throws IOException, ClassNotFoundException,
 			SAXException, URISyntaxException, InvalidKeyException, AccessControlException, InstantiationException {
 
 		final Collection params = (Collection) args.commandParams();
@@ -2619,11 +2505,10 @@ public final class Client {
 
 		final XMLVector xmluids = (XMLVector) sendCommand(cmd, false);
 
-		final Vector<XMLValue> uids = xmluids.getXmlValues();
+		final Collection<XMLable> uids = xmluids.getXmlValues();
 		get(uids, display);
 
 		params.clear();
-		group = null;
 
 		return uids;
 	}
@@ -2664,7 +2549,7 @@ public final class Client {
 		}
 		mileStone.println("<zip>");
 
-		boolean newZip = true;
+		boolean zipped = true;
 
 		final String[] filesHierarchy = new String[1];
 		filesHierarchy[0] = path.getAbsolutePath();
@@ -2673,12 +2558,12 @@ public final class Client {
 
 		if (zipper.zip(filesHierarchy, true) == false) {
 			logger.debug(zFileName + " is not zipped; it is kept 'as is'");
-			newZip = false;
+			zipped = false;
 		}
 
-		mileStone.println("<zipstatus='" + newZip + "' /></zip>");
+		mileStone.println("<zipstatus='" + zipped + "' /></zip>");
 
-		return newZip;
+		return zipped;
 	}
 
 	/**
@@ -2702,7 +2587,7 @@ public final class Client {
 			try (FileInputStream fis = new FileInputStream(xmlFile)) {
 				work = (WorkInterface) Table.newInterface(fis);
 			} catch (final Exception e) {
-				throw new IOException(e.getMessage());
+				throw new IOException(e);
 			}
 			if (work.getUID() == null) {
 				work.setUID(uid);
@@ -2712,7 +2597,7 @@ public final class Client {
 					throw new IOException("Can't retrieve application");
 				}
 			} catch (final Exception e2) {
-				throw new IOException(e2.toString());
+				throw new IOException(e2);
 			}
 		} else {
 			work = new WorkInterface();
@@ -3608,7 +3493,7 @@ public final class Client {
 
 		String hubAddr = null;
 		try {
-			final Boolean b = (Boolean) args.getOption(CommandLineOptions.SMARTSOCKETSPROXY);
+			args.getOption(CommandLineOptions.SMARTSOCKETSPROXY);
 			hubAddr = getHubAddr(false);
 		} catch (final Exception e) {
 			hubAddr = (String) args.getOption(CommandLineOptions.SMARTSOCKETSPROXY);
@@ -3690,11 +3575,11 @@ public final class Client {
 			exit("No valid URI/UID provided", XWReturnCode.PARSING);
 		}
 
-		if (theWork.getStatus() != StatusEnum.RUNNING) {
+		if ((theWork == null) || (theWork.getStatus() != StatusEnum.RUNNING)) {
 			exit("Ivalid work status", XWReturnCode.ERROR);
 		}
 		final Collection<String> serverAddresses = XWTools.split(theWork.getSmartSocketAddr(), ",");
-		if ((serverAddresses == null) || (serverAddresses.size() < 1)) {
+		if ((serverAddresses == null) || (serverAddresses.isEmpty())) {
 			exit("No valid server addresses found from work", XWReturnCode.CONNECTION);
 		}
 		final Iterator<String> addressesenum = serverAddresses.iterator();

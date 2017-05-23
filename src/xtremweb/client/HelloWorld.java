@@ -26,7 +26,7 @@ package xtremweb.client;
 import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -40,8 +40,9 @@ import xtremweb.common.MileStone;
 import xtremweb.common.StatusEnum;
 import xtremweb.common.UID;
 import xtremweb.common.WorkInterface;
-import xtremweb.common.XMLValue;
+import xtremweb.common.XMLObject;
 import xtremweb.common.XMLVector;
+import xtremweb.common.XMLable;
 import xtremweb.common.XWConfigurator;
 import xtremweb.common.XWReturnCode;
 import xtremweb.common.XWTools;
@@ -99,7 +100,7 @@ public final class HelloWorld {
 			if (args.getOption(CommandLineOptions.GUI) == null) {
 				logger.fatal("You must provide a config file, using \"--xwconfig\" !");
 			} else {
-				new MileStone(XWTools.split(new String()));
+				new MileStone(XWTools.split(""));
 			}
 		}
 	}
@@ -139,6 +140,7 @@ public final class HelloWorld {
 			client.setAutoClose(true);
 			client.close();
 		} catch (final Exception e) {
+			logger.exception(e);
 		}
 	}
 
@@ -156,20 +158,20 @@ public final class HelloWorld {
 			//
 			final XMLRPCCommandGetApps cmd = new XMLRPCCommandGetApps(uri, config.getUser());
 			final XMLVector xmluids = (XMLVector) cmd.exec(client);
-			final Collection<XMLValue> uids = xmluids.getXmlValues();
+			final ArrayList<XMLable> uids = (ArrayList<XMLable>)xmluids.getXmlValues();
 			if ((uids == null) || (uids.isEmpty())) {
 				logger.warn("no application found");
 				return;
 			}
 
-			final Iterator<XMLValue> theEnum = uids.iterator();
+			final Iterator<XMLable> theEnum = uids.iterator();
 
 			UID appUid = null;
 
 			final List commandLineParams = (List) args.commandParams();
-			if ((commandLineParams == null) || (commandLineParams.size() == 0)) {
+			if ((commandLineParams == null) || (commandLineParams.isEmpty())) {
 				if (theEnum.hasNext()) {
-					appUid = (UID) theEnum.next().getValue();
+					appUid = (UID)((XMLObject)theEnum.next()).getValue();
 				}
 			} else {
 				try {
@@ -231,7 +233,7 @@ public final class HelloWorld {
 				logger.info("File not found '" + inputFileName + "'");
 			}
 
-			String cmdLineStr = new String(" ");
+			String cmdLineStr = " ";
 			for (int i = 1; i < commandLineParams.size(); i++) {
 				cmdLineStr += commandLineParams.get(i).toString() + " ";
 			}
@@ -270,21 +272,16 @@ public final class HelloWorld {
 			logger.info("Disconnecting");
 			client.disconnect();
 		} catch (final Exception e) {
-			e.printStackTrace();
 			exit(e.getMessage(), XWReturnCode.CONNECTION);
 		}
 	}
 
 	/**
 	 * This is the standard main method
+	 * @throws ParseException 
+	 * @throws IOException 
 	 */
-	public static void main(final String[] argv) {
-		try {
-			new HelloWorld(argv).execute();
-		} catch (final IOException e) {
-			e.printStackTrace();
-		} catch (final ParseException e) {
-			e.printStackTrace();
-		}
+	public static void main(final String[] argv) throws IOException, ParseException {
+		new HelloWorld(argv).execute();
 	}
 }

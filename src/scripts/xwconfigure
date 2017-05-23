@@ -69,7 +69,11 @@ XWSETUPDBSQL_TRIGGERS_LIST="$SQL_SCRIPTS_DIR/xwhep-core-tables-create-triggers-f
                             $SQL_SCRIPTS_DIR/xwhep-core-tables-create-triggers-for-history-coming-from-8.sql"
 XWSETUPDBSQL_QUERY_FOR_TABLE_VIEWS=$SQL_SCRIPTS_DIR/xwhep-core-tables-query-for-create-views.sql
 XWSETUPDBSQL_QUERY_FOR_USERS_VIEWS=$SQL_SCRIPTS_DIR/xwhep-core-tables-query-for-create-users-views.sql
-XWSETUPDBSQL_VIEWS_LIST="$SQL_SCRIPTS_DIR/xwhep-core-tables-create-views-for-sessions-and-groups.sql   \
+XWSETUPDBSQL_VIEWS_FOR_TABLES=$SQL_SCRIPTS_DIR/xwhep-core-tables-create-views-for-tables.sql
+XWSETUPDBSQL_VIEWS_FOR_USERS=$SQL_SCRIPTS_DIR/xwhep-core-tables-create-users-views.sql
+XWSETUPDBSQL_VIEWS_LIST="$XWSETUPDBSQL_VIEWS_FOR_TABLES  \
+                         $XWSETUPDBSQL_VIEWS_FOR_USERS   \
+                         $SQL_SCRIPTS_DIR/xwhep-core-tables-create-views-for-sessions-and-groups.sql   \
                          $SQL_SCRIPTS_DIR/xwhep-core-tables-create-views-for-relationships.sql         \
                          $SQL_SCRIPTS_DIR/xwhep-core-tables-create-views-for-offering-and-billing.sql  \
                          $SQL_SCRIPTS_DIR/xwhep-core-tables-create-views-hosts-matching-works.sql"
@@ -116,6 +120,7 @@ XWCERTFILE=$KEYSTOREDIR/$XWCERTFILENAME
 JETTY=$LIBDIR/jetty-server-9.3.8.v20160314.jar
 JETTYUTIL=$LIBDIR/jetty-util-9.3.8.v20160314.jar
 JETTYHTTP=$LIBDIR/jetty-http-9.3.8.v20160314.jar
+JETTYIO=$LIBDIR/jetty-io-9.3.8.v20160314.jar
 JETTYSERVLETAPI=$LIBDIR/servlet-api-3.1.jar
 
 DEBIANVERSION="/etc/debian_version"
@@ -1754,9 +1759,10 @@ USERCERTDIR=$USERCERTDIR
 JETTY=\$LIBDIR/jetty-server-9.3.8.v20160314.jar
 JETTYUTIL=\$LIBDIR/jetty-util-9.3.8.v20160314.jar
 JETTYHTTP=\$LIBDIR/jetty-http-9.3.8.v20160314.jar
+JETTYIO=\$LIBDIR/jetty-io-9.3.8.v20160314.jar
 JETTYSERVLETAPI=$LIBDIR/servlet-api-3.1.jar
 
-OID_CP="\$JARFILE:\$JETTY:\$JETTYUTIL:\$JETTYHTTP:\$JETTYSERVLETAPI:\$LIBDIR/JOpenId-1.08.jar"
+OID_CP="\$JARFILE:\$JETTY:\$JETTYUTIL:\$JETTYHTTP:\$JETTYIO:\$JETTYSERVLETAPI:\$LIBDIR/JOpenId-1.08.jar"
 OID_MAINCLASS="xtremweb.dispatcher.HTTPOpenIdHandler"
 
 DATE=\`date "+%Y%m%d%H%M%S"\`
@@ -1969,10 +1975,11 @@ JARFILE=\$LIBDIR/xtremweb.jar
 JETTY=\$LIBDIR/jetty-server-9.3.8.v20160314.jar
 JETTYUTIL=\$LIBDIR/jetty-util-9.3.8.v20160314.jar
 JETTYHTTP=\$LIBDIR/jetty-http-9.3.8.v20160314.jar
+JETTYIO=\$LIBDIR/jetty-io-9.3.8.v20160314.jar
 JETTYSERVLETAPI=$LIBDIR/servlet-api-3.1.jar
 
 
-OID_CP="\$JARFILE:\$JETTY:\$JETTYUTIL:\$JETTYHTTP:\$JETTYSERVLETAPI:\$LIBDIR/JOpenId-1.08.jar"
+OID_CP="\$JARFILE:\$JETTY:\$JETTYUTIL:\$JETTYHTTP:\$JETTYIO:\$JETTYSERVLETAPI:\$LIBDIR/JOpenId-1.08.jar"
 OID_MAINCLASS="xtremweb.dispatcher.HTTPOpenIdHandler"
 
 DATE=\`date "+%Y%m%d%H%M%S"\`
@@ -2142,6 +2149,7 @@ cp $ROOTDIR/License.smartsockets-1.4 $cptodir > /dev/null 2>&1 || fatal "Can't c
 
 SOURCE=$LIBDIR/xtremweb.jar
 DEST=$INSTALLERSDIR/macosx/xwhep.worker/installer/PckRoot/private/etc/xwhep.worker/lib/
+mkdir -p $INSTALLERSDIR/macosx/xwhep.worker/installer/PckRoot/private/etc/xwhep.worker/lib/
 cp $SOURCE $DEST > /dev/null 2>&1 || fatal "Can't copy $SOURCE to $DEST"
 SOURCE=$LIBDIR/bcprov-jdk16-140.jar
 cp $SOURCE $DEST > /dev/null 2>&1 || fatal "Can't copy $SOURCE to $DEST"
@@ -2160,6 +2168,8 @@ cp $SOURCE $DEST > /dev/null 2>&1 || fatal "Can't copy $SOURCE to $DEST"
 SOURCE=$JETTYUTIL
 cp $SOURCE $DEST > /dev/null 2>&1 || fatal "Can't copy $SOURCE to $DEST"
 SOURCE=$JETTYHTTP
+cp $SOURCE $DEST > /dev/null 2>&1 || fatal "Can't copy $SOURCE to $DEST"
+SOURCE=$JETTYIO
 cp $SOURCE $DEST > /dev/null 2>&1 || fatal "Can't copy $SOURCE to $DEST"
 SOURCE=$JETTYSERVLETAPI
 cp $SOURCE $DEST > /dev/null 2>&1 || fatal "Can't copy $SOURCE to $DEST"
@@ -2220,6 +2230,8 @@ cp $SOURCE $DEST > /dev/null 2>&1 || fatal "Can't copy $SOURCE to $DEST"
 SOURCE=$JETTYUTIL
 cp $SOURCE $DEST > /dev/null 2>&1 || fatal "Can't copy $SOURCE to $DEST"
 SOURCE=$JETTYHTTP
+cp $SOURCE $DEST > /dev/null 2>&1 || fatal "Can't copy $SOURCE to $DEST"
+SOURCE=$JETTYIO
 cp $SOURCE $DEST > /dev/null 2>&1 || fatal "Can't copy $SOURCE to $DEST"
 SOURCE=$JETTYSERVLETAPI
 cp $SOURCE $DEST > /dev/null 2>&1 || fatal "Can't copy $SOURCE to $DEST"
@@ -2883,8 +2895,7 @@ cp -Rf $rpmDir/* $INSTALLERSDIR/linux/dpkg/xwhep.server/ > /dev/null 2>&1 || fat
 find $INSTALLERSDIR/linux/dpkg/ -type d | xargs chmod 755
 chmod 755 $INSTALLERSDIR/linux/dpkg/xwhep.server/DEBIAN/pre*
 chmod 755 $INSTALLERSDIR/linux/dpkg/xwhep.server/DEBIAN/post*
-
-if [ $DEBIANOS -eq 1 -o $MACOS -eq 1 ] ; then
+if [ "$PKGS" = "YES" -a $DEBIANOS -eq 1 -o $MACOS -eq 1 ] ; then
     dpkg-deb --build $INSTALLERSDIR/linux/dpkg/xwhep.server xwhep-server-$VERSION.deb
     if [ $? -ne 0 ] ; then
 
@@ -2911,6 +2922,7 @@ EOF
 		fi
     fi
 fi
+[ -f xwhep-server-$VERSION.deb ] && cp xwhep-server-$VERSION.deb $ROOTDIR/docker/server/ 
 echo "Server Debian package ready"
 
 #############################################################################################################################################
@@ -2932,7 +2944,7 @@ find $INSTALLERSDIR/linux/dpkg/ -type d | xargs chmod 755
 chmod 755 $INSTALLERSDIR/linux/dpkg/xwhep.server.conf/DEBIAN/pre*
 chmod 755 $INSTALLERSDIR/linux/dpkg/xwhep.server.conf/DEBIAN/post*
 
-if [ $DEBIANOS -eq 1 -o $MACOS -eq 1 ] ; then
+if [ "$PKGS" = "YES" -a $DEBIANOS -eq 1 -o $MACOS -eq 1 ] ; then
     dpkg-deb --build $INSTALLERSDIR/linux/dpkg/xwhep.server.conf xwhep-server-conf-$VERSION.deb
     if [ $? -ne 0 ] ; then
 
@@ -2959,6 +2971,7 @@ EOF
 		fi
     fi
 fi
+[ -f xwhep-server-conf-$VERSION.deb ] && cp xwhep-server-conf-$VERSION.deb $ROOTDIR/docker/server/ 
 echo "Server Configuration Debian package ready"
 
 #
@@ -3200,7 +3213,7 @@ cp -Rf $rpmDir/* $INSTALLERSDIR/linux/dpkg/xwhep.bridgedgsg/ > /dev/null 2>&1 ||
 find $INSTALLERSDIR/linux/dpkg/ -type d | xargs chmod 755
 chmod 755 $INSTALLERSDIR/linux/dpkg/xwhep.bridgedgsg/DEBIAN/pre*
 chmod 755 $INSTALLERSDIR/linux/dpkg/xwhep.bridgedgsg/DEBIAN/post*
-if [ $DEBIANOS -eq 1 -o $MACOS -eq 1 ] ; then
+if [ "$PKGS" = "YES" -a $DEBIANOS -eq 1 -o $MACOS -eq 1 ] ; then
     dpkg-deb --build $INSTALLERSDIR/linux/dpkg/xwhep.bridgedgsg xwhep-bridgedgsg-$VERSION.deb
     if [ $? -ne 0 ] ; then
 
@@ -3306,6 +3319,7 @@ else
     echo "password=$XWADMINPASSWORD" >> $TMPFILE1
 fi
 
+rm -f $TMPFILE2
 mv -f $TMPFILE1 $RPMBRIDGECONFFILE
 
 printf "."
@@ -3386,7 +3400,7 @@ cp -Rf $rpmDir/* $INSTALLERSDIR/linux/dpkg/xwhep.bridgesgdg/ > /dev/null 2>&1 ||
 find $INSTALLERSDIR/linux/dpkg/ -type d | xargs chmod 755
 chmod 755 $INSTALLERSDIR/linux/dpkg/xwhep.bridgesgdg/DEBIAN/pre*
 chmod 755 $INSTALLERSDIR/linux/dpkg/xwhep.bridgesgdg/DEBIAN/post*
-if [ $DEBIANOS -eq 1 -o $MACOS -eq 1 ] ; then
+if [ "$PKGS" = "YES" -a $DEBIANOS -eq 1 -o $MACOS -eq 1 ] ; then
     dpkg-deb --build $INSTALLERSDIR/linux/dpkg/xwhep.bridgesgdg xwhep-bridgesgdg-$VERSION.deb
     if [ $? -ne 0 ] ; then
 
@@ -3573,7 +3587,7 @@ cp -Rf $rpmDir/* $INSTALLERSDIR/linux/dpkg/xwhep.client/ > /dev/null 2>&1 || fat
 find $INSTALLERSDIR/linux/dpkg/ -type d | xargs chmod 755
 chmod 755 $INSTALLERSDIR/linux/dpkg/xwhep.client/DEBIAN/pre*
 chmod 755 $INSTALLERSDIR/linux/dpkg/xwhep.client/DEBIAN/post*
-if [ $DEBIANOS -eq 1 -o $MACOS -eq 1 ] ; then
+if [ "$PKGS" = "YES" -a $DEBIANOS -eq 1 -o $MACOS -eq 1 ] ; then
     dpkg-deb --build $INSTALLERSDIR/linux/dpkg/xwhep.client xwhep-client-$VERSION.deb
     if [ $? -ne 0 ] ; then
 
@@ -3600,6 +3614,7 @@ EOF
 		fi
     fi
 fi
+[ -f xwhep-client-$VERSION.deb ] && cp xwhep-client-$VERSION.deb $ROOTDIR/docker/client/ 
 
 echo "Client Debian package ready"
 
@@ -3703,6 +3718,8 @@ SOURCE=$JETTYUTIL
 cp $SOURCE $DEST > /dev/null 2>&1 || fatal "Can't copy $SOURCE to $DEST"
 SOURCE=$JETTYHTTP
 cp $SOURCE $DEST > /dev/null 2>&1 || fatal "Can't copy $SOURCE to $DEST"
+SOURCE=$JETTYIO
+cp $SOURCE $DEST > /dev/null 2>&1 || fatal "Can't copy $SOURCE to $DEST"
 SOURCE=$JETTYSERVLETAPI
 cp $SOURCE $DEST > /dev/null 2>&1 || fatal "Can't copy $SOURCE to $DEST"
 
@@ -3778,7 +3795,7 @@ cp -Rf $rpmDir/* $INSTALLERSDIR/linux/dpkg/xwhep.worker/ > /dev/null 2>&1 || fat
 find $INSTALLERSDIR/linux/dpkg/ -type d | xargs chmod 755
 chmod 755 $INSTALLERSDIR/linux/dpkg/xwhep.worker/DEBIAN/pre*
 chmod 755 $INSTALLERSDIR/linux/dpkg/xwhep.worker/DEBIAN/post*
-if [ $DEBIANOS -eq 1 -o $MACOS -eq 1 ] ; then
+if [ "$PKGS" = "YES" -a  $DEBIANOS -eq 1 -o $MACOS -eq 1 ] ; then
     dpkg-deb --build $INSTALLERSDIR/linux/dpkg/xwhep.worker xwhep-worker-$VERSION.deb
     if [ $? -ne 0 ] ; then
 
@@ -3805,6 +3822,7 @@ EOF
 		fi
     fi
 fi
+[ -f xwhep-worker-$VERSION.deb ] && cp xwhep-worker-$VERSION.deb $ROOTDIR/docker/worker/ 
 
 echo "Worker Debian package ready"
 

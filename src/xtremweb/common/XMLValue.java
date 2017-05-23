@@ -74,18 +74,6 @@ public class XMLValue extends XMLObject {
 	}
 
 	/**
-	 * This calls toString()
-	 *
-	 * @param csv
-	 *            is never used
-	 * @see Table#toString(boolean)
-	 */
-	@Override
-	public String toString(final boolean csv) {
-		return toString();
-	}
-
-	/**
 	 * This constructs a new object from XML attributes received from input
 	 * stream
 	 *
@@ -95,8 +83,7 @@ public class XMLValue extends XMLObject {
 	 *             on XML error
 	 */
 	public XMLValue(final DataInputStream input) throws IOException, SAXException {
-		final XMLReader reader = new XMLReader(this);
-		try {
+		try(final XMLReader reader = new XMLReader(this)) {
 			reader.read(input);
 		} catch (final InvalidKeyException e) {
 			e.printStackTrace();
@@ -110,5 +97,16 @@ public class XMLValue extends XMLObject {
 		this();
 		setXMLTag(THISTAG);
 		fromXml(attrs);
+	}
+	/**
+	 * This calls toString()
+	 *
+	 * @param csv
+	 *            is never used
+	 * @see Table#toString(boolean)
+	 */
+	@Override
+	public String toString(final boolean csv) {
+		return toString();
 	}
 }

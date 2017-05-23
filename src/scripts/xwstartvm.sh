@@ -182,8 +182,12 @@ XWCREATEVDISCRIPTNAME=xwcreatevdi
 # next is the path when installed from installation package
 CREATEVDI="/usr/bin/$XWCREATEVDISCRIPTNAME"
 # next is the path when using the source package
+[ ! -x $CREATEVDI ] && CREATEVDI="/usr/local/bin/$CREATEVDISCRIPTNAME"
 [ ! -x $CREATEVDI ] && CREATEVDI="$ROOTDIR/$CREATEVDISCRIPTNAME"
-[ ! -x $CREATEVDI ] && fatal "can't find $XWCREATEVDISCRIPTNAME"
+if [ ! -x $CREATEVDI ] ; then
+  echo  "`date`  $SCRIPTNAME  FATAL : can't find $XWCREATEVDISCRIPTNAME"
+  exit 1
+fi
 
 #####################################################################
 #
@@ -233,9 +237,11 @@ SSHGUESTPORT=22
 HTTPLOCALPORT=
 HTTPGUESTPORT=80
 
-case "$OSTYPE" in
+THISOS=`uname -s`
+
+case "$THISOS" in
   
-  darwin* )
+  Darwin )
     DATE_FORMAT='+%Y-%m-%d %H:%M:%S%z'
     VBROOT=/Applications/VirtualBox.app/Contents/MacOS/
     VBMGT="$VBROOT/VBoxManage"
@@ -246,7 +252,7 @@ case "$OSTYPE" in
     VBHDIR="$HOME/Library/VirtualBox/HardDisks"
     ;;
   
-  linux* )
+  Linux )
     DATE_FORMAT='--rfc-3339=seconds'
     VBROOT=/usr/bin
     VBMGT="$VBROOT/vboxmanage"
@@ -259,7 +265,7 @@ case "$OSTYPE" in
     ;;
   
   * )
-    fatal  "$OSTYPE not supported"  TRUE
+    fatal  "OS not supported ($THISOS)"  TRUE
     ;;
   
 esac
@@ -1202,7 +1208,7 @@ UNINSTALL="$UNINSTALL"
 START="$START"
 VMNAME="$VMNAME"
 HDA1FILE="$HDA1FILE"
-XWCPULOAD="$$XWCPULOAD"
+XWCPULOAD="$XWCPULOAD"
 XWSCRATCHPATH="$XWSCRATCHPATH"
 END_OF_MAIN_VARS
 

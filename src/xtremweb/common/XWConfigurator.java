@@ -88,6 +88,7 @@ public final class XWConfigurator extends Properties {
 	 */
 	private final Logger logger;
 
+	private static final String LOCALHOST = "localhost";
 	/**
 	 * This contains worker volunteer applications. This contains application
 	 * types.
@@ -180,15 +181,6 @@ public final class XWConfigurator extends Properties {
 	 */
 	private Collection<String> dispatchers;
 	/**
-	 * This is the max number of dispatchers the worker may know. This is used
-	 * for replication; this list contains dispatchers read from conf file and
-	 * provided by server at connections time.
-	 *
-	 * @since v1r2-rc1(RPC-V)
-	 */
-	private final int MAXDISPATCHERS = 50;
-
-	/**
 	 * This vector contains a set of XtremWeb server adresses. This is used for
 	 * replication; this list contains dataServers read from conf file and
 	 * provided by server at connections time.
@@ -196,15 +188,6 @@ public final class XWConfigurator extends Properties {
 	 * @since v1r2-rc1(RPC-V)
 	 */
 	private Collection<String> dataServers;
-	/**
-	 * This is the max number of dataServers the worker may know. This is used
-	 * for replication; this list contains dataServers read from conf file and
-	 * provided by server at connections time.
-	 *
-	 * @since v1r2-rc1(RPC-V)
-	 */
-	private final int MAXDATASERVERS = 50;
-
 	/**
 	 * This is the amount of jobs this worker has already computed
 	 *
@@ -251,7 +234,7 @@ public final class XWConfigurator extends Properties {
 	 *         not set, this returns MAXTIMEOUT,
 	 * @since RPCXW
 	 */
-	public int maxTimeout() {
+	public int getMaxTimeout() {
 		try {
 			if (realTime()) {
 				return MINTIMEOUT;
@@ -513,7 +496,8 @@ public final class XWConfigurator extends Properties {
 	 * This returns true if we use HSQLDB:MEMORY
 	 */
 	public boolean dbmem() {
-		return getProperty(XWPropertyDefs.DBENGINE).compareToIgnoreCase(XWDBs.MEMENGINE) == 0;
+		final String p = getProperty(XWPropertyDefs.DBENGINE);
+		return p == null ? false : p.compareToIgnoreCase(XWDBs.MEMENGINE) == 0;
 	}
 
 	/**
@@ -531,11 +515,12 @@ public final class XWConfigurator extends Properties {
 
 	public LoggerLevel getLoggerLevel() {
 
-		try {
-			return LoggerLevel.valueOf(getProperty(XWPropertyDefs.LOGGERLEVEL).toUpperCase());
-		} catch (final Exception e) {
+		final String p = getProperty(XWPropertyDefs.LOGGERLEVEL);
+		if (p == null) {
 			setProperty(XWPropertyDefs.LOGGERLEVEL);
 			return LoggerLevel.valueOf(XWPropertyDefs.LOGGERLEVEL.defaultValue());
+		} else {
+			return LoggerLevel.valueOf(p.toUpperCase()); 
 		}
 	}
 
@@ -554,8 +539,8 @@ public final class XWConfigurator extends Properties {
 		dispatchers = new Vector<String>();
 		dataServers = new Vector<String>();
 		try {
-			addDispatcher("localhost");
-			setCurrentDispatcher("localhost");
+			addDispatcher(LOCALHOST);
+			setCurrentDispatcher(LOCALHOST);
 			_host = new HostInterface();
 			_host.setName(XWTools.getLocalHostName());
 			_user = new UserInterface();
@@ -618,7 +603,7 @@ public final class XWConfigurator extends Properties {
 			final String[] stdLoc = {
 					getProperty(XWPropertyDefs.USERHOMEDIR) + File.separator + ".xtremweb" + File.separator + fname,
 					getProperty(XWPropertyDefs.USERHOMEDIR) + File.separator + ".xtremweb" + File.separator
-							+ "config.defaults",
+					+ "config.defaults",
 					"/etc/" + fname, getProperty(XWPropertyDefs.CONFIGFILE) };
 			for (int i = 0; i < stdLoc.length; i++) {
 				try {
@@ -778,7 +763,11 @@ public final class XWConfigurator extends Properties {
 
 		logger.setLoggerLevel(getLoggerLevel());
 
-		XWRole.setRole(XWRole.valueOf(getProperty(XWPropertyDefs.ROLE).toUpperCase()));
+		final String p = getProperty(XWPropertyDefs.ROLE);
+		if (p == null) {
+			throw new IOException("can't retreive role");
+		}
+		XWRole.setRole(XWRole.valueOf(p.toUpperCase()));
 
 		//
 		// 2 nov 2011 : we don't want any device at all
@@ -855,13 +844,7 @@ public final class XWConfigurator extends Properties {
 			} catch (final IOException e) {
 				logger.exception("Can't open keystore", e);
 				throw e;
-			} catch (final KeyStoreException e) {
-				keyStore = null;
-				logger.exception("Can't init keystore", e);
-			} catch (final NoSuchAlgorithmException e) {
-				keyStore = null;
-				logger.exception("Can't init keystore", e);
-			} catch (final UnrecoverableKeyException e) {
+			} catch (final KeyStoreException | NoSuchAlgorithmException | UnrecoverableKeyException e) {
 				keyStore = null;
 				logger.exception("Can't init keystore", e);
 			}
@@ -1071,7 +1054,7 @@ public final class XWConfigurator extends Properties {
 			ip = InetAddress.getLocalHost().getHostAddress();
 		} catch (final Exception e) {
 			try {
-				ip = java.net.InetAddress.getByName("localhost").getHostAddress();
+				ip = java.net.InetAddress.getByName(LOCALHOST).getHostAddress();
 			} catch (final Exception e2) {
 				throw new IOException("can't determine IP address: " + e2);
 			}
@@ -1132,7 +1115,6 @@ public final class XWConfigurator extends Properties {
 		}
 
 		_host.setAcceptBin(getBoolean(XWPropertyDefs.ACCEPTBIN));
-
 		if (ArchDepFactory.xwutil() != null) {
 			try {
 				_host.setCpuNb(Runtime.getRuntime().availableProcessors());
@@ -1158,8 +1140,8 @@ public final class XWConfigurator extends Properties {
 			logger.fatal("can't load xwutil library");
 		}
 
-		String localAppsProperty = getProperty(XWPropertyDefs.SHAREDAPPS).toUpperCase();
-		String localAppNames = new String();
+		final String localAppsProperty = getProperty(XWPropertyDefs.SHAREDAPPS).toUpperCase();
+		final StringBuilder localAppNames = new StringBuilder();
 
 		logger.debug("localAppsProperty = " + localAppsProperty);
 
@@ -1177,7 +1159,7 @@ public final class XWConfigurator extends Properties {
 					try {
 						final AppTypeEnum at = AppTypeEnum.valueOf(apptype);
 						if (at.available()) {
-							localAppNames += apptype + " ";
+							localAppNames.append(apptype + " ");
 						}
 					} catch (final Exception e) {
 						logger.exception("Invalid application type : " + apptype, e);
@@ -1185,11 +1167,7 @@ public final class XWConfigurator extends Properties {
 					}
 				}
 			}
-			localAppNames = localAppNames.trim();
-			localAppNames = localAppNames.replace(' ', ',');
-			_host.setSharedApps(localAppNames);
-			localAppNames = null;
-			localAppsProperty = null;
+			_host.setSharedApps(localAppNames.toString().trim().replace(' ', ','));
 		}
 
 		final String localPkgsProperty = getProperty(XWPropertyDefs.SHAREDPACKAGES);
@@ -2123,12 +2101,9 @@ public final class XWConfigurator extends Properties {
 		if (server.exists()) {
 			server.delete();
 		}
-		try {
-			final FileWriter fw = new FileWriter(server);
+		try (final FileWriter fw = new FileWriter(server)){
 			fw.write(servers);
 			fw.flush();
-			fw.close();
-
 		} catch (final Exception e) {
 			logger.exception(e);
 		}
@@ -2160,8 +2135,8 @@ public final class XWConfigurator extends Properties {
 	 */
 	private void retrieveServers(final Collection<String> v, final File file) {
 
-		try {
-			final BufferedReader bufferFile = new BufferedReader(new FileReader(file));
+		try (final FileReader fr = new FileReader(file)){
+			final BufferedReader bufferFile = new BufferedReader(fr);
 			final String l = bufferFile.readLine();
 
 			final Collection<String> newSrv = XWTools.split(l.substring(l.indexOf(new String("=")) + 1).trim());

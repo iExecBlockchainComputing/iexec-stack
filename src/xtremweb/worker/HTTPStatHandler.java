@@ -28,6 +28,7 @@ import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.security.AccessControlException;
 import java.security.InvalidKeyException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -50,7 +51,7 @@ import xtremweb.common.LoggerLevel;
 import xtremweb.common.UID;
 import xtremweb.common.UserGroupInterface;
 import xtremweb.common.UserRightEnum;
-import xtremweb.common.XMLValue;
+import xtremweb.common.XMLable;
 import xtremweb.common.XWPropertyDefs;
 import xtremweb.communications.CommClient;
 
@@ -80,39 +81,39 @@ public class HTTPStatHandler extends Thread implements Handler {
 	/**
 	 * This is the default project : by default the worker accepts any project
 	 */
-	private final static String DEFAULTPROJECT = "any";
+	private static final String DEFAULTPROJECT = "any";
 	/** This is an HTML form input name */
-	private final static String MAXJOBS = "maxJobs";
+	private static final String MAXJOBS = "maxJobs";
 	/** This is the HTML params to stop the worker */
-	private final static String STOPWORKER = "exit";
+	private static final String STOPWORKER = "exit";
 	/** This is the HTML params to retreive worker infos */
-	private final static String GETHOST = "gethost";
+	private static final String GETHOST = "gethost";
 	/** This is the HTML params to retreive the max number of job to compute */
-	private final static String GETMAXRUN = "getmaxrun";
+	private static final String GETMAXRUN = "getmaxrun";
 	/** This is the HTML params to set the max number of job to compute */
-	private final static String SETMAXRUN = "setmaxrun";
+	private static final String SETMAXRUN = "setmaxrun";
 	/** This is the HTML params to retreive worker infos */
-	private final static String GETRUNNING = "getrunning";
+	private static final String GETRUNNING = "getrunning";
 	/** This is the HTML params to retreive availability */
-	private final static String GETAVAILABILITY = "getavailability";
+	private static final String GETAVAILABILITY = "getavailability";
 	/** This is the HTML params to retreive activators */
-	private final static String GETACTIVATORS = "getactivators";
+	private static final String GETACTIVATORS = "getactivators";
 	/** This is the HTML params to retreive activators */
-	private final static String GETACTIVATORPARAMS = "getactivatorparams";
+	private static final String GETACTIVATORPARAMS = "getactivatorparams";
 	/** This is the HTML params to retreive activators */
-	private final static String GETWORKERLEVEL = "getworkerlevel";
+	private static final String GETWORKERLEVEL = "getworkerlevel";
 	/** This is the HTML params to retreive projects */
-	private final static String GETPROJECTS = "getprojects";
+	private static final String GETPROJECTS = "getprojects";
 	/** This is the HTML params to retreive projects */
-	private final static String GROUPJOBSONLY = "setgroupjobsonly";
+	private static final String GROUPJOBSONLY = "setgroupjobsonly";
 	/** This is the HTML params to retreive activators */
-	private final static String GETAPPLICATION = "getapplication";
+	private static final String GETAPPLICATION = "getapplication";
 	/** This is an HTML form input name */
-	private final static String ACTIVATORSELECTOR = "selectActivator";
+	private static final String ACTIVATORSELECTOR = "selectActivator";
 	/** This is an HTML form input name */
-	private final static String ACTIVATORPARAMS = "activatorParams";
+	private static final String ACTIVATORPARAMSNAME = "activatorParams";
 	/** This is an HTML form input name */
-	private final static String PROJECTSELECTOR = "selectProject";
+	private static final String PROJECTSELECTOR = "selectProject";
 	/**
 	 * This is the client host name; for debug purposes only
 	 */
@@ -370,7 +371,7 @@ public class HTTPStatHandler extends Thread implements Handler {
 
 		try {
 			final String activator = ((String[]) paramsMap.get(ACTIVATORSELECTOR))[0];
-			final String actParams = ((String[]) paramsMap.get(ACTIVATORPARAMS))[0];
+			final String actParams = ((String[]) paramsMap.get(ACTIVATORPARAMSNAME))[0];
 			logger.debug("activator = " + activator);
 			logger.debug("params = " + actParams);
 			setActivator(activator, actParams);
@@ -598,13 +599,12 @@ public class HTTPStatHandler extends Thread implements Handler {
 
 		final CommClient commClient = Worker.getConfig().defaultCommClient();
 		CommClient.setConfig(Worker.getConfig());
-		final Vector<XMLValue> uids = commClient.getUserGroups().getXmlValues();
-		final Enumeration<XMLValue> theEnum = uids.elements();
+		final ArrayList<XMLable> uids = (ArrayList<XMLable>)commClient.getUserGroups().getXmlValues();
 		String jobTypes = "Public and Group jobs";
 
-		while (theEnum.hasMoreElements()) {
+		for (int i = 0; i < uids.size(); i++) {
 
-			final UID uid = (UID) theEnum.nextElement().getValue();
+			final UID uid = (UID) uids.get(i);
 			UserGroupInterface group = null;
 
 			try {

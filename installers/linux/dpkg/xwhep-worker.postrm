@@ -30,9 +30,9 @@ PROG="xtremweb.worker"
 SYSLOGIN="@SYSTEMUSER@"
 
 USRBIN=/usr/bin
-XWCREATEVDI=$USRBIN/xwcreatevdi
+USRBINXWCREATEVDI=$USRBIN/xwcreatevdi
+USRLOCALBINCREATEVDI=$USRLOCALBIN/createvdi
 SUDOERS=/etc/sudoers
-SUDOERSENTRY="$SYSLOGIN ALL=NOPASSWD: $XWCREATEVDI"
 
 touch $LOG
 date >> $LOG  2>&1 
@@ -48,7 +48,8 @@ rm -f /tmp/XWUtil.jni*
 rm -Rf /tmp/XW.WORKER*
 rm -Rf $INSTALLDIR >> $LOG 2>&1
 
-rm -f $XWCREATEVDI >> $LOG  2>&1
+rm -f $USRBINXWCREATEVDI >> $LOG  2>&1
+rm -f $USRLOCALBINCREATEVDI >> $LOG  2>&1
 grep $SYSLOGIN $SUDOERS >> $LOG  2>&1
 if [ $? -eq 0 ] ; then
 	cat $SUDOERS | grep -v $SYSLOGIN > /tmp/xwsudoers

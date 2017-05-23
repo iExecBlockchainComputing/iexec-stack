@@ -325,19 +325,14 @@ public final class SocketProxy extends Thread {
 		while (!mustStop()) {
 			logger.debug("Waiting for incoming connections");
 
-			DataInputStream incomingIn = null;
-			DataOutputStream incomingOut = null;
-			DataInputStream outgoingIn = null;
-			DataOutputStream outgoingOut = null;
-			try {
-				final Socket incoming = server.accept();
-
-				final Socket outputSocket = new Socket(outputAddr, outputPort);
+			try (final Socket incoming = server.accept(); 
+					final Socket outputSocket = new Socket(outputAddr, outputPort);
+					final DataInputStream outgoingIn = new DataInputStream(outputSocket.getInputStream());
+					final DataOutputStream outgoingOut = new DataOutputStream(outputSocket.getOutputStream());
+					final DataInputStream incomingIn = new DataInputStream(incoming.getInputStream());
+					final DataOutputStream incomingOut = new DataOutputStream(incoming.getOutputStream())){
+				
 				logger.debug("Incoming connection");
-				incomingIn = new DataInputStream(incoming.getInputStream());
-				incomingOut = new DataOutputStream(incoming.getOutputStream());
-				outgoingIn = new DataInputStream(outputSocket.getInputStream());
-				outgoingOut = new DataOutputStream(outputSocket.getOutputStream());
 
 				final ProxyThread reader = new ProxyThread(READER_LABEL, incoming, incomingIn, outgoingOut);
 				reader.start();
@@ -348,29 +343,6 @@ public final class SocketProxy extends Thread {
 				logger.debug("Started");
 			} catch (final IOException e) {
 				logger.exception("socket proxy error", e);
-				try {
-					incomingIn.close();
-				} catch (final Exception e1) {
-				}
-				try {
-					incomingOut.flush();
-					incomingOut.close();
-				} catch (final Exception e2) {
-				}
-				try {
-					outgoingIn.close();
-				} catch (final Exception e1) {
-				}
-				try {
-					outgoingOut.flush();
-					outgoingOut.close();
-				} catch (final Exception e2) {
-				}
-			} finally {
-				incomingIn = null;
-				incomingOut = null;
-				outgoingIn = null;
-				outgoingOut = null;
 			}
 		}
 	}

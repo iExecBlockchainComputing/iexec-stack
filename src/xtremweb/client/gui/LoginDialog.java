@@ -48,7 +48,7 @@ public final class LoginDialog extends JDialog implements ActionListener {
 	private static String CANCEL = "Cancel";
 	private static String HELP = "Help";
 
-	private final JFrame parent;
+	private final JFrame _parent;
 	private JTextField server;
 	private JTextField login;
 	private JPasswordField password;
@@ -64,7 +64,7 @@ public final class LoginDialog extends JDialog implements ActionListener {
 		setCancelled(true);
 
 		// Use the default FlowLayout.
-		parent = f;
+		_parent = f;
 
 		// server field
 		setServer(new JTextField(50));
@@ -130,7 +130,7 @@ public final class LoginDialog extends JDialog implements ActionListener {
 			setCancelled(true);
 			setVisible(false);
 		} else {
-			JOptionPane.showMessageDialog(parent,
+			JOptionPane.showMessageDialog(_parent,
 					"Server is either a resolved server name, or an IP address\n"
 							+ "Login/Password are those provided by the server administrator",
 					TableModel.INFO, JOptionPane.INFORMATION_MESSAGE);

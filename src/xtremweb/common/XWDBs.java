@@ -42,8 +42,9 @@ public enum XWDBs {
 	private static final String[] LABELS = { "mysql", "hsqldb" };
 
 	public static final XWDBs DEFAULT = MYSQL;
-
 	public static final String MEMENGINE = "mem";
+	public static final String HSQLUSER = "sa";
+	public static final String HSQLP = "";
 
 	/**
 	 * This converts database vendor to a String.
@@ -52,16 +53,9 @@ public enum XWDBs {
 	 *            is the value to convert
 	 * @return a string containing boolean value
 	 */
-	public static String toString(final XWDBs db) throws ArrayIndexOutOfBoundsException {
-		try {
-			return LABELS[db.ordinal()];
-		} catch (final Exception e) {
-		}
-		throw new ArrayIndexOutOfBoundsException("unknown database vendor : " + db);
+	public static String toString(final XWDBs db) {
+		return LABELS[db.ordinal()];
 	}
-
-	public static final String HSQLUSER = "sa";
-	public static final String HSQLPASSWORD = "";
 
 	/**
 	 * This dumps enums to stdout

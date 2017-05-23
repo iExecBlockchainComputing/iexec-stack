@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Copyrights     : CNRS
 # Author         : Oleg Lodygensky
@@ -135,7 +135,7 @@ for ((i=0;i<NBHOSTS;i++)) ; do
 	mysql $MYSQLOPTS -B -e "insert into hosts (uid,owneruid,name,ipaddr,nbjobs,accessrights,lastalive,version,osid,os,cputypeid,cputype)       \
 							values (\"$WORKER_UID\",\"$WORKER_OWNER_UID\",'pouet','127.0.0.$i',\"$i\",'1877', now(),'10.2.0-head', \
 			               			(select osId from oses where osName = \"$OS\"),\"$OS\",    \
-			               			(select cpuTypeId from cputypes where cpuTypeName = \"$CPU\"),\"$CPU\"     \
+			               			(select cpuTypeId from cpuTypes where cpuTypeName = \"$CPU\"),\"$CPU\"     \
 			               		)"
 done
 

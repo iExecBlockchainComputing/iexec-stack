@@ -84,17 +84,19 @@ clean()
   echo "$(date "$DATE_FORMAT")  $0  FATAL:  $1"      >> $LOGFILE 2>&1
   echo "$(date "$DATE_FORMAT")  $0  Trying to clean" >> $LOGFILE 2>&1
 
-  case $OSTYPE in
+  THISOS=`uname -s`
+
+  case $THISOS in
   
-    darwin* )
+    Darwin )
       ( set -x;  hdiutil  detach  "$MOUNT_POINT" ) >> $LOGFILE 2>&1
       ;;
     
-    linux* )
+    Linux )
       echo +  umount            "$LINUX_DEVICE" >> $LOGFILE 2>&1
-      sudo    umount            "$LINUX_DEVICE" >> $LOGFILE 2>&1
+      umount            "$LINUX_DEVICE" >> $LOGFILE 2>&1
       echo +  /sbin/losetup  -d "$LINUX_DEVICE" >> $LOGFILE 2>&1
-      sudo    /sbin/losetup  -d "$LINUX_DEVICE" >> $LOGFILE 2>&1
+      /sbin/losetup  -d "$LINUX_DEVICE" >> $LOGFILE 2>&1
       ;;
     
   esac
@@ -114,20 +116,23 @@ trap fatal SIGINT SIGTERM
 #  -  The date format
 #  -  VB_MGT as the VirtualBox management command
 #-----------------------------------------------------------------------------
-case $OSTYPE in
+
+THISOS=`uname -s`
+
+case $THISOS in
   
-  darwin* )
+  Darwin )
     DATE_FORMAT='+%Y-%m-%d %H:%M:%S%z'
     VB_MGT=/Applications/VirtualBox.app/Contents/MacOS/VBoxManage
     ;;
   
-  linux* )
+  Linux )
     DATE_FORMAT='--rfc-3339=seconds'
     VB_MGT=/usr/bin/vboxmanage
     ;;
   
   * )
-    fatal "$OSTYPE not supported"
+    fatal  "OS not supported ($THISOS)" 
     ;;
   
 esac
@@ -277,12 +282,14 @@ fi
 echo "$(date "$DATE_FORMAT")  $0  INFO:  Creating '$VDI_NAME'"  \
      " with $DISK_SIZE_MB Mb" >> $LOGFILE 2>&1
 
-case $OSTYPE in
+THISOS=`uname -s`
+
+case $THISOS in
   
   #---------------------------------------------------------------------------
   #  Mac OS X :  Use the 'hdiutil' command
   #---------------------------------------------------------------------------
-  darwin* )
+  Darwin )
     
     #-------------------------------------------------------------------------
     #  Create an empty disk in FAT32
@@ -324,12 +331,7 @@ case $OSTYPE in
   #  Linux :  Use the 'dd', 'losetup', 'mkfs' and 'mount' commands.
   #           This requires to be sudoer.
   #---------------------------------------------------------------------------
-  linux* )
-    
-    #-------------------------------------------------------------------------
-    #  Verify access to sudo
-    #-------------------------------------------------------------------------
-    ( set -x;  sudo -v ) >> $LOGFILE 2>&1  ||  fatal "NOT sudoer"
+  Linux )
     
     #-------------------------------------------------------------------------
     #  Create an unformatted disk
@@ -343,26 +345,31 @@ case $OSTYPE in
     #-------------------------------------------------------------------------
     #  Find a free loop device
     #-------------------------------------------------------------------------
-    LINUX_DEVICE="$(sudo  /sbin/losetup  -f)"
+    /sbin/losetup -f >> /dev/null 2>&1   ||  \
+      fatal "Can NOT losetup -f"
+
+    LINUX_DEVICE="$(/sbin/losetup  -f)"
     echo +  /sbin/losetup  "$LINUX_DEVICE"  "$TMP_DISK" >> $LOGFILE 2>&1
-    sudo    /sbin/losetup  "$LINUX_DEVICE"  "$TMP_DISK" >> $LOGFILE 2>&1
+    /sbin/losetup  "$LINUX_DEVICE"  "$TMP_DISK" >> $LOGFILE 2>&1   ||  \
+      fatal "Can NOT losetup '$LINUX_DEVICE'"
     
+
     #-------------------------------------------------------------------------
     #  Format the disk in 'ext3'
     #-------------------------------------------------------------------------
     echo +  /sbin/mkfs  -t ext3  -L "$VOLNAME"  "$LINUX_DEVICE" >> $LOGFILE 2>&1
-    sudo    /sbin/mkfs  -t ext3  -L "$VOLNAME"  "$LINUX_DEVICE" >> $LOGFILE 2>&1 ||  \
+    /sbin/mkfs  -t ext3  -L "$VOLNAME"  "$LINUX_DEVICE" >> $LOGFILE 2>&1 ||  \
       clean "Can NOT format '$LINUX_DEVICE' in 'ext3' successfully"
 
     #-------------------------------------------------------------------------
     #  Mount the disk
     #-------------------------------------------------------------------------
     MOUNT_POINT="/mnt/$DISK_NAME"
-    sudo  mkdir  -p  "$MOUNT_POINT" >> $LOGFILE 2>&1 ||  \
+    mkdir  -p  "$MOUNT_POINT" >> $LOGFILE 2>&1 ||  \
       clean "Can NOT execute 'mkdir' on '$MOUNT_POINT' successfully"
     
     echo +  mount  -t auto  "$LINUX_DEVICE"  "$MOUNT_POINT" >> $LOGFILE 2>&1
-    sudo    mount  -t auto  "$LINUX_DEVICE"  "$MOUNT_POINT" >> $LOGFILE 2>&1 ||  \
+    mount  -t auto  "$LINUX_DEVICE"  "$MOUNT_POINT" >> $LOGFILE 2>&1 ||  \
       clean "Can NOT mount '$LINUX_DEVICE' on '$MOUNT_POINT' successfully"
     
     #-------------------------------------------------------------------------
@@ -371,10 +378,10 @@ case $OSTYPE in
 	if [ -n "$SOURCE" ] ; then
 	    if [ -f "$SOURCE" ]; then
     		echo +  cp  -v -f -p     "$SOURCE"    "$MOUNT_POINT/" >> $LOGFILE 2>&1
-      		sudo    cp  -v -f -p     "$SOURCE"    "$MOUNT_POINT/" >> $LOGFILE 2>&1
+      		cp  -v -f -p     "$SOURCE"    "$MOUNT_POINT/" >> $LOGFILE 2>&1
 	    else
     		echo +  cp  -v -f -p -r  "$SOURCE"/*  "$MOUNT_POINT/" >> $LOGFILE 2>&1
-      		sudo    cp  -v -f -p -r  "$SOURCE"/*  "$MOUNT_POINT/" >> $LOGFILE 2>&1
+      		cp  -v -f -p -r  "$SOURCE"/*  "$MOUNT_POINT/" >> $LOGFILE 2>&1
     	fi  ||  \
       clean "Can NOT copy '$SOURCE' on '$MOUNT_POINT' successfully"
     fi
@@ -382,14 +389,14 @@ case $OSTYPE in
     #  Unmount the disk
     #-------------------------------------------------------------------------
     echo +  umount  "$MOUNT_POINT" >> $LOGFILE 2>&1
-    sudo    umount  "$MOUNT_POINT" >> $LOGFILE 2>&1 ||  \
+    umount  "$MOUNT_POINT" >> $LOGFILE 2>&1 ||  \
       clean "Can NOT umount '$MOUNT_POINT' successfully"
     
     #-------------------------------------------------------------------------
     #  Release the loop device
     #-------------------------------------------------------------------------
     echo +  /sbin/losetup  -d "$LINUX_DEVICE" >> $LOGFILE 2>&1
-    sudo    /sbin/losetup  -d "$LINUX_DEVICE" >> $LOGFILE 2>&1  ||  \
+    /sbin/losetup  -d "$LINUX_DEVICE" >> $LOGFILE 2>&1  ||  \
       clean "Can NOT release loop device '$LINUX_DEVICE' successfully"
     
     ;;
@@ -406,4 +413,9 @@ rm  -f  "$TMP_DISK"
 
 echo "$(date "$DATE_FORMAT")  $0  INFO:  Successfully created '$VDI_NAME'"  >> $LOGFILE 2>&1
 
+if [ -n "$SUDO_USER" ] ; then
+	chown $SUDO_USER $VDI_NAME
+else
+	chmod 644 $VDI_NAME
+fi
 echo $VDI_NAME

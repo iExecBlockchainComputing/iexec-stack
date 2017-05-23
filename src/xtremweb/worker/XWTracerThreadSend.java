@@ -37,7 +37,6 @@ package xtremweb.worker;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import xtremweb.common.Logger;
@@ -88,23 +87,15 @@ public class XWTracerThreadSend extends Thread {
 	public void run() {
 
 		File f;
-		FileInputStream fInpS;
 		byte[] file;
 
 		f = new File(fileName);
 		file = new byte[(int) f.length()];
 
-		try {
-			fInpS = new FileInputStream(f);
-
-			try {
-				fInpS.read(file, 0, (int) f.length());
-				fInpS.close();
-			} catch (final IOException e) {
-				logger.error("XWTracerThreadSend : can't read input file; " + e);
-			}
-		} catch (final FileNotFoundException ff) {
-			logger.error("XWTracerThreadSend : input file not found; " + ff);
+		try (final FileInputStream fInpS = new FileInputStream(f);) {
+			fInpS.read(file, 0, (int) f.length());
+		} catch (final IOException e) {
+			logger.exception(e);
 		}
 
 		try {

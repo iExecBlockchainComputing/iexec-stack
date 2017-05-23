@@ -324,7 +324,7 @@
     	includeAntRuntime="false"
     	destdir="${build.classes}"
 	   srcdir="${src.java.dir}"
-	   source="1.7"
+	   source="1.8"
 	   deprecation="on">
       <patternset>
         <include name="XwIDL/**/*.java" />
@@ -340,7 +340,7 @@
     	includeAntRuntime="false"
 	   destdir="${build.classes}"
 	   srcdir="${src.java.dir}"
-	   source="1.7"
+	   source="1.8"
 	   deprecation="on">
       <patternset>
         <include name="obj/**/*.java" />
@@ -356,7 +356,7 @@
     	includeAntRuntime="false"
 	   destdir="${build.classes}"
 	   srcdir="${src.java.dir}"
-	   source="1.7"
+	   source="1.8"
 	   deprecation="on">
       <patternset>
         <include name="iface/**/*.java" />
@@ -376,7 +376,7 @@
     	includeAntRuntime="false"
 	   destdir="${build.classes}"
 	   srcdir="${src.java.dir}"
-	   source="1.7"
+	   source="1.8"
 	   deprecation="on">
       <patternset>
         <include name="**/*.java" />
@@ -396,7 +396,7 @@
     	includeAntRuntime="false"
 	   destdir="${build.classes}" 
 	   srcdir="${src.java.dir}"
-	   source="1.7"
+	   source="1.8"
 	   deprecation="on">
       <patternset>
         <include name="communications/**/*.java" />
@@ -412,7 +412,7 @@
     	includeAntRuntime="false"
 	   destdir="${build.classes}" 
 	   srcdir="${src.java.dir}"
-	   source="1.7"
+	   source="1.8"
 	   deprecation="on">
       <patternset>
         <include name="services/**/*.java" />
@@ -498,7 +498,7 @@
     	includeAntRuntime="false"
 	   destdir="${build.classes}" 
 	   srcdir="${src.java.dir}"
-	   source="1.7"
+	   source="1.8"
 	   deprecation="on">
       <patternset><include name="archdep/**" /></patternset> 
     </javac>
@@ -514,7 +514,7 @@
 	    	includeAntRuntime="false"
 		   destdir="${build.classes}" 
 		   srcdir="${src.java.test.dir}"
-		   source="1.7"
+		   source="1.8"
 		   deprecation="on">
 	      <patternset>
 	        <include name="**" />
@@ -532,7 +532,7 @@
     	includeAntRuntime="false"
 	   destdir="${build.classes}" 
 	   srcdir="${src.java.dir}"
-	   source="1.7"
+	   source="1.8"
 	   deprecation="on">
       <patternset>
         <include name="dispatcher/**" />
@@ -552,7 +552,7 @@
     	includeAntRuntime="false"
 	   destdir="${build.classes}"
 	   srcdir="${src.java.dir}"
-	   source="1.7"
+	   source="1.8"
 	   deprecation="on">
       <patternset>
 	<include name="worker/**" />
@@ -620,7 +620,7 @@
     	includeAntRuntime="false"
 	     destdir="${build.classes}" 
 	     srcdir="${src.java.dir}"
-	     source="1.7"
+	     source="1.8"
 	     deprecation="on">
         <patternset>
           <include name="data/**" />
@@ -641,7 +641,7 @@
     	includeAntRuntime="false"
 	     destdir="${build.classes}" 
 	     srcdir="${src.java.dir}"
-	     source="1.7"
+	     source="1.8"
 	     deprecation="on">
         <patternset>
 	  <include name="rpcd/**" />
@@ -686,7 +686,7 @@
     	includeAntRuntime="false"
 	     destdir="${build.classes}" 
 	     srcdir="${src.java.dir}"
-	     source="1.7"
+	     source="1.8"
 	     deprecation="on">
         <patternset>
 	  <include name="rpcv/**" />
@@ -704,7 +704,7 @@
     	includeAntRuntime="false"
 	     destdir="${build.classes}" 
 	     srcdir="${src.java.dir}"
-	     source="1.7"
+	     source="1.8"
 	     deprecation="on">
         <patternset>
 	  <include name="monitor/**" />
@@ -723,7 +723,7 @@
     	includeAntRuntime="false"
 	   destdir="${build.classes}" 
 	   srcdir="${src.java.dir}"
-	   source="1.7"
+	   source="1.8"
 	   deprecation="on">
       <patternset>
 	<include name="EP/**" />
@@ -741,7 +741,7 @@
     	includeAntRuntime="false"
 	   destdir="${build.classes}" 
 	   srcdir="${src.java.dir}"
-	   source="1.7"
+	   source="1.8"
 	   deprecation="on">
       <patternset>
         <include name="upgrade/**" />
@@ -791,29 +791,7 @@
 
     <delete file="${install.www.dir}/download/xwhep.client-${version}.zip" failonerror="false" />
 
-    <delete includeEmptyDirs="true" >
-      <fileset dir="${build.dir}/stand-alone" >
-        <include name="COM/**" />
-        <include name="META-INF/**" />
-        <include name="antlr/**" />
-        <include name="com/**" />
-        <include name="data/**" />
-        <include name="javax/**" />
-        <include name="org/**" />
-        <include name="uk/**" />
-        <include name="xtremweb/**" />
-        <include name="CHANGELOG" />
-        <include name="openid-providers.properties" />
-        <include name="plugin.properties" />
-        <include name="License**" />
-        <include name="${JARFILE}" />
-      </fileset>
-    </delete>
-    
     <!-- make install must copy the files (jni shared libraries) in ${dist.lib} -->
-    <exec dir="${build.dir}/stand-alone" executable="make" failonerror="true">
-      <arg line="clean" />
-    </exec>
     <exec dir="${src.c.dir}" executable="make">
       <arg line="-f &apos;${build.dir}/natif.mk&apos; clean" />
     </exec>
@@ -857,7 +835,10 @@
 	<!-- Sonar -->
 	<!--       -->
 	
+    <!-- You may wish to change this one -->
+	<property name="sonar.host.url" value="http://localhost:9000" />
 
+    <!-- Next should not be changed -->
 	<property name="sonar.root.dir" value="${build.dir}/.sonar" />
 	<property name="sonar.reports.dir" value="${build.dir}/sonar-reports" />
 	<property name="sonar.jacoco.itReportPath" value="${sonar.reports.dir}/jacoco.exec" />

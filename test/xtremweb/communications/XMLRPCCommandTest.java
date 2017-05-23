@@ -84,9 +84,6 @@ public abstract class XMLRPCCommandTest {
 			reader.read(new FileInputStream(temp));
 			getCmd2().setDUMPNULLS(true);
 			assertTrue(getCmd().toXml().equals(getCmd2().toXml()));
-
-			logger.info("JUnit test passed : " + this.getClass().toString());
-
 		} catch (final Exception e) {
 			logger.exception(e);
 		}

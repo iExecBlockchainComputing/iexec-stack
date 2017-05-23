@@ -89,7 +89,7 @@ public class AccessLogger {
 	/**
 	 * This is the directory name where access logs are stored
 	 */
-	private final String DIRNAME = "xwAccessLogs";
+	private static final String DIRNAME = "xwAccessLogs";
 	/**
 	 * This is the logger
 	 */
@@ -181,7 +181,8 @@ public class AccessLogger {
 				}
 
 				logDate = currentDate;
-				out = new PrintStream(new FileOutputStream(new File(logPath, getCurrentLogFileName()), true));
+				final FileOutputStream fos = new FileOutputStream(new File(logPath, getCurrentLogFileName()), true);
+				out = new PrintStream(fos);
 			}
 		} catch (final Exception e) {
 			throw new IOException(e.toString());
@@ -225,16 +226,16 @@ public class AccessLogger {
 	}
 
 	public static void main(final String[] args) throws IOException {
-		final AccessLogger accessLog = new AccessLogger(new File("."), "auger9");
+		final AccessLogger accessLog = new AccessLogger(new File("."), "xtremweb-access-test");
 
 		for (int i = 0; i < 100; i++) {
-			accessLog.println("/toto", "oleg0", "HTTP/1.1", 200, 512, "toto.com", "WIN32", IdRpc.GET);
+			accessLog.println("/toto", "user0", "HTTP/1.1", 200, 512, "toto.com", "WIN32", IdRpc.GET);
 		}
 		for (int i = 0; i < 100; i++) {
-			accessLog.println("/tata", "oleg1", "TCP/1.1", 200, 1024, "tata.com", "MACOSX", IdRpc.GETAPPS);
+			accessLog.println("/tata", "user1", "TCP/1.1", 200, 1024, "tata.com", "MACOSX", IdRpc.GETAPPS);
 		}
 		for (int i = 0; i < 100; i++) {
-			accessLog.println("/titi", "oleg2", "UDP/0.9", 200, 1024, "titi.com", "WIN32", IdRpc.DISCONNECT);
+			accessLog.println("/titi", "user2", "UDP/0.9", 200, 1024, "titi.com", "WIN32", IdRpc.DISCONNECT);
 		}
 
 	}

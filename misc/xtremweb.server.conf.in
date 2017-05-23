@@ -99,7 +99,7 @@ DBPASS= @DBPASSWORD@
 # Default : false
 # since 8.2.0
 #
-#OPENIDREGISTRATION=false
+#DELEGATEDREGISTRATION=false
 
 #
 # This is necessary to delegate authentication via OAuth
@@ -121,6 +121,13 @@ DBPASS= @DBPASSWORD@
 #
 #FACEBOOKAUTHURI=
 #
+# Facebook OAuth discovery point to retrieve all services URI
+# This should not be changed !
+# You can try this in your browser
+# @since 10.5.0
+#
+#FACEBOOK_DISCOVERYURI=
+#
 # This is necessary to delegate authentication via OAuth
 # The facebook scope
 # @since 10.5.0
@@ -133,6 +140,13 @@ DBPASS= @DBPASSWORD@
 #
 #FACEBOOKCALLBACKURL=
 
+#
+# Google OAuth discovery point to retrieve all services URI
+# This should not be changed !
+# You can try this in your browser
+# @since 10.5.0
+#
+GOOGLE_DISCOVERYURI="https://accounts.google.com/.well-known/openid-configuration"
 #
 # This is necessary to delegate authentication via OAuth
 # The google application ID
@@ -185,6 +199,13 @@ DBPASS= @DBPASSWORD@
 #
 #TWITTERAUTHURI=
 #
+# Twitter OAuth discovery point to retrieve all services URI
+# This should not be changed !
+# You can try this in your browser
+# @since 10.5.0
+#
+#TWITTER_DISCOVERYURI=
+#
 # This is necessary to delegate authentication via OAuth
 # The twitter scope
 # @since 10.5.0
@@ -216,6 +237,13 @@ DBPASS= @DBPASSWORD@
 # @since 10.5.0
 #
 #YAHOOAUTHURI=
+#
+# Yahoo OAuth discovery point to retrieve all services URI
+# This should not be changed !
+# You can try this in your browser
+# @since 10.5.0
+#
+#YAHOO_DISCOVERYURI=
 #
 # This is necessary to delegate authentication via OAuth
 # The yahoo scope
@@ -292,6 +320,11 @@ WORKERUID=
 # next is the SmartSockets hub port
 # default value : 4329
 ## SMARTSOCKETSPORT=4329
+
+# next is the SmartSockets hub external address
+# this may be needed if running inside an EC2 VM that don't know its public IP
+# default value : null
+## SMARTSOCKETSEXTERNALADDRESS=
 
 # next is proxy port
 # default value : -1 (means don't used)
@@ -569,7 +602,7 @@ LAUNCHERURL=@LAUNCHERURL@
 #  INFO
 #  WARN
 #  ERROR
-LOGGERLEVEL=@LOGGERLEVEL@
+LOGGERLEVEL=INFO
 
 
 #####

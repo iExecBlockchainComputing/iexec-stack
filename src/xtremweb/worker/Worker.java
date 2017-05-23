@@ -65,6 +65,8 @@ public class Worker {
 	private static int NEEDS_CHECK_ALONE = 2;
 	private int status = NEEDS_INIT;
 
+	private boolean running;
+
 	/**
 	 * This is the default constructor
 	 */
@@ -73,6 +75,7 @@ public class Worker {
 			System.setProperty(XWPropertyDefs.CACHEDIR.toString(), (new File("cache")).getAbsolutePath());
 		}
 		logger = new Logger(this);
+		running = true;	
 	}
 
 	/**
@@ -147,7 +150,7 @@ public class Worker {
 		boolean configerror = false;
 		String configerrmsg = null;
 		String project = getConfig().getHost().getProject().trim();
-		while (true) {
+		while (isRunning()) {
 			configerror = false;
 			configerrmsg = null;
 			try {
@@ -254,6 +257,13 @@ public class Worker {
 
 		}
 
+	}
+
+	public void setRunning(final boolean b) {
+		running = b;
+	}
+	private boolean isRunning() {
+		return running;
 	}
 
 	/**

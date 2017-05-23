@@ -47,9 +47,9 @@ import java.util.zip.ZipOutputStream;
 
 public class TracerZipFile {
 
-	private ZipOutputStream outfile = null;
 	private ZipFile infile = null;
-
+	private String outFileName;
+	
 	/**
 	 * This is the constructor to create read only file.
 	 */
@@ -65,7 +65,7 @@ public class TracerZipFile {
 	 * This is the constructor to create write only file. It inserts header (ie
 	 * configuration) in zip file.
 	 *
-	 * @param filename
+	 * @param outFileName
 	 *            is the name of the file to create.
 	 * @param host
 	 *            contains the host definition.
@@ -74,17 +74,15 @@ public class TracerZipFile {
 	 * @param sendResultDelay
 	 *            contains the send trace period.
 	 */
-	public TracerZipFile(final String filename, final HostInterface host, final int resultDelay,
+	public TracerZipFile(final String fn, final HostInterface host, final int resultDelay,
 			final int sendResultDelay) {
 
-		try {
-			outfile = new ZipOutputStream(new FileOutputStream(filename));
-
-			ZipEntry zipEntry;
+		outFileName = fn;
+		try (final FileOutputStream fos = new FileOutputStream(outFileName);
+				ZipOutputStream outfile = new ZipOutputStream(fos);){
 
 			final String lineFeed = new String("\n\r");
-
-			zipEntry = new ZipEntry("Configuration");
+			final ZipEntry zipEntry = new ZipEntry("Configuration");
 			outfile.putNextEntry(zipEntry);
 
 			outfile.write(host.getName().getBytes(XWTools.UTF8));
@@ -110,23 +108,19 @@ public class TracerZipFile {
 			outfile.write(lineFeed.getBytes(XWTools.UTF8));
 
 			outfile.closeEntry();
-		} catch (final Exception e) {
-			System.err.println(e.toString());
+		} catch (final IOException e) {
 		}
 
-	} // TracerZipFile ()
+	}
 
 	public void close() {
 		try {
-			if (outfile != null) {
-				outfile.close();
-			}
 			if (infile != null) {
 				infile.close();
 			}
 		} catch (final Exception e) {
 		}
-	} // close ()
+	}
 
 	/**
 	 * This is the constructor to create write only file. It inserts header (ie
@@ -137,43 +131,39 @@ public class TracerZipFile {
 	 * @param fileName
 	 *            is the name of the data file.
 	 */
-	public void addEntry(final String entryName, final String fileName) throws Exception {
-		try {
+	public void addEntry(final String entryName, final String fileName) throws IOException {
 
-			final File file = new File(fileName);
-			final FileInputStream dataIn = new FileInputStream(file);
-			ZipEntry zipEntry;
+		final File file = new File(fileName);
 
-			zipEntry = new ZipEntry(entryName);
+		try (final FileOutputStream fos = new FileOutputStream(outFileName);
+				final ZipOutputStream outfile = new ZipOutputStream(fos);
+				final FileInputStream dataIn = new FileInputStream(file)) {
+
+			final ZipEntry zipEntry = new ZipEntry(entryName);
 			outfile.putNextEntry(zipEntry);
 
 			while (dataIn.available() != 0) {
 				outfile.write(dataIn.read());
 			}
 
-			dataIn.close();
 			outfile.closeEntry();
-		} catch (final Exception e) {
-			e.printStackTrace();
-			throw e;
 		}
 
-	} // addEntry()
+	}
 
 	private byte[] readEntry(final String entryName) throws IOException {
 
 		final ZipEntry ze = infile.getEntry(entryName);
 		final InputStream istr = infile.getInputStream(ze);
-		final BufferedInputStream bis = new BufferedInputStream(istr);
 		final int sz = (int) ze.getSize();
 		final int N = 1024;
 		final byte buf[] = new byte[sz];
 
-		if (bis.read(buf, 0, Math.min(N, sz)) == -1) {
-			return null;
+		try (final BufferedInputStream bis = new BufferedInputStream(istr)) {
+			if (bis.read(buf, 0, Math.min(N, sz)) == -1) {
+				return new byte[0];
+			}
 		}
-
-		bis.close();
 
 		return buf;
 	}
@@ -182,90 +172,86 @@ public class TracerZipFile {
 
 		final TracesConfig ret = new TracesConfig();
 
-		try {
-			final byte buf[] = readEntry("Configuration");
-			final String strBuf = new String(buf);
-			final String lineFeed = new String("\n\r");
-			int indexStart = 0;
-			int indexEnd = 0;
-
-			indexEnd = strBuf.indexOf(lineFeed);
-			if (indexEnd == -1) {
-				return null;
-			}
-			ret.setHostName(new String(strBuf.substring(indexStart, indexEnd)));
-
-			indexStart = indexEnd + lineFeed.length();
-			indexEnd = strBuf.indexOf(lineFeed, indexStart);
-			if (indexEnd == -1) {
-				return null;
-			}
-			ret.setTimeZone(new String(strBuf.substring(indexStart, indexEnd)));
-
-			indexStart = indexEnd + lineFeed.length();
-			indexEnd = strBuf.indexOf(lineFeed, indexStart);
-			if (indexEnd == -1) {
-				return null;
-			}
-			ret.setIpAddr(new String(strBuf.substring(indexStart, indexEnd)));
-
-			indexStart = indexEnd + lineFeed.length();
-			indexEnd = strBuf.indexOf(lineFeed, indexStart);
-			if (indexEnd == -1) {
-				return null;
-			}
-			ret.setHwAddr(new String(strBuf.substring(indexStart, indexEnd)));
-
-			indexStart = indexEnd + lineFeed.length();
-			indexEnd = strBuf.indexOf(lineFeed, indexStart);
-			if (indexEnd == -1) {
-				return null;
-			}
-			ret.setVersion(new String(strBuf.substring(indexStart, indexEnd)));
-
-			indexStart = indexEnd + lineFeed.length();
-			indexEnd = strBuf.indexOf(lineFeed, indexStart);
-			if (indexEnd == -1) {
-				return null;
-			}
-			ret.setResultDelay(new Integer(new String(strBuf.substring(indexStart, indexEnd))).intValue());
-
-			indexStart = indexEnd + lineFeed.length();
-			indexEnd = strBuf.indexOf(lineFeed, indexStart);
-			if (indexEnd == -1) {
-				return null;
-			}
-			ret.setSendResultDelay(new Integer(new String(strBuf.substring(indexStart, indexEnd))).intValue());
-		} catch (final Exception e) {
-			throw e;
+		final byte buf[] = readEntry("Configuration");
+		if(buf.length == 0) {
+			return null;
 		}
+		final String strBuf = new String(buf);
+		final String lineFeed = new String("\n\r");
+		int indexStart = 0;
+		int indexEnd = strBuf.indexOf(lineFeed);
+		if (indexEnd == -1) {
+			return null;
+		}
+		ret.setHostName(strBuf.substring(indexStart, indexEnd));
+
+		indexStart = indexEnd + lineFeed.length();
+		indexEnd = strBuf.indexOf(lineFeed, indexStart);
+		if (indexEnd == -1) {
+			return null;
+		}
+		ret.setTimeZone(strBuf.substring(indexStart, indexEnd));
+
+		indexStart = indexEnd + lineFeed.length();
+		indexEnd = strBuf.indexOf(lineFeed, indexStart);
+		if (indexEnd == -1) {
+			return null;
+		}
+		ret.setIpAddr(strBuf.substring(indexStart, indexEnd));
+
+		indexStart = indexEnd + lineFeed.length();
+		indexEnd = strBuf.indexOf(lineFeed, indexStart);
+		if (indexEnd == -1) {
+			return null;
+		}
+		ret.setHwAddr(strBuf.substring(indexStart, indexEnd));
+
+		indexStart = indexEnd + lineFeed.length();
+		indexEnd = strBuf.indexOf(lineFeed, indexStart);
+		if (indexEnd == -1) {
+			return null;
+		}
+		ret.setVersion(strBuf.substring(indexStart, indexEnd));
+
+		indexStart = indexEnd + lineFeed.length();
+		indexEnd = strBuf.indexOf(lineFeed, indexStart);
+		if (indexEnd == -1) {
+			return null;
+		}
+		ret.setResultDelay(Integer.parseInt(new String(strBuf.substring(indexStart, indexEnd))));
+
+		indexStart = indexEnd + lineFeed.length();
+		indexEnd = strBuf.indexOf(lineFeed, indexStart);
+		if (indexEnd == -1) {
+			return null;
+		}
+		ret.setSendResultDelay(Integer.parseInt(new String(strBuf.substring(indexStart, indexEnd))));
 
 		return ret;
 	}
 
 	private short[] readMasks() throws Exception {
 
-		try {
-			final byte buf[] = readEntry("mask");
-			final short[] mask = new short[buf.length / 2];
-
-			//
-			// buf [i+1] is the mask LSB
-			// buf [i] is the mask MSB
-			//
-
-			int maskIndex = 0;
-			for (int i = 0; i < buf.length; i += 2) {
-
-				mask[maskIndex] |= byteToShort(buf, i);
-				maskIndex++;
-			}
-
-			return mask;
-
-		} catch (final Exception e) {
-			throw e;
+		final byte buf[] = readEntry("mask");
+		if (buf.length == 0) {
+			return null;
 		}
+		final short[] mask = new short[buf.length / 2];
+
+		//
+		// buf [i+1] is the mask LSB
+		// buf [i] is the mask MSB
+		//
+
+		int maskIndex = 0;
+		for (int i = 0; i < buf.length; i += 2) {
+
+			mask[maskIndex] |= byteToShort(buf, i);
+			maskIndex++;
+		}
+
+		return mask;
+
 	}
 
 	private int byteToInt(final byte[] buf, final int offset) throws Exception {
@@ -298,144 +284,140 @@ public class TracerZipFile {
 	private TracerState[] readStates(final short[] masks) throws Exception {
 		int i = 0;
 
-		try {
-			final byte buf[] = readEntry("state");
-			final TracerState[] states = new TracerState[masks.length];
+		final byte buf[] = readEntry("state");
+		if (buf.length == 0) {
+			return new TracerState[0];
+		}
+		final TracerState[] states = new TracerState[masks.length];
 
-			int bufIdx = 0;
+		int bufIdx = 0;
 
-			for (i = 0; i < masks.length; i++) {
+		for (i = 0; i < masks.length; i++) {
 
-				states[i] = new TracerState();
+			states[i] = new TracerState();
 
-				if ((masks[i] & 0x01) == 0x01) {
-					states[i].setCpuUser(byteToInt(buf, bufIdx));
-					bufIdx += 4;
-				}
-
-				if ((masks[i] & 0x02) == 0x02) {
-					states[i].setCpuNice(byteToInt(buf, bufIdx));
-					bufIdx += 4;
-				}
-
-				if ((masks[i] & 0x04) == 0x04) {
-					states[i].setCpuSystem(byteToInt(buf, bufIdx));
-					bufIdx += 4;
-				}
-
-				if ((masks[i] & 0x08) == 0x08) {
-					states[i].setCpuIdle(byteToInt(buf, bufIdx));
-					bufIdx += 4;
-				}
-
-				if ((masks[i] & 0x10) == 0x10) {
-					states[i].setCpuAidle(byteToInt(buf, bufIdx));
-					bufIdx += 4;
-				}
-
-				if ((masks[i] & 0x20) == 0x20) {
-					states[i].setLoadOne(byteToShort(buf, bufIdx));
-					bufIdx += 2;
-				}
-
-				if ((masks[i] & 0x40) == 0x40) {
-					states[i].setLoadFive(byteToShort(buf, bufIdx));
-					bufIdx += 2;
-				}
-
-				if ((masks[i] & 0x80) == 0x80) {
-					states[i].setLoadFifteen(byteToShort(buf, bufIdx));
-					bufIdx += 2;
-				}
-
-				if ((masks[i] & 0x0100) == 0x0100) {
-					states[i].setProcRun(byteToShort(buf, bufIdx));
-					bufIdx += 2;
-				}
-
-				if ((masks[i] & 0x0200) == 0x0200) {
-					states[i].setProcTotal(byteToShort(buf, bufIdx));
-					bufIdx += 2;
-				}
-
-				if ((masks[i] & 0x0400) == 0x0400) {
-					states[i].setMemFree(byteToInt(buf, bufIdx));
-					bufIdx += 4;
-				}
-
-				if ((masks[i] & 0x0800) == 0x0800) {
-					states[i].setMemShared(byteToInt(buf, bufIdx));
-					bufIdx += 4;
-				}
-
-				if ((masks[i] & 0x1000) == 0x1000) {
-					states[i].setMemBuffers(byteToInt(buf, bufIdx));
-					bufIdx += 4;
-				}
-
-				if ((masks[i] & 0x2000) == 0x2000) {
-					states[i].setMemCached(byteToInt(buf, bufIdx));
-					bufIdx += 4;
-				}
-
-				if ((masks[i] & 0x4000) == 0x4000) {
-					states[i].setSwapFree(byteToInt(buf, bufIdx));
-					bufIdx += 4;
-				}
-
-				if ((masks[i] & 0x8000) == 0x8000) {
-					states[i].setTime(byteToInt(buf, bufIdx));
-					bufIdx += 4;
-				}
+			if ((masks[i] & 0x01) == 0x01) {
+				states[i].setCpuUser(byteToInt(buf, bufIdx));
+				bufIdx += 4;
 			}
 
-			return states;
+			if ((masks[i] & 0x02) == 0x02) {
+				states[i].setCpuNice(byteToInt(buf, bufIdx));
+				bufIdx += 4;
+			}
 
-		} catch (final Exception e) {
-			throw e;
+			if ((masks[i] & 0x04) == 0x04) {
+				states[i].setCpuSystem(byteToInt(buf, bufIdx));
+				bufIdx += 4;
+			}
+
+			if ((masks[i] & 0x08) == 0x08) {
+				states[i].setCpuIdle(byteToInt(buf, bufIdx));
+				bufIdx += 4;
+			}
+
+			if ((masks[i] & 0x10) == 0x10) {
+				states[i].setCpuAidle(byteToInt(buf, bufIdx));
+				bufIdx += 4;
+			}
+
+			if ((masks[i] & 0x20) == 0x20) {
+				states[i].setLoadOne(byteToShort(buf, bufIdx));
+				bufIdx += 2;
+			}
+
+			if ((masks[i] & 0x40) == 0x40) {
+				states[i].setLoadFive(byteToShort(buf, bufIdx));
+				bufIdx += 2;
+			}
+
+			if ((masks[i] & 0x80) == 0x80) {
+				states[i].setLoadFifteen(byteToShort(buf, bufIdx));
+				bufIdx += 2;
+			}
+
+			if ((masks[i] & 0x0100) == 0x0100) {
+				states[i].setProcRun(byteToShort(buf, bufIdx));
+				bufIdx += 2;
+			}
+
+			if ((masks[i] & 0x0200) == 0x0200) {
+				states[i].setProcTotal(byteToShort(buf, bufIdx));
+				bufIdx += 2;
+			}
+
+			if ((masks[i] & 0x0400) == 0x0400) {
+				states[i].setMemFree(byteToInt(buf, bufIdx));
+				bufIdx += 4;
+			}
+
+			if ((masks[i] & 0x0800) == 0x0800) {
+				states[i].setMemShared(byteToInt(buf, bufIdx));
+				bufIdx += 4;
+			}
+
+			if ((masks[i] & 0x1000) == 0x1000) {
+				states[i].setMemBuffers(byteToInt(buf, bufIdx));
+				bufIdx += 4;
+			}
+
+			if ((masks[i] & 0x2000) == 0x2000) {
+				states[i].setMemCached(byteToInt(buf, bufIdx));
+				bufIdx += 4;
+			}
+
+			if ((masks[i] & 0x4000) == 0x4000) {
+				states[i].setSwapFree(byteToInt(buf, bufIdx));
+				bufIdx += 4;
+			}
+
+			if ((masks[i] & 0x8000) == 0x8000) {
+				states[i].setTime(byteToInt(buf, bufIdx));
+				bufIdx += 4;
+			}
 		}
+
+		return states;
+
 	}
 
 	private TracerConfig[] readConfigs() throws Exception {
 
-		int i = 0;
-
-		try {
-			final byte buf[] = readEntry("config");
-			final TracerConfig[] configs = new TracerConfig[buf.length / TracerConfig.LENGTH];
-
-			int bufIdx = 0;
-
-			for (i = 0; i < configs.length; i++) {
-
-				configs[i] = new TracerConfig();
-
-				configs[i].setCpuNum(byteToShort(buf, bufIdx));
-				bufIdx += 2;
-
-				configs[i].setCpuSpeed(byteToShort(buf, bufIdx));
-				bufIdx += 2;
-
-				configs[i].setMemTotal(byteToInt(buf, bufIdx));
-				bufIdx += 4;
-
-				configs[i].setSwapTotal(byteToInt(buf, bufIdx));
-				bufIdx += 4;
-
-				configs[i].setBoottime(byteToInt(buf, bufIdx));
-				bufIdx += 4;
-
-				configs[i].setKernel(new byte[16]);
-				System.arraycopy(buf, bufIdx, configs[i].getKernel(), 0, 16);
-				bufIdx += 16;
-
-				configs[i].setTime(byteToInt(buf, bufIdx));
-			}
-
-			return configs;
-		} catch (final Exception e) {
-			throw e;
+		final byte buf[] = readEntry("config");
+		if (buf.length == 0) {
+			return new TracerConfig[0];
 		}
+		final TracerConfig[] configs = new TracerConfig[buf.length / TracerConfig.LENGTH];
+
+		int bufIdx = 0;
+
+		for (int i = 0; i < configs.length; i++) {
+
+			configs[i] = new TracerConfig();
+
+			configs[i].setCpuNum(byteToShort(buf, bufIdx));
+			bufIdx += 2;
+
+			configs[i].setCpuSpeed(byteToShort(buf, bufIdx));
+			bufIdx += 2;
+
+			configs[i].setMemTotal(byteToInt(buf, bufIdx));
+			bufIdx += 4;
+
+			configs[i].setSwapTotal(byteToInt(buf, bufIdx));
+			bufIdx += 4;
+
+			configs[i].setBoottime(byteToInt(buf, bufIdx));
+			bufIdx += 4;
+
+			configs[i].setKernel(new byte[16]);
+			System.arraycopy(buf, bufIdx, configs[i].getKernel(), 0, 16);
+			bufIdx += 16;
+
+			configs[i].setTime(byteToInt(buf, bufIdx));
+		}
+
+		return configs;
 	}
 
 	public Traces read() throws Exception {

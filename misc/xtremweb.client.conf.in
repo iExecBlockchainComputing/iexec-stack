@@ -315,7 +315,7 @@ SSLKEYSTORE=../keystore/xwhepclient.keys
 #  INFO
 #  WARN
 #  ERROR
-LOGGERLEVEL=@LOGGERLEVEL@
+LOGGERLEVEL=INFO
 
 #####
 ##### End of File

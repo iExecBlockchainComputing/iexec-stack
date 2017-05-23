@@ -81,13 +81,16 @@ public final class JarResources {
 
 	/** initializes internal hash tables with Jar file resources. */
 	private void init() {
-		try {
+		try (final JarFile jf = new JarFile(jarFileName);
+				final ZipFile zf = new ZipFile(jarFileName);
+				final FileInputStream fis = new FileInputStream(jarFileName);
+				final BufferedInputStream bis = new BufferedInputStream(fis);
+				final ZipInputStream zis = new ZipInputStream(bis)){
 			// gets the main class name
-			final JarFile jf = new JarFile(jarFileName);
 			mainClassName = jf.getManifest().getMainAttributes().getValue("Main-Class");
 
 			// extracts just sizes only.
-			final ZipFile zf = new ZipFile(jarFileName);
+			
 			final Enumeration e = zf.entries();
 			while (e.hasMoreElements()) {
 				final ZipEntry ze = (ZipEntry) e.nextElement();
@@ -96,12 +99,7 @@ public final class JarResources {
 
 				htSizes.put(ze.getName(), new Integer((int) ze.getSize()));
 			}
-			zf.close();
-
 			// extract resources and put them into the hashtable.
-			final FileInputStream fis = new FileInputStream(jarFileName);
-			final BufferedInputStream bis = new BufferedInputStream(fis);
-			final ZipInputStream zis = new ZipInputStream(bis);
 			ZipEntry ze = null;
 			while ((ze = zis.getNextEntry()) != null) {
 				if (ze.isDirectory()) {
@@ -132,6 +130,7 @@ public final class JarResources {
 
 				logger.debug(ze.getName() + "  rb=" + rb + ",size=" + size + ",csize=" + ze.getCompressedSize());
 			}
+			zis.close();
 		} catch (final NullPointerException e) {
 			logger.debug("done.");
 		} catch (final FileNotFoundException e) {

@@ -47,7 +47,7 @@ public class PasswordDialog extends JDialog implements ActionListener {
 	private static String CANCEL = "Cancel";
 	private static String HELP = "Help";
 
-	private final JFrame parent;
+	private final JFrame _parent;
 	private final JPasswordField password;
 	private final JPasswordField password2;
 	private boolean cancelled;
@@ -62,7 +62,7 @@ public class PasswordDialog extends JDialog implements ActionListener {
 		cancelled = true;
 
 		// Use the default FlowLayout.
-		parent = f;
+		_parent = f;
 
 		// login field
 		final JLabel jlogin = new JLabel(login);
@@ -127,7 +127,7 @@ public class PasswordDialog extends JDialog implements ActionListener {
 			cancelled = true;
 			setVisible(false);
 		} else {
-			JOptionPane.showMessageDialog(parent, "You must enter password twice to avoid errors");
+			JOptionPane.showMessageDialog(_parent, "You must enter password twice to avoid errors");
 		}
 	}
 

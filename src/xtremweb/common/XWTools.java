@@ -71,6 +71,8 @@ import xtremweb.dispatcher.HTTPOpenIdHandler;
  */
 
 public class XWTools {
+	private XWTools() {
+	}
 
 	private static final Logger logger = new Logger();
 
@@ -179,17 +181,13 @@ public class XWTools {
 	 */
 	public static String getSQLDateTime(final java.util.Date d) {
 
-		String ret = null;
-
 		if (d == null) {
 			return null;
 		}
 
 		synchronized (sqlDateFormat) {
-			ret = sqlDateFormat.format(d);
+			return sqlDateFormat.format(d);
 		}
-
-		return ret;
 	}
 
 	/**

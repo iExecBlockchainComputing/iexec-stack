@@ -30,6 +30,7 @@ import java.net.URISyntaxException;
 import java.security.AccessControlException;
 import java.security.InvalidKeyException;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Enumeration;
@@ -2722,46 +2723,37 @@ public final class DBInterface {
 			throw new IOException("chmodstr can't be null");
 		}
 
-		Table theRow = null;
-		UserRightEnum userrights = null;
-		XWAccessRights rights = null;
-		try {
-			theRow = app(theClient, uid);
-			userrights = UserRightEnum.INSERTAPP;
-			if (theRow == null) {
-				theRow = data(theClient, uid);
-				userrights = UserRightEnum.ADVANCED_USER;
-			}
-			if (theRow == null) {
-				theRow = usergroup(theClient, uid);
-				userrights = UserRightEnum.SUPER_USER;
-			}
-			if (theRow == null) {
-				theRow = user(theClient, uid);
-				userrights = UserRightEnum.ADVANCED_USER;
-			}
-			if (theRow == null) {
-				theRow = group(theClient, uid);
-				userrights = UserRightEnum.ADVANCED_USER;
-			}
-			if (theRow == null) {
-				theRow = session(theClient, uid);
-				userrights = UserRightEnum.ADVANCED_USER;
-			}
-			if (theRow == null) {
-				return false;
-			}
-			rights = theRow.getAccessRights();
-			rights.chmod(chmodstr);
-			theRow.setAccessRights(rights);
-			update(theClient, userrights, theRow);
-
-			return true;
-		} finally {
-			theRow = null;
-			userrights = null;
-			rights = null;
+		Table theRow = app(theClient, uid);
+		UserRightEnum userrights = UserRightEnum.INSERTAPP;
+		if (theRow == null) {
+			theRow = data(theClient, uid);
+			userrights = UserRightEnum.ADVANCED_USER;
 		}
+		if (theRow == null) {
+			theRow = usergroup(theClient, uid);
+			userrights = UserRightEnum.SUPER_USER;
+		}
+		if (theRow == null) {
+			theRow = user(theClient, uid);
+			userrights = UserRightEnum.ADVANCED_USER;
+		}
+		if (theRow == null) {
+			theRow = group(theClient, uid);
+			userrights = UserRightEnum.ADVANCED_USER;
+		}
+		if (theRow == null) {
+			theRow = session(theClient, uid);
+			userrights = UserRightEnum.ADVANCED_USER;
+		}
+		if (theRow == null) {
+			return false;
+		}
+		final XWAccessRights rights = theRow.getAccessRights();
+		rights.chmod(chmodstr);
+		theRow.setAccessRights(rights);
+		update(theClient, userrights, theRow);
+
+		return true;
 	}
 
 	/**
@@ -2770,14 +2762,14 @@ public final class DBInterface {
 	public final void updateAppsPool() {
 
 		try {
-			final Vector<AppInterface> apps = (Vector<AppInterface>) apps();
+			final ArrayList<AppInterface> apps = (ArrayList<AppInterface>) apps();
 			if (apps == null) {
 				logger.warn("Can't retrieve any app");
 				return;
 			}
 
-			for (final Enumeration<AppInterface> enums = apps.elements(); enums.hasMoreElements();) {
-				final AppInterface theApp = enums.nextElement();
+			for (final Iterator<AppInterface> enums = apps.iterator(); enums.hasNext();) {
+				final AppInterface theApp = enums.next();
 				theApp.getName();
 				theApp.isService();
 			}
@@ -3275,7 +3267,7 @@ public final class DBInterface {
 		final UserGroupInterface theGroupByUID = usergroup(theClient, groupUid);
 		final UserGroupInterface theGroup = (theGroupByUID != null ? theGroupByUID
 				: usergroup(theClient, SQLRequest.MAINTABLEALIAS + "." + UserGroupInterface.Columns.LABEL.toString()
-						+ "='" + groupitf.getLabel() + "'"));
+				+ "='" + groupitf.getLabel() + "'"));
 
 		if (theGroup == null) {
 			insert(groupitf);
@@ -4515,7 +4507,7 @@ public final class DBInterface {
 
 				if (app.getBinary(worker.getCpu(), worker.getOs()) == null) {
 					logger.warn(worker.getUID() + " : " + app.getName()
-							+ " is not broadcasted since there is no compatible binary");
+					+ " is not broadcasted since there is no compatible binary");
 					continue;
 				}
 				job.setExpectedHost(worker.getUID());
@@ -4799,7 +4791,7 @@ public final class DBInterface {
 
 			job.setReplicatedUid(null);
 			logger.debug(theClient.getLogin() + " " + jobUID + " replications = " + job.getExpectedReplications()
-					+ " by " + job.getReplicaSetSize());
+			+ " by " + job.getReplicaSetSize());
 
 			// if job.getExpectedReplications() < 0, we replicate for ever
 			int replica = job.getExpectedReplications() < 0 ? job.getExpectedReplications() - job.getReplicaSetSize()

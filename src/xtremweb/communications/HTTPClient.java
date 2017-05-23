@@ -264,7 +264,7 @@ public class HTTPClient extends CommClient {
 			URI uri2 = null;
 			String struri2 = null;
 			try {
-				struri2 = new String(uri.getScheme() + Connection.schemeSeparator() + serverName);
+				struri2 = new String(uri.getScheme() + Connection.getSchemeSeparator() + serverName);
 				if (serverPort > 0) {
 					struri2 += ":" + serverPort;
 				}

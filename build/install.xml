@@ -64,6 +64,7 @@
   <property name="xwidl.dir" value="${src.java.dir}/XwIDL" />
   <property name="antlr.dir" value="${src.java.dir}/antlr" />
   <property name="doc.dir" value="${basedir}/doc"/>
+  <property name="docker.dir" value="${basedir}/docker"/>
 
     <!-- NEED TO CHANGE THE VERSION ? -->
     <condition property="version.changed">
@@ -395,6 +396,12 @@ version=${version}
 	<patternset refid="XW-DOC" />
       </fileset>
     </copy>
+    <copy todir="${dist.dir}/docker/"
+          filtering="no" overwrite="yes">
+      <fileset dir="${docker.dir}" >
+        <include name="**"/>
+      </fileset>
+    </copy>
     
     <patternset id="XW-LIBS">
       <include name="*" />
@@ -651,47 +658,16 @@ version=${version}
 
   <target name="createDownload" depends="installScripts">
 
-    <delete file="${build.dir}/stand-alone/${JARFILE}" />
-    <delete dir="${build.dir}/stand-alone/xtremweb/" />
-    <delete dir="${build.dir}/stand-alone/xwclasses/" />
-    <delete dir="${build.dir}/stand-alone/jni/" />
-
     <filter token="XWVERSION" value="${version}"/>
     <filter token="SYSTEMUSER" value="${system.user}"/>
 
     <!-- Create the stand alone JAR file for the worker -->
 
-    <exec dir="${build.dir}/stand-alone" executable="sh" 
-     failonerror="true" os="Linux, Mac OS X">
-      <arg line="make-standalone.sh -f ${dist.lib}/${JARFILE}"/>
-      <env key="XWSUFFIX" value="${xwsuffix}" />
-      <env key="XWARCH"   value="${xwarch}" />
-      <env key="TARGET"   value="${target.os}" />
-      <env key="CROSS"    value="${cross.prefix}" />
-      <env key="XWVERSION" value="${version}" />
-    </exec>
-
-    <exec dir="${build.dir}/stand-alone" executable="cmd.exe" 
-     failonerror="true" os="Windows XP, Windows 2000">
-      <arg line="/E:ON /C make-standalone.bat -f &quot;${dist.lib}\${JARFILE}&quot;"/>
-      <env key="XWSUFFIX" value="${xwsuffix}" />
-      <env key="XWARCH"   value="${xwarch}" />
-      <env key="TARGET"   value="${target.os}" />
-      <env key="CROSS"    value="${cross.prefix}" />
-      <env key="XWVERSION" value="${version}" />
-    </exec>
-
       <!-- Install Mac OS X  -->
-    <copy file="${build.dir}/stand-alone/${JARFILE}"
-          todir="${dist.dir.macosx.worker}/installer/PckRoot/private/etc/xwhep.worker/lib"
-          overwrite="yes" />
     <copy file="${dist.dir.keystore}/xwhepworker.keys" 
           todir="${dist.dir.macosx.worker}/installer/PckRoot/private/etc/xwhep.worker/keystore"
           failonerror="no" filtering="no" overwrite="yes" />
 
-    <copy file="${build.dir}/stand-alone/${JARFILE}"
-          todir="${dist.dir.macosx.client}/installer/PckRoot/Applications/xwhep.client/lib"
-          overwrite="yes" />
     <copy file="${lib.dir}/bcprov-jdk15on-151.jar"
           todir="${dist.dir.macosx.client}/installer/PckRoot/Applications/xwhep.client/lib"
           overwrite="yes" />
@@ -702,9 +678,6 @@ version=${version}
           todir="${dist.dir.macosx.client}/installer/PckRoot/Applications/xwhep.client/keystore"
           failonerror="no" filtering="no" overwrite="yes" />
 
-    <copy file="${build.dir}/stand-alone/${JARFILE}"
-          todir="${dist.dir.macosx.server}/installer/PckRoot/private/etc/xwhep.server/lib"
-          overwrite="yes" />
     <copy file="${dist.dir.keystore}/xwhepserver.keys" 
           todir="${dist.dir.macosx.server}/installer/PckRoot/private/etc/xwhep.server/keystore"
           failonerror="no" filtering="no" overwrite="yes" />
@@ -928,23 +901,11 @@ version=${version}
           file="${dpkg.dir}/xwhep-worker.postrm"
           filtering="yes" overwrite="yes" />
 
-    <copy file="${build.dir}/stand-alone/${JARFILE}"
-	  todir="${dist.dir.worker.innosetup}/worker/lib/"
-          overwrite="yes" />
     <copy file="${lib.dir}/bcprov-jdk15on-151.jar"
 	  todir="${dist.dir.client.innosetup}/client/lib/"
           overwrite="yes" />
     <copy file="${lib.dir}/bcpkix-jdk15on-151.jar"
 	  todir="${dist.dir.client.innosetup}/client/lib/"
-          overwrite="yes" />
-    <copy file="${build.dir}/stand-alone/${JARFILE}"
-	  todir="${dist.dir.client.innosetup}/client/lib/"
-          overwrite="yes" />
-    <copy file="${build.dir}/stand-alone/${JARFILE}"
-	  todir="${dist.dir.server.innosetup}/server/lib/"
-          overwrite="yes" />
-    <copy file="${build.dir}/stand-alone/${JARFILE}"
-	  todir="${dist.dir.win32.worker}/lib/"
           overwrite="yes" />
 
 

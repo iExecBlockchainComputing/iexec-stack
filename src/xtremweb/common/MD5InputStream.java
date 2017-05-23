@@ -140,18 +140,20 @@ public class MD5InputStream extends FilterInputStream {
 	 * here.
 	 **/
 	public static void main(final String[] arg) {
-		try {
 
-			// //////////////////////////////////////////////////////////////
-			//
-			// usage: java com.twmacinta.util.MD5InputStream [--use-default-md5]
-			// [--no-native-lib] filename
-			//
-			// ///////
+		// //////////////////////////////////////////////////////////////
+		//
+		// usage: java com.twmacinta.util.MD5InputStream [--use-default-md5]
+		// [--no-native-lib] filename
+		//
+		// ///////
 
-			// determine the filename to use and the MD5 impelementation to use
+		// determine the filename to use and the MD5 impelementation to use
 
-			final String filename = arg[arg.length - 1];
+		final String filename = arg[arg.length - 1];
+		try (final FileInputStream fis = new FileInputStream(filename);
+				final InputStream is = new BufferedInputStream(fis);
+				final MD5InputStream in = new MD5InputStream(new BufferedInputStream(fis))){
 			boolean useDefaultMd5 = false;
 			boolean useNativeLib = true;
 			for (int i = 0; i < (arg.length - 1); i++) {
@@ -170,13 +172,11 @@ public class MD5InputStream extends FilterInputStream {
 			// Use the default MD5 implementation that comes with Java
 
 			if (useDefaultMd5) {
-				final InputStream in = new BufferedInputStream(new FileInputStream(filename));
 				final java.security.MessageDigest digest = java.security.MessageDigest.getInstance("MD5");
-				while ((num_read = in.read(buf)) != -1) {
+				while ((num_read = is.read(buf)) != -1) {
 					digest.update(buf, 0, num_read);
 				}
 				System.out.println(MD5.asHex(digest.digest()) + "  " + filename);
-				in.close();
 
 				// Use the optimized MD5 implementation
 
@@ -190,12 +190,10 @@ public class MD5InputStream extends FilterInputStream {
 
 				// calculate the checksum
 
-				final MD5InputStream in = new MD5InputStream(new BufferedInputStream(new FileInputStream(filename)));
 				while ((num_read = in.read(buf)) != -1) {
 					;
 				}
 				System.out.println(MD5.asHex(in.hash()) + "  " + filename);
-				in.close();
 			}
 		} catch (final Exception e) {
 			e.printStackTrace();

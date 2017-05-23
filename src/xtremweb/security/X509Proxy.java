@@ -48,6 +48,7 @@ import java.security.cert.CertificateParsingException;
 import java.security.cert.X509Certificate;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 
 import javax.security.auth.x500.X500Principal;
 
@@ -59,10 +60,10 @@ public final class X509Proxy {
 	public static final String BEGINPRIVATEKEY = "-----BEGIN RSA PRIVATE KEY-----";
 	public static final String ENDPRIVATEKEY = "-----END RSA PRIVATE KEY-----";
 
-	public static final String BEGINCERT_ = "-----BEGIN_CERTIFICATE-----";
-	public static final String ENDCERT_ = "-----END_CERTIFICATE-----";
-	public static final String BEGINPRIVATEKEY_ = "-----BEGIN_RSA_PRIVATE_KEY-----";
-	public static final String ENDPRIVATEKEY_ = "-----END_RSA_PRIVATE_KEY-----";
+	public static final String BEGINCERT_NOSPACE = "-----BEGIN_CERTIFICATE-----";
+	public static final String ENDCERT_NOSPACE = "-----END_CERTIFICATE-----";
+	public static final String BEGINPRIVATEKEY_NOSPACE = "-----BEGIN_RSA_PRIVATE_KEY-----";
+	public static final String ENDPRIVATEKEY_NOSPACE = "-----END_RSA_PRIVATE_KEY-----";
 
 	/**
 	 * This is the logger
@@ -88,15 +89,15 @@ public final class X509Proxy {
 	 *                - on factory.getInstance() error
 	 */
 	public X509Proxy() throws CertificateException {
-		content = new String();
-		certsList = new LinkedList<X509Certificate>();
+		content = "";
+		certsList = new LinkedList<>();
 		certFactory = CertificateFactory.getInstance("X.509");
 
 		logger = new Logger(this);
 	}
 
 	/**
-	 * This retreives X509 public keys from X509 proxy and put them in a linked
+	 * This retrieves X509 public keys from X509 proxy and put them in a linked
 	 * list where one element is the issuer of the following, ordered from least
 	 * ot most trusted certs.
 	 *
@@ -119,7 +120,7 @@ public final class X509Proxy {
 	}
 
 	/**
-	 * This retreives X509 public keys from X509 proxy and put them in a linked
+	 * This retrieves X509 public keys from X509 proxy and put them in a linked
 	 * list where one element is the issuer of the following, ordered from least
 	 * ot most trusted certs.
 	 *
@@ -136,7 +137,7 @@ public final class X509Proxy {
 	}
 
 	/**
-	 * This retreives X509 public keys from X509 proxy and put them in a linked
+	 * This retrieves X509 public keys from X509 proxy and put them in a linked
 	 * list where one element is the issuer of the following, ordered from least
 	 * ot most trusted certs.
 	 *
@@ -153,7 +154,7 @@ public final class X509Proxy {
 	}
 
 	/**
-	 * This retreives X509 public keys from X509 proxy and put them in a linked
+	 * This retrieves X509 public keys from X509 proxy and put them in a linked
 	 * list where one element is the issuer of the following, ordered from least
 	 * ot most trusted certs.
 	 *
@@ -169,40 +170,28 @@ public final class X509Proxy {
 		if (certFile == null) {
 			throw new IOException("file is null");
 		}
-		if (certFile.exists() == false) {
+		if (!certFile.exists()) {
 			throw new IOException("file not found : " + certFile);
 		}
 
-		FileReader certFileReader = null;
-		BufferedReader reader = null;
-
-		try {
-			certFileReader = new FileReader(certFile);
-			reader = new BufferedReader(certFileReader);
+		try(final FileReader certFileReader = new FileReader(certFile);
+				final BufferedReader reader = new BufferedReader(certFileReader)){
 
 			for (String ligne = reader.readLine(); ligne != null; ligne = reader.readLine()) {
 				content = content.concat(ligne + "\n");
 			}
-		} finally {
-			certFileReader = null;
-			reader = null;
 		}
 
-		ByteArrayInputStream inputStream = null;
-
-		try {
-			inputStream = new ByteArrayInputStream(content.getBytes());
+		try (final ByteArrayInputStream inputStream = new ByteArrayInputStream(content.getBytes())){
 			getCertificates(inputStream);
-		} finally {
-			inputStream = null;
 		}
 	}
 
 	/**
-	 * This retreives X509 public keys from X509 proxy and put them in a linked
+	 * This retrieves X509 public keys from X509 proxy and put them in a linked
 	 * list where one element is the issuer of the following, ordered from least
-	 * ot most trusted certs.
-	 *
+	 * at most trusted certs.
+	 * @see getCertificate(BufferedInputStream)
 	 * @param inputStream
 	 *            - the input stream to reader X509 proxy from
 	 * @exception IOException
@@ -212,104 +201,10 @@ public final class X509Proxy {
 	 */
 	private void getCertificates(final InputStream inputStream) throws IOException, CertificateException {
 
-		BufferedInputStream bis = null;
-
-		try {
-			bis = new BufferedInputStream(inputStream);
-
-			final int i = 0;
-
+		try (final BufferedInputStream bis = new BufferedInputStream(inputStream)) {
 			while (bis.available() > 0) {
-				X509Certificate theCert = null;
-				X509Certificate firstcert = null;
-				X509Certificate lastcert = null;
-				X500Principal subject = null;
-				X500Principal issuer = null;
-				String certSubjectName = null;
-				String certIssuerName = null;
-				String firstSubjectName = null;
-				String firstIssuerName = null;
-				String lastSubjectName = null;
-				String lastIssuerName = null;
-
-				try {
-					theCert = (X509Certificate) certFactory.generateCertificate(bis);
-					subject = theCert.getSubjectX500Principal();
-					certSubjectName = subject.getName();
-					subject = null;
-					issuer = theCert.getIssuerX500Principal();
-					certIssuerName = issuer.getName();
-					issuer = null;
-
-					logger.finest(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ");
-					logger.finest("SubjectDN = " + certSubjectName);
-					logger.finest("IssuerDN  = " + certIssuerName);
-					logger.finest("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< [" + size() + "]  ");
-
-					theCert.checkValidity();
-
-					if (size() == 0) {
-						logger.finest(">>>>>>>>>> add " + certSubjectName);
-						add(theCert);
-						theCert = null;
-						continue;
-					}
-
-					firstcert = getFirst();
-					lastcert = getLast();
-
-					subject = firstcert.getSubjectX500Principal();
-					firstSubjectName = subject.getName();
-					subject = null;
-					issuer = firstcert.getIssuerX500Principal();
-					firstIssuerName = issuer.getName();
-					issuer = null;
-					subject = lastcert.getSubjectX500Principal();
-					lastSubjectName = subject.getName();
-					subject = null;
-					issuer = lastcert.getIssuerX500Principal();
-					lastIssuerName = issuer.getName();
-					issuer = null;
-
-					if (certIssuerName.compareTo(firstSubjectName) == 0) {
-						addFirst(theCert);
-						logger.finest(">>>>>>>>>> addFirst " + certSubjectName + " is issued by " + firstSubjectName);
-						continue;
-					}
-
-					if (certSubjectName.compareTo(lastIssuerName) == 0) {
-						addLast(theCert);
-						logger.finest(">>>>>>>>>> addLast  " + certSubjectName + " is issuer of " + lastSubjectName);
-						continue;
-					}
-
-					throw new CertificateParsingException(certSubjectName + " is not in the X509 path ?!?!");
-				} catch (final CertificateParsingException e) {
-					// this may happen since the X509 proxy also contains X509
-					// proxy private key
-				} finally {
-					issuer = null;
-					subject = null;
-					certIssuerName = null;
-					certSubjectName = null;
-					firstIssuerName = null;
-					firstSubjectName = null;
-					lastIssuerName = null;
-					lastSubjectName = null;
-					theCert = null;
-					firstcert = null;
-					lastcert = null;
-				}
+				getCertificate(bis);
 			}
-		} finally {
-			try {
-				if (bis != null) {
-					bis.close();
-				}
-			} catch (final IOException ioe) {
-				logger.exception(ioe);
-			}
-			bis = null;
 		}
 
 		//
@@ -319,16 +214,67 @@ public final class X509Proxy {
 
 		final Iterator<X509Certificate> certsit = certsList.listIterator();
 		while (certsit.hasNext()) {
-			try {
-				final X509Certificate cert = certsit.next();
-				logger.config(">> Subject=\"" + cert.getSubjectDN() + "\" Issuer=\"" + cert.getIssuerDN() + "\"");
-			} catch (final Exception e) {
+			final X509Certificate cert = certsit.next();
+			logger.config(">> Subject=\"" + cert.getSubjectDN() + "\" Issuer=\"" + cert.getIssuerDN() + "\"");
+		}
+	}
+	/**
+	 * This retrieves a certificate from input stream
+	 * @param bis input stream
+	 * @throws CertificateException
+	 */
+	private void getCertificate(final BufferedInputStream bis) throws CertificateException{
+		try {
+			final X509Certificate theCert = (X509Certificate) certFactory.generateCertificate(bis);
+			X500Principal subject = theCert.getSubjectX500Principal();
+			final String certSubjectName = subject.getName();
+			X500Principal issuer = theCert.getIssuerX500Principal();
+			final String certIssuerName = issuer.getName();
+
+			logger.finest(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ");
+			logger.finest("SubjectDN = " + certSubjectName);
+			logger.finest("IssuerDN  = " + certIssuerName);
+			logger.finest("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< [" + size() + "]  ");
+
+			theCert.checkValidity();
+
+			if (size() == 0) {
+				logger.finest(">>>>>>>>>> add " + certSubjectName);
+				add(theCert);
+				return;
 			}
+
+			final X509Certificate firstcert = getFirst();
+			final X509Certificate lastcert = getLast();
+
+			subject = firstcert.getSubjectX500Principal();
+			final String firstSubjectName = subject.getName();
+			subject = lastcert.getSubjectX500Principal();
+			final String lastSubjectName = subject.getName();
+			issuer = lastcert.getIssuerX500Principal();
+			final String lastIssuerName = issuer.getName();
+
+			if (certIssuerName.compareTo(firstSubjectName) == 0) {
+				addFirst(theCert);
+				logger.finest(">>>>>>>>>> addFirst " + certSubjectName + " is issued by " + firstSubjectName);
+				return;
+			}
+
+			if (certSubjectName.compareTo(lastIssuerName) == 0) {
+				addLast(theCert);
+				logger.finest(">>>>>>>>>> addLast  " + certSubjectName + " is issuer of " + lastSubjectName);
+				return;
+			}
+
+			throw new CertificateParsingException(certSubjectName + " is not in the X509 path ?!?!");
+		} catch (final CertificateParsingException e) {
+			// this may happen since the X509 proxy also contains X509
+			// proxy private key
 		}
 	}
 
 	/**
-	 * This retreives the X509 proxy file content
+	 * This retrieves the X509 proxy file content
 	 */
 	public String getContent() {
 		return content;
@@ -365,21 +311,21 @@ public final class X509Proxy {
 	}
 
 	/**
-	 * This retreives the certificates list
+	 * This retrieves the certificates list
 	 */
-	public LinkedList<X509Certificate> getCertificates() {
+	public List<X509Certificate> getCertificates() {
 		return certsList;
 	}
 
 	/**
-	 * This retreives the first entry from list
+	 * This retrieves the first entry from list
 	 */
 	public X509Certificate getFirst() {
 		return certsList.getFirst();
 	}
 
 	/**
-	 * This retreives the last entry from list which is the most trusted cert of
+	 * This retrieves the last entry from list which is the most trusted cert of
 	 * this proxy
 	 */
 	public X509Certificate getLast() {
@@ -387,7 +333,7 @@ public final class X509Proxy {
 	}
 
 	/**
-	 * This retreives the subject of the most trusted cert of this proxy
+	 * This retrieves the subject of the most trusted cert of this proxy
 	 *
 	 * @see #getLast()
 	 */
@@ -400,7 +346,7 @@ public final class X509Proxy {
 	}
 
 	/**
-	 * This retreives the subject distinguished name of this proxy
+	 * This retrieves the subject distinguished name of this proxy
 	 *
 	 * @see #getSubject()
 	 */
@@ -413,7 +359,7 @@ public final class X509Proxy {
 	}
 
 	/**
-	 * This retreives the subject of the most trusted cert of this proxy
+	 * This retrieves the subject of the most trusted cert of this proxy
 	 *
 	 * @see #getLast()
 	 */
@@ -426,7 +372,7 @@ public final class X509Proxy {
 	}
 
 	/**
-	 * This retreives the subject distinguished name of this proxy
+	 * This retrieves the subject distinguished name of this proxy
 	 *
 	 * @see #getSubject()
 	 */
@@ -446,7 +392,7 @@ public final class X509Proxy {
 	}
 
 	/**
-	 * This retreives the size of this vector
+	 * This retrieves the size of this vector
 	 *
 	 * @return the size of this vector
 	 */

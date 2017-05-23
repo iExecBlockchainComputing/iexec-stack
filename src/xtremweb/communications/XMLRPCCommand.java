@@ -1001,18 +1001,13 @@ public abstract class XMLRPCCommand extends XMLable {
 	 */
 	public static void main(final String[] argv) {
 		final Logger logger = new Logger();
-		try {
-			XMLRPCCommand cmd;
-			if (argv.length > 1) {
-				final StreamIO streamIO = new StreamIO(null, new DataInputStream(new FileInputStream(argv[1])));
-
-				cmd = XMLRPCCommand.newCommand(streamIO);
-				cmd.getLogger().info(cmd.openXmlRootElement() + cmd.toXml() + cmd.closeXmlRootElement());
-			}
+		try (final DataInputStream dis = new DataInputStream(new FileInputStream(argv[1]));
+			final StreamIO streamIO = new StreamIO(null, new DataInputStream(dis))){
+			XMLRPCCommand cmd = XMLRPCCommand.newCommand(streamIO);
+			cmd.getLogger().info(cmd.openXmlRootElement() + cmd.toXml() + cmd.closeXmlRootElement());
 		} catch (final Exception e) {
 			logger.exception("Usage : java -cp " + XWTools.JARFILENAME
 					+ " xtremweb.communications.XMLRPCCommand <aConfigFile> <anXMLDescriptionFile>", e);
-			System.exit(1);
 		}
 	}
 
@@ -1022,7 +1017,8 @@ public abstract class XMLRPCCommand extends XMLable {
 	 * @since 8.2.0
 	 */
 	public void test(final String[] argv) {
-		try {
+		try (final XMLReader reader = new XMLReader(this);
+				final DataOutputStream dos = new DataOutputStream(System.out)){
 			LoggerLevel logLevel = LoggerLevel.INFO;
 			try {
 				logLevel = LoggerLevel.valueOf(System.getProperty(XWPropertyDefs.LOGGERLEVEL.toString()));
@@ -1030,12 +1026,12 @@ public abstract class XMLRPCCommand extends XMLable {
 			}
 			if (argv.length > 1) {
 				resetParameter();
-				final XMLReader reader = new XMLReader(this);
+				
 				reader.read(new FileInputStream(argv[1]));
 			}
 			setLoggerLevel(logLevel);
 			setDUMPNULLS(true);
-			final XMLWriter writer = new XMLWriter(new DataOutputStream(System.out));
+			final XMLWriter writer = new XMLWriter(dos);
 			writer.write(this);
 		} catch (final Exception e) {
 			e.printStackTrace();

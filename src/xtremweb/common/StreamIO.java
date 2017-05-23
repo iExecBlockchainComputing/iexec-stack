@@ -214,14 +214,13 @@ public class StreamIO implements AutoCloseable {
 			}
 			dos.close();
 		} else {
-			final ByteArrayInputStream bis = new ByteArrayInputStream(array);
-			final ReadableByteChannel inChannel = Channels.newChannel(bis);
-			final FileChannel outChannel = new FileOutputStream(file).getChannel();
-
-			final MappedByteBuffer bb = outChannel.map(FileChannel.MapMode.READ_WRITE, 0, array.length);
-			outChannel.write(bb);
-			inChannel.close();
-			outChannel.close();
+			try (final ByteArrayInputStream bis = new ByteArrayInputStream(array);
+					final ReadableByteChannel inChannel = Channels.newChannel(bis);
+					final FileOutputStream fout = new FileOutputStream(file);
+					final FileChannel outChannel = fout.getChannel()) {
+				final MappedByteBuffer bb = outChannel.map(FileChannel.MapMode.READ_WRITE, 0, array.length);
+				outChannel.write(bb);
+			}
 		}
 	}
 
@@ -264,30 +263,29 @@ public class StreamIO implements AutoCloseable {
 	 * @see XWTools#LONGFILESIZE
 	 */
 	public static byte[] file2array(final File file) throws ArrayIndexOutOfBoundsException, IOException {
-		byte[] contents;
-		final FileInputStream fis = new FileInputStream(file);
 
 		if (!nio) {
 			if (file.length() > XWTools.LONGFILESIZE) {
 				throw new ArrayIndexOutOfBoundsException("too huge size : " + file.length());
 			} else {
-				contents = new byte[(int) file.length()];
-				fis.read(contents);
-				fis.close();
+				final byte[] contents = new byte[(int) file.length()];
+				try (final FileInputStream fis = new FileInputStream(file)){
+					fis.read(contents);
+				}
 				return contents;
 			}
 		} else {
-			final ByteArrayOutputStream bos = new ByteArrayOutputStream((int) file.length());
-			final WritableByteChannel outChannel = Channels.newChannel(bos);
-			final FileChannel inChannel = new FileInputStream(file).getChannel();
+			try (final ByteArrayOutputStream bos = new ByteArrayOutputStream((int) file.length());
+					final WritableByteChannel outChannel = Channels.newChannel(bos);
+					final FileInputStream fis = new FileInputStream(file);
+					final FileChannel inChannel = fis.getChannel()) {
 
-			final MappedByteBuffer bb = inChannel.map(FileChannel.MapMode.READ_ONLY, 0, inChannel.size());
-			outChannel.write(bb);
+				final MappedByteBuffer bb = inChannel.map(FileChannel.MapMode.READ_ONLY, 0, inChannel.size());
+				outChannel.write(bb);
 
-			inChannel.transferTo(0, file.length(), outChannel);
-			inChannel.close();
-			outChannel.close();
-			return bos.toByteArray();
+				inChannel.transferTo(0, file.length(), outChannel);
+				return bos.toByteArray();
+			}
 		}
 	}
 
@@ -595,11 +593,9 @@ public class StreamIO implements AutoCloseable {
 
 		logger.debug("readFile(" + file + "," + thiscomnio + ")");
 
-		final FileOutputStream fos = new FileOutputStream(file);
-		final FileChannel outChannel = fos.getChannel();
-
 		long written = 0;
-		try {
+		try (final FileOutputStream fos = new FileOutputStream(file);
+				final FileChannel outChannel = fos.getChannel()) {
 			if (length > 0) {
 				if (!thiscomnio) {
 					int n = 0;
@@ -626,17 +622,6 @@ public class StreamIO implements AutoCloseable {
 			}
 		} finally {
 			output.flush();
-			try {
-				fos.flush();
-				fos.close();
-			} catch (final Exception e) {
-			}
-			try {
-				if (outChannel != null) {
-					outChannel.close();
-				}
-			} catch (final Exception e) {
-			}
 		}
 		logger.finest("readFile done");
 	}
@@ -846,13 +831,11 @@ public class StreamIO implements AutoCloseable {
 	 */
 	public static void main(final String[] argv) {
 
-		try {
-			File fin = new File(argv[0]);
-			File fout = new File("outtemp_nio");
-			FileOutputStream fos = new FileOutputStream(fout);
-			DataOutputStream output = new DataOutputStream(fos);
-
-			StreamIO io = new StreamIO(output, null);
+		File fin = new File(argv[0]);
+		File fout = new File("outtemp_nio");
+		try (final FileOutputStream fos = new FileOutputStream(fout);
+				final DataOutputStream output = new DataOutputStream(fos); 
+				final StreamIO io = new StreamIO(output, null);) {
 
 			long t0 = System.currentTimeMillis();
 			io.writeFile(fin);
@@ -863,37 +846,44 @@ public class StreamIO implements AutoCloseable {
 
 			fout.delete();
 
-			final File fout2 = new File("outtemp_no_nio");
-			final FileOutputStream fos2 = new FileOutputStream(fout2);
-			final DataOutputStream output2 = new DataOutputStream(fos2);
-			io = new StreamIO(output2, null);
+		} catch (IOException e1) {
+		} finally {
+		}
+		try (final FileOutputStream fos = new FileOutputStream(fout);
+				final DataOutputStream output = new DataOutputStream(fos); 
+				final StreamIO io = new StreamIO(output, null);) {
+
 			StreamIO.nio = !StreamIO.nio;
 
-			t0 = System.currentTimeMillis();
+			long t0 = System.currentTimeMillis();
 			io.writeFile(fin);
-			t1 = System.currentTimeMillis();
-
-			d0 = t1 - t0;
+			long t1 = System.currentTimeMillis();
+			long d0 = t1 - t0;
 			System.out.println((StreamIO.nio ? "with" : "w/o ") + " NIO; Size =  " + fin.length() + " ; dT = " + d0);
-			fout2.delete();
+		} catch (IOException e1) {
+		} finally {
+		}
 
-			final String long2000Chars = "01234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789";
+		final String long2000Chars = "01234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789";
 
-			fout = new File("longString.txt");
-			fos = new FileOutputStream(fout);
-			output = new DataOutputStream(fos);
+		fout = new File("longString.txt");
+		try (final FileOutputStream fos = new FileOutputStream(fout);
+				final DataOutputStream output = new DataOutputStream(fos);
+				StreamIO io = new StreamIO(output, null)) {
 
-			io = new StreamIO(output, null);
 			io.writeString(long2000Chars);
 
 			fin = new File("longString.txt");
-			final FileInputStream fis = new FileInputStream(fout);
-			final DataInputStream input = new DataInputStream(fis);
 
-			io = new StreamIO(null, input);
+		} catch (IOException e1) {
+		} finally {
+		}
+		try (final FileOutputStream fos = new FileOutputStream(fout);
+				final DataOutputStream output = new DataOutputStream(fos); 
+				final StreamIO io = new StreamIO(output, null);) {
+
 			System.out.println("\nread = " + io.readString());
 
-			fout.delete();
 		} catch (final Exception e) {
 			e.printStackTrace();
 		}

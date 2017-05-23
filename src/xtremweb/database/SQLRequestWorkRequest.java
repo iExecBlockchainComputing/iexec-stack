@@ -94,12 +94,12 @@ public class SQLRequestWorkRequest extends SQLRequest {
 	 * This concatenates SQLRequestAccessible.CRITERIAS and
 	 * WORKREQUESTCRITERIAS_NOBIN
 	 */
-	private static final String CRITERIAS = SQLRequestAccessible.CRITERIAS + WORKREQUESTCRITERIAS;
+	private static final String CRITERIAS = SQLRequestAccessible.SQLCRITERIAS + WORKREQUESTCRITERIAS;
 	/**
 	 * This concatenates SQLRequestAccessible.CRITERIAS and
 	 * WORKREQUESTCRITERIAS_NOBIN
 	 */
-	private static final String CRITERIAS_NOBIN = SQLRequestAccessible.CRITERIAS + WORKREQUESTCRITERIAS_NOBIN;
+	private static final String CRITERIAS_NOBIN = SQLRequestAccessible.SQLCRITERIAS + WORKREQUESTCRITERIAS_NOBIN;
 
 	/**
 	 * This is the equivalent of CRITERIAS for HyperSQL This is only because
@@ -160,12 +160,12 @@ public class SQLRequestWorkRequest extends SQLRequest {
 	 * This concatenates SQLRequestAccessible.CRITERIAS and
 	 * WORKREQUESTCRITERIAS_NOBIN
 	 */
-	private static final String PROJECTCRITERIAS = SQLRequestAccessible.CRITERIAS + WORKREQUESTPROJECTCRITERIAS;
+	private static final String PROJECTCRITERIAS = SQLRequestAccessible.SQLCRITERIAS + WORKREQUESTPROJECTCRITERIAS;
 	/**
 	 * This concatenates SQLRequestAccessible.CRITERIAS and
 	 * WORKREQUESTCRITERIAS_NOBIN
 	 */
-	private static final String PROJECTCRITERIAS_NOBIN = SQLRequestAccessible.CRITERIAS
+	private static final String PROJECTCRITERIAS_NOBIN = SQLRequestAccessible.SQLCRITERIAS
 			+ WORKREQUESTPROJECTCRITERIAS_NOBIN;
 	/**
 	 * This is the equivalent of CRITERIAS for HyperSQL This is only because

@@ -49,40 +49,40 @@ import xtremweb.common.XWPropertyDefs;
 
 public final class TCPActivator extends Activator implements Runnable {
 
-	private final int default_port = 4567;
+	private final int defaultPort = 4567;
 
-	private int m_port;
-	private InetAddress m_addr;
-	private boolean m_feedback;
+	private int mPort;
+	private InetAddress mAddr;
+	private boolean mFeedback;
 
 	protected void setListen() throws UnknownHostException {
 		final String listen = Worker.getConfig().getProperty("activator.tcp.listen");
-		m_port = default_port;
-		m_addr = InetAddress.getLocalHost();
+		mPort = defaultPort;
+		mAddr = InetAddress.getLocalHost();
 		if (!((listen == null) || listen.equals(""))) {
 			try {
 				final int i = listen.indexOf(':');
 				if (i < 0) {
 					try {
-						m_port = Integer.parseInt(listen);
+						mPort = Integer.parseInt(listen);
 					} catch (final NumberFormatException e) {
-						m_addr = InetAddress.getByName(listen);
+						mAddr = InetAddress.getByName(listen);
 					}
 				} else {
 
 					if ((i > 1) || ((i == 1) && (listen.charAt(0) != '*'))) {
-						m_addr = InetAddress.getByName(listen.substring(0, i));
+						mAddr = InetAddress.getByName(listen.substring(0, i));
 					} else {
-						m_addr = null;
+						mAddr = null;
 					}
-					m_port = Integer.parseInt(listen.substring(i + 1, listen.length()));
+					mPort = Integer.parseInt(listen.substring(i + 1, listen.length()));
 				}
 			} catch (final UnknownHostException e) {
 				throw e;
 			} catch (final Throwable e) {
 				getLogger().warn("can't parse 'activator.tcp.listen=" + listen + "' " + e);
-				m_port = default_port;
-				m_addr = InetAddress.getLocalHost();
+				mPort = defaultPort;
+				mAddr = InetAddress.getLocalHost();
 			}
 		}
 	}
@@ -90,9 +90,9 @@ public final class TCPActivator extends Activator implements Runnable {
 	public TCPActivator() {
 		try {
 			this.setListen();
-			getLogger().debug("TCPActivator will listen on " + m_addr + ":" + m_port);
-			m_feedback = Worker.getConfig().getBoolean(XWPropertyDefs.TCPACTIVATORFEEDBACK);
-			if (m_feedback) {
+			getLogger().debug("TCPActivator will listen on " + mAddr + ":" + mPort);
+			mFeedback = Worker.getConfig().getBoolean(XWPropertyDefs.TCPACTIVATORFEEDBACK);
+			if (mFeedback) {
 				getLogger().debug("feedback enable");
 			}
 		} catch (final Exception e) {
@@ -102,71 +102,59 @@ public final class TCPActivator extends Activator implements Runnable {
 
 	@Override
 	public void run() {
-		ServerSocket servsock;
-		int soTimeout = 0;
-		try {
-			servsock = new ServerSocket(m_port, 1, m_addr);
-		} catch (final IOException e) {
-			getLogger().error("Can't start " + e);
-			return;
-		}
 
-		soTimeout = 1000;
-		while (!Thread.interrupted()) {
-			Socket control;
-			BufferedReader input;
-			PrintWriter output;
-			try {
-				servsock.setSoTimeout(soTimeout);
-				control = servsock.accept();
-			} catch (final InterruptedIOException e) {
-				continue;
-			} catch (final IOException e) {
-				getLogger().error("I/O error" + e);
-				Thread.currentThread().interrupt();
-				continue;
-			}
+		try (ServerSocket servsock = new ServerSocket(mPort, 1, mAddr)){
 
-			try {
-				input = new BufferedReader(new InputStreamReader(control.getInputStream()));
-				output = null;
-				if (m_feedback) {
-					output = new PrintWriter(control.getOutputStream());
-					output.print("XW TCPActivator\r\n" + getMask() + "> ");
-					output.flush();
+			int soTimeout = 1000;
+			while (!Thread.interrupted()) {
+				Socket control;
+				BufferedReader input;
+				PrintWriter output;
+				try {
+					servsock.setSoTimeout(soTimeout);
+					control = servsock.accept();
+				} catch (final InterruptedIOException e) {
+					continue;
+				} catch (final IOException e) {
+					getLogger().error("I/O error" + e);
+					Thread.currentThread().interrupt();
+					continue;
 				}
 
-				for (String line = input.readLine(); line != null; line = input.readLine()) {
-					try {
-						final int mask = Integer.parseInt(line);
-						synchronized (this) {
-							setMask(mask);
-							notify();
-						}
-						if (m_feedback) {
-							output.print("OK\r\n" + getMask() + "> ");
-							output.flush();
-						}
-					} catch (final NumberFormatException e) {
-						if (m_feedback) {
-							output.print("ERROR\r\n" + getMask() + "> ");
-							output.flush();
+				try {
+					input = new BufferedReader(new InputStreamReader(control.getInputStream()));
+					output = null;
+					if (mFeedback) {
+						output = new PrintWriter(control.getOutputStream());
+						output.print("XW TCPActivator\r\n" + getMask() + "> ");
+						output.flush();
+					}
+
+					for (String line = input.readLine(); line != null; line = input.readLine()) {
+						try {
+							final int mask = Integer.parseInt(line);
+							synchronized (this) {
+								setMask(mask);
+								notify();
+							}
+							if (mFeedback) {
+								output.print("OK\r\n" + getMask() + "> ");
+								output.flush();
+							}
+						} catch (final NumberFormatException e) {
+							if (mFeedback) {
+								output.print("ERROR\r\n" + getMask() + "> ");
+								output.flush();
+							}
 						}
 					}
-				}
-			} catch (final IOException e) {
-				getLogger().error("a problem occured " + e);
-				try {
+				} catch (final IOException e) {
+					getLogger().exception(e);
 					control.close();
-				} catch (final IOException ie) {
-					getLogger().error("can't close the socket " + ie);
 				}
 			}
-		} // while
-		try {
-			servsock.close();
 		} catch (final IOException ie) {
-			getLogger().error("can't close the socket " + ie);
+			getLogger().exception(ie);
 		}
 	}
 }
