@@ -206,8 +206,6 @@ public class rpc implements Interface {
 	 */
 	protected int udp(final byte[] newDatas) throws Exception {
 
-		DatagramSocket serverSocket = null;
-		DatagramPacket serverPacket = null;
 
 		mileStone.println("XW RPC service started");
 
@@ -241,46 +239,38 @@ public class rpc implements Interface {
 
 		logger.debug("prog " + prog + " version " + version);
 
-		serverSocket = new DatagramSocket();
+		try (final DatagramSocket serverSocket = new DatagramSocket()) {
 
-		logger.debug("newDatas.length = " + newDatas.length);
-		logger.debug("request.getLength() = " + request.getLength());
-		serverPacket = new DatagramPacket(request.getBuffer(), request.getLength(), serverHost, rpcServerPort);
+			logger.debug("newDatas.length = " + newDatas.length);
+			logger.debug("request.getLength() = " + request.getLength());
+			final DatagramPacket serverPacket = new DatagramPacket(request.getBuffer(), request.getLength(), serverHost, rpcServerPort);
 
-		logger.debug("writing to " + hostName + ":" + rpcServerPort);
+			logger.debug("writing to " + hostName + ":" + rpcServerPort);
 
-		//
-		// Sending the job
-		//
+			mileStone.println(proc + " sending");
 
-		mileStone.println(proc + " sending");
+			serverSocket.send(serverPacket);
 
-		serverSocket.send(serverPacket);
+			mileStone.println(proc + " waiting result");
 
-		mileStone.println(proc + " waiting result");
+			final byte[] buf = new byte[BUFSIZE];
+			serverPacket.setData(buf);
+			logger.debug("waiting answer from " + hostName + ":" + rpcServerPort);
 
-		final byte[] buf = new byte[BUFSIZE];
-		serverPacket.setData(buf);
-		logger.debug("waiting answer from " + hostName + ":" + rpcServerPort);
+			serverSocket.receive(serverPacket);
 
-		serverSocket.receive(serverPacket);
+			mileStone.println(proc + " got result");
 
-		mileStone.println(proc + " got result");
+			final int nbBytes = serverPacket.getLength();
+			logger.debug("nbBytes = " + nbBytes);
 
-		final int nbBytes = serverPacket.getLength();
-		logger.debug("nbBytes = " + nbBytes);
-
-		datas = new byte[nbBytes];
-		if (datas != null) {
+			datas = new byte[nbBytes];
 			logger.debug("datas.length = " + datas.length);
-		} else {
-			logger.debug("datas is null ?!?!?!?!?!");
+
+			System.arraycopy(serverPacket.getData(), 0, datas, 0, nbBytes);
+
+			mileStone.println(proc + " executed");
 		}
-
-		System.arraycopy(serverPacket.getData(), 0, datas, 0, nbBytes);
-
-		mileStone.println(proc + " executed");
-
 		return 0;
 	}
 
