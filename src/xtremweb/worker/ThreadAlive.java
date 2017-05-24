@@ -130,10 +130,14 @@ public class ThreadAlive extends Thread {
 		logger.info("Thread Alive started");
 
 		while (canRun) {
+
 			try {
-
 				synchronize();
-
+			} catch (InvalidKeyException | AccessControlException | ClassNotFoundException | IOException
+					| URISyntaxException | SAXException e) {
+				logger.exception(e);
+			}
+			try {
 				// we don't sleep for the whole timeout as we need to
 				// take care that the computation is still on.
 				logger.config("Sleep until the next alive (" + alivePeriod + " seconds)");
@@ -151,12 +155,12 @@ public class ThreadAlive extends Thread {
 					Work w = wal.elementAt(i);
 					logger.finest("ThreadAlive  calling checkJob()");
 					checkJob(w);
-					w = null;
 				}
 				wal.clear();
-				wal = null;
 			} catch (final InterruptedException e) {
 				break;
+			} catch (IOException e) {
+				logger.exception(e);
 			}
 		}
 
@@ -170,8 +174,9 @@ public class ThreadAlive extends Thread {
 	 *
 	 * @param theJob
 	 *            is the work to signal.
+	 * @throws IOException 
 	 */
-	private void checkJob(final Work theJob) {
+	private void checkJob(final Work theJob) throws IOException {
 
 		if (theJob == null) {
 			logger.debug("ThreadAlive::checkJob() : theJob = null");
@@ -180,53 +185,47 @@ public class ThreadAlive extends Thread {
 
 		Hashtable rmiResults = null;
 
+		//
+		// send job UID to the server and collect informations about that
+		// job
+		//
 		try {
-			//
-			// send job UID to the server and collect informations about that
-			// job
-			//
-			try {
-				rmiResults = workAlive(theJob.getUID());
-			} catch (final Exception e) {
-				logger.error("connection error" + e);
-			}
-
-			if (rmiResults == null) {
-				logger.debug("ThreadAlive::checkJob() : rmiResults = null");
-				return;
-			}
-
-			//
-			// should this worker stop current computation ?
-			//
-			final Boolean keepWorking = (Boolean) rmiResults.get("keepWorking");
-			if (keepWorking != null) {
-
-				final String msg = "workAlive(" + theJob.getUID() + ")";
-
-				if (keepWorking.booleanValue() == false) {
-
-					final ThreadWork tw = ThreadLaunch.getInstance().getThreadByWork(theJob);
-
-					if (tw != null) {
-
-						logger.info(msg + " stop working thread");
-						tw.stopProcess();
-					} else {
-						logger.warn(msg + " can't find working thread");
-					}
-					CommManager.getInstance().getPoolWork().removeWork(theJob.getUID());
-
-					ThreadLaunch.getInstance().raz();
-				} else {
-					logger.debug(msg + " ok");
-				}
-			}
-
+			rmiResults = workAlive(theJob.getUID());
 		} catch (final Exception e) {
-			logger.exception("RMI workAlive() call err", e);
+			logger.error("connection error" + e);
 		}
-		rmiResults = null;
+
+		if (rmiResults == null) {
+			logger.debug("ThreadAlive::checkJob() : rmiResults = null");
+			return;
+		}
+
+		//
+		// should this worker stop current computation ?
+		//
+		final Boolean keepWorking = (Boolean) rmiResults.get("keepWorking");
+		if (keepWorking != null) {
+
+			final String msg = "workAlive(" + theJob.getUID() + ")";
+
+			if (keepWorking.booleanValue() == false) {
+
+				final ThreadWork tw = ThreadLaunch.getInstance().getThreadByWork(theJob);
+
+				if (tw != null) {
+
+					logger.info(msg + " stop working thread");
+					tw.stopProcess();
+				} else {
+					logger.warn(msg + " can't find working thread");
+				}
+				CommManager.getInstance().getPoolWork().removeWork(theJob.getUID());
+
+				ThreadLaunch.getInstance().raz();
+			} else {
+				logger.debug(msg + " ok");
+			}
+		}
 	}
 
 	/**
@@ -239,232 +238,230 @@ public class ThreadAlive extends Thread {
 	 * </ul>
 	 * Since 9.1.1, this sends the first 20 job results only, otherwise the
 	 * message may be too long and reset the comm channel
+	 * @throws IOException 
+	 * @throws URISyntaxException 
+	 * @throws SAXException 
+	 * @throws ClassNotFoundException 
+	 * @throws AccessControlException 
+	 * @throws InvalidKeyException 
 	 *
 	 * @see xtremweb.dispatcher.CommHandler#workAlive(IdServers, Hashtable)
 	 */
-	private void synchronize() {
+	private void synchronize() throws IOException, URISyntaxException, InvalidKeyException, AccessControlException, ClassNotFoundException, SAXException {
 
 		Hashtable rmiResults = null;
 
+		ping();
+		//
+		// retrieve stored job results
+		//
+		final Vector<UID> jobResults = new Vector<UID>();
+		final Hashtable<UID, Work> savingWorks = CommManager.getInstance().getPoolWork().getSavingWork();
+
+		final Enumeration<Work> theEnumeration = savingWorks.elements();
+
+		for (int i = 0; (i < 20) && theEnumeration.hasMoreElements(); i++) {
+			final Work aWork = theEnumeration.nextElement();
+			if (aWork == null) {
+				continue;
+			}
+
+			logger.debug("threadAlive() : job results " + aWork.getUID());
+
+			jobResults.add(aWork.getUID());
+		}
+
+		logger.debug("threadAlive() : jobResults.size() = " + jobResults.size());
+		final Hashtable rmiParams = new Hashtable();
+		rmiParams.put(XWPostParams.JOBRESULTS.toString(), jobResults);
+
+		//
+		// send them to the server and retrieve some informations
+		//
 		try {
-			ping();
-			//
-			// retrieve stored job results
-			//
-			final Vector<UID> jobResults = new Vector<UID>();
-			final Hashtable<UID, Work> savingWorks = CommManager.getInstance().getPoolWork().getSavingWork();
+			rmiResults = workAlive(rmiParams);
+		} catch (final Exception e) {
+			logger.exception("workAlive : connection error", e);
+			return;
+		}
 
-			final Enumeration<Work> theEnumeration = savingWorks.elements();
+		rmiParams.clear();
 
-			for (int i = 0; (i < 20) && theEnumeration.hasMoreElements(); i++) {
-				final Work aWork = theEnumeration.nextElement();
-				if (aWork == null) {
+		if (rmiResults == null) {
+			logger.debug("ThreadAlive::synchronize() : rmiResults = null");
+			return;
+		}
+
+		final String serverVersion = (String) rmiResults.get(XWPostParams.CURRENTVERSION.toString());
+		if ((serverVersion != null) && !serverVersion.equals(CommonVersion.getCurrent().toString())) {
+			logger.info("**********  **********  **********");
+			logger.info("\nCurrent version : " + CommonVersion.getCurrent().toString());
+			logger.info("Server  version : " + serverVersion);
+			logger.info("We must upgrade");
+			logger.info("Restarting now");
+			logger.info("\n**********  **********  **********");
+			System.exit(XWReturnCode.RESTART.ordinal());
+		}
+
+		//
+		// RPC-V : retrieve saved tasks and remove them from from
+		// PoolWork::savingTasks
+		//
+		final Vector finishedTasks = (Vector) rmiResults.get(XWPostParams.FINISHEDTASKS.toString());
+
+		if (finishedTasks != null) {
+			logger.debug("ThreadAlive() : finishedTasks.size() = " + finishedTasks.size());
+			final Iterator<XMLValue> li = finishedTasks.iterator();
+
+			while (li.hasNext()) {
+				final UID uid = (UID) li.next().getValue();
+				if (uid != null) {
+					CommManager.getInstance().getPoolWork().removeWork(uid);
+				}
+			}
+		}
+
+		//
+		// RPC-V : retrieve tasks which results are expected by the
+		// coordinator
+		//
+		final Vector resultsExpected = (Vector) rmiResults.get(XWPostParams.RESULTEXPECTEDS.toString());
+
+		if (resultsExpected != null) {
+			logger.debug("ThreadAlive() : resultsExpected.size() = " + resultsExpected.size());
+
+			final Iterator<XMLValue> li = resultsExpected.iterator();
+
+			while (li.hasNext()) {
+				final UID uid = (UID) li.next().getValue();
+				if (uid == null) {
 					continue;
 				}
 
-				logger.debug("threadAlive() : job results " + aWork.getUID());
-
-				jobResults.add(aWork.getUID());
-			}
-
-			logger.debug("threadAlive() : jobResults.size() = " + jobResults.size());
-			final Hashtable rmiParams = new Hashtable();
-			rmiParams.put(XWPostParams.JOBRESULTS.toString(), jobResults);
-
-			//
-			// send them to the server and retrieve some informations
-			//
-			try {
-				rmiResults = workAlive(rmiParams);
-			} catch (final Exception e) {
-				logger.exception("workAlive : connection error", e);
-				return;
-			}
-
-			rmiParams.clear();
-
-			if (rmiResults == null) {
-				logger.debug("ThreadAlive::synchronize() : rmiResults = null");
-				return;
-			}
-
-			final String serverVersion = (String) rmiResults.get(XWPostParams.CURRENTVERSION.toString());
-			if ((serverVersion != null) && !serverVersion.equals(CommonVersion.getCurrent().toString())) {
-				logger.info("**********  **********  **********");
-				logger.info("\nCurrent version : " + CommonVersion.getCurrent().toString());
-				logger.info("Server  version : " + serverVersion);
-				logger.info("We must upgrade");
-				logger.info("Restarting now");
-				logger.info("\n**********  **********  **********");
-				System.exit(XWReturnCode.RESTART.ordinal());
-			}
-
-			//
-			// RPC-V : retrieve saved tasks and remove them from from
-			// PoolWork::savingTasks
-			//
-			final Vector finishedTasks = (Vector) rmiResults.get(XWPostParams.FINISHEDTASKS.toString());
-
-			if (finishedTasks != null) {
-				logger.debug("ThreadAlive() : finishedTasks.size() = " + finishedTasks.size());
-				final Iterator<XMLValue> li = finishedTasks.iterator();
-
-				while (li.hasNext()) {
-					final UID uid = (UID) li.next().getValue();
-					if (uid != null) {
-						CommManager.getInstance().getPoolWork().removeWork(uid);
-					}
-				}
-			}
-
-			//
-			// RPC-V : retrieve tasks which results are expected by the
-			// coordinator
-			//
-			final Vector resultsExpected = (Vector) rmiResults.get(XWPostParams.RESULTEXPECTEDS.toString());
-
-			if (resultsExpected != null) {
-				logger.debug("ThreadAlive() : resultsExpected.size() = " + resultsExpected.size());
-
-				final Iterator<XMLValue> li = resultsExpected.iterator();
-
-				while (li.hasNext()) {
-					final UID uid = (UID) li.next().getValue();
-					if (uid == null) {
+				Work theWork = CommManager.getInstance().getPoolWork().getSavingWork(uid);
+				if (theWork == null) {
+					final ThreadWork threadWork = ThreadLaunch.getInstance().getThreadByWorkUid(uid);
+					if (threadWork == null) {
+						logger.error("ThreadAlive() : can't retreive running work = " + uid);
 						continue;
 					}
-
-					Work theWork = CommManager.getInstance().getPoolWork().getSavingWork(uid);
-					if (theWork == null) {
-						final ThreadWork threadWork = ThreadLaunch.getInstance().getThreadByWorkUid(uid);
-						if (threadWork == null) {
-							logger.error("ThreadAlive() : can't retreive running work = " + uid);
-							continue;
-						}
-						try {
-							threadWork.zipResult();
-							theWork = threadWork.getCurrentWork();
-						} catch (final Exception e) {
-							logger.exception(e);
-							theWork = null;
-						}
-					}
-					if (theWork != null) {
-						CommManager.getInstance().sendResult(theWork);
-					}
-				}
-			}
-
-			//
-			// Retrieve new server key
-			//
-			final String keystoreUriStr = (String) rmiResults.get(XWPostParams.KEYSTOREURI.toString());
-			if ((keystoreUriStr != null) && (keystoreUriStr.length() > 0)) {
-				logger.info("ThreadAlive() KEYSTOREURI : " + keystoreUriStr);
-				boolean newkeystore = false;
-				final URI keystoreUri = new URI(keystoreUriStr);
-				final File currentKeystoreFile = new File(System.getProperty(XWPropertyDefs.JAVAKEYSTORE.toString()));
-				logger.debug("currentKeystoreFile : " + currentKeystoreFile + " length = "
-						+ currentKeystoreFile.length());
-
-				final DataInterface newKeystoreData = CommManager.getInstance().getData(keystoreUri);
-				if (newKeystoreData == null) {
-					throw new IOException("Can't retrieve new keystore data " + keystoreUri);
-				}
-
-				final String currentKeystoreMD5 = MD5.asHex(MD5.getHash(currentKeystoreFile));
-
-				if (newKeystoreData.getMD5().compareTo(currentKeystoreMD5) != 0) {
-					logger.info("Downloading new keystore");
-					CommManager.getInstance().downloadData(keystoreUri);
-					final File newKeystoreFile = CommManager.getInstance().commClient(keystoreUri).getContentFile(keystoreUri);
-
-					try (final FileOutputStream foutput = new FileOutputStream(currentKeystoreFile);
-							final DataOutputStream output = new DataOutputStream(foutput); 
-							final StreamIO io = new StreamIO(output, null, false)) {
-
-						logger.debug("newKeystoreFile : " + newKeystoreFile + " length = " + newKeystoreFile.length());
-						io.writeFileContent(newKeystoreFile);
-						newkeystore = true;
+					try {
+						threadWork.zipResult();
+						theWork = threadWork.getCurrentWork();
 					} catch (final Exception e) {
-						logger.exception("can't download KEYSTOREURI", e);
-					} finally {
-						if (newkeystore == true) {
-							logger.info("**********  **********  **********");
-							logger.info("New keystore received");
-							logger.info("Restarting now");
-							logger.info("**********  **********  **********");
-							System.exit(XWReturnCode.RESTART.ordinal());
-						}
+						logger.exception(e);
+						theWork = null;
 					}
 				}
-			}
-
-			//
-			// retreive new server to connect to
-			//
-			final String newServer = (String) rmiResults.get(XWPostParams.NEWSERVER.toString());
-			if (newServer != null) {
-				logger.debug("ThreadAlive() new server : " + newServer);
-				config.addDispatcher(newServer);
-			}
-
-			//
-			// the SmartSockets hub address
-			//
-			final String hubAddrStr = (String) rmiResults.get(Connection.HUBPNAME);
-			String dbgMsg = "SmartSockets hub address = " + (hubAddrStr == null ? "unknwown" : hubAddrStr);
-			if (hubAddrStr != null) {
-				System.setProperty(XWPropertyDefs.SMARTSOCKETSHUBADDR.toString(), hubAddrStr);
-			}
-
-			final Boolean traces = (Boolean) rmiResults.get(XWPostParams.TRACES.toString());
-			if (traces != null) {
-				if (traces.booleanValue()) {
-					dbgMsg += "; tracing";
-				} else {
-					dbgMsg += "; stop tracing";
+				if (theWork != null) {
+					CommManager.getInstance().sendResult(theWork);
 				}
 			}
-
-			final Integer tracesSendResultDelay = (Integer) rmiResults
-					.get(XWPostParams.TRACESSENDRESULTDELAY.toString());
-			int sDelay = 0;
-
-			if (tracesSendResultDelay != null) {
-				sDelay = tracesSendResultDelay.intValue();
-				dbgMsg += "; " + tracesSendResultDelay.intValue();
-			}
-
-			final Integer tracesResultDelay = (Integer) rmiResults.get(XWPostParams.TRACESRESULTDELAY.toString());
-			int rDelay = 0;
-			if (tracesResultDelay != null) {
-				rDelay = tracesResultDelay.intValue();
-				dbgMsg += "; " + tracesResultDelay.intValue();
-			}
-
-			logger.debug(dbgMsg);
-
-			if (XWTracer.getInstance() != null) {
-				if (traces != null) {
-					XWTracer.getInstance().setConfig(traces.booleanValue(), rDelay, sDelay);
-				} else {
-					XWTracer.getInstance().setConfig(rDelay, sDelay);
-				}
-			}
-
-			final Integer newAlivePeriod = (Integer) rmiResults.get(XWPostParams.ALIVEPERIOD.toString());
-			if (newAlivePeriod != null) {
-				alivePeriod = newAlivePeriod.intValue();
-				logger.info("Alive period from server = " + alivePeriod);
-			}
-
-		} catch (final Exception e) {
-			logger.exception("workAlive() call err", e);
 		}
 
-		rmiResults = null;
+		//
+		// Retrieve new server key
+		//
+		final String keystoreUriStr = (String) rmiResults.get(XWPostParams.KEYSTOREURI.toString());
+		if ((keystoreUriStr != null) && (keystoreUriStr.length() > 0)) {
+			logger.info("ThreadAlive() KEYSTOREURI : " + keystoreUriStr);
+			boolean newkeystore = false;
+			final URI keystoreUri = new URI(keystoreUriStr);
+			final File currentKeystoreFile = new File(System.getProperty(XWPropertyDefs.JAVAKEYSTORE.toString()));
+			logger.debug("currentKeystoreFile : " + currentKeystoreFile + " length = "
+					+ currentKeystoreFile.length());
 
+			final DataInterface newKeystoreData = CommManager.getInstance().getData(keystoreUri);
+			if (newKeystoreData == null) {
+				throw new IOException("Can't retrieve new keystore data " + keystoreUri);
+			}
+
+			final String currentKeystoreMD5 = MD5.asHex(MD5.getHash(currentKeystoreFile));
+
+			if (newKeystoreData.getMD5().compareTo(currentKeystoreMD5) != 0) {
+				logger.info("Downloading new keystore");
+				CommManager.getInstance().downloadData(keystoreUri);
+				final File newKeystoreFile = CommManager.getInstance().commClient(keystoreUri).getContentFile(keystoreUri);
+
+				try (final FileOutputStream foutput = new FileOutputStream(currentKeystoreFile);
+						final DataOutputStream output = new DataOutputStream(foutput); 
+						final StreamIO io = new StreamIO(output, null, false)) {
+
+					logger.debug("newKeystoreFile : " + newKeystoreFile + " length = " + newKeystoreFile.length());
+					io.writeFileContent(newKeystoreFile);
+					newkeystore = true;
+				} catch (final Exception e) {
+					logger.exception("can't download KEYSTOREURI", e);
+				} finally {
+					if (newkeystore == true) {
+						logger.info("**********  **********  **********");
+						logger.info("New keystore received");
+						logger.info("Restarting now");
+						logger.info("**********  **********  **********");
+						System.exit(XWReturnCode.RESTART.ordinal());
+					}
+				}
+			}
+		}
+
+		//
+		// retrieve new server to connect to
+		//
+		final String newServer = (String) rmiResults.get(XWPostParams.NEWSERVER.toString());
+		if (newServer != null) {
+			logger.debug("ThreadAlive() new server : " + newServer);
+			config.addDispatcher(newServer);
+		}
+
+		//
+		// the SmartSockets hub address
+		//
+		final String hubAddrStr = (String) rmiResults.get(Connection.HUBPNAME);
+		String dbgMsg = "SmartSockets hub address = " + (hubAddrStr == null ? "unknwown" : hubAddrStr);
+		if (hubAddrStr != null) {
+			System.setProperty(XWPropertyDefs.SMARTSOCKETSHUBADDR.toString(), hubAddrStr);
+		}
+
+		final Boolean traces = (Boolean) rmiResults.get(XWPostParams.TRACES.toString());
+		if (traces != null) {
+			if (traces.booleanValue()) {
+				dbgMsg += "; tracing";
+			} else {
+				dbgMsg += "; stop tracing";
+			}
+		}
+
+		final Integer tracesSendResultDelay = (Integer) rmiResults
+				.get(XWPostParams.TRACESSENDRESULTDELAY.toString());
+		int sDelay = 0;
+
+		if (tracesSendResultDelay != null) {
+			sDelay = tracesSendResultDelay.intValue();
+			dbgMsg += "; " + tracesSendResultDelay.intValue();
+		}
+
+		final Integer tracesResultDelay = (Integer) rmiResults.get(XWPostParams.TRACESRESULTDELAY.toString());
+		int rDelay = 0;
+		if (tracesResultDelay != null) {
+			rDelay = tracesResultDelay.intValue();
+			dbgMsg += "; " + tracesResultDelay.intValue();
+		}
+
+		logger.debug(dbgMsg);
+
+		if (XWTracer.getInstance() != null) {
+			if (traces != null) {
+				XWTracer.getInstance().setConfig(traces.booleanValue(), rDelay, sDelay);
+			} else {
+				XWTracer.getInstance().setConfig(rDelay, sDelay);
+			}
+		}
+
+		final Integer newAlivePeriod = (Integer) rmiResults.get(XWPostParams.ALIVEPERIOD.toString());
+		if (newAlivePeriod != null) {
+			alivePeriod = newAlivePeriod.intValue();
+			logger.info("Alive period from server = " + alivePeriod);
+		}
 	}
 
 	/**
@@ -472,23 +469,19 @@ public class ThreadAlive extends Thread {
 	 *
 	 * @param jobUID
 	 *            is the UID of the currently computed job
+	 * @throws URISyntaxException 
 	 * @throws AccessControlException
 	 * @throws InvalidKeyException
 	 * @see #checkJob(Work)
 	 */
-	public Hashtable workAlive(final UID jobUID)
-			throws InterruptedException, URISyntaxException, InvalidKeyException, AccessControlException {
+	public Hashtable workAlive(final UID jobUID) throws InvalidKeyException, URISyntaxException {
 
 		CommClient commClient = null;
 		Hashtable result = null;
 		try {
 			commClient = commClient();
 			result = commClient.workAlive(jobUID).getHashtable();
-		} catch (final RemoteException ce) {
-			logger.exception(ce);
-		} catch (final SAXException ce) {
-			logger.exception(ce);
-		} catch (final IOException ce) {
+		} catch (final SAXException | IOException ce) {
 			logger.exception(ce);
 		} finally {
 			if (commClient != null) {

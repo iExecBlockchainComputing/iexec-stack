@@ -81,6 +81,7 @@ import xtremweb.exec.ExecutorLaunchException;
 
 public class ThreadWork extends Thread {
 
+	private static final String WARNNOAPPLI = "work has no application";
 	/**
 	 * This is the logger
 	 */
@@ -289,7 +290,7 @@ public class ThreadWork extends Thread {
 			try {
 				killed = false;
 
-				if (Worker.getConfig().realTime() == false) {
+				if (!Worker.getConfig().realTime()) {
 					waitForCompute();
 				}
 				currentWork = CommManager.getInstance().getPoolWork().getNextWorkToCompute();
@@ -388,29 +389,19 @@ public class ThreadWork extends Thread {
 	protected void stopProcess() {
 		logger.debug("stop process");
 		if (exec != null) {
-			if (exec.isRunning()) {
-				try {
-					unload();
-					exec.stop();
-					killed = true;
-					exec = null;
+			if (!exec.isRunning()) {
+				logger.info("ThreadWork.stopProcess() : nothing to stop");
+				return;
+			}
+			try {
+				unload();
+				exec.stop();
+				killed = true;
+				exec = null;
 
-					ThreadLaunch.getInstance().raz();
-				} catch (final ExecutorLaunchException e) {
-					logger.exception("ThreadWork.stopProcess() error ", e);
-				} catch (InvalidKeyException e) {
-					logger.exception("ThreadWork.stopProcess() error ", e);
-				} catch (ClassNotFoundException e) {
-					logger.exception("ThreadWork.stopProcess() error ", e);
-				} catch (IOException e) {
-					logger.exception("ThreadWork.stopProcess() error ", e);
-				} catch (SAXException e) {
-					logger.exception("ThreadWork.stopProcess() error ", e);
-				} catch (URISyntaxException e) {
-					logger.exception("ThreadWork.stopProcess() error ", e);
-				}
-			} else {
-				logger.warn("ThreadWork.stopProcess() : nothing to stop");
+				ThreadLaunch.getInstance().raz();
+			} catch (final Exception e) {
+				logger.exception("ThreadWork.stopProcess() error ", e);
 			}
 		}
 	}
@@ -439,7 +430,7 @@ public class ThreadWork extends Thread {
 	private void startProxy(final String hubAddr) throws InvalidKeyException,
 	IOException, ClassNotFoundException, SAXException, URISyntaxException {
 
-		if (Worker.getConfig().getBoolean(XWPropertyDefs.INCOMINGCONNECTIONS) == false) {
+		if (!Worker.getConfig().getBoolean(XWPropertyDefs.INCOMINGCONNECTIONS)) {
 			logger.info("Incoming connections not allowed");
 			return;
 		}
@@ -447,7 +438,7 @@ public class ThreadWork extends Thread {
 		if ((hubAddr == null) || (hubAddr.length() < 1)) {
 			return;
 		}
-		smartSocketsProxies = new Vector<SmartSocketsProxy>();
+		smartSocketsProxies = new Vector<>();
 		//
 		// Let 1st set SmartSockets proxies for server like job
 		//
@@ -457,8 +448,8 @@ public class ThreadWork extends Thread {
 
 			if (sports != null) {
 				final Iterator<String> portenum = sports.iterator();
-				String addresses = null;
-				String ports = null;
+				final StringBuilder addresses = new StringBuilder();
+				final StringBuilder ports= new StringBuilder();
 				while (portenum.hasNext()) {
 					int fport = Integer.parseInt(portenum.next());
 					try {
@@ -482,28 +473,24 @@ public class ThreadWork extends Thread {
 						final SmartSocketsProxy smartSocketsProxy = new SmartSocketsProxy(hubAddr, null, fport, true);
 						smartSocketsProxies.add(smartSocketsProxy);
 						smartSocketsProxy.start();
-						if (addresses == null) {
-							addresses = new String();
-						} else {
-							addresses += ",";
+						if (addresses.length() > 0) {
+							addresses.append(",");
 						}
-						addresses += smartSocketsProxy.getLocalAddress().toString();
+						addresses.append(smartSocketsProxy.getLocalAddress().toString());
 
-						if (ports == null) {
-							ports = new String();
-						} else {
-							ports += ",";
+						if (ports.length() > 0) {
+							ports.append(",");
 						}
-						ports += "" + Integer.toString(fport);
+						ports.append("" + Integer.toString(fport));
 					} catch (final Exception e) {
 						XWTools.releasePort(fport);
 						logger.exception("Can't start new SmartSocket server proxy", e);
 					}
 				}
 
-				addEnvVar(XWLISTENINGPORTSNAME, ports);
+				addEnvVar(XWLISTENINGPORTSNAME, ports.toString());
 
-				currentWork.setSmartSocketAddr(addresses);
+				currentWork.setSmartSocketAddr(addresses.toString());
 			}
 		}
 
@@ -522,18 +509,14 @@ public class ThreadWork extends Thread {
 
 					final String serverAddr = addressesenum.nextElement();
 
-					SmartSocketsProxy smartSocketsProxy = null;
 					try {
 						final int lport = Integer.parseInt(serverAddresses.get(serverAddr));
 						logger.info("Starting new SmartSocket client proxy " + serverAddr + " / " + lport);
-						smartSocketsProxy = new SmartSocketsProxy(hubAddr, serverAddr, lport, false);
+						final SmartSocketsProxy smartSocketsProxy = new SmartSocketsProxy(hubAddr, serverAddr, lport, false);
 						smartSocketsProxies.add(smartSocketsProxy);
 						smartSocketsProxy.start();
 					} catch (final Exception e) {
 						logger.exception("Can't start new SmartSocket client proxy", e);
-					}
-					finally {
-						smartSocketsProxy = null;
 					}
 				}
 			}
@@ -558,7 +541,7 @@ public class ThreadWork extends Thread {
 		final Iterator<SmartSocketsProxy> proxiesEnum = smartSocketsProxies.iterator();
 
 		while (proxiesEnum.hasNext()) {
-			SmartSocketsProxy smartSocketsProxy = proxiesEnum.next();
+			final SmartSocketsProxy smartSocketsProxy = proxiesEnum.next();
 			if (smartSocketsProxy == null) {
 				continue;
 			}
@@ -566,15 +549,12 @@ public class ThreadWork extends Thread {
 			//
 			// we must open a last communications to unblock the socket.accept()
 			//
-			Socket s = null;
-			int listenPort = -1;
-			try {
-				listenPort = smartSocketsProxy.getListenPort();
-				if (listenPort < 0) {
-					smartSocketsProxy = null;
-					continue;
-				}
-				s = SocketFactory.getDefault().createSocket("localhost", listenPort);
+			final int listenPort = smartSocketsProxy.getListenPort();
+			if (listenPort < 0) {
+				continue;
+			}
+
+			try (final Socket s = SocketFactory.getDefault().createSocket("localhost", listenPort);){
 				final OutputStream so = s.getOutputStream();
 				so.write('\n'); // just write something to wake up the thread
 				logger.info("SmartSocket proxy stopped");
@@ -582,14 +562,6 @@ public class ThreadWork extends Thread {
 				logger.exception("Cant' stop SmartSocket proxy " + smartSocketsProxy.getListenPort(), e);
 			} finally {
 				XWTools.releasePort(listenPort);
-				smartSocketsProxy = null;
-				try {
-					if (s != null) {
-						s.close();
-					}
-				} catch (final IOException io) {
-				}
-				s = null;
 			}
 		}
 		smartSocketsProxies.clear();
@@ -688,7 +660,7 @@ public class ThreadWork extends Thread {
 	 */
 	private StatusEnum executeJob() throws Exception {
 
-		StatusEnum ret = StatusEnum.PENDING;
+		StatusEnum ret;
 
 		zipper.setCreation(false);
 
@@ -785,7 +757,7 @@ public class ThreadWork extends Thread {
 		final UID workApp = currentWork.getApplication();
 
 		if (workApp == null) {
-			throw new IOException("work has no application");
+			throw new IOException(WARNNOAPPLI);
 		}
 		final AppInterface app = (AppInterface) CommManager.getInstance().commClient().get(workApp, false);
 
@@ -825,7 +797,7 @@ public class ThreadWork extends Thread {
 		for (final Enumeration<String> keys = envvars.keys(); keys.hasMoreElements();) {
 			final String key = keys.nextElement();
 			final String value = envvars.get(key);
-			final String tuple = new String(key + "=" + value);
+			final String tuple = key + "=" + value;
 			ret[i++] = tuple;
 			logger.finest("tuple[" + i + "] = " + tuple);
 		}
@@ -848,7 +820,7 @@ public class ThreadWork extends Thread {
 		final UID workApp = currentWork.getApplication();
 
 		if (workApp == null) {
-			throw new IOException("work has no application");
+			throw new IOException(WARNNOAPPLI);
 		}
 		final AppInterface app = (AppInterface) CommManager.getInstance().commClient().get(workApp, false);
 
@@ -866,7 +838,7 @@ public class ThreadWork extends Thread {
 		final File scriptPath = CommManager.getInstance().commClient().getContentFile(scriptUri);
 
 		if (scriptPath != null) {
-			if (scriptPath.exists() == false) {
+			if (!scriptPath.exists()) {
 				throw new IOException("can find local script " + scriptPath);
 			}
 			ret = scriptPath.getCanonicalPath();
@@ -890,7 +862,7 @@ public class ThreadWork extends Thread {
 		final UID workApp = currentWork.getApplication();
 
 		if (workApp == null) {
-			throw new IOException("work has no application");
+			throw new IOException(WARNNOAPPLI);
 		}
 		final AppInterface app = (AppInterface) CommManager.getInstance().commClient().get(workApp, false);
 
@@ -908,7 +880,7 @@ public class ThreadWork extends Thread {
 		final File scriptPath = CommManager.getInstance().commClient().getContentFile(scriptUri);
 
 		if (scriptPath != null) {
-			if (scriptPath.exists() == false) {
+			if (!scriptPath.exists()) {
 				throw new IOException("can find local script " + scriptPath);
 			}
 			scriptPath.setExecutable(true);
@@ -919,7 +891,7 @@ public class ThreadWork extends Thread {
 	}
 
 	/**
-	 * This retreives the current process binary path Since 6.0.0, it may happen
+	 * This retrieves the current process binary path Since 6.0.0, it may happen
 	 * that the Application has a file URI (e.g file:///path/to/bin) This is how
 	 * we use locally predeployed applications (typically sandboxes)
 	 *
@@ -930,13 +902,13 @@ public class ThreadWork extends Thread {
 	InvalidKeyException, AccessControlException {
 		File sbBinPath = null;
 		File appBinPath = null;
-		String sbArgs = null;
-		String ret = new String();
-		String javajar = null;
+		final StringBuilder sbArgs = new StringBuilder();
+		final StringBuilder ret = new StringBuilder();
+		final StringBuilder javajar = new StringBuilder();
 		final UID workApp = currentWork.getApplication();
 
 		if (workApp == null) {
-			throw new IOException("work has no application");
+			throw new IOException(WARNNOAPPLI);
 		}
 
 		final AppInterface app = (AppInterface) CommManager.getInstance().commClient().get(workApp, false);
@@ -951,10 +923,9 @@ public class ThreadWork extends Thread {
 
 		if ((appType != null) && Worker.getConfig().getLocalApps().contains(appType)) {
 			logger.debug("Applications " + appName + " (" + appType + ") is a shared app");
-			String scriptPathName = getLaunchScriptPath();
+			final String scriptPathName = getLaunchScriptPath();
 			appBinPath = new File(scriptPathName);
-			scriptPathName = null;
-			if (appBinPath.exists() == false) {
+			if (!appBinPath.exists()) {
 				throw new IOException("local binary file not found");
 			}
 		} else {
@@ -966,15 +937,14 @@ public class ThreadWork extends Thread {
 				throw new IOException("can find application " + workApp);
 			}
 
-			DataInterface bin = (DataInterface) CommManager.getInstance().commClient().get(binUri);
+			final DataInterface bin = (DataInterface) CommManager.getInstance().commClient().get(binUri);
 
 			if ((bin != null) && (bin.getType() == DataTypeEnum.JAVA)) {
-				javajar = new String("java -jar");
+				javajar.append("java -jar");
 			}
 			appBinPath = CommManager.getInstance().commClient().getContentFile(binUri);
 
 			if ((appBinPath != null) && (appBinPath.exists() == false)) {
-				bin = null;
 				appBinPath = null;
 				throw new IOException("can find local binary " + appBinPath);
 			}
@@ -985,7 +955,7 @@ public class ThreadWork extends Thread {
 				sbBinPath = sandboxBinFile;
 
 				if (Worker.getConfig().getProperty(XWPropertyDefs.SANDBOXSTARTARGS) != null) {
-					sbArgs = Worker.getConfig().getProperty(XWPropertyDefs.SANDBOXSTARTARGS);
+					sbArgs.append(Worker.getConfig().getProperty(XWPropertyDefs.SANDBOXSTARTARGS));
 				}
 			}
 		}
@@ -995,25 +965,21 @@ public class ThreadWork extends Thread {
 		}
 
 		if (sbBinPath != null) {
-			ret = sbBinPath.getCanonicalPath();
-			if (sbArgs != null) {
-				ret += " " + sbArgs;
+			ret.append(sbBinPath.getCanonicalPath());
+			if (sbArgs.length() > 0) {
+				ret.append(" " + sbArgs);
 			}
 		}
-		sbArgs = null;
-		sbBinPath = null;
 
-		if (javajar != null) {
-			ret += " " + javajar;
+		if (javajar.length() > 0) {
+			ret.append(" " + javajar);
 		}
-		javajar = null;
 
 		final String path = appBinPath.getCanonicalPath();
-		ret += " " + path;
+		ret.append(" " + path);
 		addEnvVar(XWBINPATHNAME, path);
-		appBinPath = null;
 
-		return ret;
+		return ret.toString();
 	}
 
 	/**
@@ -1196,9 +1162,9 @@ public class ThreadWork extends Thread {
 		// don't install app default dirin if job defined its own one
 		//
 		final URI dirinuri = currentWork.getDirin() != null ? currentWork.getDirin() : app.getDefaultDirin();
-		if ((dirinuri != null) && (dirinuri.isNull() == false)) {
-			File dirinFile = null;
+		if ((dirinuri != null) && (!dirinuri.isNull())) {
 			try {
+				File dirinFile = null;
 				final DataInterface dirinData = (DataInterface) CommManager.getInstance().commClient(dirinuri)
 						.get(dirinuri, false);
 				final DataTypeEnum dirinType = (dirinData != null ? dirinData.getType() : null);
@@ -1211,8 +1177,6 @@ public class ThreadWork extends Thread {
 				addEnvVar(XWDIRINPATHNAME, dirinFile.getCanonicalPath());
 			} catch (final Exception e) {
 				logger.exception(e);
-			} finally {
-				dirinFile = null;
 			}
 		} else {
 			logger.debug("prepareWorkingDirectory : job has no dirin");
@@ -1221,7 +1185,7 @@ public class ThreadWork extends Thread {
 		// don't install app default stdin if job defined its own one
 		//
 		final URI stdinuri = currentWork.getStdin() != null ? currentWork.getStdin() : app.getDefaultStdin();
-		if ((stdinuri != null) && (stdinuri.isNull() == false)) {
+		if ((stdinuri != null) && (!stdinuri.isNull())) {
 			final File stdinFile = installFile(stdinuri, currentWork.getScratchDir());
 			addEnvVar(XWSTDINPATHNAME, stdinFile.getCanonicalPath());
 		} else {
@@ -1387,9 +1351,9 @@ public class ThreadWork extends Thread {
 		final String hubAddrStr = System.getProperty(XWPropertyDefs.SMARTSOCKETSHUBADDR.toString());
 		startProxy(hubAddrStr);
 		logger.debug("Execute Native Job " + workUID);
-		String command = new String();
+		final StringBuilder command = new StringBuilder();
 		for (final Iterator<String> iter = cmdLine.iterator(); iter.hasNext();) {
-			command += iter.next() + " ";
+			command.append(iter.next() + " ");
 		}
 
 		logger.debug(workUID + " launches " + command);
@@ -1400,28 +1364,26 @@ public class ThreadWork extends Thread {
 			XWTools.checkDir(scratchDir);
 		} catch (final Exception e) {
 			logger.exception(e);
-			command = null;
 			throw new IOException(e.toString());
 		}
 
 		logger.debug("" + workUID + " executing on dir " + currentWork.getScratchDirName() + " stdin "
 				+ (stdin == null ? "null" : stdin.getCanonicalPath()));
 
-		final FileInputStream in = (stdin != null ? new FileInputStream(stdin) : null);
-		final FileOutputStream out = new FileOutputStream(new File(scratchDir, XWTools.STDOUT));
-		final FileOutputStream err = new FileOutputStream(new File(scratchDir, XWTools.STDERR));
+		try (final FileInputStream in = (stdin != null ? new FileInputStream(stdin) : null);
+				final FileOutputStream out = new FileOutputStream(new File(scratchDir, XWTools.STDOUT));
+				final FileOutputStream err = new FileOutputStream(new File(scratchDir, XWTools.STDERR))){
 
-		final String[] envvarsArray = getEnvVars();
-		exec = new Executor(command, envvarsArray, currentWork.getScratchDirName(), in, out, err,
-				Long.parseLong(Worker.getConfig().getProperty(XWPropertyDefs.TIMEOUT)));
-		exec.setMaxWallClockTime(currentWork.getMaxWallClockTime());
-		exec.setLoggerLevel(logger.getLoggerLevel());
+			final String[] envvarsArray = getEnvVars();
+			exec = new Executor(command.toString(), envvarsArray, currentWork.getScratchDirName(), in, out, err,
+					Long.parseLong(Worker.getConfig().getProperty(XWPropertyDefs.TIMEOUT)));
+			exec.setMaxWallClockTime(currentWork.getMaxWallClockTime());
+			exec.setLoggerLevel(logger.getLoggerLevel());
 
-		try {
 			if ((Boolean.getBoolean(Worker.getConfig().getProperty(XWPropertyDefs.JAVARUNTIME))) && (stdin == null)) {
 				mileStone.println("executing (Runtime)", workUID);
 				final Runtime machine = Runtime.getRuntime();
-				final Process process = machine.exec(command, null, scratchDir);
+				final Process process = machine.exec(command.toString(), null, scratchDir);
 				process.waitFor();
 				processReturnCode = process.exitValue();
 			} else {
@@ -1429,39 +1391,7 @@ public class ThreadWork extends Thread {
 				processReturnCode = exec.startAndWait();
 			}
 		} finally {
-			try {
-				if (out != null) {
-					out.flush();
-				}
-			} catch (final IOException t) {
-			}
-			try {
-				if (out != null) {
-					out.close();
-				}
-			} catch (final IOException t) {
-			}
-			try {
-				if (in != null) {
-					in.close();
-				}
-			} catch (final IOException t) {
-			}
-			try {
-				if (err != null) {
-					err.flush();
-				}
-			} catch (final IOException t) {
-			}
-			try {
-				if (err != null) {
-					err.close();
-				}
-			} catch (final IOException t) {
-			}
-
 			exec = null;
-			command = null;
 		}
 
 		mileStone.println("executed", workUID);
