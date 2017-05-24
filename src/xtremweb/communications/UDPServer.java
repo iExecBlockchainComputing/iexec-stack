@@ -23,12 +23,15 @@
 
 package xtremweb.communications;
 
+import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.channels.DatagramChannel;
 import java.rmi.RemoteException;
+import java.security.AccessControlException;
+import java.security.InvalidKeyException;
 
 import org.eclipse.jetty.server.Handler;
 
@@ -93,7 +96,7 @@ public class UDPServer extends CommServer {
 		try {
 			String proptxt = prop.getProperty(Connection.UDPPORT.toString());
 			if (proptxt != null) {
-				setPort(new Integer(proptxt.trim()).intValue());
+				setPort(Integer.parseInt(proptxt.trim()));
 			}
 
 			setHandler(h);
@@ -126,7 +129,7 @@ public class UDPServer extends CommServer {
 	}
 
 	/**
-	 * This indefinitly waits for incoming connections. This uses the
+	 * This indefinitely waits for incoming connections. This uses the
 	 * CommHandler to handle connections. Packet size is set to util#PACKETSIZE
 	 *
 	 * @see xtremweb.common.XWTools#PACKETSIZE
@@ -140,55 +143,62 @@ public class UDPServer extends CommServer {
 		while (true) {
 
 			try {
-				if (nio) {
-					final BytePacket buffer = new BytePacket();
-
-					while (true) {
-						buffer.getBuffer().clear();
-						final SocketAddress remote = nioServer.receive(buffer.getBuffer());
-
-						if (remote == null) {
-							try {
-								Thread.sleep(50);
-							} catch (final InterruptedException e) {
-							}
-
-							continue;
-						}
-
-						buffer.getBuffer().clear();
-						final CommHandler handler = (CommHandler) getHandler();
-						handler.setPacket(nioServer, remote, buffer);
-						handler.run();
-					}
-				} else {
-					final byte[] buf = new byte[XWTools.PACKETSIZE];
-					final DatagramPacket packet = new DatagramPacket(buf, buf.length);
-					ioServer.receive(packet);
-					boolean done = false;
-					int doing = 0;
-					while (done == false) {
-						try {
-							final CommHandler h = popConnection();
-							h.setPacket(ioServer, packet);
-							h.start();
-							done = true;
-						} catch (final OutOfMemoryError ome) {
-							if (doing++ > 1000) {
-								getLogger().fatal("UDPServer memory error ; can't do more");
-							}
-
-							getLogger().error("Still answering (" + doing + ") : " + ome);
-							sleep(100);
-						}
-					}
-				}
+				nio();
+				stdio();
 			} catch (final Exception e) {
 				getLogger().fatal("UDPServer error " + e);
 			}
 		}
-	} // run()
+	}
 
+	private void stdio() throws IOException, InvalidKeyException, AccessControlException, InstantiationException, IllegalAccessException, InterruptedException {
+		if (nio) {
+			return;
+		}
+
+		final byte[] buf = new byte[XWTools.PACKETSIZE];
+		final DatagramPacket packet = new DatagramPacket(buf, buf.length);
+		ioServer.receive(packet);
+		boolean done = false;
+		int doing = 0;
+		while (!done) {
+			try {
+				final CommHandler h = popConnection();
+				h.setPacket(ioServer, packet);
+				h.start();
+				done = true;
+			} catch (final OutOfMemoryError ome) {
+				if (doing++ > 1000) {
+					getLogger().fatal("UDPServer memory error ; can't do more");
+				}
+
+				getLogger().error("Still answering (" + doing + ") : " + ome);
+				sleep(100);
+			}
+		}
+	}
+	private void nio() throws IOException, InvalidKeyException, AccessControlException {
+		final BytePacket buffer = new BytePacket();
+		if (!nio) {
+			return;
+		}
+
+		buffer.getBuffer().clear();
+		final SocketAddress remote = nioServer.receive(buffer.getBuffer());
+
+		if (remote == null) {
+			try {
+				Thread.sleep(50);
+			} catch (final InterruptedException e) {
+			}
+		}
+
+		buffer.getBuffer().clear();
+		final CommHandler handler = (CommHandler) getHandler();
+		handler.setPacket(nioServer, remote, buffer);
+		handler.run();
+
+	}
 	/**
 	 * This is called on program termination (CTRL+C) This deletes session from
 	 * server
@@ -202,7 +212,7 @@ public class UDPServer extends CommServer {
 				ioServer.close();
 			}
 		} catch (final Exception e) {
-			getLogger().error("can't clean up");
+			getLogger().exception("can't clean up", e);
 		}
 	}
 
