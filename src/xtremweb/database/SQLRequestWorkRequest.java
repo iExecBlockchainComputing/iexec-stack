@@ -303,7 +303,7 @@ public class SQLRequestWorkRequest extends SQLRequest {
 	 * @return a String containing criteria
 	 */
 	@Override
-	public String criterias() throws IOException {
+	public String getFullCriterias() throws IOException {
 
 		if (host == null) {
 			throw new IOException("SQLRequestWorkRequest : host is null ?!?!");

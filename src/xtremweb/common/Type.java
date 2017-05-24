@@ -188,7 +188,6 @@ public abstract class Type extends XMLable {
 				value = column.fromString(val.toString().trim());
 			}
 		} catch (final Exception e) {
-			getLogger().exception(e);
 		}
 		return setValue(column.getOrdinal(), value);
 	}
@@ -241,7 +240,7 @@ public abstract class Type extends XMLable {
 	public String toXml() {
 
 		try {
-			String ret = getOpenTag();
+			final StringBuilder ret = new StringBuilder(getOpenTag());
 			for (int i = FIRST_ATTRIBUTE; i < getMaxAttribute(); i++) {
 
 				final String attrLabel = getColumnLabel(i).toLowerCase();
@@ -251,23 +250,23 @@ public abstract class Type extends XMLable {
 
 				final Object value = getValueAt(i);
 				if (value != null) {
-					ret += "<" + attrLabel + ">";
+					ret.append("<" + attrLabel + ">");
 					if (value instanceof java.util.Date) {
-						ret += XWTools.getSQLDateTime((java.util.Date) value);
+						ret.append(XWTools.getSQLDateTime((java.util.Date) value));
 					} else if (value instanceof XWAccessRights) {
-						ret += ((XWAccessRights) value).toHexString();
+						ret.append(((XWAccessRights) value).toHexString());
 					} else {
-						ret += value.toString();
+						ret.append(value.toString());
 					}
-					ret += "</" + attrLabel + ">";
+					ret.append("</" + attrLabel + ">");
 				} else {
 					if (isDUMPNULLS()) {
-						ret += "<" + attrLabel + "></" + attrLabel + ">";
+						ret.append("<" + attrLabel + "></" + attrLabel + ">");
 					}
 				}
 			}
-			ret += getCloseTag();
-			return ret;
+			ret.append(getCloseTag());
+			return ret.toString();
 		} catch (final Exception e) {
 			e.printStackTrace();
 		}
@@ -282,7 +281,7 @@ public abstract class Type extends XMLable {
 	public String toHtml() {
 
 		try {
-			String ret = ("<table>");
+			final StringBuilder ret = new StringBuilder("<table>");
 			for (int i = FIRST_ATTRIBUTE; i < getMaxAttribute(); i++) {
 
 				if (getColumnLabel(i) == null) {
@@ -291,17 +290,17 @@ public abstract class Type extends XMLable {
 
 				final Object value = getValueAt(i);
 				if (value != null) {
-					ret += "<tr><td class='param''>" + getColumnLabel(i).toLowerCase() + "</td><td class='value'>";
+					ret.append("<tr><td class='param''>" + getColumnLabel(i).toLowerCase() + "</td><td class='value'>");
 					if (value instanceof java.util.Date) {
-						ret += XWTools.getSQLDateTime((java.util.Date) value);
+						ret.append(XWTools.getSQLDateTime((java.util.Date) value));
 					} else {
-						ret += value.toString();
+						ret.append(value.toString());
 					}
-					ret += "</td></tr>";
+					ret.append("</td></tr>");
 				}
 			}
-			ret += "</table>";
-			return ret;
+			ret.append("</table>");
+			return ret.toString();
 		} catch (final Exception e) {
 		}
 		return null;
@@ -498,7 +497,7 @@ public abstract class Type extends XMLable {
 				max = shortIndexes.length;
 			}
 
-			String ret = "";
+			final StringBuilder ret = new StringBuilder();
 			for (int i = FIRST_ATTRIBUTE; i < max; i++) {
 
 				final int index = getIndex(i, shortOutput);
@@ -508,7 +507,7 @@ public abstract class Type extends XMLable {
 				}
 
 				if (index != FIRST_ATTRIBUTE) {
-					ret += ",";
+					ret.append(",");
 				}
 
 				final Object value = getValueAt(index);
@@ -520,31 +519,31 @@ public abstract class Type extends XMLable {
 							theValue = ((XWAccessRights) value).toHexString();
 						}
 						if (csv) {
-							ret += " " + theValue;
+							ret.append(" " + theValue);
 						} else {
-							ret += " " + getColumnLabel(index) + "=" + theValue;
+							ret.append(" " + getColumnLabel(index) + "=" + theValue);
 						}
 					} else if (value.getClass() != java.util.Date.class) {
 						if (csv) {
-							ret += " " + QUOTE + value.toString() + QUOTE;
+							ret.append(" " + QUOTE + value.toString() + QUOTE);
 						} else {
-							ret += " " + getColumnLabel(index) + "=" + QUOTE + value.toString() + QUOTE;
+							ret.append(" " + getColumnLabel(index) + "=" + QUOTE + value.toString() + QUOTE);
 						}
 					} else {
 						final java.util.Date date = (java.util.Date) value;
 						if (csv) {
-							ret += " " + QUOTE + XWTools.getSQLDateTime(date) + QUOTE;
+							ret.append(" " + QUOTE + XWTools.getSQLDateTime(date) + QUOTE);
 						} else {
-							ret += " " + getColumnLabel(index) + "=" + QUOTE + XWTools.getSQLDateTime(date) + QUOTE;
+							ret.append(" " + getColumnLabel(index) + "=" + QUOTE + XWTools.getSQLDateTime(date) + QUOTE);
 						}
 					}
 				} else if (!csv) {
-					ret += " " + getColumnLabel(index) + "=" + NULLVALUE;
+					ret.append(" " + getColumnLabel(index) + "=" + NULLVALUE);
 				} else {
-					ret += NULLVALUE;
+					ret.append(NULLVALUE);
 				}
 			}
-			return ret;
+			return ret.toString();
 		} catch (final Exception e) {
 			getLogger().exception(e);
 		}
@@ -610,7 +609,7 @@ public abstract class Type extends XMLable {
 	final public String getColumns() {
 
 		try {
-			String ret = "";
+			final StringBuilder ret = new StringBuilder();
 			for (int i = FIRST_ATTRIBUTE; i < getMaxAttribute(); i++) {
 
 				if (getColumnLabel(i) == null) {
@@ -619,11 +618,11 @@ public abstract class Type extends XMLable {
 				}
 
 				if (i != FIRST_ATTRIBUTE) {
-					ret += ",";
+					ret.append(",");
 				}
-				ret += getColumnLabel(i);
+				ret.append(getColumnLabel(i));
 			}
-			return ret;
+			return ret.toString();
 		} catch (final Exception e) {
 		}
 		return null;
@@ -663,7 +662,6 @@ public abstract class Type extends XMLable {
 	 */
 	final public String[] columns(final boolean shortOutput, final boolean notnull) {
 
-		String[] ret = null;
 		try {
 
 			int max = getMaxAttribute();
@@ -673,14 +671,14 @@ public abstract class Type extends XMLable {
 				max = shortIndexes.length;
 			}
 
-			ret = new String[max];
+			final String[] ret = new String[max];
 
 			for (int i = FIRST_ATTRIBUTE; i < max; i++) {
 
 				final int index = getIndex(i, shortOutput);
 
 				final String label = getColumnLabel(index);
-				if ((label == null) || ((notnull == true) && (getValue(index) == null))) {
+				if ((label == null) || (notnull && (getValue(index) == null))) {
 					continue;
 				}
 
@@ -688,7 +686,6 @@ public abstract class Type extends XMLable {
 			}
 			return ret;
 		} catch (final Exception e) {
-			ret = null;
 			getLogger().exception(e);
 		}
 		return null;
@@ -701,28 +698,28 @@ public abstract class Type extends XMLable {
 	final public String valuesToString() {
 
 		try {
-			String ret = "";
+			final StringBuilder ret = new StringBuilder();
 			for (int i = FIRST_ATTRIBUTE; i < getMaxAttribute(); i++) {
 
 				if (i != FIRST_ATTRIBUTE) {
-					ret += ",";
+					ret.append(",");
 				}
 
 				final Object value = getValueAt(i);
 				if (value != null) {
 					if (value.getClass() == XWAccessRights.class) {
-						ret += value.toString();
+						ret.append(value.toString());
 					} else if (value.getClass() != java.util.Date.class) {
-						ret += QUOTE + value + QUOTE;
+						ret.append(QUOTE + value + QUOTE);
 					} else {
 						final java.util.Date date = (java.util.Date) value;
-						ret += QUOTE + XWTools.getSQLDateTime(date) + QUOTE;
+						ret.append(QUOTE + XWTools.getSQLDateTime(date) + QUOTE);
 					}
 				} else {
-					ret += "NULL";
+					ret.append("NULL");
 				}
 			}
-			return ret;
+			return ret.toString();
 		} catch (final Exception e) {
 		}
 		return null;
@@ -736,7 +733,7 @@ public abstract class Type extends XMLable {
 	public String criteria() throws IOException {
 
 		if (getRequest() != null) {
-			return getRequest().criterias();
+			return getRequest().getFullCriterias();
 		}
 
 		if (getColumnLabel(KEYINDEX) == null) {
@@ -862,14 +859,15 @@ public abstract class Type extends XMLable {
 	 */
 	private static Type readType(final BufferedInputStream input, final Type itf)
 			throws InvalidKeyException, SAXException, IOException {
-		final XMLReader reader = new XMLReader(itf);
-		reader.read(input);
-		return itf;
+		try (final XMLReader reader = new XMLReader(itf)) {
+			reader.read(input);
+			return itf;
+		}
 	}
 
 	/**
 	 * This constructs a new XMLRPCCommand object. This first checks the opening
-	 * tag and then instanciate the right object accordingly to the opening tag.
+	 * tag and then instantiate the right object accordingly to the opening tag.
 	 *
 	 * @param in
 	 *            is the input stream to read interface from
