@@ -128,12 +128,10 @@ public final class HelloWorld {
 	/**
 	 * This prints a message to std err and exits.
 	 *
-	 * @param msg
-	 *            is the message to print to stderr
 	 * @param code
 	 *            is the return code to use on exit
 	 */
-	private void exit(final String msg, final XWReturnCode code) {
+	private void exit(final XWReturnCode code) {
 
 		try {
 			final CommClient client = commClient();
@@ -272,7 +270,8 @@ public final class HelloWorld {
 			logger.info("Disconnecting");
 			client.disconnect();
 		} catch (final Exception e) {
-			exit(e.getMessage(), XWReturnCode.CONNECTION);
+			logger.exception(e);
+			exit(XWReturnCode.CONNECTION);
 		}
 	}
 
