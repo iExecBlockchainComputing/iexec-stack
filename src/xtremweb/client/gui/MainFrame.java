@@ -102,33 +102,30 @@ public final class MainFrame extends JFrame implements ActionListener {
 	 * menu item.
 	 */
 	public void setLoggerLevel(final LoggerLevel l) {
-		try {
-			logger.setLoggerLevel(l);
-			client.setLoggerLevel(l);
-			myPanel.setLoggerLevel(l);
+		logger.setLoggerLevel(l);
+		client.setLoggerLevel(l);
+		myPanel.setLoggerLevel(l);
 
-			itemError.setSelected(false);
-			itemWarn.setSelected(false);
-			itemInfo.setSelected(false);
-			itemDebug.setSelected(false);
+		itemError.setSelected(false);
+		itemWarn.setSelected(false);
+		itemInfo.setSelected(false);
+		itemDebug.setSelected(false);
 
-			switch (l) {
-			case ERROR:
-				itemError.setSelected(true);
-				break;
-			case WARN:
-				itemWarn.setSelected(true);
-				break;
-			case INFO:
-				itemInfo.setSelected(true);
-				break;
-			case DEBUG:
-				itemDebug.setSelected(true);
-				break;
-			default:
-				break;
-			}
-		} catch (final Exception e) {
+		switch (l) {
+		case ERROR:
+			itemError.setSelected(true);
+			break;
+		case WARN:
+			itemWarn.setSelected(true);
+			break;
+		case INFO:
+			itemInfo.setSelected(true);
+			break;
+		case DEBUG:
+			itemDebug.setSelected(true);
+			break;
+		default:
+			break;
 		}
 	}
 
@@ -818,17 +815,17 @@ public final class MainFrame extends JFrame implements ActionListener {
 
 		JOptionPane.showMessageDialog(this,
 				"Current version : " + CommonVersion.getCurrent() + "\nServer  version : " + versionWarn
-						+ "\nWritten by Oleg Lodygensky\n" + "LAL IN2P3 CNRS France - " + url
-						+ "\n\nBased on XtremWeb 1.8.0 by LRI INRIA France\n\n" + "This software is under GPL license\n"
-						+ "THIS SOFTWARE IS PROVIDED \"AS IS\" AND ANY EXPRESSED OR IMPLIED WARRANTIES,\n"
-						+ "INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS\n"
-						+ "FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS\n"
-						+ "BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL\n"
-						+ "DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n"
-						+ "LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY\n"
-						+ "OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE\n"
-						+ "OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF\n"
-						+ "THE POSSIBILITY OF SUCH DAMAGE.\n\n",
+				+ "\nWritten by Oleg Lodygensky\n" + "LAL IN2P3 CNRS France - " + url
+				+ "\n\nBased on XtremWeb 1.8.0 by LRI INRIA France\n\n" + "This software is under GPL license\n"
+				+ "THIS SOFTWARE IS PROVIDED \"AS IS\" AND ANY EXPRESSED OR IMPLIED WARRANTIES,\n"
+				+ "INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS\n"
+				+ "FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS\n"
+				+ "BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL\n"
+				+ "DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n"
+				+ "LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY\n"
+				+ "OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE\n"
+				+ "OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF\n"
+				+ "THE POSSIBILITY OF SUCH DAMAGE.\n\n",
 				"XWHEP Version", JOptionPane.INFORMATION_MESSAGE);
 	}
 
@@ -850,7 +847,7 @@ public final class MainFrame extends JFrame implements ActionListener {
 						"Connection error!!!\n\n" + "This may be due to :\n" + "  - server is not reachable;\n"
 								+ "  - communication layer is wrong" + " (try another one in 'Comm' menu);\n"
 								+ "  - wrong login/password.",
-						TableModel.WARNING, JOptionPane.ERROR_MESSAGE);
+								TableModel.WARNING, JOptionPane.ERROR_MESSAGE);
 				startWorker.setEnabled(false);
 			}
 

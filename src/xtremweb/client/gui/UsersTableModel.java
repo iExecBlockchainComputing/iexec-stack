@@ -64,8 +64,8 @@ class UsersTableModel extends TableModel {
 	private static final String UID = "UID";
 	private static final String GROUP = "User group";
 	private static final String LOGIN = "Login";
-	private static final String p = "Password";
-	private static final String p2 = "Confirm password";
+	private static final String P = "Password";
+	private static final String P2 = "Confirm password";
 	private static final String EMAIL = "E-mail";
 	private static final String FNAME = "First name";
 	private static final String LNAME = "Last name";
@@ -75,12 +75,12 @@ class UsersTableModel extends TableModel {
 	/**
 	 * These defines submission parameter labels
 	 */
-	private static final String[] labels = { UID, GROUP, LOGIN, p, p2, EMAIL, FNAME, LNAME, TEAM, COUNTRY,
+	private static final String[] labels = { UID, GROUP, LOGIN, P, P2, EMAIL, FNAME, LNAME, TEAM, COUNTRY,
 			RIGHTS };
 
 	private static final String HELPSTRING = "<u>" + GROUP + "</u> : select an user group (this is optionnal)<br>"
 			+ "<u>" + LOGIN + "</u> : a login must be unic in the platform; reusing an existing login updates user<br>"
-			+ "<u>" + p + "</u> : please provide a password <br>" + "<u>" + p2
+			+ "<u>" + P + "</u> : please provide a password <br>" + "<u>" + P2
 			+ "</u> : please confirm the password<br>" + "<u>" + EMAIL + "</u> : a valid email address is required<br>"
 			+ "<u>" + FNAME + "</u> first name<br>" + "<u>" + LNAME + "</u> last name<br>" + "<u>" + RIGHTS
 			+ "</u> select a user rights from drop down menu";
@@ -126,7 +126,7 @@ class UsersTableModel extends TableModel {
 
 			groupLabels = new String[vgroups.size() + 1];
 			int i = 0;
-			groupLabels[i++] = new String(SELECT);
+			groupLabels[i++] = SELECT;
 
 			for(int idx = 0; idx < vgroups.size(); idx++) {
 				final UID groupUID = (UID) vgroups.get(idx);
@@ -185,9 +185,9 @@ class UsersTableModel extends TableModel {
 				return;
 			}
 
-			jtf = (JTextField) dlg.getFields().get(p);
+			jtf = (JTextField) dlg.getFields().get(P);
 			final String password = jtf.getText();
-			jtf = (JTextField) dlg.getFields().get(p2);
+			jtf = (JTextField) dlg.getFields().get(P2);
 			final String password2 = jtf.getText();
 
 			if (password2.compareTo(password) != 0) {
