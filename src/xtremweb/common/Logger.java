@@ -71,6 +71,7 @@ public class Logger {
 		try {
 			level = LoggerLevel.valueOf(levelstr.toUpperCase());
 		} catch (final Exception e) {
+			exception(e);
 		}
 	}
 

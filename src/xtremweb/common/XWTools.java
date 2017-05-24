@@ -243,34 +243,20 @@ public class XWTools {
 	 * @see #releasePort(int)
 	 */
 	public static synchronized boolean lockPort(final int port) {
-		ServerSocket ss = null;
-		DatagramSocket ds = null;
-		final Integer key = new Integer(port);
+		final Integer key = port;
 
 		if (lockedPorts.containsKey(key)) {
 			return false;
 		}
 
-		try {
-			ss = new ServerSocket(port);
-			ss.setReuseAddress(true);
-			ds = new DatagramSocket(port);
-			ds.setReuseAddress(true);
-			lockedPorts.put(key, new Boolean(true));
-			return true;
-		} catch (final Exception e) {
-		} finally {
-			if (ds != null) {
-				ds.close();
-			}
+		try (final ServerSocket ss = new ServerSocket(port);
+				final DatagramSocket ds = new DatagramSocket(port)){
 
-			if (ss != null) {
-				try {
-					ss.close();
-				} catch (final IOException e) {
-					/* should not be thrown */
-				}
-			}
+			ss.setReuseAddress(true);
+			ds.setReuseAddress(true);
+			lockedPorts.put(key, true);
+			return true;
+		} catch (IOException e) {
 		}
 
 		return false;
@@ -289,7 +275,7 @@ public class XWTools {
 	 * @see #lockPort(int)
 	 */
 	public static void releasePort(final int port) {
-		lockedPorts.remove(new Integer(port));
+		lockedPorts.remove(port);
 	}
 
 	private static String localhostName = null;
@@ -333,7 +319,7 @@ public class XWTools {
 		return ret;
 	}
 
-	public static boolean searchInArray(final Object a[], final Object b) {
+	public static boolean searchInArray(final Object[] a, final Object b) {
 		int i = 0;
 		boolean found = false;
 		boolean complete = false;
@@ -355,7 +341,7 @@ public class XWTools {
 	}
 
 	/**
-	 * Restart error: cause the programm to exit and restart
+	 * Restart error: cause the program to exit and restart
 	 */
 	public static void restart(final String s) {
 		logger.info("restarting : " + s);
@@ -378,7 +364,7 @@ public class XWTools {
 	 * This retreives an X.509 certificate from file
 	 */
 	public static X509Certificate certificateFromFile(final String certFileName)
-			throws CertificateException, CertificateExpiredException, FileNotFoundException, IOException {
+			throws CertificateException, CertificateExpiredException, IOException {
 
 		return certificateFromFile(new File(certFileName));
 	}
@@ -387,13 +373,12 @@ public class XWTools {
 	 * This retreives an X.509 certificate from file
 	 */
 	public static X509Certificate certificateFromFile(final File certFile)
-			throws CertificateException, CertificateExpiredException, FileNotFoundException, IOException {
+			throws CertificateException, CertificateExpiredException, IOException {
 
-		final FileInputStream inStream = new FileInputStream(certFile);
-		final CertificateFactory cf = CertificateFactory.getInstance("X.509");
-		final X509Certificate cert = (X509Certificate) cf.generateCertificate(inStream);
-		inStream.close();
-		return cert;
+		try (final FileInputStream inStream = new FileInputStream(certFile)) {
+			final CertificateFactory cf = CertificateFactory.getInstance("X.509");
+			return (X509Certificate) cf.generateCertificate(inStream);
+		}
 	}
 
 	private static CertificateFactory certificateFactory = null;
@@ -421,14 +406,9 @@ public class XWTools {
 		if (certificateFactory == null) {
 			certificateFactory = CertificateFactory.getInstance("X.509");
 		}
-		X509Certificate cert = null;
-		try {
-			cert = (X509Certificate) certificateFactory.generateCertificate(in);
-			cert.checkValidity();
-			return cert;
-		} finally {
-			cert = null;
-		}
+		final X509Certificate cert = (X509Certificate) certificateFactory.generateCertificate(in);
+		cert.checkValidity();
+		return cert;
 	}
 
 	/**
@@ -436,10 +416,7 @@ public class XWTools {
 	 */
 	public static boolean compareCertificates(final X509Certificate key1, final X509Certificate key2)
 			throws CertificateEncodingException {
-		if (Arrays.equals(key1.getEncoded(), key2.getEncoded())) {
-			return true;
-		}
-		return false;
+		return (Arrays.equals(key1.getEncoded(), key2.getEncoded())) ? true : false;
 	}
 
 	/**
@@ -474,7 +451,7 @@ public class XWTools {
 	 */
 	public static File createDir(final File parent, final UID uid) throws IOException {
 
-		final String dirName = new Integer(uid.hashCode() % 1000).toString();
+		final String dirName = Integer.toString(uid.hashCode() % 1000);
 		final File dir = new File(parent, dirName);
 		checkDir(dir);
 		return dir;
@@ -523,7 +500,7 @@ public class XWTools {
 	 * This delete a full directory
 	 */
 	static public boolean deleteDir(final File path) throws IOException {
-		if ((path == null) || (path.exists() == false)) {
+		if ((path == null) || (!path.exists())) {
 			return false;
 		}
 
@@ -605,8 +582,7 @@ public class XWTools {
 		final Vector<String> ret = new Vector<String>();
 		final StringTokenizer tokenizer = new StringTokenizer(src, separator);
 
-		for (; tokenizer.hasMoreTokens();) {
-
+		while (tokenizer.hasMoreTokens()) {
 			final String elem = tokenizer.nextToken();
 			ret.addElement(elem.trim());
 		}
@@ -691,7 +667,7 @@ public class XWTools {
 	 * @param len
 	 *            is the number of bytes to use in datas
 	 */
-	public static int[] bytes2integers(final byte datas[], final int len) {
+	public static int[] bytes2integers(final byte[] datas, final int len) {
 
 		final int nbint = len / SIZEOFINTEGER;
 		final int[] integers = new int[nbint + 1];
@@ -715,7 +691,7 @@ public class XWTools {
 	 * @param bytes
 	 *            [] is a 4 elements array
 	 */
-	public static int bytes2integer(final byte bytes[]) {
+	public static int bytes2integer(final byte[] bytes) {
 
 		return (((bytes[0] << 24) & 0xff000000) + ((bytes[1] << 16) & 0x00ff0000) + ((bytes[2] << 8) & 0x0000ff00)
 				+ (bytes[3] & 0x000000ff));
@@ -730,7 +706,7 @@ public class XWTools {
 	 */
 	public static byte[] long2bytes(final long data) {
 
-		final byte bytes[] = new byte[SIZEOFLONG];
+		final byte[] bytes = new byte[SIZEOFLONG];
 		bytes[0] = (byte) ((data & 0xff00000000000000L) >> 56);
 		bytes[1] = (byte) ((data & 0x00ff000000000000L) >> 48);
 		bytes[2] = (byte) ((data & 0x0000ff0000000000L) >> 40);
@@ -752,7 +728,7 @@ public class XWTools {
 	 */
 	public static byte[] integer2bytes(final int data) {
 
-		final byte bytes[] = new byte[SIZEOFINTEGER];
+		final byte[] bytes = new byte[SIZEOFINTEGER];
 
 		bytes[0] = (byte) ((data & 0xff000000) >> 24);
 		bytes[1] = (byte) ((data & 0x00ff0000) >> 16);
@@ -771,7 +747,7 @@ public class XWTools {
 	 */
 	public static byte[] short2bytes(final short data) {
 
-		final byte bytes[] = new byte[SIZEOFSHORT];
+		final byte[] bytes = new byte[SIZEOFSHORT];
 
 		bytes[0] = (byte) ((data & 0xff00) >> 8);
 		bytes[1] = (byte) (data & 0x00ff);
