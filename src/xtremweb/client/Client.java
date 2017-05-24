@@ -447,7 +447,7 @@ public final class Client {
 		macroLineNumber = 0;
 		macroFile = null;
 		zipper = new Zipper();
-		commClients = new HashMap<String, CommClient>();
+		commClients = new HashMap<>();
 
 		args = new CommandLineParser(argv);
 
