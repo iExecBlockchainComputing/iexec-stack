@@ -83,15 +83,10 @@ public class PEMPublicKey {
 	 * @param keyPath
 	 *            is the public key file path
 	 */
-	public PublicKey read(final String keyPath) throws CertificateException, FileNotFoundException, IOException {
+	public PublicKey read(final String keyPath) throws CertificateException, IOException {
 
-		File f = null;
-		try {
-			f = new File(keyPath);
-			return read(f);
-		} finally {
-			f = null;
-		}
+		final File f = new File(keyPath);
+		return read(f);
 	}
 
 	/**
@@ -100,20 +95,10 @@ public class PEMPublicKey {
 	 * @param keyFile
 	 *            is the public key file path
 	 */
-	public PublicKey read(final File keyFile) throws CertificateException, FileNotFoundException, IOException {
+	public PublicKey read(final File keyFile) throws CertificateException, IOException {
 
-		FileReader fr = null;
-		try {
-			fr = new FileReader(keyFile);
+		try (final FileReader fr = new FileReader(keyFile)){
 			return read(fr);
-		} catch (final ClassCastException e) {
-			throw new CertificateException(e);
-		} finally {
-			try {
-				fr.close();
-			} catch (final Exception ignore) {
-			}
-			fr = null;
 		}
 	}
 
@@ -125,25 +110,15 @@ public class PEMPublicKey {
 	 * @exception CertificateException
 	 *                on certificate format or validity error
 	 */
-	public PublicKey read(final Reader reader) throws CertificateException, FileNotFoundException, IOException {
+	public PublicKey read(final Reader reader) throws CertificateException, IOException {
 
-		PEMReader r = null;
-		try {
-			r = new PEMReader(reader);
+		try (final PEMReader r = new PEMReader(reader)){
 			certificate = (X509CertificateObject) r.readObject();
 			if (certificate == null) {
 				throw new CertificateException("invalid certificate file");
 			}
 			certificate.checkValidity();
 			return certificate.getPublicKey();
-		} catch (final ClassCastException e) {
-			throw new CertificateException(e);
-		} finally {
-			try {
-				r.close();
-			} catch (final Exception ignore) {
-			}
-			r = null;
 		}
 	}
 
@@ -163,13 +138,11 @@ public class PEMPublicKey {
 	 * @see #getSubject()
 	 */
 	public String getSubjectName() {
-		X500Principal subject = getSubject();
+		final X500Principal subject = getSubject();
 		if (subject == null) {
 			return null;
 		}
-		final String ret = subject.getName();
-		subject = null;
-		return ret;
+		return subject.getName();
 	}
 
 	/**
@@ -188,13 +161,11 @@ public class PEMPublicKey {
 	 * @see #getSubject()
 	 */
 	public String getIssuerName() {
-		X500Principal issuer = getIssuer();
+		final X500Principal issuer = getIssuer();
 		if (issuer == null) {
 			return null;
 		}
-		final String ret = issuer.getName();
-		issuer = null;
-		return ret;
+		return issuer.getName();
 	}
 
 	/**
@@ -233,16 +204,12 @@ public class PEMPublicKey {
 		final PEMPublicKey reader = new PEMPublicKey();
 		final PublicKey publicKey = reader.read(args[0]);
 
+		final X509ProxyValidator validator = new X509ProxyValidator();
 		try {
-			final X509ProxyValidator validator = new X509ProxyValidator();
-			try {
-				validator.validate(reader.certificate);
-				logger.info("PEMPublic key validated against CA cert path :)");
-			} catch (final Exception e) {
-				logger.exception("Can't validate", e);
-			}
+			validator.validate(reader.certificate);
+			logger.info("PEMPublic key validated against CA cert path :)");
 		} catch (final Exception e) {
-			logger.exception("Can't create ProxyValidator", e);
+			logger.exception("Can't validate", e);
 		}
 
 		if (args.length > 1) {
