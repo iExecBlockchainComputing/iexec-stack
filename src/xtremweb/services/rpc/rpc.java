@@ -73,20 +73,7 @@ public class rpc implements Interface {
 	/**
 	 * This is the transfered buffer size
 	 */
-	private final int BUFSIZE = 8192;
-	/**
-	 * This is the file name packet that RPCXW-S forwards to the SunRPC server
-	 * We write content from SunRPC client to this file; RPCXW-S reads and
-	 * forwards it to the SunRPC server
-	 */
-	private final String FILEIN = "packet-in.bin";
-
-	/**
-	 * This is the file name packet that RPCXW-S received from the SunRPC server
-	 * RPCXW-S writes this file and we must forward the content to the SunRPC
-	 * client
-	 */
-	private final String FILEOUT = "packet-out.bin";
+	private static final int BUFSIZE = 8192;
 	/**
 	 * This is the results
 	 */
@@ -174,7 +161,7 @@ public class rpc implements Interface {
 			}
 		} catch (final Exception e) {
 			ret = -1;
-			logger.error(e.toString());
+			logger.exception(e);
 		}
 
 		return ret;
