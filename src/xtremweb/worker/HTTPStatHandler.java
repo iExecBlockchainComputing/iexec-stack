@@ -599,7 +599,7 @@ public class HTTPStatHandler extends Thread implements Handler {
 
 		final CommClient commClient = Worker.getConfig().defaultCommClient();
 		CommClient.setConfig(Worker.getConfig());
-		final ArrayList<XMLable> uids = (ArrayList<XMLable>)commClient.getUserGroups().getXmlValues();
+		final ArrayList<XMLable> uids = (ArrayList<XMLable>) commClient.getUserGroups().getXmlValues();
 		String jobTypes = "Public and Group jobs";
 
 		for (int i = 0; i < uids.size(); i++) {

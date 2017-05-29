@@ -265,7 +265,8 @@ public final class Client {
 	 * @throws IOException
 	 * @throws IllegalAccessException
 	 * @throws SAXException
-	 * @throws ClassNotFoundException if data is not found
+	 * @throws ClassNotFoundException
+	 *             if data is not found
 	 * @throws AccessControlException
 	 * @throws InvalidKeyException
 	 * @throws URISyntaxException
@@ -853,9 +854,8 @@ public final class Client {
 	}
 
 	/**
-	 * This retrieves command line parameter and calls get(Vector)
-	 * <blockquote> Command line parameters : --xwget URI | UID [ URI |
-	 * UID...] </blockquote>
+	 * This retrieves command line parameter and calls get(Vector) <blockquote>
+	 * Command line parameters : --xwget URI | UID [ URI | UID...] </blockquote>
 	 *
 	 * @throws AccessControlException
 	 * @throws InvalidKeyException
@@ -905,7 +905,7 @@ public final class Client {
 			bypass = true;
 		}
 
-		final ArrayList<UID> replicatedWorkUIDs = new ArrayList<UID>();
+		final ArrayList<UID> replicatedWorkUIDs = new ArrayList<>();
 		final Iterator theEnum = params.iterator();
 		while (theEnum.hasNext()) {
 			final Object param = theEnum.next();
@@ -1115,9 +1115,8 @@ public final class Client {
 
 	/**
 	 * This retrieves application from XtremWeb server This may write app
-	 * description to stdout, accordingly to dislay parameter
-	 * <blockquote> Command line parameters : --xwgetapp UID
-	 * [UID...] </blockquote>
+	 * description to stdout, accordingly to dislay parameter <blockquote>
+	 * Command line parameters : --xwgetapp UID [UID...] </blockquote>
 	 *
 	 * @param name
 	 *            is the application name
@@ -1184,9 +1183,9 @@ public final class Client {
 	/**
 	 * This inserts/updates an application in server.<br>
 	 * This does not read from cache because we need the exact last app
-	 * definition in order to correctly update it if it exists.
-	 * <blockquote> Command line parameters : --xwsendapp appName cpuType osName
-	 * binFileName </blockquote> The user must have the right to do so
+	 * definition in order to correctly update it if it exists. <blockquote>
+	 * Command line parameters : --xwsendapp appName cpuType osName binFileName
+	 * </blockquote> The user must have the right to do so
 	 *
 	 * @throws IOException
 	 * @throws ParseException
@@ -1353,8 +1352,8 @@ public final class Client {
 
 	/**
 	 * This removes objects from server.<br>
-	 * <blockquote> Command line parameters : --xwremove UID
-	 * [UID...] </blockquote> The user must have the right to do so
+	 * <blockquote> Command line parameters : --xwremove UID [UID...]
+	 * </blockquote> The user must have the right to do so
 	 *
 	 * @throws AccessControlException
 	 * @throws InvalidKeyException
@@ -1461,8 +1460,8 @@ public final class Client {
 	/**
 	 * This inserts a new data in server.<br>
 	 * <blockquote> Command line parameters : --xwsenddata dataName cpuType
-	 * osName DataTypeEnum accessRight [binFileName | binFileURI | binFileUID
-	 * ] </blockquote> The user must have the right to do so
+	 * osName DataTypeEnum accessRight [binFileName | binFileURI | binFileUID ]
+	 * </blockquote> The user must have the right to do so
 	 *
 	 * @throws IOException
 	 *             on I/O error
@@ -1492,7 +1491,7 @@ public final class Client {
 		XWAccessRights accessRights = null;
 		DataTypeEnum dataTypeEnum = null;
 		URI dataUri = null;
-		UID uid = new UID();
+		final UID uid = new UID();
 
 		DataInterface data;
 		final File xmlFile = (File) args.getOption(CommandLineOptions.XML);
@@ -1677,8 +1676,7 @@ public final class Client {
 		data.setAccessRights(accessRights);
 		data.setURI(commClient().newURI(data.getUID()));
 
-		if ((uri != null) &&
-				(uri.isFile())) {
+		if ((uri != null) && (uri.isFile())) {
 			dataFile = new File(uri.getPath());
 			data.setName(dataFile.getName());
 			final DataTypeEnum thisType = DataTypeEnum.getFileType(dataFile);
@@ -1774,9 +1772,8 @@ public final class Client {
 	 * @throws InstantiationException
 	 * @see #getGroups(boolean)
 	 */
-	public Collection<XMLable> getGroups()
-			throws IOException, ClassNotFoundException, SAXException, URISyntaxException, InvalidKeyException,
-			AccessControlException, InstantiationException, IllegalAccessException {
+	public Collection<XMLable> getGroups() throws IOException, ClassNotFoundException, SAXException, URISyntaxException,
+			InvalidKeyException, AccessControlException, InstantiationException, IllegalAccessException {
 		return getGroups(false);
 	}
 
@@ -1828,7 +1825,7 @@ public final class Client {
 			if (group.getUID() == null) {
 				group.setUID(uid);
 			}
-			if ((group.getName() == null) ||  (group.getOwner() == null)) {
+			if ((group.getName() == null) || (group.getOwner() == null)) {
 				throw new IOException("group and/or group owner can not be null");
 			}
 		} else {
@@ -1947,8 +1944,8 @@ public final class Client {
 	/**
 	 * This inserts a new session in server.<br>
 	 * <blockquote> Command line parameters : --xwaddsession &lt;session
-	 * name&gt; &lt;cpu type&gt; &lt;os name&gt; &lt;bin file
-	 * name&gt; </blockquote> The user must have the right to do so
+	 * name&gt; &lt;cpu type&gt; &lt;os name&gt; &lt;bin file name&gt;
+	 * </blockquote> The user must have the right to do so
 	 *
 	 * @throws AccessControlException
 	 * @throws InvalidKeyException
@@ -2039,8 +2036,8 @@ public final class Client {
 	 * @throws InstantiationException
 	 * @see #getTraces(boolean)
 	 */
-	public Collection<XMLable> getTraces() throws IOException, ClassNotFoundException, SAXException,
-			URISyntaxException, InvalidKeyException, AccessControlException, InstantiationException {
+	public Collection<XMLable> getTraces() throws IOException, ClassNotFoundException, SAXException, URISyntaxException,
+			InvalidKeyException, AccessControlException, InstantiationException {
 		return getTraces(false);
 	}
 
@@ -2091,8 +2088,8 @@ public final class Client {
 
 	/**
 	 * This retrieves, stores and displays userGroups installed in XtremWeb
-	 * server. <blockquote> Command line parameters :
-	 * --xwuserGroups </blockquote>
+	 * server. <blockquote> Command line parameters : --xwuserGroups
+	 * </blockquote>
 	 *
 	 * @param display
 	 *            is true to write userGroup descriptions to stdout
@@ -2114,8 +2111,8 @@ public final class Client {
 	/**
 	 * This inserts a new userGroup in server.<br>
 	 * <blockquote> Command line parameters : --xwsenduserGroup &lt;userGroup
-	 * name&gt; &lt;cpu type&gt; &lt;os name&gt; &lt;bin file
-	 * name&gt; </blockquote> The user must have the right to do so
+	 * name&gt; &lt;cpu type&gt; &lt;os name&gt; &lt;bin file name&gt;
+	 * </blockquote> The user must have the right to do so
 	 *
 	 * @throws AccessControlException
 	 * @throws InvalidKeyException
@@ -2301,8 +2298,8 @@ public final class Client {
 	/**
 	 * This inserts a new user in server.<br>
 	 * <blockquote> Command line parameters : --xwsenduser &lt;user login&gt;
-	 * &lt;uesr password&gt; &lt;user email&gt; &lt;user
-	 * rights&gt; </blockquote> The user must have the right to do so
+	 * &lt;uesr password&gt; &lt;user email&gt; &lt;user rights&gt;
+	 * </blockquote> The user must have the right to do so
 	 *
 	 * @throws AccessControlException
 	 * @throws InvalidKeyException
@@ -3412,8 +3409,8 @@ public final class Client {
 
 	/**
 	 * This parses "macro" file and executes each line calling doItNow()
-	 * <blockquote> Command line parameters : --xwmacro &lt;macro file
-	 * name&gt; </blockquote>
+	 * <blockquote> Command line parameters : --xwmacro &lt;macro file name&gt;
+	 * </blockquote>
 	 *
 	 * @see #doItNow()
 	 */

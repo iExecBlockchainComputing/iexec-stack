@@ -226,7 +226,7 @@ public class XWTools {
 	 * @see #lockPort(int)
 	 * @see #releasePort(int)
 	 */
-	static private Hashtable<Integer, Boolean> lockedPorts = new Hashtable<Integer, Boolean>();
+	static private Hashtable<Integer, Boolean> lockedPorts = new Hashtable<>();
 
 	/**
 	 * Checks to see if a specific port is available. If the port is available,
@@ -249,14 +249,13 @@ public class XWTools {
 			return false;
 		}
 
-		try (final ServerSocket ss = new ServerSocket(port);
-				final DatagramSocket ds = new DatagramSocket(port)){
+		try (final ServerSocket ss = new ServerSocket(port); final DatagramSocket ds = new DatagramSocket(port)) {
 
 			ss.setReuseAddress(true);
 			ds.setReuseAddress(true);
 			lockedPorts.put(key, true);
 			return true;
-		} catch (IOException e) {
+		} catch (final IOException e) {
 		}
 
 		return false;
@@ -543,7 +542,7 @@ public class XWTools {
 	 */
 	public static Map<String, String> hash(final String src, final String separator1, final String separator2) {
 
-		final Hashtable<String, String> ret = new Hashtable<String, String>();
+		final Hashtable<String, String> ret = new Hashtable<>();
 
 		if ((src == null) || (separator1 == null) || (separator2 == null)) {
 			return ret;
@@ -579,7 +578,7 @@ public class XWTools {
 		if ((src == null) || (separator == null)) {
 			return null;
 		}
-		final Vector<String> ret = new Vector<String>();
+		final Vector<String> ret = new Vector<>();
 		final StringTokenizer tokenizer = new StringTokenizer(src, separator);
 
 		while (tokenizer.hasMoreTokens()) {
@@ -823,14 +822,19 @@ public class XWTools {
 		}
 		return certs;
 	}
+
 	/**
-	 * This extracts a JSon value from an URL 
-	 * @param u is the URL to retrieve JSon content
-	 * @param key is the JSon key name to retrieve 
-	 * @throws IOException on connection error
+	 * This extracts a JSon value from an URL
+	 * 
+	 * @param u
+	 *            is the URL to retrieve JSon content
+	 * @param key
+	 *            is the JSon key name to retrieve
+	 * @throws IOException
+	 *             on connection error
 	 * @since 10.5.0
 	 */
-	public static String jsonValueFromURL (final String u, final String key) throws IOException {
+	public static String jsonValueFromURL(final String u, final String key) throws IOException {
 		final URL url = new URL(u);
 		try (final InputStream is = url.openStream();) {
 			final JSONTokener jst = new JSONTokener(is);
@@ -838,13 +842,17 @@ public class XWTools {
 			return obj.getString(key);
 		}
 	}
+
 	/**
-	 * This extracts a JSon value from an URL 
-	 * @param s contains the JSon representation
-	 * @param key is the JSon key name to retrieve 
+	 * This extracts a JSon value from an URL
+	 * 
+	 * @param s
+	 *            contains the JSon representation
+	 * @param key
+	 *            is the JSon key name to retrieve
 	 * @since 10.5.0
 	 */
-	public static String jsonValueFromString (final String s, final String key)  {
+	public static String jsonValueFromString(final String s, final String key) {
 		final JSONTokener jst = new JSONTokener(s);
 		final JSONObject obj = new JSONObject(jst);
 		return obj.getString(key);

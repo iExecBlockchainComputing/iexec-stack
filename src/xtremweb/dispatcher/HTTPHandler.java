@@ -86,7 +86,6 @@ import xtremweb.communications.XMLRPCCommandChmod;
 import xtremweb.communications.XMLRPCCommandWorkAlive;
 import xtremweb.communications.XWPostParams;
 import xtremweb.database.SQLRequest;
-import xtremweb.dispatcher.HTTPOAuthHandler.Operator;
 import xtremweb.security.XWAccessRights;
 
 /**
@@ -144,8 +143,7 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 	 */
 	public static final String DASHBOARDFILENAME_CSS = "/dashboard.css";
 	/**
-	 * This is JavaScript -extracted from xwserver.html- file name :
-	 * xwserver.js
+	 * This is JavaScript -extracted from xwserver.html- file name : xwserver.js
 	 *
 	 * @since 10.2.0
 	 */
@@ -161,25 +159,14 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 	 */
 	public static final String RESOURCEFILENAME_LOGO = "/logo.jpg";
 
-	private static final String[] names = {
-			DASHBOARDFILENAME_HTML,
-			DASHBOARDFILENAME_CSS,
-			FAVICOFILENAME_ICO,
-			RESOURCEFILENAME_LOGO,
-			SCRIPTFILENAME_JS
-	};
+	private static final String[] names = { DASHBOARDFILENAME_HTML, DASHBOARDFILENAME_CSS, FAVICOFILENAME_ICO,
+			RESOURCEFILENAME_LOGO, SCRIPTFILENAME_JS };
 	private static final String TEXTHTML = "text/html";
 	private static final String TEXTCSS = "text/css";
 	private static final String IMAGEXICON = "image/x-icon";
 	private static final String IMAGEJPEG = "image/jpeg";
 	private static final String APPJS = "application/javascript";
-	private static final String[] mimeTypes = {
-			TEXTHTML,
-			TEXTCSS,
-			IMAGEXICON,
-			IMAGEJPEG,
-			APPJS 
-	};
+	private static final String[] mimeTypes = { TEXTHTML, TEXTCSS, IMAGEXICON, IMAGEJPEG, APPJS };
 
 	/**
 	 * This enumerates resources needed by the dashboard html file (css, images,
@@ -205,8 +192,7 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 		 *
 		 * @since 10.2.0
 		 */
-		FAVICON,
-		LOGO,
+		FAVICON, LOGO,
 		/**
 		 * This is JavaScript, extracted from xwserver.html
 		 *
@@ -589,10 +575,11 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 			response.setDateHeader("Date", new Date().getTime());
 			response.setContentType("text/xml;charset=UTF-8");
 			String msg = XMLable.XMLHEADER + "<" + XMLable.ROOTTAG + ">";
-//			response.getWriter().println(XMLable.XMLHEADER + "<" + XMLable.ROOTTAG + ">");
+			// response.getWriter().println(XMLable.XMLHEADER + "<" +
+			// XMLable.ROOTTAG + ">");
 			if (answer != null) {
 				debug("HTTPHandler#write(" + answer.toXml() + ")");
-//				response.getWriter().println(answer.toXml());
+				// response.getWriter().println(answer.toXml());
 				msg += answer.toXml();
 			}
 			msg += "</" + XMLable.ROOTTAG + ">";
@@ -620,14 +607,15 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 			getLogger().debug("Facebook AppId not set");
 			return;
 		}
-		String facebookAppID = Dispatcher.getConfig().getProperty(XWPropertyDefs.FACEBOOKAPPID); 
-		boolean facebookApp = (facebookAppID != null) && (facebookAppID.length() > 0); 
+		final String facebookAppID = Dispatcher.getConfig().getProperty(XWPropertyDefs.FACEBOOKAPPID);
+		final boolean facebookApp = (facebookAppID != null) && (facebookAppID.length() > 0);
 		if (facebookApp) {
 			final Cookie cookiefacebook = new Cookie(COOKIE_FACEBOOKAPP, facebookAppID);
 			getLogger().debug(COOKIE_FACEBOOKAPP + " = " + facebookAppID);
 			response.addCookie(cookiefacebook);
 		}
 	}
+
 	/**
 	 * This sets google application cookie
 	 *
@@ -638,15 +626,16 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 			getLogger().debug("Google AppId not set");
 			return;
 		}
-		String googleAppID = Dispatcher.getConfig().getProperty(XWPropertyDefs.GOOGLEAPPID); 
+		final String googleAppID = Dispatcher.getConfig().getProperty(XWPropertyDefs.GOOGLEAPPID);
 		getLogger().debug("googleAppID = " + googleAppID);
-		boolean googleApp = (googleAppID != null) && (googleAppID.length() > 0); 
+		final boolean googleApp = (googleAppID != null) && (googleAppID.length() > 0);
 		if (googleApp) {
 			final Cookie cookieGoogle = new Cookie(COOKIE_GOOGLEAPP, googleAppID);
 			getLogger().debug(COOKIE_GOOGLEAPP + " = " + googleAppID);
 			response.addCookie(cookieGoogle);
 		}
 	}
+
 	/**
 	 * This sets twitter application cookie
 	 *
@@ -657,14 +646,15 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 			getLogger().debug("Twitter AppId not set");
 			return;
 		}
-		String twitterAppID = Dispatcher.getConfig().getProperty(XWPropertyDefs.TWITTERAPPID); 
-		boolean twitterApp = (twitterAppID != null) && (twitterAppID.length() > 0); 
+		final String twitterAppID = Dispatcher.getConfig().getProperty(XWPropertyDefs.TWITTERAPPID);
+		final boolean twitterApp = (twitterAppID != null) && (twitterAppID.length() > 0);
 		if (twitterApp) {
 			final Cookie cookieTwitter = new Cookie(COOKIE_TWITTERAPP, twitterAppID);
 			getLogger().debug(COOKIE_TWITTERAPP + " = " + twitterAppID);
 			response.addCookie(cookieTwitter);
 		}
 	}
+
 	/**
 	 * This sets yahoo application cookie
 	 *
@@ -675,14 +665,15 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 			getLogger().debug("Yahoo AppId not set");
 			return;
 		}
-		String yahooAppID = Dispatcher.getConfig().getProperty(XWPropertyDefs.YAHOOAPPID); 
-		boolean yahooApp = (yahooAppID != null) && (yahooAppID.length() > 0); 
+		final String yahooAppID = Dispatcher.getConfig().getProperty(XWPropertyDefs.YAHOOAPPID);
+		final boolean yahooApp = (yahooAppID != null) && (yahooAppID.length() > 0);
 		if (yahooApp) {
 			final Cookie cookieYahoo = new Cookie(COOKIE_YAHOOAPP, yahooAppID);
 			getLogger().debug(COOKIE_YAHOOAPP + " = " + yahooAppID);
 			response.addCookie(cookieYahoo);
 		}
 	}
+
 	/**
 	 * This sets application cookie
 	 *
@@ -719,8 +710,7 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 		if (r.getMimeType() != null) {
 			getLogger().debug("sendind " + r + " ; " + r.getMimeType());
 			response.setContentType(r.getMimeType());
-		}
-		else {
+		} else {
 			getLogger().debug("sendind " + r + " ; unkown mime type");
 		}
 		r.write(response);
@@ -830,12 +820,13 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 	 */
 	@Override
 	public synchronized void writeFile(final File f) throws IOException {
-		try(final StreamIO io = new StreamIO(new DataOutputStream(response.getOutputStream()), null, false)) {
+		try (final StreamIO io = new StreamIO(new DataOutputStream(response.getOutputStream()), null, false)) {
 			mileStone("<writeFile file='" + f + "'>");
 			//
 			// 2 dec 2007 : we force nio to false
 			//
-//			final StreamIO io = new StreamIO(new DataOutputStream(response.getOutputStream()), null, false);
+			// final StreamIO io = new StreamIO(new
+			// DataOutputStream(response.getOutputStream()), null, false);
 			io.writeFileContent(f);
 		} catch (final Exception e) {
 			getLogger().exception(e);
@@ -903,7 +894,7 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 		if (request.getParameterMap().size() <= 0) {
 
 			if (target.equals(PATH)) {
-				redirectPage(baseRequest,Resources.DASHBOARDHTML); 
+				redirectPage(baseRequest, Resources.DASHBOARDHTML);
 				return;
 			}
 
@@ -915,8 +906,6 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 			}
 		}
 
-		
-		
 		final HttpSession session = request.getSession(true);
 		final String authState = request.getParameter(XWPostParams.AUTH_STATE.toString()) != null
 				? request.getParameter(XWPostParams.AUTH_STATE.toString())
@@ -927,13 +916,11 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 		final String authId = request.getParameter(XWPostParams.AUTH_IDENTITY.toString()) != null
 				? request.getParameter(XWPostParams.AUTH_IDENTITY.toString())
 				: (String) session.getAttribute(XWPostParams.AUTH_IDENTITY.toString());
-				
+
 		getLogger().debug("oauthState = " + authState);
 		getLogger().debug("oauthEmail= " + authEmail);
 		getLogger().debug("oauthId= " + authId);
 
-		
-		
 		UserInterface user = null;
 
 		user = userFromCertificate(request);
@@ -1265,6 +1252,7 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 
 	/**
 	 * This retrieves the user from a remove OpenId server
+	 * 
 	 * @deprecated since 10.5.0, OAuth is preferred
 	 */
 	@Deprecated
@@ -1360,7 +1348,7 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 		final String authId = request.getParameter(XWPostParams.AUTH_IDENTITY.toString()) != null
 				? request.getParameter(XWPostParams.AUTH_IDENTITY.toString())
 				: (String) session.getAttribute(XWPostParams.AUTH_IDENTITY.toString());
-				
+
 		getLogger().debug("oauthState = " + authState);
 		getLogger().debug("oauthEmail= " + authEmail);
 		getLogger().debug("oauthId= " + authId);

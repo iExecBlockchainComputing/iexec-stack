@@ -128,7 +128,7 @@ public class MD5OutputStream extends FilterOutputStream {
 	 **/
 	public static void main(final String[] arg) {
 		try (final MD5OutputStream out = new MD5OutputStream(new NullOutputStream());
-				final InputStream in = new BufferedInputStream(new FileInputStream(arg[0]))){
+				final InputStream in = new BufferedInputStream(new FileInputStream(arg[0]))) {
 			final byte[] buf = new byte[65536];
 			int numRead;
 			while ((numRead = in.read(buf)) != -1) {

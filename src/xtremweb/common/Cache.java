@@ -463,7 +463,7 @@ public final class Cache extends XMLable {
 		setColumnAt(SIZE, "SIZE");
 
 		config = null;
-		cache = new Hashtable<URI, CacheEntry>(100);
+		cache = new Hashtable<>(100);
 		cacheFile = null;
 		try {
 			contentDir = File.createTempFile("xw-junit", "cache");
@@ -646,7 +646,7 @@ public final class Cache extends XMLable {
 
 		final String str2 = "</" + THISTAG + ">";
 		final byte[] strb2 = str2.getBytes(XWTools.UTF8);
-		
+
 		o.write(strb2);
 	}
 
@@ -724,7 +724,7 @@ public final class Cache extends XMLable {
 				final DataInputStream input = new DataInputStream(fis);
 				try (final XMLReader reader = new XMLReader(this)) {
 					reader.read(input);
-				} catch (final InvalidKeyException | EOFException  e) {
+				} catch (final InvalidKeyException | EOFException e) {
 					if (streamer != null) {
 						streamer.close();
 					}

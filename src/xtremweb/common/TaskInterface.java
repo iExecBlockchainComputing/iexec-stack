@@ -555,7 +555,7 @@ public final class TaskInterface extends xtremweb.common.Table {
 	 * @exception IOException
 	 *                is thrown is attribute is not well formed
 	 */
-	public UID getHost()  {
+	public UID getHost() {
 		try {
 			return (UID) getValue(Columns.HOSTUID);
 		} catch (final NullPointerException e) {
@@ -806,12 +806,14 @@ public final class TaskInterface extends xtremweb.common.Table {
 
 	/**
 	 * This sets the date when this task has been created
+	 * 
 	 * @since 10.5.1
 	 */
 	public boolean setInsertionDate() {
 		final Date date = new Date();
 		return setInsertionDate(date);
 	}
+
 	/**
 	 * This sets the date when this task has been created
 	 */
@@ -842,12 +844,14 @@ public final class TaskInterface extends xtremweb.common.Table {
 
 	/**
 	 * This sets the removal date
+	 * 
 	 * @since 10.5.1
 	 */
 	public boolean setRemovalDate() {
 		final Date date = new Date();
 		return setRemovalDate(date);
 	}
+
 	/**
 	 * This sets the removal date
 	 */
@@ -878,7 +882,7 @@ public final class TaskInterface extends xtremweb.common.Table {
 	 * @param worker
 	 *            is the worker UID
 	 */
-	public void setRunningBy(final UID worker)  {
+	public void setRunningBy(final UID worker) {
 
 		final java.util.Date newDate = new java.util.Date(System.currentTimeMillis());
 
@@ -907,7 +911,7 @@ public final class TaskInterface extends xtremweb.common.Table {
 	 *         expected one! the signalling worker has to be asked to stop
 	 *         computing
 	 */
-	public boolean setAlive(final UID worker)  {
+	public boolean setAlive(final UID worker) {
 
 		if ((isRunning() == false) || (getHost() == null)) {
 			setRunningBy(worker);

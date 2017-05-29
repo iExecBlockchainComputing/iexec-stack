@@ -75,7 +75,7 @@ public class Worker {
 			System.setProperty(XWPropertyDefs.CACHEDIR.toString(), (new File("cache")).getAbsolutePath());
 		}
 		logger = new Logger(this);
-		running = true;	
+		running = true;
 	}
 
 	/**
@@ -253,6 +253,7 @@ public class Worker {
 	public void setRunning(final boolean b) {
 		running = b;
 	}
+
 	private boolean isRunning() {
 		return running;
 	}

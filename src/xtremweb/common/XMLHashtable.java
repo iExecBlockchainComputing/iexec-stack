@@ -184,6 +184,7 @@ public final class XMLHashtable extends XMLValue {
 		setEmpty(false);
 		fromXml(attrs);
 	}
+
 	/**
 	 * This is called by the GC; this calls clear();
 	 *
@@ -225,7 +226,8 @@ public final class XMLHashtable extends XMLValue {
 	@Override
 	public String toXml() {
 
-		final StringBuilder ret = new StringBuilder("<" + getXMLTag() + " " + getColumnLabel(SIZEIDX) + "=\"" + size + "\" >");
+		final StringBuilder ret = new StringBuilder(
+				"<" + getXMLTag() + " " + getColumnLabel(SIZEIDX) + "=\"" + size + "\" >");
 
 		for (int i = 0; i < size; i++) {
 			ret.append(tuples[i].toXml());
@@ -249,7 +251,7 @@ public final class XMLHashtable extends XMLValue {
 		for (int i = 0; i < size; i++) {
 			tuples[i].toXml(o);
 		}
-		final String strTail = "</" + getXMLTag() + ">";		
+		final String strTail = "</" + getXMLTag() + ">";
 		o.write(strTail.getBytes(XWTools.UTF8));
 	}
 
@@ -445,7 +447,7 @@ public final class XMLHashtable extends XMLValue {
 
 			final Hashtable ret = xmlh.getHashtable();
 			System.out.println(ret);
-			Enumeration myenum = ret.keys();
+			final Enumeration myenum = ret.keys();
 			for (; myenum.hasMoreElements();) {
 
 				final Object k = myenum.nextElement();

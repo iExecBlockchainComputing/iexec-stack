@@ -128,26 +128,31 @@ public class HTTPOAuthHandler extends Thread implements org.eclipse.jetty.server
 		protected URL callbackUrl;
 		/**
 		 * This is the OAuth uri
+		 * 
 		 * @since 10.5.0
 		 */
 		protected URI authUri;
 		/**
 		 * This is the userinfo uri
+		 * 
 		 * @since 10.5.0
 		 */
 		protected URI userinfoEndpointUri;
 		/**
 		 * This is the user email attribute name
+		 * 
 		 * @since 10.5.0
 		 */
 		protected String emailAttrName;
 		/**
 		 * This is the user id attribute name
+		 * 
 		 * @since 10.5.0
 		 */
 		protected String idAttrName;
 		/**
 		 * This is the server address
+		 * 
 		 * @since 10.5.0
 		 */
 		protected String serverAddress;
@@ -179,6 +184,7 @@ public class HTTPOAuthHandler extends Thread implements org.eclipse.jetty.server
 		public String getAppId() {
 			return this.appId;
 		}
+
 		/**
 		 * This sets the api
 		 */
@@ -210,6 +216,7 @@ public class HTTPOAuthHandler extends Thread implements org.eclipse.jetty.server
 		public String getAppKey() {
 			return this.appKey;
 		}
+
 		/**
 		 * This sets the OAuth service scope
 		 */
@@ -225,6 +232,7 @@ public class HTTPOAuthHandler extends Thread implements org.eclipse.jetty.server
 		public String getScope() {
 			return this.scope;
 		}
+
 		/**
 		 * This sets the OAuth callback url
 		 */
@@ -243,6 +251,7 @@ public class HTTPOAuthHandler extends Thread implements org.eclipse.jetty.server
 
 		/**
 		 * This sets the OAuth URI
+		 * 
 		 * @since 10.5.0
 		 */
 		public void setOAuthUri(final URI key) {
@@ -251,6 +260,7 @@ public class HTTPOAuthHandler extends Thread implements org.eclipse.jetty.server
 
 		/**
 		 * This retrieves the OAuth URI
+		 * 
 		 * @since 10.5.0
 		 * @return the auth URI
 		 */
@@ -260,6 +270,7 @@ public class HTTPOAuthHandler extends Thread implements org.eclipse.jetty.server
 
 		/**
 		 * This sets the user info URI
+		 * 
 		 * @since 10.5.0
 		 */
 		public void setUserInfoEndpointUri(final URI key) {
@@ -268,14 +279,17 @@ public class HTTPOAuthHandler extends Thread implements org.eclipse.jetty.server
 
 		/**
 		 * This retrieves the user info URI
+		 * 
 		 * @since 10.5.0
 		 * @return the auth URI
 		 */
 		public URI getUserInfoEndpointUri() {
 			return this.userinfoEndpointUri;
 		}
+
 		/**
 		 * This sets the user info URI
+		 * 
 		 * @since 10.5.0
 		 */
 		public void setEmailAttrName(final String key) {
@@ -284,14 +298,17 @@ public class HTTPOAuthHandler extends Thread implements org.eclipse.jetty.server
 
 		/**
 		 * This retrieves the user info URI
+		 * 
 		 * @since 10.5.0
 		 * @return the auth URI
 		 */
 		public String getEmailAttrName() {
 			return this.emailAttrName;
 		}
+
 		/**
 		 * This sets the user info URI
+		 * 
 		 * @since 10.5.0
 		 */
 		public void setIdAttrName(final String key) {
@@ -300,6 +317,7 @@ public class HTTPOAuthHandler extends Thread implements org.eclipse.jetty.server
 
 		/**
 		 * This retrieves the user info URI
+		 * 
 		 * @since 10.5.0
 		 * @return the auth URI
 		 */
@@ -309,6 +327,7 @@ public class HTTPOAuthHandler extends Thread implements org.eclipse.jetty.server
 
 		/**
 		 * This sets the server address
+		 * 
 		 * @since 10.5.0
 		 */
 		public void setServerAddress(final String key) {
@@ -317,14 +336,17 @@ public class HTTPOAuthHandler extends Thread implements org.eclipse.jetty.server
 
 		/**
 		 * This retrieves the server address
+		 * 
 		 * @since 10.5.0
 		 * @return the auth URI
 		 */
 		public String getServerAddress() {
 			return this.serverAddress;
 		}
+
 		/**
 		 * This sets the service
+		 * 
 		 * @since 10.5.0
 		 */
 		public void setServiceBuilder(final ServiceBuilder key) {
@@ -333,6 +355,7 @@ public class HTTPOAuthHandler extends Thread implements org.eclipse.jetty.server
 
 		/**
 		 * This retrieves the service
+		 * 
 		 * @since 10.5.0
 		 * @return the auth URI
 		 */
@@ -455,18 +478,18 @@ public class HTTPOAuthHandler extends Thread implements org.eclipse.jetty.server
 			Operator.FACEBOOK.setOAuthUri(new URI(Dispatcher.getConfig().getProperty(XWPropertyDefs.FACEBOOKAUTHURI)));
 			Operator.FACEBOOK.setScope(Dispatcher.getConfig().getProperty(XWPropertyDefs.FACEBOOKSCOPE));
 			Operator.FACEBOOK.setServerAddress(FACEBOOK_SERVER_ADDR);
-			Operator.FACEBOOK.setCallbackUrl(new URL(Dispatcher.getConfig().getProperty(XWPropertyDefs.FACEBOOKCALLBACKURL)));
+			Operator.FACEBOOK
+					.setCallbackUrl(new URL(Dispatcher.getConfig().getProperty(XWPropertyDefs.FACEBOOKCALLBACKURL)));
 			Operator.FACEBOOK.setApi(FacebookApi.instance());
-			Operator.FACEBOOK.setUserInfoEndpointUri(new URI( XWTools.jsonValueFromURL(Dispatcher.getConfig().getProperty(XWPropertyDefs.FACEBOOK_DISCOVERYURI), FACEBOOK_USERINFO_ATTR_NAME)));
+			Operator.FACEBOOK.setUserInfoEndpointUri(new URI(
+					XWTools.jsonValueFromURL(Dispatcher.getConfig().getProperty(XWPropertyDefs.FACEBOOK_DISCOVERYURI),
+							FACEBOOK_USERINFO_ATTR_NAME)));
 			Operator.FACEBOOK.setEmailAttrName(FACEBOOK_USEREMAIL_ATTR_NAME);
 			Operator.FACEBOOK.setIdAttrName(FACEBOOK_USERID_ATTR_NAME);
-			Operator.FACEBOOK.setServiceBuilder(new ServiceBuilder()
-					.apiKey(Operator.FACEBOOK.getAppId())
-					.apiSecret(Operator.FACEBOOK.getAppKey())
-					.callback(Operator.FACEBOOK.getCallbackUrl().toString())
+			Operator.FACEBOOK.setServiceBuilder(new ServiceBuilder().apiKey(Operator.FACEBOOK.getAppId())
+					.apiSecret(Operator.FACEBOOK.getAppKey()).callback(Operator.FACEBOOK.getCallbackUrl().toString())
 					.scope(Operator.FACEBOOK.getScope()));
-		}
-		catch(final Exception e) {
+		} catch (final Exception e) {
 			logger.warn(Operator.FACEBOOK.toString() + " : " + e.toString());
 		}
 		try {
@@ -475,18 +498,18 @@ public class HTTPOAuthHandler extends Thread implements org.eclipse.jetty.server
 			Operator.GOOGLE.setOAuthUri(new URI(Dispatcher.getConfig().getProperty(XWPropertyDefs.GOOGLEAUTHURI)));
 			Operator.GOOGLE.setScope(Dispatcher.getConfig().getProperty(XWPropertyDefs.GOOGLESCOPE));
 			Operator.GOOGLE.setServerAddress(GOOGLE_SERVER_ADDR);
-			Operator.GOOGLE.setCallbackUrl(new URL(Dispatcher.getConfig().getProperty(XWPropertyDefs.GOOGLECALLBACKURL)));
+			Operator.GOOGLE
+					.setCallbackUrl(new URL(Dispatcher.getConfig().getProperty(XWPropertyDefs.GOOGLECALLBACKURL)));
 			Operator.GOOGLE.setApi(GoogleApi20.instance());
-			Operator.GOOGLE.setUserInfoEndpointUri(new URI( XWTools.jsonValueFromURL(Dispatcher.getConfig().getProperty(XWPropertyDefs.GOOGLE_DISCOVERYURI), GOOGLE_USERINFO_ENDPOINT_ATTR_NAME)));
+			Operator.GOOGLE.setUserInfoEndpointUri(new URI(
+					XWTools.jsonValueFromURL(Dispatcher.getConfig().getProperty(XWPropertyDefs.GOOGLE_DISCOVERYURI),
+							GOOGLE_USERINFO_ENDPOINT_ATTR_NAME)));
 			Operator.GOOGLE.setEmailAttrName(GOOGLE_USEREMAIL_ATTR_NAME);
 			Operator.GOOGLE.setIdAttrName(GOOGLE_USERID_ATTR_NAME);
-			Operator.GOOGLE.setServiceBuilder(new ServiceBuilder()
-					.apiKey(Operator.GOOGLE.getAppId())
-					.apiSecret(Operator.GOOGLE.getAppKey())
-					.callback(Operator.GOOGLE.getCallbackUrl().toString())
-					.scope(Operator.GOOGLE.getScope()));
-		}
-		catch(final Exception e) {
+			Operator.GOOGLE.setServiceBuilder(
+					new ServiceBuilder().apiKey(Operator.GOOGLE.getAppId()).apiSecret(Operator.GOOGLE.getAppKey())
+							.callback(Operator.GOOGLE.getCallbackUrl().toString()).scope(Operator.GOOGLE.getScope()));
+		} catch (final Exception e) {
 			logger.warn(Operator.GOOGLE.toString() + " : " + e.toString());
 		}
 
@@ -496,18 +519,18 @@ public class HTTPOAuthHandler extends Thread implements org.eclipse.jetty.server
 			Operator.TWITTER.setOAuthUri(new URI(Dispatcher.getConfig().getProperty(XWPropertyDefs.TWITTERAUTHURI)));
 			Operator.TWITTER.setScope(Dispatcher.getConfig().getProperty(XWPropertyDefs.TWITTERSCOPE));
 			Operator.TWITTER.setServerAddress(TWITTER_SERVER_ADDR);
-			Operator.TWITTER.setCallbackUrl(new URL(Dispatcher.getConfig().getProperty(XWPropertyDefs.TWITTERCALLBACKURL)));
+			Operator.TWITTER
+					.setCallbackUrl(new URL(Dispatcher.getConfig().getProperty(XWPropertyDefs.TWITTERCALLBACKURL)));
 			Operator.TWITTER.setApi(TwitterApi.instance());
-			Operator.TWITTER.setUserInfoEndpointUri(new URI( XWTools.jsonValueFromURL(Dispatcher.getConfig().getProperty(XWPropertyDefs.TWITTER_DISCOVERYURI), TWITTER_USERINFO_ATTR_NAME)));
+			Operator.TWITTER.setUserInfoEndpointUri(new URI(
+					XWTools.jsonValueFromURL(Dispatcher.getConfig().getProperty(XWPropertyDefs.TWITTER_DISCOVERYURI),
+							TWITTER_USERINFO_ATTR_NAME)));
 			Operator.TWITTER.setEmailAttrName(TWITTER_USEREMAIL_ATTR_NAME);
 			Operator.TWITTER.setIdAttrName(TWITTER_USERID_ATTR_NAME);
-			Operator.TWITTER.setServiceBuilder(new ServiceBuilder()
-					.apiKey(Operator.TWITTER.getAppId())
-					.apiSecret(Operator.TWITTER.getAppKey())
-					.callback(Operator.TWITTER.getCallbackUrl().toString())
-					.scope(Operator.TWITTER.getScope()));
-		}
-		catch(final Exception e) {
+			Operator.TWITTER.setServiceBuilder(
+					new ServiceBuilder().apiKey(Operator.TWITTER.getAppId()).apiSecret(Operator.TWITTER.getAppKey())
+							.callback(Operator.TWITTER.getCallbackUrl().toString()).scope(Operator.TWITTER.getScope()));
+		} catch (final Exception e) {
 			logger.warn(Operator.TWITTER.toString() + " : " + e.toString());
 		}
 
@@ -519,21 +542,19 @@ public class HTTPOAuthHandler extends Thread implements org.eclipse.jetty.server
 			Operator.YAHOO.setServerAddress(YAHOO_SERVER_ADDR);
 			Operator.YAHOO.setCallbackUrl(new URL(Dispatcher.getConfig().getProperty(XWPropertyDefs.YAHOOCALLBACKURL)));
 			Operator.YAHOO.setApi(YahooApi.instance());
-			Operator.YAHOO.setUserInfoEndpointUri(new URI( XWTools.jsonValueFromURL(Dispatcher.getConfig().getProperty(XWPropertyDefs.YAHOO_DISCOVERYURI), YAHOO_USERINFO_ATTR_NAME)));
+			Operator.YAHOO.setUserInfoEndpointUri(new URI(XWTools.jsonValueFromURL(
+					Dispatcher.getConfig().getProperty(XWPropertyDefs.YAHOO_DISCOVERYURI), YAHOO_USERINFO_ATTR_NAME)));
 			Operator.YAHOO.setEmailAttrName(YAHOO_USEREMAIL_ATTR_NAME);
 			Operator.YAHOO.setIdAttrName(YAHOO_USERID_ATTR_NAME);
-			Operator.YAHOO.setServiceBuilder(new ServiceBuilder()
-					.apiKey(Operator.YAHOO.getAppId())
-					.apiSecret(Operator.YAHOO.getAppKey())
-					.callback(Operator.YAHOO.getCallbackUrl().toString())
-					.scope(Operator.YAHOO.getScope()));
-		}
-		catch(final Exception e) {
+			Operator.YAHOO.setServiceBuilder(
+					new ServiceBuilder().apiKey(Operator.YAHOO.getAppId()).apiSecret(Operator.YAHOO.getAppKey())
+							.callback(Operator.YAHOO.getCallbackUrl().toString()).scope(Operator.YAHOO.getScope()));
+		} catch (final Exception e) {
 			logger.warn(Operator.YAHOO.toString() + " : " + e.toString());
 		}
 
 		for (final Operator op : Operator.values()) {
-			if (op.getServiceBuilder() == null) { 
+			if (op.getServiceBuilder() == null) {
 				continue;
 			}
 			logger.info("" + op + " server   = " + op.getServerAddress());
@@ -723,15 +744,15 @@ public class HTTPOAuthHandler extends Thread implements org.eclipse.jetty.server
 
 		try {
 			final String code = request.getParameter(XWPostParams.AUTH_CODE.toString());
-			if((code == null) || (code.length() < 1)) {
+			if ((code == null) || (code.length() < 1)) {
 				throw new OAuthException("no code found");
 			}
 			logger.debug("code = " + code);
-			//Token accessToken = service.getAccessToken(state);
+			// Token accessToken = service.getAccessToken(state);
 			final String state = request.getParameter(XWPostParams.AUTH_STATE.toString());
 			logger.debug("state = " + state);
 			final HttpSession session = request.getSession(false);
-			if(session == null) {
+			if (session == null) {
 				throw new OAuthException("no session found");
 			}
 			logger.debug("session = " + session.getId());
@@ -743,13 +764,14 @@ public class HTTPOAuthHandler extends Thread implements org.eclipse.jetty.server
 			}
 			Token accessToken = null;
 			if (service.getClass() == OAuth20Service.class) {
-				accessToken = ((OAuth20Service)service).getAccessToken(code);
+				accessToken = ((OAuth20Service) service).getAccessToken(code);
 			}
 
 			final Operator op = operatorFromRequest(request);
 			logger.debug("userinfo_endpoint " + op.getUserInfoEndpointUri());
 			logger.debug("accessTocken " + accessToken + ", " + accessToken.getRawResponse());
-			final OAuthRequest oauthRequest = new OAuthRequest(Verb.GET, "https://www.googleapis.com/oauth2/v3/userinfo", service);
+			final OAuthRequest oauthRequest = new OAuthRequest(Verb.GET,
+					"https://www.googleapis.com/oauth2/v3/userinfo", service);
 			service.signRequest(accessToken, oauthRequest);
 			final Response oauthResponse = oauthRequest.send();
 
@@ -762,13 +784,13 @@ public class HTTPOAuthHandler extends Thread implements org.eclipse.jetty.server
 			final JSONObject obj = new JSONObject(jst);
 			final Authentication auth = getAuthentication(op, session, obj);
 
-			final String url = localRootUrl + "?" + XWPostParams.AUTH_STATE + "=" + state
-					+ "&" + XWPostParams.AUTH_EMAIL + "="
-					+ auth.getEmail() + "&" + XWPostParams.AUTH_IDENTITY + "=" + auth.getIdentity();
+			final String url = localRootUrl + "?" + XWPostParams.AUTH_STATE + "=" + state + "&"
+					+ XWPostParams.AUTH_EMAIL + "=" + auth.getEmail() + "&" + XWPostParams.AUTH_IDENTITY + "="
+					+ auth.getIdentity();
 			logger.debug("sendRedirectUrm = " + url);
 			response.sendRedirect(url);
 			return;
-		} catch(final OAuthException e) {
+		} catch (final OAuthException e) {
 
 			try {
 				final Operator op = operatorFromRequest(request);
@@ -778,17 +800,22 @@ public class HTTPOAuthHandler extends Thread implements org.eclipse.jetty.server
 			}
 		}
 	}
+
 	/**
 	 * This retrieves the operator from the request
-	 * @param request is the HTTP request
+	 * 
+	 * @param request
+	 *            is the HTTP request
 	 * @return the found operator
-	 * @throws OAuthException is no operator found
+	 * @throws OAuthException
+	 *             is no operator found
 	 */
 	private Operator operatorFromRequest(final HttpServletRequest request) throws OAuthException {
 		try {
 			final String operatorName = request.getParameter(XWPostParams.AUTH_OPERATOR.toString());
-			final String path = request.getPathInfo(); 
-			final Operator op = operatorName != null ? Operator.valueOf(operatorName) : Operator.valueOf(path.substring(1).toUpperCase()); 
+			final String path = request.getPathInfo();
+			final Operator op = operatorName != null ? Operator.valueOf(operatorName)
+					: Operator.valueOf(path.substring(1).toUpperCase());
 			logger.debug("operator = " + op);
 			return op;
 		} catch (final Exception e) {
@@ -830,11 +857,11 @@ public class HTTPOAuthHandler extends Thread implements org.eclipse.jetty.server
 		storeState(newState, service);
 
 		if (service.getClass() == OAuth10aService.class) {
-			final OAuth1RequestToken token = ((OAuth10aService)service).getRequestToken();
-			response.sendRedirect(((OAuth10aService)service).getAuthorizationUrl(token));
+			final OAuth1RequestToken token = ((OAuth10aService) service).getRequestToken();
+			response.sendRedirect(((OAuth10aService) service).getAuthorizationUrl(token));
 		}
 		if (service.getClass() == OAuth20Service.class) {
-			response.sendRedirect(((OAuth20Service)service).getAuthorizationUrl());
+			response.sendRedirect(((OAuth20Service) service).getAuthorizationUrl());
 		}
 	}
 
@@ -845,7 +872,8 @@ public class HTTPOAuthHandler extends Thread implements org.eclipse.jetty.server
 	 *            is the HTTP request
 	 * @return the authentication if found; null otherwise
 	 */
-	private Authentication getAuthentication(final Operator op, final HttpSession session, final JSONObject obj) throws OAuthException {
+	private Authentication getAuthentication(final Operator op, final HttpSession session, final JSONObject obj)
+			throws OAuthException {
 
 		String email = obj.getString(op.getEmailAttrName());
 		String id = obj.getString(op.getIdAttrName());
@@ -869,7 +897,7 @@ public class HTTPOAuthHandler extends Thread implements org.eclipse.jetty.server
 	/**
 	 * This simulates a database that store all states:
 	 */
-	private final Hashtable<String, OAuthService> stateDb = new Hashtable<String, OAuthService>();
+	private final Hashtable<String, OAuthService> stateDb = new Hashtable<>();
 
 	/**
 	 * This generates a new state (a random string) and stores it in stateDb
@@ -903,6 +931,7 @@ public class HTTPOAuthHandler extends Thread implements org.eclipse.jetty.server
 	boolean stateExists(final String state) {
 		return stateDb.containsKey(state);
 	}
+
 	/**
 	 * This tests if state exist in database:
 	 *
@@ -912,6 +941,7 @@ public class HTTPOAuthHandler extends Thread implements org.eclipse.jetty.server
 	OAuthService getState(final String state) {
 		return stateDb.get(state);
 	}
+
 	/**
 	 * This stores state in database, if not already stored
 	 *

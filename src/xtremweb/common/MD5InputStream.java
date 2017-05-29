@@ -153,7 +153,7 @@ public class MD5InputStream extends FilterInputStream {
 		final String filename = arg[arg.length - 1];
 		try (final FileInputStream fis = new FileInputStream(filename);
 				final InputStream is = new BufferedInputStream(fis);
-				final MD5InputStream in = new MD5InputStream(new BufferedInputStream(fis))){
+				final MD5InputStream in = new MD5InputStream(new BufferedInputStream(fis))) {
 			boolean useDefaultMd5 = false;
 			boolean useNativeLib = true;
 			for (int i = 0; i < (arg.length - 1); i++) {

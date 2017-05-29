@@ -58,6 +58,7 @@ public enum AppTypeEnum {
 		public String getPathName() {
 			return virtualboxpaths[OSEnum.getOs().ordinal()];
 		}
+
 		/**
 		 * This retrieves application default pathname
 		 *
@@ -100,6 +101,7 @@ public enum AppTypeEnum {
 	};
 
 	private static final String NOBINPATH = "no binary path for ";
+
 	/**
 	 * This retrieves an OS from its ordinal value
 	 *

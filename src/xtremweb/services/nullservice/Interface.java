@@ -27,7 +27,7 @@ package xtremweb.services.nullservice;
  * Date : Nov 20th, 2005 <br />
  * This package does nothing. This is only an XtremWeb service test
  *
- * @author <a href="lodygens  a/\t  lal.in2p3.fr">Oleg Lodygensky</a>
+ * @author <a href="lodygens a/\t lal.in2p3.fr">Oleg Lodygensky</a>
  * @since RPCXW
  */
 

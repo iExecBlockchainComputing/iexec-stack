@@ -75,8 +75,7 @@ class UsersTableModel extends TableModel {
 	/**
 	 * These defines submission parameter labels
 	 */
-	private static final String[] labels = { UID, GROUP, LOGIN, P, P2, EMAIL, FNAME, LNAME, TEAM, COUNTRY,
-			RIGHTS };
+	private static final String[] labels = { UID, GROUP, LOGIN, P, P2, EMAIL, FNAME, LNAME, TEAM, COUNTRY, RIGHTS };
 
 	private static final String HELPSTRING = "<u>" + GROUP + "</u> : select an user group (this is optionnal)<br>"
 			+ "<u>" + LOGIN + "</u> : a login must be unic in the platform; reusing an existing login updates user<br>"
@@ -122,13 +121,13 @@ class UsersTableModel extends TableModel {
 
 		try {
 			final XMLVector groups = getParent().commClient().getUserGroups();
-			final ArrayList<XMLable> vgroups = (ArrayList<XMLable>)groups.getXmlValues();
+			final ArrayList<XMLable> vgroups = (ArrayList<XMLable>) groups.getXmlValues();
 
 			groupLabels = new String[vgroups.size() + 1];
 			int i = 0;
 			groupLabels[i++] = SELECT;
 
-			for(int idx = 0; idx < vgroups.size(); idx++) {
+			for (int idx = 0; idx < vgroups.size(); idx++) {
 				final UID groupUID = (UID) vgroups.get(idx);
 				final UserGroupInterface group = (UserGroupInterface) getParent().commClient().get(groupUID, false);
 				groupLabels[i++] = group.getLabel();

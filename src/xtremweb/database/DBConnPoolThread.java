@@ -142,7 +142,7 @@ public class DBConnPoolThread extends Thread {
 		className = getClass().getName();
 
 		logger.config("dburl      = '" + dburl + "' " + "dbuser     = '" + config.getProperty(XWPropertyDefs.DBUSER)
-		+ "' dbpassword = '" + config.getProperty(XWPropertyDefs.DBPASS) + "'");
+				+ "' dbpassword = '" + config.getProperty(XWPropertyDefs.DBPASS) + "'");
 
 		connPool = Collections.synchronizedList(new LinkedList<Connection>());
 		updateFifo = Collections.synchronizedList(new LinkedList<String>());
@@ -277,11 +277,11 @@ public class DBConnPoolThread extends Thread {
 	protected final synchronized <T extends Type> Collection<T> executeQuery(final Connection conn, final String query,
 			final T row) throws IOException {
 
-//		if (row == null) {
-//			Thread.currentThread().dumpStack();
-//			throw new IOException("executeQuery : row is null");
-//		}
-		MileStone mileStone = new MileStone(xtremweb.database.DBConnPoolThread.class);
+		// if (row == null) {
+		// Thread.currentThread().dumpStack();
+		// throw new IOException("executeQuery : row is null");
+		// }
+		final MileStone mileStone = new MileStone(xtremweb.database.DBConnPoolThread.class);
 
 		// remove comma from milestone to be able to generate CSV files
 		// using benchmarks/milstone/scripts/parse.awk
@@ -300,7 +300,7 @@ public class DBConnPoolThread extends Thread {
 
 		ResultSet rs = null;
 
-		try (final Statement stmt = dbConn.createStatement()){
+		try (final Statement stmt = dbConn.createStatement()) {
 			ArrayList<T> ret = null;
 
 			logger.finest(query);
@@ -317,8 +317,8 @@ public class DBConnPoolThread extends Thread {
 				throw new IOException("can't get SQL results");
 			}
 
-			ret = new ArrayList<T>();
-			if(row != null) {
+			ret = new ArrayList<>();
+			if (row != null) {
 				while (rs.next()) {
 					@SuppressWarnings("unchecked")
 					final T theRow = (T) row.getClass().newInstance();
@@ -376,7 +376,7 @@ public class DBConnPoolThread extends Thread {
 
 		ResultSet rs = null;
 
-		try (Statement stmt = dbConn.createStatement()){
+		try (Statement stmt = dbConn.createStatement()) {
 
 			logger.finest(query);
 
@@ -387,7 +387,7 @@ public class DBConnPoolThread extends Thread {
 				rs = stmt.getGeneratedKeys();
 			}
 
-			ArrayList<UID> ret = new ArrayList<UID>();
+			final ArrayList<UID> ret = new ArrayList<>();
 
 			while (rs.next()) {
 				ret.add(new UID(rs.getString("theuid")));
@@ -407,7 +407,7 @@ public class DBConnPoolThread extends Thread {
 			throw new IOException(e);
 		} finally {
 			try {
-				if(rs != null) {
+				if (rs != null) {
 					rs.close();
 				}
 			} catch (final Exception e2) {
@@ -449,8 +449,7 @@ public class DBConnPoolThread extends Thread {
 	 *            is string to use in SQL SELECT WHERE clause if not null
 	 *            otherwise TableRow#criterias() is used
 	 */
-	public <T extends Table> void update(final Collection<T> rows, final String criterias)
-			throws IOException {
+	public <T extends Table> void update(final Collection<T> rows, final String criterias) throws IOException {
 
 		try {
 			final Iterator<T> rowit = rows.iterator();
@@ -472,11 +471,12 @@ public class DBConnPoolThread extends Thread {
 	 *
 	 * @see #update(Table, String, boolean)
 	 */
-	public synchronized <T extends Table> void update(final T row, final String criteria, final boolean pool) throws IOException {
+	public synchronized <T extends Table> void update(final T row, final String criteria, final boolean pool)
+			throws IOException {
 
 		try {
 			final String rowset = row.toString();
-			final String theCriteria = criteria != null ? criteria : row .criteria();
+			final String theCriteria = criteria != null ? criteria : row.criteria();
 
 			if ((theCriteria == null) || (rowset == null)) {
 				throw new IOException("unable to get update criteria");
@@ -514,7 +514,7 @@ public class DBConnPoolThread extends Thread {
 			throw new IOException("row is null ?!?!");
 		}
 		return config.getProperty(XWPropertyDefs.DBNAME) + "."
-		+ row.fromTableNames().replaceAll(",", "," + config.getProperty(XWPropertyDefs.DBNAME) + ".");
+				+ row.fromTableNames().replaceAll(",", "," + config.getProperty(XWPropertyDefs.DBNAME) + ".");
 	}
 
 	/**
@@ -582,8 +582,8 @@ public class DBConnPoolThread extends Thread {
 			}
 		}
 		final String query = "SELECT " + row.rowSelection() + " FROM " + rowTableNames(row)
-		+ (conditions == null ? "" : " WHERE " + conditions)
-		+ (groupBy == null ? "" : " GROUP BY " + groupBy) + " LIMIT " + limit;
+				+ (conditions == null ? "" : " WHERE " + conditions) + (groupBy == null ? "" : " GROUP BY " + groupBy)
+				+ " LIMIT " + limit;
 
 		return executeQuery(query, row);
 	}
@@ -628,9 +628,9 @@ public class DBConnPoolThread extends Thread {
 				}
 			}
 			final String query = "SELECT " + row.rowSelection() + " FROM " + rowTableNames(row)
-			+ (conditions == null ? "" : " WHERE " + conditions) + " LIMIT " + config.requestLimit();
+					+ (conditions == null ? "" : " WHERE " + conditions) + " LIMIT " + config.requestLimit();
 
-			final ArrayList<UID> ret = (ArrayList<UID>)queryUID(query);
+			final ArrayList<UID> ret = (ArrayList<UID>) queryUID(query);
 			return ret;
 		} catch (final Exception e) {
 			logger.exception(e);
@@ -655,7 +655,7 @@ public class DBConnPoolThread extends Thread {
 		final String query = "INSERT INTO " + config.getProperty(XWPropertyDefs.DBNAME) + "." + row.tableName() + ("(")
 				+ row.getColumns() + (") ") + " VALUES (" + criteria + ")";
 
-		//		executeQuery(query, row);
+		// executeQuery(query, row);
 		updateFifo.add(query);
 		notify();
 	}
@@ -676,13 +676,13 @@ public class DBConnPoolThread extends Thread {
 			}
 
 			String query = "INSERT INTO " + config.getProperty(XWPropertyDefs.DBNAME) + "." + row.tableName()
-			+ HISTORYSUFFIX + " SELECT * FROM " + config.getProperty(XWPropertyDefs.DBNAME) + "."
-			+ row.tableName() + " WHERE " + criteria;
+					+ HISTORYSUFFIX + " SELECT * FROM " + config.getProperty(XWPropertyDefs.DBNAME) + "."
+					+ row.tableName() + " WHERE " + criteria;
 			executeQuery(query, row);
 
 			query = "DELETE FROM " + config.getProperty(XWPropertyDefs.DBNAME) + "." + row.tableName() + " WHERE "
 					+ criteria;
-			//			executeQuery(query, row);
+			// executeQuery(query, row);
 			updateFifo.add(query);
 			notify();
 		} catch (final Exception e) {
@@ -706,7 +706,7 @@ public class DBConnPoolThread extends Thread {
 					+ WorkInterface.Columns.STATUS.toString() + "='" + StatusEnum.WAITING + "' or "
 					+ WorkInterface.Columns.STATUS.toString() + "='" + StatusEnum.PENDING + "') OR ISNULL(status))";
 
-			//			executeQuery(query, null);
+			// executeQuery(query, null);
 			updateFifo.add(query);
 			notify();
 		} catch (final Exception e) {

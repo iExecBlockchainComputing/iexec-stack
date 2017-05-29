@@ -32,7 +32,7 @@ package xtremweb.common;
  *
  * @since 1.9.0
  *
- * @author <a href="mailto: lodygens  *a**t* lal.in2p3.fr">Oleg Lodygensky</a>
+ * @author <a href="mailto: lodygens *a**t* lal.in2p3.fr">Oleg Lodygensky</a>
  * @version %I% %G%
  */
 

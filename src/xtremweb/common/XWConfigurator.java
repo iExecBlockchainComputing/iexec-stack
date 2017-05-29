@@ -520,7 +520,7 @@ public final class XWConfigurator extends Properties {
 			setProperty(XWPropertyDefs.LOGGERLEVEL);
 			return LoggerLevel.valueOf(XWPropertyDefs.LOGGERLEVEL.defaultValue());
 		} else {
-			return LoggerLevel.valueOf(p.toUpperCase()); 
+			return LoggerLevel.valueOf(p.toUpperCase());
 		}
 	}
 
@@ -536,8 +536,8 @@ public final class XWConfigurator extends Properties {
 		logger = new Logger(this);
 
 		upTime = new Date();
-		dispatchers = new Vector<String>();
-		dataServers = new Vector<String>();
+		dispatchers = new Vector<>();
+		dataServers = new Vector<>();
 		try {
 			addDispatcher(LOCALHOST);
 			setCurrentDispatcher(LOCALHOST);
@@ -603,7 +603,7 @@ public final class XWConfigurator extends Properties {
 			final String[] stdLoc = {
 					getProperty(XWPropertyDefs.USERHOMEDIR) + File.separator + ".xtremweb" + File.separator + fname,
 					getProperty(XWPropertyDefs.USERHOMEDIR) + File.separator + ".xtremweb" + File.separator
-					+ "config.defaults",
+							+ "config.defaults",
 					"/etc/" + fname, getProperty(XWPropertyDefs.CONFIGFILE) };
 			for (int i = 0; i < stdLoc.length; i++) {
 				try {
@@ -947,7 +947,7 @@ public final class XWConfigurator extends Properties {
 
 		if ((dispatchers == null) || (dispatchers.size() == 0)) {
 			if (XWRole.isDispatcher()) {
-				dispatchers = new Vector<String>();
+				dispatchers = new Vector<>();
 				dispatchers.add(XWTools.getLocalHostName());
 			} else {
 				throw new IOException("No XWHEP Server Found");
@@ -2101,7 +2101,7 @@ public final class XWConfigurator extends Properties {
 		if (server.exists()) {
 			server.delete();
 		}
-		try (final FileWriter fw = new FileWriter(server)){
+		try (final FileWriter fw = new FileWriter(server)) {
 			fw.write(servers);
 			fw.flush();
 		} catch (final Exception e) {
@@ -2135,7 +2135,7 @@ public final class XWConfigurator extends Properties {
 	 */
 	private void retrieveServers(final Collection<String> v, final File file) {
 
-		try (final FileReader fr = new FileReader(file)){
+		try (final FileReader fr = new FileReader(file)) {
 			final BufferedReader bufferFile = new BufferedReader(fr);
 			final String l = bufferFile.readLine();
 

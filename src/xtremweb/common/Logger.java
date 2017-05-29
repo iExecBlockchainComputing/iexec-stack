@@ -68,8 +68,9 @@ public class Logger {
 		level = LoggerLevel.INFO;
 		name = null;
 		final String levelstr = System.getProperty(XWPropertyDefs.LOGGERLEVEL.toString());
-		if(levelstr != null)
+		if (levelstr != null) {
 			level = LoggerLevel.valueOf(levelstr.toUpperCase());
+		}
 	}
 
 	/**

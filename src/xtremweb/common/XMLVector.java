@@ -97,7 +97,7 @@ public final class XMLVector extends XMLValue {
 	 * @param v
 	 *            is the vector to (un)marshal
 	 */
-	public XMLVector(final Collection <XMLable>v) {
+	public XMLVector(final Collection<XMLable> v) {
 		super(THISTAG, 0);
 
 		setEmpty(false);
@@ -195,6 +195,7 @@ public final class XMLVector extends XMLValue {
 	 * @since 5.8.0
 	 * @see #clear()
 	 */
+	@Override
 	protected void finalize() {
 		clear();
 	}
@@ -211,6 +212,7 @@ public final class XMLVector extends XMLValue {
 		}
 		super.clear();
 	}
+
 	/**
 	 * This serializes this object to a String as an XML object<br />
 	 *
@@ -224,8 +226,8 @@ public final class XMLVector extends XMLValue {
 			return "<" + getXMLTag() + " " + getColumnLabel(SIZE) + "=\"0\" ></" + getXMLTag() + ">";
 		}
 
-		final StringBuilder ret = new StringBuilder("<" + getXMLTag() + " " + getColumnLabel(SIZE) + "=\"" + ((ArrayList<XMLable>) value).size()
-				+ "\" >");
+		final StringBuilder ret = new StringBuilder(
+				"<" + getXMLTag() + " " + getColumnLabel(SIZE) + "=\"" + ((ArrayList<XMLable>) value).size() + "\" >");
 
 		final Iterator<XMLable> myenum = ((ArrayList<XMLable>) value).iterator();
 
@@ -254,7 +256,8 @@ public final class XMLVector extends XMLValue {
 			o.write(strHead.getBytes(XWTools.UTF8));
 			return;
 		}
-		final String strBody = "<" + getXMLTag() + " " + getColumnLabel(SIZE) + "=\"" + ((ArrayList<XMLable>) value).size() + "\" >";
+		final String strBody = "<" + getXMLTag() + " " + getColumnLabel(SIZE) + "=\""
+				+ ((ArrayList<XMLable>) value).size() + "\" >";
 		o.write(strBody.getBytes(XWTools.UTF8));
 
 		final Iterator<XMLable> myenum = ((ArrayList<XMLable>) value).iterator();
@@ -429,7 +432,7 @@ public final class XMLVector extends XMLValue {
 		XMLVector xmlv = new XMLVector(v);
 
 		if (argv.length == 1) {
-			try (final FileInputStream fis = new FileInputStream(argv[0])){
+			try (final FileInputStream fis = new FileInputStream(argv[0])) {
 				xmlv = new XMLVector(new DataInputStream(fis));
 			} catch (final Exception e) {
 				e.printStackTrace();
@@ -439,7 +442,7 @@ public final class XMLVector extends XMLValue {
 
 		xmlv.getLogger().setLoggerLevel(LoggerLevel.DEBUG);
 
-		final ArrayList<XMLable> ret = (ArrayList<XMLable>)xmlv.getXmlValues();
+		final ArrayList<XMLable> ret = (ArrayList<XMLable>) xmlv.getXmlValues();
 		System.out.println(ret);
 		for (int i = 0; i < xmlv.size(); i++) {
 

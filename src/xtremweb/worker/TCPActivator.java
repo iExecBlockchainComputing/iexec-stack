@@ -103,9 +103,9 @@ public final class TCPActivator extends Activator implements Runnable {
 	@Override
 	public void run() {
 
-		try (ServerSocket servsock = new ServerSocket(mPort, 1, mAddr)){
+		try (ServerSocket servsock = new ServerSocket(mPort, 1, mAddr)) {
 
-			int soTimeout = 1000;
+			final int soTimeout = 1000;
 			while (!Thread.interrupted()) {
 				Socket control;
 				BufferedReader input;

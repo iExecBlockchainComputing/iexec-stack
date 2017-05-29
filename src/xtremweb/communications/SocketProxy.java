@@ -325,13 +325,13 @@ public final class SocketProxy extends Thread {
 		while (!mustStop()) {
 			logger.debug("Waiting for incoming connections");
 
-			try (final Socket incoming = server.accept(); 
+			try (final Socket incoming = server.accept();
 					final Socket outputSocket = new Socket(outputAddr, outputPort);
 					final DataInputStream outgoingIn = new DataInputStream(outputSocket.getInputStream());
 					final DataOutputStream outgoingOut = new DataOutputStream(outputSocket.getOutputStream());
 					final DataInputStream incomingIn = new DataInputStream(incoming.getInputStream());
-					final DataOutputStream incomingOut = new DataOutputStream(incoming.getOutputStream())){
-				
+					final DataOutputStream incomingOut = new DataOutputStream(incoming.getOutputStream())) {
+
 				logger.debug("Incoming connection");
 
 				final ProxyThread reader = new ProxyThread(READER_LABEL, incoming, incomingIn, outgoingOut);

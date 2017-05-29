@@ -269,7 +269,7 @@ public class StreamIO implements AutoCloseable {
 				throw new ArrayIndexOutOfBoundsException("too huge size : " + file.length());
 			} else {
 				final byte[] contents = new byte[(int) file.length()];
-				try (final FileInputStream fis = new FileInputStream(file)){
+				try (final FileInputStream fis = new FileInputStream(file)) {
 					fis.read(contents);
 				}
 				return contents;
@@ -594,8 +594,7 @@ public class StreamIO implements AutoCloseable {
 		logger.debug("readFile(" + file + "," + thiscomnio + ")");
 
 		long written = 0;
-		try (final FileOutputStream fos = new FileOutputStream(file);
-				final FileChannel outChannel = fos.getChannel()) {
+		try (final FileOutputStream fos = new FileOutputStream(file); final FileChannel outChannel = fos.getChannel()) {
 			if (length > 0) {
 				if (!thiscomnio) {
 					int n = 0;
@@ -834,33 +833,33 @@ public class StreamIO implements AutoCloseable {
 		File fin = new File(argv[0]);
 		File fout = new File("outtemp_nio");
 		try (final FileOutputStream fos = new FileOutputStream(fout);
-				final DataOutputStream output = new DataOutputStream(fos); 
+				final DataOutputStream output = new DataOutputStream(fos);
 				final StreamIO io = new StreamIO(output, null);) {
 
-			long t0 = System.currentTimeMillis();
+			final long t0 = System.currentTimeMillis();
 			io.writeFile(fin);
-			long t1 = System.currentTimeMillis();
+			final long t1 = System.currentTimeMillis();
 
-			long d0 = t1 - t0;
+			final long d0 = t1 - t0;
 			System.out.println((StreamIO.nio ? "with" : "w/o ") + " NIO; Size =  " + fin.length() + " ; dT = " + d0);
 
 			fout.delete();
 
-		} catch (IOException e1) {
+		} catch (final IOException e1) {
 		} finally {
 		}
 		try (final FileOutputStream fos = new FileOutputStream(fout);
-				final DataOutputStream output = new DataOutputStream(fos); 
+				final DataOutputStream output = new DataOutputStream(fos);
 				final StreamIO io = new StreamIO(output, null);) {
 
 			StreamIO.nio = !StreamIO.nio;
 
-			long t0 = System.currentTimeMillis();
+			final long t0 = System.currentTimeMillis();
 			io.writeFile(fin);
-			long t1 = System.currentTimeMillis();
-			long d0 = t1 - t0;
+			final long t1 = System.currentTimeMillis();
+			final long d0 = t1 - t0;
 			System.out.println((StreamIO.nio ? "with" : "w/o ") + " NIO; Size =  " + fin.length() + " ; dT = " + d0);
-		} catch (IOException e1) {
+		} catch (final IOException e1) {
 		} finally {
 		}
 
@@ -875,11 +874,11 @@ public class StreamIO implements AutoCloseable {
 
 			fin = new File("longString.txt");
 
-		} catch (IOException e1) {
+		} catch (final IOException e1) {
 		} finally {
 		}
 		try (final FileOutputStream fos = new FileOutputStream(fout);
-				final DataOutputStream output = new DataOutputStream(fos); 
+				final DataOutputStream output = new DataOutputStream(fos);
 				final StreamIO io = new StreamIO(output, null);) {
 
 			System.out.println("\nread = " + io.readString());

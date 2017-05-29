@@ -267,7 +267,7 @@ public abstract class TableModel extends DefaultTableModel {
 	 * This contains data. Each rows has also a last item which contains a
 	 * <CODE>JButton</CODE> to view data.
 	 */
-	private final Vector<Table> rows = new Vector<Table>();
+	private final Vector<Table> rows = new Vector<>();
 
 	public Vector<Table> getDataRows() {
 		return rows;
@@ -665,7 +665,7 @@ public abstract class TableModel extends DefaultTableModel {
 
 		rows.clear();
 		final XMLVector datas = getRows();
-		final ArrayList<XMLable> vdatas = (ArrayList<XMLable>)datas.getXmlValues();
+		final ArrayList<XMLable> vdatas = (ArrayList<XMLable>) datas.getXmlValues();
 
 		getParent().setProgressStringPainted(true);
 		getParent().setProgressValue(0);

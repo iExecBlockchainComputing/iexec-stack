@@ -534,7 +534,8 @@ public abstract class Type extends XMLable {
 						if (csv) {
 							ret.append(" " + QUOTE + XWTools.getSQLDateTime(date) + QUOTE);
 						} else {
-							ret.append(" " + getColumnLabel(index) + "=" + QUOTE + XWTools.getSQLDateTime(date) + QUOTE);
+							ret.append(
+									" " + getColumnLabel(index) + "=" + QUOTE + XWTools.getSQLDateTime(date) + QUOTE);
 						}
 					}
 				} else if (!csv) {

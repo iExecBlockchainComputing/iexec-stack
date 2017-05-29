@@ -152,7 +152,7 @@ public final class HelloWorld {
 			//
 			final XMLRPCCommandGetApps cmd = new XMLRPCCommandGetApps(uri, config.getUser());
 			final XMLVector xmluids = (XMLVector) cmd.exec(client);
-			final ArrayList<XMLable> uids = (ArrayList<XMLable>)xmluids.getXmlValues();
+			final ArrayList<XMLable> uids = (ArrayList<XMLable>) xmluids.getXmlValues();
 			if ((uids == null) || (uids.isEmpty())) {
 				logger.warn("no application found");
 				return;
@@ -165,7 +165,7 @@ public final class HelloWorld {
 			final List commandLineParams = (List) args.commandParams();
 			if ((commandLineParams == null) || (commandLineParams.isEmpty())) {
 				if (theEnum.hasNext()) {
-					appUid = (UID)((XMLObject)theEnum.next()).getValue();
+					appUid = (UID) ((XMLObject) theEnum.next()).getValue();
 				}
 			} else {
 				try {
@@ -227,8 +227,8 @@ public final class HelloWorld {
 				logger.info("File not found '" + inputFileName + "'");
 			}
 
-			StringBuilder cmdLineStr = new StringBuilder(" ");
-			for (int i = 1; commandLineParams != null && i < commandLineParams.size(); i++) {
+			final StringBuilder cmdLineStr = new StringBuilder(" ");
+			for (int i = 1; (commandLineParams != null) && (i < commandLineParams.size()); i++) {
 				cmdLineStr.append(commandLineParams.get(i).toString() + " ");
 			}
 
@@ -273,8 +273,9 @@ public final class HelloWorld {
 
 	/**
 	 * This is the standard main method
-	 * @throws ParseException 
-	 * @throws IOException 
+	 * 
+	 * @throws ParseException
+	 * @throws IOException
 	 */
 	public static void main(final String[] argv) throws IOException, ParseException {
 		new HelloWorld(argv).execute();

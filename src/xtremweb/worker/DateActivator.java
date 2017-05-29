@@ -232,7 +232,7 @@ public class DateActivator extends PollingActivator {
 	public DateActivator() {
 		super();
 
-		gaps = new Vector<Gap>();
+		gaps = new Vector<>();
 		days = new Hashtable();
 		calendar = new GregorianCalendar();
 		days.put(new Integer(Calendar.SUNDAY), new Integer(Calendar.SUNDAY));

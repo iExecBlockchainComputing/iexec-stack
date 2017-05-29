@@ -25,7 +25,6 @@ package xtremweb.security;
 
 import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -108,8 +107,7 @@ public final class PEMPrivateKey {
 	 *            is the private key password
 	 * @see #read(File, String)
 	 */
-	public void read(final String keyPath, final String password)
-			throws CertificateException, IOException {
+	public void read(final String keyPath, final String password) throws CertificateException, IOException {
 
 		final File f = new File(keyPath);
 		read(f, password);
@@ -124,8 +122,7 @@ public final class PEMPrivateKey {
 	 *            is the private key password
 	 * @see #read(File, char[])
 	 */
-	public void read(final File f, final String password)
-			throws CertificateException, IOException {
+	public void read(final File f, final String password) throws CertificateException, IOException {
 
 		final char[] p = password == null ? null : password.toCharArray();
 		read(f, p);
@@ -140,8 +137,7 @@ public final class PEMPrivateKey {
 	 * @param password
 	 *            is the private key password
 	 */
-	public void read(final File keyFile, final char[] password)
-			throws CertificateException, IOException {
+	public void read(final File keyFile, final char[] password) throws CertificateException, IOException {
 
 		if (keyFile == null) {
 			throw new IOException("key file is null");
@@ -151,8 +147,7 @@ public final class PEMPrivateKey {
 		}
 
 		final DefaultPasswordFinder pfinder = new DefaultPasswordFinder(password);
-		try (final FileReader fr = new FileReader(keyFile);
-				final PEMReader r = new PEMReader(fr, pfinder)){
+		try (final FileReader fr = new FileReader(keyFile); final PEMReader r = new PEMReader(fr, pfinder)) {
 
 			final KeyPair kp = (KeyPair) r.readObject();
 			try {

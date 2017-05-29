@@ -1282,10 +1282,9 @@ public class WorkInterface extends Table {
 	/**
 	 * This retrieves a semicolon list containing tuple of SmartSockets address
 	 * and local port. This helps a job running on XWHEP worker side to connect
-	 * to a server like application running on XWHEP client side. e.g.
-	 * "Saddr1, port1; Saddr2, port2" This will be used to create one proxy per
-	 * port to forward outgoing connections to the associated SmartSockets
-	 * address.
+	 * to a server like application running on XWHEP client side. e.g. "Saddr1,
+	 * port1; Saddr2, port2" This will be used to create one proxy per port to
+	 * forward outgoing connections to the associated SmartSockets address.
 	 *
 	 * @return this attribute, or null if not set
 	 * @since 8.0.0
@@ -2035,6 +2034,7 @@ public class WorkInterface extends Table {
 
 	/**
 	 * This sets the completion date
+	 * 
 	 * @since 10.5.1
 	 * @return true if value has changed, false otherwise
 	 */
@@ -2042,6 +2042,7 @@ public class WorkInterface extends Table {
 		final Date d = new Date();
 		return setCompletedDate(d);
 	}
+
 	/**
 	 * This sets the completion date
 	 *
@@ -2049,13 +2050,13 @@ public class WorkInterface extends Table {
 	 */
 	public final boolean setCompletedDate(final Date d) {
 		Date val = d;
-		final Date arrivaldate = getArrivalDate(); 
+		final Date arrivaldate = getArrivalDate();
 		if ((val != null) && (arrivaldate != null) && (val.before(arrivaldate))) {
 			getLogger().error("completedDate : " + d.toString() + " < " + arrivaldate);
-			Date start = getCompStartDate();
-			Date end = getCompEndDate();
+			final Date start = getCompStartDate();
+			final Date end = getCompEndDate();
 			if ((start != null) && (end != null)) {
-				long diff = end.getTime() - start.getTime();
+				final long diff = end.getTime() - start.getTime();
 				if (diff > 0) {
 					val = new Date();
 					val.setTime(val.getTime() + diff);

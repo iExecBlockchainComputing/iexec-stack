@@ -429,7 +429,7 @@ public class URI extends XMLable {
 				System.out.println(uri.getPath() + " exists = " + new File(uri.getPath()).exists());
 			}
 
-			final Hashtable<URI, String> cache = new Hashtable<URI, String>();
+			final Hashtable<URI, String> cache = new Hashtable<>();
 
 			for (int i = 0; i < 10; i++) {
 				uri = new URI("http://server/" + i);

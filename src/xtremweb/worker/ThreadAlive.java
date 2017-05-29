@@ -143,7 +143,7 @@ public class ThreadAlive extends Thread {
 				logger.config("Sleep until the next alive (" + alivePeriod + " seconds)");
 				java.lang.Thread.sleep(alivePeriod * 1000);
 
-				Vector<Work> wal = CommManager.getInstance().getPoolWork().getAliveWork();
+				final Vector<Work> wal = CommManager.getInstance().getPoolWork().getAliveWork();
 				if (wal == null) {
 					continue;
 				}
@@ -152,14 +152,14 @@ public class ThreadAlive extends Thread {
 
 				for (int i = 0; i < wal.size(); i++) {
 
-					Work w = wal.elementAt(i);
+					final Work w = wal.elementAt(i);
 					logger.finest("ThreadAlive  calling checkJob()");
 					checkJob(w);
 				}
 				wal.clear();
 			} catch (final InterruptedException e) {
 				break;
-			} catch (IOException e) {
+			} catch (final IOException e) {
 				logger.exception(e);
 			}
 		}
@@ -174,7 +174,7 @@ public class ThreadAlive extends Thread {
 	 *
 	 * @param theJob
 	 *            is the work to signal.
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	private void checkJob(final Work theJob) throws IOException {
 
@@ -238,16 +238,18 @@ public class ThreadAlive extends Thread {
 	 * </ul>
 	 * Since 9.1.1, this sends the first 20 job results only, otherwise the
 	 * message may be too long and reset the comm channel
-	 * @throws IOException 
-	 * @throws URISyntaxException 
-	 * @throws SAXException 
-	 * @throws ClassNotFoundException 
-	 * @throws AccessControlException 
-	 * @throws InvalidKeyException 
+	 * 
+	 * @throws IOException
+	 * @throws URISyntaxException
+	 * @throws SAXException
+	 * @throws ClassNotFoundException
+	 * @throws AccessControlException
+	 * @throws InvalidKeyException
 	 *
 	 * @see xtremweb.dispatcher.CommHandler#workAlive(IdServers, Hashtable)
 	 */
-	private void synchronize() throws IOException, URISyntaxException, InvalidKeyException, AccessControlException, ClassNotFoundException, SAXException {
+	private void synchronize() throws IOException, URISyntaxException, InvalidKeyException, AccessControlException,
+			ClassNotFoundException, SAXException {
 
 		Hashtable rmiResults = null;
 
@@ -255,7 +257,7 @@ public class ThreadAlive extends Thread {
 		//
 		// retrieve stored job results
 		//
-		final Vector<UID> jobResults = new Vector<UID>();
+		final Vector<UID> jobResults = new Vector<>();
 		final Hashtable<UID, Work> savingWorks = CommManager.getInstance().getPoolWork().getSavingWork();
 
 		final Enumeration<Work> theEnumeration = savingWorks.elements();
@@ -368,8 +370,7 @@ public class ThreadAlive extends Thread {
 			boolean newkeystore = false;
 			final URI keystoreUri = new URI(keystoreUriStr);
 			final File currentKeystoreFile = new File(System.getProperty(XWPropertyDefs.JAVAKEYSTORE.toString()));
-			logger.debug("currentKeystoreFile : " + currentKeystoreFile + " length = "
-					+ currentKeystoreFile.length());
+			logger.debug("currentKeystoreFile : " + currentKeystoreFile + " length = " + currentKeystoreFile.length());
 
 			final DataInterface newKeystoreData = CommManager.getInstance().getData(keystoreUri);
 			if (newKeystoreData == null) {
@@ -381,10 +382,11 @@ public class ThreadAlive extends Thread {
 			if (newKeystoreData.getMD5().compareTo(currentKeystoreMD5) != 0) {
 				logger.info("Downloading new keystore");
 				CommManager.getInstance().downloadData(keystoreUri);
-				final File newKeystoreFile = CommManager.getInstance().commClient(keystoreUri).getContentFile(keystoreUri);
+				final File newKeystoreFile = CommManager.getInstance().commClient(keystoreUri)
+						.getContentFile(keystoreUri);
 
 				try (final FileOutputStream foutput = new FileOutputStream(currentKeystoreFile);
-						final DataOutputStream output = new DataOutputStream(foutput); 
+						final DataOutputStream output = new DataOutputStream(foutput);
 						final StreamIO io = new StreamIO(output, null, false)) {
 
 					logger.debug("newKeystoreFile : " + newKeystoreFile + " length = " + newKeystoreFile.length());
@@ -431,8 +433,7 @@ public class ThreadAlive extends Thread {
 			}
 		}
 
-		final Integer tracesSendResultDelay = (Integer) rmiResults
-				.get(XWPostParams.TRACESSENDRESULTDELAY.toString());
+		final Integer tracesSendResultDelay = (Integer) rmiResults.get(XWPostParams.TRACESSENDRESULTDELAY.toString());
 		int sDelay = 0;
 
 		if (tracesSendResultDelay != null) {
@@ -469,7 +470,7 @@ public class ThreadAlive extends Thread {
 	 *
 	 * @param jobUID
 	 *            is the UID of the currently computed job
-	 * @throws URISyntaxException 
+	 * @throws URISyntaxException
 	 * @throws AccessControlException
 	 * @throws InvalidKeyException
 	 * @see #checkJob(Work)

@@ -193,7 +193,6 @@ public class rpc implements Interface {
 	 */
 	protected int udp(final byte[] newDatas) throws Exception {
 
-
 		mileStone.println("XW RPC service started");
 
 		logger.debug("Callback length 00 = " + newDatas.length);
@@ -230,7 +229,8 @@ public class rpc implements Interface {
 
 			logger.debug("newDatas.length = " + newDatas.length);
 			logger.debug("request.getLength() = " + request.getLength());
-			final DatagramPacket serverPacket = new DatagramPacket(request.getBuffer(), request.getLength(), serverHost, rpcServerPort);
+			final DatagramPacket serverPacket = new DatagramPacket(request.getBuffer(), request.getLength(), serverHost,
+					rpcServerPort);
 
 			logger.debug("writing to " + hostName + ":" + rpcServerPort);
 

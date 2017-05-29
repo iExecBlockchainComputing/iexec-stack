@@ -49,7 +49,6 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
-import java.util.Vector;
 
 import javax.net.ssl.SSLHandshakeException;
 
@@ -1188,14 +1187,13 @@ public abstract class CommClient implements ClientAPI {
 			}
 		}
 
-		final ArrayList<XMLable> apps = (ArrayList<XMLable>)getApps().getXmlValues();
+		final ArrayList<XMLable> apps = (ArrayList<XMLable>) getApps().getXmlValues();
 		try {
-			logger.finest(
-					"commClient#getApp(" + name + ") vector.size = " + apps.size() + " " + apps.toString());
+			logger.finest("commClient#getApp(" + name + ") vector.size = " + apps.size() + " " + apps.toString());
 
-			for (int i = 0; i< apps.size(); i++) {
+			for (int i = 0; i < apps.size(); i++) {
 
-				final UID uid = (UID) ((XMLValue)apps.get(i)).getValue();
+				final UID uid = (UID) ((XMLValue) apps.get(i)).getValue();
 				if (uid == null) {
 					continue;
 				}
@@ -2288,7 +2286,7 @@ public abstract class CommClient implements ClientAPI {
 			return StatusEnum.ERROR;
 		}
 
-		final ArrayList<XMLable> v = (ArrayList<XMLable>)jobIDs.getXmlValues();
+		final ArrayList<XMLable> v = (ArrayList<XMLable>) jobIDs.getXmlValues();
 		try {
 			for (int i = 0; i < v.size(); i++) {
 				final UID uid = (UID) v.get(i);
@@ -2324,7 +2322,7 @@ public abstract class CommClient implements ClientAPI {
 			return StatusEnum.ERROR;
 		}
 
-		final ArrayList<XMLable> v = (ArrayList<XMLable>)jobIDs.getXmlValues();
+		final ArrayList<XMLable> v = (ArrayList<XMLable>) jobIDs.getXmlValues();
 		try {
 			for (int i = 0; i < v.size(); i++) {
 				final UID uid = (UID) v.get(i);

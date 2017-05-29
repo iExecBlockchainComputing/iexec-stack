@@ -65,7 +65,7 @@ public class JarClassLoader extends java.net.URLClassLoader {
 	}
 
 	public static void main(final String[] args) {
-		try (final JarClassLoader loader = new JarClassLoader(new URL(args[0]))){
+		try (final JarClassLoader loader = new JarClassLoader(new URL(args[0]))) {
 			final String[] theargs = new String[args.length - 2];
 			System.arraycopy(args, 2, theargs, 0, args.length - 2);
 			loader.invokeClass(args[1], theargs);

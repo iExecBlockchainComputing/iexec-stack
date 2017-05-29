@@ -151,7 +151,8 @@ public class UDPServer extends CommServer {
 		}
 	}
 
-	private void stdio() throws IOException, InvalidKeyException, AccessControlException, InstantiationException, IllegalAccessException, InterruptedException {
+	private void stdio() throws IOException, InvalidKeyException, AccessControlException, InstantiationException,
+			IllegalAccessException, InterruptedException {
 		if (nio) {
 			return;
 		}
@@ -177,6 +178,7 @@ public class UDPServer extends CommServer {
 			}
 		}
 	}
+
 	private void nio() throws IOException, InvalidKeyException, AccessControlException {
 		final BytePacket buffer = new BytePacket();
 		if (!nio) {
@@ -199,6 +201,7 @@ public class UDPServer extends CommServer {
 		handler.run();
 
 	}
+
 	/**
 	 * This is called on program termination (CTRL+C) This deletes session from
 	 * server

@@ -131,12 +131,13 @@ public class CallbackPipe extends Callback {
 
 		logger.info("prog " + prog + " version " + version);
 
-		try (final DatagramSocket serverSocket = new DatagramSocket()){
+		try (final DatagramSocket serverSocket = new DatagramSocket()) {
 
 			logger.info("newDatas.length = " + newDatas.length);
 			logger.info("request.getLength() = " + request.getLength());
 			final InetAddress serverHost = getServerHost();
-			DatagramPacket serverPacket = new DatagramPacket(newDatas, request.getLength(), serverHost, rpcServerPort);
+			final DatagramPacket serverPacket = new DatagramPacket(newDatas, request.getLength(), serverHost,
+					rpcServerPort);
 
 			logger.info("writing to " + serverName + ":" + rpcServerPort);
 

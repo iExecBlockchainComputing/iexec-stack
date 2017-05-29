@@ -162,7 +162,8 @@ public class ThreadWork extends Thread {
 	private static final String XWLISTENINGPORTSNAME = "XWLISTENINGPORTS";
 	/**
 	 * This is the name of the XWPORTS env var which contains a comma separated
-	 * list of ports the proxy is listening (to connect to client SmartSocket proxy)
+	 * list of ports the proxy is listening (to connect to client SmartSocket
+	 * proxy)
 	 *
 	 * @since 10.6.0
 	 */
@@ -239,11 +240,8 @@ public class ThreadWork extends Thread {
 		Runtime.getRuntime().addShutdownHook(new Thread("ThreadWorkCleaner") {
 			@Override
 			public void run() {
-				try {
-					shutDown();
-					stopProcess();
-				} catch (final Exception e) {
-				}
+				shutDown();
+				stopProcess();
 			}
 		});
 	}
@@ -352,7 +350,7 @@ public class ThreadWork extends Thread {
 				}
 				envvars = null;
 			} catch (final InterruptedException e) {
-				logger.warn(e.toString());
+				logger.exception(e);
 			}
 		}
 	}
@@ -427,8 +425,8 @@ public class ThreadWork extends Thread {
 	 * @throws InvalidKeyException
 	 * @since 8.0.0
 	 */
-	private void startProxy(final String hubAddr) throws InvalidKeyException,
-	IOException, ClassNotFoundException, SAXException, URISyntaxException {
+	private void startProxy(final String hubAddr)
+			throws InvalidKeyException, IOException, ClassNotFoundException, SAXException, URISyntaxException {
 
 		if (!Worker.getConfig().getBoolean(XWPropertyDefs.INCOMINGCONNECTIONS)) {
 			logger.info("Incoming connections not allowed");
@@ -449,7 +447,7 @@ public class ThreadWork extends Thread {
 			if (sports != null) {
 				final Iterator<String> portenum = sports.iterator();
 				final StringBuilder addresses = new StringBuilder();
-				final StringBuilder ports= new StringBuilder();
+				final StringBuilder ports = new StringBuilder();
 				while (portenum.hasNext()) {
 					int fport = Integer.parseInt(portenum.next());
 					try {
@@ -501,7 +499,8 @@ public class ThreadWork extends Thread {
 		final String sport2 = currentWork.getSmartSocketClient();
 		if (sport2 != null) {
 
-			final Hashtable<String, String> serverAddresses = (Hashtable<String, String>) XWTools.hash(sport2, ";", ",");
+			final Hashtable<String, String> serverAddresses = (Hashtable<String, String>) XWTools.hash(sport2, ";",
+					",");
 			if (serverAddresses != null) {
 				final Enumeration<String> addressesenum = serverAddresses.keys();
 
@@ -512,7 +511,8 @@ public class ThreadWork extends Thread {
 					try {
 						final int lport = Integer.parseInt(serverAddresses.get(serverAddr));
 						logger.info("Starting new SmartSocket client proxy " + serverAddr + " / " + lport);
-						final SmartSocketsProxy smartSocketsProxy = new SmartSocketsProxy(hubAddr, serverAddr, lport, false);
+						final SmartSocketsProxy smartSocketsProxy = new SmartSocketsProxy(hubAddr, serverAddr, lport,
+								false);
 						smartSocketsProxies.add(smartSocketsProxy);
 						smartSocketsProxy.start();
 					} catch (final Exception e) {
@@ -554,7 +554,7 @@ public class ThreadWork extends Thread {
 				continue;
 			}
 
-			try (final Socket s = SocketFactory.getDefault().createSocket("localhost", listenPort);){
+			try (final Socket s = SocketFactory.getDefault().createSocket("localhost", listenPort);) {
 				final OutputStream so = s.getOutputStream();
 				so.write('\n'); // just write something to wake up the thread
 				logger.info("SmartSocket proxy stopped");
@@ -589,11 +589,11 @@ public class ThreadWork extends Thread {
 
 		final File scratchDir = currentWork.getScratchDir();
 		try (final FileOutputStream out = new FileOutputStream(new File(scratchDir, "unloadout.txt"));
-				final FileOutputStream err = new FileOutputStream(new File(scratchDir, "unloaderr.txt"))){
+				final FileOutputStream err = new FileOutputStream(new File(scratchDir, "unloaderr.txt"))) {
 
 			final String[] envVars = getEnvVars();
-			final Executor unloader = new Executor(command.toString(), envVars, currentWork.getScratchDirName(), null, out, err,
-					Long.parseLong(Worker.getConfig().getProperty(XWPropertyDefs.TIMEOUT)));
+			final Executor unloader = new Executor(command.toString(), envVars, currentWork.getScratchDirName(), null,
+					out, err, Long.parseLong(Worker.getConfig().getProperty(XWPropertyDefs.TIMEOUT)));
 			try {
 				unloader.startAndWait();
 			} catch (final ExecutorLaunchException | InterruptedException e) {
@@ -732,7 +732,7 @@ public class ThreadWork extends Thread {
 	 */
 	private void addEnvVar(final String key, final String value) {
 		if (envvars == null) {
-			envvars = new Hashtable<String, String>();
+			envvars = new Hashtable<>();
 		}
 		envvars.put(key, value);
 	}
@@ -1096,13 +1096,12 @@ public class ThreadWork extends Thread {
 
 		// this is not a zip file
 		// copy content from cache to pwd
-		final File fout = new File(home,
-				theData.getName() != null ? theData.getName() : theData.getUID().toString());
+		final File fout = new File(home, theData.getName() != null ? theData.getName() : theData.getUID().toString());
 		XWTools.checkDir(fout.getParent());
 
 		try (final FileOutputStream fos = new FileOutputStream(fout);
 				final DataOutputStream output = new DataOutputStream(fos);
-				final StreamIO io = new StreamIO(output, null, 10240, Worker.getConfig().nio())){
+				final StreamIO io = new StreamIO(output, null, 10240, Worker.getConfig().nio())) {
 
 			logger.debug("installFile = " + fData + " is not a zip file; just copy it to PWD : " + fout);
 			io.writeFileContent(fData);
@@ -1215,8 +1214,8 @@ public class ThreadWork extends Thread {
 	 *                is thrown on I/O error
 	 * @return the file containing the job result
 	 */
-	public synchronized File zipResult() throws IOException, ClassNotFoundException, SAXException, URISyntaxException,
-	InvalidKeyException {
+	public synchronized File zipResult()
+			throws IOException, ClassNotFoundException, SAXException, URISyntaxException, InvalidKeyException {
 
 		boolean islocked = false;
 
@@ -1341,9 +1340,8 @@ public class ThreadWork extends Thread {
 	 * @throws InterruptedException
 	 * @throws ExecutorLaunchException
 	 */
-	protected void executeNativeJob(final Collection<String> cmdLine)
-			throws IOException, InvalidKeyException, ClassNotFoundException, SAXException,
-			URISyntaxException, ExecutorLaunchException, InterruptedException {
+	protected void executeNativeJob(final Collection<String> cmdLine) throws IOException, InvalidKeyException,
+	ClassNotFoundException, SAXException, URISyntaxException, ExecutorLaunchException, InterruptedException {
 
 		final UID workUID = currentWork.getUID();
 
@@ -1372,7 +1370,7 @@ public class ThreadWork extends Thread {
 
 		try (final FileInputStream in = (stdin != null ? new FileInputStream(stdin) : null);
 				final FileOutputStream out = new FileOutputStream(new File(scratchDir, XWTools.STDOUT));
-				final FileOutputStream err = new FileOutputStream(new File(scratchDir, XWTools.STDERR))){
+				final FileOutputStream err = new FileOutputStream(new File(scratchDir, XWTools.STDERR))) {
 
 			final String[] envvarsArray = getEnvVars();
 			exec = new Executor(command.toString(), envvarsArray, currentWork.getScratchDirName(), in, out, err,

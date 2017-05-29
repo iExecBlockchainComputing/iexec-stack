@@ -122,7 +122,7 @@ public class Shell extends Thread {
 
 		while (true) {
 
-			try (Socket socket = socketServer.accept()){
+			try (Socket socket = socketServer.accept()) {
 				process(socket);
 			} catch (final Exception e) {
 				logger.exception(e);
@@ -137,8 +137,8 @@ public class Shell extends Thread {
 	private void process(final Socket socket) throws ParseException, IOException {
 
 		try (final StreamIO io = new StreamIO(new DataOutputStream(socket.getOutputStream()),
-					new DataInputStream(socket.getInputStream()), socket.getSendBufferSize(), false);
-			PrintStream printStream = new PrintStream(socket.getOutputStream());){
+				new DataInputStream(socket.getInputStream()), socket.getSendBufferSize(), false);
+				PrintStream printStream = new PrintStream(socket.getOutputStream());) {
 			client.setPrintStream(printStream);
 
 			final XMLRPCCommand cmd = XMLRPCCommand.newCommand(io);
@@ -148,7 +148,8 @@ public class Shell extends Thread {
 				client.sendCommand(cmd, true);
 			}
 
-		} catch (final ClassNotFoundException | InvalidKeyException | AccessControlException | InstantiationException | SAXException e) {
+		} catch (final ClassNotFoundException | InvalidKeyException | AccessControlException | InstantiationException
+				| SAXException e) {
 			logger.exception(e);
 		}
 	}
@@ -162,7 +163,7 @@ public class Shell extends Thread {
 			logger.debug("cleanup");
 			socketServer.close();
 		} catch (final Exception e) {
-			logger.exception("can't clean up",e);
+			logger.exception("can't clean up", e);
 		}
 	}
 

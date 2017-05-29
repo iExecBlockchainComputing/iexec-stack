@@ -276,7 +276,7 @@ public final class X509ProxyValidator {
 			throws NoSuchAlgorithmException, IOException, CertificateException {
 
 		FileInputStream certis = null;
-		Vector<X509CACertPath> ret = new Vector<X509CACertPath>();
+		Vector<X509CACertPath> ret = new Vector<>();
 		Collection<X509Certificate> certs = null;
 		LinkedList<X509Certificate> certslist = null;
 		File[] certFiles = null;
@@ -292,7 +292,7 @@ public final class X509ProxyValidator {
 			}
 		} catch (final CertificateException ce) {
 			certs = (Collection<X509Certificate>) (certFactory.generateCertificates(certis));
-			certslist = new LinkedList<X509Certificate>(certs);
+			certslist = new LinkedList<>(certs);
 			validator = new X509CACertPath((X509Certificate) null, certslist);
 			ret.add(validator);
 		} finally {
@@ -325,8 +325,8 @@ public final class X509ProxyValidator {
 		final CertificateException ce = null;
 		LinkedList<X509Certificate> list = null;
 		FileInputStream certis = null;
-		final Vector<LinkedList<X509Certificate>> lists = new Vector<LinkedList<X509Certificate>>();
-		final Vector<X509CACertPath> ret = new Vector<X509CACertPath>();
+		final Vector<LinkedList<X509Certificate>> lists = new Vector<>();
+		final Vector<X509CACertPath> ret = new Vector<>();
 		X500Principal principal = null;
 
 		//
@@ -359,7 +359,7 @@ public final class X509ProxyValidator {
 			String certIssuerName = principal.getName();
 
 			if (lists.isEmpty()) {
-				list = new LinkedList<X509Certificate>();
+				list = new LinkedList<>();
 				logger.finest("> add first new list (" + certs[i] + ") " + certSubjectName);
 				list.add(certFromFile);
 				lists.add(list);
@@ -438,7 +438,7 @@ public final class X509ProxyValidator {
 			}
 
 			if (inserted == false) {
-				list = new LinkedList<X509Certificate>();
+				list = new LinkedList<>();
 				logger.finest("> add another new list (" + certs[i] + ") " + certSubjectName);
 				list.add(certFromFile);
 				lists.add(list);

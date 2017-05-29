@@ -69,8 +69,8 @@ public class PoolWork {
 
 		logger = new Logger(this);
 
-		poolWorks = new Hashtable<UID, Work>();
-		savingWorks = new Hashtable<UID, Work>();
+		poolWorks = new Hashtable<>();
+		savingWorks = new Hashtable<>();
 
 		File worksDir = Worker.getConfig().getWorksDir();
 
@@ -266,7 +266,7 @@ public class PoolWork {
 	 * @since v1r2-rc0(RPC-V)
 	 */
 	public synchronized Vector<Work> getAliveWork() {
-		Vector<Work> worksAlive = new Vector<Work>();
+		Vector<Work> worksAlive = new Vector<>();
 		final Enumeration<Work> theEnumeration = poolWorks.elements();
 
 		while (theEnumeration.hasMoreElements()) {

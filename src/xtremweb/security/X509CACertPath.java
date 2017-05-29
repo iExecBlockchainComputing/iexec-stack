@@ -209,7 +209,7 @@ public final class X509CACertPath {
 
 	/**
 	 * This retrieves the anchor issuer DN
-	 * 
+	 *
 	 * @since 8.2.0
 	 */
 	public String getAnchorIssuerName() {
@@ -224,7 +224,7 @@ public final class X509CACertPath {
 
 	/**
 	 * This retrieves the anchor
-	 * 
+	 *
 	 * @since 8.2.0
 	 */
 	public X509Certificate getAnchor() {

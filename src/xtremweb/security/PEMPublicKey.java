@@ -25,7 +25,6 @@ package xtremweb.security;
 
 import java.io.DataInputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -97,7 +96,7 @@ public class PEMPublicKey {
 	 */
 	public PublicKey read(final File keyFile) throws CertificateException, IOException {
 
-		try (final FileReader fr = new FileReader(keyFile)){
+		try (final FileReader fr = new FileReader(keyFile)) {
 			return read(fr);
 		}
 	}
@@ -112,7 +111,7 @@ public class PEMPublicKey {
 	 */
 	public PublicKey read(final Reader reader) throws CertificateException, IOException {
 
-		try (final PEMReader r = new PEMReader(reader)){
+		try (final PEMReader r = new PEMReader(reader)) {
 			certificate = (X509CertificateObject) r.readObject();
 			if (certificate == null) {
 				throw new CertificateException("invalid certificate file");
