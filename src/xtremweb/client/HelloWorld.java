@@ -44,7 +44,6 @@ import xtremweb.common.XMLObject;
 import xtremweb.common.XMLVector;
 import xtremweb.common.XMLable;
 import xtremweb.common.XWConfigurator;
-import xtremweb.common.XWReturnCode;
 import xtremweb.common.XWTools;
 import xtremweb.communications.CommClient;
 import xtremweb.communications.URI;
@@ -127,11 +126,8 @@ public final class HelloWorld {
 
 	/**
 	 * This prints a message to std err and exits.
-	 *
-	 * @param code
-	 *            is the return code to use on exit
 	 */
-	private void exit(final XWReturnCode code) {
+	private void exit() {
 
 		try {
 			final CommClient client = commClient();
@@ -231,16 +227,16 @@ public final class HelloWorld {
 				logger.info("File not found '" + inputFileName + "'");
 			}
 
-			String cmdLineStr = " ";
-			for (int i = 1; i < commandLineParams.size(); i++) {
-				cmdLineStr += commandLineParams.get(i).toString() + " ";
+			StringBuilder cmdLineStr = new StringBuilder(" ");
+			for (int i = 1; commandLineParams != null && i < commandLineParams.size(); i++) {
+				cmdLineStr.append(commandLineParams.get(i).toString() + " ");
 			}
 
 			if (cmdLineStr.indexOf(XWTools.QUOTE) != -1) {
 				throw new ParseException("6 dec 2005 : command line cannot have \"" + XWTools.QUOTE
 						+ "\" character until further notification", 0);
 			}
-			work.setCmdLine(cmdLineStr);
+			work.setCmdLine(cmdLineStr.toString());
 
 			logger.info("Submitting a new work for application '" + appUid + "' : " + work.toXml());
 
@@ -271,7 +267,7 @@ public final class HelloWorld {
 			client.disconnect();
 		} catch (final Exception e) {
 			logger.exception(e);
-			exit(XWReturnCode.CONNECTION);
+			exit();
 		}
 	}
 

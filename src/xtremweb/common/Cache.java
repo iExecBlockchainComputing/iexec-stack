@@ -145,11 +145,10 @@ public final class Cache extends XMLable {
 		 */
 		public CacheEntry(final DataInputStream input) throws IOException, SAXException {
 			this();
-			final XMLReader reader = new XMLReader(this);
-			try {
+			try (final XMLReader reader = new XMLReader(this)) {
 				reader.read(input);
 			} catch (final InvalidKeyException e) {
-				e.printStackTrace();
+				getLogger().exception(e);
 			}
 		}
 
@@ -357,7 +356,7 @@ public final class Cache extends XMLable {
 		 */
 		@Override
 		public String toString(final boolean csv) {
-			String ret = new String();
+			String ret = "";
 
 			if (itf != null) {
 				ret += itf.toString(csv);
@@ -530,11 +529,10 @@ public final class Cache extends XMLable {
 	 */
 	public Cache(final DataInputStream input) throws IOException, SAXException {
 		this();
-		final XMLReader reader = new XMLReader(this);
-		try {
+		try (final XMLReader reader = new XMLReader(this)) {
 			reader.read(input);
 		} catch (final InvalidKeyException e) {
-			e.printStackTrace();
+			getLogger().exception(e);
 		}
 	}
 
@@ -551,7 +549,7 @@ public final class Cache extends XMLable {
 				streamer.close();
 			}
 		} catch (final Exception e) {
-			getLogger().exception("can't clean up", e);
+			getLogger().exception("can't flush", e);
 		}
 		streamer = null;
 	}
@@ -572,11 +570,8 @@ public final class Cache extends XMLable {
 			}
 
 			XWTools.deleteDir(contentDir);
-			try {
-				XWTools.checkDir(contentDir);
-				write();
-			} catch (final Exception e) {
-			}
+			XWTools.checkDir(contentDir);
+			write();
 		} catch (final Exception e) {
 			getLogger().exception(e);
 			getLogger().fatal(e.toString());
@@ -613,18 +608,18 @@ public final class Cache extends XMLable {
 	@Override
 	public String toXml() {
 
-		String ret = new String("<" + THISTAG + " " + "SIZE=\"" + cache.size() + "\" >");
+		final StringBuilder ret = new StringBuilder("<" + THISTAG + " " + "SIZE=\"" + cache.size() + "\" >");
 		for (final CacheEntry entry : cache.values()) {
 			try {
-				ret += entry.toXml();
+				ret.append(entry.toXml());
 			} catch (final Exception e) {
 				getLogger().exception(e);
 			}
 		}
 
-		ret += "</" + THISTAG + ">";
+		ret.append("</" + THISTAG + ">");
 
-		return ret;
+		return ret.toString();
 	}
 
 	/**
@@ -636,9 +631,9 @@ public final class Cache extends XMLable {
 	@Override
 	public void toXml(final DataOutputStream o) throws IOException {
 
-		final String str1 = new String("<" + THISTAG + " " + "SIZE=\"" + cache.size() + "\" >");
-
+		final String str1 = "<" + THISTAG + " " + "SIZE=\"" + cache.size() + "\" >";
 		final byte[] strb1 = str1.getBytes(XWTools.UTF8);
+
 		o.write(strb1);
 
 		for (final CacheEntry entry : cache.values()) {
@@ -650,8 +645,8 @@ public final class Cache extends XMLable {
 		}
 
 		final String str2 = "</" + THISTAG + ">";
-
 		final byte[] strb2 = str2.getBytes(XWTools.UTF8);
+		
 		o.write(strb2);
 	}
 
@@ -757,7 +752,7 @@ public final class Cache extends XMLable {
 					streamer = new StreamIO(output, null, 10240, config.nio());
 				}
 
-				final String header = new String("<" + THISTAG + " " + "SIZE=\"" + cache.size() + "\" >");
+				final String header = "<" + THISTAG + " " + "SIZE=\"" + cache.size() + "\" >";
 				streamer.writeBytes(header);
 				for (final CacheEntry entry : cache.values()) {
 					writeEntry(entry);
@@ -1176,17 +1171,17 @@ public final class Cache extends XMLable {
 	 */
 	@Override
 	public String toString(final boolean csv) {
-		String ret = new String();
+		final StringBuilder ret = new StringBuilder();
 
 		for (final Object entry : cache.values()) {
 			try {
-				ret += (((CacheEntry) entry).getInterface().toXml());
+				ret.append(((CacheEntry) entry).getInterface().toXml());
 			} catch (final Exception e) {
 				getLogger().exception(e);
 			}
 		}
 
-		return ret;
+		return ret.toString();
 	}
 
 	/**
@@ -1195,14 +1190,13 @@ public final class Cache extends XMLable {
 	public static void main(final String[] argv) {
 
 		try {
-
 			if (argv.length < 1) {
 				System.out.println("Usage : java -cp " + XWTools.JARFILENAME + " <configFile> [anXmlDefinition]");
 				System.exit(1);
 			}
 
 			final XWConfigurator config = new XWConfigurator(argv[0], false);
-			final Cache cache = new Cache(config);
+			new Cache(config);
 		} catch (final Exception e) {
 			e.printStackTrace();
 			System.exit(1);

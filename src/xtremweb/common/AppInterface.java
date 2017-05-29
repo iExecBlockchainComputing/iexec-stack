@@ -61,7 +61,7 @@ public final class AppInterface extends Table {
 	 *
 	 * @since 9.0.0
 	 */
-	public static final String TABLENAME = "apps";
+	public static final String APPTABLENAME = "apps";
 
 	/**
 	 * This the application name length as defined in DB
@@ -1135,7 +1135,7 @@ public final class AppInterface extends Table {
 	 */
 	public AppInterface() {
 
-		super(THISTAG, TABLENAME);
+		super(THISTAG, APPTABLENAME);
 
 		setAttributeLength(ENUMSIZE);
 

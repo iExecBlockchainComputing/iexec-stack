@@ -26,6 +26,7 @@ package xtremweb.archdep;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -41,12 +42,19 @@ import xtremweb.common.LoggerLevel;
  */
 public class XWUtilLinux extends XWUtilImpl {
 
-	private long machineTotal = 0, machineTotalOld = 0;
-	private long machineUser = 0, machineUserOld = 0;
-	private long machineNice = 0, machineNiceOld = 0;
-	private long machineIdle = 0, machineIdleOld = 0;
-	private long machineSys = 0, machineSysOld = 0;
-
+	private long machineTotal = 0;
+	private long machineTotalOld = 0;
+	private long machineUser = 0;
+	private long machineUserOld = 0;
+	private long machineNice = 0;
+	private long machineIdle = 0;
+	private long machineSys = 0;
+	private static final String PROC = "/proc/";
+	private static final String STAT = "/stat";
+	private static final String PROCSTAT = "/proc/stat";
+	private static final String CPUINFO = "/proc/cpuinfo";
+	private static final String MEMINFO = "/proc/meminfo";
+	private static final String CANTREAD = "Cannot read ";
 	private long totalPidUserOld = 0;
 
 	private LinkedList<Integer> pids = null;
@@ -76,10 +84,10 @@ public class XWUtilLinux extends XWUtilImpl {
 	 */
 	private void cpuLoads() {
 
-		final File procStats = new File("/proc/stat");
+		final File procStats = new File(PROCSTAT);
 
 		if (!procStats.exists()) {
-			logger.error("Cannot read /proc/stat");
+			logger.error(CANTREAD + PROCSTAT);
 			return;
 		}
 
@@ -99,24 +107,15 @@ public class XWUtilLinux extends XWUtilImpl {
 				tokenizer.nextToken();
 
 				final long machineUserTmp = machineUser;
-				final long machineNiceTmp = machineNice;
-				final long machineSysTmp = machineSys;
-				final long machineIdleTmp = machineIdle;
-
 				final long machineTotalTmp = machineTotal;
 
-				machineUser = new Long(tokenizer.nextToken()).longValue();
-				machineNice = new Long(tokenizer.nextToken()).longValue();
-				machineSys = new Long(tokenizer.nextToken()).longValue();
-				machineIdle = new Long(tokenizer.nextToken()).longValue();
+				machineUser = Long.parseLong(tokenizer.nextToken());
+				machineNice = Long.parseLong(tokenizer.nextToken());
+				machineSys = Long.parseLong(tokenizer.nextToken());
+				machineIdle = Long.parseLong(tokenizer.nextToken());
 
 				machineTotal = machineUser + machineNice + machineSys + machineIdle;
-
 				machineUserOld = machineUserTmp;
-				machineNiceOld = machineNiceTmp;
-				machineSysOld = machineSysTmp;
-				machineIdleOld = machineIdleTmp;
-
 				machineTotalOld = machineTotalTmp;
 
 			} else {
@@ -159,10 +158,10 @@ public class XWUtilLinux extends XWUtilImpl {
 	 */
 	private int getProcessGroup(final int pid) {
 
-		final File procStat = new File("/proc/" + pid + "/stat");
+		final File procStat = new File(PROC + pid + STAT);
 
 		if (!procStat.exists()) {
-			logger.error("can't get process group from /proc/" + pid + "/stat");
+			logger.error("can't get process group from " + PROC + pid + STAT);
 			return -1;
 		}
 
@@ -177,7 +176,7 @@ public class XWUtilLinux extends XWUtilImpl {
 			}
 
 			return Integer.parseInt(tokenizer.nextToken());
-		} catch (final Throwable e) {
+		} catch (final IOException e) {
 			logger.error("XWUtilLinux::getProcessGroup () 02 : " + e);
 		}
 
@@ -195,8 +194,8 @@ public class XWUtilLinux extends XWUtilImpl {
 	 */
 	private Collection<Integer> getProcessFamily(final int parent) {
 
-		LinkedList<Integer> ret = new LinkedList<Integer>();
-		final File dir = new File("/proc/");
+		LinkedList<Integer> ret = new LinkedList<>();
+		final File dir = new File(PROC);
 		final int grp = getProcessGroup(parent);
 
 		if (grp == -1) {
@@ -223,14 +222,13 @@ public class XWUtilLinux extends XWUtilImpl {
 				String line = bufferFile.readLine();
 
 				final StringTokenizer tokenizer = new StringTokenizer(line, "\t ");
-				final int thisChildPid = new Integer(tokenizer.nextToken()).intValue();
+				final int thisChildPid = Integer.parseInt(tokenizer.nextToken());
 				final int thisChildGid = getProcessGroup(thisChildPid);
 
 				if (thisChildGid == grp) {
-					ret.add(new Integer(thisChildPid));
+					ret.add(thisChildPid);
 				}
-			} catch (final Throwable e) {
-				e.printStackTrace();
+			} catch (final IOException e) {
 				logger.error("XWUtilLinux::getProcessFamily ()" + e);
 				ret = null;
 			}
@@ -246,10 +244,10 @@ public class XWUtilLinux extends XWUtilImpl {
 	 */
 	private int processUser(final int pid) {
 
-		final File procStats = new File("/proc/" + pid + "/stat");
+		final File procStats = new File(PROC + pid + STAT);
 
 		if (!procStats.exists()) {
-			logger.error("can't get process user from /proc/" + pid + "/stat");
+			logger.error("can't get process user from " + PROC + pid + STAT);
 			return 0;
 		}
 
@@ -264,8 +262,7 @@ public class XWUtilLinux extends XWUtilImpl {
 			}
 
 			return new Long(tokenizer.nextToken()).intValue();
-		} catch (final Throwable e) {
-			e.printStackTrace();
+		} catch (final IOException e) {
 			logger.error("XWUtilLinux::getProcessUser () 02 : " + e);
 		}
 
@@ -317,10 +314,10 @@ public class XWUtilLinux extends XWUtilImpl {
 	@Override
 	public int getSpeedProc() {
 		String valStr = null;
-		final File procInterrupts = new File("/proc/cpuinfo");
+		final File procInterrupts = new File(CPUINFO);
 
 		if (!procInterrupts.exists()) {
-			logger.error("Cannot read /proc/cpuinfo");
+			logger.error(CANTREAD + CPUINFO);
 			return 0;
 		}
 
@@ -329,7 +326,7 @@ public class XWUtilLinux extends XWUtilImpl {
 
 			while ((l != null) && (valStr == null)) {
 				if (l.indexOf("cpu MHz") != -1) {
-					final int start = l.indexOf(":") + 1;
+					final int start = l.indexOf(':') + 1;
 					if (start != -1) {
 						valStr = l.substring(start);
 					}
@@ -341,8 +338,8 @@ public class XWUtilLinux extends XWUtilImpl {
 			if (valStr != null) {
 				return new Float(valStr).intValue();
 			}
-		} catch (final Exception e) {
-			logger.error(" Exception: " + e);
+		} catch (final IOException e) {
+			logger.exception(e);
 			return 0;
 		}
 
@@ -352,11 +349,11 @@ public class XWUtilLinux extends XWUtilImpl {
 	@Override
 	public String getProcModel() {
 		String valStr = null;
-		final File procInterrupts = new File("/proc/cpuinfo");
+		final File procInterrupts = new File(CPUINFO);
 
 		if (!procInterrupts.exists()) {
-			logger.error("Cannot read /proc/cpuinfo");
-			return new String();
+			logger.error(CANTREAD + CPUINFO);
+			return "";
 		}
 
 		try (final BufferedReader bufferFile = new BufferedReader(new FileReader(procInterrupts))) {
@@ -365,7 +362,7 @@ public class XWUtilLinux extends XWUtilImpl {
 			while ((l != null) && (valStr == null)) {
 
 				if (l.indexOf("model name") != -1) {
-					final int start = l.indexOf(":") + 1;
+					final int start = l.indexOf(':') + 1;
 					if (start != -1) {
 						valStr = l.substring(start);
 					}
@@ -373,8 +370,8 @@ public class XWUtilLinux extends XWUtilImpl {
 				l = bufferFile.readLine();
 			}
 			bufferFile.close();
-		} catch (final Exception e) {
-			logger.error(" Exception: " + e);
+		} catch (final IOException e) {
+			logger.exception(e);
 			return "";
 		}
 
@@ -390,10 +387,10 @@ public class XWUtilLinux extends XWUtilImpl {
 	@Override
 	public long getTotalMem() {
 		String valStr = null;
-		final File procInterrupts = new File("/proc/meminfo");
+		final File procInterrupts = new File(MEMINFO);
 
 		if (!procInterrupts.exists()) {
-			logger.error("Cannot read /proc/meminfo");
+			logger.error(CANTREAD + MEMINFO);
 			return 0;
 		}
 
@@ -402,7 +399,7 @@ public class XWUtilLinux extends XWUtilImpl {
 
 			while ((l != null) && (valStr == null)) {
 				if (l.indexOf("MemTotal") != -1) {
-					final int start = l.indexOf(":") + 1;
+					final int start = l.indexOf(':') + 1;
 					if (start != -1) {
 						valStr = l.substring(start);
 					}
@@ -428,10 +425,10 @@ public class XWUtilLinux extends XWUtilImpl {
 	@Override
 	public long getTotalSwap() {
 		String valStr = null;
-		final File procInterrupts = new File("/proc/meminfo");
+		final File procInterrupts = new File(MEMINFO);
 
 		if (!procInterrupts.exists()) {
-			logger.error("Cannot read /proc/meminfo");
+			logger.error(CANTREAD + MEMINFO);
 			return 0;
 		}
 
@@ -453,8 +450,8 @@ public class XWUtilLinux extends XWUtilImpl {
 				valStr = valStr.substring(0, kb);
 				return new Float(valStr).longValue();
 			}
-		} catch (final Exception e) {
-			logger.error(" Exception: " + e);
+		} catch (final IOException e) {
+			logger.exception(e);
 			return 0;
 		}
 		return 0;

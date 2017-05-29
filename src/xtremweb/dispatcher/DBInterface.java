@@ -38,6 +38,8 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Vector;
 
+import javax.mail.MessagingException;
+
 import xtremweb.common.AppInterface;
 import xtremweb.common.AppTypeEnum;
 import xtremweb.common.Cache;
@@ -372,13 +374,13 @@ public final class DBInterface {
 			logger.warn("can't send mail : client is null");
 			return;
 		}
-		try {
-			emailSender.send("XtremWeb-HEP@" + XWTools.getLocalHostName() + " : " + row.getUID(), theClient.getEMail(),
-					msg + "\n" + row.toString(false, true) + "\n\n" + "https://" + XWTools.getLocalHostName() + ":"
-							+ System.getProperty(XWPropertyDefs.HTTPSPORT.toString()) + "/get/" + row.getUID());
-		} catch (final Exception e) {
-			logger.warn(e.toString());
-		}
+			try {
+				emailSender.send("XtremWeb-HEP@" + XWTools.getLocalHostName() + " : " + row.getUID(), theClient.getEMail(),
+						msg + "\n" + row.toString(false, true) + "\n\n" + "https://" + XWTools.getLocalHostName() + ":"
+								+ System.getProperty(XWPropertyDefs.HTTPSPORT.toString()) + "/get/" + row.getUID());
+			} catch (MessagingException | IOException e) {
+				logger.exception(e);
+			}
 	}
 
 	/**
@@ -717,7 +719,7 @@ public final class DBInterface {
 	 * @since 5.8.0
 	 */
 	private AppInterface readableApp(final UserInterface u) throws IOException {
-		final SQLRequestReadable r = new SQLRequestReadable(AppInterface.TABLENAME, u, ColumnSelection.selectAll);
+		final SQLRequestReadable r = new SQLRequestReadable(AppInterface.APPTABLENAME, u, ColumnSelection.selectAll);
 		return new AppInterface(r);
 	}
 
@@ -735,7 +737,7 @@ public final class DBInterface {
 		if (uid == null) {
 			return null;
 		}
-		final SQLRequestReadable r = new SQLRequestReadable(AppInterface.TABLENAME, u, ColumnSelection.selectAll, uid);
+		final SQLRequestReadable r = new SQLRequestReadable(AppInterface.APPTABLENAME, u, ColumnSelection.selectAll, uid);
 		return new AppInterface(r);
 	}
 
@@ -747,7 +749,7 @@ public final class DBInterface {
 	 * @since 5.8.0
 	 */
 	private AppInterface readableAppUID(final UserInterface u) throws IOException {
-		final SQLRequestReadable r = new SQLRequestReadable(AppInterface.TABLENAME, u, ColumnSelection.selectUID);
+		final SQLRequestReadable r = new SQLRequestReadable(AppInterface.APPTABLENAME, u, ColumnSelection.selectUID);
 		return new AppInterface(r);
 	}
 
