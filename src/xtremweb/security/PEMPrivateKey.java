@@ -61,7 +61,7 @@ public final class PEMPrivateKey {
 		Security.addProvider(new BouncyCastleProvider());
 	}
 
-	private final static String SIGNATUREALGONAME = "SHA256WithRSAEncryption";
+	private static final String SIGNATUREALGONAME = "SHA256WithRSAEncryption";
 
 	private static class DefaultPasswordFinder implements PasswordFinder {
 

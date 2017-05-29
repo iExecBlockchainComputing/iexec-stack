@@ -63,22 +63,8 @@ public class ViewDialog extends JDialog implements ActionListener {
 	public static final String HELP = "Help";
 	private final JFrame _parent;
 
-	/**
-	 * @return the textPane
-	 */
-	@Override
-	public JFrame getParent() {
-		return _parent;
-	}
 
 	private JPanel textPane = null;
-
-	/**
-	 * @return the textPane
-	 */
-	public JPanel getTextPane() {
-		return textPane;
-	}
 
 	/**
 	 * This contains the editable fields
@@ -237,6 +223,20 @@ public class ViewDialog extends JDialog implements ActionListener {
 
 		getContentPane().add(textPane);
 		pack();
+	}
+
+	/**
+	 * @return the textPane
+	 */
+	public JPanel getTextPane() {
+		return textPane;
+	}
+	/**
+	 * @return the textPane
+	 */
+	@Override
+	public JFrame getParent() {
+		return _parent;
 	}
 
 	/**

@@ -128,6 +128,15 @@ import xtremweb.security.XWAccessRights;
  */
 
 public final class Client {
+	/**
+	 * This aims to display some time stamps
+	 */
+	private MileStone mileStone;
+
+	/**
+	 * This hashtable stores comm clients for each schema
+	 */
+	private final HashMap<String, CommClient> commClients;
 
 	/**
 	 * This is the output stream
@@ -148,24 +157,9 @@ public final class Client {
 	private CommandLineParser args;
 
 	/**
-	 * This is needed to call this class methods from GUI
-	 */
-	public void setArguments(final CommandLineParser a) {
-		args = a;
-	}
-
-	/**
 	 * This stores client config such as login, password, server addr etc.
 	 */
 	private XWConfigurator config;
-
-	public XWConfigurator getConfig() {
-		return config;
-	}
-
-	public void setConfig(final XWConfigurator c) {
-		config = c;
-	}
 
 	/**
 	 * This stores the macro file line number.
@@ -187,7 +181,66 @@ public final class Client {
 	 * @since 7.0.0
 	 */
 	private boolean shellRunning;
+	
+	/**
+	 * This is the zip file
+	 */
+	private final Zipper zipper;
+	/**
+	 * Don't forget to remove temp ZIP file when submitting job
+	 */
+	private boolean newZip = false;
 
+
+	/**
+	 * This is the default constructor
+	 */
+	private Client(final String[] a) throws ParseException {
+		final String[] argv = a.clone();
+
+		logger = new Logger(this);
+		out = System.out;
+		executingMacro = false;
+		shellRunning = false;
+		config = null;
+		macroLineNumber = 0;
+		macroFile = null;
+		zipper = new Zipper();
+		commClients = new HashMap<>();
+
+		args = new CommandLineParser(argv);
+
+		if (args.help() || ((args.command() == IdRpc.NULL) && (args.getOption(CommandLineOptions.GUI) == null)
+				&& (args.getOption(CommandLineOptions.MACRO) == null))) {
+			usage(args.command());
+		}
+		try {
+			config = (XWConfigurator) args.getOption(CommandLineOptions.CONFIG);
+			setLoggerLevel(config.getLoggerLevel());
+		} catch (final NullPointerException e) {
+			logger.exception(e);
+			if (args.getOption(CommandLineOptions.GUI) == null) {
+				logger.fatal("You must provide a config file, using \"--xwconfig\" !");
+			} else {
+				new MileStone(XWTools.split(""));
+				mileStone = new MileStone(Client.class);
+			}
+		}
+	}
+	/**
+	 * This is needed to call this class methods from GUI
+	 */
+	public void setArguments(final CommandLineParser a) {
+		args = a;
+	}
+
+	public XWConfigurator getConfig() {
+		return config;
+	}
+
+	public void setConfig(final XWConfigurator c) {
+		config = c;
+	}
 	/**
 	 * This retrieves and initializes the default communication client
 	 *
@@ -405,15 +458,6 @@ public final class Client {
 	}
 
 	/**
-	 * This is the zip file
-	 */
-	private final Zipper zipper;
-	/**
-	 * Don't forget to remove temp ZIP file when submitting job
-	 */
-	private boolean newZip = false;
-
-	/**
 	 * This sets the logger level. This also sets the logger levels checkboxes
 	 * menu item.
 	 */
@@ -421,52 +465,6 @@ public final class Client {
 		logger.setLoggerLevel(l);
 		if (zipper != null) {
 			zipper.setLoggerLevel(l);
-		}
-	}
-
-	/**
-	 * This aims to display some time stamps
-	 */
-	private MileStone mileStone;
-
-	/**
-	 * This hashtable stores comm clients for each schema
-	 */
-	private final HashMap<String, CommClient> commClients;
-
-	/**
-	 * This is the default constructor
-	 */
-	private Client(final String[] a) throws ParseException {
-		final String[] argv = a.clone();
-
-		logger = new Logger(this);
-		out = System.out;
-		executingMacro = false;
-		shellRunning = false;
-		config = null;
-		macroLineNumber = 0;
-		macroFile = null;
-		zipper = new Zipper();
-		commClients = new HashMap<>();
-
-		args = new CommandLineParser(argv);
-
-		if (args.help() || ((args.command() == IdRpc.NULL) && (args.getOption(CommandLineOptions.GUI) == null)
-				&& (args.getOption(CommandLineOptions.MACRO) == null))) {
-			usage(args.command());
-		}
-		try {
-			config = (XWConfigurator) args.getOption(CommandLineOptions.CONFIG);
-			setLoggerLevel(config.getLoggerLevel());
-		} catch (final NullPointerException e) {
-			logger.exception(e);
-			if (args.getOption(CommandLineOptions.GUI) == null) {
-				logger.fatal("You must provide a config file, using \"--xwconfig\" !");
-			} else {
-				new MileStone(XWTools.split(""));
-				mileStone = new MileStone(Client.class);
-			}
 		}
 	}
 
@@ -2921,8 +2919,6 @@ public final class Client {
 	 */
 	private void workRequest() throws IOException {
 
-		final List params = (List) args.commandParams();
-
 		try {
 			final WorkInterface work = commClient().workRequest(config.getHost());
 			println("Work received: " + work.toXml());
@@ -3112,7 +3108,7 @@ public final class Client {
 		if (uids == null) {
 			throw new IOException("no param provided");
 		}
-		boolean status = false;
+		boolean status;
 		final Iterator li = uids.iterator();
 
 		final String onoff = (String) li.next();

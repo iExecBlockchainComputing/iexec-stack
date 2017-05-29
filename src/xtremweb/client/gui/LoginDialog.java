@@ -44,9 +44,9 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
 public final class LoginDialog extends JDialog implements ActionListener {
-	private static String OK = "Ok";
-	private static String CANCEL = "Cancel";
-	private static String HELP = "Help";
+	private static final String OK = "Ok";
+	private static final String CANCEL = "Cancel";
+	private static final String HELP = "Help";
 
 	private final JFrame _parent;
 	private JTextField server;

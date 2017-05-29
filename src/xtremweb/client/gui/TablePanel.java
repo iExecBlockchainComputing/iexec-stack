@@ -68,10 +68,6 @@ public class TablePanel extends JPanel {
 	private final JTable jTable;
 	private final TableModel model;
 
-	public TableModel getTableModel() {
-		return model;
-	}
-
 	private final TableSorter sorter;
 
 	/**
@@ -133,11 +129,15 @@ public class TablePanel extends JPanel {
 		add(jScrollPane);
 	}
 
+	public TableModel getTableModel() {
+		return model;
+	}
+
 	/**
-	 * This retreives datas from server; this also enable/disable buttons
+	 * This retrieves datas from server; this also enable/disable buttons
 	 */
 	public void refresh() throws ConnectException {
-		// retreive datas from server
+		// retrieve data from server
 		model.refresh();
 		// enable/disable buttons
 		model.getButtons();

@@ -55,7 +55,7 @@ public class SQLRequestWorkRequest extends SQLRequest {
 	 * @see DBConnPool#rowTableNames(String)
 	 */
 	private static final String TABLENAMES = WorkInterface.TABLENAME + " as " + MAINTABLEALIAS + ","
-			+ AppInterface.APPTABLENAME + "," + UserInterface.TABLENAME + "," + DataInterface.TABLENAME;
+			+ AppInterface.APPTABLENAME + "," + UserInterface.TABLENAME + "," + DataInterface.DATATABLENAME;
 
 	/**
 	 * This is used if host.acceptBin == true. This helps to retrieve any

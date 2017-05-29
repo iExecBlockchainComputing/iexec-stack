@@ -852,7 +852,7 @@ public final class DBInterface {
 		if (uid == null) {
 			return null;
 		}
-		final SQLRequestReadable r = new SQLRequestReadable(DataInterface.TABLENAME, u, ColumnSelection.selectAll, uid);
+		final SQLRequestReadable r = new SQLRequestReadable(DataInterface.DATATABLENAME, u, ColumnSelection.selectAll, uid);
 		return new DataInterface(r);
 	}
 
@@ -864,7 +864,7 @@ public final class DBInterface {
 	 * @since 5.8.0
 	 */
 	private DataInterface readableDataUID(final UserInterface u) throws IOException {
-		final SQLRequestReadable r = new SQLRequestReadable(DataInterface.TABLENAME, u, ColumnSelection.selectUID);
+		final SQLRequestReadable r = new SQLRequestReadable(DataInterface.DATATABLENAME, u, ColumnSelection.selectUID);
 		return new DataInterface(r);
 	}
 

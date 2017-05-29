@@ -89,13 +89,25 @@ import xtremweb.worker.Worker;
  */
 public final class MainFrame extends JFrame implements ActionListener {
 
+	/**
+	 * This stores the total lines
+	 */
+	private int totalLines;
+	/**
+	 * This stores the number of selected lines
+	 */
+	private int selectedLines;
+	/**
+	 * This shows lines information in the form "selectedLines/totalLines"
+	 */
+	private final JTextField linesInfo;
+
 	private final Logger logger;
 
+	private final Dimension DEFAULTSIZE = new Dimension(800, 600);
 	public LoggerLevel getLoggerLevel() {
 		return logger.getLoggerLevel();
 	}
-
-	private final Dimension DEFAULTSIZE = new Dimension(800, 600);
 
 	/**
 	 * This sets the logger level. This also sets the logger levels checkboxes
@@ -133,23 +145,6 @@ public final class MainFrame extends JFrame implements ActionListener {
 	 * This is the client
 	 */
 	private final Client client;
-
-	/**
-	 * This retreives the client
-	 */
-	public Client getClient() {
-		return client;
-	}
-
-	/**
-	 * This retrieves the communication layer
-	 *
-	 * @throws IOException
-	 * @throws InstantiationException
-	 */
-	public CommClient commClient() throws IOException, InstantiationException {
-		return client.commClient();
-	}
 
 	/**
 	 * This is the "quit" menu item, in "File" menu
@@ -238,138 +233,6 @@ public final class MainFrame extends JFrame implements ActionListener {
 	 * This shows download progress
 	 */
 	private final JProgressBar progressBar;
-
-	/**
-	 * This sets the progressbar value
-	 */
-	public void setProgressValue(final int v) {
-		progressBar.setValue(v);
-		progressBar.paintImmediately(progressBar.getVisibleRect());
-	}
-
-	/**
-	 * This sets the progressbar value
-	 */
-	public void setProgressStringPainted(final boolean b) {
-		progressBar.setStringPainted(b);
-	}
-
-	/**
-	 * This increments the progressbar value
-	 */
-	public void incProgressValue() {
-		setProgressValue(getProgressValue() + 1);
-	}
-
-	/**
-	 * This returns the progressbar value
-	 */
-	public int getProgressValue() {
-		return progressBar.getValue();
-	}
-
-	/**
-	 * This sets the progressbar minimum
-	 */
-	public void setProgressMinimum(final int v) {
-		progressBar.setMinimum(v);
-	}
-
-	/**
-	 * This sets the progressbar maximum
-	 */
-	public void setProgressMaximum(final int v) {
-		progressBar.setMaximum(v);
-	}
-
-	/**
-	 * This sets title to "not connected"
-	 */
-	public void setTitleNotConnected() {
-		setTitle("XWHEP : not connected");
-		myPanel.setVisible(false);
-	}
-
-	/**
-	 * This sets title to "login@server"
-	 */
-	public void setTitleConnected() {
-		setTitleConnected(client.getConfig().getUser().getLogin(), client.getConfig().getCurrentDispatcher());
-	}
-
-	/**
-	 * This sets title to "login@server"
-	 */
-	public void setTitleConnected(final String login, final String server) {
-		setTitle("XWHEP : " + login + "@" + server);
-		myPanel.setVisible(true);
-	}
-
-	/**
-	 * This stores the total lines
-	 */
-	private int totalLines;
-	/**
-	 * This stores the number of selected lines
-	 */
-	private int selectedLines;
-	/**
-	 * This shows lines information in the form "selectedLines/totalLines"
-	 */
-	private final JTextField linesInfo;
-
-	/**
-	 * This sets the total lines and refresh linesInfo
-	 */
-	public void setTotalLines(final int v) {
-		totalLines = v;
-		linesInfo.setText("" + selectedLines + "/" + totalLines);
-	}
-
-	/**
-	 * This retreives the total lines and refresh linesInfo
-	 */
-	public int getTotalLines() {
-		return totalLines;
-	}
-
-	/**
-	 * This increments the total lines and refresh linesInfo
-	 */
-	public void incTotalLines() {
-		setTotalLines(totalLines + 1);
-	}
-
-	/**
-	 * This sets the selected lines and refresh linesInfo
-	 */
-	public void setSelectedLines(final int v) {
-		selectedLines = v;
-		linesInfo.setText("" + selectedLines + "/" + totalLines);
-	}
-
-	/******************************************************************/
-	/* inner class WinListener */
-	/******************************************************************/
-
-	/**
-	 * This inner class implements the interface <CODE>WindowAdapter</CODE> to
-	 * catch window close event.
-	 */
-	class WinListener extends WindowAdapter {
-		/**
-		 * This is the only method of that class, inherited from interface
-		 * <CODE>WindowAdapter</CODE>.
-		 *
-		 * @param ev
-		 *            is the event to process.
-		 */
-		@Override
-		public void windowClosing(final WindowEvent ev) {
-			processQuit();
-		}
-
-	}
 
 	/**
 	 * This constructor creates the main window. Including a <CODE>Panel</CODE>
@@ -578,6 +441,142 @@ public final class MainFrame extends JFrame implements ActionListener {
 
 		getUser();
 		myPanel.enableButtons();
+
+	}
+
+	/**
+	 * This retrieves the client
+	 */
+	public Client getClient() {
+		return client;
+	}
+
+	/**
+	 * This retrieves the communication layer
+	 *
+	 * @throws IOException
+	 * @throws InstantiationException
+	 */
+	public CommClient commClient() throws IOException, InstantiationException {
+		return client.commClient();
+	}
+
+	/**
+	 * This sets the progressbar value
+	 */
+	public void setProgressValue(final int v) {
+		progressBar.setValue(v);
+		progressBar.paintImmediately(progressBar.getVisibleRect());
+	}
+
+	/**
+	 * This sets the progressbar value
+	 */
+	public void setProgressStringPainted(final boolean b) {
+		progressBar.setStringPainted(b);
+	}
+
+	/**
+	 * This increments the progressbar value
+	 */
+	public void incProgressValue() {
+		setProgressValue(getProgressValue() + 1);
+	}
+
+	/**
+	 * This returns the progressbar value
+	 */
+	public int getProgressValue() {
+		return progressBar.getValue();
+	}
+
+	/**
+	 * This sets the progressbar minimum
+	 */
+	public void setProgressMinimum(final int v) {
+		progressBar.setMinimum(v);
+	}
+
+	/**
+	 * This sets the progressbar maximum
+	 */
+	public void setProgressMaximum(final int v) {
+		progressBar.setMaximum(v);
+	}
+
+	/**
+	 * This sets title to "not connected"
+	 */
+	public void setTitleNotConnected() {
+		setTitle("XWHEP : not connected");
+		myPanel.setVisible(false);
+	}
+
+	/**
+	 * This sets title to "login@server"
+	 */
+	public void setTitleConnected() {
+		setTitleConnected(client.getConfig().getUser().getLogin(), client.getConfig().getCurrentDispatcher());
+	}
+
+	/**
+	 * This sets title to "login@server"
+	 */
+	public void setTitleConnected(final String login, final String server) {
+		setTitle("XWHEP : " + login + "@" + server);
+		myPanel.setVisible(true);
+	}
+
+	/**
+	 * This sets the total lines and refresh linesInfo
+	 */
+	public void setTotalLines(final int v) {
+		totalLines = v;
+		linesInfo.setText("" + selectedLines + "/" + totalLines);
+	}
+
+	/**
+	 * This retrieves the total lines and refresh linesInfo
+	 */
+	public int getTotalLines() {
+		return totalLines;
+	}
+
+	/**
+	 * This increments the total lines and refresh linesInfo
+	 */
+	public void incTotalLines() {
+		setTotalLines(totalLines + 1);
+	}
+
+	/**
+	 * This sets the selected lines and refresh linesInfo
+	 */
+	public void setSelectedLines(final int v) {
+		selectedLines = v;
+		linesInfo.setText("" + selectedLines + "/" + totalLines);
+	}
+
+	/******************************************************************/
+	/* inner class WinListener */
+	/******************************************************************/
+
+	/**
+	 * This inner class implements the interface <CODE>WindowAdapter</CODE> to
+	 * catch window close event.
+	 */
+	class WinListener extends WindowAdapter {
+		/**
+		 * This is the only method of that class, inherited from interface
+		 * <CODE>WindowAdapter</CODE>.
+		 *
+		 * @param ev
+		 *            is the event to process.
+		 */
+		@Override
+		public void windowClosing(final WindowEvent ev) {
+			processQuit();
+		}
 
 	}
 
@@ -870,7 +869,7 @@ public final class MainFrame extends JFrame implements ActionListener {
 	}
 
 	/**
-	 * This retreive user's properties from server
+	 * This retrieve user's properties from server
 	 */
 	private boolean getUser() {
 		boolean ret = true;

@@ -592,16 +592,8 @@ public final class CertificateValidator {
 	public Vector<CACertPath> createPaths(final String certFilePathName)
 			throws NoSuchAlgorithmException, IOException, CertificateException {
 
-		File certFile = null;
-		Vector<CACertPath> ret = null;
-
-		try {
-			certFile = new File(certFilePathName);
-			ret = createPaths(certFile);
-		} finally {
-			certFile = null;
-		}
-		return ret;
+		final File certFile = new File(certFilePathName);
+		return createPaths(certFile);
 	}
 
 	/**

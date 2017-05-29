@@ -103,7 +103,7 @@ public final class TableSorter extends AbstractTableModel {
 	public static final int NOT_SORTED = 0;
 	public static final int ASCENDING = 1;
 
-	private static Directive EMPTY_DIRECTIVE = new Directive(-1, NOT_SORTED);
+	private static final Directive EMPTY_DIRECTIVE = new Directive(-1, NOT_SORTED);
 
 	public static final Comparator COMPARABLE_COMAPRATOR = new Comparator() {
 		@Override

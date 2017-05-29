@@ -77,30 +77,9 @@ public abstract class TableModel extends DefaultTableModel {
 	 */
 	private final Logger logger;
 
-	/**
-	 * This is the logger getter
-	 *
-	 * @return the logger
-	 */
-	public Logger getLogger() {
-		return logger;
-	}
-
-	public LoggerLevel getLoggerLevel() {
-		return logger.getLoggerLevel();
-	}
-
 	public final static String WARNING = "XWHEP Warning";
 	public final static String INFO = "XWHEP Information";
 	public final static String ERROR = "XWHEP Error";
-
-	/**
-	 * This sets the logger level. This also sets the logger levels checkboxes
-	 * menu item.
-	 */
-	public final void setLoggerLevel(final LoggerLevel l) {
-		logger.setLoggerLevel(l);
-	}
 
 	/**
 	 * These commands are used to set some fields in dialog boxes
@@ -133,21 +112,6 @@ public abstract class TableModel extends DefaultTableModel {
 	private ViewDialog viewDialog = null;
 
 	/**
-	 * @param viewDialog
-	 *            the viewDialog to set
-	 */
-	public void setViewDialog(final ViewDialog viewDialog) {
-		this.viewDialog = viewDialog;
-	}
-
-	/**
-	 * @return the viewDialog
-	 */
-	public ViewDialog getViewDialog() {
-		return viewDialog;
-	}
-
-	/**
 	 * This is the select button label, also used as key in hashtable
 	 */
 	public static final String SELECT_LABEL = "Select all";
@@ -157,13 +121,6 @@ public abstract class TableModel extends DefaultTableModel {
 	private JButton selectButton;
 
 	/**
-	 * @return the selectButton
-	 */
-	public JButton getSelectButton() {
-		return selectButton;
-	}
-
-	/**
 	 * This is the deselect button label, also used as key in hashtable
 	 */
 	public static final String UNSELECT_LABEL = "Clear selection";
@@ -171,13 +128,6 @@ public abstract class TableModel extends DefaultTableModel {
 	 * This is the unselect button
 	 */
 	private JButton unselectButton;
-
-	/**
-	 * @return the unselectButton
-	 */
-	public JButton getUnselectButton() {
-		return unselectButton;
-	}
 
 	/**
 	 * This is the refresh button label, also used as key in hashtable
@@ -223,21 +173,6 @@ public abstract class TableModel extends DefaultTableModel {
 	private MainFrame parent;
 
 	/**
-	 * @return the parent
-	 */
-	public MainFrame getParent() {
-		return parent;
-	}
-
-	/**
-	 * @param parent
-	 *            the parent to set
-	 */
-	public void setParent(final MainFrame parent) {
-		this.parent = parent;
-	}
-
-	/**
 	 * This is the table
 	 */
 	private JTable jTable;
@@ -258,20 +193,6 @@ public abstract class TableModel extends DefaultTableModel {
 	 * This is the interface to display and manage
 	 */
 	private final Table itf;
-
-	public Table getInterface() {
-		return itf;
-	}
-
-	/**
-	 * This contains data. Each rows has also a last item which contains a
-	 * <CODE>JButton</CODE> to view data.
-	 */
-	private final Vector<Table> rows = new Vector<>();
-
-	public Vector<Table> getDataRows() {
-		return rows;
-	}
 
 	/**
 	 * This is a constructor.
@@ -302,6 +223,83 @@ public abstract class TableModel extends DefaultTableModel {
 		delButton = null;
 		jTable = null;
 		sorter = null;
+	}
+
+	/**
+	 * This contains data. Each rows has also a last item which contains a
+	 * <CODE>JButton</CODE> to view data.
+	 */
+	private final Vector<Table> rows = new Vector<>();
+
+	/**
+	 * @param viewDialog
+	 *            the viewDialog to set
+	 */
+	public void setViewDialog(final ViewDialog viewDialog) {
+		this.viewDialog = viewDialog;
+	}
+
+	/**
+	 * @return the viewDialog
+	 */
+	public ViewDialog getViewDialog() {
+		return viewDialog;
+	}
+
+	/**
+	 * @return the selectButton
+	 */
+	public JButton getSelectButton() {
+		return selectButton;
+	}
+
+	/**
+	 * @return the unselectButton
+	 */
+	public JButton getUnselectButton() {
+		return unselectButton;
+	}
+	/**
+	 * @return the parent
+	 */
+	public MainFrame getParent() {
+		return parent;
+	}
+
+	/**
+	 * @param parent
+	 *            the parent to set
+	 */
+	public void setParent(final MainFrame parent) {
+		this.parent = parent;
+	}
+	public Table getInterface() {
+		return itf;
+	}
+
+	public Vector<Table> getDataRows() {
+		return rows;
+	}
+
+	/**
+	 * This is the logger getter
+	 *
+	 * @return the logger
+	 */
+	public Logger getLogger() {
+		return logger;
+	}
+
+	public LoggerLevel getLoggerLevel() {
+		return logger.getLoggerLevel();
+	}
+
+	/**
+	 * This sets the logger level. This also sets the logger levels checkboxes
+	 * menu item.
+	 */
+	public final void setLoggerLevel(final LoggerLevel l) {
+		logger.setLoggerLevel(l);
 	}
 
 	/**
