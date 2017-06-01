@@ -79,6 +79,7 @@ public class XMLVectorTest {
 			assertTrue(v1.toXml().equals(v2.toXml()));
 		} catch (final Exception e) {
 			logger.exception(e);
+			assert(false);
 		}
 	}
 }

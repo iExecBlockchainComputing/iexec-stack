@@ -86,6 +86,7 @@ public abstract class XMLRPCCommandTest {
 			assertTrue(getCmd().toXml().equals(getCmd2().toXml()));
 		} catch (final Exception e) {
 			logger.exception(e);
+			assert(false);
 		}
 	}
 

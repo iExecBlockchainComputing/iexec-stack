@@ -87,6 +87,7 @@ public abstract class TableInterfaceTest {
 			assertTrue(getItf().toXml().equals(getItf2().toXml()));
 		} catch (final Exception e) {
 			logger.exception(e);
+			assert(false);
 		}
 	}
 

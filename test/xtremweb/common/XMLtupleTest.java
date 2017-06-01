@@ -29,18 +29,14 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.util.Collection;
-import java.util.Hashtable;
-import java.util.Vector;
 
 import org.junit.Test;
 
 import xtremweb.common.Logger;
 import xtremweb.common.LoggerLevel;
-import xtremweb.common.StreamIO;
-import xtremweb.common.XMLHashtable;
-import xtremweb.common.UID;
+import xtremweb.common.XMLtuple;
 import xtremweb.common.XMLReader;
+import xtremweb.common.XMLWriter;
 
 /**
  * This tests XML serialization
@@ -51,10 +47,10 @@ import xtremweb.common.XMLReader;
  * @version 1.0
  */
 
-public class XMLHashtableTest {
+public class XMLtupleTest {
 	private final Logger logger;
 
-	public XMLHashtableTest () {
+	public XMLtupleTest () {
 		logger = new Logger(this);
 	}
 
@@ -64,39 +60,23 @@ public class XMLHashtableTest {
 	@Test
 	public void start() {
 		try {
-			final Collection v = new Vector();
-			v.add(new String("a string in vector"));
-			v.add(new Integer(100));
-			v.add(new Boolean("true"));
-			final Hashtable h = new Hashtable();
-			final Hashtable subHash = new Hashtable();
-			h.put(new Integer(1), new String("un"));
-			h.put(new String("deux"), new Integer(2));
-			h.put(new String("a vector"), v);
-			h.put(new String("a null UID"), UID.NULLUID);
-			h.put(new String("a false boolean"), new Boolean("false"));
-			subHash.put(new Integer(10), new String("dix"));
-			subHash.put(new String("dix"), new Integer(10));
-			subHash.put(new String("a vector"), v);
-			h.put(new String("an hashtable"), subHash);
-
-			final XMLHashtable hRead = new XMLHashtable();
-			final XMLHashtable hWrite = new XMLHashtable(h);
-
+			final XMLtuple tRead = new XMLtuple();
+			final XMLtuple tWrite = new XMLtuple(new Integer(1), new String("un"));
+			
 			final File temp = File.createTempFile("xw-junit", "itf");
 			final FileOutputStream fout = new FileOutputStream(temp);
-			final DataOutputStream out = new DataOutputStream(fout);
-			hWrite.setLoggerLevel(LoggerLevel.DEBUG);
-			hWrite.setDUMPNULLS(true);
-			final XMLWriter writer = new XMLWriter(out);
-			writer.write(hWrite);
+			final DataOutputStream dos = new DataOutputStream(fout);
+			tWrite.setLoggerLevel(LoggerLevel.DEBUG);
+			tWrite.setDUMPNULLS(true);
+			final XMLWriter writer = new XMLWriter(dos);
+			writer.write(tWrite);
 
-			final XMLReader reader = new XMLReader(hRead);
+			final XMLReader reader = new XMLReader(tRead);
 			reader.read(new FileInputStream(temp));
-			hRead.setDUMPNULLS(true);
-			assertTrue(hWrite.toXml().equals(hRead.toXml()));
+			tRead.setDUMPNULLS(true);
+			assertTrue(tWrite.toXml().equals(tRead.toXml()));
 		} catch (final Exception e) {
-			logger.exception(e);
+			e.printStackTrace();
 			assert(false);
 		}
 	}
