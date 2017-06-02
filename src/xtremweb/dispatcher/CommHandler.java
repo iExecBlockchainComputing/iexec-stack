@@ -863,7 +863,7 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 		Exception excpt = null;
 		WorkInterface itf = null;
 
-		mileStone(("<workRequest host=" + _host) != null ? _host.getName() : "null" + ">");
+		mileStone("<workRequest host=" + (_host != null ? _host.getName() : "null") + ">");
 		try {
 			final UserInterface user = DBInterface.getInstance().checkClient(_user, UserRightEnum.GETJOB);
 
@@ -891,7 +891,7 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 				}
 			}
 			if (itf == null) {
-				debug(("worker " + _host) != null ? _host.getName() : "null" + " gets nothing");
+				debug("worker " + (_host != null ? _host.getName() : "null") + " gets nothing");
 			}
 			mileStone("</workRequest>");
 			notifyAll();
@@ -949,7 +949,7 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 
 		boolean keepWorking = false;
 
-		mileStone(("<workAlive host=" + _host) != null ? _host.getName() : "null" + ">");
+		mileStone("<workAlive host=" + (_host != null ? _host.getName() : "null") + ">");
 		final UserInterface user = DBInterface.getInstance().checkClient(_user, UserRightEnum.GETJOB);
 
 		_host.setIPAddr(remoteIP);
@@ -1029,7 +1029,7 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 	public Hashtable workAlive(final UserInterface _user, final HostInterface _host, final Hashtable rmiParams)
 			throws IOException, InvalidKeyException, AccessControlException {
 
-		mileStone(("<workAlive host=" + _host) != null ? _host.getName() : "null" + ">");
+		mileStone("<workAlive host=" + (_host != null ? _host.getName() : "null") + ">");
 		final UserInterface user = DBInterface.getInstance().checkClient(_user, UserRightEnum.GETJOB);
 
 		_host.setIPAddr(remoteIP);
