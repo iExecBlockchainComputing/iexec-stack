@@ -181,7 +181,7 @@ public final class Client {
 	 * @since 7.0.0
 	 */
 	private boolean shellRunning;
-	
+
 	/**
 	 * This is the zip file
 	 */
@@ -303,7 +303,7 @@ public final class Client {
 	 * @throws AccessControlException
 	 */
 	private DataInterface getData(final URI uri) throws IOException, ClassNotFoundException, SAXException,
-			InvalidKeyException, URISyntaxException, AccessControlException, InstantiationException {
+	InvalidKeyException, URISyntaxException, AccessControlException, InstantiationException {
 		return getData(uri, false);
 	}
 
@@ -326,7 +326,7 @@ public final class Client {
 	 * @throws InstantiationException
 	 */
 	private DataInterface getData(final URI uri, final boolean display) throws IOException, InvalidKeyException,
-			AccessControlException, ClassNotFoundException, SAXException, URISyntaxException, InstantiationException {
+	AccessControlException, ClassNotFoundException, SAXException, URISyntaxException, InstantiationException {
 
 		final XMLRPCCommandGet cmd = new XMLRPCCommandGet(uri);
 
@@ -380,7 +380,7 @@ public final class Client {
 		// insure data is in cache
 		final DataInterface data = getData(uri);
 
-		if (download == false) {
+		if (!download) {
 			return;
 		}
 
@@ -781,7 +781,7 @@ public final class Client {
 	 * @throws InstantiationException
 	 */
 	public XMLable sendCommand(final XMLRPCCommand command, final boolean display) throws InvalidKeyException,
-			AccessControlException, IOException, ClassNotFoundException, SAXException, InstantiationException {
+	AccessControlException, IOException, ClassNotFoundException, SAXException, InstantiationException {
 
 		final XMLable result = command.exec(commClient());
 
@@ -815,7 +815,7 @@ public final class Client {
 	 * @throws InstantiationException
 	 */
 	private void chmod() throws IOException, ClassNotFoundException, ParseException, SAXException, URISyntaxException,
-			InvalidKeyException, AccessControlException, InstantiationException, IllegalAccessException {
+	InvalidKeyException, AccessControlException, InstantiationException, IllegalAccessException {
 
 		final Collection params = (Collection) args.commandParams();
 		if (params == null) {
@@ -862,7 +862,7 @@ public final class Client {
 	 * @see #get(Vector)
 	 */
 	private void get() throws IOException, ClassNotFoundException, SAXException, URISyntaxException,
-			InvalidKeyException, AccessControlException, InstantiationException, IllegalAccessException {
+	InvalidKeyException, AccessControlException, InstantiationException, IllegalAccessException {
 
 		final Collection params = (Collection) args.commandParams();
 		get(params, true);
@@ -888,7 +888,7 @@ public final class Client {
 	 * @see #get(URI, boolean, boolean)
 	 */
 	private void get(final Collection params, final boolean display) throws InvalidKeyException, AccessControlException,
-			IOException, SAXException, URISyntaxException, ClassNotFoundException, InstantiationException {
+	IOException, SAXException, URISyntaxException, ClassNotFoundException, InstantiationException {
 
 		if (params == null) {
 			throw new IOException("no URI provided");
@@ -1020,7 +1020,7 @@ public final class Client {
 	 * @throws IllegalAccessException
 	 */
 	public Table get(final UID uid) throws IOException, ClassNotFoundException, SAXException, URISyntaxException,
-			InvalidKeyException, AccessControlException, InstantiationException {
+	InvalidKeyException, AccessControlException, InstantiationException {
 		final URI uri = commClient().newURI(uid);
 		return get(uri, false, false);
 	}
@@ -1036,7 +1036,7 @@ public final class Client {
 	 * @throws InstantiationException
 	 */
 	public Table get(final URI uri) throws InvalidKeyException, AccessControlException, IOException, SAXException,
-			URISyntaxException, InstantiationException {
+	URISyntaxException, InstantiationException {
 		return get(uri, false, false);
 	}
 
@@ -1083,7 +1083,7 @@ public final class Client {
 	 * @throws InvalidKeyException
 	 */
 	private Table get(final URI uri, final boolean display, final boolean bypass) throws IOException,
-			InvalidKeyException, AccessControlException, SAXException, URISyntaxException, InstantiationException {
+	InvalidKeyException, AccessControlException, SAXException, URISyntaxException, InstantiationException {
 
 		final CommClient commClient = commClient();
 		Table ret;
@@ -1128,7 +1128,7 @@ public final class Client {
 	 * @throws InvalidKeyException
 	 */
 	public AppInterface getApp(final String name) throws InvalidKeyException, AccessControlException, IOException,
-			ClassNotFoundException, SAXException, URISyntaxException, InstantiationException {
+	ClassNotFoundException, SAXException, URISyntaxException, InstantiationException {
 		return commClient().getApp(name, false);
 	}
 
@@ -1147,7 +1147,7 @@ public final class Client {
 	 * @see #getApps(boolean)
 	 */
 	public Collection<XMLable> getApps() throws InvalidKeyException, AccessControlException, URISyntaxException,
-			IOException, InstantiationException, ClassNotFoundException, SAXException, IllegalAccessException {
+	IOException, InstantiationException, ClassNotFoundException, SAXException, IllegalAccessException {
 		return getApps(false);
 	}
 
@@ -1195,7 +1195,7 @@ public final class Client {
 	 * @throws InvalidKeyException
 	 */
 	private void sendApp() throws IOException, ParseException, InvalidKeyException, AccessControlException,
-			URISyntaxException, InstantiationException, ClassNotFoundException, SAXException {
+	URISyntaxException, InstantiationException, ClassNotFoundException, SAXException {
 
 		final List appParams = (List) args.commandParams();
 
@@ -1360,7 +1360,7 @@ public final class Client {
 	 * @throws SAXException
 	 */
 	private void remove() throws IOException, ParseException, ClassNotFoundException, InvalidKeyException,
-			AccessControlException, InstantiationException, IllegalAccessException, SAXException {
+	AccessControlException, InstantiationException, IllegalAccessException, SAXException {
 
 		final Collection params = (Collection) args.commandParams();
 		if (params == null) {
@@ -1394,7 +1394,7 @@ public final class Client {
 	 * @throws SAXException
 	 */
 	public void remove(final URI uri) throws IOException, ClassNotFoundException, InvalidKeyException,
-			AccessControlException, InstantiationException, SAXException {
+	AccessControlException, InstantiationException, SAXException {
 
 		final XMLRPCCommandRemove cmd = new XMLRPCCommandRemove(uri);
 		sendCommand(cmd, false);
@@ -1427,7 +1427,7 @@ public final class Client {
 	 * @see #getDatas(boolean)
 	 */
 	public Collection<XMLable> getDatas() throws IOException, ClassNotFoundException, SAXException, URISyntaxException,
-			InvalidKeyException, AccessControlException, InstantiationException, IllegalAccessException {
+	InvalidKeyException, AccessControlException, InstantiationException, IllegalAccessException {
 		return getDatas(false);
 	}
 
@@ -1479,8 +1479,8 @@ public final class Client {
 	 * @throws AccessControlException
 	 */
 	private void sendData() throws IOException, ParseException, InvalidKeyException, URISyntaxException,
-			InstantiationException, CertificateExpiredException, CertificateException, AccessControlException,
-			ClassNotFoundException, SAXException {
+	InstantiationException, CertificateExpiredException, CertificateException, AccessControlException,
+	ClassNotFoundException, SAXException {
 
 		File dataFile = null;
 		String dataName = null;
@@ -1660,7 +1660,7 @@ public final class Client {
 	 */
 	public URI sendData(final OSEnum os, final CPUEnum cpu, final DataTypeEnum type, final XWAccessRights accessRights,
 			final URI uri, final String name) throws IOException, URISyntaxException, InvalidKeyException,
-			AccessControlException, ClassNotFoundException, SAXException, InstantiationException {
+	AccessControlException, ClassNotFoundException, SAXException, InstantiationException {
 
 		logger.debug(
 				"sendData(" + os + ", " + cpu + ", " + type + ", " + accessRights + ", " + uri + ", " + name + ")");
@@ -1674,18 +1674,19 @@ public final class Client {
 		data.setAccessRights(accessRights);
 		data.setURI(commClient().newURI(data.getUID()));
 
-		if ((uri != null) && (uri.isFile())) {
-			dataFile = new File(uri.getPath());
-			data.setName(dataFile.getName());
-			final DataTypeEnum thisType = DataTypeEnum.getFileType(dataFile);
-			if ((thisType == DataTypeEnum.TEXT) && (type == DataTypeEnum.URIPASSTHROUGH)) {
-				data.setType(type);
-			}
-			if (thisType == DataTypeEnum.X509) {
-				data.setAccessRights(XWAccessRights.USERALL);
+		if (uri != null) {
+			if (uri.isFile()) {
+				dataFile = new File(uri.getPath());
+				data.setName(dataFile.getName());
+				final DataTypeEnum thisType = DataTypeEnum.getFileType(dataFile);
+				if ((thisType == DataTypeEnum.TEXT) && (type == DataTypeEnum.URIPASSTHROUGH)) {
+					data.setType(type);
+				}
+				if (thisType == DataTypeEnum.X509) {
+					data.setAccessRights(XWAccessRights.USERALL);
+				}
 			}
 		}
-
 		return sendData(data, dataFile);
 	}
 
@@ -1726,7 +1727,7 @@ public final class Client {
 	 * @throws InstantiationException
 	 */
 	public URI sendData(final DataInterface data, final File dataFile) throws IOException, InvalidKeyException,
-			AccessControlException, ClassNotFoundException, SAXException, URISyntaxException, InstantiationException {
+	AccessControlException, ClassNotFoundException, SAXException, URISyntaxException, InstantiationException {
 
 		if (dataFile == null) {
 			data.setStatus(StatusEnum.AVAILABLE);
@@ -1771,7 +1772,7 @@ public final class Client {
 	 * @see #getGroups(boolean)
 	 */
 	public Collection<XMLable> getGroups() throws IOException, ClassNotFoundException, SAXException, URISyntaxException,
-			InvalidKeyException, AccessControlException, InstantiationException, IllegalAccessException {
+	InvalidKeyException, AccessControlException, InstantiationException, IllegalAccessException {
 		return getGroups(false);
 	}
 
@@ -1864,7 +1865,7 @@ public final class Client {
 	 * @see #getHosts(boolean)
 	 */
 	public Collection<XMLable> getHosts() throws IOException, ClassNotFoundException, SAXException, URISyntaxException,
-			InvalidKeyException, AccessControlException, InstantiationException {
+	InvalidKeyException, AccessControlException, InstantiationException {
 		return getHosts(false);
 	}
 
@@ -1885,7 +1886,7 @@ public final class Client {
 	 * @see #getHosts
 	 */
 	private Collection<XMLable> getHosts(final boolean display) throws InvalidKeyException, AccessControlException,
-			IOException, ClassNotFoundException, SAXException, URISyntaxException, InstantiationException {
+	IOException, ClassNotFoundException, SAXException, URISyntaxException, InstantiationException {
 
 		final XMLVector xmluids = (XMLVector) sendCommand(
 				new XMLRPCCommandGetHosts(commClient().newURI(), config.getUser()), false);
@@ -1914,7 +1915,7 @@ public final class Client {
 	 * @see #getSessions(boolean)
 	 */
 	public Collection<XMLable> getSessions() throws IOException, ClassNotFoundException, SAXException,
-			URISyntaxException, InvalidKeyException, AccessControlException, InstantiationException {
+	URISyntaxException, InvalidKeyException, AccessControlException, InstantiationException {
 		return getSessions(false);
 	}
 
@@ -1930,7 +1931,7 @@ public final class Client {
 	 * @see #getSessions
 	 */
 	private Collection<XMLable> getSessions(final boolean display) throws IOException, ClassNotFoundException,
-			SAXException, URISyntaxException, InvalidKeyException, AccessControlException, InstantiationException {
+	SAXException, URISyntaxException, InvalidKeyException, AccessControlException, InstantiationException {
 
 		final XMLVector xmluids = (XMLVector) sendCommand(
 				new XMLRPCCommandGetSessions(commClient().newURI(), config.getUser()), false);
@@ -1950,7 +1951,7 @@ public final class Client {
 	 * @throws InstantiationException
 	 */
 	private void sendSession() throws ParseException, IOException, ClassNotFoundException, SAXException,
-			URISyntaxException, InvalidKeyException, AccessControlException, InstantiationException {
+	URISyntaxException, InvalidKeyException, AccessControlException, InstantiationException {
 
 		final List params = (List) args.commandParams();
 		final UID uid = new UID();
@@ -2001,7 +2002,7 @@ public final class Client {
 	 * @see #getTasks(boolean)
 	 */
 	public Collection<XMLable> getTasks() throws IOException, ClassNotFoundException, SAXException, URISyntaxException,
-			InvalidKeyException, AccessControlException, InstantiationException {
+	InvalidKeyException, AccessControlException, InstantiationException {
 		return getTasks(false);
 	}
 
@@ -2017,7 +2018,7 @@ public final class Client {
 	 * @see #getTasks
 	 */
 	private Collection<XMLable> getTasks(final boolean display) throws IOException, ClassNotFoundException,
-			SAXException, URISyntaxException, InvalidKeyException, AccessControlException, InstantiationException {
+	SAXException, URISyntaxException, InvalidKeyException, AccessControlException, InstantiationException {
 
 		final XMLVector xmluids = (XMLVector) sendCommand(
 				new XMLRPCCommandGetTasks(commClient().newURI(), config.getUser()), false);
@@ -2035,7 +2036,7 @@ public final class Client {
 	 * @see #getTraces(boolean)
 	 */
 	public Collection<XMLable> getTraces() throws IOException, ClassNotFoundException, SAXException, URISyntaxException,
-			InvalidKeyException, AccessControlException, InstantiationException {
+	InvalidKeyException, AccessControlException, InstantiationException {
 		return getTraces(false);
 	}
 
@@ -2051,7 +2052,7 @@ public final class Client {
 	 * @see #getTraces
 	 */
 	private Collection<XMLable> getTraces(final boolean display) throws IOException, ClassNotFoundException,
-			SAXException, URISyntaxException, InvalidKeyException, AccessControlException, InstantiationException {
+	SAXException, URISyntaxException, InvalidKeyException, AccessControlException, InstantiationException {
 
 		final XMLVector xmluids = (XMLVector) sendCommand(
 				new XMLRPCCommandGetTraces(commClient().newURI(), config.getUser()), false);
@@ -2080,7 +2081,7 @@ public final class Client {
 	 * @see #getUserGroups(boolean)
 	 */
 	public Collection<XMLable> getUserGroups() throws IOException, ClassNotFoundException, SAXException,
-			URISyntaxException, InvalidKeyException, AccessControlException, InstantiationException {
+	URISyntaxException, InvalidKeyException, AccessControlException, InstantiationException {
 		return getUserGroups(false);
 	}
 
@@ -2097,7 +2098,7 @@ public final class Client {
 	 * @see #getUserGroups
 	 */
 	public Collection<XMLable> getUserGroups(final boolean display) throws IOException, ClassNotFoundException,
-			SAXException, URISyntaxException, InvalidKeyException, AccessControlException, InstantiationException {
+	SAXException, URISyntaxException, InvalidKeyException, AccessControlException, InstantiationException {
 
 		final XMLVector xmluids = (XMLVector) sendCommand(
 				new XMLRPCCommandGetUserGroups(commClient().newURI(), config.getUser()), false);
@@ -2117,7 +2118,7 @@ public final class Client {
 	 * @throws InstantiationException
 	 */
 	private void sendUserGroup() throws ParseException, IOException, ClassNotFoundException, SAXException,
-			URISyntaxException, InvalidKeyException, AccessControlException, InstantiationException {
+	URISyntaxException, InvalidKeyException, AccessControlException, InstantiationException {
 
 		UserGroupInterface group = null;
 		UserInterface groupAdmin = null;
@@ -2209,7 +2210,7 @@ public final class Client {
 	 * @see #getUser(UID, boolean)
 	 */
 	private void getUser() throws IOException, ClassNotFoundException, SAXException, URISyntaxException,
-			InvalidKeyException, AccessControlException, InstantiationException {
+	InvalidKeyException, AccessControlException, InstantiationException {
 		final Collection params = (Collection) args.commandParams();
 		get(params, true);
 		params.clear();
@@ -2227,7 +2228,7 @@ public final class Client {
 	 * @see #getUser(String, boolean)
 	 */
 	public UserInterface getUser(final String login) throws IOException, ClassNotFoundException, SAXException,
-			URISyntaxException, InvalidKeyException, AccessControlException, InstantiationException {
+	URISyntaxException, InvalidKeyException, AccessControlException, InstantiationException {
 		return getUser(login, false);
 	}
 
@@ -2245,7 +2246,7 @@ public final class Client {
 	 * @throws InstantiationException
 	 */
 	private UserInterface getUser(final String login, final boolean display) throws IOException, ClassNotFoundException,
-			SAXException, URISyntaxException, InvalidKeyException, AccessControlException, InstantiationException {
+	SAXException, URISyntaxException, InvalidKeyException, AccessControlException, InstantiationException {
 
 		final UserInterface user = commClient().getUser(login, false);
 
@@ -2267,7 +2268,7 @@ public final class Client {
 	 * @see #getUsers(boolean)
 	 */
 	public Collection<XMLable> getUsers() throws IOException, ClassNotFoundException, SAXException, URISyntaxException,
-			InvalidKeyException, AccessControlException, InstantiationException {
+	InvalidKeyException, AccessControlException, InstantiationException {
 		return getUsers(false);
 	}
 
@@ -2283,7 +2284,7 @@ public final class Client {
 	 * @see #get(Vector, boolean)
 	 */
 	private Collection<XMLable> getUsers(final boolean display) throws IOException, ClassNotFoundException,
-			SAXException, URISyntaxException, InvalidKeyException, AccessControlException, InstantiationException {
+	SAXException, URISyntaxException, InvalidKeyException, AccessControlException, InstantiationException {
 
 		final URI uri = commClient().newURI();
 		final XMLRPCCommandGetUsers cmd = new XMLRPCCommandGetUsers(uri, config.getUser());
@@ -2304,7 +2305,7 @@ public final class Client {
 	 * @throws InstantiationException
 	 */
 	private void sendUser() throws ParseException, IOException, ClassNotFoundException, SAXException,
-			URISyntaxException, InvalidKeyException, AccessControlException, InstantiationException {
+	URISyntaxException, InvalidKeyException, AccessControlException, InstantiationException {
 
 		final UID uid = new UID();
 		UserInterface user = null;
@@ -2390,7 +2391,7 @@ public final class Client {
 	}
 
 	private void sendUser(final UserInterface user) throws ParseException, IOException, ClassNotFoundException,
-			SAXException, URISyntaxException, InvalidKeyException, AccessControlException, InstantiationException {
+	SAXException, URISyntaxException, InvalidKeyException, AccessControlException, InstantiationException {
 		sendUser(user, true);
 	}
 
@@ -2440,7 +2441,7 @@ public final class Client {
 	 * @see #getWorks(boolean)
 	 */
 	public Collection<XMLable> getWorks() throws IOException, ClassNotFoundException, SAXException, URISyntaxException,
-			InvalidKeyException, AccessControlException, InstantiationException {
+	InvalidKeyException, AccessControlException, InstantiationException {
 		return getWorks(false);
 	}
 
@@ -2456,7 +2457,7 @@ public final class Client {
 	 * @see #getWorks
 	 */
 	private Collection<XMLable> getWorks(final boolean display) throws IOException, ClassNotFoundException,
-			SAXException, URISyntaxException, InvalidKeyException, AccessControlException, InstantiationException {
+	SAXException, URISyntaxException, InvalidKeyException, AccessControlException, InstantiationException {
 
 		final StatusEnum status = (StatusEnum) args.getOption(CommandLineOptions.STATUS);
 		final XMLRPCCommandGetWorks cmd = new XMLRPCCommandGetWorks(commClient().newURI(), config.getUser());
@@ -2479,7 +2480,7 @@ public final class Client {
 	 * @see #getWorks
 	 */
 	private Collection<XMLable> getGroupWorks(final boolean display) throws IOException, ClassNotFoundException,
-			SAXException, URISyntaxException, InvalidKeyException, AccessControlException, InstantiationException {
+	SAXException, URISyntaxException, InvalidKeyException, AccessControlException, InstantiationException {
 
 		final Collection params = (Collection) args.commandParams();
 		if (params == null) {
@@ -2572,7 +2573,7 @@ public final class Client {
 	 * @throws InstantiationException
 	 */
 	private void sendWork() throws IOException, ParseException, ClassNotFoundException, SAXException,
-			URISyntaxException, InvalidKeyException, AccessControlException, InstantiationException {
+	URISyntaxException, InvalidKeyException, AccessControlException, InstantiationException {
 
 		final UID uid = new UID();
 		WorkInterface work = null;
@@ -3480,7 +3481,7 @@ public final class Client {
 	 * @since 8.0.0
 	 */
 	private void smartSocketsProxy() throws InterruptedException, InvalidKeyException, AccessControlException,
-			IOException, ClassNotFoundException, SAXException, URISyntaxException {
+	IOException, ClassNotFoundException, SAXException, URISyntaxException {
 
 		final Vector params = (Vector) args.commandParams();
 
@@ -3509,7 +3510,7 @@ public final class Client {
 			try {
 				final SmartSocketsProxy smartSocketsProxy = new SmartSocketsProxy(hubAddr, null, forwardPort, true);
 				println("Starting proxy; listening address : " + smartSocketsProxy.getLocalAddress()
-						+ ", forwarding port : " + forwardPort);
+				+ ", forwarding port : " + forwardPort);
 				smartSocketsProxy.start();
 			} catch (final Exception e) {
 				logger.exception("Can't start new SmartSocket proxy", e);
