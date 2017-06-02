@@ -631,10 +631,8 @@ public final class Cache extends XMLable {
 	@Override
 	public void toXml(final DataOutputStream o) throws IOException {
 
-		final String str1 = "<" + THISTAG + " " + "SIZE=\"" + cache.size() + "\" >";
-		final byte[] strb1 = str1.getBytes(XWTools.UTF8);
-
-		o.write(strb1);
+		final String openTag = "<" + THISTAG + " " + "SIZE=\"" + cache.size() + "\" >";
+		o.write(openTag.getBytes(XWTools.UTF8));
 
 		for (final CacheEntry entry : cache.values()) {
 			try {
@@ -644,10 +642,8 @@ public final class Cache extends XMLable {
 			}
 		}
 
-		final String str2 = "</" + THISTAG + ">";
-		final byte[] strb2 = str2.getBytes(XWTools.UTF8);
-
-		o.write(strb2);
+		final String closeTag = "</" + THISTAG + ">";
+		o.write(closeTag.getBytes(XWTools.UTF8));
 	}
 
 	/**
@@ -711,7 +707,7 @@ public final class Cache extends XMLable {
 
 	/**
 	 * This retrieves this cache content from cache file. This rewrites cache to
-	 * file to remove duplicated and unecessary entries
+	 * file to remove duplicated and unnecessary entries
 	 *
 	 * @see #streamer
 	 */
@@ -724,14 +720,15 @@ public final class Cache extends XMLable {
 				final DataInputStream input = new DataInputStream(fis);
 				try (final XMLReader reader = new XMLReader(this)) {
 					reader.read(input);
-				} catch (final InvalidKeyException | EOFException e) {
-					if (streamer != null) {
-						streamer.close();
-					}
-					logger.finest("XWHEP Cache : " + cache.size() + " objects cached");
 				}
-			} catch (final IOException | SAXException e) {
+			} catch (final InvalidKeyException | IOException | SAXException e) {
 				logger.exception(e);
+			} finally {
+				if (streamer != null) {
+					streamer.close();
+				}
+				streamer = null;
+				logger.finest("XWHEP Cache : " + cache.size() + " objects cached");
 			}
 		}
 
@@ -746,7 +743,8 @@ public final class Cache extends XMLable {
 		logger.finest("write()");
 
 		if (cacheFile != null) {
-			try (final FileOutputStream fos = new FileOutputStream(cacheFile)) {
+			try {
+				final FileOutputStream fos = new FileOutputStream(cacheFile);
 				if (streamer == null) {
 					final DataOutputStream output = new DataOutputStream(fos);
 					streamer = new StreamIO(output, null, 10240, config.nio());

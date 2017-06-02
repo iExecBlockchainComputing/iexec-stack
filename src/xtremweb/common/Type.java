@@ -268,7 +268,7 @@ public abstract class Type extends XMLable {
 			ret.append(getCloseTag());
 			return ret.toString();
 		} catch (final Exception e) {
-			e.printStackTrace();
+			getLogger().exception(e);
 		}
 		return null;
 	}

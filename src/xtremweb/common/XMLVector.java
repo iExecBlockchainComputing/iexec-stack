@@ -116,7 +116,7 @@ public final class XMLVector extends XMLValue {
 
 		setValue(new ArrayList<XMLValue>());
 
-		Iterator myIterator = v.iterator();
+		final Iterator myIterator = v.iterator();
 
 		while (myIterator.hasNext()) {
 
@@ -134,7 +134,6 @@ public final class XMLVector extends XMLValue {
 				value.add(new XMLValue(obj));
 			}
 		}
-		myIterator = null;
 	}
 
 	/**

@@ -108,7 +108,7 @@ public class XMLObject extends XMLable {
 		try (final XMLReader reader = new XMLReader(this)) {
 			reader.read(input);
 		} catch (final InvalidKeyException e) {
-			e.printStackTrace();
+			getLogger().exception(e);
 		}
 	}
 
