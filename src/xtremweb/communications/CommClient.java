@@ -43,7 +43,7 @@ import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.security.AccessControlException;
 import java.security.InvalidKeyException;
-import java.util.ArrayList;
+import java.util.Vector;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Enumeration;
@@ -318,7 +318,7 @@ public abstract class CommClient implements ClientAPI {
 			try {
 				addHandler(key, value);
 			} catch (final Exception e) {
-				System.err.println("Init comm layers: ignoring (" + key + ", " + value + ") : " + e);
+				new Logger().exception("Init comm layers: ignoring (" + key + ", " + value + ")", e);
 			}
 		}
 
@@ -338,7 +338,7 @@ public abstract class CommClient implements ClientAPI {
 				addHandler(Connection.httpsScheme(), Connection.HTTPPORT.layer());
 			}
 		} catch (final Exception e) {
-			e.printStackTrace();
+			new Logger().exception(e);
 			XWTools.fatal("init comm layers : " + e);
 		}
 	}
@@ -1187,7 +1187,7 @@ public abstract class CommClient implements ClientAPI {
 			}
 		}
 
-		final ArrayList<XMLable> apps = (ArrayList<XMLable>) getApps().getXmlValues();
+		final Vector<XMLValue> apps = (Vector<XMLValue>) getApps().getXmlValues();
 		try {
 			logger.finest("commClient#getApp(" + name + ") vector.size = " + apps.size() + " " + apps.toString());
 
@@ -2286,10 +2286,10 @@ public abstract class CommClient implements ClientAPI {
 			return StatusEnum.ERROR;
 		}
 
-		final ArrayList<XMLable> v = (ArrayList<XMLable>) jobIDs.getXmlValues();
+		final Vector<XMLValue> v = (Vector<XMLValue>) jobIDs.getXmlValues();
 		try {
-			for (int i = 0; i < v.size(); i++) {
-				final UID uid = (UID) v.get(i);
+			for (final Enumeration<XMLValue> e = v.elements(); e.hasMoreElements();) {
+				final UID uid = (UID) e.nextElement().getValue();
 				final WorkInterface work = (WorkInterface) get(uid);
 				if (work.getStatus() != StatusEnum.COMPLETED) {
 					return StatusEnum.WAITING;
@@ -2322,10 +2322,10 @@ public abstract class CommClient implements ClientAPI {
 			return StatusEnum.ERROR;
 		}
 
-		final ArrayList<XMLable> v = (ArrayList<XMLable>) jobIDs.getXmlValues();
+		final Vector<XMLValue> v = (Vector<XMLValue>) jobIDs.getXmlValues();
 		try {
-			for (int i = 0; i < v.size(); i++) {
-				final UID uid = (UID) v.get(i);
+			for (final Enumeration<XMLValue> e = v.elements(); e.hasMoreElements();) {
+				final UID uid = (UID) e.nextElement().getValue();
 				final WorkInterface work = (WorkInterface) get(uid);
 				if (work.getStatus() != StatusEnum.COMPLETED) {
 					return StatusEnum.WAITING;

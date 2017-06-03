@@ -30,13 +30,12 @@ import java.net.URISyntaxException;
 import java.security.AccessControlException;
 import java.security.InvalidKeyException;
 import java.text.ParseException;
-import java.util.ArrayList;
+import java.util.Vector;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
-import java.util.Vector;
 
 import javax.mail.MessagingException;
 
@@ -2766,7 +2765,7 @@ public final class DBInterface {
 	public final void updateAppsPool() {
 
 		try {
-			final ArrayList<AppInterface> apps = (ArrayList<AppInterface>) apps();
+			final Vector<AppInterface> apps = (Vector<AppInterface>) apps();
 			if (apps == null) {
 				logger.warn("Can't retrieve any app");
 				return;

@@ -40,7 +40,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
+import java.util.Vector;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -284,7 +284,7 @@ public class DBConnPoolThread extends Thread {
 		final MileStone mileStone = new MileStone(xtremweb.database.DBConnPoolThread.class);
 
 		// remove comma from milestone to be able to generate CSV files
-		// using benchmarks/milstone/scripts/parse.awk
+		// using benchmarks/milestone/scripts/parse.awk
 		final String mq = query.substring(0, Math.min(query.length(), 80)).replace(',', '_');
 		mileStone.println("<executeQuery>" + mq + "...");
 
@@ -299,9 +299,8 @@ public class DBConnPoolThread extends Thread {
 		}
 
 		ResultSet rs = null;
-
 		try (final Statement stmt = dbConn.createStatement()) {
-			ArrayList<T> ret = null;
+			Vector<T> ret = null;
 
 			logger.finest(query);
 
@@ -312,12 +311,10 @@ public class DBConnPoolThread extends Thread {
 				rs = stmt.getGeneratedKeys();
 			}
 			if (rs == null) {
-				mileStone.println("<executeQueryError /></executeQuery>");
-				notifyAll();
 				throw new IOException("can't get SQL results");
 			}
 
-			ret = new ArrayList<>();
+			ret = new Vector<>();
 			if (row != null) {
 				while (rs.next()) {
 					@SuppressWarnings("unchecked")
@@ -325,6 +322,10 @@ public class DBConnPoolThread extends Thread {
 					theRow.fill(rs);
 					ret.add(theRow);
 				}
+			}
+
+			if (ret.isEmpty()) {
+				ret = null;
 			}
 
 			return ret;
@@ -386,19 +387,19 @@ public class DBConnPoolThread extends Thread {
 			if (rs == null) {
 				rs = stmt.getGeneratedKeys();
 			}
+			if (rs == null) {
+				throw new IOException("can't get SQL results");
+			}
 
-			final ArrayList<UID> ret = new ArrayList<>();
+			final Vector<UID> ret = new Vector<>();
 
 			while (rs.next()) {
 				ret.add(new UID(rs.getString("theuid")));
 			}
 
-			try {
-				rs.close();
-			} catch (final Exception e) {
-				logger.exception(e);
+			if (ret.isEmpty()) {
+				return null;
 			}
-
 			return ret;
 		} catch (final Exception e) {
 			logger.exception("ExecuteQuery  (" + query + ")", e);
@@ -530,8 +531,8 @@ public class DBConnPoolThread extends Thread {
 	 */
 	public <T extends Type> T selectOne(final T row, final String criterias) throws IOException {
 
-		final ArrayList<T> v = (ArrayList<T>) select(row, criterias, 1);
-		if (!v.isEmpty()) {
+		final Vector<T> v = (Vector<T>) select(row, criterias, 1);
+		if ((v != null) && (!v.isEmpty())) {
 			return v.get(0);
 		}
 		return null;
@@ -630,7 +631,7 @@ public class DBConnPoolThread extends Thread {
 			final String query = "SELECT " + row.rowSelection() + " FROM " + rowTableNames(row)
 					+ (conditions == null ? "" : " WHERE " + conditions) + " LIMIT " + config.requestLimit();
 
-			final ArrayList<UID> ret = (ArrayList<UID>) queryUID(query);
+			final Vector<UID> ret = (Vector<UID>) queryUID(query);
 			return ret;
 		} catch (final Exception e) {
 			logger.exception(e);

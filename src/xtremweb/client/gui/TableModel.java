@@ -43,7 +43,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.net.ConnectException;
-import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
 
@@ -62,8 +62,8 @@ import xtremweb.common.Logger;
 import xtremweb.common.LoggerLevel;
 import xtremweb.common.Table;
 import xtremweb.common.UID;
+import xtremweb.common.XMLValue;
 import xtremweb.common.XMLVector;
-import xtremweb.common.XMLable;
 import xtremweb.communications.URI;
 
 /**
@@ -611,12 +611,15 @@ public abstract class TableModel extends DefaultTableModel {
 	public abstract XMLVector getRows() throws ConnectException;
 
 	/**
-	 * This retreives an object from cache or server if not in cache
+	 * This retrieves an object from cache or server if not in cache
 	 *
 	 * @return a TableInterface or null on error
 	 * @see xtremweb.communications.CommClient#get(UID, boolean)
 	 */
 	public Table getRow(final UID uid) throws ConnectException {
+		if(uid == null) {
+			return null;
+		}
 		try {
 			getParent().setTitleConnected();
 			final Table ret = getParent().commClient().get(uid, false);
@@ -663,7 +666,7 @@ public abstract class TableModel extends DefaultTableModel {
 
 		rows.clear();
 		final XMLVector datas = getRows();
-		final ArrayList<XMLable> vdatas = (ArrayList<XMLable>) datas.getXmlValues();
+		final Vector<XMLValue> vdatas = (Vector<XMLValue>) datas.getXmlValues();
 
 		getParent().setProgressStringPainted(true);
 		getParent().setProgressValue(0);
@@ -674,19 +677,11 @@ public abstract class TableModel extends DefaultTableModel {
 
 		if (datas != null) {
 
-			for (int i = 0; i < vdatas.size(); i++) {
-
-				UID uid = (UID) vdatas.get(i);
+			for (final Enumeration<XMLValue> e = vdatas.elements(); e.hasMoreElements();) {
+				final UID uid = (UID) e.nextElement().getValue();
 
 				getParent().incProgressValue();
-
-				if (uid == null) {
-					continue;
-				}
-
 				final Table row = getRow(uid);
-
-				uid = null;
 
 				if (row == null) {
 					continue;

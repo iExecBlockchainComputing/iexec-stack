@@ -28,7 +28,6 @@ import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.security.AccessControlException;
 import java.security.InvalidKeyException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -51,7 +50,7 @@ import xtremweb.common.LoggerLevel;
 import xtremweb.common.UID;
 import xtremweb.common.UserGroupInterface;
 import xtremweb.common.UserRightEnum;
-import xtremweb.common.XMLable;
+import xtremweb.common.XMLValue;
 import xtremweb.common.XWPropertyDefs;
 import xtremweb.communications.CommClient;
 
@@ -599,12 +598,11 @@ public class HTTPStatHandler extends Thread implements Handler {
 
 		final CommClient commClient = Worker.getConfig().defaultCommClient();
 		CommClient.setConfig(Worker.getConfig());
-		final ArrayList<XMLable> uids = (ArrayList<XMLable>) commClient.getUserGroups().getXmlValues();
+		final Vector<XMLValue> uids = (Vector<XMLValue>) commClient.getUserGroups().getXmlValues();
 		String jobTypes = "Public and Group jobs";
 
-		for (int i = 0; i < uids.size(); i++) {
-
-			final UID uid = (UID) uids.get(i);
+		for (final Enumeration<XMLValue> e = uids.elements(); e.hasMoreElements();) {
+			final UID uid = (UID) e.nextElement().getValue();
 			UserGroupInterface group = null;
 
 			try {

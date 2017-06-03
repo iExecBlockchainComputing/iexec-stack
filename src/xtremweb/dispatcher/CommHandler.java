@@ -31,11 +31,10 @@ import java.net.SocketException;
 import java.security.AccessControlException;
 import java.security.InvalidKeyException;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.Vector;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -128,7 +127,7 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 	 */
 	private int tracesSendResultDelay = 60;
 
-	private static final XMLVector NOANSWER = new XMLVector(new ArrayList());
+	private static final XMLVector NOANSWER = new XMLVector(new Vector());
 	private static final Version CURRENTVERSION = CommonVersion.getCurrent();
 	private static final String CURRENTVERSIONSTRING = CURRENTVERSION.toString();
 
@@ -1049,8 +1048,8 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 		ret.put(XWPostParams.CURRENTVERSION.toString(), CURRENTVERSIONSTRING);
 
 		logger.finest("retrieve saved tasks so that the worker cleans its local copy");
-		final ArrayList<UID> finishedTasks = new ArrayList<>();
-		final ArrayList<UID> resultsVector = new ArrayList<>();
+		final Vector<UID> finishedTasks = new Vector<>();
+		final Vector<UID> resultsVector = new Vector<>();
 
 		try {
 			//
@@ -1064,7 +1063,7 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 			// that
 			// job)
 			//
-			final ArrayList jobResults = (ArrayList) rmiParams.get(XWPostParams.JOBRESULTS.toString());
+			final Vector jobResults = (Vector) rmiParams.get(XWPostParams.JOBRESULTS.toString());
 
 			if (jobResults != null) {
 
@@ -1257,10 +1256,10 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 			throws IOException, InvalidKeyException, AccessControlException {
 
 		mileStone("<getApps>");
-		final ArrayList<UID> ret = (ArrayList<UID>) DBInterface.getInstance().getApplications(client);
+		final Vector<UID> ret = (Vector<UID>) DBInterface.getInstance().getApplications(client);
 		XMLVector v = null;
 		if (ret != null) {
-			v = new XMLVector((Collection) ret);
+			v = new XMLVector(ret);
 		}
 		mileStone("</getApps>");
 		return v;
@@ -1375,10 +1374,10 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 			throws IOException, InvalidKeyException, AccessControlException {
 
 		mileStone("<getDatas>");
-		final ArrayList<UID> ret = (ArrayList<UID>) DBInterface.getInstance().getDatas(client);
+		final Vector<UID> ret = (Vector<UID>) DBInterface.getInstance().getDatas(client);
 		XMLVector v = null;
 		if (ret != null) {
-			v = new XMLVector((Collection) ret);
+			v = new XMLVector(ret);
 		}
 		mileStone("</getDatas>");
 		return v;
@@ -1593,10 +1592,10 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 
 		try {
 			mileStone("<getGroups>");
-			final ArrayList<UID> ret = (ArrayList<UID>) DBInterface.getInstance().getGroups(client);
+			final Vector<UID> ret = (Vector<UID>) DBInterface.getInstance().getGroups(client);
 			XMLVector v = null;
 			if (ret != null) {
-				v = new XMLVector((Collection) ret);
+				v = new XMLVector(ret);
 			}
 			return v;
 		} finally {
@@ -1634,10 +1633,10 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 
 		try {
 			mileStone("<getGroupWorks>");
-			final ArrayList<UID> ret = (ArrayList<UID>) DBInterface.getInstance().getGroupJobs(client, group);
+			final Vector<UID> ret = (Vector<UID>) DBInterface.getInstance().getGroupJobs(client, group);
 			XMLVector v = null;
 			if (ret != null) {
-				v = new XMLVector((Collection) ret);
+				v = new XMLVector(ret);
 			}
 			return v;
 		} finally {
@@ -1664,10 +1663,10 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 
 		try {
 			mileStone("<getSessions>");
-			final ArrayList<UID> ret = (ArrayList<UID>) DBInterface.getInstance().getSessions(client);
+			final Vector<UID> ret = (Vector<UID>) DBInterface.getInstance().getSessions(client);
 			XMLVector v = null;
 			if (ret != null) {
-				v = new XMLVector((Collection) ret);
+				v = new XMLVector(ret);
 			}
 			return v;
 		} finally {
@@ -1688,10 +1687,10 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 
 		try {
 			mileStone("<getSessionWorks>");
-			final ArrayList<UID> ret = (ArrayList<UID>) DBInterface.getInstance().getSessionJobs(client, session);
+			final Vector<UID> ret = (Vector<UID>) DBInterface.getInstance().getSessionJobs(client, session);
 			XMLVector v = null;
 			if (ret != null) {
-				v = new XMLVector((Collection) ret);
+				v = new XMLVector(ret);
 			}
 			return v;
 		} finally {
@@ -1758,10 +1757,10 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 
 		try {
 			mileStone("<getWorks>");
-			final ArrayList<UID> ret = (ArrayList<UID>) DBInterface.getInstance().getAllJobs(client, s);
+			final Vector<UID> ret = (Vector<UID>) DBInterface.getInstance().getAllJobs(client, s);
 			XMLVector v = null;
 			if (ret != null) {
-				v = new XMLVector((Collection) ret);
+				v = new XMLVector(ret);
 			}
 			return v;
 		} finally {
@@ -1783,10 +1782,10 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 
 		try {
 			mileStone("<broadcast>");
-			final ArrayList<UID> ret = (ArrayList<UID>) DBInterface.getInstance().broadcast(client, work);
+			final Vector<UID> ret = (Vector<UID>) DBInterface.getInstance().broadcast(client, work);
 			XMLVector v = null;
 			if (ret != null) {
-				v = new XMLVector((Collection) ret);
+				v = new XMLVector(ret);
 			}
 			return v;
 		} finally {
@@ -1836,10 +1835,10 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 
 		try {
 			mileStone("<getWorkers>");
-			final ArrayList<UID> ret = (ArrayList<UID>) DBInterface.getInstance().getAliveWorkers(client);
+			final Vector<UID> ret = (Vector<UID>) DBInterface.getInstance().getAliveWorkers(client);
 			XMLVector v = null;
 			if (ret != null) {
-				v = new XMLVector((Collection) ret);
+				v = new XMLVector(ret);
 			}
 			return v;
 		} finally {
@@ -1932,10 +1931,10 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 
 		try {
 			mileStone("<getUserGroups>");
-			final ArrayList<UID> ret = (ArrayList<UID>) DBInterface.getInstance().getUserGroups(client);
+			final Vector<UID> ret = (Vector<UID>) DBInterface.getInstance().getUserGroups(client);
 			XMLVector v = null;
 			if (ret != null) {
-				v = new XMLVector((Collection) ret);
+				v = new XMLVector(ret);
 			}
 			return v;
 		} finally {
@@ -1962,10 +1961,10 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 
 		try {
 			mileStone("<getUsers>");
-			final ArrayList<UID> ret = (ArrayList<UID>) DBInterface.getInstance().getUsers(client);
+			final Vector<UID> ret = (Vector<UID>) DBInterface.getInstance().getUsers(client);
 			XMLVector v = null;
 			if (ret != null) {
-				v = new XMLVector((Collection) ret);
+				v = new XMLVector(ret);
 			}
 			return v;
 		} finally {
@@ -1983,10 +1982,10 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 
 		try {
 			mileStone("<getTasks>");
-			final ArrayList<UID> ret = (ArrayList<UID>) DBInterface.getInstance().tasksUID(client);
+			final Vector<UID> ret = (Vector<UID>) DBInterface.getInstance().tasksUID(client);
 			XMLVector v = null;
 			if (ret != null) {
-				v = new XMLVector((Collection) ret);
+				v = new XMLVector(ret);
 			}
 			return v;
 		} finally {
