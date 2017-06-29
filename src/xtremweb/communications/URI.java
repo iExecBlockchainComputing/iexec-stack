@@ -104,6 +104,7 @@ public class URI extends XMLable {
 	public URI(final String value) throws URISyntaxException {
 		this();
 		fromString(value);
+		checkHostAndScheme();
 	}
 
 	/**
@@ -127,6 +128,7 @@ public class URI extends XMLable {
 	 */
 	public URI(final String server, final UID uid) throws URISyntaxException {
 		this(server, -1, uid);
+		checkHostAndScheme();
 	}
 
 	/**
@@ -145,6 +147,7 @@ public class URI extends XMLable {
 		uri = new java.net.URI(Connection.xwScheme() + Connection.getSchemeSeparator() + server
 				+ (port > 0 ? ":" + port : "") + (uid != null ? "/" + uid.toString() : ""));
 		uri.normalize();
+		checkHostAndScheme();
 	}
 
 	/**
@@ -155,15 +158,27 @@ public class URI extends XMLable {
 	 *            is the input stream
 	 * @exception IOException
 	 *                is thrown on XML parsing error
+	 * @throws URISyntaxException 
 	 */
-	public URI(final DataInputStream in) throws IOException, SAXException {
+	public URI(final DataInputStream in) throws IOException, SAXException, URISyntaxException {
 		this();
-		final XMLReader reader = new XMLReader(this);
-		try {
+		try (final XMLReader reader = new XMLReader(this)) {
 			reader.read(in);
 		} catch (final InvalidKeyException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}
+		checkHostAndScheme();
+	}
+	/**
+	 * This checks the presence of server and scheme
+	 * @throws URISyntaxException if server or scheme is null
+	 */
+	private void checkHostAndScheme() throws URISyntaxException {
+		if (uri == null) {
+			return;
+		}
+		if (!isFile() && ((getScheme() == null) || (getHost() == null))) {
+			throw new URISyntaxException(uri.toString(), "host or scheme not set");
 		}
 	}
 
@@ -194,21 +209,19 @@ public class URI extends XMLable {
 	 * This returns a java.rmi.server.UID String representation
 	 */
 	public UID getUID() {
-		try {
-			final String uidStr = getPath().substring(1, getPath().length());
-			return new UID(uidStr);
-		} catch (final Exception e) {
+		if (getPath() == null) {
+			return null;
 		}
-		return null;
+		final String uidStr = getPath().substring(1, getPath().length());
+		return new UID(uidStr);
 	}
 
 	/**
 	 * This returns the host part of this URI
 	 */
 	public String getHost() {
-		try {
+		if(uri != null) {
 			return uri.getHost();
-		} catch (final NullPointerException e) {
 		}
 		return null;
 	}
@@ -217,16 +230,17 @@ public class URI extends XMLable {
 	 * This returns the port part of this URI
 	 */
 	public int getPort() {
-		return uri.getPort();
+		if(uri != null) {
+			return uri.getPort();
+		}
+		return -1;
 	}
-
 	/**
 	 * This returns the scheme part of this URI
 	 */
 	public String getScheme() {
-		try {
+		if(uri != null) {
 			return uri.getScheme();
-		} catch (final NullPointerException e) {
 		}
 		return null;
 	}
@@ -235,9 +249,8 @@ public class URI extends XMLable {
 	 * This returns the path part of this URI
 	 */
 	public String getPath() {
-		try {
+		if(uri != null) {
 			return uri.getPath();
-		} catch (final NullPointerException e) {
 		}
 		return null;
 	}
@@ -252,7 +265,7 @@ public class URI extends XMLable {
 		if (getScheme() == null) {
 			return false;
 		}
-		return (getScheme().compareToIgnoreCase(Connection.fileScheme()) == 0);
+		return (getScheme() == null ? false : getScheme().compareToIgnoreCase(Connection.fileScheme()) == 0);
 	}
 
 	/**
@@ -262,7 +275,7 @@ public class URI extends XMLable {
 	 * @see xtremweb.communications.Connection#xwScheme()
 	 */
 	public boolean isXtremWeb() {
-		return (getScheme().compareToIgnoreCase(Connection.xwScheme()) == 0);
+		return (getScheme() == null ? false : getScheme().compareToIgnoreCase(Connection.xwScheme()) == 0);
 	}
 
 	/**
@@ -272,9 +285,11 @@ public class URI extends XMLable {
 	 * @see xtremweb.communications.Connection#atticScheme()
 	 */
 	public boolean isAttic() {
-		URL url = null;
+		if(uri == null) {
+			return false;
+		}
 		try {
-			url = new URL(uri.toString());
+			final URL url = new URL(uri.toString());
 			return (url.getProtocol().compareToIgnoreCase(Connection.atticScheme()) == 0);
 		} catch (final Exception e) {
 		}
@@ -288,9 +303,11 @@ public class URI extends XMLable {
 	 * @see xtremweb.communications.Connection#httpScheme()
 	 */
 	public boolean isHttp() {
-		URL url = null;
+		if(uri == null) {
+			return false;
+		}
 		try {
-			url = new URL(uri.toString());
+			final URL url = new URL(uri.toString());
 			return (url.getProtocol().compareToIgnoreCase(Connection.httpScheme()) == 0);
 		} catch (final Exception e) {
 		}
@@ -305,9 +322,11 @@ public class URI extends XMLable {
 	 * @since 7.3.2
 	 */
 	public boolean isHttps() {
-		URL url = null;
+		if(uri == null) {
+			return false;
+		}
 		try {
-			url = new URL(uri.toString());
+			final URL url = new URL(uri.toString());
 			return (url.getProtocol().compareToIgnoreCase(Connection.httpsScheme()) == 0);
 		} catch (final Exception e) {
 		}
@@ -331,9 +350,8 @@ public class URI extends XMLable {
 	@Override
 	public String toString(final boolean csv) {
 		try {
-			String ret = uri.toString().replaceAll("&amp;", "&");
-			ret = ret.replaceAll("&", "&amp;");
-			return ret;
+			final String ret = uri.toString().replaceAll("&amp;", "&");
+			return ret.replaceAll("&", "&amp;");
 		} catch (final NullPointerException e) {
 		}
 		return null;
@@ -351,14 +369,9 @@ public class URI extends XMLable {
 		if (value == null) {
 			throw new URISyntaxException("string is null", "");
 		}
-		String v = value.replaceAll("&amp;", "&");
-		v = v.replaceAll("&", "&amp;");
-		try {
-			uri = new java.net.URI(v);
-			uri.normalize();
-		} finally {
-			v = null;
-		}
+		final String v = value.replaceAll("&amp;", "&");
+		uri = new java.net.URI(v.replaceAll("&", "&amp;"));
+		uri.normalize();
 	}
 
 	/**
@@ -428,7 +441,12 @@ public class URI extends XMLable {
 			if (uri.isFile() == true) {
 				System.out.println(uri.getPath() + " exists = " + new File(uri.getPath()).exists());
 			}
-
+			try {
+				uri.checkHostAndScheme();
+			}
+			catch(Exception e) {
+				e.printStackTrace();
+			}
 			final Hashtable<URI, String> cache = new Hashtable<>();
 
 			for (int i = 0; i < 10; i++) {
