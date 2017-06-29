@@ -1048,7 +1048,7 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 			logger.debug("Parameters dataUploadSize = " + dataUploadSize + " dataUploadmd5sum = " + dataUploadmd5sum);
 
 			final Iterator<String> it = paths.iterator();
-			String uriWithoutCmd = new String();
+			String uriWithoutCmd = "";
 			int i = 0;
 			while (it.hasNext()) {
 				final String st = it.next();

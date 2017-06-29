@@ -1504,7 +1504,6 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 		long ret = 0;
 		DataInterface theData = null;
 		File dFile = null;
-		final Date date = new Date();
 
 		mileStone("<downloadData>");
 		try {
