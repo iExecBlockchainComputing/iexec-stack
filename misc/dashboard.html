@@ -42,7 +42,7 @@
 
 
 
-<title>XtremWeb-HEP 10.5.1</title>
+<title>XtremWeb-HEP 10.5.2</title>
 
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -54,7 +54,7 @@
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
   <script src="/xwserver.js" type="text/javascript"></script>
-
+  <script src="/eth-auth-jwt.js"></script>
 
 </head>
 
@@ -72,7 +72,7 @@
 						class="icon-bar"></span>
 				</button>
 				<a class="navbar-brand" href="http://www.xtremweb-hep.org/">
-					XtremWeb-HEP 10.5.1
+					XtremWeb-HEP 10.5.2
 				</a>
 			</div>
 
@@ -377,6 +377,17 @@
           <h4><span class="glyphicon glyphicon-lock"></span> Login</h4>
         </div>
         <div class="modal-body" style="padding:40px 50px;">
+			<h5>
+			If your email address is <b>already</b> registered in this XWHEP server, you may connect using one of the authentication methods :
+			</h5>
+			<ul>
+				<li id="metaMask">
+					<a href="/jwt">MetaMask</a>
+				</li>
+				<li id="yahooApp">
+					<a href="/oauth2?AUTH_OPERATOR=YAHOO">Yahoo</a>
+				</li>
+			</ul>
 			<h5>
 			If your email address is <b>already</b> registered in this XWHEP server, you may connect using one of the authentication methods :
 			</h5>
