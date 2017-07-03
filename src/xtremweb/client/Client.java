@@ -1320,26 +1320,28 @@ public final class Client {
 				throw new ParseException("unknown application type", 0);
 			}
 			if (os == null) {
-				throw new ParseException("unknown OS", 0);
+				logger.info("OS is not set; will not send any binary");
 			}
-			if ((cpu == null) && (os != OSEnum.JAVA)) {
-				throw new ParseException("unknown CPU", 0);
-			}
-			if (binaryUri == null) {
-				if (binaryFile != null) {
-					DataTypeEnum type = DataTypeEnum.getFileType(binaryFile);
-					if (type == null) {
-						type = DataTypeEnum.BINARY;
-					}
-					binaryUri = sendData(os, cpu, type, accessRights,
-							new URI("file://" + binaryFile.getCanonicalPath()), binaryFile.getName());
-				} else {
-					logger.warn("no binary found (no URI, no file)");
+			else {
+				if ((cpu == null) && (os != OSEnum.JAVA)) {
+					throw new ParseException("CPU is not set", 1);
 				}
+				if (binaryUri == null) {
+					if (binaryFile != null) {
+						DataTypeEnum type = DataTypeEnum.getFileType(binaryFile);
+						if (type == null) {
+							type = DataTypeEnum.BINARY;
+						}
+						binaryUri = sendData(os, cpu, type, accessRights,
+								new URI("file://" + binaryFile.getCanonicalPath()), binaryFile.getName());
+					} else {
+						logger.debug("no binary found (no URI, no file)");
+					}
+				}
+	
+				logger.debug("uri = " + binaryUri + " os = " + os + " cpu = " + cpu);
+				app.setBinary(cpu, os, binaryUri);
 			}
-
-			logger.debug("uri = " + binaryUri + " os = " + os + " cpu = " + cpu);
-			app.setBinary(cpu, os, binaryUri);
 			app.setAccessRights(accessRights);
 			app.setType(apptype);
 		}
