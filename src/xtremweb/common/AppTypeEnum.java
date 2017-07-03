@@ -50,6 +50,37 @@ public enum AppTypeEnum {
 	 */
 	SHARED,
 	/**
+	 * On July 3rd, 2017, this is our 2nd shared application: docker
+	 * @since 10.6.0
+	 */
+	DOCKER {
+		@Override
+		public String getPathName() {
+			return dockerpaths[OSEnum.getOs().ordinal()];
+		}
+
+		/**
+		 * This retrieves application default pathname
+		 *
+		 * @return application binary path for the current OS
+		 * @throws FileNotFoundException
+		 *             if no application binary path found for the current OS
+		 * @see xtremweb.common.OSEnum#getOs(String)
+		 */
+		@Override
+		public File getPath() throws FileNotFoundException {
+			final String filePath = dockerpaths[OSEnum.getOs().ordinal()];
+			if (filePath == null) {
+				throw new FileNotFoundException(NOBINPATH + this);
+			}
+			final File f = new File(filePath);
+			if (f.exists()) {
+				return f;
+			}
+			throw new FileNotFoundException(NOBINPATH + this);
+		}
+	},
+	/**
 	 * On Dec 2nd, 2011, this denotes our 1st shared application. This denotes
 	 * VirtualBox as shared application
 	 */
@@ -85,6 +116,20 @@ public enum AppTypeEnum {
 	public static final AppTypeEnum LAST = VIRTUALBOX;
 	public static final int SIZE = LAST.ordinal() + 1;
 
+	/**
+	 * This array stores default docker pathnames (one entry per OS). Each
+	 * entry is a semicolon separated paths list
+	 * paths
+	 *
+	 * @since 10.6.0
+	 */
+	private static String[] dockerpaths = { null, // NONE
+			"/usr/bin/docker", // LINUX
+			"c:\\Program Files\\Docker\\Docker\\resources\\bin\\docker.exe", // WIN32
+			"/usr/local/bin/docker", // MACOSX
+			null, // SOLARIS
+			null // JAVA
+	};
 	/**
 	 * This array stores default VirtualBox pathnames (one entry per OS). Each
 	 * entry is a semicolon separated paths list Defaults are Oracle VirtualBox
