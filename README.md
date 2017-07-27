@@ -8,5 +8,5 @@ Quick start
 ===========
 
 The easiest way is by using Docker.
-Please see [Docker deployment](docker/server-master).
+Please see [Docker deployment](docker/master).
 
