@@ -285,6 +285,7 @@ public final class SessionInterface extends xtremweb.common.Table {
 		}
 		setDirty(false);
 	}
+
 	/**
 	 * This retrieves column label from enum Columns. This takes cares of this
 	 * version. If this version is null, this version is prior to 5.8.0. Before

@@ -77,6 +77,7 @@ public class XWToolsTest {
 			assertTrue(XWTools.createDir(temp, uid).equals(XWTools.createDir(temp, uid)));
 		} catch (IOException e) {
 			e.printStackTrace();
+			assert(false);
 		}
 	}
 }

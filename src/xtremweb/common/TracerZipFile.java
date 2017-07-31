@@ -49,7 +49,7 @@ public class TracerZipFile {
 
 	private ZipFile infile = null;
 	private String outFileName;
-	
+
 	/**
 	 * This is the constructor to create read only file.
 	 */
@@ -74,12 +74,11 @@ public class TracerZipFile {
 	 * @param sendResultDelay
 	 *            contains the send trace period.
 	 */
-	public TracerZipFile(final String fn, final HostInterface host, final int resultDelay,
-			final int sendResultDelay) {
+	public TracerZipFile(final String fn, final HostInterface host, final int resultDelay, final int sendResultDelay) {
 
 		outFileName = fn;
 		try (final FileOutputStream fos = new FileOutputStream(outFileName);
-				ZipOutputStream outfile = new ZipOutputStream(fos);){
+				ZipOutputStream outfile = new ZipOutputStream(fos);) {
 
 			final String lineFeed = new String("\n\r");
 			final ZipEntry zipEntry = new ZipEntry("Configuration");
@@ -173,7 +172,7 @@ public class TracerZipFile {
 		final TracesConfig ret = new TracesConfig();
 
 		final byte buf[] = readEntry("Configuration");
-		if(buf.length == 0) {
+		if (buf.length == 0) {
 			return null;
 		}
 		final String strBuf = new String(buf);

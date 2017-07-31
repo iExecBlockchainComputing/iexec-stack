@@ -37,5 +37,6 @@ package xtremweb.archdep;
 public class XWUtilMacOSX extends XWUtilImpl {
 
 	public XWUtilMacOSX() {
+		// this is not implemented
 	}
 }

@@ -21,21 +21,40 @@
 #
 #
 
+# Versionning
+#  July 24th, 2017 
+#  0.3
+#    - xwversion : 10.6.0
+#    - using ADD and WORKDIR to ease usage
+#    - reducing packages list to the necessary only to reduce image size
+#
+
 FROM ubuntu:16.04
 MAINTAINER Oleg Lodygensky (oleg.lodygensky@lal.in2p3.fr)
 LABEL "copyrights"="CNRS 2016"
 LABEL "author"="Oleg Lodygensky"
-LABEL version="0.2"
+LABEL version="0.3"
 LABEL description="This creates a Docker image for the XWHEP client"
 
-#
-# DEBIAN_FRONTEND=noninteractive bypasses user input.
-# Hence, mysql-server installation will not ask
-# for the new mysql admin password;
-# and mysql admin password will be empty
-#
-RUN apt-get update && export DEBIAN_FRONTEND=noninteractive && apt-get install -y apt-utils
-RUN export DEBIAN_FRONTEND=noninteractive && apt-get install -y openjdk-8-jdk zip unzip wget make ant gcc uuid uuid-runtime vim git
+EXPOSE 4327
 
-COPY xwhep-client-10.5.0.deb /tmp/
-RUN cd /tmp/ && dpkg -i xwhep-client-10.5.0.deb
+ENV XWVERSION "10.6.0"
+
+
+RUN apt-get update
+#RUN export DEBIAN_FRONTEND=noninteractive && apt-get install -y openjdk-8-jre zip unzip vim iputils-ping
+RUN export DEBIAN_FRONTEND=noninteractive && apt-get install -y openjdk-8-jre zip unzip vim
+
+ADD . /xwhep
+WORKDIR /xwhep
+RUN dpkg -i xwhep-client-$XWVERSION.deb
+
+#
+# A script to set server address
+# 
+RUN echo "#!/bin/sh" > /usr/bin/xwsetserveraddr.sh
+RUN echo "if [ ! -z \$XWSERVERADDR ] ; then " >> /usr/bin/xwsetserveraddr.sh
+RUN echo "   sed \"s/127\\.0\\.0\\.1.*localhost/127\\.0\\.0\\.1 localhost $HOSTNAME/g\" /etc/hosts" >> /usr/bin/xwsetserveraddr.sh
+RUN echo "   echo \"\$XWSERVERADDR xwserver\" >> /etc/hosts" >> /usr/bin/xwsetserveraddr.sh
+RUN echo "fi" >> /usr/bin/xwsetserveraddr.sh
+RUN chmod +x /usr/bin/xwsetserveraddr.sh

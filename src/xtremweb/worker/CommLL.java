@@ -47,8 +47,8 @@ public class CommLL extends CommQueue {
 	private final Vector<CommEvent> commEventInProgress;
 
 	public CommLL() {
-		poolQueue = new Vector<CommEvent>(MAX_COMMEVENT_INPROGRESS);
-		commEventInProgress = new Vector<CommEvent>(MAX_COMMEVENT_INPROGRESS);
+		poolQueue = new Vector<>(MAX_COMMEVENT_INPROGRESS);
+		commEventInProgress = new Vector<>(MAX_COMMEVENT_INPROGRESS);
 		setLogger(new Logger(this));
 	}
 

@@ -39,7 +39,7 @@ package xtremweb.services;
  * </p>
  *
  * @see xtremweb.services.rpc.Interface
- * @author <a href="mailto:lodygens  a/\t  lal.in2p3.fr">Oleg Lodygensky</a>
+ * @author <a href="mailto:lodygens a/\t lal.in2p3.fr">Oleg Lodygensky</a>
  * @since RPCXW
  */
 

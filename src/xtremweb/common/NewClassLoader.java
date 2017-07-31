@@ -46,7 +46,7 @@ public class NewClassLoader extends MultiClassLoader {
 
 	public NewClassLoader() {
 
-		paths = new ArrayList<String>();
+		paths = new ArrayList<>();
 	}
 
 	public void addClassPath(final String path) {
@@ -82,7 +82,7 @@ public class NewClassLoader extends MultiClassLoader {
 
 			try (final FileInputStream fis = new FileInputStream(f)) {
 
-				int size = (int) f.length();
+				final int size = (int) f.length();
 				result = new byte[size];
 				int rb = 0;
 				int chunk = 0;
@@ -95,7 +95,7 @@ public class NewClassLoader extends MultiClassLoader {
 				}
 
 				break;
-			} catch (IOException e) {
+			} catch (final IOException e) {
 			}
 		}
 		return result;

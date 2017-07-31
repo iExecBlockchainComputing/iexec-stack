@@ -61,8 +61,7 @@ public class XMLReader implements AutoCloseable {
 		final String p = System.getProperty(XWPropertyDefs.LOGGERLEVEL.toString());
 		if (p != null) {
 			logLevel = LoggerLevel.valueOf(p);
-		}
-		else {
+		} else {
 			logLevel = LoggerLevel.INFO;
 		}
 		logger = new Logger(logLevel);

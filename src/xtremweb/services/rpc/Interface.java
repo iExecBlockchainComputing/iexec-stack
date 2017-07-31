@@ -26,7 +26,7 @@ package xtremweb.services.rpc;
 /**
  * This interface helps to detect whether RPC service is implemented in XtremWeb
  *
- * @author <a href="lodygens  a/\t  lal.in2p3.fr">Oleg Lodygensky</a>
+ * @author <a href="lodygens a/\t lal.in2p3.fr">Oleg Lodygensky</a>
  * @since RPCXW
  */
 

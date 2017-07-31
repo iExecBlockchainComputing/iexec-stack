@@ -61,8 +61,8 @@ public class Worker {
 	 * disk.
 	 */
 	private static XWConfigurator config;
-	private static int NEEDS_INIT = 1;
-	private static int NEEDS_CHECK_ALONE = 2;
+	private static final int NEEDS_INIT = 1;
+	private static final int NEEDS_CHECK_ALONE = 2;
 	private int status = NEEDS_INIT;
 
 	private boolean running;
@@ -75,7 +75,7 @@ public class Worker {
 			System.setProperty(XWPropertyDefs.CACHEDIR.toString(), (new File("cache")).getAbsolutePath());
 		}
 		logger = new Logger(this);
-		running = true;	
+		running = true;
 	}
 
 	/**
@@ -123,19 +123,10 @@ public class Worker {
 
 			final Properties defaults = new Properties();
 
-			try {
-
-				final InputStream def = this.getClass().getClassLoader().getResourceAsStream("data/config.defaults");
-
-				if (def == null) {
-
-					throw new IOException();
+			try (final InputStream def = this.getClass().getClassLoader().getResourceAsStream("data/config.defaults")) {
+				if (def != null) {
+					defaults.load(def);
 				}
-				defaults.load(def);
-			} catch (final IOException e) {
-			}
-
-			try {
 				setConfig((XWConfigurator) args.getOption(CommandLineOptions.CONFIG));
 				getConfig().store();
 			} catch (final Exception e) {
@@ -262,6 +253,7 @@ public class Worker {
 	public void setRunning(final boolean b) {
 		running = b;
 	}
+
 	private boolean isRunning() {
 		return running;
 	}

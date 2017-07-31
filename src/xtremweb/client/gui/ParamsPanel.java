@@ -79,7 +79,6 @@ public class ParamsPanel extends JPanel {
 	 */
 	private final JTextField paramsNbWorkers;
 
-
 	/**
 	 * This constructs a new panel with GUI to manage XtremWeb parameters
 	 */

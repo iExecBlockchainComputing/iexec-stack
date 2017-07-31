@@ -71,15 +71,6 @@ public class ArchDepFactory {
 	private static ArchDepFactory instance = new ArchDepFactory();
 
 	/**
-	 * ArchDepFactory singleton
-	 *
-	 * @return the unique instance of ArchdepFactory
-	 */
-	public static ArchDepFactory getInstance() {
-		return instance;
-	}
-
-	/**
 	 * This is the default constructor This creates all needed maps to retrieve
 	 * Libraries accordingly to the OS
 	 */
@@ -87,35 +78,35 @@ public class ArchDepFactory {
 
 		logger = new Logger(this);
 
-		final Map<OSEnum, String> map_util = new Hashtable<OSEnum, String>(10);
-		final Map<OSEnum, String> map_tracer = new Hashtable<OSEnum, String>(10);
-		final Map<OSEnum, String> map_interrupts = new Hashtable<OSEnum, String>(10);
-		final Map<OSEnum, String> map_exec = new Hashtable<OSEnum, String>(10);
-		final Map<OSEnum, String> map_portmap = new Hashtable<OSEnum, String>(10);
+		final Map<OSEnum, String> mapUtil = new Hashtable<OSEnum, String>(10);
+		final Map<OSEnum, String> mapTracer = new Hashtable<OSEnum, String>(10);
+		final Map<OSEnum, String> mapInterrupts = new Hashtable<OSEnum, String>(10);
+		final Map<OSEnum, String> mapExec = new Hashtable<OSEnum, String>(10);
+		final Map<OSEnum, String> mapPortmap = new Hashtable<OSEnum, String>(10);
 
-		map_util.put(OSEnum.NONE, "xtremweb.archdep.XWUtilDummy");
-		map_util.put(OSEnum.LINUX, "xtremweb.archdep.XWUtilLinux");
-		map_util.put(OSEnum.SOLARIS, "xtremweb.archdep.XWUtilSolaris");
-		map_util.put(OSEnum.WIN32, "xtremweb.archdep.XWUtilWin32");
-		map_util.put(OSEnum.MACOSX, "xtremweb.archdep.XWUtilMacOSX");
+		mapUtil.put(OSEnum.NONE, "xtremweb.archdep.XWUtilDummy");
+		mapUtil.put(OSEnum.LINUX, "xtremweb.archdep.XWUtilLinux");
+		mapUtil.put(OSEnum.SOLARIS, "xtremweb.archdep.XWUtilSolaris");
+		mapUtil.put(OSEnum.WIN32, "xtremweb.archdep.XWUtilWin32");
+		mapUtil.put(OSEnum.MACOSX, "xtremweb.archdep.XWUtilMacOSX");
 
-		map_tracer.put(OSEnum.NONE, "xtremweb.archdep.XWTracerImpl");
+		mapTracer.put(OSEnum.NONE, "xtremweb.archdep.XWTracerImpl");
 
-		map_interrupts.put(OSEnum.LINUX, "xtremweb.archdep.XWInterruptsLinux");
-		map_interrupts.put(OSEnum.WIN32, "xtremweb.archdep.XWInterruptsWin32");
+		mapInterrupts.put(OSEnum.LINUX, "xtremweb.archdep.XWInterruptsLinux");
+		mapInterrupts.put(OSEnum.WIN32, "xtremweb.archdep.XWInterruptsWin32");
 
-		map_exec.put(OSEnum.NONE, "xtremweb.archdep.XWExecPureJava");
-		map_exec.put(OSEnum.LINUX, "xtremweb.archdep.XWExecPureJava");
+		mapExec.put(OSEnum.NONE, "xtremweb.archdep.XWExecPureJava");
+		mapExec.put(OSEnum.LINUX, "xtremweb.archdep.XWExecPureJava");
 
-		map_portmap.put(OSEnum.NONE, "xtremweb.archdep.PortMapper");
-		map_portmap.put(OSEnum.LINUX, "xtremweb.archdep.PortMapper");
+		mapPortmap.put(OSEnum.NONE, "xtremweb.archdep.PortMapper");
+		mapPortmap.put(OSEnum.LINUX, "xtremweb.archdep.PortMapper");
 
 		ifmap = new Hashtable<String, Map<OSEnum, String>>(10);
-		ifmap.put("xtremweb.archdep.XWUtil", map_util);
-		ifmap.put("xtremweb.archdep.XWTracerNative", map_tracer);
-		ifmap.put("xtremweb.archdep.XWInterrupts", map_interrupts);
-		ifmap.put("xtremweb.archdep.XWExec", map_exec);
-		ifmap.put("xtremweb.archdep.PortMapperItf", map_portmap);
+		ifmap.put("xtremweb.archdep.XWUtil", mapUtil);
+		ifmap.put("xtremweb.archdep.XWTracerNative", mapTracer);
+		ifmap.put("xtremweb.archdep.XWInterrupts", mapInterrupts);
+		ifmap.put("xtremweb.archdep.XWExec", mapExec);
+		ifmap.put("xtremweb.archdep.PortMapperItf", mapPortmap);
 
 		uniqueInstances = new Hashtable<String, Object>(10);
 
@@ -126,6 +117,15 @@ public class ArchDepFactory {
 			loadingMessage.append(librairies[i] + ":" + (loadLibrary(librairies[i]) ? "Loaded; " : "Missing; "));
 		}
 		logger.info(loadingMessage.toString());
+	}
+
+	/**
+	 * ArchDepFactory singleton
+	 *
+	 * @return the unique instance of ArchdepFactory
+	 */
+	public static ArchDepFactory getInstance() {
+		return instance;
 	}
 
 	/**

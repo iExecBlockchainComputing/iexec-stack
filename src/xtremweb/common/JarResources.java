@@ -85,12 +85,12 @@ public final class JarResources {
 				final ZipFile zf = new ZipFile(jarFileName);
 				final FileInputStream fis = new FileInputStream(jarFileName);
 				final BufferedInputStream bis = new BufferedInputStream(fis);
-				final ZipInputStream zis = new ZipInputStream(bis)){
+				final ZipInputStream zis = new ZipInputStream(bis)) {
 			// gets the main class name
 			mainClassName = jf.getManifest().getMainAttributes().getValue("Main-Class");
 
 			// extracts just sizes only.
-			
+
 			final Enumeration e = zf.entries();
 			while (e.hasMoreElements()) {
 				final ZipEntry ze = (ZipEntry) e.nextElement();

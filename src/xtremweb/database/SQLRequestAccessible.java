@@ -231,7 +231,7 @@ public abstract class SQLRequestAccessible extends SQLRequest {
 	 * @return a String containing SQL criteria
 	 */
 	@Override
-	public String criterias() throws IOException {
+	public String getFullCriterias() throws IOException {
 
 		final String ret = String.format(getCriterias(), getUser().getUID().toString(), getOtherAccess(),
 				getOtherAccess(), getGroupAccess(), getGroupAccess());

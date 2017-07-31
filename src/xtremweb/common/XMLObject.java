@@ -105,10 +105,10 @@ public class XMLObject extends XMLable {
 	 *             on XML error
 	 */
 	protected XMLObject(final DataInputStream input) throws IOException, SAXException {
-		try (final XMLReader reader = new XMLReader(this)){
+		try (final XMLReader reader = new XMLReader(this)) {
 			reader.read(input);
 		} catch (final InvalidKeyException e) {
-			e.printStackTrace();
+			getLogger().exception(e);
 		}
 	}
 
@@ -119,6 +119,7 @@ public class XMLObject extends XMLable {
 		this();
 		fromXml(attrs);
 	}
+
 	/**
 	 * This retrieve this object value
 	 */
@@ -171,7 +172,6 @@ public class XMLObject extends XMLable {
 		value = null;
 	}
 
-
 	/**
 	 * This serializes this object to a String as an XML object<br />
 	 *
@@ -181,11 +181,12 @@ public class XMLObject extends XMLable {
 	@Override
 	public String toXml() {
 
-		final StringBuilder ret = new StringBuilder( "<" + getXMLTag() + " ");
+		final StringBuilder ret = new StringBuilder("<" + getXMLTag() + " ");
 		if (empty) {
 			ret.append(XMLTYPE + "=\"" + type.getName() + "\" " + XMLVALUE + "=\"" + value.toString() + "\" />");
 		} else {
-			ret.append(XMLTYPE + "=\"" + type.getName() + "\">" + ((XMLObject) value).toXml() + "</" + getXMLTag() + ">");
+			ret.append(
+					XMLTYPE + "=\"" + type.getName() + "\">" + ((XMLObject) value).toXml() + "</" + getXMLTag() + ">");
 		}
 		return ret.toString();
 	}

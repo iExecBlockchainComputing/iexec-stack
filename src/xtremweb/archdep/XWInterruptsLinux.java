@@ -31,6 +31,7 @@ package xtremweb.archdep;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.IOException;
 
 /**
  * <p>
@@ -71,13 +72,12 @@ public class XWInterruptsLinux implements XWInterrupts {
 					l = l.trim();
 					l = l.substring(0, l.indexOf(' '));
 					bufferFile.close();
-					return (new Integer(l)).intValue();
+					return Integer.parseInt(l);
 				}
 				l = bufferFile.readLine();
 			}
 
-			bufferFile.close();
-		} catch (final Exception e) {
+		} catch (final IOException e) {
 			System.err.println("Unrecoverable exception " + e);
 			System.exit(1);
 		}
@@ -98,7 +98,7 @@ public class XWInterruptsLinux implements XWInterrupts {
 					l = l.trim();
 					l = l.substring(0, l.indexOf(' '));
 					bufferFile.close();
-					return (new Integer(l)).intValue();
+					return Integer.parseInt(l);
 				}
 				l = bufferFile.readLine();
 			}

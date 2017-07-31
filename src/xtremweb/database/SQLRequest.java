@@ -135,7 +135,7 @@ public abstract class SQLRequest {
 	 *
 	 * @return a String containing SQL criteria
 	 */
-	public abstract String criterias() throws IOException;
+	public abstract String getFullCriterias() throws IOException;
 
 	/**
 	 * @return the logger

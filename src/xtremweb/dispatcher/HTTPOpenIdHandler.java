@@ -23,15 +23,11 @@
 
 package xtremweb.dispatcher;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.UnknownHostException;
 import java.security.KeyStore;
-import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -39,9 +35,6 @@ import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.net.SocketFactory;
-import javax.net.ssl.SSLSocket;
-import javax.net.ssl.SSLSocketFactory;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -440,7 +433,7 @@ public class HTTPOpenIdHandler extends Thread implements org.eclipse.jetty.serve
 	}
 
 	// simulate a database that store all nonce:
-	private final Set<String> nonceDb = new HashSet<String>();
+	private final Set<String> nonceDb = new HashSet<>();
 
 	// check if nonce is exist in database:
 	boolean isNonceExist(final String nonce) {

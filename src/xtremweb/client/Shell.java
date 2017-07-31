@@ -23,16 +23,17 @@
 
 package xtremweb.client;
 
-import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.security.AccessControlException;
+import java.security.InvalidKeyException;
 import java.text.ParseException;
+
+import org.xml.sax.SAXException;
 
 import xtremweb.common.Logger;
 import xtremweb.common.StreamIO;
@@ -95,7 +96,7 @@ public class Shell extends Thread {
 		try {
 			final String proptxt = System.getProperty(Connection.XMLRPCPORT.toString());
 			if (proptxt != null) {
-				port = new Integer(proptxt.trim()).intValue();
+				port = Integer.parseInt(proptxt.trim());
 			}
 
 			socketServer = new ServerSocket(port);
@@ -119,34 +120,12 @@ public class Shell extends Thread {
 
 		logger.info("started, listening on port : " + port);
 
-		int loop = 0;
 		while (true) {
 
-			Socket socket = null;
-			String localip = null;
-			String remoteip = null;
-			try {
-				if ((++loop % 1000) == 0) {
-					loop = 0;
-					System.gc();
-				}
-				logger.debug("Connection management : accepting");
-				socket = socketServer.accept();
-
+			try (Socket socket = socketServer.accept()) {
 				process(socket);
-
 			} catch (final Exception e) {
 				logger.exception(e);
-			} finally {
-				try {
-					socket.close();
-				} catch (final Exception e) {
-					logger.exception(e);
-				} finally {
-					socket = null;
-					localip = null;
-					remoteip = null;
-				}
 			}
 		}
 
@@ -155,20 +134,13 @@ public class Shell extends Thread {
 	/**
 	 * This reads from socket input stream
 	 */
-	private void process(final Socket socket) throws ParseException, IOException, FileNotFoundException {
+	private void process(final Socket socket) throws ParseException, IOException {
 
-		InputStreamReader isreader = null;
-		BufferedReader breader = null;
-		PrintStream printStream = null;
-		StreamIO io = null;
-		try {
-			isreader = new InputStreamReader(socket.getInputStream());
-			breader = new BufferedReader(isreader);
-			printStream = new PrintStream(socket.getOutputStream());
+		try (final StreamIO io = new StreamIO(new DataOutputStream(socket.getOutputStream()),
+				new DataInputStream(socket.getInputStream()), socket.getSendBufferSize(), false);
+				PrintStream printStream = new PrintStream(socket.getOutputStream());) {
 			client.setPrintStream(printStream);
 
-			io = new StreamIO(new DataOutputStream(socket.getOutputStream()),
-					new DataInputStream(socket.getInputStream()), socket.getSendBufferSize(), false);
 			final XMLRPCCommand cmd = XMLRPCCommand.newCommand(io);
 			if (cmd.getUser() == null) {
 				printStream.println("ERROR : user must be set");
@@ -176,29 +148,9 @@ public class Shell extends Thread {
 				client.sendCommand(cmd, true);
 			}
 
-		} catch (final ClassNotFoundException e) {
-			try {
-				if (printStream != null) {
-					printStream.println("ERROR : object or not found (or access denied)");
-				}
-			} catch (final Exception e2) {
-			}
-
+		} catch (final ClassNotFoundException | InvalidKeyException | AccessControlException | InstantiationException
+				| SAXException e) {
 			logger.exception(e);
-		} catch (final Exception e) {
-			try {
-				if (printStream != null) {
-					printStream.println("ERROR : " + e);
-				}
-			} catch (final Exception e2) {
-			}
-
-			logger.exception(e);
-		} finally {
-			io = null;
-			isreader = null;
-			breader = null;
-			printStream = null;
 		}
 	}
 
@@ -211,7 +163,7 @@ public class Shell extends Thread {
 			logger.debug("cleanup");
 			socketServer.close();
 		} catch (final Exception e) {
-			logger.error("can't clean up");
+			logger.exception("can't clean up", e);
 		}
 	}
 

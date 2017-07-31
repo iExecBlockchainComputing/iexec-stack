@@ -47,8 +47,8 @@ public class CommStack extends CommQueue {
 
 	public CommStack() {
 		size = 0;
-		poolQueue = new Stack<CommEvent>();
-		commEventInProgress = new Vector<CommEvent>(MAX_COMMEVENT_INPROGRESS);
+		poolQueue = new Stack<>();
+		commEventInProgress = new Vector<>(MAX_COMMEVENT_INPROGRESS);
 		setLogger(new Logger(this));
 	}
 

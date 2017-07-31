@@ -43,7 +43,7 @@ import java.util.Map;
 public abstract class MultiClassLoader extends ClassLoader {
 
 	// ---------- Fields --------------------------------------
-	private final Map<String, Class> classes = new Hashtable<String, Class>();
+	private final Map<String, Class> classes = new Hashtable<>();
 	private char classNameReplacementChar;
 
 	private final boolean monitorOn = false;

@@ -30,13 +30,14 @@ import java.net.URISyntaxException;
 import java.security.AccessControlException;
 import java.security.InvalidKeyException;
 import java.text.ParseException;
-import java.util.ArrayList;
+import java.util.Vector;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
-import java.util.Vector;
+
+import javax.mail.MessagingException;
 
 import xtremweb.common.AppInterface;
 import xtremweb.common.AppTypeEnum;
@@ -240,7 +241,8 @@ public final class DBInterface {
 		final UserInterface owner = user(ret.getOwner());
 		final UID ownerGroup = (owner == null ? null : owner.getGroup());
 
-		final boolean accessdenied = !ret.canRead(u, ownerGroup) && u.getRights().lowerThan(UserRightEnum.ADVANCED_USER);
+		final boolean accessdenied = !ret.canRead(u, ownerGroup)
+				&& u.getRights().lowerThan(UserRightEnum.ADVANCED_USER);
 
 		if (accessdenied) {
 			throw new AccessControlException(u.getLogin() + " can't access " + uri);
@@ -376,8 +378,8 @@ public final class DBInterface {
 			emailSender.send("XtremWeb-HEP@" + XWTools.getLocalHostName() + " : " + row.getUID(), theClient.getEMail(),
 					msg + "\n" + row.toString(false, true) + "\n\n" + "https://" + XWTools.getLocalHostName() + ":"
 							+ System.getProperty(XWPropertyDefs.HTTPSPORT.toString()) + "/get/" + row.getUID());
-		} catch (final Exception e) {
-			logger.warn(e.toString());
+		} catch (MessagingException | IOException e) {
+			logger.exception(e);
 		}
 	}
 
@@ -717,7 +719,7 @@ public final class DBInterface {
 	 * @since 5.8.0
 	 */
 	private AppInterface readableApp(final UserInterface u) throws IOException {
-		final SQLRequestReadable r = new SQLRequestReadable(AppInterface.TABLENAME, u, ColumnSelection.selectAll);
+		final SQLRequestReadable r = new SQLRequestReadable(AppInterface.APPTABLENAME, u, ColumnSelection.selectAll);
 		return new AppInterface(r);
 	}
 
@@ -735,7 +737,8 @@ public final class DBInterface {
 		if (uid == null) {
 			return null;
 		}
-		final SQLRequestReadable r = new SQLRequestReadable(AppInterface.TABLENAME, u, ColumnSelection.selectAll, uid);
+		final SQLRequestReadable r = new SQLRequestReadable(AppInterface.APPTABLENAME, u, ColumnSelection.selectAll,
+				uid);
 		return new AppInterface(r);
 	}
 
@@ -747,7 +750,7 @@ public final class DBInterface {
 	 * @since 5.8.0
 	 */
 	private AppInterface readableAppUID(final UserInterface u) throws IOException {
-		final SQLRequestReadable r = new SQLRequestReadable(AppInterface.TABLENAME, u, ColumnSelection.selectUID);
+		final SQLRequestReadable r = new SQLRequestReadable(AppInterface.APPTABLENAME, u, ColumnSelection.selectUID);
 		return new AppInterface(r);
 	}
 
@@ -848,7 +851,7 @@ public final class DBInterface {
 		if (uid == null) {
 			return null;
 		}
-		final SQLRequestReadable r = new SQLRequestReadable(DataInterface.TABLENAME, u, ColumnSelection.selectAll, uid);
+		final SQLRequestReadable r = new SQLRequestReadable(DataInterface.DATATABLENAME, u, ColumnSelection.selectAll, uid);
 		return new DataInterface(r);
 	}
 
@@ -860,7 +863,7 @@ public final class DBInterface {
 	 * @since 5.8.0
 	 */
 	private DataInterface readableDataUID(final UserInterface u) throws IOException {
-		final SQLRequestReadable r = new SQLRequestReadable(DataInterface.TABLENAME, u, ColumnSelection.selectUID);
+		final SQLRequestReadable r = new SQLRequestReadable(DataInterface.DATATABLENAME, u, ColumnSelection.selectUID);
 		return new DataInterface(r);
 	}
 
@@ -2762,7 +2765,7 @@ public final class DBInterface {
 	public final void updateAppsPool() {
 
 		try {
-			final ArrayList<AppInterface> apps = (ArrayList<AppInterface>) apps();
+			final Vector<AppInterface> apps = (Vector<AppInterface>) apps();
 			if (apps == null) {
 				logger.warn("Can't retrieve any app");
 				return;
@@ -3267,7 +3270,7 @@ public final class DBInterface {
 		final UserGroupInterface theGroupByUID = usergroup(theClient, groupUid);
 		final UserGroupInterface theGroup = (theGroupByUID != null ? theGroupByUID
 				: usergroup(theClient, SQLRequest.MAINTABLEALIAS + "." + UserGroupInterface.Columns.LABEL.toString()
-				+ "='" + groupitf.getLabel() + "'"));
+						+ "='" + groupitf.getLabel() + "'"));
 
 		if (theGroup == null) {
 			insert(groupitf);
@@ -3650,7 +3653,8 @@ public final class DBInterface {
 
 		final UserInterface owner = user(theTaskbyWork.getOwner());
 		final UID ownerGroup = (owner == null ? null : owner.getGroup());
-		if (!theTaskbyWork.canRead(theClient, ownerGroup) && theClient.getRights().lowerThan(UserRightEnum.SUPER_USER)) {
+		if (!theTaskbyWork.canRead(theClient, ownerGroup)
+				&& theClient.getRights().lowerThan(UserRightEnum.SUPER_USER)) {
 			throw new AccessControlException(client.getLogin() + " can't read " + uid);
 		}
 		return theTaskbyWork;
@@ -3735,8 +3739,7 @@ public final class DBInterface {
 		if (theApp == null) {
 			return false;
 		}
-		if (!theApp.canWrite(theClient, ownerGroup)
-				&& theClient.getRights().lowerThan(UserRightEnum.SUPER_USER)) {
+		if (!theApp.canWrite(theClient, ownerGroup) && theClient.getRights().lowerThan(UserRightEnum.SUPER_USER)) {
 			throw new AccessControlException(theClient.getLogin() + " can not remove app " + theApp.getName());
 		}
 
@@ -3944,7 +3947,7 @@ public final class DBInterface {
 		if (workuids != null) {
 			for (final Enumeration<UID> enums = workuids.elements(); enums.hasMoreElements();) {
 				final UID workuid = enums.nextElement();
-				if(workuid != null) {
+				if (workuid != null) {
 					ret = deleteJob(theClient, workuid);
 				}
 				if (!ret) {
@@ -4353,7 +4356,7 @@ public final class DBInterface {
 			logger.warn(e.getMessage());
 		}
 
-		final Vector<Table> updateRows = new Vector<Table>();
+		final Vector<Table> updateRows = new Vector<>();
 		final Vector<TaskInterface> theTasks = (Vector<TaskInterface>) tasks(theWork);
 
 		if (theTasks != null) {
@@ -4481,7 +4484,7 @@ public final class DBInterface {
 	public Collection<UID> broadcast(final UserInterface client, final WorkInterface job)
 			throws IOException, InvalidKeyException, AccessControlException {
 
-		final Vector<UID> ret = new Vector<UID>();
+		final Vector<UID> ret = new Vector<>();
 		final UserInterface theClient = checkClient(client, UserRightEnum.INSERTJOB);
 
 		if (theClient.getRights() == UserRightEnum.WORKER_USER) {
@@ -4507,7 +4510,7 @@ public final class DBInterface {
 
 				if (app.getBinary(worker.getCpu(), worker.getOs()) == null) {
 					logger.warn(worker.getUID() + " : " + app.getName()
-					+ " is not broadcasted since there is no compatible binary");
+							+ " is not broadcasted since there is no compatible binary");
 					continue;
 				}
 				job.setExpectedHost(worker.getUID());
@@ -4592,8 +4595,7 @@ public final class DBInterface {
 
 		final WorkInterface theWork = work(theClient, jobUID);
 		if (theWork != null) {
-			if (theWork.canWrite(theClient, appOwnerGroup)
-					|| clientRights.higherOrEquals(UserRightEnum.WORKER_USER)) {
+			if (theWork.canWrite(theClient, appOwnerGroup) || clientRights.higherOrEquals(UserRightEnum.WORKER_USER)) {
 
 				final UID hostUID = (_host == null ? null : _host.getUID());
 				final HostInterface theHost = (hostUID == null ? null : host(hostUID));
@@ -4650,7 +4652,7 @@ public final class DBInterface {
 
 				theWork.updateInterface(job);
 
-				final Vector<Table> rows = new Vector<Table>();
+				final Vector<Table> rows = new Vector<>();
 
 				logger.debug(delegatedClient.getLogin() + " is updating " + theWork.getUID() + " status = "
 						+ job.getStatus());
@@ -4787,11 +4789,11 @@ public final class DBInterface {
 				job.setStatus(StatusEnum.UNAVAILABLE);
 			}
 
-			final Vector<Table> rows = new Vector<Table>();
+			final Vector<Table> rows = new Vector<>();
 
 			job.setReplicatedUid(null);
 			logger.debug(theClient.getLogin() + " " + jobUID + " replications = " + job.getExpectedReplications()
-			+ " by " + job.getReplicaSetSize());
+					+ " by " + job.getReplicaSetSize());
 
 			// if job.getExpectedReplications() < 0, we replicate for ever
 			int replica = job.getExpectedReplications() < 0 ? job.getExpectedReplications() - job.getReplicaSetSize()
@@ -4800,12 +4802,18 @@ public final class DBInterface {
 
 			for (; (replica <= job.getReplicaSetSize()) && (replica <= job.getExpectedReplications()); replica++) {
 				final WorkInterface newWork = new WorkInterface(job);
-				newWork.setUID(jobUID); // we insert the original work (to eventually be replicated)
+				newWork.setUID(jobUID); // we insert the original work (to
+										// eventually be replicated)
 				if (firstJob == true) {
-					newWork.setTotalReplica(Math.min(job.getReplicaSetSize(), job.getExpectedReplications())); // this is the original work
+					newWork.setTotalReplica(Math.min(job.getReplicaSetSize(), job.getExpectedReplications())); // this
+																												// is
+																												// the
+																												// original
+																												// work
 					firstJob = false;
 				} else {
-					newWork.setUID(new UID()); // each eventual replica has its own UID
+					newWork.setUID(new UID()); // each eventual replica has its
+												// own UID
 					newWork.replicate(jobUID);
 				}
 				newWork.setPending();
@@ -4940,7 +4948,7 @@ public final class DBInterface {
 	public Collection<UID> disconnect(final UserInterface client)
 			throws IOException, InvalidKeyException, AccessControlException {
 
-		final Vector<UID> ret = new Vector<UID>();
+		final Vector<UID> ret = new Vector<>();
 		final UserInterface theClient = checkClient(client, UserRightEnum.DELETESESSION);
 		final Collection<UID> sessions = getSessions(theClient, theClient.getUID());
 		if (sessions != null) {
@@ -5230,7 +5238,7 @@ public final class DBInterface {
 
 		final UserInterface theClient = checkClient(client, UserRightEnum.LISTHOST);
 
-		final Vector<UID> ret = new Vector<UID>(100, 50);
+		final Vector<UID> ret = new Vector<>(100, 50);
 
 		final Collection<HostInterface> hosts = hosts(theClient);
 		final Iterator<HostInterface> enums = hosts.iterator();

@@ -372,7 +372,7 @@ public final class SmartSocketsProxy extends Thread {
 		writerName = proxyName + "Writer";
 		this.server = server;
 		logger = new Logger(this);
-		connectProperties = new HashMap<String, Object>();
+		connectProperties = new HashMap<>();
 		System.setProperty(Connection.HUBPNAME, hubAddr);
 		vSocketFactory = VirtualSocketFactory.getDefaultSocketFactory();
 		if (server) {
@@ -418,15 +418,17 @@ public final class SmartSocketsProxy extends Thread {
 			logger.debug("Server waiting for connections");
 
 			try {
-				VirtualSocket incoming = vServerSocket.accept();
-				final Socket outgoing = SocketFactory.getDefault().createSocket(XWTools.getLocalHostName(), forwardPort);
+				final VirtualSocket incoming = vServerSocket.accept();
+				final Socket outgoing = SocketFactory.getDefault().createSocket(XWTools.getLocalHostName(),
+						forwardPort);
 
 				try (final DataInputStream incomingIn = new DataInputStream(incoming.getInputStream());
 						final DataOutputStream incomingOut = new DataOutputStream(incoming.getOutputStream());
 						final DataInputStream outgoingIn = new DataInputStream(outgoing.getInputStream());
 						final DataOutputStream outgoingOut = new DataOutputStream(outgoing.getOutputStream());) {
 
-					logger.debug("Incoming connection; forwarding to " + XWTools.getLocalHostName() + ":" + forwardPort);
+					logger.debug(
+							"Incoming connection; forwarding to " + XWTools.getLocalHostName() + ":" + forwardPort);
 
 					reader = new ProxyThread(readerName, incoming, incomingIn, outgoingOut);
 					reader.start();
@@ -464,7 +466,7 @@ public final class SmartSocketsProxy extends Thread {
 						final DataInputStream incomingIn = new DataInputStream(incoming.getInputStream());
 						final DataOutputStream incomingOut = new DataOutputStream(incoming.getOutputStream());
 						final DataInputStream outgoingIn = new DataInputStream(outgoing.getInputStream());
-						final DataOutputStream outgoingOut = new DataOutputStream(outgoing.getOutputStream());){
+						final DataOutputStream outgoingOut = new DataOutputStream(outgoing.getOutputStream());) {
 
 					logger.debug("Incoming connection");
 

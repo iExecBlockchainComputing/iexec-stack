@@ -66,7 +66,7 @@ public final class Work extends WorkInterface {
 	/**
 	 * This is this work data package name (worker shared data used by the data
 	 * driven scheduler)
-	 * 
+	 *
 	 * @since 10.0.0
 	 */
 	private String dataPackageName;
@@ -114,7 +114,7 @@ public final class Work extends WorkInterface {
 
 	/**
 	 * This creates needed directory structure accordingly to package, if any
-	 * 
+	 *
 	 * @throws IOException
 	 */
 	public void prepareDir() throws IOException {
@@ -131,7 +131,7 @@ public final class Work extends WorkInterface {
 
 	/**
 	 * This creates needed directory structure
-	 * 
+	 *
 	 * @param v
 	 *            is the base path
 	 * @throws IOException
@@ -149,7 +149,7 @@ public final class Work extends WorkInterface {
 
 	/**
 	 * This return the scratch directory
-	 * 
+	 *
 	 * @return
 	 */
 	public File getScratchDir() {
@@ -158,7 +158,7 @@ public final class Work extends WorkInterface {
 
 	/**
 	 * This calls clean(true) to force cleaning
-	 * 
+	 *
 	 * @see #clean(boolean)
 	 */
 	public void clean() {
@@ -167,7 +167,7 @@ public final class Work extends WorkInterface {
 
 	/**
 	 * This calls clean(scratchDir, force)
-	 * 
+	 *
 	 * @see #clean(File, boolean)
 	 */
 	public void clean(final boolean force) {
@@ -193,7 +193,7 @@ public final class Work extends WorkInterface {
 	/**
 	 * This erases provided file/directory from disk, except if dataPacakgeName
 	 * is set
-	 * 
+	 *
 	 * @param dirWork
 	 *            is the directory to clean
 	 * @param force
@@ -223,7 +223,7 @@ public final class Work extends WorkInterface {
 	/**
 	 * This sets this work package name (worker shared data used by the data
 	 * driven scheduler)
-	 * 
+	 *
 	 * @param pkg
 	 *            is this work package name
 	 * @throws IOException
@@ -238,7 +238,7 @@ public final class Work extends WorkInterface {
 	/**
 	 * This retrieves this work package name (worker shared data used by the
 	 * data driven scheduler)
-	 * 
+	 *
 	 * @since 10.0.0
 	 */
 	public String getDataPackage() {
@@ -247,7 +247,7 @@ public final class Work extends WorkInterface {
 
 	/**
 	 * This checks if this work has a package name
-	 * 
+	 *
 	 * @since 10.0.0
 	 * @return true if packageName attribute is set; false otherwise
 	 */

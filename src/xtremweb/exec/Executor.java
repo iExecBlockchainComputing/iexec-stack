@@ -651,11 +651,10 @@ public class Executor {
 		if (args.length > 2) {
 			stdinName = args[2];
 		}
-		try (final FileOutputStream stdout = new FileOutputStream(new File("stdout.txt")); 
-				final FileOutputStream stderr = new FileOutputStream(new File("stderr.txt"))){
+		try (final FileOutputStream stdout = new FileOutputStream(new File("stdout.txt"));
+				final FileOutputStream stderr = new FileOutputStream(new File("stderr.txt"))) {
 			final Executor exec = new Executor(command, ".",
-					stdinName == null ? null : new FileInputStream(new File(stdinName)),
-							stdout, stderr);
+					stdinName == null ? null : new FileInputStream(new File(stdinName)), stdout, stderr);
 			exec.getLogger().setLoggerLevel(LoggerLevel.DEBUG);
 			exec.startAndWait();
 		} catch (final Exception e) {

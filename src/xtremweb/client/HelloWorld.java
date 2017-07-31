@@ -26,7 +26,8 @@ package xtremweb.client;
 import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.ArrayList;
+import java.util.Vector;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -41,10 +42,10 @@ import xtremweb.common.StatusEnum;
 import xtremweb.common.UID;
 import xtremweb.common.WorkInterface;
 import xtremweb.common.XMLObject;
+import xtremweb.common.XMLValue;
 import xtremweb.common.XMLVector;
 import xtremweb.common.XMLable;
 import xtremweb.common.XWConfigurator;
-import xtremweb.common.XWReturnCode;
 import xtremweb.common.XWTools;
 import xtremweb.communications.CommClient;
 import xtremweb.communications.URI;
@@ -127,13 +128,8 @@ public final class HelloWorld {
 
 	/**
 	 * This prints a message to std err and exits.
-	 *
-	 * @param msg
-	 *            is the message to print to stderr
-	 * @param code
-	 *            is the return code to use on exit
 	 */
-	private void exit(final String msg, final XWReturnCode code) {
+	private void exit() {
 
 		try {
 			final CommClient client = commClient();
@@ -158,20 +154,20 @@ public final class HelloWorld {
 			//
 			final XMLRPCCommandGetApps cmd = new XMLRPCCommandGetApps(uri, config.getUser());
 			final XMLVector xmluids = (XMLVector) cmd.exec(client);
-			final ArrayList<XMLable> uids = (ArrayList<XMLable>)xmluids.getXmlValues();
+			final Collection<XMLValue> uids = xmluids.getXmlValues();
 			if ((uids == null) || (uids.isEmpty())) {
 				logger.warn("no application found");
 				return;
 			}
 
-			final Iterator<XMLable> theEnum = uids.iterator();
+			final Iterator<XMLValue> theEnum = uids.iterator();
 
 			UID appUid = null;
 
 			final List commandLineParams = (List) args.commandParams();
 			if ((commandLineParams == null) || (commandLineParams.isEmpty())) {
 				if (theEnum.hasNext()) {
-					appUid = (UID)((XMLObject)theEnum.next()).getValue();
+					appUid = (UID) ((XMLObject) theEnum.next()).getValue();
 				}
 			} else {
 				try {
@@ -233,16 +229,16 @@ public final class HelloWorld {
 				logger.info("File not found '" + inputFileName + "'");
 			}
 
-			String cmdLineStr = " ";
-			for (int i = 1; i < commandLineParams.size(); i++) {
-				cmdLineStr += commandLineParams.get(i).toString() + " ";
+			final StringBuilder cmdLineStr = new StringBuilder(" ");
+			for (int i = 1; (commandLineParams != null) && (i < commandLineParams.size()); i++) {
+				cmdLineStr.append(commandLineParams.get(i).toString() + " ");
 			}
 
 			if (cmdLineStr.indexOf(XWTools.QUOTE) != -1) {
 				throw new ParseException("6 dec 2005 : command line cannot have \"" + XWTools.QUOTE
 						+ "\" character until further notification", 0);
 			}
-			work.setCmdLine(cmdLineStr);
+			work.setCmdLine(cmdLineStr.toString());
 
 			logger.info("Submitting a new work for application '" + appUid + "' : " + work.toXml());
 
@@ -272,14 +268,16 @@ public final class HelloWorld {
 			logger.info("Disconnecting");
 			client.disconnect();
 		} catch (final Exception e) {
-			exit(e.getMessage(), XWReturnCode.CONNECTION);
+			logger.exception(e);
+			exit();
 		}
 	}
 
 	/**
 	 * This is the standard main method
-	 * @throws ParseException 
-	 * @throws IOException 
+	 * 
+	 * @throws ParseException
+	 * @throws IOException
 	 */
 	public static void main(final String[] argv) throws IOException, ParseException {
 		new HelloWorld(argv).execute();

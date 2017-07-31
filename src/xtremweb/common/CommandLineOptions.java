@@ -405,8 +405,8 @@ public enum CommandLineOptions {
 	/**
 	 * This expects semicolon list containing tuple of SmartSockets address and
 	 * local port. This helps a job running on XWHEP worker side to connect to a
-	 * server like application running on XWHEP client side. e.g.
-	 * "Saddr1, port1; Saddr2, port2"
+	 * server like application running on XWHEP client side. e.g. "Saddr1,
+	 * port1; Saddr2, port2"
 	 *
 	 * @since 8.0.0
 	 */

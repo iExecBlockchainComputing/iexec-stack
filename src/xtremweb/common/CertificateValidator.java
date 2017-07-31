@@ -269,7 +269,7 @@ public final class CertificateValidator {
 		 *
 		 */
 		public X509CertPath() {
-			certsFromProxy = new LinkedList<X509Certificate>();
+			certsFromProxy = new LinkedList<>();
 		}
 
 		/**
@@ -592,16 +592,8 @@ public final class CertificateValidator {
 	public Vector<CACertPath> createPaths(final String certFilePathName)
 			throws NoSuchAlgorithmException, IOException, CertificateException {
 
-		File certFile = null;
-		Vector<CACertPath> ret = null;
-
-		try {
-			certFile = new File(certFilePathName);
-			ret = createPaths(certFile);
-		} finally {
-			certFile = null;
-		}
-		return ret;
+		final File certFile = new File(certFilePathName);
+		return createPaths(certFile);
 	}
 
 	/**
@@ -619,7 +611,7 @@ public final class CertificateValidator {
 			throws NoSuchAlgorithmException, IOException, CertificateException {
 
 		FileInputStream certis = null;
-		Vector<CACertPath> ret = new Vector<CACertPath>();
+		Vector<CACertPath> ret = new Vector<>();
 		Collection<X509Certificate> certs = null;
 		LinkedList<X509Certificate> certslist = null;
 		final Exception e = null;
@@ -635,7 +627,7 @@ public final class CertificateValidator {
 			}
 		} catch (final CertificateException ce) {
 			certs = (Collection<X509Certificate>) (certFactory.generateCertificates(certis));
-			certslist = new LinkedList<X509Certificate>(certs);
+			certslist = new LinkedList<>(certs);
 			validator = new CACertPath((X509Certificate) null, certslist);
 			ret.add(validator);
 		} finally {
@@ -665,8 +657,8 @@ public final class CertificateValidator {
 		}
 
 		LinkedList<X509Certificate> list = null;
-		final Vector<LinkedList<X509Certificate>> lists = new Vector<LinkedList<X509Certificate>>();
-		final Vector<CACertPath> ret = new Vector<CACertPath>();
+		final Vector<LinkedList<X509Certificate>> lists = new Vector<>();
+		final Vector<CACertPath> ret = new Vector<>();
 		logger.info("certs.length = " + certs.length);
 
 		for (int i = 0; i < certs.length; i++) {
@@ -693,7 +685,7 @@ public final class CertificateValidator {
 			}
 
 			if (lists.isEmpty()) {
-				list = new LinkedList<X509Certificate>();
+				list = new LinkedList<>();
 				logger.info("> add first new list " + certFromFile.getSubjectDN());
 				list.add(certFromFile);
 				lists.add(list);
@@ -757,7 +749,7 @@ public final class CertificateValidator {
 
 			if (!inserted) {
 				logger.info(">\n> no Cert Path found : " + certs[i]);
-				list = new LinkedList<X509Certificate>();
+				list = new LinkedList<>();
 				logger.info("> add another new list " + certFromFile.getSubjectDN() + "\n>");
 				list.add(certFromFile);
 				lists.add(list);

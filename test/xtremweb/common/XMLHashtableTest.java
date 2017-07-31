@@ -97,6 +97,7 @@ public class XMLHashtableTest {
 			assertTrue(hWrite.toXml().equals(hRead.toXml()));
 		} catch (final Exception e) {
 			logger.exception(e);
+			assert(false);
 		}
 	}
 }

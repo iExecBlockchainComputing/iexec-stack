@@ -327,7 +327,7 @@ public class Zipper {
 		ZipInputStream zis = null;
 		ZipEntry entry;
 
-		try (final FileInputStream fis = new FileInputStream(fileName) ){
+		try (final FileInputStream fis = new FileInputStream(fileName)) {
 			zis = new ZipInputStream(new BufferedInputStream(fis));
 		} catch (final Exception z) {
 			logger.exception("definitly not a zip file ", z);
@@ -432,7 +432,7 @@ public class Zipper {
 		boolean atleastone = false;
 
 		try (final FileOutputStream fos = new FileOutputStream(new File(fileName));
-				final ZipOutputStream zipFile = new ZipOutputStream(fos)){
+				final ZipOutputStream zipFile = new ZipOutputStream(fos)) {
 			logger.debug("zipping to " + fileName);
 
 			for (int i = 0; i < inputs.length; i++) {
@@ -624,7 +624,8 @@ public class Zipper {
 
 	/**
 	 * This main method is for test purposes only
-	 * @throws IOException 
+	 * 
+	 * @throws IOException
 	 */
 	public static void main(final String[] argv) throws IOException {
 		Zipper.test(argv[0]);

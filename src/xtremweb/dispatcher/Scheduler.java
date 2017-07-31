@@ -56,7 +56,6 @@ public abstract class Scheduler {
 	 */
 	public abstract Collection<WorkInterface> retrieve() throws IOException;
 
-
 	/**
 	 * This tries to find a job that matches the given host and host owner. The
 	 * found job must:

@@ -84,7 +84,7 @@ DISPATCHERS=@DISPATCHERS@
 # default value : 443
 ## HTTPSPORT=443
 
-# next is XML RPC port
+# next is XML RPC port listened by the client shell
 # default value : 4327
 ## XMLRPCPORT=4327
 

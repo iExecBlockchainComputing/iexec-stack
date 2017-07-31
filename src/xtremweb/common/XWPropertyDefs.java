@@ -611,8 +611,8 @@ public enum XWPropertyDefs {
 	 */
 	SMARTSOCKETSHUBADDR,
 	/**
-	 * Server: SmartSocket Hub may need its public IP.
-	 * e.g. in a VM, external IP may not be known.
+	 * Server: SmartSocket Hub may need its public IP. e.g. in a VM, external IP
+	 * may not be known.
 	 * <p>
 	 * <p>
 	 * Property type : string

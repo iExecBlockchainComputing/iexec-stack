@@ -183,27 +183,6 @@ public final class GroupInterface extends xtremweb.common.Table {
 	private static final int ENUMSIZE = Columns.values().length;
 
 	/**
-	 * This retrieves column label from enum Columns. This takes cares of this
-	 * version. If this version is null, this version is prior to 5.8.0. Before
-	 * 5.8.0, OWNERUID was known as CLIENTUID and ACCESSRIGHTS did not exist.
-	 *
-	 * @param i
-	 *            is an ordinal of an Columns
-	 * @since 5.8.0
-	 * @return null if((version == null) &amp;&amp; (i ==
-	 *         ACCESSRIGHTS.ordinal())); "CLIENTUID" if((version == null)
-	 *         &amp;&amp; (i == OWNERUID.ordinal())); column label otherwise
-	 */
-	@Override
-	public String getColumnLabel(final int i) throws IndexOutOfBoundsException {
-		try {
-			return TableColumns.fromInt(i).toString();
-		} catch (final Exception e) {
-		}
-		return Columns.fromInt(i).toString();
-	}
-
-	/**
 	 * This is the default constructor
 	 */
 	public GroupInterface() {
@@ -239,6 +218,26 @@ public final class GroupInterface extends xtremweb.common.Table {
 		fill(rs);
 	}
 
+	/**
+	 * This retrieves column label from enum Columns. This takes cares of this
+	 * version. If this version is null, this version is prior to 5.8.0. Before
+	 * 5.8.0, OWNERUID was known as CLIENTUID and ACCESSRIGHTS did not exist.
+	 *
+	 * @param i
+	 *            is an ordinal of an Columns
+	 * @since 5.8.0
+	 * @return null if((version == null) &amp;&amp; (i ==
+	 *         ACCESSRIGHTS.ordinal())); "CLIENTUID" if((version == null)
+	 *         &amp;&amp; (i == OWNERUID.ordinal())); column label otherwise
+	 */
+	@Override
+	public String getColumnLabel(final int i) throws IndexOutOfBoundsException {
+		try {
+			return TableColumns.fromInt(i).toString();
+		} catch (final Exception e) {
+		}
+		return Columns.fromInt(i).toString();
+	}
 	/**
 	 * This fills columns from DB
 	 *

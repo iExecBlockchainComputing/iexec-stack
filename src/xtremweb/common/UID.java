@@ -305,7 +305,7 @@ public final class UID extends XMLable {
 	 */
 	public static void main(final String[] argv) {
 
-		final Hashtable<UID, String> cache = new Hashtable<UID, String>();
+		final Hashtable<UID, String> cache = new Hashtable<>();
 		final Logger logger = new Logger();
 		final UID org = new UID();
 		UID copy = null;

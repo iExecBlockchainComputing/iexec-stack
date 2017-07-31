@@ -36,6 +36,7 @@ package xtremweb.client.gui;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
 
@@ -48,6 +49,7 @@ import xtremweb.common.UID;
 import xtremweb.common.UserGroupInterface;
 import xtremweb.common.UserInterface;
 import xtremweb.common.UserRightEnum;
+import xtremweb.common.XMLValue;
 import xtremweb.common.XMLVector;
 import xtremweb.common.XMLable;
 
@@ -64,8 +66,8 @@ class UsersTableModel extends TableModel {
 	private static final String UID = "UID";
 	private static final String GROUP = "User group";
 	private static final String LOGIN = "Login";
-	private static final String p = "Password";
-	private static final String p2 = "Confirm password";
+	private static final String P = "Password";
+	private static final String P2 = "Confirm password";
 	private static final String EMAIL = "E-mail";
 	private static final String FNAME = "First name";
 	private static final String LNAME = "Last name";
@@ -75,12 +77,11 @@ class UsersTableModel extends TableModel {
 	/**
 	 * These defines submission parameter labels
 	 */
-	private static final String[] labels = { UID, GROUP, LOGIN, p, p2, EMAIL, FNAME, LNAME, TEAM, COUNTRY,
-			RIGHTS };
+	private static final String[] labels = { UID, GROUP, LOGIN, P, P2, EMAIL, FNAME, LNAME, TEAM, COUNTRY, RIGHTS };
 
 	private static final String HELPSTRING = "<u>" + GROUP + "</u> : select an user group (this is optionnal)<br>"
 			+ "<u>" + LOGIN + "</u> : a login must be unic in the platform; reusing an existing login updates user<br>"
-			+ "<u>" + p + "</u> : please provide a password <br>" + "<u>" + p2
+			+ "<u>" + P + "</u> : please provide a password <br>" + "<u>" + P2
 			+ "</u> : please confirm the password<br>" + "<u>" + EMAIL + "</u> : a valid email address is required<br>"
 			+ "<u>" + FNAME + "</u> first name<br>" + "<u>" + LNAME + "</u> last name<br>" + "<u>" + RIGHTS
 			+ "</u> select a user rights from drop down menu";
@@ -122,14 +123,14 @@ class UsersTableModel extends TableModel {
 
 		try {
 			final XMLVector groups = getParent().commClient().getUserGroups();
-			final ArrayList<XMLable> vgroups = (ArrayList<XMLable>)groups.getXmlValues();
+			final Vector<XMLValue> vgroups = (Vector<XMLValue>) groups.getXmlValues();
 
 			groupLabels = new String[vgroups.size() + 1];
 			int i = 0;
-			groupLabels[i++] = new String(SELECT);
+			groupLabels[i++] = SELECT;
 
-			for(int idx = 0; idx < vgroups.size(); idx++) {
-				final UID groupUID = (UID) vgroups.get(idx);
+			for (final Enumeration<XMLValue> e = vgroups.elements(); e.hasMoreElements();) {
+				final UID groupUID = (UID) e.nextElement().getValue();
 				final UserGroupInterface group = (UserGroupInterface) getParent().commClient().get(groupUID, false);
 				groupLabels[i++] = group.getLabel();
 				groupsUID.put(group.getLabel(), groupUID);
@@ -185,9 +186,9 @@ class UsersTableModel extends TableModel {
 				return;
 			}
 
-			jtf = (JTextField) dlg.getFields().get(p);
+			jtf = (JTextField) dlg.getFields().get(P);
 			final String password = jtf.getText();
-			jtf = (JTextField) dlg.getFields().get(p2);
+			jtf = (JTextField) dlg.getFields().get(P2);
 			final String password2 = jtf.getText();
 
 			if (password2.compareTo(password) != 0) {

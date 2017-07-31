@@ -83,7 +83,7 @@ public class XMLValue extends XMLObject {
 	 *             on XML error
 	 */
 	public XMLValue(final DataInputStream input) throws IOException, SAXException {
-		try(final XMLReader reader = new XMLReader(this)) {
+		try (final XMLReader reader = new XMLReader(this)) {
 			reader.read(input);
 		} catch (final InvalidKeyException e) {
 			e.printStackTrace();
@@ -98,6 +98,7 @@ public class XMLValue extends XMLObject {
 		setXMLTag(THISTAG);
 		fromXml(attrs);
 	}
+
 	/**
 	 * This calls toString()
 	 *

@@ -60,7 +60,7 @@ public class Ps {
 			while (input.ready()) {
 				ligne = input.readLine();
 				pid[id] = Integer.valueOf(ligne).intValue();
-				try (final BufferedReader pidstat = new BufferedReader(new FileReader("/proc/" + pid[id] + "/stat"))){
+				try (final BufferedReader pidstat = new BufferedReader(new FileReader("/proc/" + pid[id] + "/stat"))) {
 					// on ne garde que ce qui est numerique (i.e. pid)
 					ligne = pidstat.readLine();
 					pidstat.close();

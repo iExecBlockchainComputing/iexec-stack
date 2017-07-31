@@ -57,7 +57,7 @@ public final class DataInterface extends Table {
 	 *
 	 * @since 9.0.0
 	 */
-	public static final String TABLENAME = "datas";
+	public static final String DATATABLENAME = "datas";
 
 	/**
 	 * This is the XML tag
@@ -422,31 +422,11 @@ public final class DataInterface extends Table {
 	private static final int ENUMSIZE = Columns.values().length;
 
 	/**
-	 * This retrieves column label from enum Columns. This takes cares of this
-	 * version. Version 5.8.0 introduces no change in data definition so this
-	 * works as it used to in prior versions
-	 *
-	 * @param i
-	 *            is an ordinal of an Columns
-	 * @since 5.8.0
-	 * @return column label as in versions prior to 5.8.0, since 5.8.0
-	 *         introduces no change in data definition
-	 */
-	@Override
-	public String getColumnLabel(final int i) throws IndexOutOfBoundsException {
-		try {
-			return TableColumns.fromInt(i).toString();
-		} catch (final Exception e) {
-		}
-		return Columns.fromInt(i).toString();
-	}
-
-	/**
 	 * This is the default constructor
 	 */
 	public DataInterface() {
 
-		super(THISTAG, TABLENAME);
+		super(THISTAG, DATATABLENAME);
 		setAttributeLength(ENUMSIZE);
 		setAccessRights(XWAccessRights.DEFAULT);
 		setReplicated(false);
@@ -489,6 +469,26 @@ public final class DataInterface extends Table {
 	public DataInterface(final ResultSet rs) throws IOException {
 		this();
 		fill(rs);
+	}
+
+	/**
+	 * This retrieves column label from enum Columns. This takes cares of this
+	 * version. Version 5.8.0 introduces no change in data definition so this
+	 * works as it used to in prior versions
+	 *
+	 * @param i
+	 *            is an ordinal of an Columns
+	 * @since 5.8.0
+	 * @return column label as in versions prior to 5.8.0, since 5.8.0
+	 *         introduces no change in data definition
+	 */
+	@Override
+	public String getColumnLabel(final int i) throws IndexOutOfBoundsException {
+		try {
+			return TableColumns.fromInt(i).toString();
+		} catch (final Exception e) {
+		}
+		return Columns.fromInt(i).toString();
 	}
 
 	/**
@@ -1021,10 +1021,8 @@ public final class DataInterface extends Table {
 	 * @return true is value has changed
 	 */
 	public boolean setSize(final long v) {
-		Long l = new Long(v);
-		final boolean ret = setValue(Columns.SIZE, l);
-		l = null;
-		return ret;
+		final Long l = new Long(v);
+		return  setValue(Columns.SIZE, l);
 	}
 
 	/**

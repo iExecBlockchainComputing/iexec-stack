@@ -21,12 +21,26 @@
 #
 #
 
+# Versionning
+#  0.4 : July 25th, 2017
+#    - reducing exposed ports
+#  0.3 : July 7th, 2017
+#    - xwversion : 10.6.0
+#  0.2 : July 3rd, 2017
+#    - exposes server ports
+#
+
 FROM ubuntu:16.04
 MAINTAINER Oleg Lodygensky (oleg.lodygensky@lal.in2p3.fr)
 LABEL "copyrights"="CNRS 2016"
 LABEL "author"="Oleg Lodygensky"
-LABEL version="0.2"
+LABEL version="0.4"
 LABEL description="This creates a Docker image for the XWHEP server"
+EXPOSE 4321 4322 4323 443
+ENV XWVERSION "10.6.0"
+
+ADD . /xwhep
+WORKDIR /xwhep
 
 #
 # DEBIAN_FRONTEND=noninteractive bypasses user input.
@@ -34,13 +48,29 @@ LABEL description="This creates a Docker image for the XWHEP server"
 # for the new mysql admin password;
 # and mysql admin password will be empty
 #
-RUN apt-get update && export DEBIAN_FRONTEND=noninteractive && apt-get install -y apt-utils
-RUN export DEBIAN_FRONTEND=noninteractive && apt-get install -y openjdk-8-jdk mysql-server mysql-client zip unzip wget make ant gcc uuid uuid-runtime vim git
-RUN service mysql start
+RUN apt-get update
+RUN export DEBIAN_FRONTEND=noninteractive && \
+       apt-get install -y openjdk-8-jre mysql-server mysql-client \
+       zip unzip wget make
 
-COPY xwhep-server-10.5.0.deb /tmp/
-COPY xwhep-server-conf-10.5.0.deb /tmp/
-RUN cd /tmp/ && dpkg -i xwhep-server-10.5.0.deb
-RUN cd /tmp/ && dpkg -i xwhep-server-conf-10.5.0.deb
-RUN service xtremweb.server start
+RUN dpkg -i xwhep-server-$XWVERSION.deb
+RUN dpkg -i xwhep-server-conf-$XWVERSION.deb
+RUN service mysql start && mysql -u root < /opt/xwhep-server-$XWVERSION/bin/db-maintenance/xwhep-core-tables-create-tables.sql
+
+#
+# -1- don't renice in container
+# -2- we must remove LAUNCHERURL since Apache is not installed
+# 
+RUN sed -i "s/^V_NICE=.*//g" /opt/xwhep-server-$XWVERSION/bin/xtremwebconf.sh
+RUN sed -i "s/LAUNCHER.*//g" /opt/xwhep-server-$XWVERSION/conf/xtremweb.server.conf
+
+#
+# Entry point script
+# 
+RUN echo "#!/bin/sh" > /tmp/xwstart.sh
+RUN echo "service mysql start" >> /tmp/xwstart.sh
+RUN echo "/etc/init.d/xtremweb.server console" >> /tmp/xwstart.sh
+RUN chmod +x /tmp/xwstart.sh
+
+ENTRYPOINT [ "/tmp/xwstart.sh" ]
 

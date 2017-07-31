@@ -25,7 +25,6 @@ package xtremweb.security;
 
 import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -61,6 +60,8 @@ public final class PEMPrivateKey {
 	static {
 		Security.addProvider(new BouncyCastleProvider());
 	}
+
+	private static final String SIGNATUREALGONAME = "SHA256WithRSAEncryption";
 
 	private static class DefaultPasswordFinder implements PasswordFinder {
 
@@ -106,16 +107,10 @@ public final class PEMPrivateKey {
 	 *            is the private key password
 	 * @see #read(File, String)
 	 */
-	public void read(final String keyPath, final String password)
-			throws CertificateException, FileNotFoundException, IOException {
+	public void read(final String keyPath, final String password) throws CertificateException, IOException {
 
-		File f = null;
-		try {
-			f = new File(keyPath);
-			read(f, password);
-		} finally {
-			f = null;
-		}
+		final File f = new File(keyPath);
+		read(f, password);
 	}
 
 	/**
@@ -127,8 +122,7 @@ public final class PEMPrivateKey {
 	 *            is the private key password
 	 * @see #read(File, char[])
 	 */
-	public void read(final File f, final String password)
-			throws CertificateException, FileNotFoundException, IOException {
+	public void read(final File f, final String password) throws CertificateException, IOException {
 
 		final char[] p = password == null ? null : password.toCharArray();
 		read(f, p);
@@ -143,8 +137,7 @@ public final class PEMPrivateKey {
 	 * @param password
 	 *            is the private key password
 	 */
-	public void read(final File keyFile, final char[] password)
-			throws CertificateException, FileNotFoundException, IOException {
+	public void read(final File keyFile, final char[] password) throws CertificateException, IOException {
 
 		if (keyFile == null) {
 			throw new IOException("key file is null");
@@ -153,31 +146,17 @@ public final class PEMPrivateKey {
 			throw new IOException("password is null");
 		}
 
-		FileReader fr = null;
-		PEMReader r = null;
-		try {
-			fr = new FileReader(keyFile);
-			final DefaultPasswordFinder pfinder = new DefaultPasswordFinder(password);
-			r = new PEMReader(fr, pfinder);
+		final DefaultPasswordFinder pfinder = new DefaultPasswordFinder(password);
+		try (final FileReader fr = new FileReader(keyFile); final PEMReader r = new PEMReader(fr, pfinder)) {
+
 			final KeyPair kp = (KeyPair) r.readObject();
 			try {
 				publicKey = kp.getPublic();
-			} catch (final Exception ingore) {
+			} catch (final Exception ignore) {
 			}
 			privateKey = kp.getPrivate();
 		} catch (final ClassCastException e) {
 			throw new CertificateException(e);
-		} finally {
-			try {
-				r.close();
-			} catch (final Exception ignore) {
-			}
-			try {
-				fr.close();
-			} catch (final Exception ignore) {
-			}
-			fr = null;
-			r = null;
 		}
 	}
 
@@ -216,7 +195,7 @@ public final class PEMPrivateKey {
 		final long t = System.currentTimeMillis();
 		final double q = Math.random();
 
-		final Signature s = Signature.getInstance("SHA256WithRSAEncryption");
+		final Signature s = Signature.getInstance(SIGNATUREALGONAME);
 		s.initSign(privateKey);
 		s.update(Protection.makeBytes(t, q));
 		final byte[] signature = s.sign();
@@ -248,13 +227,13 @@ public final class PEMPrivateKey {
 
 		logger.info("privateKey = " + reader.privateKey.toString());
 
-		final Signature signature = Signature.getInstance("SHA256WithRSAEncryption");
+		final Signature signature = Signature.getInstance(SIGNATUREALGONAME);
 		signature.initSign(reader.privateKey);
 		signature.update(message.getBytes());
 		final byte[] signatureBytes = signature.sign();
 		logger.info(new String(Hex.encode(signatureBytes)));
 
-		final Signature verifier = Signature.getInstance("SHA256WithRSAEncryption");
+		final Signature verifier = Signature.getInstance(SIGNATUREALGONAME);
 		verifier.initVerify(reader.publicKey);
 		verifier.update(message.getBytes());
 		if (verifier.verify(signatureBytes)) {
@@ -265,11 +244,9 @@ public final class PEMPrivateKey {
 
 		if (args.length > 2) {
 			final int port = 7999;
-			final Socket s = new Socket("localhost", port);
-
-			reader.sendAuthentication(s.getOutputStream());
-
-			s.close();
+			try (final Socket s = new Socket("localhost", port)) {
+				reader.sendAuthentication(s.getOutputStream());
+			}
 		}
 	}
 }

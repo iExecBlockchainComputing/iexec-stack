@@ -99,7 +99,7 @@ public final class ThreadLaunch extends Thread {
 
 		unavailable = true;
 
-		threadWorkPool = new Vector<ThreadWork>();
+		threadWorkPool = new Vector<>();
 
 		activatorThread = null;
 		setupActivator();
@@ -233,7 +233,7 @@ public final class ThreadLaunch extends Thread {
 	 */
 	public Vector<Work> runningWorks() {
 
-		final Vector<Work> ret = new Vector<Work>();
+		final Vector<Work> ret = new Vector<>();
 
 		for (final Iterator<ThreadWork> it = threadWorkPool.iterator(); it.hasNext();) {
 			final ThreadWork threadWork = it.next();

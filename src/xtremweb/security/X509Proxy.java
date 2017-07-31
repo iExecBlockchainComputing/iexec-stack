@@ -174,15 +174,15 @@ public final class X509Proxy {
 			throw new IOException("file not found : " + certFile);
 		}
 
-		try(final FileReader certFileReader = new FileReader(certFile);
-				final BufferedReader reader = new BufferedReader(certFileReader)){
+		try (final FileReader certFileReader = new FileReader(certFile);
+				final BufferedReader reader = new BufferedReader(certFileReader)) {
 
 			for (String ligne = reader.readLine(); ligne != null; ligne = reader.readLine()) {
 				content = content.concat(ligne + "\n");
 			}
 		}
 
-		try (final ByteArrayInputStream inputStream = new ByteArrayInputStream(content.getBytes())){
+		try (final ByteArrayInputStream inputStream = new ByteArrayInputStream(content.getBytes())) {
 			getCertificates(inputStream);
 		}
 	}
@@ -191,6 +191,7 @@ public final class X509Proxy {
 	 * This retrieves X509 public keys from X509 proxy and put them in a linked
 	 * list where one element is the issuer of the following, ordered from least
 	 * at most trusted certs.
+	 * 
 	 * @see getCertificate(BufferedInputStream)
 	 * @param inputStream
 	 *            - the input stream to reader X509 proxy from
@@ -218,12 +219,15 @@ public final class X509Proxy {
 			logger.config(">> Subject=\"" + cert.getSubjectDN() + "\" Issuer=\"" + cert.getIssuerDN() + "\"");
 		}
 	}
+
 	/**
 	 * This retrieves a certificate from input stream
-	 * @param bis input stream
+	 * 
+	 * @param bis
+	 *            input stream
 	 * @throws CertificateException
 	 */
-	private void getCertificate(final BufferedInputStream bis) throws CertificateException{
+	private void getCertificate(final BufferedInputStream bis) throws CertificateException {
 		try {
 			final X509Certificate theCert = (X509Certificate) certFactory.generateCertificate(bis);
 			X500Principal subject = theCert.getSubjectX500Principal();

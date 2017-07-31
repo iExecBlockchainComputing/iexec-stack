@@ -21,12 +21,24 @@
 #
 #
 
+# Versionning
+#  July 24th, 2017
+#  0.3
+#    - xwversion : 10.6.0
+#    - using ADD and WORKDIR to ease usage
+#    - reducing packages list to the necessary only to reduce image size
+#
+
 FROM ubuntu:16.04
 MAINTAINER Oleg Lodygensky (oleg.lodygensky@lal.in2p3.fr)
 LABEL "copyrights"="CNRS 2016"
 LABEL "author"="Oleg Lodygensky"
-LABEL version="0.2"
+LABEL version="0.3"
 LABEL description="This creates a Docker image for the XWHEP worker"
+EXPOSE 4324 443
+
+ENV XWVERSION "10.6.0"
+
 
 #
 # DEBIAN_FRONTEND=noninteractive bypasses user input.
@@ -34,9 +46,32 @@ LABEL description="This creates a Docker image for the XWHEP worker"
 # for the new mysql admin password;
 # and mysql admin password will be empty
 #
-RUN apt-get update && export DEBIAN_FRONTEND=noninteractive && apt-get install -y apt-utils
-RUN export DEBIAN_FRONTEND=noninteractive && apt-get install -y openjdk-8-jdk zip unzip wget make ant gcc uuid uuid-runtime vim git
+#RUN apt-get update && export DEBIAN_FRONTEND=noninteractive && apt-get install -y apt-utils
+#RUN export DEBIAN_FRONTEND=noninteractive && apt-get install -y openjdk-8-jre zip unzip wget make ant gcc uuid uuid-runtime vim git
+RUN apt-get update
+RUN export DEBIAN_FRONTEND=noninteractive && apt-get install -y openjdk-8-jre zip unzip
 
-COPY xwhep-worker-10.5.0.deb /tmp/
-RUN cd /tmp/ && dpkg -i xwhep-worker-10.5.0.deb
-RUN service xtremweb.worker start
+#COPY xwhep-worker-$XWVERSION.deb /tmp/
+
+ADD . /xwhep
+WORKDIR /xwhep
+
+RUN dpkg -i xwhep-worker-$XWVERSION.deb
+
+RUN sed -i "s/^V_NICE=.*//g" /opt/xwhep-worker-$XWVERSION/bin/xtremwebconf.sh
+RUN sed -i "s/LAUNCHER.*//g" /opt/xwhep-worker-$XWVERSION/conf/xtremweb.worker.conf
+RUN sed -i "s/DISPATCHERS.*/DISPATCHERS=xwserver/g" /opt/xwhep-worker-$XWVERSION/conf/xtremweb.worker.conf
+
+#
+# Entry point script
+# 
+RUN echo "#!/bin/sh" > /tmp/xwstart.sh
+RUN echo "if [ ! -z \$XWSERVERADDR ] ; then " >> /tmp/xwstart.sh
+RUN echo "   sed \"s/127\\.0\\.0\\.1.*localhost/127\\.0\\.0\\.1 localhost $HOSTNAME/g\" /etc/hosts" >> /tmp/xwstart.sh
+RUN echo "   echo \"\$XWSERVERADDR xwserver\" >> /etc/hosts" >> /tmp/xwstart.sh
+RUN echo "fi" >> /tmp/xwstart.sh
+RUN echo "cat /etc/hosts" >> /tmp/xwstart.sh
+RUN echo "/etc/init.d/xtremweb.worker console" >> /tmp/xwstart.sh
+RUN chmod +x /tmp/xwstart.sh
+
+ENTRYPOINT [ "/tmp/xwstart.sh" ]

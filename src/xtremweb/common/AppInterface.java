@@ -61,7 +61,7 @@ public final class AppInterface extends Table {
 	 *
 	 * @since 9.0.0
 	 */
-	public static final String TABLENAME = "apps";
+	public static final String APPTABLENAME = "apps";
 
 	/**
 	 * This the application name length as defined in DB
@@ -1109,33 +1109,11 @@ public final class AppInterface extends Table {
 	private static final int ENUMSIZE = Columns.values().length;
 
 	/**
-	 * This retrieves column label from enum Columns. This takes cares of this
-	 * version. If this version is null, this version is prior to 5.8.0. Before
-	 * 5.8.0, OWNERUID and ACCESSRIGHTS did not exist. Then this returns null
-	 * for these two columns.
-	 *
-	 * @param i
-	 *            is an ordinal of an Columns
-	 * @since 5.8.0
-	 * @return null if((version == null) &amp;&amp; ((i ==
-	 *         MACOS_X86_64URI.ordinal()) || (c ==
-	 *         LDMACOS_X86_64URI.ordinal()))); column label otherwise
-	 */
-	@Override
-	public String getColumnLabel(final int i) throws IndexOutOfBoundsException {
-		try {
-			return TableColumns.fromInt(i).toString();
-		} catch (final Exception e) {
-		}
-		return Columns.fromInt(i).toString();
-	}
-
-	/**
 	 * This is the default constructor
 	 */
 	public AppInterface() {
 
-		super(THISTAG, TABLENAME);
+		super(THISTAG, APPTABLENAME);
 
 		setAttributeLength(ENUMSIZE);
 
@@ -1178,6 +1156,27 @@ public final class AppInterface extends Table {
 	}
 
 	/**
+	 * This retrieves column label from enum Columns. This takes cares of this
+	 * version. If this version is null, this version is prior to 5.8.0. Before
+	 * 5.8.0, OWNERUID and ACCESSRIGHTS did not exist. Then this returns null
+	 * for these two columns.
+	 *
+	 * @param i
+	 *            is an ordinal of an Columns
+	 * @since 5.8.0
+	 * @return null if((version == null) &amp;&amp; ((i ==
+	 *         MACOS_X86_64URI.ordinal()) || (c ==
+	 *         LDMACOS_X86_64URI.ordinal()))); column label otherwise
+	 */
+	@Override
+	public String getColumnLabel(final int i) throws IndexOutOfBoundsException {
+		try {
+			return TableColumns.fromInt(i).toString();
+		} catch (final Exception e) {
+		}
+		return Columns.fromInt(i).toString();
+	}
+	/**
 	 * This fills columns from DB
 	 *
 	 * @since 9.0.0
@@ -1192,201 +1191,201 @@ public final class AppInterface extends Table {
 			setUID((UID) TableColumns.UID.fromResultSet(rs));
 			setOwner((UID) TableColumns.OWNERUID.fromResultSet(rs));
 			setAccessRights((XWAccessRights) TableColumns.ACCESSRIGHTS.fromResultSet(rs));
-
-			try {
-				setWebPage((URL) Columns.WEBPAGE.fromResultSet(rs));
-			} catch (final Exception e) {
-			}
-			try {
-				setJava((URI) Columns.JAVAURI.fromResultSet(rs));
-			} catch (final Exception e) {
-			}
-			try {
-				setWin32_ix86((URI) Columns.WIN32_IX86URI.fromResultSet(rs));
-			} catch (final Exception e) {
-			}
-			try {
-				setWin32_amd64((URI) Columns.WIN32_AMD64URI.fromResultSet(rs));
-			} catch (final Exception e) {
-			}
-			try {
-				setWin32_x86_64((URI) Columns.WIN32_X86_64URI.fromResultSet(rs));
-			} catch (final Exception e) {
-			}
-			try {
-				setLinux_ix86((URI) Columns.LINUX_IX86URI.fromResultSet(rs));
-			} catch (final Exception e) {
-			}
-			try {
-				setLinux_amd64((URI) Columns.LINUX_AMD64URI.fromResultSet(rs));
-			} catch (final Exception e) {
-			}
-			try {
-				setLinux_x86_64((URI) Columns.LINUX_X86_64URI.fromResultSet(rs));
-			} catch (final Exception e) {
-			}
-			try {
-				setLinux_ia64((URI) Columns.LINUX_IA64URI.fromResultSet(rs));
-			} catch (final Exception e) {
-			}
-			try {
-				setLinux_ppc((URI) Columns.LINUX_PPCURI.fromResultSet(rs));
-			} catch (final Exception e) {
-			}
-			try {
-				setMacos_ix86((URI) Columns.MACOS_IX86URI.fromResultSet(rs));
-			} catch (final Exception e) {
-			}
-			try {
-				setMacos_x86_64((URI) Columns.MACOS_X86_64URI.fromResultSet(rs));
-			} catch (final Exception e) {
-			}
-			try {
-				setMacos_ppc((URI) Columns.MACOS_PPCURI.fromResultSet(rs));
-			} catch (final Exception e) {
-			}
-			try {
-				setSolaris_sparc((URI) Columns.SOLARIS_SPARCURI.fromResultSet(rs));
-			} catch (final Exception e) {
-			}
-			try {
-				setSolaris_alpha((URI) Columns.SOLARIS_ALPHAURI.fromResultSet(rs));
-			} catch (final Exception e) {
-			}
-			try {
-				setLDWin32_ix86((URI) Columns.LDWIN32_IX86URI.fromResultSet(rs));
-			} catch (final Exception e) {
-			}
-			try {
-				setLDWin32_amd64((URI) Columns.LDWIN32_AMD64URI.fromResultSet(rs));
-			} catch (final Exception e) {
-			}
-			try {
-				setLDWin32_x86_64((URI) Columns.LDWIN32_X86_64URI.fromResultSet(rs));
-			} catch (final Exception e) {
-			}
-			try {
-				setLDLinux_ix86((URI) Columns.LDLINUX_IX86URI.fromResultSet(rs));
-			} catch (final Exception e) {
-			}
-			try {
-				setLDLinux_amd64((URI) Columns.LDLINUX_AMD64URI.fromResultSet(rs));
-			} catch (final Exception e) {
-			}
-			try {
-				setLDLinux_x86_64((URI) Columns.LDLINUX_X86_64URI.fromResultSet(rs));
-			} catch (final Exception e) {
-			}
-			try {
-				setLDLinux_ia64((URI) Columns.LDLINUX_IA64URI.fromResultSet(rs));
-			} catch (final Exception e) {
-			}
-			try {
-				setLDLinux_ppc((URI) Columns.LDLINUX_PPCURI.fromResultSet(rs));
-			} catch (final Exception e) {
-			}
-			try {
-				setLDMacos_ix86((URI) Columns.LDMACOS_IX86URI.fromResultSet(rs));
-			} catch (final Exception e) {
-			}
-			try {
-				setLDMacos_x86_64((URI) Columns.LDMACOS_X86_64URI.fromResultSet(rs));
-			} catch (final Exception e) {
-			}
-			try {
-				setLDMacos_ppc((URI) Columns.LDMACOS_PPCURI.fromResultSet(rs));
-			} catch (final Exception e) {
-			}
-			try {
-				setLDSolaris_sparc((URI) Columns.LDSOLARIS_SPARCURI.fromResultSet(rs));
-			} catch (final Exception e) {
-			}
-			try {
-				setLDSolaris_alpha((URI) Columns.LDSOLARIS_ALPHAURI.fromResultSet(rs));
-			} catch (final Exception e) {
-			}
-			try {
-				setDefaultStdin((URI) Columns.DEFAULTSTDINURI.fromResultSet(rs));
-			} catch (final Exception e) {
-			}
-			try {
-				setDefaultDirin((URI) Columns.DEFAULTDIRINURI.fromResultSet(rs));
-			} catch (final Exception e) {
-			}
-			try {
-				setBaseDirin((URI) Columns.BASEDIRINURI.fromResultSet(rs));
-			} catch (final Exception e) {
-			}
-			try {
-				setLaunchScriptSh((URI) Columns.LAUNCHSCRIPTSHURI.fromResultSet(rs));
-			} catch (final Exception e) {
-			}
-			try {
-				setLaunchScriptCmd((URI) Columns.LAUNCHSCRIPTCMDURI.fromResultSet(rs));
-			} catch (final Exception e) {
-			}
-			try {
-				setUnloadScriptSh((URI) Columns.UNLOADSCRIPTSHURI.fromResultSet(rs));
-			} catch (final Exception e) {
-			}
-			try {
-				setUnloadScriptCmd((URI) Columns.UNLOADSCRIPTCMDURI.fromResultSet(rs));
-			} catch (final Exception e) {
-			}
-			try {
-				setNbJobs((Integer) Columns.NBJOBS.fromResultSet(rs));
-			} catch (final Exception e) {
-			}
-			try {
-				setPendingJobs((Integer) Columns.PENDINGJOBS.fromResultSet(rs));
-			} catch (final Exception e) {
-			}
-			try {
-				setRunningJobs((Integer) Columns.RUNNINGJOBS.fromResultSet(rs));
-			} catch (final Exception e) {
-			}
-			try {
-				setErrorJobs((Integer) Columns.ERRORJOBS.fromResultSet(rs));
-			} catch (final Exception e) {
-			}
-			try {
-				setAvgExecTime((Integer) Columns.AVGEXECTIME.fromResultSet(rs));
-			} catch (final Exception e) {
-			}
-			try {
-				setMinMemory((Integer) Columns.MINMEMORY.fromResultSet(rs));
-			} catch (final Exception e) {
-			}
-			try {
-				setMinCpuSpeed((Integer) Columns.MINCPUSPEED.fromResultSet(rs));
-			} catch (final Exception e) {
-			}
-			try {
-				setMinFreeMassStorage((Long) Columns.MINFREEMASSSTORAGE.fromResultSet(rs));
-			} catch (final Exception e) {
-			}
-			try {
-				setEnvVars((String) Columns.ENVVARS.fromResultSet(rs));
-			} catch (final Exception e) {
-			}
-			try {
-				setNeededPackages((String) Columns.NEEDEDPACKAGES.fromResultSet(rs));
-			} catch (final Exception e) {
-			}
-			try {
-				setName((String) Columns.NAME.fromResultSet(rs));
-			} catch (final Exception e) {
-			}
-			try {
-				setService((Boolean) Columns.ISSERVICE.fromResultSet(rs));
-			} catch (final Exception e) {
-			}
-			try {
-				setType((AppTypeEnum) Columns.TYPE.fromResultSet(rs));
-			} catch (final Exception e) {
-			}
 		} catch (final Exception e) {
 			throw new IOException(e.toString());
+		}
+
+		try {
+			setWebPage((URL) Columns.WEBPAGE.fromResultSet(rs));
+		} catch (final Exception e) {
+		}
+		try {
+			setJava((URI) Columns.JAVAURI.fromResultSet(rs));
+		} catch (final Exception e) {
+		}
+		try {
+			setWin32_ix86((URI) Columns.WIN32_IX86URI.fromResultSet(rs));
+		} catch (final Exception e) {
+		}
+		try {
+			setWin32_amd64((URI) Columns.WIN32_AMD64URI.fromResultSet(rs));
+		} catch (final Exception e) {
+		}
+		try {
+			setWin32_x86_64((URI) Columns.WIN32_X86_64URI.fromResultSet(rs));
+		} catch (final Exception e) {
+		}
+		try {
+			setLinux_ix86((URI) Columns.LINUX_IX86URI.fromResultSet(rs));
+		} catch (final Exception e) {
+		}
+		try {
+			setLinux_amd64((URI) Columns.LINUX_AMD64URI.fromResultSet(rs));
+		} catch (final Exception e) {
+		}
+		try {
+			setLinux_x86_64((URI) Columns.LINUX_X86_64URI.fromResultSet(rs));
+		} catch (final Exception e) {
+		}
+		try {
+			setLinux_ia64((URI) Columns.LINUX_IA64URI.fromResultSet(rs));
+		} catch (final Exception e) {
+		}
+		try {
+			setLinux_ppc((URI) Columns.LINUX_PPCURI.fromResultSet(rs));
+		} catch (final Exception e) {
+		}
+		try {
+			setMacos_ix86((URI) Columns.MACOS_IX86URI.fromResultSet(rs));
+		} catch (final Exception e) {
+		}
+		try {
+			setMacos_x86_64((URI) Columns.MACOS_X86_64URI.fromResultSet(rs));
+		} catch (final Exception e) {
+		}
+		try {
+			setMacos_ppc((URI) Columns.MACOS_PPCURI.fromResultSet(rs));
+		} catch (final Exception e) {
+		}
+		try {
+			setSolaris_sparc((URI) Columns.SOLARIS_SPARCURI.fromResultSet(rs));
+		} catch (final Exception e) {
+		}
+		try {
+			setSolaris_alpha((URI) Columns.SOLARIS_ALPHAURI.fromResultSet(rs));
+		} catch (final Exception e) {
+		}
+		try {
+			setLDWin32_ix86((URI) Columns.LDWIN32_IX86URI.fromResultSet(rs));
+		} catch (final Exception e) {
+		}
+		try {
+			setLDWin32_amd64((URI) Columns.LDWIN32_AMD64URI.fromResultSet(rs));
+		} catch (final Exception e) {
+		}
+		try {
+			setLDWin32_x86_64((URI) Columns.LDWIN32_X86_64URI.fromResultSet(rs));
+		} catch (final Exception e) {
+		}
+		try {
+			setLDLinux_ix86((URI) Columns.LDLINUX_IX86URI.fromResultSet(rs));
+		} catch (final Exception e) {
+		}
+		try {
+			setLDLinux_amd64((URI) Columns.LDLINUX_AMD64URI.fromResultSet(rs));
+		} catch (final Exception e) {
+		}
+		try {
+			setLDLinux_x86_64((URI) Columns.LDLINUX_X86_64URI.fromResultSet(rs));
+		} catch (final Exception e) {
+		}
+		try {
+			setLDLinux_ia64((URI) Columns.LDLINUX_IA64URI.fromResultSet(rs));
+		} catch (final Exception e) {
+		}
+		try {
+			setLDLinux_ppc((URI) Columns.LDLINUX_PPCURI.fromResultSet(rs));
+		} catch (final Exception e) {
+		}
+		try {
+			setLDMacos_ix86((URI) Columns.LDMACOS_IX86URI.fromResultSet(rs));
+		} catch (final Exception e) {
+		}
+		try {
+			setLDMacos_x86_64((URI) Columns.LDMACOS_X86_64URI.fromResultSet(rs));
+		} catch (final Exception e) {
+		}
+		try {
+			setLDMacos_ppc((URI) Columns.LDMACOS_PPCURI.fromResultSet(rs));
+		} catch (final Exception e) {
+		}
+		try {
+			setLDSolaris_sparc((URI) Columns.LDSOLARIS_SPARCURI.fromResultSet(rs));
+		} catch (final Exception e) {
+		}
+		try {
+			setLDSolaris_alpha((URI) Columns.LDSOLARIS_ALPHAURI.fromResultSet(rs));
+		} catch (final Exception e) {
+		}
+		try {
+			setDefaultStdin((URI) Columns.DEFAULTSTDINURI.fromResultSet(rs));
+		} catch (final Exception e) {
+		}
+		try {
+			setDefaultDirin((URI) Columns.DEFAULTDIRINURI.fromResultSet(rs));
+		} catch (final Exception e) {
+		}
+		try {
+			setBaseDirin((URI) Columns.BASEDIRINURI.fromResultSet(rs));
+		} catch (final Exception e) {
+		}
+		try {
+			setLaunchScriptSh((URI) Columns.LAUNCHSCRIPTSHURI.fromResultSet(rs));
+		} catch (final Exception e) {
+		}
+		try {
+			setLaunchScriptCmd((URI) Columns.LAUNCHSCRIPTCMDURI.fromResultSet(rs));
+		} catch (final Exception e) {
+		}
+		try {
+			setUnloadScriptSh((URI) Columns.UNLOADSCRIPTSHURI.fromResultSet(rs));
+		} catch (final Exception e) {
+		}
+		try {
+			setUnloadScriptCmd((URI) Columns.UNLOADSCRIPTCMDURI.fromResultSet(rs));
+		} catch (final Exception e) {
+		}
+		try {
+			setNbJobs((Integer) Columns.NBJOBS.fromResultSet(rs));
+		} catch (final Exception e) {
+		}
+		try {
+			setPendingJobs((Integer) Columns.PENDINGJOBS.fromResultSet(rs));
+		} catch (final Exception e) {
+		}
+		try {
+			setRunningJobs((Integer) Columns.RUNNINGJOBS.fromResultSet(rs));
+		} catch (final Exception e) {
+		}
+		try {
+			setErrorJobs((Integer) Columns.ERRORJOBS.fromResultSet(rs));
+		} catch (final Exception e) {
+		}
+		try {
+			setAvgExecTime((Integer) Columns.AVGEXECTIME.fromResultSet(rs));
+		} catch (final Exception e) {
+		}
+		try {
+			setMinMemory((Integer) Columns.MINMEMORY.fromResultSet(rs));
+		} catch (final Exception e) {
+		}
+		try {
+			setMinCpuSpeed((Integer) Columns.MINCPUSPEED.fromResultSet(rs));
+		} catch (final Exception e) {
+		}
+		try {
+			setMinFreeMassStorage((Long) Columns.MINFREEMASSSTORAGE.fromResultSet(rs));
+		} catch (final Exception e) {
+		}
+		try {
+			setEnvVars((String) Columns.ENVVARS.fromResultSet(rs));
+		} catch (final Exception e) {
+		}
+		try {
+			setNeededPackages((String) Columns.NEEDEDPACKAGES.fromResultSet(rs));
+		} catch (final Exception e) {
+		}
+		try {
+			setName((String) Columns.NAME.fromResultSet(rs));
+		} catch (final Exception e) {
+		}
+		try {
+			setService((Boolean) Columns.ISSERVICE.fromResultSet(rs));
+		} catch (final Exception e) {
+		}
+		try {
+			setType((AppTypeEnum) Columns.TYPE.fromResultSet(rs));
+		} catch (final Exception e) {
 		}
 
 		setDirty(false);
@@ -1425,11 +1424,10 @@ public final class AppInterface extends Table {
 	 */
 	public AppInterface(final InputStream input) throws IOException, SAXException {
 		this();
-		final XMLReader reader = new XMLReader(this);
-		try {
+		try (final XMLReader reader = new XMLReader(this)) {
 			reader.read(input);
 		} catch (final InvalidKeyException e) {
-			e.printStackTrace();
+			getLogger().exception(e);
 		}
 	}
 

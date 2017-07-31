@@ -27,7 +27,12 @@
 <!--    build.xml - Ant build file for the XWHEP sources
         created Mon Mar 25 2002 by Samuel Heriard
  -->
-<project basedir=".." default="all" name="xwhep" xmlns:sonar="antlib:org.sonar.ant" >
+<project 
+	basedir=".." 
+	default="all"
+	name="xwhep"
+	xmlns:jacoco="antlib:org.jacoco.ant"
+	xmlns:sonar="antlib:org.sonar.ant" >
   
 
   <!-- NAMES -->
@@ -36,10 +41,10 @@
   
    <!-- DIRECTORIES -->
   <property name="misc.dir" value="${basedir}/misc" />
-	  <property name="src.dir" value="${basedir}/src" />
-	  <property name="src.test.dir" value="${basedir}/test" />
-	  <property name="src.java.dir" value="${src.dir}/xtremweb" />
-	  <property name="src.java.test.dir" value="${src.test.dir}/xtremweb" />
+  <property name="src.dir" value="${basedir}/src" />
+  <property name="src.test.dir" value="${basedir}/test" />
+  <property name="src.java.dir" value="${src.dir}/xtremweb" />
+  <property name="src.java.test.dir" value="${src.test.dir}/xtremweb" />
   <property name="src.c.dir" value="${src.dir}/natif" />
   <property name="src.scripts.dir" value="${src.dir}/scripts" />
   <property name="lib.dir" value="${basedir}/classes" />
@@ -74,7 +79,7 @@
             <srcfiles dir="${src.java.dir}/communications" includes="*" />
             <srcfiles dir="${src.java.dir}/dispatcher" includes="*" />
             <srcfiles dir="${src.java.dir}/archdep" includes="*" />
-	    <srcfiles dir="${src.java.dir}/exec" includes="*" />
+		    <srcfiles dir="${src.java.dir}/exec" includes="*" />
             <srcfiles dir="${src.java.dir}/worker" includes="*" />
             <srcfiles dir="${src.java.dir}/services" includes="*" />
             <srcfiles dir="${src.java.dir}/dispatcher" includes="*" />
@@ -836,7 +841,7 @@
 	<!--       -->
 	
     <!-- You may wish to change this one -->
-	<property name="sonar.host.url" value="http://localhost:9000" />
+	 <property name="sonar.host.url" value="http://localhost:9000" />
 
     <!-- Next should not be changed -->
 	<property name="sonar.root.dir" value="${build.dir}/.sonar" />
@@ -844,7 +849,7 @@
 	<property name="sonar.jacoco.itReportPath" value="${sonar.reports.dir}/jacoco.exec" />
 	<property name="sonar.host.url" value="${sonar.host.url}" />
 	<!-- Define the Sonar project properties -->
-	<property name="sonar.projectKey" value="xwhep-10.x" />
+	<property name="sonar.projectKey" value="xwhep-10" />
 	<property name="sonar.projectName" value="XtremWeb-HEP" />
 	<property name="sonar.projectVersion" value="${version}" />
 	<property name="sonar.language" value="java" />
@@ -862,9 +867,7 @@
 	<property name="coverage.reports.dir" value="${sonar.reports.dir}/coverage" />
 
    	<property name="sonar.surefire.reportsPath" value="${sonar.junit.reportsPath}" />
-<!--
 	<property name="sonar.jacoco.reportPath" value="${coverage.reports.dir}" />
--->
 	
 	<!-- Define the Sonar target -->
 
@@ -880,6 +883,8 @@
 		<mkdir dir="${coverage.reports.dir}" />
 		<taskdef uri="antlib:org.sonar.ant" resource="org/sonar/ant/antlib.xml">
 		</taskdef>
+	    <taskdef uri="antlib:org.jacoco.ant" resource="org/jacoco/ant/antlib.xml">
+	    </taskdef>
 	</target>
 	
 	<target name="sonar" depends="sonar-init">

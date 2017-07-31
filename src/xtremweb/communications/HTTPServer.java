@@ -103,7 +103,7 @@ public class HTTPServer extends CommServer {
 		try {
 			final int httpPort = (prop.getRole() == XWRole.WORKER
 					? Integer.parseInt(prop.getProperty(Connection.HTTPPORT.toString()))
-							: Integer.parseInt(prop.getProperty(Connection.HTTPWORKERPORT.toString())));
+					: Integer.parseInt(prop.getProperty(Connection.HTTPWORKERPORT.toString())));
 
 			setPort(httpPort);
 
@@ -143,19 +143,22 @@ public class HTTPServer extends CommServer {
 			getLogger().fatal(getName() + ": could not listen on port " + getPort() + " : " + e);
 		}
 	}
+
 	/**
 	 * This initializes the secured layer
+	 * 
 	 * @param prop
 	 * @throws IOException
 	 * @throws CertificateException
 	 * @throws NoSuchAlgorithmException
 	 * @throws KeyStoreException
 	 */
-	private void initSecuredLayer(final XWConfigurator prop) throws IOException, CertificateException, NoSuchAlgorithmException, KeyStoreException {
+	private void initSecuredLayer(final XWConfigurator prop)
+			throws IOException, CertificateException, NoSuchAlgorithmException, KeyStoreException {
 		final String password = prop.getProperty(XWPropertyDefs.SSLKEYPASSWORD);
 		final String passphrase = prop.getProperty(XWPropertyDefs.SSLKEYPASSPHRASE);
 		final File fstore = File.createTempFile("xwcacert", null);
-		try (final FileOutputStream sstore = new FileOutputStream(fstore)){
+		try (final FileOutputStream sstore = new FileOutputStream(fstore)) {
 			final int httpsPort = Integer.parseInt(prop.getProperty(Connection.HTTPSPORT.toString()));
 			setPort(httpsPort);
 
@@ -191,6 +194,7 @@ public class HTTPServer extends CommServer {
 
 		}
 	}
+
 	/**
 	 * This adds an handler
 	 *

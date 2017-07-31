@@ -63,7 +63,7 @@ public class HashTaskSet extends TaskSet {
 		final DBInterface db = DBInterface.getInstance();
 		final Date now = new Date();
 		try {
-			final Vector<Table> rows = new Vector<Table>();
+			final Vector<Table> rows = new Vector<>();
 
 			final Collection<WorkInterface> works = Dispatcher.getScheduler().retrieve();
 			if (works == null) {
@@ -151,7 +151,7 @@ public class HashTaskSet extends TaskSet {
 				theTask.setError();
 				theTask.setRemovalDate(now);
 
-				final Vector<Table> rows = new Vector<Table>();
+				final Vector<Table> rows = new Vector<>();
 
 				final UID hostUID = theTask.getHost();
 				if (hostUID != null) {

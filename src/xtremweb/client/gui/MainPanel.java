@@ -53,33 +53,11 @@ public final class MainPanel extends JPanel {
 
 	private final Logger logger;
 
-	public LoggerLevel getLoggerLevel() {
-		return logger.getLoggerLevel();
-	}
-
 	/**
 	 * This defines tabs order Tab must be inserted in this order
 	 */
 	public enum Tabs {
 		JOBS, GROUPS, SESSIONS, DATAS, APPS, USERS, USERGROUPS, HOSTS, WORKS, TASKS
-	}
-
-	/**
-	 * This sets the logger level. This also sets the logger levels checkboxes
-	 * menu item.
-	 */
-	public void setLoggerLevel(final LoggerLevel l) {
-		logger.setLoggerLevel(l);
-		jobsTableModel.setLoggerLevel(l);
-		groupsTableModel.setLoggerLevel(l);
-		sessionsTableModel.setLoggerLevel(l);
-		appsTableModel.setLoggerLevel(l);
-		datasTableModel.setLoggerLevel(l);
-		usersTableModel.setLoggerLevel(l);
-		usergroupsTableModel.setLoggerLevel(l);
-		hostsTableModel.setLoggerLevel(l);
-		tasksTableModel.setLoggerLevel(l);
-		worksTableModel.setLoggerLevel(l);
 	}
 
 	/**
@@ -213,11 +191,30 @@ public final class MainPanel extends JPanel {
 
 		setLayout(new GridLayout(1, 1));
 		add(tabbedPane);
-
 		setMinimumSize(new Dimension(500, 450));
-
 		setLoggerLevel(_parent.getLoggerLevel());
+	}
 
+	/**
+	 * This sets the logger level. This also sets the logger levels checkboxes
+	 * menu item.
+	 */
+	public void setLoggerLevel(final LoggerLevel l) {
+		logger.setLoggerLevel(l);
+		jobsTableModel.setLoggerLevel(l);
+		groupsTableModel.setLoggerLevel(l);
+		sessionsTableModel.setLoggerLevel(l);
+		appsTableModel.setLoggerLevel(l);
+		datasTableModel.setLoggerLevel(l);
+		usersTableModel.setLoggerLevel(l);
+		usergroupsTableModel.setLoggerLevel(l);
+		hostsTableModel.setLoggerLevel(l);
+		tasksTableModel.setLoggerLevel(l);
+		worksTableModel.setLoggerLevel(l);
+	}
+
+	public LoggerLevel getLoggerLevel() {
+		return logger.getLoggerLevel();
 	}
 
 	/**

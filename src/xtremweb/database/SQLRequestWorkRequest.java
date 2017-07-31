@@ -55,7 +55,7 @@ public class SQLRequestWorkRequest extends SQLRequest {
 	 * @see DBConnPool#rowTableNames(String)
 	 */
 	private static final String TABLENAMES = WorkInterface.TABLENAME + " as " + MAINTABLEALIAS + ","
-			+ AppInterface.TABLENAME + "," + UserInterface.TABLENAME + "," + DataInterface.TABLENAME;
+			+ AppInterface.APPTABLENAME + "," + UserInterface.TABLENAME + "," + DataInterface.DATATABLENAME;
 
 	/**
 	 * This is used if host.acceptBin == true. This helps to retrieve any
@@ -303,7 +303,7 @@ public class SQLRequestWorkRequest extends SQLRequest {
 	 * @return a String containing criteria
 	 */
 	@Override
-	public String criterias() throws IOException {
+	public String getFullCriterias() throws IOException {
 
 		if (host == null) {
 			throw new IOException("SQLRequestWorkRequest : host is null ?!?!");

@@ -99,7 +99,7 @@ public class MatchingScheduler extends SimpleScheduler {
 		final DBInterface db = DBInterface.getInstance();
 
 		try {
-			final Collection<Table> rows = new Vector<Table>();
+			final Collection<Table> rows = new Vector<>();
 			String criterias = null;
 			final SQLRequestWorkRequest workRequest = new SQLRequestWorkRequest(host, user);
 			final WorkInterface workSelection = new WorkInterface(workRequest);

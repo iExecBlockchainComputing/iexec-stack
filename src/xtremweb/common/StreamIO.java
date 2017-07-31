@@ -27,7 +27,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -99,10 +98,7 @@ public class StreamIO implements AutoCloseable {
 		output = o;
 		input = i;
 		bufferLength = n;
-		try {
-			mileStone = new MileStone(getClass());
-		} catch (final Exception e) {
-		}
+		mileStone = new MileStone(getClass());
 		nio = newio;
 	}
 
@@ -167,6 +163,7 @@ public class StreamIO implements AutoCloseable {
 				output.close();
 			}
 		} catch (final IOException ioe) {
+			logger.exception(ioe);
 		}
 	}
 
@@ -269,7 +266,7 @@ public class StreamIO implements AutoCloseable {
 				throw new ArrayIndexOutOfBoundsException("too huge size : " + file.length());
 			} else {
 				final byte[] contents = new byte[(int) file.length()];
-				try (final FileInputStream fis = new FileInputStream(file)){
+				try (final FileInputStream fis = new FileInputStream(file)) {
 					fis.read(contents);
 				}
 				return contents;
@@ -299,9 +296,8 @@ public class StreamIO implements AutoCloseable {
 	 *                is thrown on on I/O error
 	 */
 	public void writeString(final String v) throws IOException {
-		byte[] strb = v.getBytes(XWTools.UTF8);
+		final byte[] strb = v.getBytes(XWTools.UTF8);
 		output.write(strb);
-		strb = null;
 	}
 
 	/**
@@ -311,8 +307,8 @@ public class StreamIO implements AutoCloseable {
 	 * @exception Exception
 	 *                is thrown on on I/O error
 	 */
-	public String readString() throws IOException, EOFException {
-		byte[] readStringBytes = new byte[bufferLength];
+	public String readString() throws IOException {
+		final byte[] readStringBytes = new byte[bufferLength];
 		final int read = input.read(readStringBytes);
 
 		final StringBuffer out = new StringBuffer();
@@ -326,7 +322,6 @@ public class StreamIO implements AutoCloseable {
 				out.append(current);
 			}
 		}
-		readStringBytes = null;
 		return out.toString();
 	}
 
@@ -473,7 +468,7 @@ public class StreamIO implements AutoCloseable {
 	 *                is thrown on I/O error or if the provided file does not
 	 *                exist
 	 */
-	public void writeFile(final File file) throws IOException, SocketException {
+	public void writeFile(final File file) throws IOException {
 
 		if (file == null) {
 			throw new IOException("file is null");
@@ -497,7 +492,7 @@ public class StreamIO implements AutoCloseable {
 	/**
 	 * This calls wrtieFileConten(file, this.nio)
 	 */
-	public void writeFileContent(final File file) throws IOException, SocketException {
+	public void writeFileContent(final File file) throws IOException {
 		writeFileContent(file, nio);
 	}
 
@@ -513,7 +508,7 @@ public class StreamIO implements AutoCloseable {
 	 *                is thrown on I/O error or if the provided file does not
 	 *                exist
 	 */
-	public void writeFileContent(final File file, final boolean thiscomnio) throws IOException, SocketException {
+	public void writeFileContent(final File file, final boolean thiscomnio) throws IOException {
 
 		if (file == null) {
 			throw new IOException("file is null");
@@ -526,10 +521,9 @@ public class StreamIO implements AutoCloseable {
 		logger.debug("writeFileContent : " + thiscomnio);
 		final long length = file.length();
 		logger.debug("writeFileContent : thiscommio = " + thiscomnio + "; length = " + length);
-		final FileInputStream fis = new FileInputStream(file);
-		final FileChannel inChannel = fis.getChannel();
+		try (final FileInputStream fis = new FileInputStream(file);
+				final FileChannel inChannel = fis.getChannel()) {
 
-		try {
 			if (length > 0) {
 				long written = 0;
 				if (!thiscomnio) {
@@ -556,18 +550,6 @@ public class StreamIO implements AutoCloseable {
 			}
 		} finally {
 			output.flush();
-			try {
-				if (fis != null) {
-					fis.close();
-				}
-			} catch (final Exception e) {
-			}
-			try {
-				if (inChannel != null) {
-					inChannel.close();
-				}
-			} catch (final Exception e) {
-			}
 		}
 	}
 
@@ -581,7 +563,7 @@ public class StreamIO implements AutoCloseable {
 	 * @exception IOException
 	 *                is thrown on I/O error
 	 */
-	public void readFile(final File file) throws IOException, SocketException {
+	public void readFile(final File file) throws IOException {
 
 		final long length = readLong();
 		logger.finest("readFile : to be read " + length);
@@ -594,8 +576,7 @@ public class StreamIO implements AutoCloseable {
 		logger.debug("readFile(" + file + "," + thiscomnio + ")");
 
 		long written = 0;
-		try (final FileOutputStream fos = new FileOutputStream(file);
-				final FileChannel outChannel = fos.getChannel()) {
+		try (final FileOutputStream fos = new FileOutputStream(file); final FileChannel outChannel = fos.getChannel()) {
 			if (length > 0) {
 				if (!thiscomnio) {
 					int n = 0;
@@ -632,12 +613,11 @@ public class StreamIO implements AutoCloseable {
 	 * @param file
 	 *            denotes the file to store content from input stream
 	 */
-	public void readFileContent(final File file) throws IOException, SocketException {
+	public void readFileContent(final File file) throws IOException {
 
 		final byte[] buffer = new byte[bufferLength];
-		final FileOutputStream fos = new FileOutputStream(file);
 
-		try {
+		try (final FileOutputStream fos = new FileOutputStream(file)){
 			if (!nio) {
 				long written = 0;
 				int n = 0;
@@ -651,10 +631,6 @@ public class StreamIO implements AutoCloseable {
 				logger.finest("readFileContent : bytes read = " + written);
 			} else {
 				throw new IOException("StreamIO#readFileContent is not implemented with java.nio");
-			}
-		} finally {
-			if (fos != null) {
-				fos.close();
 			}
 		}
 	}
@@ -685,13 +661,10 @@ public class StreamIO implements AutoCloseable {
 	 *                is thrown on I/O error
 	 */
 	public void writeObject(final Hashtable o) throws IOException {
-		ObjectOutputStream oos = null;
-		try {
-			oos = new ObjectOutputStream(output);
+		
+		try(ObjectOutputStream oos = new ObjectOutputStream(output)) {
 			oos.writeObject(o);
 			output.flush();
-		} finally {
-			oos = null;
 		}
 	}
 
@@ -784,7 +757,7 @@ public class StreamIO implements AutoCloseable {
 			final byte[] strb2 = o.closeXmlRootElement().getBytes(XWTools.UTF8);
 			output.write(strb2);
 		} catch (final Exception e) {
-			if (logger.debug() == true) {
+			if (logger.debug()) {
 				logger.exception(e);
 			}
 			throw new IOException(e.getMessage());
@@ -818,12 +791,9 @@ public class StreamIO implements AutoCloseable {
 			throw new IOException("input string is null");
 		}
 
-		byte[] strb = in.getBytes(XWTools.UTF8);
-		ByteArrayInputStream ba = new ByteArrayInputStream(strb);
-		final DataInputStream ret = new DataInputStream(ba);
-		ba = null;
-		strb = null;
-		return ret;
+		final byte[] strb = in.getBytes(XWTools.UTF8);
+		final ByteArrayInputStream ba = new ByteArrayInputStream(strb);
+		return new DataInputStream(ba);
 	}
 
 	/**
@@ -834,34 +804,32 @@ public class StreamIO implements AutoCloseable {
 		File fin = new File(argv[0]);
 		File fout = new File("outtemp_nio");
 		try (final FileOutputStream fos = new FileOutputStream(fout);
-				final DataOutputStream output = new DataOutputStream(fos); 
+				final DataOutputStream output = new DataOutputStream(fos);
 				final StreamIO io = new StreamIO(output, null);) {
 
-			long t0 = System.currentTimeMillis();
+			final long t0 = System.currentTimeMillis();
 			io.writeFile(fin);
-			long t1 = System.currentTimeMillis();
+			final long t1 = System.currentTimeMillis();
 
-			long d0 = t1 - t0;
+			final long d0 = t1 - t0;
 			System.out.println((StreamIO.nio ? "with" : "w/o ") + " NIO; Size =  " + fin.length() + " ; dT = " + d0);
 
 			fout.delete();
 
-		} catch (IOException e1) {
-		} finally {
+		} catch (final IOException e1) {
 		}
 		try (final FileOutputStream fos = new FileOutputStream(fout);
-				final DataOutputStream output = new DataOutputStream(fos); 
+				final DataOutputStream output = new DataOutputStream(fos);
 				final StreamIO io = new StreamIO(output, null);) {
 
 			StreamIO.nio = !StreamIO.nio;
 
-			long t0 = System.currentTimeMillis();
+			final long t0 = System.currentTimeMillis();
 			io.writeFile(fin);
-			long t1 = System.currentTimeMillis();
-			long d0 = t1 - t0;
+			final long t1 = System.currentTimeMillis();
+			final long d0 = t1 - t0;
 			System.out.println((StreamIO.nio ? "with" : "w/o ") + " NIO; Size =  " + fin.length() + " ; dT = " + d0);
-		} catch (IOException e1) {
-		} finally {
+		} catch (final IOException e1) {
 		}
 
 		final String long2000Chars = "01234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789";
@@ -875,11 +843,10 @@ public class StreamIO implements AutoCloseable {
 
 			fin = new File("longString.txt");
 
-		} catch (IOException e1) {
-		} finally {
+		} catch (final IOException e1) {
 		}
 		try (final FileOutputStream fos = new FileOutputStream(fout);
-				final DataOutputStream output = new DataOutputStream(fos); 
+				final DataOutputStream output = new DataOutputStream(fos);
 				final StreamIO io = new StreamIO(output, null);) {
 
 			System.out.println("\nread = " + io.readString());
