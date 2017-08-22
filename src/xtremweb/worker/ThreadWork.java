@@ -589,7 +589,7 @@ public class ThreadWork extends Thread {
 
 		final File scratchDir = currentWork.getScratchDir();
 		try (final FileOutputStream out = new FileOutputStream(new File(scratchDir, "unloadout.txt"));
-				final FileOutputStream err = new FileOutputStream(new File(scratchDir, "unloaderr.txt"))) {
+			 final FileOutputStream err = new FileOutputStream(new File(scratchDir, "unloaderr.txt"))) {
 
 			final String[] envVars = getEnvVars();
 			final Executor unloader = new Executor(command.toString(), envVars, currentWork.getScratchDirName(), null,
@@ -752,7 +752,7 @@ public class ThreadWork extends Thread {
 	 * @since 8.0.0 (FG)
 	 */
 	protected String[] getEnvVars() throws IOException, InvalidKeyException, AccessControlException,
-	ClassNotFoundException, SAXException, URISyntaxException {
+			ClassNotFoundException, SAXException, URISyntaxException {
 
 		final UID workApp = currentWork.getApplication();
 
@@ -899,7 +899,7 @@ public class ThreadWork extends Thread {
 	 * @throws InvalidKeyException
 	 */
 	protected String getBinPath() throws IOException, ClassNotFoundException, SAXException, URISyntaxException,
-	InvalidKeyException, AccessControlException {
+			InvalidKeyException, AccessControlException {
 		File sbBinPath = null;
 		File appBinPath = null;
 		final StringBuilder sbArgs = new StringBuilder();
@@ -989,7 +989,7 @@ public class ThreadWork extends Thread {
 	 * @throws InvalidKeyException
 	 */
 	protected Collection<String> getCmdLine() throws IOException, ClassNotFoundException, SAXException,
-	URISyntaxException, InvalidKeyException, AccessControlException {
+			URISyntaxException, InvalidKeyException, AccessControlException {
 
 		Collection<String> ret = null;
 
@@ -1100,8 +1100,8 @@ public class ThreadWork extends Thread {
 		XWTools.checkDir(fout.getParent());
 
 		try (final FileOutputStream fos = new FileOutputStream(fout);
-				final DataOutputStream output = new DataOutputStream(fos);
-				final StreamIO io = new StreamIO(output, null, 10240, Worker.getConfig().nio())) {
+			 final DataOutputStream output = new DataOutputStream(fos);
+			 final StreamIO io = new StreamIO(output, null, 10240, Worker.getConfig().nio())) {
 
 			logger.debug("installFile = " + fData + " is not a zip file; just copy it to PWD : " + fout);
 			io.writeFileContent(fData);
@@ -1341,7 +1341,7 @@ public class ThreadWork extends Thread {
 	 * @throws ExecutorLaunchException
 	 */
 	protected void executeNativeJob(final Collection<String> cmdLine) throws IOException, InvalidKeyException,
-	ClassNotFoundException, SAXException, URISyntaxException, ExecutorLaunchException, InterruptedException {
+			ClassNotFoundException, SAXException, URISyntaxException, ExecutorLaunchException, InterruptedException {
 
 		final UID workUID = currentWork.getUID();
 
@@ -1369,8 +1369,8 @@ public class ThreadWork extends Thread {
 				+ (stdin == null ? "null" : stdin.getCanonicalPath()));
 
 		try (final FileInputStream in = (stdin != null ? new FileInputStream(stdin) : null);
-				final FileOutputStream out = new FileOutputStream(new File(scratchDir, XWTools.STDOUT));
-				final FileOutputStream err = new FileOutputStream(new File(scratchDir, XWTools.STDERR))) {
+			 final FileOutputStream out = new FileOutputStream(new File(scratchDir, XWTools.STDOUT));
+			 final FileOutputStream err = new FileOutputStream(new File(scratchDir, XWTools.STDERR))) {
 
 			final String[] envvarsArray = getEnvVars();
 			exec = new Executor(command.toString(), envvarsArray, currentWork.getScratchDirName(), in, out, err,
