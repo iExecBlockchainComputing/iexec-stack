@@ -179,6 +179,7 @@ services:
 #    build: ../server
     image: "${IMAGENAME_SERVER}"
     container_name: "${CONTAINERNAME_SERVER}"
+    hostname: "${XWSERVERHEADERNAME}"
     ports:
      - "4321-4323"
      - "443"
@@ -187,6 +188,7 @@ services:
 #    build: ../worker
     image: "${IMAGENAME_WORKER}"
     container_name: "${CONTAINERNAME_WORKER}"
+    hostname: "${XWWORKERHEADERNAME}"
     ports:
      - "4324"
      - "443"
@@ -198,6 +200,7 @@ services:
 #    build: ../client
     image: "${IMAGENAME_CLIENT}"
     container_name: "${CONTAINERNAME_CLIENT}"
+    hostname: "${XWCLIENTHEADERNAME}"
     ports:
      - "4327"
     depends_on:
