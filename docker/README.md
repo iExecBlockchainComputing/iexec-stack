@@ -26,7 +26,7 @@ Please see [deployment](deployment/).
 
 ## 2.2 - Composed deployment
 
-This is not functional yet.
+Please see [deployment](deployment/).
 
 
 # 3 - Connect to a platform

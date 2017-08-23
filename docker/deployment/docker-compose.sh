@@ -111,6 +111,9 @@ trap  fatal  SIGINT  SIGTERM
 ROOTDIR="$(dirname "$0")"
 SCRIPTNAME="$(basename "$0")"
 
+XWJOBUID="$(date '+%Y-%m-%d-%H-%M-%S')"
+
+
 type docker > /dev/null 2>&1
 if [ $? -ne 0 ] ; then
 	fatal "docker not installed"
@@ -160,22 +163,49 @@ IMAGENAME_SERVER=$(docker images | grep ${XWSERVERHEADERNAME} | cut -d ' ' -f 1 
 IMAGENAME_WORKER=$(docker images | grep ${XWWORKERHEADERNAME} | cut -d ' ' -f 1 | tail -1 )
 IMAGENAME_CLIENT=$(docker images | grep ${XWCLIENTHEADERNAME} | cut -d ' ' -f 1 | tail -1 )
 
+CONTAINERNAME_SERVER="${XWSERVERHEADERNAME}_${XWJOBUID}"
+CONTAINERNAME_WORKER="${XWWORKERHEADERNAME}_${XWJOBUID}"
+CONTAINERNAME_CLIENT="${XWCLIENTHEADERNAME}_${XWJOBUID}"
+
 [ ${NBSERVERS} -gt 1 ] && warn "There is more than one server; will use ${IMAGENAME_SERVER}"
 [ ${NBWORKERS} -gt 1 ] && warn "There is more than one worker; will use ${IMAGENAME_WORKER}"
 [ ${NBCLIENTS} -gt 1 ] && warn "There is more than one client; will use ${IMAGENAME_CLIENT}"
 
+
 cat > docker-compose.yml << EOF_DOCKERCOMPOSEYAML
 version: '2'
 services:
-    xwserver:
-      image: "${IMAGENAME_SERVER}"
-      ports:
-        - "4320:4329"
-    xwworker:
-      image: "${IMAGENAME_WORKER}"
-    #xwclient:
-    #  image: "${IMAGENAME_CLIENT}"
+  ${XWSERVERHEADERNAME}:
+#    build: ../server
+    image: "${IMAGENAME_SERVER}"
+    container_name: "${CONTAINERNAME_SERVER}"
+    ports:
+     - "4321-4323"
+     - "443"
+
+  ${XWWORKERHEADERNAME}:
+#    build: ../worker
+    image: "${IMAGENAME_WORKER}"
+    container_name: "${CONTAINERNAME_WORKER}"
+    ports:
+     - "4324"
+     - "443"
+    depends_on:
+            - ${XWSERVERHEADERNAME}
+    tty: true
+
+  ${XWCLIENTHEADERNAME}:
+#    build: ../client
+    image: "${IMAGENAME_CLIENT}"
+    container_name: "${CONTAINERNAME_CLIENT}"
+    ports:
+     - "4327"
+    depends_on:
+            - ${XWSERVERHEADERNAME}
+    tty: true
 EOF_DOCKERCOMPOSEYAML
+
+docker-compose up
 
 exit 0
 ###########################################################

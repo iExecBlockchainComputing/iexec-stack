@@ -14,7 +14,7 @@ You can create Docker images there:
 
 We propose a script to automate a deployment made of a server, a worker and a client
 
-Make your deployement by launching docker.sh like:
+Make your deployment by launching docker.sh like:
 ```
   docker.sh
 ```
@@ -22,4 +22,9 @@ Make your deployement by launching docker.sh like:
 
 # Docker-compose deployment
 
-This is not functional yet.
+We propose a script to automate a deployment made of a server, a worker and a client
+
+Make your deployment by launching docker-compose.sh like:
+```
+  docker-compose.sh
+```
