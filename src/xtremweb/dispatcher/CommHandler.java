@@ -683,7 +683,7 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 		} catch (final EOFException e) {
 			error(e);
 		} catch (final SocketException e) {
-			error(e);
+			debug(e.toString());
 		} catch (final IOException e) {
 			error("Disk access error " + e);
 			result = new XMLRPCResult(XWReturnCode.DISK, e.getMessage());
