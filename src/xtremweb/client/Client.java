@@ -106,6 +106,7 @@ import xtremweb.communications.XMLRPCCommandGetHosts;
 import xtremweb.communications.XMLRPCCommandGetSessions;
 import xtremweb.communications.XMLRPCCommandGetTasks;
 import xtremweb.communications.XMLRPCCommandGetTraces;
+import xtremweb.communications.XMLRPCCommandGetUserByLogin;
 import xtremweb.communications.XMLRPCCommandGetUserGroups;
 import xtremweb.communications.XMLRPCCommandGetUsers;
 import xtremweb.communications.XMLRPCCommandGetWorks;
@@ -329,7 +330,6 @@ public final class Client {
 	AccessControlException, ClassNotFoundException, SAXException, URISyntaxException, InstantiationException {
 
 		final XMLRPCCommandGet cmd = new XMLRPCCommandGet(uri);
-
 		final DataInterface data = (DataInterface) sendCommand(cmd, display);
 		if (data != null) {
 			return data;
@@ -844,7 +844,8 @@ public final class Client {
 				final XWAccessRights rights = obj.getAccessRights();
 				rights.chmod(modstr);
 				obj.setAccessRights(rights);
-				commClient().send(new XMLRPCCommandSend(uri, obj));
+				final XMLRPCCommandSend cmd = new XMLRPCCommandSend(uri, obj);
+				commClient().send(cmd);
 			}
 		}
 
@@ -1344,6 +1345,10 @@ public final class Client {
 			}
 			app.setAccessRights(accessRights);
 			app.setType(apptype);
+		}
+
+		if (args.getOption(CommandLineOptions.ENVVAR) != null) {
+			app.setEnvVars((String) args.getOption(CommandLineOptions.ENVVAR));
 		}
 
 		commClient().send(app);
@@ -2429,8 +2434,10 @@ public final class Client {
 		println(XWPropertyDefs.LOGGERLEVEL + "=" + LoggerLevel.INFO);
 		final String certPath = config.getPath(XWPropertyDefs.SSLKEYSTORE);
 		if ((certPath != null) && (new File(certPath)).exists()) {
-			println("# worker keystore");
+			println("# keystore");
 			println(XWPropertyDefs.SSLKEYSTORE + "=" + certPath);
+			println(XWPropertyDefs.SSLKEYPASSPHRASE + "=" + config.getProperty(XWPropertyDefs.SSLKEYPASSPHRASE));
+			println(XWPropertyDefs.SSLKEYPASSWORD + "=" + config.getProperty(XWPropertyDefs.SSLKEYPASSWORD));
 		}
 	}
 
@@ -2769,14 +2776,15 @@ public final class Client {
 			work.setCmdLine(cmdLineStr);
 			cmdLineStr = null;
 
+			if (args.getOption(CommandLineOptions.ENVVAR) != null) {
+				work.setEnvVars((String) args.getOption(CommandLineOptions.ENVVAR));
+			}
 			if (args.getOption(CommandLineOptions.LABEL) != null) {
 				work.setLabel((String) args.getOption(CommandLineOptions.LABEL));
 			}
-
 			if (args.getOption(CommandLineOptions.EXPECTEDHOST) != null) {
 				work.setExpectedHost((UID) args.getOption(CommandLineOptions.EXPECTEDHOST));
 			}
-
 			if (args.getOption(CommandLineOptions.SESSION) != null) {
 				work.setSession((UID) args.getOption(CommandLineOptions.SESSION));
 			}
@@ -3161,7 +3169,14 @@ public final class Client {
 				final boolean challenge = config.getChallenging();
 				final String pass = config.getUser().getPassword();
 				final String certificate = config.getUser().getCertificate();
+
+				logger.finest("Client#execute temporarly removing mandate to get client info");
+				final String savmandating = config.getMandate();
+				config.setMandate("");
 				config.setUser(getUser(config.getUser().getLogin()));
+				logger.finest("Client#execute restoring mandate " + savmandating);
+				config.setMandate(savmandating);
+
 				config.getUser().setPassword(pass);
 				config.getUser().setCertificate(certificate);
 				config.setProperty(XWPropertyDefs.USERUID, config.getUser().getUID());
