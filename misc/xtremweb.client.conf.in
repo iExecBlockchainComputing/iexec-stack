@@ -108,6 +108,12 @@ DISPATCHERS=@DISPATCHERS@
 # Default : 10000
 #cachesize
 
+# This is the login we connect for
+# aka: we want to do something for someone else.
+# We (as defined by credentials LOGIN/PASSWORD or any) must have MANDATED_USER user rights
+# since 10.6.0
+#MANDATINGLOGIN=
+
 # Login and password to connect to the server (required)
 LOGIN=@DEFAULTUSER@
 PASSWORD=@DEFAULTPASSWORD@
