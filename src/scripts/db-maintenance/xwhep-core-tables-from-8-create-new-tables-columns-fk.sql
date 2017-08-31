@@ -191,11 +191,12 @@ insert into userRights (userRightId, userRightName, userRightDescription) values
 insert into userRights (userRightId, userRightName, userRightDescription) values (30, 'INSERTAPP',       null);
 insert into userRights (userRightId, userRightName, userRightDescription) values (31, 'DELETEAPP',       null);
 insert into userRights (userRightId, userRightName, userRightDescription) values (32, 'ADVANCED_USER',   null);
-insert into userRights (userRightId, userRightName, userRightDescription) values (33, 'INSERTHOST',      null);
-insert into userRights (userRightId, userRightName, userRightDescription) values (34, 'DELETEHOST',      null);
-insert into userRights (userRightId, userRightName, userRightDescription) values (35, 'INSERTUSERGROUP', null);
-insert into userRights (userRightId, userRightName, userRightDescription) values (36, 'DELETEUSERGROUP', null);
-insert into userRights (userRightId, userRightName, userRightDescription) values (37, 'SUPER_USER',      null);
+insert into userRights (userRightId, userRightName, userRightDescription) values (33, 'DELEGATION_USER', null);
+insert into userRights (userRightId, userRightName, userRightDescription) values (34, 'INSERTHOST',      null);
+insert into userRights (userRightId, userRightName, userRightDescription) values (35, 'DELETEHOST',      null);
+insert into userRights (userRightId, userRightName, userRightDescription) values (36, 'INSERTUSERGROUP', null);
+insert into userRights (userRightId, userRightName, userRightDescription) values (37, 'DELETEUSERGROUP', null);
+insert into userRights (userRightId, userRightName, userRightDescription) values (38, 'SUPER_USER',      null);
 
 -- ---------------------------------------------------------------------------
 -- Data for table "statuses"
