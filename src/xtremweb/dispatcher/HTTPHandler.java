@@ -1128,7 +1128,7 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 					String contentTypeValue = CONTENTTYPEVALUE;
 
 					try {
-						final DataInterface theData = DBInterface.getInstance().getData(command.getUser(), uid);
+						final DataInterface theData = DBInterface.getInstance().getData(command);
 						final DataTypeEnum dataType = theData != null ? theData.getType() : null;
 						final Date lastModified = theData != null ? theData.getMTime() : null;
 						if (theData != null) {
@@ -1439,10 +1439,12 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 	 * @see #sendData(UserInterface, DataInterface)
 	 */
 	@Override
-	public synchronized long uploadData(final UserInterface client, final UID uid)
+	public synchronized long uploadData(final XMLRPCCommand command)
 			throws IOException, InvalidKeyException, AccessControlException {
 
-		final DataInterface theData = DBInterface.getInstance().getData(client, uid);
+		DataInterface theData = (DataInterface)get(command);
+		UID uid = command.getURI().getUID();
+
 		long ret = 0;
 
 		mileStone("<uploadData>");

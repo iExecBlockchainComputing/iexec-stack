@@ -48,11 +48,11 @@ import xtremweb.common.CommonVersion;
 import xtremweb.common.DataInterface;
 import xtremweb.common.Logger;
 import xtremweb.common.Table;
-import xtremweb.common.UID;
 import xtremweb.common.UserInterface;
 import xtremweb.common.Version;
 import xtremweb.common.XMLable;
 import xtremweb.common.XWConfigurator;
+import xtremweb.communications.XMLRPCCommand;
 
 /**
  * This handles HTTP request to /stats/
@@ -341,7 +341,7 @@ public class HTTPStatsHandler extends xtremweb.dispatcher.CommHandler {
 	 * @see #sendData(UserInterface, DataInterface)
 	 */
 	@Override
-	public synchronized long uploadData(final UserInterface client, final UID uid)
+	public synchronized long uploadData(final XMLRPCCommand command)
 			throws IOException, InvalidKeyException, AccessControlException {
 		return 0L;
 	}

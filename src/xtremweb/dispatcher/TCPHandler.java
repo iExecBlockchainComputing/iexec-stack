@@ -206,7 +206,6 @@ public class TCPHandler extends xtremweb.dispatcher.CommHandler {
 	 */
 	@Override
 	protected void write(final XMLable cmd) throws IOException {
-		IOException ioe = null;
 		final Logger logger = getLogger();
 
 		try {
@@ -218,12 +217,9 @@ public class TCPHandler extends xtremweb.dispatcher.CommHandler {
 			}
 			final String str = e.toString();
 			mileStone("<error method='write' msg='" + e.getMessage() + "' />");
-			ioe = new IOException(str);
+			throw new IOException(str);
 		} finally {
 			mileStone("</write>");
-			if (ioe != null) {
-				throw ioe;
-			}
 		}
 	}
 
@@ -253,23 +249,18 @@ public class TCPHandler extends xtremweb.dispatcher.CommHandler {
 	 */
 	@Override
 	public synchronized void readFile(final File f) throws IOException {
-		IOException ioe = null;
 		final Logger logger = getLogger();
 		try {
 			mileStone("<readFile file='" + f + "'>");
 			io.readFile(f);
 		} catch (final Exception e) {
 			logger.exception(e);
-			String str = e.getMessage();
+			final String str = e.getMessage();
 			mileStone("<error method='readFile' msg='" + e.getMessage() + "' />");
-			ioe = new IOException(str);
-			str = null;
+			throw new IOException(str);
 		} finally {
 			mileStone("</readFile>");
 			notifyAll();
-			if (ioe != null) {
-				throw ioe;
-			}
 		}
 	}
 
