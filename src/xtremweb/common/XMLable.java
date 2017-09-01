@@ -227,11 +227,18 @@ public abstract class XMLable {
 		return "<" + XMLTAG + ">";
 	}
 
-	public String getOpenTag(final URI uri) {
+	/**
+	 * 
+	 * @param uri is the object uri
+	 * @param mandat (since 11.0.0) is a user login for which a command could have a mandate 
+	 * @return
+	 */
+	public String getOpenTag(final URI uri, final String mandat) {
 		if (uri == null) {
 			return getOpenTag();
 		}
-		return "<" + XMLTAG + " uri=\"" + uri.toString() + "\">";
+		final String dlattr = mandat == null ? "" : " mandatinglogin = \"" + mandat + "\"";
+		return "<" + XMLTAG + " uri=\"" + uri.toString() + "\"" + dlattr + ">";
 	}
 
 	public String getCloseTag() {
