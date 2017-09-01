@@ -165,7 +165,7 @@ public class ThreadWork extends Thread {
 	 * list of ports the proxy is listening (to connect to client SmartSocket
 	 * proxy)
 	 *
-	 * @since 10.6.0
+	 * @since 11.0.0
 	 */
 	private static final String XWFORWARDINGPORTSNAME = "XWFORWARDINGPORTS";
 	/**
