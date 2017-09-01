@@ -336,7 +336,7 @@ public class HTTPClient extends CommClient {
 	protected void write(final XMLRPCCommand cmd) throws IOException {
 
 		mileStone("<write cmd='" + cmd.getIdRpc() + "'>");
-
+		cmd.setMandatingLogin(getConfig().getMandate());
 		post = new PostMethod(httpClient.getHostConfiguration().getHostURL());
 		post.addParameter(XWPostParams.XMLDESC.toString(), cmd.toXml());
 		httpClient.executeMethod(post);

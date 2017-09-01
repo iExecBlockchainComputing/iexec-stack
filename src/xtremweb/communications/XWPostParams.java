@@ -208,6 +208,12 @@ public enum XWPostParams {
 	 */
 	ALIVEPERIOD,
 	/**
+	 * This is the mandating parameter
+	 *
+	 * @since 11.0.0
+	 */
+	XWMANDATINGLOGIN,
+	/**
 	 * This is the login parameter from the login formulaire
 	 *
 	 * @since 10.2.0

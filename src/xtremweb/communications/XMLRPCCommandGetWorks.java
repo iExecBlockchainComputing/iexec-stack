@@ -128,7 +128,7 @@ public class XMLRPCCommandGetWorks extends XMLRPCCommand {
 	}
 
 	/**
-	 * This retrieves this command status flag
+	 * This retrieves status flag
 	 *
 	 * @return the status flag
 	 * @since 8.2.0
@@ -138,7 +138,7 @@ public class XMLRPCCommandGetWorks extends XMLRPCCommand {
 	}
 
 	/**
-	 * This setsthis command status flag
+	 * This sets status flag
 	 *
 	 * @since 8.2.0
 	 */

@@ -432,7 +432,6 @@ public abstract class CommClient implements ClientAPI {
 			if (cmd.getUser() == null) {
 				cmd.setUser(config.getUser());
 			}
-
 			logger.finest("sendCommand " + cmd.toXml());
 
 			write(cmd);
@@ -2114,10 +2113,8 @@ public abstract class CommClient implements ClientAPI {
 	public UserInterface getUser(final XMLRPCCommandGetUserByLogin command, final boolean bypass)
 			throws InvalidKeyException, AccessControlException, IOException, SAXException {
 
-		UserInterface user = null;
-
 		if (!bypass) {
-			user = cache.userByLogin(command.getLogin());
+			final UserInterface user = cache.userByLogin(command.getLogin());
 			if (user != null) {
 				return user;
 			}
@@ -2125,11 +2122,10 @@ public abstract class CommClient implements ClientAPI {
 
 		try {
 			sendCommand(command);
-			user = newUserInterface();
+			return newUserInterface();
 		} finally {
 			close();
 		}
-		return user;
 	}
 
 	/**

@@ -235,6 +235,7 @@ public class UDPClient extends CommClient {
 	 */
 	@Override
 	protected void write(final XMLRPCCommand cmd) throws IOException {
+		cmd.setMandatingLogin(getConfig().getMandate());
 		packet.putObject(cmd);
 		send();
 	}

@@ -71,7 +71,7 @@ public class XMLRPCCommandGetUserByLogin extends XMLRPCCommand {
 	 *
 	 * @param uri
 	 *            contains the URI to connect to; its path must contains the
-	 *            login of the user to retreive
+	 *            login of the user to retrieve
 	 */
 	protected XMLRPCCommandGetUserByLogin(final URI uri) throws IOException {
 		super(uri, IDRPC);
@@ -124,7 +124,7 @@ public class XMLRPCCommandGetUserByLogin extends XMLRPCCommand {
 	}
 
 	/**
-	 * This retreives this command user login
+	 * This retrieves this command user login
 	 *
 	 * @return the login of the user
 	 */

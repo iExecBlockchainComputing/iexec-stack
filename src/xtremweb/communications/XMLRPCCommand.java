@@ -74,10 +74,33 @@ public abstract class XMLRPCCommand extends XMLable {
 	private IdRpc idrpc;
 
 	/**
+	 * This is the MANDATINGLOGIN column index
+	 * This is used to run a command for another user
+	 * @since 11.0.0
+	 */
+	public static final int MANDATINGLOGIN = 0;
+
+	/**
+	 * This retrieves this command mandating login
+	 * @since 11.0.0
+	 */
+	public final String getMandatingLogin() {
+		return (String) getValueAt(MANDATINGLOGIN);
+	}
+
+	/**
+	 * This sets this command mandating login
+	 * @param dl is this command mandating login
+	 * @since 11.0.0
+	 */
+	public final void setMandatingLogin(final String dl) {
+		setValueAt(MANDATINGLOGIN, dl);
+	}
+
+	/**
 	 * This is the URI column index
 	 */
-	public static final int URI = 0;
-
+	protected static final int URI = 1;
 	/**
 	 * This retrieves this command URI
 	 */
@@ -187,6 +210,8 @@ public abstract class XMLRPCCommand extends XMLable {
 		setColumns();
 		setColumnAt(URI, "URI");
 		setURI(uri);
+		setColumnAt(MANDATINGLOGIN, "MANDATINGLOGIN");
+		setMandatingLogin(null);
 		currentTag = XMLTAGS.NONE;
 	}
 
@@ -358,21 +383,22 @@ public abstract class XMLRPCCommand extends XMLable {
 	@Override
 	public String toXml() {
 
-		String ret = getOpenTag(getURI());
+//		System.out.println("System.getProperty(XWPropertyDefs.MANDATINGLOGIN)) = " + getMandatingLogin());
+		final StringBuilder ret = new StringBuilder(getOpenTag(getURI(), getMandatingLogin()));
 
 		if (user != null) {
-			ret += user.toXml();
+			ret.append(user.toXml());
 		}
 		if (host != null) {
-			ret += host.toXml();
+			ret.append(host.toXml());
 		}
 		if (getParameter() != null) {
-			ret += getParameter().toXml();
+			ret.append(getParameter().toXml());
 		}
 
-		ret += getCloseTag();
+		ret.append(getCloseTag());
 
-		return ret;
+		return ret.toString();
 	}
 
 	/**
@@ -395,9 +421,25 @@ public abstract class XMLRPCCommand extends XMLable {
 
 			logger.finest("XMLRPCCommand  ##  attribute #" + a + ": name=\"" + attribute + "\"" + ", value=\"" + value
 					+ "\"");
+//			System.out.println("XMLRPCCommand  ##  attribute #" + a + ": name=\"" + attribute + "\"" + ", value=\"" + value
+//					+ "\"");
 
+//			System.out.println ("getColumnLabel(MANDATINGLOGIN) = " + getColumnLabel(MANDATINGLOGIN));
+//			System.out.println ("attribute.compareToIgnoreCase(" + getColumnLabel(MANDATINGLOGIN) + " = " + attribute.compareToIgnoreCase(getColumnLabel(MANDATINGLOGIN)));
+
+			if (attribute.compareToIgnoreCase(getColumnLabel(MANDATINGLOGIN)) == 0) {
+				logger.finest("XMLRPCCommand  ##  creating mandating login from " + value);
+				System.out.println("XMLRPCCommand  ##  creating mandating login from " + value);
+				try {
+					setValueAt(MANDATINGLOGIN, value);
+				} catch (final Exception e) {
+					logger.exception(e);
+				}
+				continue;
+			}
 			if (attribute.compareToIgnoreCase(getColumnLabel(URI)) == 0) {
 				logger.finest("XMLRPCCommand  ##  creating uri from " + value);
+//				System.out.println("XMLRPCCommand  ##  creating uri from " + value);
 				try {
 					setValueAt(URI, new URI(value));
 				} catch (final Exception e) {

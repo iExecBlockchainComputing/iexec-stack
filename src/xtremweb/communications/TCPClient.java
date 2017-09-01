@@ -296,6 +296,8 @@ public class TCPClient extends CommClient {
 			}
 
 			try {
+				cmd.setMandatingLogin(getConfig().getMandate());
+				getLogger().finest("TCPClient#write writing " + cmd.toXml());
 				writer.writeWithTags(cmd);
 			} catch (final IOException brokenpipe) {
 				// Oct 26th, 2011 : the socket may have been closed;
