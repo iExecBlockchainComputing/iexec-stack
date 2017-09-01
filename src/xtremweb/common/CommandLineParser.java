@@ -525,6 +525,7 @@ public final class CommandLineParser {
 						setOption(opt, new UID(args[++i]));
 						break;
 					case ENV:
+					case ENVVAR:
 					case STDIN:
 					case CERT:
 					case OUT:

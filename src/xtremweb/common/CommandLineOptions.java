@@ -203,6 +203,18 @@ public enum CommandLineOptions {
 		}
 	},
 	/**
+	 * This defines the environment variables of the job being submitted
+	 * Parameter : String
+	 * @since 11.0.0
+	 */
+	ENVVAR {
+		@Override
+		public String help() {
+			return this.toString()
+					+ " [URI | UID | dir name | file name | zip file name] : to provide a job environment file";
+		}
+	},
+	/**
 	 * This defines the standard input file. <br />
 	 * Parameter : [ an uri | an uid | a file name | a directory name ]
 	 */
