@@ -270,7 +270,7 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 	private static final String LASTMODIFIEDLABEL = "Last-Modified";
 
 	private static final String DEFAULT_ANSWER_HEAD = "<html><head><title>XtremWeb-HEP API</title></head>"
-			+ "<body><center><h1>XtremWeb-HEP API</h1><br /><h3>You are logged as \"%s\"</h3></center><br /><br /><a href=\"/\">Go to the client interface</a><br /><br />"
+			+ "<body><center><h1>XtremWeb-HEP API</h1><br /><h3>%s</h3></center><br /><br /><a href=\"/\">Go to the client interface</a><br /><br />"
 			+ "Available interface commands :<br /><ul>";
 	private static final String DEFAULT_UPLOAD_FORM = "<form action=\"%s/" + IdRpc.UPLOADDATA + "\""
 			+ " enctype=\"multipart/form-data\" method=\"post\">"
@@ -749,16 +749,22 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 
 		try {
 			final PrintWriter writer = response.getWriter();
-			String msg = String.format(DEFAULT_ANSWER_HEAD,
-					client.getEMail() != null ? client.getEMail() : client.getLogin());
+			final StringBuilder  msg = new StringBuilder();
+			if (client !=null) {
+				msg.append(String.format(DEFAULT_ANSWER_HEAD,
+						"You are logged as \"" + client.getEMail() != null ? client.getEMail() : client.getLogin()) + "\"");
+			} else {
+				msg.append(String.format(DEFAULT_ANSWER_HEAD,
+						"<i>You are not logged</i>"));
+			}
 			response.setContentType(TEXTHTML + ";charset=UTF-8");
 
 			for (final IdRpc i : IdRpc.values()) {
-				msg += "<li> <a href=\"" + baseUri + "/" + i + "\">" + baseUri + "/" + i + "</a> : " + i.helpRestApi();
+				msg.append("<li> <a href=\"" + baseUri + "/" + i + "\">" + baseUri + "/" + i + "</a> : " + i.helpRestApi());
 			}
 
-			msg += String.format(DEFAULT_UPLOAD_FORM, baseUri);
-			msg += String.format(DEFAULT_ANSWER_TAIL, baseUri);
+			msg.append(String.format(DEFAULT_UPLOAD_FORM, baseUri));
+			msg.append(String.format(DEFAULT_ANSWER_TAIL, baseUri));
 
 			response.setHeader(CONTENTLENGTHLABEL, "" + msg.length());
 			writer.println(msg);
@@ -907,6 +913,9 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 		}
 
 		final HttpSession session = request.getSession(true);
+		final String mandatingLogin = request.getParameter(XWPostParams.XWMANDATINGLOGIN.toString()) != null
+				? request.getParameter(XWPostParams.XWMANDATINGLOGIN.toString())
+				: (String) session.getAttribute(XWPostParams.XWMANDATINGLOGIN.toString());
 		final String authState = request.getParameter(XWPostParams.AUTH_STATE.toString()) != null
 				? request.getParameter(XWPostParams.AUTH_STATE.toString())
 				: (String) session.getAttribute(XWPostParams.AUTH_STATE.toString());
@@ -1084,6 +1093,7 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 				logger.debug("obj = null");
 			}
 			command = getIdRpc().newCommand(uri, user, obj);
+			command.setMandatingLogin(mandatingLogin);
 
 			final String parameter = request.getParameter(XWPostParams.PARAMETER.toString());
 			logger.debug("parameter = " + parameter);
