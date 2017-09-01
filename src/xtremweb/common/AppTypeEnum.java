@@ -51,7 +51,7 @@ public enum AppTypeEnum {
 	SHARED,
 	/**
 	 * On July 3rd, 2017, this is our 2nd shared application: docker
-	 * @since 10.6.0
+	 * @since 11.0.0
 	 */
 	DOCKER {
 		@Override
@@ -121,7 +121,7 @@ public enum AppTypeEnum {
 	 * entry is a semicolon separated paths list
 	 * paths
 	 *
-	 * @since 10.6.0
+	 * @since 11.0.0
 	 */
 	private static String[] dockerpaths = { null, // NONE
 			"/usr/bin/docker", // LINUX
