@@ -406,6 +406,30 @@ public final class XWConfigurator extends Properties {
 		challenging = v;
 	}
 
+	/**
+	 * This is the a mandate: a user login for which actions should be taken
+	 * @since 11.0.0
+	 * @see UserRightEnum#MANDATED_USER
+	 */
+	private String mandate;
+
+
+	/**
+	 * @return the mandate
+	 * @since 11.0.0
+	 */
+	public String getMandate() {
+		return mandate;
+	}
+
+	/**
+	 * @param mandat the mandate to set
+	 * @since 11.0.0
+	 */
+	public void setMandate(final String mandat) {
+		this.mandate = mandat;
+	}
+
 	/** notify configuration */
 	private boolean useNotify = false;
 
@@ -777,16 +801,20 @@ public final class XWConfigurator extends Properties {
 			setProperty("java.awt.headless", "true");
 		}
 
-		String astring = getProperty(XWPropertyDefs.LOGIN);
-		if (astring == null) {
+		final String mandat = getProperty(XWPropertyDefs.MANDATINGLOGIN);
+		setProperty(XWPropertyDefs.MANDATINGLOGIN, mandat, true);
+		setMandate(getProperty(XWPropertyDefs.MANDATINGLOGIN));
+
+		String login = getProperty(XWPropertyDefs.LOGIN);
+		if (login == null) {
 			throw new IOException("No login name provided");
 		}
-		setProperty(XWPropertyDefs.LOGIN, astring);
-		astring = getProperty(XWPropertyDefs.PASSWORD);
-		if ((astring == null) && (!XWRole.isDispatcher())) {
+		setProperty(XWPropertyDefs.LOGIN, login);
+		final String passwd = getProperty(XWPropertyDefs.PASSWORD);
+		if ((login == null) && (!XWRole.isDispatcher())) {
 			throw new IOException("You must provide a Passsword");
 		}
-		setProperty(XWPropertyDefs.PASSWORD, astring);
+		setProperty(XWPropertyDefs.PASSWORD, passwd);
 		_user.setLogin(getProperty(XWPropertyDefs.LOGIN));
 		_user.setPassword(getProperty(XWPropertyDefs.PASSWORD));
 
@@ -798,11 +826,11 @@ public final class XWConfigurator extends Properties {
 		} catch (final IllegalArgumentException e) {
 		}
 
-		astring = getProperty(XWPropertyDefs.ADMINLOGIN);
-		if (astring == null) {
+		login = getProperty(XWPropertyDefs.ADMINLOGIN);
+		if (login == null) {
 			throw new IOException("No admin login provided");
 		}
-		setProperty(XWPropertyDefs.ADMINLOGIN, astring);
+		setProperty(XWPropertyDefs.ADMINLOGIN, login);
 
 		try {
 			final String uidstr = getProperty(XWPropertyDefs.USERUID);
