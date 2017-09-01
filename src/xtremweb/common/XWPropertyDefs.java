@@ -56,11 +56,8 @@ public enum XWPropertyDefs {
 		}
 	},
 	/**
-	 * Server : a boolean allowing registration using delegated authentication
-	 * such as OpenId or OAuth
-	 * <p>
+	 * Server : a boolean allowing registration using delegated OpenId or OAuth authentication
 	 * Property type : boolean
-	 * </p>
 	 *
 	 * @since 8.2.0
 	 */
@@ -793,14 +790,19 @@ public enum XWPropertyDefs {
 	},
 	/**
 	 * Worker , Client : login
-	 * <p>
 	 * Property type : string
-	 * </p>
-	 * <p>
 	 * Default : null
-	 * </p>
 	 */
 	LOGIN,
+	/**
+	 * Client : this permits to act for someone else. 
+	 * Delegation requires sufficient user rights.
+	 * Property type : string
+	 * Default : null
+	 * @since 11.0.0
+	 * @see UserRightEnum#DELEGATION_USER
+	 */
+	MANDATINGLOGIN,
 	/**
 	 * Worker , Client : password
 	 * <p>
