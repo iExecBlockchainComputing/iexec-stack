@@ -43,10 +43,6 @@ public enum UserRightEnum {
 	 */
 	NONE,
 	/**
-	 * retrieve jobs list
-	 */
-	LISTJOB,
-	/**
 	 * submit/update job
 	 */
 	INSERTJOB,
@@ -55,14 +51,6 @@ public enum UserRightEnum {
 	 */
 	GETJOB,
 	/**
-	 * delete job
-	 */
-	DELETEJOB,
-	/**
-	 * retrieve datas list
-	 */
-	LISTDATA,
-	/**
 	 * send/update data
 	 */
 	INSERTDATA,
@@ -70,6 +58,59 @@ public enum UserRightEnum {
 	 * retrieve data
 	 */
 	GETDATA,
+	/**
+	 * retrieve group
+	 */
+	GETGROUP,
+	/**
+	 * retrieve session
+	 */
+	GETSESSION,
+	/**
+	 * retrieve host
+	 */
+	GETHOST,
+	/**
+	 * retrieve application
+	 */
+	GETAPP,
+	/**
+	 * retrieve user
+	 */
+	GETUSER,
+	/**
+	 * This allows user rights delegation to workers e.g. workers must be able
+	 * to update works and change works status (among others)
+	 */
+	UPDATEWORK,
+	/**
+	 * this is the user rights needed by workers
+	 */
+	WORKER_USER,
+	/**
+	 * This denotes virtualized worker user rights. This aims to allow access
+	 * objects that has the sticky bit.
+	 *
+	 * @since 8.0.0
+	 * @see xtremweb.security.XWAccessRights#STICKYBIT
+	 */
+	VWORKER_USER,
+	/**
+	 * broadcast a job to all known worker
+	 */
+	BROADCAST,
+	/**
+	 * retrieve jobs list
+	 */
+	LISTJOB,
+	/**
+	 * delete job
+	 */
+	DELETEJOB,
+	/**
+	 * retrieve datas list
+	 */
+	LISTDATA,
 	/**
 	 * delete data
 	 */
@@ -83,10 +124,6 @@ public enum UserRightEnum {
 	 */
 	INSERTGROUP,
 	/**
-	 * retrieve group
-	 */
-	GETGROUP,
-	/**
 	 * delete group
 	 */
 	DELETEGROUP,
@@ -99,10 +136,6 @@ public enum UserRightEnum {
 	 */
 	INSERTSESSION,
 	/**
-	 * retrieve session
-	 */
-	GETSESSION,
-	/**
 	 * delete session
 	 */
 	DELETESESSION,
@@ -111,17 +144,9 @@ public enum UserRightEnum {
 	 */
 	LISTHOST,
 	/**
-	 * retrieve host
-	 */
-	GETHOST,
-	/**
 	 * Retrieve users list
 	 */
 	LISTUSER,
-	/**
-	 * retrieve user
-	 */
-	GETUSER,
 	/**
 	 * retrieve user groups list
 	 */
@@ -143,30 +168,9 @@ public enum UserRightEnum {
 	 */
 	LISTAPP,
 	/**
-	 * retrieve application
-	 */
-	GETAPP,
-	/**
 	 * this is the default user right
 	 */
 	STANDARD_USER,
-	/**
-	 * This allows user rights delegation to workers e.g. workers must be able
-	 * to update works and change works status (among others)
-	 */
-	UPDATEWORK,
-	/**
-	 * this is the user rights needed by workers
-	 */
-	WORKER_USER,
-	/**
-	 * This denotes virtualized worker user rights. This aims to allow access
-	 * objects that has the sticky bit.
-	 *
-	 * @since 8.0.0
-	 * @see xtremweb.security.XWAccessRights#STICKYBIT
-	 */
-	VWORKER_USER,
 	/**
 	 * this is a advanced rights : send/update a user
 	 */
@@ -179,6 +183,11 @@ public enum UserRightEnum {
 	 * this is the advanced right
 	 */
 	ADVANCED_USER,
+	/**
+	 * This permits to mandate : a user can be mandated to do something for someone else
+	 * @since 11.0.0
+	 */
+	MANDATED_USER,
 	/**
 	 * this is a privileged right : send/update host
 	 */
