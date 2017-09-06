@@ -213,9 +213,14 @@ public class Dispatcher {
 				// OAuth Handler needs HTTP session
 				final SessionHandler oauth_sessionHandler = new SessionHandler();
 				final HTTPOAuthHandler oah = new HTTPOAuthHandler();
-				HTTPOpenIdHandler.setCACertificateEntries(getConfig().getKeyStore());
 				oauth_sessionHandler.setHandler(oah);
 				httpServer.addHandler(HTTPOAuthHandler.handlerPath, oauth_sessionHandler);
+
+				// JWT Handler needs HTTP session
+				final SessionHandler jwt_sessionHandler = new SessionHandler();
+				final HTTPJWTHandler jwth = new HTTPJWTHandler();
+				jwt_sessionHandler.setHandler(jwth);
+				httpServer.addHandler(HTTPJWTHandler.handlerPath, jwt_sessionHandler);
 
 				// StatsHandler does not need HTTP session
 				httpServer.addHandler(HTTPStatsHandler.PATH, new HTTPStatsHandler());

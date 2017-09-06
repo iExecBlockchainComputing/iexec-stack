@@ -36,6 +36,7 @@ import java.net.ServerSocket;
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.nio.charset.Charset;
+import java.security.KeyStore;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateExpiredException;
@@ -856,6 +857,52 @@ public class XWTools {
 		final JSONTokener jst = new JSONTokener(s);
 		final JSONObject obj = new JSONObject(jst);
 		return obj.getString(key);
+	}
+
+	public static final String GOOGLE_ADDR = "www.google.com";
+	public static final String YAHOO_ADDR = "www.yahoo.com";
+
+	/**
+	 * This inserts all known CA certificates to the provided keystore
+	 *
+	 * @param store
+	 *            is the keystore to add certificate to
+	 * @return this returns null, if parameter is null; else this returns the
+	 *         keystore filled with some new entries
+	 * @since 8.0.2
+	 */
+	public static KeyStore setCACertificateEntries(final KeyStore store) {
+		if (store == null) {
+			return null;
+		}
+		final Logger logger = new Logger();
+		try {
+			final X509Certificate[] gcerts = XWTools.retrieveCertificates(GOOGLE_ADDR, false);
+			for (int i = 0; i < gcerts.length; i++) {
+				final X509Certificate cert = gcerts[i];
+				try {
+					final String alias = cert.getSubjectDN().toString();
+					logger.finest("KeyStore set entry= " + alias + "; KeyStore.size = " + store.size());
+					store.setCertificateEntry(alias, cert);
+				} catch (final Exception e) {
+					logger.exception("Can't add new entry to keystore", e);
+				}
+			}
+			final X509Certificate[] ycerts = XWTools.retrieveCertificates(YAHOO_ADDR, false);
+			for (int i = 0; i < ycerts.length; i++) {
+				final X509Certificate cert = ycerts[i];
+				try {
+					final String alias = cert.getSubjectDN().toString();
+					logger.finest("KeyStore set entry= " + alias + "; KeyStore.size = " + store.size());
+					store.setCertificateEntry(alias, cert);
+				} catch (final Exception e) {
+					logger.exception("Can't add new entry to keystore", e);
+				}
+			}
+		} catch (final Exception e) {
+			logger.exception("Can't add new entry to keystore", e);
+		}
+		return store;
 	}
 
 	/**
