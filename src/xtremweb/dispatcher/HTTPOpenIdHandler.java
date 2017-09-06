@@ -91,9 +91,6 @@ public class HTTPOpenIdHandler extends Thread implements org.eclipse.jetty.serve
 	public static final String OP_GOOGLE = "Google";
 	public static final String OP_YAHOO = "Yahoo";
 
-	public static final String GOOGLE_ADDR = "www.google.com";
-	public static final String YAHOO_ADDR = "www.yahoo.com";
-
 	public static final String OPENID_NONCE_PARAMETER = "openid.response_nonce";
 	/**
 	 * This is the client host name; for debug purposes only
@@ -452,49 +449,6 @@ public class HTTPOpenIdHandler extends Thread implements org.eclipse.jetty.serve
 		} catch (final ParseException e) {
 			throw new OpenIdException("Bad nonce time.");
 		}
-	}
-
-	/**
-	 * This inserts all known CA certificates to the provided keystore
-	 *
-	 * @param store
-	 *            is the keystore to add certificate to
-	 * @return this returns null, if parameter is null; else this returns the
-	 *         keystore filled with some new entries
-	 * @since 8.0.2
-	 */
-	public static KeyStore setCACertificateEntries(final KeyStore store) {
-		if (store == null) {
-			return null;
-		}
-		final Logger logger = new Logger();
-		try {
-			final X509Certificate[] gcerts = XWTools.retrieveCertificates(HTTPOpenIdHandler.GOOGLE_ADDR, false);
-			for (int i = 0; i < gcerts.length; i++) {
-				final X509Certificate cert = gcerts[i];
-				try {
-					final String alias = cert.getSubjectDN().toString();
-					logger.finest("KeyStore set entry= " + alias + "; KeyStore.size = " + store.size());
-					store.setCertificateEntry(alias, cert);
-				} catch (final Exception e) {
-					logger.exception("Can't add new entry to keystore", e);
-				}
-			}
-			final X509Certificate[] ycerts = XWTools.retrieveCertificates(HTTPOpenIdHandler.YAHOO_ADDR, false);
-			for (int i = 0; i < ycerts.length; i++) {
-				final X509Certificate cert = ycerts[i];
-				try {
-					final String alias = cert.getSubjectDN().toString();
-					logger.finest("KeyStore set entry= " + alias + "; KeyStore.size = " + store.size());
-					store.setCertificateEntry(alias, cert);
-				} catch (final Exception e) {
-					logger.exception("Can't add new entry to keystore", e);
-				}
-			}
-		} catch (final Exception e) {
-			logger.exception("Can't add new entry to keystore", e);
-		}
-		return store;
 	}
 
 	/**
