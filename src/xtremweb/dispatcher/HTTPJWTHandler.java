@@ -25,15 +25,19 @@ package xtremweb.dispatcher;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Enumeration;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -43,6 +47,13 @@ import org.eclipse.jetty.server.Server;
 import org.expressme.openid.Authentication;
 import org.expressme.openid.OpenIdException;
 import org.expressme.openid.OpenIdManager;
+
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWTVerifier;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.interfaces.Claim;
+import com.auth0.jwt.interfaces.DecodedJWT;
 
 import xtremweb.common.Logger;
 import xtremweb.common.LoggerLevel;
@@ -287,7 +298,42 @@ public class HTTPJWTHandler extends Thread implements org.eclipse.jetty.server.H
 			for (final Enumeration<String> e = request.getHeaderNames(); e.hasMoreElements();) {
 				logger.debug("header " + e.nextElement());
 			}
-
+			final Cookie[] cookies = request.getCookies();
+			logger.debug("cookies.length = " + cookies.length);
+			for (int cookieN = 0; cookieN < cookies.length; cookieN++) {
+				logger.debug("Cookie[" + cookieN + "] = " + cookies[cookieN].toString());
+				logger.debug("Cookie[" + cookieN + "].getName() = " + cookies[cookieN].getName());
+				logger.debug("Cookie[" + cookieN + "].getDomain() = " + cookies[cookieN].getDomain());
+				logger.debug("Cookie[" + cookieN + "].getComment() = " + cookies[cookieN].getComment());
+				logger.debug("Cookie[" + cookieN + "].getValue() = " + cookies[cookieN].getValue());
+				logger.debug("Cookie[" + cookieN + "].getValue().compareTo('token') = " + cookies[cookieN].getName().compareTo("token"));
+				if (cookies[cookieN].getName().compareTo("token") == 0) {
+					try {
+						Algorithm algorithm = Algorithm.HMAC256("Imesety");
+						JWTVerifier verifier = JWT.require(algorithm)
+								.withIssuer("xwhep")
+								.build(); //Reusable verifier instance
+						DecodedJWT jwt = verifier.verify(cookies[cookieN].getValue());
+						logger.debug("JWT id = " + jwt.getId());
+						logger.debug("JWT key id = " + jwt.getKeyId());
+						logger.debug("JWT issuer = " + jwt.getIssuer());
+						logger.debug("JWT payload = " + jwt.getPayload());
+						logger.debug("JWT issued at = " + jwt.getIssuedAt());
+						logger.debug("JWT expires at = " + jwt.getExpiresAt());
+						logger.debug("JWT getNotBefore = " + jwt.getNotBefore());
+						logger.debug("JWT jwt.getClaim('name') = " + jwt.getClaim("name"));
+						logger.debug("JWT jwt.getClaim('name').asString() = " + jwt.getClaim("name").asString());
+					} catch (Exception e){
+						logger.exception("Json Web Token ", e);
+					}
+					//						} catch (UnsupportedEncodingException e){
+					//					    logger.exception("Json Web Token ", e);
+					//					} catch (JWTVerificationException exception){
+					//					    //Invalid signature/claims
+					//					}
+				}
+			}
+			logger.debug("request.getParameterMap().size() = " + request.getParameterMap().size());
 			if (request.getParameterMap().size() > 0) {
 				jwtRequest(baseRequest);
 			}
