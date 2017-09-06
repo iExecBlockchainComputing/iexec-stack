@@ -685,19 +685,15 @@ public final class XWConfigurator extends Properties {
 		//
 		// retrieve all environment variables
 		//
-		Map<String, String> envmap = System.getenv();
+		final Map<String, String> envmap = System.getenv();
 		baseEnvVars = new String[envmap.size()];
-		Set<Map.Entry<String, String>> envset = envmap.entrySet();
-		Iterator<Map.Entry<String, String>> envit = envset.iterator();
+		final Set<Map.Entry<String, String>> envset = envmap.entrySet();
+		final Iterator<Map.Entry<String, String>> envit = envset.iterator();
 		int i = 0;
 		while (envit.hasNext()) {
-			Map.Entry<String, String> entry = envit.next();
+			final Map.Entry<String, String> entry = envit.next();
 			baseEnvVars[i++] = new String(entry.getKey() + "=" + entry.getValue());
-			entry = null;
 		}
-		envit = null;
-		envset = null;
-		envmap = null;
 	}
 
 	/**
@@ -858,8 +854,6 @@ public final class XWConfigurator extends Properties {
 			}
 		}
 
-		keyStore = null;
-
 		if ((keyStoreFile != null) && keyStoreFile.exists()) {
 			final String passPhrase = getProperty(XWPropertyDefs.SSLKEYPASSPHRASE);
 			final String passWord = getProperty(XWPropertyDefs.SSLKEYPASSWORD);
@@ -876,6 +870,7 @@ public final class XWConfigurator extends Properties {
 				keyStore = null;
 				logger.exception("Can't init keystore", e);
 			}
+			XWTools.setCACertificateEntries(keyStore);
 		}
 
 		if ((keyStore != null) && (keyStoreFile != null)) {
