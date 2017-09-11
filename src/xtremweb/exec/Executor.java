@@ -340,7 +340,7 @@ public class Executor {
 	 */
 	private void closeHandles() {
 
-		getLogger().debug("closeHandles()");
+		getLogger().finest("closeHandles()");
 
 		try {
 			stdout.flush();
@@ -440,11 +440,11 @@ public class Executor {
 			if (stdin != null) {
 				try {
 					if (stdin.available() > 0) {
-						getLogger().debug("stdin.available() = " + stdin.available());
+						getLogger().finest("stdin.available() = " + stdin.available());
 					}
 					piped = pipe(stdin, process.getOutputStream(), false);
 					if (piped > 0) {
-						getLogger().debug("pipe(stdin)  = " + piped);
+						getLogger().finest("pipe(stdin)  = " + piped);
 					}
 					if (stdin.available() <= 0) {
 						stdin.close();
@@ -470,13 +470,13 @@ public class Executor {
 			if (process.getInputStream() != null) {
 				try {
 					if (process.getInputStream().available() > 0) {
-						getLogger().debug(
+						getLogger().finest(
 								"process.getInputStream().available() = " + process.getInputStream().available());
 					}
 
 					piped = pipe(process.getInputStream(), stdout, false);
 					if (piped > 0) {
-						getLogger().debug("pipe(stdout) = " + piped);
+						getLogger().finest("pipe(stdout) = " + piped);
 					}
 				} catch (final Exception e) {
 					getLogger().exception("Executor (" + getCommandLine() + ") : input stream error", e);
@@ -485,12 +485,12 @@ public class Executor {
 			if (process.getErrorStream() != null) {
 				try {
 					if (process.getErrorStream().available() > 0) {
-						getLogger().debug(
+						getLogger().finest(
 								"process.getErrorStream().available() = " + process.getErrorStream().available());
 					}
 					piped = pipe(process.getErrorStream(), stderr, false);
 					if (piped > 0) {
-						getLogger().debug("pipe(stderr) = " + piped);
+						getLogger().finest("pipe(stderr) = " + piped);
 					}
 				} catch (final Exception e) {
 					getLogger().exception("Executor (" + getCommandLine() + ") : err stream error", e);
