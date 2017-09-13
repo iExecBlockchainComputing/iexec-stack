@@ -175,7 +175,7 @@ public class PoolWork {
 			// then, work has already been saved, and we retry to upload result
 			logger.debug(uid.toString() + " already saved");
 			if (poolWorks.remove(uid) != null) {
-				logger.fatal(uid.toString() + " still in poolWorks???");
+				logger.error(uid.toString() + " still in poolWorks???");
 			}
 			notifyAll();
 			return;
@@ -183,7 +183,7 @@ public class PoolWork {
 
 		savingWorks.put(uid, w);
 		if (poolWorks.remove(uid) == null) {
-			logger.fatal("saveWork can't remove element");
+			logger.error("saveWork can't remove element");
 		}
 		CommManager.getInstance().workRequest();
 		notifyAll();
