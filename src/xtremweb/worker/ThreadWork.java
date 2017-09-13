@@ -579,10 +579,11 @@ public class ThreadWork extends Thread {
 
 		stopProxy();
 
-		final StringBuilder command = new StringBuilder(getUnloadScriptPath());
-		if (command.length() == 0) {
+		final String unloadpath = getUnloadScriptPath();
+		if(unloadpath == null) {
 			return;
 		}
+		final StringBuilder command = new StringBuilder(unloadpath);
 		command.append(" " + currentWork.getCmdLine());
 
 		logger.config("unload");
