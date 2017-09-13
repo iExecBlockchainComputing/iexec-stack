@@ -968,7 +968,7 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 				waitIdRpc(i);
 			} catch (final Exception e) {
 				// let other handlers manage this (e.g. /stats, /openid)
-				logger.debug("ignoring " + reqUri);
+				logger.debug("not handling " + reqUri);
 				return;
 			}
 		}
