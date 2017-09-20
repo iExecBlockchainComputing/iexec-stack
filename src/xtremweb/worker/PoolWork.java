@@ -160,16 +160,13 @@ public class PoolWork {
 	 */
 	public synchronized void saveWork(final Work w) {
 
-		UID uid = null;
-
-		try {
-			uid = w.getUID();
-			logger.debug("PoolWork::saveWork(" + uid + ")");
-		} catch (final IOException e) {
+		final UID uid = w.getUID();
+		if(uid == null) {
 			logger.error("saveWork can't find uid???");
 			notifyAll();
 			return;
 		}
+		logger.debug("PoolWork::saveWork(" + uid + ")");
 		if (savingWorks.get(uid) != null) {
 			// this may happen on communication failure
 			// then, work has already been saved, and we retry to upload result
@@ -266,32 +263,19 @@ public class PoolWork {
 	 * @since v1r2-rc0(RPC-V)
 	 */
 	public synchronized Vector<Work> getAliveWork() {
-		Vector<Work> worksAlive = new Vector<>();
+		Vector<Work> worksAlive = new Vector<Work>();
 		final Enumeration<Work> theEnumeration = poolWorks.elements();
 
 		while (theEnumeration.hasMoreElements()) {
-			Work w = theEnumeration.nextElement();
-			if (w.getResult() == null) {
-				logger.debug("PoolWork::getAliveWork() w.getResult() is null ");
-			} else {
-				try {
-					logger.debug("PoolWork::getAliveWork() " + w.getUID() + " is " + w.getStatus().toString());
-				} catch (final Exception e) {
-					logger.warn("PoolWork::getAliveWork() error ???");
-				}
-			}
+			final Work w = theEnumeration.nextElement();
+			logger.debug("PoolWork::getAliveWork() w.getResult() = " + w.getResult());
+			logger.debug("PoolWork::getAliveWork() " + w.getUID() + " is " + w.getStatus().toString());
 			if (w.isRunning()) {
 				worksAlive.addElement(w);
 			}
-			w = null;
 		}
 
 		logger.debug("PoolWork::getAliveWork()  worksAlive size = " + worksAlive.size());
-
-		if (worksAlive.isEmpty()) {
-			worksAlive = null;
-		}
-
 		return worksAlive;
 	}
 
@@ -304,9 +288,7 @@ public class PoolWork {
 	 * @since 8.2.0
 	 */
 	public synchronized Work getAliveWork(final UID uid) {
-		final Work ret = poolWorks.get(uid);
-		logger.debug("PoolWork::getAliveWork() : work " + (ret == null ? "not" : "") + " found " + uid);
-		return ret;
+		return poolWorks.get(uid);
 	}
 
 	/**
@@ -317,24 +299,18 @@ public class PoolWork {
 	 */
 	public synchronized Work getNextWorkToCompute() {
 
-		try {
-			final Enumeration<Work> theEnumeration = poolWorks.elements();
+		final Enumeration<Work> theEnumeration = poolWorks.elements();
 
-			while (theEnumeration.hasMoreElements()) {
+		while (theEnumeration.hasMoreElements()) {
 
-				Work w = theEnumeration.nextElement();
-
-				if (w.isPending()) {
-					w.setStatus(StatusEnum.RUNNING);
-					return w;
-				}
-				w = null;
+			final Work w = theEnumeration.nextElement();
+			if (w.isPending()) {
+				w.setStatus(StatusEnum.RUNNING);
+				return w;
 			}
-
-			return null;
-		} finally {
-			notifyAll();
 		}
+
+		return null;
 	}
 
 	@Override

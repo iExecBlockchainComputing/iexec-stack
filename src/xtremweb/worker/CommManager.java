@@ -312,7 +312,7 @@ public final class CommManager extends Thread {
 	 * @since 8.0.0
 	 */
 	private void workSend(final Work w) throws ConnectException, UnknownHostException, URISyntaxException, IOException,
-			InvalidKeyException, AccessControlException, SAXException {
+	InvalidKeyException, AccessControlException, SAXException {
 
 		final URI uri = commClient().newURI(w.getUID());
 		final XMLRPCCommandSend cmd = new XMLRPCCommandSend(uri, w);
@@ -435,7 +435,7 @@ public final class CommManager extends Thread {
 	 * @throws InvalidKeyException
 	 */
 	private WorkInterface getWork() throws ClassNotFoundException, UnknownHostException, ConnectException, IOException,
-			SAXException, URISyntaxException, InvalidKeyException, AccessControlException {
+	SAXException, URISyntaxException, InvalidKeyException, AccessControlException {
 
 		final HostInterface workerHost = Worker.getConfig().getHost();
 		final File d = Worker.getConfig().getTmpDir();
@@ -455,7 +455,7 @@ public final class CommManager extends Thread {
 	 * @throws InvalidKeyException
 	 */
 	private AppInterface getApp(final UID uid) throws ClassNotFoundException, UnknownHostException, ConnectException,
-			IOException, SAXException, URISyntaxException, InvalidKeyException, AccessControlException {
+	IOException, SAXException, URISyntaxException, InvalidKeyException, AccessControlException {
 
 		final AppInterface app = (AppInterface) commClient().get(uid, false);
 		if (app == null) {
@@ -479,7 +479,7 @@ public final class CommManager extends Thread {
 	 * @since 8.0.0
 	 */
 	protected File uriPassThrough(final URI throughUri) throws IOException, URISyntaxException, InvalidKeyException,
-			AccessControlException, ClassNotFoundException, SAXException {
+	AccessControlException, ClassNotFoundException, SAXException {
 
 		final File ret = null;
 		boolean islocked = false;
@@ -581,7 +581,7 @@ public final class CommManager extends Thread {
 				}
 				if (!found) {
 					throw new IOException("Driven data package (" + drivenData.getPackage()
-							+ ") doesn't match worker packages : " + sharedDataPkgs);
+					+ ") doesn't match worker packages : " + sharedDataPkgs);
 				}
 			}
 		} catch (final Exception e) {
@@ -600,7 +600,7 @@ public final class CommManager extends Thread {
 	 * @throws InvalidKeyException
 	 */
 	private void downloadApp(final UID uid) throws ClassNotFoundException, UnknownHostException, ConnectException,
-			IOException, SAXException, URISyntaxException, InvalidKeyException, AccessControlException {
+	IOException, SAXException, URISyntaxException, InvalidKeyException, AccessControlException {
 
 		final AppInterface app = getApp(uid);
 		final CPUEnum cpu = Worker.getConfig().getHost().getCpu();
@@ -689,7 +689,7 @@ public final class CommManager extends Thread {
 	 * @throws InvalidKeyException
 	 */
 	public DataInterface getData(final URI uri) throws ClassNotFoundException, UnknownHostException, ConnectException,
-			IOException, SAXException, InvalidKeyException, AccessControlException, URISyntaxException {
+	IOException, SAXException, InvalidKeyException, AccessControlException, URISyntaxException {
 
 		return getData(uri, true);
 	}
@@ -731,7 +731,7 @@ public final class CommManager extends Thread {
 	 * @throws InvalidKeyException
 	 */
 	private void uploadData(final URI uri) throws ClassNotFoundException, UnknownHostException, ConnectException,
-			IOException, SAXException, InvalidKeyException, AccessControlException, URISyntaxException {
+	IOException, SAXException, InvalidKeyException, AccessControlException, URISyntaxException {
 
 		if (uri == null) {
 			throw new IOException("uploadData() : uri is null");
@@ -777,7 +777,7 @@ public final class CommManager extends Thread {
 	 * @see #downloadData(URI, boolean)
 	 */
 	public void downloadData(final URI uri) throws ClassNotFoundException, UnknownHostException, ConnectException,
-			IOException, SAXException, InvalidKeyException, AccessControlException, URISyntaxException {
+	IOException, SAXException, InvalidKeyException, AccessControlException, URISyntaxException {
 
 		downloadData(uri, false);
 	}
@@ -935,7 +935,7 @@ public final class CommManager extends Thread {
 	 * @throws InvalidKeyException
 	 */
 	private void wget(final URI uri) throws ClassNotFoundException, UnknownHostException, ConnectException, IOException,
-			SAXException, InvalidKeyException, AccessControlException, URISyntaxException {
+	SAXException, InvalidKeyException, AccessControlException, URISyntaxException {
 
 		if (uri == null) {
 			return;
@@ -1088,13 +1088,8 @@ public final class CommManager extends Thread {
 					continue;
 				}
 
-				try {
-					if (mw.getUID() == null) {
-						logger.error("mw.iud = null ?!?");
-						continue;
-					}
-				} catch (final IOException e) {
-					logger.error("can' get mw.iud ?!?");
+				if (mw.getUID() == null) {
+					logger.error("mw.iud = null ?!?");
 					continue;
 				}
 
@@ -1219,9 +1214,7 @@ public final class CommManager extends Thread {
 	 * @throws InvalidKeyException
 	 */
 	protected void uploadResults(final Work theWork) throws IOException, ClassNotFoundException, SAXException,
-			URISyntaxException, InvalidKeyException, AccessControlException {
-
-		IOException ioe = null;
+	URISyntaxException, InvalidKeyException, AccessControlException {
 
 		if (theWork == null) {
 			logger.error("uploadResults : theWork is null");
@@ -1237,35 +1230,22 @@ public final class CommManager extends Thread {
 			return;
 		}
 
-		DataInterface data = null;
+		IOException ioe = null;
 		try {
-			data = getData(resultURI, false);
+			final DataInterface data = getData(resultURI, false);
+			final CommClient commClient = commClient(resultURI);
+			final File content = commClient.getContentFile(resultURI);
+			logger.debug("CommManager#uploadResults " + content);
+			if (content.exists()) {
+				commClient.send(data);
+				uploadData(resultURI);
+				theWork.setStatus(StatusEnum.COMPLETED);
+			}
 		} catch (final Exception e) {
-		}
-		if (data == null) {
-			if (theWork.getStatus() == StatusEnum.COMPLETED) {
-				logger.warn("uploadResults : can't retreive result to upload");
-			}
-		} else {
-			CommClient commClient = null;
-			File content = null;
-			try {
-				commClient = commClient(resultURI);
-				content = commClient.getContentFile(resultURI);
-				logger.debug("CommManager#uploadResults " + content);
-				if (content.exists()) {
-					commClient.send(data);
-					uploadData(resultURI);
-					theWork.setStatus(StatusEnum.COMPLETED);
-				}
-			} catch (final Exception e) {
-				content = null;
-				logger.exception("CommManager#uploadResults", e);
-				commClient = null;
-				logger.exception(e);
-				ioe = new IOException(e);
-				theWork.setStatus(StatusEnum.DATAREQUEST);
-			}
+			logger.exception("CommManager#uploadResults", e);
+			logger.exception(e);
+			ioe = new IOException(e);
+			theWork.setStatus(StatusEnum.DATAREQUEST);
 		}
 
 		try {

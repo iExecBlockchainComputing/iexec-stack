@@ -254,16 +254,7 @@ public final class ThreadLaunch extends Thread {
 	 * @see #getThreadByWorkUid(UID)
 	 */
 	public ThreadWork getThreadByWork(final Work w) {
-
-		UID uid = null;
-		try {
-			uid = w.getUID();
-			return getThreadByWorkUid(uid);
-		} catch (final IOException e) {
-		} finally {
-			uid = null;
-		}
-		return null;
+		return getThreadByWorkUid(w.getUID());
 	}
 
 	/**
@@ -281,18 +272,14 @@ public final class ThreadLaunch extends Thread {
 			return null;
 		}
 
-		try {
-			for (final Iterator<ThreadWork> it = threadWorkPool.iterator(); it.hasNext();) {
-				ThreadWork threadWork = it.next();
-				if ((threadWork != null) && (threadWork.getWork() != null)
-						&& threadWork.getWork().getUID().equals(uid)) {
-					return threadWork;
-				}
-				threadWork = null;
+		for (final Iterator<ThreadWork> it = threadWorkPool.iterator(); it.hasNext();) {
+			final ThreadWork threadWork = it.next();
+			if ((threadWork != null) && (threadWork.getWork() != null)
+					&& threadWork.getWork().getUID().equals(uid)) {
+				return threadWork;
 			}
-			logger.error("getThreadByWorkUid() can't find work " + uid);
-		} catch (final IOException e) {
 		}
+		logger.error("getThreadByWorkUid() can't find work " + uid);
 		return null;
 	}
 
