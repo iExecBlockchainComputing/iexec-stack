@@ -60,6 +60,7 @@ import xtremweb.common.LoggerLevel;
 import xtremweb.common.XWPropertyDefs;
 import xtremweb.common.XWTools;
 import xtremweb.communications.Connection;
+import xtremweb.dispatcher.HTTPOAuthHandler.Operator;
 
 /**
  * This handles HTTP request to /jwt/ This accepts and verifies
@@ -298,45 +299,8 @@ public class HTTPJWTHandler extends Thread implements org.eclipse.jetty.server.H
 			for (final Enumeration<String> e = request.getHeaderNames(); e.hasMoreElements();) {
 				logger.debug("header " + e.nextElement());
 			}
-			final Cookie[] cookies = request.getCookies();
-			logger.debug("cookies.length = " + cookies.length);
-			for (int cookieN = 0; cookieN < cookies.length; cookieN++) {
-				logger.debug("Cookie[" + cookieN + "] = " + cookies[cookieN].toString());
-				logger.debug("Cookie[" + cookieN + "].getName() = " + cookies[cookieN].getName());
-				logger.debug("Cookie[" + cookieN + "].getDomain() = " + cookies[cookieN].getDomain());
-				logger.debug("Cookie[" + cookieN + "].getComment() = " + cookies[cookieN].getComment());
-				logger.debug("Cookie[" + cookieN + "].getValue() = " + cookies[cookieN].getValue());
-				logger.debug("Cookie[" + cookieN + "].getValue().compareTo('token') = " + cookies[cookieN].getName().compareTo("token"));
-				if (cookies[cookieN].getName().compareTo("token") == 0) {
-					try {
-						Algorithm algorithm = Algorithm.HMAC256("Imesety");
-						JWTVerifier verifier = JWT.require(algorithm)
-								.withIssuer("xwhep")
-								.build(); //Reusable verifier instance
-						DecodedJWT jwt = verifier.verify(cookies[cookieN].getValue());
-						logger.debug("JWT id = " + jwt.getId());
-						logger.debug("JWT key id = " + jwt.getKeyId());
-						logger.debug("JWT issuer = " + jwt.getIssuer());
-						logger.debug("JWT payload = " + jwt.getPayload());
-						logger.debug("JWT issued at = " + jwt.getIssuedAt());
-						logger.debug("JWT expires at = " + jwt.getExpiresAt());
-						logger.debug("JWT getNotBefore = " + jwt.getNotBefore());
-						logger.debug("JWT jwt.getClaim('name') = " + jwt.getClaim("name"));
-						logger.debug("JWT jwt.getClaim('name').asString() = " + jwt.getClaim("name").asString());
-					} catch (Exception e){
-						logger.exception("Json Web Token ", e);
-					}
-					//						} catch (UnsupportedEncodingException e){
-					//					    logger.exception("Json Web Token ", e);
-					//					} catch (JWTVerificationException exception){
-					//					    //Invalid signature/claims
-					//					}
-				}
-			}
-			logger.debug("request.getParameterMap().size() = " + request.getParameterMap().size());
-			if (request.getParameterMap().size() > 0) {
-				jwtRequest(baseRequest);
-			}
+			jwtRequest(baseRequest);
+
 		} catch (final Exception e) {
 			response.setContentType("text/html");
 			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -347,7 +311,6 @@ public class HTTPJWTHandler extends Thread implements org.eclipse.jetty.server.H
 			logger.exception(e);
 		}
 
-		baseRequest.setHandled(true);
 		response.getWriter().flush();
 		request = null;
 		response = null;
@@ -358,30 +321,55 @@ public class HTTPJWTHandler extends Thread implements org.eclipse.jetty.server.H
 	 * This handles XMLHTTPRequest
 	 */
 	private void jwtRequest(Request baseRequest) throws IOException {
-		// String op =
-		// request.getParameter(XWPostParams.AUTH_OPERATOR.toString());
-		// if (op==null) {
-		// final Authentication auth = getAuthentication(baseRequest);
-		// final String url = localRootUrl + "?" + XWPostParams.AUTH_NONCE
-		// + "=" + baseRequest.getParameter(OPENID_NONCE_PARAMETER)
-		// + "&" + XWPostParams.AUTH_EMAIL + "=" + auth.getEmail()
-		// + "&" + XWPostParams.AUTH_IDENTITY + "=" + auth.getIdentity();
-		// response.sendRedirect(url);
-		// return;
-		// }
-		// if (OP_GOOGLE.equals(op) || OP_YAHOO.equals(op)) {
-		// // redirect to Google or Yahoo sign on page:
-		// final Endpoint endpoint = manager.lookupEndpoint(op);
-		// final Association association = manager.lookupAssociation(endpoint);
-		// session.setAttribute(ATTR_MAC, association.getRawMacKey());
-		// session.setAttribute(ATTR_ALIAS, endpoint.getAlias());
-		// final String url = manager.getAuthenticationUrl(endpoint,
-		// association);
-		// response.sendRedirect(url);
-		// }
-		// else {
-		// throw new IOException("Unsupported OP: " + op);
-		// }
+		final Cookie[] cookies = request.getCookies();
+		if ((cookies == null) || (cookies.length < 1)){
+			logger.debug("no cookie found");
+			baseRequest.setHandled(false);
+			return;
+		}
+
+		logger.debug("cookies.length = " + cookies.length);
+		for (int cookieN = 0; cookieN < cookies.length; cookieN++) {
+			logger.debug("Cookie[" + cookieN + "] = " + cookies[cookieN].toString());
+			logger.debug("Cookie[" + cookieN + "].getName() = " + cookies[cookieN].getName());
+			logger.debug("Cookie[" + cookieN + "].getDomain() = " + cookies[cookieN].getDomain());
+			logger.debug("Cookie[" + cookieN + "].getComment() = " + cookies[cookieN].getComment());
+			logger.debug("Cookie[" + cookieN + "].getValue() = " + cookies[cookieN].getValue());
+			logger.debug("Cookie[" + cookieN + "].getValue().compareTo('token') = " + cookies[cookieN].getName().compareTo("token"));
+			if (cookies[cookieN].getName().compareTo("token") == 0) {
+				final String secret = Dispatcher.getConfig().getProperty(XWPropertyDefs.JWTSECRET);
+				final String issuer = Dispatcher.getConfig().getProperty(XWPropertyDefs.JWTISSUER);
+				logger.debug("Config JWT secret = " + secret);
+				logger.debug("Config JWT issuer = " + issuer);
+				try {
+					Algorithm algorithm = Algorithm.HMAC256(secret);
+					JWTVerifier verifier = JWT.require(algorithm)
+							.withIssuer(issuer)
+							.build(); //Reusable verifier instance
+					logger.debug("cookies[cookieN].getValue() = " + cookies[cookieN].getValue());
+					DecodedJWT jwt = verifier.verify(cookies[cookieN].getValue());
+					logger.debug("JWT issuer = " + jwt.getIssuer());
+					logger.debug("JWT id = " + jwt.getId());
+					logger.debug("JWT key id = " + jwt.getKeyId());
+					logger.debug("JWT issuer = " + jwt.getIssuer());
+					logger.debug("JWT payload = " + jwt.getPayload());
+					logger.debug("JWT issued at = " + jwt.getIssuedAt());
+					logger.debug("JWT expires at = " + jwt.getExpiresAt());
+					logger.debug("JWT getNotBefore = " + jwt.getNotBefore());
+					logger.debug("JWT jwt.getClaim('blockchainaddr') = " + jwt.getClaim("blockchainaddr"));
+					logger.debug("JWT jwt.getClaim('blockchainaddr').asString() = " + jwt.getClaim("blockchainaddr").asString());
+				} catch (Exception e){
+					logger.exception("Json Web Token ", e);
+				}
+				//						} catch (UnsupportedEncodingException e){
+				//					    logger.exception("Json Web Token ", e);
+				//					} catch (JWTVerificationException exception){
+				//					    //Invalid signature/claims
+				//					}
+			}
+		}
+
+		baseRequest.setHandled(true);
 	}
 
 	/**
