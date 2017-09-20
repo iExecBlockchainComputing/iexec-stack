@@ -429,7 +429,6 @@ public abstract class XMLRPCCommand extends XMLable {
 
 			if (attribute.compareToIgnoreCase(getColumnLabel(MANDATINGLOGIN)) == 0) {
 				logger.finest("XMLRPCCommand  ##  creating mandating login from " + value);
-				System.out.println("XMLRPCCommand  ##  creating mandating login from " + value);
 				try {
 					setValueAt(MANDATINGLOGIN, value);
 				} catch (final Exception e) {
@@ -439,7 +438,6 @@ public abstract class XMLRPCCommand extends XMLable {
 			}
 			if (attribute.compareToIgnoreCase(getColumnLabel(URI)) == 0) {
 				logger.finest("XMLRPCCommand  ##  creating uri from " + value);
-//				System.out.println("XMLRPCCommand  ##  creating uri from " + value);
 				try {
 					setValueAt(URI, new URI(value));
 				} catch (final Exception e) {
