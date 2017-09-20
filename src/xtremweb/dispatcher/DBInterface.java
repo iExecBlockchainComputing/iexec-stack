@@ -411,7 +411,7 @@ public final class DBInterface {
 			emailSender.send("XtremWeb-HEP@" + XWTools.getLocalHostName() + " : " + row.getUID(), theClient.getEMail(),
 					msg + "\n" + row.toString(false, true) + "\n\n" + "https://" + XWTools.getLocalHostName() + ":"
 							+ System.getProperty(XWPropertyDefs.HTTPSPORT.toString()) + "/get/" + row.getUID());
-		} catch (MessagingException | IOException e) {
+		} catch (MessagingException e) {
 			logger.exception(e);
 		}
 	}
@@ -3027,7 +3027,6 @@ public final class DBInterface {
 			return itf;
 		} catch (IllegalArgumentException e) {
 			final String login = command.getURI().getPath().substring(1);
-			System.out.println("DBInterface#getUser() : " + login);
 			final UserInterface ret = getUserByLogin(command, login);
 			if (ret == null) {
 				return null;

@@ -124,12 +124,8 @@ public abstract class Table extends Type {
 	 * @exception IOException
 	 *                is thrown is attribute is nor set, neither well formed
 	 */
-	public final UID getUID() throws IOException {
-		try {
-			return (UID) getValue(TableColumns.UID);
-		} catch (final Exception e) {
-			throw new IOException("DataInterface#getUID() : attribute not set");
-		}
+	public final UID getUID() {
+		return (UID) getValue(TableColumns.UID);
 	}
 
 	/**
