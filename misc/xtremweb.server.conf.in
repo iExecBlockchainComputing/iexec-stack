@@ -76,7 +76,7 @@ DBPASS= @DBPASSWORD@
 #
 # This contains the mail protocol to use
 # Since 9.1.0
-# Default : "smtp"
+# Default : smtp
 #
 #MAILPROTOCOL=pop3
 
@@ -100,6 +100,17 @@ DBPASS= @DBPASSWORD@
 # since 8.2.0
 #
 #DELEGATEDREGISTRATION=false
+
+#
+# Server : the JWT issuer
+# @since 11.0.0
+#
+#JWTISSUER=
+#
+# Server : the JWT secret key to decode
+# @since 11.0.0
+#
+#JWTSECRET=
 
 #
 # This is necessary to delegate authentication via OAuth
@@ -146,7 +157,7 @@ DBPASS= @DBPASSWORD@
 # You can try this in your browser
 # @since 10.5.0
 #
-GOOGLE_DISCOVERYURI="https://accounts.google.com/.well-known/openid-configuration"
+GOOGLE_DISCOVERYURI=https://accounts.google.com/.well-known/openid-configuration
 #
 # This is necessary to delegate authentication via OAuth
 # The google application ID
@@ -333,8 +344,7 @@ WORKERUID=
 
 #
 # Internode communications needs a running SmartSockets hub; this may also denote a hub network<br />
-# Property name : "smartsocketshubaddr"<br />
-# Property type : string<br />
+# Property type : string
 # Default value : null
 # @since 8.0.0
 #
@@ -387,8 +397,7 @@ SSLKEYPASSPHRASE= @KEYPASSPHRASE@
 SSLKEYPASSWORD= @KEYSERVERPASSWORD@
 
 # Server        : the directory containing user public keys<br />
-# Property name : "USERCERTDIR"<br />
-# Property type : String<br />
+# Property name : USERCERTDIR
 # Default       : null
 # @since 7.4.0
 # Note : please use full path; don't use ~ or any variable (e.g. $HOME)
