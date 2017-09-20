@@ -61,6 +61,11 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWTVerifier;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.interfaces.DecodedJWT;
+
 import xtremweb.common.BytePacket;
 import xtremweb.common.DataInterface;
 import xtremweb.common.DataTypeEnum;
@@ -896,16 +901,19 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 		for (final Enumeration<String> e = request.getHeaderNames(); e.hasMoreElements();) {
 			logger.finest("header " + e.nextElement());
 		}
+		logger.debug("cookies.length = " + (request.getCookies() == null ? "0" : request.getCookies().length));
 
 		if (request.getParameterMap().size() <= 0) {
 
 			if (target.equals(PATH)) {
+				logger.debug("redirecting to dashboard");
 				redirectPage(baseRequest, Resources.DASHBOARDHTML);
 				return;
 			}
 
 			for (final Resources r : Resources.values()) {
 				if (r.getName().compareToIgnoreCase(target) == 0) {
+					logger.debug("redirecting to " + r);
 					sendResource(r);
 					return;
 				}
