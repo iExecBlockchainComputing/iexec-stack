@@ -105,12 +105,12 @@ DBPASS= @DBPASSWORD@
 # Server : the JWT issuer
 # @since 11.0.0
 #
-#JWTISSUER=
+#JWTETHISSUER=
 #
 # Server : the JWT secret key to decode
 # @since 11.0.0
 #
-#JWTSECRET=
+#JWTETHSECRET=
 
 #
 # This is necessary to delegate authentication via OAuth
@@ -153,7 +153,7 @@ DBPASS= @DBPASSWORD@
 
 #
 # Google OAuth discovery point to retrieve all services URI
-# This should not be changed !
+# This should not be changed
 # You can try this in your browser
 # @since 10.5.0
 #
@@ -174,9 +174,9 @@ GOOGLE_DISCOVERYURI=https://accounts.google.com/.well-known/openid-configuration
 #
 # This is necessary to delegate authentication via OAuth
 # The google auth URI
+# This should not be changed
 # @since 10.5.0
-#
-#GOOGLEAUTHURI=
+GOOGLEAUTHURI="https://www.googleapis.com/oauth2/v3/userinfo"
 #
 # This is necessary to delegate authentication via OAuth
 # The google scope
