@@ -73,15 +73,15 @@ public enum XWPropertyDefs {
 		}
 	},
 	/**
-	 * Server : the JWT issuer
+	 * Server : the JWT issuer to authenticate with ethereum public key address
 	 * @since 11.0.0
 	 */
-	JWTISSUER,
+	JWTETHISSUER,
 	/**
-	 * Server : the JWT secret key to decode
+	 * Server : the JWT secrete key to decode eth auth
 	 * @since 11.0.0
 	 */
-	JWTSECRET,
+	JWTETHSECRET,
 	/**
 	 * Server : the facebook application ID for OAuth
 	 * <p>
