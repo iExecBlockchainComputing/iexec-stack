@@ -28,10 +28,12 @@ import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.security.AccessControlException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Enumeration;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -54,31 +56,32 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.github.scribejava.core.oauth.OAuthService;
 
 import xtremweb.common.Logger;
 import xtremweb.common.LoggerLevel;
+import xtremweb.common.MD5;
 import xtremweb.common.XWPropertyDefs;
 import xtremweb.common.XWTools;
 import xtremweb.communications.Connection;
+import xtremweb.dispatcher.HTTPOAuthHandler.OAuthException;
 import xtremweb.dispatcher.HTTPOAuthHandler.Operator;
 
 /**
  * This handles HTTP request to /jwt/ This accepts and verifies
  * {@link http://jwt.io/ Json Web Tokens}.
  *
- * Created: 8 octobre 2015
- *
  * @author Oleg Lodygensky
- * @since XWHEP 10.2.0
+ * @since XWHEP 11.0.0
  */
 
-public class HTTPJWTHandler extends Thread implements org.eclipse.jetty.server.Handler {
+public abstract class HTTPJWTHandler extends Thread implements org.eclipse.jetty.server.Handler {
 
-	private Logger logger;
+	protected Logger logger;
 
-	private HttpServletRequest request;
-	private HttpServletResponse response;
-	private HttpSession session;
+	protected HttpServletRequest request;
+	protected HttpServletResponse response;
+	protected HttpSession session;
 
 	/**
 	 * This contains the gap while a login is valid
@@ -87,30 +90,30 @@ public class HTTPJWTHandler extends Thread implements org.eclipse.jetty.server.H
 	 */
 	long loginTimeout = 0;
 
-	static final String ATTR_MAC = "openid_mac";
-	static final String ATTR_ALIAS = "openid_alias";
-
-	private OpenIdManager manager;
 	public static final String handlerPath = "/jwt";
 
-	public static final String OPENID_NONCE_PARAMETER = "openid.response_nonce";
 	/**
 	 * This is the client host name; for debug purposes only
 	 */
-	private String remoteName;
+	protected String remoteName;
 	/**
 	 * This is the client IP addr; for debug purposes only
 	 */
-	private String remoteIP;
+	protected String remoteIP;
 	/**
 	 * This is the client port; for debug purposes only
 	 */
-	private int remotePort;
+	protected int remotePort;
 
 	/** this contains this server URL */
-	private URL localRootUrl;
+	protected URL localRootUrl;
 
-	private static HTTPJWTHandler instance;
+	protected static HTTPJWTHandler instance;
+
+	protected Algorithm algorithm;
+	protected JWTVerifier verifier;
+	final String jwtethsecret = Dispatcher.getConfig().getProperty(XWPropertyDefs.JWTETHSECRET);
+	final String jwtethissuer = Dispatcher.getConfig().getProperty(XWPropertyDefs.JWTETHISSUER);
 
 	/**
 	 * @return the instance
@@ -121,26 +124,37 @@ public class HTTPJWTHandler extends Thread implements org.eclipse.jetty.server.H
 
 	/**
 	 * This is the default constructor which only calls super("HTTPStatHandler")
+	 * @throws UnsupportedEncodingException 
+	 * @throws IllegalArgumentException 
 	 */
-	public HTTPJWTHandler() {
-		super("HTTPJWTHandler");
+	public HTTPJWTHandler() throws IllegalArgumentException, UnsupportedEncodingException {
+		this("HTTPJWTHandler");
+	}
+	/**
+	 * This is the default constructor which only calls super("HTTPStatHandler")
+	 * @throws UnsupportedEncodingException 
+	 * @throws IllegalArgumentException 
+	 */
+	protected HTTPJWTHandler(final String name) throws IllegalArgumentException, UnsupportedEncodingException {
+		super(name);
 		if (instance != null) {
 			return;
 		}
 		loginTimeout = Dispatcher.getConfig().getInt(XWPropertyDefs.LOGINTIMEOUT) * 1000;
 		logger = new Logger(this);
-		manager = new OpenIdManager();
 		try {
 			localRootUrl = new URL(Connection.HTTPSSLSCHEME + "://" + XWTools.getLocalHostName() + ":"
 					+ Dispatcher.getConfig().getPort(Connection.HTTPSPORT));
 		} catch (final MalformedURLException e) {
 			XWTools.fatal(e.getMessage());
 		}
-		manager.setRealm(localRootUrl.toString());
-		// final String returnto = localRootUrl + HTTPHandler.PATH;
-		final String returnto = localRootUrl + handlerPath;
-		logger.debug("Return to = " + returnto);
-		manager.setReturnTo(returnto);
+
+		logger.debug("JWT secret = " + jwtethsecret);
+		logger.debug("JWT issuer = " + jwtethissuer);
+		algorithm = Algorithm.HMAC256(jwtethsecret);
+		verifier = JWT.require(algorithm)
+				.withIssuer(jwtethissuer)
+				.build();
 		instance = this;
 	}
 
@@ -149,8 +163,10 @@ public class HTTPJWTHandler extends Thread implements org.eclipse.jetty.server.H
 	 *
 	 * @param l
 	 *            is the logger level
+	 * @throws UnsupportedEncodingException 
+	 * @throws IllegalArgumentException 
 	 */
-	public HTTPJWTHandler(LoggerLevel l) {
+	public HTTPJWTHandler(LoggerLevel l) throws IllegalArgumentException, UnsupportedEncodingException {
 		this();
 		logger.setLoggerLevel(l);
 	}
@@ -320,58 +336,7 @@ public class HTTPJWTHandler extends Thread implements org.eclipse.jetty.server.H
 	/**
 	 * This handles XMLHTTPRequest
 	 */
-	private void jwtRequest(Request baseRequest) throws IOException {
-		final Cookie[] cookies = request.getCookies();
-		if ((cookies == null) || (cookies.length < 1)){
-			logger.debug("no cookie found");
-			baseRequest.setHandled(false);
-			return;
-		}
-
-		logger.debug("cookies.length = " + cookies.length);
-		for (int cookieN = 0; cookieN < cookies.length; cookieN++) {
-			logger.debug("Cookie[" + cookieN + "] = " + cookies[cookieN].toString());
-			logger.debug("Cookie[" + cookieN + "].getName() = " + cookies[cookieN].getName());
-			logger.debug("Cookie[" + cookieN + "].getDomain() = " + cookies[cookieN].getDomain());
-			logger.debug("Cookie[" + cookieN + "].getComment() = " + cookies[cookieN].getComment());
-			logger.debug("Cookie[" + cookieN + "].getValue() = " + cookies[cookieN].getValue());
-			logger.debug("Cookie[" + cookieN + "].getValue().compareTo('token') = " + cookies[cookieN].getName().compareTo("token"));
-			if (cookies[cookieN].getName().compareTo("token") == 0) {
-				final String secret = Dispatcher.getConfig().getProperty(XWPropertyDefs.JWTSECRET);
-				final String issuer = Dispatcher.getConfig().getProperty(XWPropertyDefs.JWTISSUER);
-				logger.debug("Config JWT secret = " + secret);
-				logger.debug("Config JWT issuer = " + issuer);
-				try {
-					Algorithm algorithm = Algorithm.HMAC256(secret);
-					JWTVerifier verifier = JWT.require(algorithm)
-							.withIssuer(issuer)
-							.build(); //Reusable verifier instance
-					logger.debug("cookies[cookieN].getValue() = " + cookies[cookieN].getValue());
-					DecodedJWT jwt = verifier.verify(cookies[cookieN].getValue());
-					logger.debug("JWT issuer = " + jwt.getIssuer());
-					logger.debug("JWT id = " + jwt.getId());
-					logger.debug("JWT key id = " + jwt.getKeyId());
-					logger.debug("JWT issuer = " + jwt.getIssuer());
-					logger.debug("JWT payload = " + jwt.getPayload());
-					logger.debug("JWT issued at = " + jwt.getIssuedAt());
-					logger.debug("JWT expires at = " + jwt.getExpiresAt());
-					logger.debug("JWT getNotBefore = " + jwt.getNotBefore());
-					logger.debug("JWT jwt.getClaim('blockchainaddr') = " + jwt.getClaim("blockchainaddr"));
-					logger.debug("JWT jwt.getClaim('blockchainaddr').asString() = " + jwt.getClaim("blockchainaddr").asString());
-				} catch (Exception e){
-					logger.exception("Json Web Token ", e);
-				}
-				//						} catch (UnsupportedEncodingException e){
-				//					    logger.exception("Json Web Token ", e);
-				//					} catch (JWTVerificationException exception){
-				//					    //Invalid signature/claims
-				//					}
-			}
-		}
-
-		baseRequest.setHandled(true);
-	}
-
+	protected abstract void jwtRequest(Request baseRequest) throws IOException;
 	/**
 	 * This retrieves authentication from openid server response
 	 * 
@@ -379,21 +344,18 @@ public class HTTPJWTHandler extends Thread implements org.eclipse.jetty.server.H
 	 *            is the HTTP request
 	 * @return the authentication if found; null otherwise
 	 */
-	private Authentication getAuthentication(Request baseRequest) throws OpenIdException {
+	protected Authentication getAuthentication(final Request baseRequest, final String attrName) throws OpenIdException {
 		final HttpSession session = baseRequest.getSession(false);
 		if (session == null) {
 			throw new OpenIdException("session not found");
 		}
-		// check sign on result from Google or Yahoo:
-		checkNonce(baseRequest.getParameter(OPENID_NONCE_PARAMETER));
+
 		// get authentication:
-		final byte[] mac_key = (byte[]) session.getAttribute(ATTR_MAC);
-		final String alias = (String) session.getAttribute(ATTR_ALIAS);
-		final Authentication authentication = manager.getAuthentication(baseRequest, mac_key, alias);
-		return authentication;
+		final String alias = (String) session.getAttribute(attrName);
+		return null;
 	}
 
-	private void showAuthentication(PrintWriter pw, Authentication auth) {
+	protected void showAuthentication(PrintWriter pw, Authentication auth) {
 		pw.print(
 				"<html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" /><title>Test JOpenID</title></head><body><h1>You have successfully signed on!</h1>");
 		pw.print("<p>Identity: " + auth.getIdentity() + "</p>");
@@ -408,76 +370,101 @@ public class HTTPJWTHandler extends Thread implements org.eclipse.jetty.server.H
 	}
 
 	/**
-	 * This checks if nonce is unic and valid If so, the nonce is revalidated
-	 * for a new delay
-	 * 
-	 * @see #loginTimeout
-	 * @param nonce
-	 * @throws OpenIdException
-	 *             if nonce is not valid, already exists or if its survival time
-	 *             reached
+	 * This retrieves the JWT
+	 * @throws UnsupportedEncodingException 
+	 * @throws IllegalArgumentException 
+	 * @param cookie contains the string representation of the JWT
 	 */
-	private void checkNonce(String nonce) throws OpenIdException {
-		// check response_nonce to prevent replay-attack:
-		if ((nonce == null) || (nonce.length() < 20)) {
-			throw new OpenIdException("invalid nonce");
+	final protected DecodedJWT getToken(final Cookie cookie)
+			throws IllegalArgumentException, UnsupportedEncodingException, JWTVerificationException {
+		return getToken(cookie.getValue());
+	}
+	/**
+	 * This verifies the JWT
+	 * @param strToken is the string representation of the JWT
+	 */
+	final protected DecodedJWT getToken(final String strToken)
+			throws IllegalArgumentException, UnsupportedEncodingException, JWTVerificationException {
+		if (strToken == null) {
+			throw new JWTVerificationException("string token is null");
 		}
-		// make sure the time of server is correct:
-		final long nonceTime = getNonceTime(nonce);
-		final long diff = Math.abs(System.currentTimeMillis() - nonceTime);
-		if (diff > loginTimeout) {
-			throw new OpenIdException("bad nonce time");
+		return verifier.verify(strToken);
+	}
+	/**
+	 * This retrieves the expected cookie
+	 * @see #COOKIE_NAME
+	 * @return the found cookie or null
+	 */
+	final protected Cookie getCookie(final String cookieName) throws IllegalArgumentException {
+
+		final Cookie[] cookies = request.getCookies();
+		if ((cookies == null) || (cookies.length < 1)){
+			throw new IllegalArgumentException("no cookie");
 		}
-		if (isNonceExist(nonce)) {
-			throw new OpenIdException("unknown noce");
+
+		logger.debug("cookies.length = " + cookies.length);
+		for (int cookieN = 0; cookieN < cookies.length; cookieN++) {
+			if (cookies[cookieN].getName().compareTo(cookieName) == 0) {
+				return cookies[cookieN];
+			}
 		}
-		storeNonce(nonce, nonceTime + loginTimeout);
+		throw new IllegalArgumentException("cookie not found : " + cookieName);
+	}
+	/**
+	 * This simulates a database that store all states:
+	 */
+	protected final Hashtable<String, Cookie> stateDb = new Hashtable<>();
+
+	/**
+	 * This generates a new state (a random string) and stores it in stateDb
+	 *
+	 * @return the new generated state
+	 */
+	protected String newState(final Cookie token) {
+		final MD5 md5 = new MD5(token.getValue() + System.currentTimeMillis() + Math.random());
+		return md5.asHex();
 	}
 
 	/**
-	 * This checks if nonce exists and is valid
-	 * 
-	 * @param nonce
-	 * @throws OpenIdException
-	 *             if nonce is not valid, does not exist or its survival time
-	 *             reached
+	 * This tests if state exist in database:
+	 *
+	 * @param state
+	 * @throws OAuthException
+	 *             is thrown if provided state does not exist
 	 */
-	public void verifyNonce(String nonce) throws OpenIdException {
-		// check response_nonce to prevent replay-attack:
-		if ((nonce == null) || (nonce.length() < 20)) {
-			throw new OpenIdException("invalid nonce");
-		}
-		// make sure the time of server is correct:
-		final long nonceTime = getNonceTime(nonce);
-		final long diff = Math.abs(System.currentTimeMillis() - nonceTime);
-		if (diff > loginTimeout) {
-			throw new OpenIdException("bad nonce time");
-		}
-		if (isNonceExist(nonce) == false) {
-			throw new OpenIdException("unknown noce");
+	void checkState(final String state) throws AccessControlException {
+		if (!stateExists(state)) {
+			throw new AccessControlException("invalid state");
 		}
 	}
 
-	// simulate a database that store all nonce:
-	private final Set<String> nonceDb = new HashSet<>();
-
-	// check if nonce is exist in database:
-	boolean isNonceExist(String nonce) {
-		return nonceDb.contains(nonce);
+	/**
+	 * This tests if state exist in database:
+	 *
+	 * @param state
+	 * @return true if state exists
+	 */
+	boolean stateExists(final String state) {
+		return stateDb.containsKey(state);
 	}
 
-	// store nonce in database:
-	void storeNonce(String nonce, long expires) {
-		nonceDb.add(nonce);
-		logger.debug("storeNonce(" + nonce + "," + expires + ") = " + nonceDb.contains(nonce));
+	/**
+	 * This tests if state exist in database:
+	 *
+	 * @param state
+	 * @return true if state exists
+	 */
+	Cookie getState(final String state) {
+		return stateDb.get(state);
 	}
 
-	long getNonceTime(String nonce) {
-		try {
-			return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").parse(nonce.substring(0, 19) + "+0000").getTime();
-		} catch (final ParseException e) {
-			throw new OpenIdException("Bad nonce time.");
-		}
+	/**
+	 * This stores state in database, if not already stored
+	 * @param state is the state to store
+	 * @param jwt is a Cookie containing the signed JWT 
+	 */
+	void storeState(final String state, final Cookie jwt) {
+		stateDb.put(state, jwt);
 	}
 
 	/**
