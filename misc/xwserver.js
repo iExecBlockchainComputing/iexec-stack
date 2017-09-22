@@ -874,6 +874,7 @@ function getCurrentUser()
     }
 
     var url="/get/" + uid;
+    console.log("getCurrentUser : " + url);
     xmlHttpConnectionGetCurrentUser.onreadystatechange=getCurrentUserStateChanged;
     xmlHttpConnectionGetCurrentUser.open("POST",url,true);
     xmlHttpConnectionGetCurrentUser.send(null);
@@ -920,43 +921,51 @@ function getCurrentUserStateChanged()
 		return;
 	}
 
-	try { //les balises br en fin de lignes sont pour des tests 
+	try { 
        	document.getElementById(divID).innerHTML =
-       	      "<span class=\"overviewleft\">Login</span><span class=\"overviewright\" id=\"overviewUserLogin\">" +"            "+xmlDoc.getElementsByTagName("login").item(0).firstChild.nodeValue + "</span> </br>"
-              + "<span class=\"overviewleft\">Email</span><span class=\"overviewright\" id=\"overviewUserEmail\">" +"            "+ xmlDoc.getElementsByTagName("email").item(0).firstChild.nodeValue + "</span> </br>" 
-              + "<span class=\"overviewleft\">Rights</span><span class=\"overviewright\" id=\"overviewUserRights\">" +"            "+ xmlDoc.getElementsByTagName("rights").item(0).firstChild.nodeValue + "</span> </br>"; 
-		try {
+       	      "<span class=\"overviewleft\">Login</span><span class=\"overviewright\" id=\"overviewUserLogin\">" +"            "+xmlDoc.getElementsByTagName("login").item(0).firstChild.nodeValue + "</span> </br>";
+
+       	try {
+       		document.getElementById(divID).innerHTML +=
+       			"<span class=\"overviewleft\">Email</span><span class=\"overviewright\" id=\"overviewUserEmail\">" +"            "+ xmlDoc.getElementsByTagName("email").item(0).firstChild.nodeValue + "</span> </br>" 
+        } catch(err) {
+        }
+
+       	document.getElementById(divID).innerHTML +=
+            "<span class=\"overviewleft\">Rights</span><span class=\"overviewright\" id=\"overviewUserRights\">" +"            "+ xmlDoc.getElementsByTagName("rights").item(0).firstChild.nodeValue + "</span> </br>"; 
+
+       	try {
        		document.getElementById(divID).innerHTML +=
             	"<span class=\"overviewleft\">First Name</span><span class=\"overviewright\" id=\"overviewUserFName\">" +"            "+ xmlDoc.getElementsByTagName("fname").item(0).firstChild.nodeValue + "</span></br>";
-         } catch(err) {
-         } 
+        } catch(err) {
+        } 
          try {
        		document.getElementById(divID).innerHTML +=
              	"<span class=\"overviewleft\">Last Name</span><span class=\"overviewright\" id=\"overviewUserLName\">" +"            "+ xmlDoc.getElementsByTagName("lname").item(0).firstChild.nodeValue + "</span></br>";
-         } catch(err) {
-         } 
+        } catch(err) {
+        } 
 
    		document.getElementById(divID).innerHTML +=
               "<span class=\"overviewleft\">&nbsp;</span><span class=\"overviewright\">&nbsp;</span></br>";
 
          try {
        		document.getElementById(divID).innerHTML +=
-              "<span class=\"overviewleft\">Pending jobs</span><span class=\"overviewright\" id=\"overviewUserPending\">" +"            "+ xmlDoc.getElementsByTagName("pendingjobs").item(0).firstChild.nodeValue + "</span></br>"; 
+              "<span class=\"overviewleft\">Pending jobs&nbsp;</span><span class=\"overviewright\" id=\"overviewUserPending\">" +"            "+ xmlDoc.getElementsByTagName("pendingjobs").item(0).firstChild.nodeValue + "</span></br>"; 
          } catch(err) {
          } 
          try {
        		document.getElementById(divID).innerHTML +=
-              "<span class=\"overviewleft\">Running jobs</span><span class=\"overviewright\" id=\"overviewUserRunning\">" + xmlDoc.getElementsByTagName("runningjobs").item(0).firstChild.nodeValue + "</span></br>"; 
+              "<span class=\"overviewleft\">Running jobs&nbsp;</span><span class=\"overviewright\" id=\"overviewUserRunning\">" + xmlDoc.getElementsByTagName("runningjobs").item(0).firstChild.nodeValue + "</span></br>"; 
          } catch(err) {
          } 
          try {
        		document.getElementById(divID).innerHTML +=
-              "<span class=\"overviewleft\">Error jobs</span><span class=\"overviewright\" id=\"overviewUserError\">" + xmlDoc.getElementsByTagName("errorjobs").item(0).firstChild.nodeValue + "</span></br>"; 
+              "<span class=\"overviewleft\">Error jobs&nbsp;</span><span class=\"overviewright\" id=\"overviewUserError\">" + xmlDoc.getElementsByTagName("errorjobs").item(0).firstChild.nodeValue + "</span></br>"; 
          } catch(err) {
          } 
          try {
        		document.getElementById(divID).innerHTML +=
-              "<span class=\"overviewleft\">Completed jobs</span><span class=\"overviewright\" id=\"overviewUserJobs\">" + xmlDoc.getElementsByTagName("nbjobs").item(0).firstChild.nodeValue + "</span></br>"; 
+              "<span class=\"overviewleft\">Completed jobs&nbsp;</span><span class=\"overviewright\" id=\"overviewUserJobs\">" + xmlDoc.getElementsByTagName("nbjobs").item(0).firstChild.nodeValue + "</span></br>"; 
          } catch(err) {
          } 
 
@@ -965,7 +974,7 @@ function getCurrentUserStateChanged()
        	var completeds = parseInt(xmlDoc.getElementsByTagName("nbjobs").item(0).firstChild.nodeValue);
        	var errors     = parseInt(xmlDoc.getElementsByTagName("errorjobs").item(0).firstChild.nodeValue);
 
-	var propertyNames = ["pending", "running", "completed", "errors"];
+       	var propertyNames = ["pending", "running", "completed", "errors"];
 		addData("graph", {"id":new Date().getTime(), "pending":pendings, "running":runnings, "completed":completeds, "errors":errors});
 	}
 	catch(err){
