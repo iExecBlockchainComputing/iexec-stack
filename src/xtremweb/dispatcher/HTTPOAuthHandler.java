@@ -254,8 +254,8 @@ public class HTTPOAuthHandler extends Thread implements org.eclipse.jetty.server
 		 * 
 		 * @since 10.5.0
 		 */
-		public void setOAuthUri(final URI key) {
-			this.authUri = key;
+		public void setOAuthUri(final URI uri) {
+			this.authUri = uri;
 		}
 
 		/**
@@ -771,7 +771,7 @@ public class HTTPOAuthHandler extends Thread implements org.eclipse.jetty.server
 			logger.debug("userinfo_endpoint " + op.getUserInfoEndpointUri());
 			logger.debug("accessTocken " + accessToken + ", " + accessToken.getRawResponse());
 			final OAuthRequest oauthRequest = new OAuthRequest(Verb.GET,
-					"https://www.googleapis.com/oauth2/v3/userinfo", service);
+					op.getOAuthUri().toString(), service);
 			service.signRequest(accessToken, oauthRequest);
 			final Response oauthResponse = oauthRequest.send();
 
