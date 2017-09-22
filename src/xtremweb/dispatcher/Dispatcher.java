@@ -218,9 +218,9 @@ public class Dispatcher {
 
 				// JWT Handler needs HTTP session
 				final SessionHandler jwt_sessionHandler = new SessionHandler();
-				final HTTPJWTHandler jwth = new HTTPJWTHandler();
+				final HTTPJWTEthereumAuthHandler jwth = new HTTPJWTEthereumAuthHandler();
 				jwt_sessionHandler.setHandler(jwth);
-				httpServer.addHandler(HTTPJWTHandler.handlerPath, jwt_sessionHandler);
+				httpServer.addHandler(HTTPJWTEthereumAuthHandler.handlerPath, jwt_sessionHandler);
 
 				// StatsHandler does not need HTTP session
 				httpServer.addHandler(HTTPStatsHandler.PATH, new HTTPStatsHandler());
