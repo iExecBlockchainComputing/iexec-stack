@@ -44,7 +44,7 @@
   <property name="misc.dir" value="${basedir}/misc" />
   <property name="benchmark.dir" value="${basedir}/benchmark" />
   <property name="src.dir" value="${basedir}/src" />
-  <property name="src.java.dir" value="${src.dir}/xtremweb" />
+  <property name="src.java.dir" value="${src.dir}/main/java/xtremweb" />
   <property name="src.c.dir" value="${src.dir}/natif" />
   <property name="src.scripts.dir" value="${src.dir}/scripts" />
   <property name="lib.dir" value="${basedir}/classes" />
