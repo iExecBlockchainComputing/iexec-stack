@@ -42,10 +42,10 @@
    <!-- DIRECTORIES -->
   <property name="misc.dir" value="${basedir}/misc" />
   <property name="src.dir" value="${basedir}/src" />
-  <property name="src.test.dir" value="${basedir}/test" />
-  <property name="src.java.dir" value="${src.dir}/xtremweb" />
-  <property name="src.java.test.dir" value="${src.test.dir}/xtremweb" />
-  <property name="src.c.dir" value="${src.dir}/natif" />
+  <property name="src.test.dir" value="${src.dir}/test/" />
+  <property name="src.java.dir" value="${src.dir}/main/java/xtremweb" />
+  <property name="src.java.test.dir" value="${src.test.dir}/java/xtremweb" />
+  <property name="src.c.dir" value="${src.dir}/natif/src/main/natif/xtremweb/archdep" />
   <property name="src.scripts.dir" value="${src.dir}/scripts" />
   <property name="lib.dir" value="${basedir}/classes" />
   <property name="build.dir" value="${basedir}/build" />
