@@ -47,10 +47,10 @@ public final class UID extends XMLable {
 	 */
 	public static final String THISTAG = "uid";
 	/**
-	 * This defines the null UID so that we can differenciate a null value
+	 * This defines the null UID so that we can differentiate a null value
 	 * (where value is not defined) to a empty value where value is defined to
 	 * be empty<br />
-	 * This is especially usefull to force works.STDIN to null even if
+	 * This is especially useful to force works.STDIN to null even if
 	 * apps.STDIN is defined
 	 */
 	public static final UID NULLUID = newUID("00000000-0000-0000-0000-000000000000");
@@ -88,6 +88,14 @@ public final class UID extends XMLable {
 	private static UID myUid = new UID();
 
 	/**
+	 * @param m
+	 *            the new value of myUid
+	 */
+	public static void setMyUid(final UID m) {
+		myUid = m;
+	}
+
+	/**
 	 * This is the unic identifier
 	 */
 	private UUID uuid;
@@ -99,7 +107,7 @@ public final class UID extends XMLable {
 	private static final int UID = FIRST_ATTRIBUTE;
 
 	/**
-	 * This constructs a new object, instancianting a new java.rmi.serverUID
+	 * This constructs a new object, instantiating a new java.rmi.serverUID
 	 */
 	public UID() {
 		super(THISTAG, UID);
@@ -146,7 +154,6 @@ public final class UID extends XMLable {
 		try {
 			reader.read(in);
 		} catch (final InvalidKeyException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -332,6 +339,8 @@ public final class UID extends XMLable {
 		logger.info("cache.get(copy) should be the same as cache.get(org)\n");
 		logger.info("cache.get(org) = " + cache.get(org));
 		logger.info("cache.get(copy) = " + cache.get(copy));
+		logger.info("org = " + org);
+		logger.info("org.hasCode = " + org.hashCode());
 	}
 
 	/**
@@ -341,13 +350,5 @@ public final class UID extends XMLable {
 	 */
 	public static UID getMyUid() {
 		return myUid;
-	}
-
-	/**
-	 * @param m
-	 *            the new value of myUid
-	 */
-	public static void setMyUid(final UID m) {
-		myUid = m;
 	}
 }
