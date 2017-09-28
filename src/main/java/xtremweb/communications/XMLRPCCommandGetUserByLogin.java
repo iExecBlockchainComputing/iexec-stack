@@ -82,7 +82,7 @@ public class XMLRPCCommandGetUserByLogin extends XMLRPCCommand {
 	 *
 	 * @param uri
 	 *            contains the URI to connect to; its path must contains the
-	 *            login of the user to retreive
+	 *            login of the user to retrieve
 	 * @param u
 	 *            defines the user who executes this command
 	 */
