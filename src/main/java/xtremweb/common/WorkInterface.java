@@ -108,7 +108,7 @@ public class WorkInterface extends Table {
 			 *
 			 * @param v
 			 *            the String representation
-			 * @return a Boolean representing the column value
+			 * @return a String representing the column value
 			 * @throws Exception
 			 *             is thrown on instantiation error
 			 */
