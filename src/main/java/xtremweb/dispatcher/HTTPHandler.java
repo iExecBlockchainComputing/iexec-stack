@@ -1085,19 +1085,18 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 			logger.debug("Parameters dataUploadSize = " + dataUploadSize + " dataUploadmd5sum = " + dataUploadmd5sum);
 
 			final Iterator<String> it = paths.iterator();
-			String uriWithoutCmd = "";
+			final StringBuilder uriWithoutCmd = new StringBuilder();
 			int i = 0;
 			while (it.hasNext()) {
 				final String st = it.next();
 				logger.debug("Parsing path path = " + st);
 				if (i++ > 0) {
-					uriWithoutCmd += "/" + st;
+					uriWithoutCmd.append("/" + st);
 				}
 			}
 
 			final URI uri = new URI(Connection.httpsScheme() + "://" + XWTools.getHostName(request.getServerName())
-			+ ":" + request.getServerPort() + uriWithoutCmd);
-			uriWithoutCmd = null;
+			+ ":" + request.getServerPort() + uriWithoutCmd.toString());
 			logger.debug("URI = " + uri);
 
 			final String objXmlDesc = request.getParameter(XWPostParams.XMLDESC.toString());
