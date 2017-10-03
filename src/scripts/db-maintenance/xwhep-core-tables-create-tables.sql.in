@@ -814,7 +814,7 @@ create table if not exists  works  (
   mtime               timestamp                                    comment 'Timestamp of last update',
   userproxy           varchar(254)                                 comment 'This is the X.509 user proxy URI to identify the owner of this work. this is not a certificate',
   accessRights        int(4)                      default 0x700    comment 'This defines access rights "a la" linux FS  See xtremweb.common.XWAccessRights.java',
-  sgid                varchar(254)                                 comment 'XWHEP 7.2.0 : this is the Service Grid Identifier; this is set by the DG 2 SG bridge, if any',
+  sgid                varchar(254)                                 comment 'external id - xw 7.2.0: Service Grid Identifier set by the DG 2 SG bridge; xw 11.1.0 : blockchain transaction hash',
   wallclocktime       int(10)                                      comment 'Wallclocktime : how many seconds a job can be computed  The job is stopped as the wall clocktime is reached  If wallclocktime < 0, the job is not stopped  Since 8.2.0',
   maxRetry            int(3)                                       comment 'How many time should we try to compute',
   retry               int(3)                                       comment 'How many time have we tried to compute  Since 8.0.0',
@@ -860,6 +860,7 @@ create table if not exists  works  (
   index  groupUID            (groupUID),
   index  expectedhostUID     (expectedhostUID),
   index  ownerUID            (ownerUID),
+  index  sgId                (sgId),
   index  completedDate       (completedDate)
   )
 engine  = @DBENGINE@,
