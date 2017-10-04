@@ -438,6 +438,34 @@ interface ClientAPI {
 			throws InvalidKeyException, AccessControlException, IOException, SAXException;
 
 	/**
+	 * This retrieves a work from its external ID (external scheduler, blockchain transaction)
+	 * @return a WorkInterface
+	 * @since 11.1.0
+	 */
+	public Table getWorkByExternalId(final String login, final boolean bypass)
+			throws InvalidKeyException, AccessControlException, IOException, SAXException, URISyntaxException;
+
+	/**
+	 * This retrieves a work from its external ID (external scheduler, blockchain transaction)
+	 * @return a WorkInterface
+	 * @since 11.1.0
+	 */
+	public Table getWorkByExternalId(final XMLRPCCommandGetWorkByExternalId command)
+			throws InvalidKeyException, AccessControlException, IOException, SAXException;
+	/**
+	 * This retrieves an user from server
+	 *
+	 * @param command
+	 *            is the command to send to server to retreive user
+	 * @param bypass
+	 *            if true user is downloaded from server even if already in
+	 *            cache if false, user is only downloaded if not already in
+	 *            cache
+	 */
+	public Table getWorkByExternalId(final XMLRPCCommandGetWorkByExternalId command, final boolean bypass)
+			throws InvalidKeyException, AccessControlException, IOException, SAXException;
+
+	/**
 	 * This removes a set of jobs from server
 	 *
 	 * @param uids

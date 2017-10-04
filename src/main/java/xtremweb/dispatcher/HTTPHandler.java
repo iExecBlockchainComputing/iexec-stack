@@ -88,6 +88,7 @@ import xtremweb.communications.URI;
 import xtremweb.communications.XMLRPCCommand;
 import xtremweb.communications.XMLRPCCommandActivateHost;
 import xtremweb.communications.XMLRPCCommandChmod;
+import xtremweb.communications.XMLRPCCommandGet;
 import xtremweb.communications.XMLRPCCommandWorkAlive;
 import xtremweb.communications.XWPostParams;
 import xtremweb.database.SQLRequest;
@@ -1085,19 +1086,18 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 			logger.debug("Parameters dataUploadSize = " + dataUploadSize + " dataUploadmd5sum = " + dataUploadmd5sum);
 
 			final Iterator<String> it = paths.iterator();
-			String uriWithoutCmd = "";
+			final StringBuilder uriWithoutCmd = new StringBuilder();
 			int i = 0;
 			while (it.hasNext()) {
 				final String st = it.next();
 				logger.debug("Parsing path path = " + st);
 				if (i++ > 0) {
-					uriWithoutCmd += "/" + st;
+					uriWithoutCmd.append("/" + st);
 				}
 			}
 
 			final URI uri = new URI(Connection.httpsScheme() + "://" + XWTools.getHostName(request.getServerName())
-			+ ":" + request.getServerPort() + uriWithoutCmd);
-			uriWithoutCmd = null;
+			+ ":" + request.getServerPort() + uriWithoutCmd.toString());
 			logger.debug("URI = " + uri);
 
 			final String objXmlDesc = request.getParameter(XWPostParams.XMLDESC.toString());
@@ -1548,7 +1548,7 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 	public synchronized long uploadData(final XMLRPCCommand command)
 			throws IOException, InvalidKeyException, AccessControlException {
 
-		DataInterface theData = (DataInterface)get(command);
+		DataInterface theData = (DataInterface)get((XMLRPCCommandGet)command);
 		UID uid = command.getURI().getUID();
 
 		long ret = 0;

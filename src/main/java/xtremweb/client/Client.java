@@ -918,21 +918,17 @@ public final class Client {
 					obj = get((UID) param, display, bypass);
 				} catch (final ClassCastException e1) {
 					try {
-						obj = get((URI) param, display, bypass);
-					} catch (final ClassCastException e2) {
-						try {
-							// this may be the case if param has been retrieved
-							// from server
-							obj = get((UID) ((XMLValue) param).getValue(), display, bypass);
-						} catch (final ClassCastException e3) {
-							obj = getApp((String) param);
-							if (obj == null) {
-								obj = getUser((String) param, false);
-							}
-							if (obj != null) {
-								get(obj.getUID(), display, bypass);
-								continue;
-							}
+						// this may be the case if param has been retrieved
+						// from server
+						obj = get((UID) ((XMLValue) param).getValue(), display, bypass);
+					} catch (final ClassCastException e3) {
+						obj = getApp((String) param);
+						if (obj == null) {
+							obj = getUser((String) param, false);
+						}
+						if (obj != null) {
+							obj = get(obj.getUID(), display, bypass);
+							continue;
 						}
 					}
 				}
@@ -1339,7 +1335,7 @@ public final class Client {
 						logger.debug("no binary found (no URI, no file)");
 					}
 				}
-	
+
 				logger.debug("uri = " + binaryUri + " os = " + os + " cpu = " + cpu);
 				app.setBinary(cpu, os, binaryUri);
 			}
@@ -2264,6 +2260,33 @@ public final class Client {
 			endLine();
 		}
 		return user;
+	}
+
+	/**
+	 * This retrieves user from XtremWeb server This may write description to
+	 * stdout, accordingly to dislay parameter
+	 *
+	 * @param login
+	 *            is the use login
+	 * @param display
+	 *            tells to write descriptio to stdout, or not
+	 * @return an UserInterface
+	 * @throws AccessControlException
+	 * @throws InvalidKeyException
+	 * @throws InstantiationException
+	 */
+	private WorkInterface getWorkByExternalId(final String extId, final boolean display) throws IOException, ClassNotFoundException,
+	SAXException, URISyntaxException, InvalidKeyException, AccessControlException, InstantiationException {
+
+		final WorkInterface work = (WorkInterface)commClient().getWorkByExternalId(extId);
+
+		if (display) {
+			startLine();
+			final String str = args.xml() ? work.toXml() : work.toString(args.csv() || args.html());
+			println(true, str);
+			endLine();
+		}
+		return work;
 	}
 
 	/**

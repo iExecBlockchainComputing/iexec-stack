@@ -82,7 +82,7 @@ public class XMLRPCCommandGetUserByLogin extends XMLRPCCommand {
 	 *
 	 * @param uri
 	 *            contains the URI to connect to; its path must contains the
-	 *            login of the user to retreive
+	 *            login of the user to retrieve
 	 * @param u
 	 *            defines the user who executes this command
 	 */
@@ -131,14 +131,11 @@ public class XMLRPCCommandGetUserByLogin extends XMLRPCCommand {
 	public String getLogin() {
 		try {
 			final URI uri = getURI();
-
 			// prior to 5.0.0, there was no URI...
 			if (uri == null) {
 				return getUser().getLogin();
 			}
-
-			final String login = uri.getPath().substring(1, uri.getPath().length());
-			return login;
+			return uri.getPath().substring(1, uri.getPath().length());
 		} catch (final Exception e) {
 			getLogger().exception(e);
 		}

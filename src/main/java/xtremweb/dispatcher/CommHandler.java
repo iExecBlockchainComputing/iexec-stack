@@ -69,6 +69,8 @@ import xtremweb.communications.Connection;
 import xtremweb.communications.IdRpc;
 import xtremweb.communications.URI;
 import xtremweb.communications.XMLRPCCommand;
+import xtremweb.communications.XMLRPCCommandGet;
+import xtremweb.communications.XMLRPCCommandGetWorkByExternalId;
 import xtremweb.communications.XMLRPCCommandWorkAliveByUID;
 import xtremweb.communications.XMLRPCResult;
 import xtremweb.communications.XWPostParams;
@@ -496,18 +498,19 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 				shutDown(command);
 				result = NOANSWER;
 				break;
-			case REMOVE: {
+			case REMOVE:
 				remove(command);
 				result = NOANSWER;
 				break;
-			}
 			case VERSION:
 				result = CURRENTVERSION;
 				break;
-			case GET: {
-				result = get(command);
+			case GET:
+				result = get((XMLRPCCommandGet)command);
 				break;
-			}
+			case GETWORKBYEXTERNALID:
+				result = get((XMLRPCCommandGetWorkByExternalId)command);
+				break;
 			case GETTASK: {
 				result = getTask(command);
 				break;
@@ -1129,9 +1132,18 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 	/**
 	 * This retrieves an object from server
 	 */
-	protected XMLable get(final XMLRPCCommand command)
+	protected XMLable get(final XMLRPCCommandGet command)
 			throws IOException, InvalidKeyException, AccessControlException {
 		final DBCommandGet dbc = new DBCommandGet(DBInterface.getInstance()); 
+		return dbc.exec(command);
+	}
+
+	/**
+	 * This retrieves an object from server
+	 */
+	protected XMLable get(final XMLRPCCommandGetWorkByExternalId command)
+			throws IOException, InvalidKeyException, AccessControlException {
+		final DBCommandGetWorkByExternalId dbc = new DBCommandGetWorkByExternalId(DBInterface.getInstance()); 
 		return dbc.exec(command);
 	}
 
@@ -1261,7 +1273,7 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 		UID uid = command.getURI().getUID();
 
 		try {
-			theData = (DataInterface)get(command);
+			theData = (DataInterface)get((XMLRPCCommandGet)command);
 			if (theData == null) {
 				throw new IOException("uploadData(" + uid + ") data not found");
 			}
@@ -1322,7 +1334,7 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 
 		mileStone("<downloadData>");
 		try {
-			theData = (DataInterface)get(command);
+			theData = (DataInterface)get((XMLRPCCommandGet)command);
 			if (theData == null) {
 				throw new IOException("downloadData(" + uid + ") data not found");
 			}
