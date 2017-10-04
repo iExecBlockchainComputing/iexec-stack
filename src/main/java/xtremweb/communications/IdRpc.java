@@ -696,6 +696,27 @@ public enum IdRpc {
 		}
 	},
 	/**
+	 * This retrieves a work by its external ID (another scheduler, blockchain transaction hash etc.)
+	 * @since 11.1.0
+	 */
+	GETWORKBYEXTERNALID {
+		@Override
+		public XMLRPCCommandGetWorkByExternalId newCommand(final URI uri, final UserInterface client, final Table obj)
+				throws IOException {
+			return new XMLRPCCommandGetWorkByExternalId(uri, client);
+		}
+
+		@Override
+		public String helpClient() {
+			return this.toString() + " aString [...] : retrevies work given their id";
+		}
+
+		@Override
+		public String helpRestApi() {
+			return this.toString() + "/anId";
+		}
+	},
+	/**
 	 * This send a work status to server
 	 */
 	WORKALIVEBYUID {

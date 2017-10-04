@@ -48,12 +48,12 @@ import xtremweb.common.XWConfigurator;
 /**
  * This class defines the XMLRPCCommand to send user definition
  */
-public class XMLRPCCommandGetUserByLogin extends XMLRPCCommand {
+public class XMLRPCCommandGetWorkByExternalId extends XMLRPCCommand {
 
 	/**
 	 * This is the RPC id
 	 */
-	public static final IdRpc IDRPC = IdRpc.GETUSERBYLOGIN;
+	public static final IdRpc IDRPC = IdRpc.GETWORKBYEXTERNALID;
 	/**
 	 * This is the XML tag
 	 */
@@ -62,7 +62,7 @@ public class XMLRPCCommandGetUserByLogin extends XMLRPCCommand {
 	/**
 	 * This constructs a new command
 	 */
-	protected XMLRPCCommandGetUserByLogin() throws IOException {
+	protected XMLRPCCommandGetWorkByExternalId() throws IOException {
 		super(null, IDRPC);
 	}
 
@@ -73,7 +73,7 @@ public class XMLRPCCommandGetUserByLogin extends XMLRPCCommand {
 	 *            contains the URI to connect to; its path must contains the
 	 *            login of the user to retrieve
 	 */
-	protected XMLRPCCommandGetUserByLogin(final URI uri) throws IOException {
+	protected XMLRPCCommandGetWorkByExternalId(final URI uri) throws IOException {
 		super(uri, IDRPC);
 	}
 
@@ -86,7 +86,7 @@ public class XMLRPCCommandGetUserByLogin extends XMLRPCCommand {
 	 * @param u
 	 *            defines the user who executes this command
 	 */
-	public XMLRPCCommandGetUserByLogin(final URI uri, final UserInterface u) throws IOException {
+	public XMLRPCCommandGetWorkByExternalId(final URI uri, final UserInterface u) throws IOException {
 		this(uri);
 		setUser(u);
 	}
@@ -102,7 +102,7 @@ public class XMLRPCCommandGetUserByLogin extends XMLRPCCommand {
 	 * @throws InvalidKeyException
 	 * @see xtremweb.common.XMLReader#read(InputStream)
 	 */
-	public XMLRPCCommandGetUserByLogin(final InputStream input) throws IOException, SAXException, InvalidKeyException {
+	public XMLRPCCommandGetWorkByExternalId(final InputStream input) throws IOException, SAXException, InvalidKeyException {
 		this();
 		final XMLReader reader = new XMLReader(this);
 		reader.read(input);
@@ -120,7 +120,7 @@ public class XMLRPCCommandGetUserByLogin extends XMLRPCCommand {
 	@Override
 	public XMLable exec(final CommClient comm)
 			throws IOException, SAXException, InvalidKeyException, AccessControlException {
-		return comm.getUser(this);
+		return comm.get(this);
 	}
 
 	/**
@@ -128,13 +128,9 @@ public class XMLRPCCommandGetUserByLogin extends XMLRPCCommand {
 	 *
 	 * @return the login of the user
 	 */
-	public String getLogin() {
+	public String getExternalId() {
 		try {
 			final URI uri = getURI();
-			// prior to 5.0.0, there was no URI...
-			if (uri == null) {
-				return getUser().getLogin();
-			}
 			return uri.getPath().substring(1, uri.getPath().length());
 		} catch (final Exception e) {
 			getLogger().exception(e);

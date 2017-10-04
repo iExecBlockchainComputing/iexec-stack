@@ -963,7 +963,52 @@ public abstract class CommClient implements ClientAPI {
 			throws InvalidKeyException, AccessControlException, IOException, SAXException {
 		return get(command, true);
 	}
+	/**
+	 * This calls get(command, true)
+	 *
+	 * @param command
+	 *            is the GET command to send to server
+	 * @see #get(XMLRPCCommandGet, boolean)
+	 * @since 11.1.0
+	 */
+	public Table get(final XMLRPCCommandGetWorkByExternalId command)
+			throws InvalidKeyException, AccessControlException, IOException, SAXException {
+		return get(command, true);
+	}
 
+	/**
+	 * This retrieves an object definition given its URI, from server or from
+	 * cache, if already in cache.
+	 *
+	 * @param command
+	 *            is the GET command to send to server
+	 * @param bypass
+	 *            if true object is downloaded from server even if already in
+	 *            cache if false, object is only downloaded if not already in
+	 *            cache
+	 * @return an object definition
+	 * @since 1.0.0
+	 */
+	public Table get(final XMLRPCCommandGetWorkByExternalId command, final boolean bypass)
+			throws InvalidKeyException, AccessControlException, IOException, SAXException {
+		if (!bypass) {
+			final Table object = cache.get(command.getURI());
+			if (object != null) {
+				return object;
+			}
+		}
+
+		try {
+			sendCommand(command);
+			final Table object = newTableInterface();
+			if (object != null) {
+				cache.add(object, command.getURI());
+			}
+			return object;
+		} finally {
+			close();
+		}
+	}
 	/**
 	 * This retrieves an object definition given its URI, from server or from
 	 * cache, if already in cache.
@@ -1000,10 +1045,10 @@ public abstract class CommClient implements ClientAPI {
 	}
 
 	/**
-	 * This calls get(new XMLRPCCommandGet(uri), bypass)
+	 * This calls getTask(uid, false)
 	 *
 	 * @param uid
-	 *            is the UID of the object to retreive
+	 *            is the UID of the object to retrieve
 	 * @see #get(URI, boolean)
 	 * @since 1.0.0
 	 */
@@ -1013,10 +1058,10 @@ public abstract class CommClient implements ClientAPI {
 	}
 
 	/**
-	 * This calls get(new XMLRPCCommandGet(uri), bypass)
+	 * This calls getTask(uri, bypass)
 	 *
 	 * @param uid
-	 *            is the UID of the object to retreive
+	 *            is the UID of the object to retrieve
 	 * @param bypass
 	 *            tells to force download
 	 * @see #get(URI, boolean)
@@ -1029,7 +1074,7 @@ public abstract class CommClient implements ClientAPI {
 	}
 
 	/**
-	 * This calls get(uri, true)
+	 * This calls getTask(uri, false)
 	 *
 	 * @param uri
 	 *            is the URI to get the object from
@@ -1042,7 +1087,7 @@ public abstract class CommClient implements ClientAPI {
 	}
 
 	/**
-	 * This calls get(new XMLRPCCommandGet(uri), bypass)
+	 * This calls getTask(new XMLRPCCommandGetTask(uri), bypass)
 	 *
 	 * @param uri
 	 *            is the URI of the object to get
@@ -1804,6 +1849,71 @@ public abstract class CommClient implements ClientAPI {
 			close();
 		}
 		return xmlv;
+	}
+
+	/**
+	 * This calls getWorkByExternalId(extId, true)
+	 * @since 11.1.0
+	 */
+	public Table getWorkByExternalId(final String extId)
+			throws InvalidKeyException, AccessControlException, IOException, SAXException, URISyntaxException {
+		return getWorkByExternalId(extId, true);
+	}
+
+	/**
+	 * This calls getWorkByExternalId(new XMLRPCCommandGetWorkByExternalId(extId), bypass)
+	 * @since 11.1.0
+	 */
+	@Override
+	public Table getWorkByExternalId(final String extId, final boolean bypass)
+			throws InvalidKeyException, AccessControlException, IOException, SAXException, URISyntaxException {
+
+		final URI uri = new URI(newURI().toString() + "/" + extId);
+		final XMLRPCCommandGetWorkByExternalId cmd = new XMLRPCCommandGetWorkByExternalId(uri);
+		return getWorkByExternalId(cmd, bypass);
+	}
+
+	/**
+	 * This calls XMLRPCCommandGetWorkByExternalId(command, true)
+	 * @since 11.1.0
+	 */
+	@Override
+	public Table getWorkByExternalId(final XMLRPCCommandGetWorkByExternalId command)
+			throws InvalidKeyException, AccessControlException, IOException, SAXException {
+		return getWorkByExternalId(command, true);
+	}
+
+	/**
+	 * This retrieves an user from server
+	 *
+	 * @param command
+	 *            is the command to send to server to retrieve user
+	 * @param bypass
+	 *            if true work is downloaded from server even if already in
+	 *            cache if false, work is only downloaded if not already in
+	 *            cache
+	 * @since 11.1.0
+	 */
+	public Table getWorkByExternalId(final XMLRPCCommandGetWorkByExternalId command, final boolean bypass)
+			throws InvalidKeyException, AccessControlException, IOException, SAXException {
+
+		if (!bypass) {
+			final Table object = cache.get(command.getURI());
+			if (object != null) {
+				return object;
+			}
+		}
+
+		try {
+			sendCommand(command);
+			final Table object = newWorkInterface();
+			if (object != null) {
+				cache.add(object, command.getURI());
+			}
+			return object;
+		} finally {
+			close();
+		}
 	}
 
 	/**
