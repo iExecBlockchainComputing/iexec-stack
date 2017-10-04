@@ -2223,7 +2223,7 @@ public final class DBInterface {
 	 * @return the last loaded row
 	 * @since 5.8.0
 	 */
-	protected WorkInterface work00(final UserInterface u, final String conditions) throws IOException {
+	protected WorkInterface work(final UserInterface u, final String conditions) throws IOException {
 		final WorkInterface row = readableWork(u);
 		return selectOne(row, conditions);
 	}
@@ -3667,6 +3667,46 @@ public final class DBInterface {
 			throw new AccessControlException(theClient.getLogin() + " can't read " + uid);
 		}
 		return theTaskbyWork;
+	}
+
+	/**
+	 * This retrieves a task for the specified client. This specifically permits
+	 * to retrieve job instantiation informations (e.g. start date, worker...)
+	 *
+	 * @see #getJob(UserInterface, UID)
+	 * @param client
+	 *            is the ClientInterface, describing the client
+	 * @param uid
+	 *            is the UID of the task to retrieve
+	 * @return null on error; a TaskInterface otherwise
+	 * @exception IOException
+	 *                is thrown general error
+	 * @exception InvalidKeyException
+	 *                is thrown on credential error
+	 * @exception AccessControlException
+	 *                is thrown on access rights violation
+	 */
+	public WorkInterface getWorkByExternalId(final XMLRPCCommand command)
+			throws IOException, InvalidKeyException, AccessControlException {
+
+		final UserInterface theClient = checkClient(command, UserRightEnum.GETJOB);
+		final URI uri = command.getURI();
+		final String extId = uri.getPath().substring(1, uri.getPath().length());
+
+		final WorkInterface theWorkById = work(theClient,
+				WorkInterface.Columns.SGID.toString() + "='" + extId + "'");
+
+		if (theWorkById == null) {
+			return null;
+		}
+
+		final UserInterface owner = user(theWorkById.getOwner());
+		final UID ownerGroup = (owner == null ? null : owner.getGroup());
+		if (!theWorkById.canRead(theClient, ownerGroup)
+				&& theClient.getRights().lowerThan(UserRightEnum.SUPER_USER)) {
+			throw new AccessControlException(theClient.getLogin() + " can't read " + extId);
+		}
+		return theWorkById;
 	}
 
 	/**

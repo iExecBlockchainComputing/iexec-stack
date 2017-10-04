@@ -88,6 +88,7 @@ import xtremweb.communications.URI;
 import xtremweb.communications.XMLRPCCommand;
 import xtremweb.communications.XMLRPCCommandActivateHost;
 import xtremweb.communications.XMLRPCCommandChmod;
+import xtremweb.communications.XMLRPCCommandGet;
 import xtremweb.communications.XMLRPCCommandWorkAlive;
 import xtremweb.communications.XWPostParams;
 import xtremweb.database.SQLRequest;
@@ -1547,7 +1548,7 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 	public synchronized long uploadData(final XMLRPCCommand command)
 			throws IOException, InvalidKeyException, AccessControlException {
 
-		DataInterface theData = (DataInterface)get(command);
+		DataInterface theData = (DataInterface)get((XMLRPCCommandGet)command);
 		UID uid = command.getURI().getUID();
 
 		long ret = 0;
