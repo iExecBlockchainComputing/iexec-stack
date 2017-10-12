@@ -2765,7 +2765,6 @@ public final class DBInterface {
 		final UID ownerGroup = (owner == null ? null : owner.getGroup());
 
 		if (!row.canRead(theClient, ownerGroup) && theClient.getRights().lowerThan(UserRightEnum.SUPER_USER)) {
-
 			throw new AccessControlException(theClient.getLogin() + " can't use " + uri);
 		}
 
@@ -2833,6 +2832,7 @@ public final class DBInterface {
 
 			return;
 		}
+
 		if (data.getUID() == null) {
 			data.setUID(new UID());
 		}

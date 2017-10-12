@@ -89,6 +89,7 @@ import xtremweb.communications.XMLRPCCommand;
 import xtremweb.communications.XMLRPCCommandActivateHost;
 import xtremweb.communications.XMLRPCCommandChmod;
 import xtremweb.communications.XMLRPCCommandGet;
+import xtremweb.communications.XMLRPCCommandUploadData;
 import xtremweb.communications.XMLRPCCommandWorkAlive;
 import xtremweb.communications.XWPostParams;
 import xtremweb.database.SQLRequest;
@@ -862,30 +863,24 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 
 		user = userFromJWTEthereumAuth(request);
 		if(user != null) {
-			getLogger().debug("HTPHandler User 00 " + user.toXml());
 			return user;
 		}
 		user = userFromOAuth(request);
 		if(user != null) {
-			getLogger().debug("HTPHandler User 01 " + user.toXml());
 			return user;
 		}
 		user = userFromOpenId(request);
 		if(user != null) {
-			getLogger().debug("HTPHandler User 02 " + user.toXml());
 			return user;
 		}
 		user = userFromPostParams(request);
 		if(user != null) {
-			getLogger().debug("HTPHandler User 03 " + user.toXml());
 			return user;
 		}
 		user = userFromCertificate(request);
 		if(user != null) {
-			getLogger().debug("HTPHandler User 04 " + user.toXml());
 			return user;
 		}
-		getLogger().debug("HTPHandler User 05 not user found");
 		return null;
 	}
 
@@ -928,10 +923,10 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 		// logger.debug("Authorization = " +
 		// request.getHeader(HttpHeaders.AUTHORIZATION));
 		for (final Enumeration<String> e = request.getParameterNames(); e.hasMoreElements();) {
-			logger.finest("parameter " + e.nextElement());
+			logger.debug("parameter " + e.nextElement());
 		}
 		for (final Enumeration<String> e = request.getHeaderNames(); e.hasMoreElements();) {
-			logger.finest("header " + e.nextElement());
+			logger.debug("header " + e.nextElement());
 		}
 		logger.debug("cookies.length = " + (request.getCookies() == null ? "0" : request.getCookies().length));
 
@@ -1021,6 +1016,7 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 			//
 			if (isMultipart) {
 				final List parts = servletUpload.parseRequest(request);
+				logger.debug("parts.size = " + parts.size());
 				if (parts != null) {
 					for (final Iterator it = parts.iterator(); it.hasNext();) {
 						final FileItem item = (FileItem) it.next();
@@ -1028,6 +1024,8 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 						logger.debug("multipart item = " + item.getFieldName().toUpperCase());
 
 						try {
+							logger.debug("XWPostParams.valueOf(" + item.getFieldName().toUpperCase() + ") = " + XWPostParams.valueOf(item.getFieldName().toUpperCase()));
+
 							switch (XWPostParams.valueOf(item.getFieldName().toUpperCase())) {
 							case DATAUID:
 								reqUri += "/" + item.getString();
@@ -1101,7 +1099,7 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 			logger.debug("URI = " + uri);
 
 			final String objXmlDesc = request.getParameter(XWPostParams.XMLDESC.toString());
-			logger.debug("objXmlDesc = " + objXmlDesc);
+			logger.finest("objXmlDesc = " + objXmlDesc);
 
 			if (objXmlDesc != null) {
 				final ByteArrayInputStream in = new ByteArrayInputStream(objXmlDesc.getBytes());
@@ -1457,6 +1455,7 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 	private UserInterface userFromPostParams(final HttpServletRequest request) throws IOException {
 
 		final HttpSession session = request.getSession(true);
+
 		final String login = (request.getParameter(XWPostParams.XWLOGIN.toString()) != null
 				? request.getParameter(XWPostParams.XWLOGIN.toString())
 						: (String) session.getAttribute(XWPostParams.XWLOGIN.toString()));
@@ -1548,7 +1547,7 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 	public synchronized long uploadData(final XMLRPCCommand command)
 			throws IOException, InvalidKeyException, AccessControlException {
 
-		DataInterface theData = (DataInterface)get((XMLRPCCommandGet)command);
+		DataInterface theData = (DataInterface)get(command);
 		UID uid = command.getURI().getUID();
 
 		long ret = 0;
