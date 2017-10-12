@@ -1132,6 +1132,15 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 	/**
 	 * This retrieves an object from server
 	 */
+	protected XMLable get(final XMLRPCCommand command)
+			throws IOException, InvalidKeyException, AccessControlException {
+		final DBCommandGet dbc = new DBCommandGet(DBInterface.getInstance()); 
+		return dbc.exec(command);
+	}
+
+	/**
+	 * This retrieves an object from server
+	 */
 	protected XMLable get(final XMLRPCCommandGet command)
 			throws IOException, InvalidKeyException, AccessControlException {
 		final DBCommandGet dbc = new DBCommandGet(DBInterface.getInstance()); 
@@ -1273,7 +1282,7 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 		UID uid = command.getURI().getUID();
 
 		try {
-			theData = (DataInterface)get((XMLRPCCommandGet)command);
+			theData = (DataInterface)get(command);
 			if (theData == null) {
 				throw new IOException("uploadData(" + uid + ") data not found");
 			}
@@ -1334,7 +1343,7 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 
 		mileStone("<downloadData>");
 		try {
-			theData = (DataInterface)get((XMLRPCCommandGet)command);
+			theData = (DataInterface)get(command);
 			if (theData == null) {
 				throw new IOException("downloadData(" + uid + ") data not found");
 			}
