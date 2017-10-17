@@ -217,7 +217,7 @@ insert into userRights (userRightId, userRightName, userRightDescription) values
 insert into userRights (userRightId, userRightName, userRightDescription) values ( 9, 'GETUSER',         null);
 insert into userRights (userRightId, userRightName, userRightDescription) values (10, 'UPDATEWORK',      'worker can update work for the owner');
 insert into userRights (userRightId, userRightName, userRightDescription) values (11, 'WORKER_USER',     'worker cannot do everything');
-insert into userRights (userRightId, userRightName, userRightDescription) values (12, 'VWORKER_USER',    null);
+insert into userRights (userRightId, userRightName, userRightDescription) values (12, 'VWORKER_USER',    'vworker can take advantage of stickybit');
 insert into userRights (userRightId, userRightName, userRightDescription) values (13, 'BROADCAST',       'submit one job to all workers');
 insert into userRights (userRightId, userRightName, userRightDescription) values (14, 'LISTJOB',         null);
 insert into userRights (userRightId, userRightName, userRightDescription) values (15, 'DELETEJOB',       null);
