@@ -3375,6 +3375,7 @@ public final class DBInterface {
 		if (appitf.getAccessRights() == null) {
 			appitf.setAccessRights(XWAccessRights.DEFAULT);
 		}
+		final int isStickyBit = appitf.getAccessRights().value() & XWAccessRights.STICKYBIT_INT;
 		final UID clientGroup = theClient.getGroup();
 
 		final UserInterface owner = user(appitf.getOwner());
@@ -3465,18 +3466,18 @@ public final class DBInterface {
 				theApp.setSolaris_sparc(appitf.getSolarisSparc());
 
 				if (theClient.getRights().lowerThan(UserRightEnum.ADVANCED_USER)) {
-					logger.debug("set app AR to USERALL");
-					appitf.setAccessRights(XWAccessRights.USERALL);
+					logger.debug("set app AR to USERALL " + new XWAccessRights(XWAccessRights.USERALL.value() | isStickyBit));
+					appitf.setAccessRights(new XWAccessRights(XWAccessRights.USERALL.value() | isStickyBit));
 				}
 				if (theClient.getRights().doesEqual(UserRightEnum.SUPER_USER)) {
 					if (appitf.getAccessRights() == null) {
-						logger.debug("set app AR to DEFAULT");
-						appitf.setAccessRights(XWAccessRights.DEFAULT);
+						logger.debug("set app AR to DEFAULT " + new XWAccessRights(XWAccessRights.DEFAULT.value() | isStickyBit));
+						appitf.setAccessRights(new XWAccessRights(XWAccessRights.DEFAULT.value() | isStickyBit));
 					}
 				} else {
 					if ((theClient.getRights().higherOrEquals(UserRightEnum.INSERTAPP)) && (clientGroup != null)) {
-						logger.debug("set app AR to OWNERGROUP");
-						appitf.setAccessRights(XWAccessRights.OWNERGROUP);
+						logger.debug("set app AR to OWNERGROUP " + new XWAccessRights(XWAccessRights.OWNERGROUP.value() | isStickyBit));
+						appitf.setAccessRights(new XWAccessRights(XWAccessRights.OWNERGROUP.value() | isStickyBit));
 					}
 				}
 				theApp.updateInterface(appitf);
@@ -3500,18 +3501,18 @@ public final class DBInterface {
 		}
 
 		if (theClient.getRights().lowerThan(UserRightEnum.ADVANCED_USER)) {
-			logger.debug("set app AR to USERALL");
-			appitf.setAccessRights(XWAccessRights.USERALL);
+			logger.debug("set app AR to USERALL " + new XWAccessRights(XWAccessRights.USERALL.value() | isStickyBit));
+			appitf.setAccessRights(new XWAccessRights(XWAccessRights.USERALL.value() | isStickyBit));
 		}
 		if (theClient.getRights().doesEqual(UserRightEnum.SUPER_USER)) {
 			if (appitf.getAccessRights() == null) {
-				logger.debug("set app AR to DEFAULT");
-				appitf.setAccessRights(XWAccessRights.DEFAULT);
+				logger.debug("set app AR to DEFAULT " + new XWAccessRights(XWAccessRights.DEFAULT.value() | isStickyBit));
+				appitf.setAccessRights(new XWAccessRights(XWAccessRights.DEFAULT.value() | isStickyBit));
 			}
 		} else {
 			if ((theClient.getRights().higherOrEquals(UserRightEnum.INSERTAPP)) && (clientGroup != null)) {
-				logger.debug("set app AR to OWNERGROUP");
-				appitf.setAccessRights(XWAccessRights.OWNERGROUP);
+				logger.debug("set app AR to OWNERGROUP " + new XWAccessRights(XWAccessRights.OWNERGROUP.value() | isStickyBit));
+				appitf.setAccessRights(new XWAccessRights(XWAccessRights.OWNERGROUP.value() | isStickyBit));
 			}
 		}
 
