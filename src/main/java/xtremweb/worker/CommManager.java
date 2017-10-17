@@ -608,11 +608,9 @@ public final class CommManager extends Thread {
 
 		URI uri = null;
 
-		AppTypeEnum appType = app.getType();
-		String apptypestr = appType.toString();
+		final AppTypeEnum appType = app.getType();
+		final String apptypestr = appType.toString();
 		final boolean localapp = Worker.getConfig().getLocalApps().contains(apptypestr);
-		appType = null;
-		apptypestr = null;
 
 		logger.error("CommManager : can't use app library; please use executables");
 		uri = app.getBinary(cpu, os);
