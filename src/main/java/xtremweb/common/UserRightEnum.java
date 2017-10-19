@@ -268,6 +268,15 @@ public enum UserRightEnum {
 	public boolean doesEqual(final UserRightEnum c) {
 		return this.ordinal() == c.ordinal();
 	}
+	
+	/**
+	 * This tests whether this represents a worker right
+	 * @return true if so
+	 * since 11.3.0
+	 */
+	public boolean isWorker() {
+		return this.doesEqual(WORKER_USER) || this.doesEqual(UserRightEnum.VWORKER_USER);
+	}
 
 	/**
 	 * This retrieves an Columns from its integer value
