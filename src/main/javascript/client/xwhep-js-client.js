@@ -460,7 +460,7 @@ const createXWHEPClient = ({
    * @return a new Promise
    * @resolve undefined
    */
-  function uploadData(dataUid, dataPath) {
+  function uploadData(cookies, dataUid, dataPath) {
     return new Promise((resolve, reject) => {
       var state = "";
       if((cookies !== undefined) && (cookies[0] !== undefined)) {
@@ -925,22 +925,19 @@ const createXWHEPClient = ({
    */
   async function register(cookies, user, provider, creator, appName, submitTxHash) {
 
-	return new Promise((resolve, reject) => {
+	if (!(appName in hashtableAppNames)) {
+	  await getApps().then(() => {
+		if (!(appName in hashtableAppNames)) {
+		  return Promise.reject(new Error(`register() : application not found ${appName}`));
+		}
+	  });
+	}
 
-	  console.log(`register(${appName})`)
-	  if (!(appName in hashtableAppNames)) {
-	    console.log(`register(${appName}) call getApps()`)
-	    getApps(cookies).then(() => {
-          if (!(appName in hashtableAppNames)) {
-            reject(`register() : application not found ${appName}`);
-    		return;
-          }
-        });
-      }
+	return new Promise((resolve, reject) => {
+      const workUid = uuidV4();
 
       const appUid = hashtableAppNames[appName];
-      console.log(`register(${appName}) appuid = ${appUid}`)
-      const workUid = uuidV4();
+
       const workDescription = `<work><uid>${workUid}</uid><accessrights>0x755</accessrights><appuid>${appUid}</appuid><sgid>${submitTxHash}</sgid><status>UNAVAILABLE</status></work>`;
       sendWork(cookies, workDescription).then(() => {
         sendWork(cookies, workDescription).then(() => { // a 2nd time to force status to UNAVAILABLE
@@ -971,20 +968,18 @@ const createXWHEPClient = ({
    */
   function setApplicationParam(cookies, uid, paramName, paramValue) {
 
+	console.log('setApplicationParam uid', uid);
+	console.log('setApplicationParam paramName', paramName);
+	console.log('setApplicationParam paramValue', paramValue);
+
+	if (!(paramName in appAvailableParameters)) {
+	  return Promise.reject(new Error(`setApplicationParam() : invalid app parameter ${paramName}`));
+	}
+	if (appAvailableParameters[paramName] === false) {
+	  return Promise.reject(new Error(`setApplicationParam() : read only app parameter ${paramName}`));
+	}
+
 	return new Promise((resolve, reject) => {
-	  console.log('setApplicationParam uid', uid);
-	  console.log('setApplicationParam paramName', paramName);
-	  console.log('setApplicationParam paramValue', paramValue);
-
-	  if (!(paramName in appAvailableParameters)) {
-        reject(`setApplicationParam() : invalid app parameter ${paramName}`);
-        return;
-	  }
-	  if (appAvailableParameters[paramName] === false) {
-        reject(`setApplicationParam() : read only app parameter ${paramName}`);
-        return;
-	  }
-
       get(cookies, uid).then((getResponse) => {
         let jsonObject;
         parseString(getResponse, (err, result) => {
@@ -1028,17 +1023,15 @@ const createXWHEPClient = ({
 
   function setWorkParam(cookies, uid, paramName, paramValue) {
 
+	if (!(paramName in workAvailableParameters)) {
+	  return Promise.reject(new Error(`setWorkParam() : Invalid parameter ${paramName}`));
+	}
+
+	if (workAvailableParameters[paramName] === false) {
+	  return Promise.reject(new Error(`setWorkParam() : read only parameter ${paramName}`));
+	}
+
 	return new Promise((resolve, reject) => {
-	  if (!(paramName in workAvailableParameters)) {
-		reject(`setWorkParam() : Invalid parameter ${paramName}`);
-		return;
-	  }
-
-	  if (workAvailableParameters[paramName] === false) {
-		reject(`setWorkParam() : read only parameter ${paramName}`);
-		return;
-	  }
-
       get(cookies, uid).then((getResponse) => {
         let jsonObject;
         parseString(getResponse, (err, result) => {
@@ -1276,6 +1269,7 @@ const createXWHEPClient = ({
     new Promise((resolve, reject) => {
       console.log(`submit(${appName})`);
       register(cookies, user, provider, creator,appName,submitTxHash).then((workUid) => {
+    	console.log(`submit(${appName}) : ${workUid}`);
         setWorkParam(cookies, workUid, 'cmdline', cmdLineParam).then(() => {
           setStdinUri(cookies, workUid, stdinContent).then(() => {
             setPending(cookies, workUid).then(() => {
