@@ -45,7 +45,6 @@ const XMLRPCRESULTMESSAGE = 'MESSAGE';
  */
 const STATENAME="state";
 const ETHAUTHNAME="ethauthtoken";
-const JSESSIONID="JSESSIONID";
 
 
 /**
@@ -360,13 +359,26 @@ const createXWHEPClient = ({
    * @return a new Promise
    * @resolve undefined
    */
-  function sendWork(xmlWork) {
+  function sendWork(cookies, xmlWork) {
     return new Promise((resolve, reject) => {
+
+  	  var state = "";
+      if(cookies !== undefined) {
+    	console.log(`sendWork(${cookies}) : cookies = ${cookies}`);
+    	state = getCookie(cookies, STATENAME);
+      }
+
+	  console.log(`sendWork(${cookies}) ; ${STATENAME} = ${state}`);
+
+	  var creds = CREDENTIALS;
+	  if (state !== "") {
+		  creds = `?${STATENAME}=${state}`;
+	  }
       const sendWorkPath = `${PATH_SENDWORK}?XMLDESC=${xmlWork}`;
       const options = {
         hostname,
         port,
-        path: `${PATH_SENDWORK + CREDENTIALS}&XMLDESC=${xmlWork}`,
+        path: `${PATH_SENDWORK + creds}&XMLDESC=${xmlWork}`,
         method: 'GET',
         rejectUnauthorized: false,
       };
@@ -397,12 +409,25 @@ const createXWHEPClient = ({
    * @return a new Promise
    * @resolve undefined
    */
-  function sendApp(xmlApp) {
+  function sendApp(cookies, xmlApp) {
     return new Promise((resolve, reject) => {
+      var state = "";
+      if((cookies !== undefined) && (cookies[0] !== undefined)) {
+    	var cookie = cookies[0];
+    	console.log(`sendWork(${cookies}) : cookie = ${cookie}`);
+    	state = getCookie(cookies, STATENAME);
+      }
+
+      console.log(`sendWork(${cookies}) ; ${STATENAME} = ${state}`);
+
+      var creds = CREDENTIALS;
+      if (state !== "") {
+    	creds = `?${STATENAME}=${state}`;
+      }
       const options = {
         hostname,
         port,
-        path: `${PATH_SENDAPP + CREDENTIALS}&XMLDESC=${xmlApp}`,
+        path: `${PATH_SENDAPP + creds}&XMLDESC=${xmlApp}`,
         method: 'GET',
         rejectUnauthorized: false,
       };
@@ -437,11 +462,24 @@ const createXWHEPClient = ({
    */
   function uploadData(dataUid, dataPath) {
     return new Promise((resolve, reject) => {
+      var state = "";
+      if((cookies !== undefined) && (cookies[0] !== undefined)) {
+    	var cookie = cookies[0];
+    	console.log(`sendWork(${cookies}) : cookie = ${cookie}`);
+    	state = getCookie(cookies, STATENAME);
+      }
+
+      console.log(`sendWork(${cookies}) ; ${STATENAME} = ${state}`);
+
+      var creds = CREDENTIALS;
+      if (state !== "") {
+    	creds = `?${STATENAME}=${state}`;
+      }
       const uploadDataPath = `${PATH_UPLOADDATA}/${dataUid}`;
       const options = {
         hostname,
         port : port,
-        path : `${PATH_UPLOADDATA}/${dataUid}${CREDENTIALS}`,
+        path : `${PATH_UPLOADDATA}/${dataUid}${creds}`,
         method : 'POST',
         protocol : 'https:',
         rejectUnauthorized: false
@@ -482,13 +520,26 @@ const createXWHEPClient = ({
    * @return a new Promise
    * @resolve undefined
    */
- function sendData(xmlData) {
-    return new Promise((resolve, reject) => {
+ function sendData(cookies, xmlData) {
+   return new Promise((resolve, reject) => {
+	 var state = "";
+	 if((cookies !== undefined) && (cookies[0] !== undefined)) {
+	   var cookie = cookies[0];
+	   console.log(`sendWork(${cookies}) : cookie = ${cookie}`);
+	   state = getCookie(cookies, STATENAME);
+	 }
+
+	 console.log(`sendWork(${cookies}) ; ${STATENAME} = ${state}`);
+
+	 var creds = CREDENTIALS;
+	 if (state !== "") {
+	   creds = `?${STATENAME}=${state}`;
+	 }
       const sendDataPath = `${PATH_SENDDATA}?XMLDESC=${xmlData}`;
       const options = {
         hostname: hostname,
         port: port,
-        path: `${PATH_SENDDATA}${CREDENTIALS}&XMLDESC=${xmlData}`,
+        path: `${PATH_SENDDATA}${creds}&XMLDESC=${xmlData}`,
         method: 'GET',
         protocol : 'https:',
         rejectUnauthorized: false,
@@ -521,18 +572,31 @@ const createXWHEPClient = ({
    * @return a Promise
    * @resolve a String containing the XML representation of the retrieved object
    */
-  const get = uid => (
+  const get = (cookies, uid) => (
     new Promise((resolve, reject) => {
       let getResponse = '';
+
+      var state = "";
+      if((cookies !== undefined) && (cookies[0] !== undefined)) {
+    	var cookie = cookies[0];
+    	console.log(`sendWork(${cookies}) : cookie = ${cookie}`);
+    	state = getCookie(cookies, STATENAME);
+      }
+
+	  var creds = CREDENTIALS;
+	  if (state !== "") {
+		  creds = `?${STATENAME}=${state}`;
+	  }
 
       const getPath = `${PATH_GET}/${uid}`;
       const options = {
         hostname,
         port,
-        path: getPath + CREDENTIALS,
+        path: getPath + creds,
         method: 'GET',
         rejectUnauthorized: false,
       };
+	  console.log(`get(${cookies}, ${uid}) ; ${options}`);
 
       const req = https.request(options, (res) => {
         res.on('data', (d) => {
@@ -541,6 +605,7 @@ const createXWHEPClient = ({
         });
 
         res.on('end', () => {
+          console.log(`get() : ${getResponse}`);
           resolve(getResponse);
           return;
         });
@@ -561,9 +626,10 @@ const createXWHEPClient = ({
    * @resolve a String containing the XML representation of the retrieved object
    * @see get(uid)
    */
-  function getApp(appUid) {
+  function getApp(cookies, appUid) {
     return new Promise((resolve, reject) => {
-      get(appUid).then((getResponse) => {
+      console.log(`getApp(${cookies}, ${appUid}`);
+      get(cookies, appUid).then((getResponse) => {
         let jsonObject;
         parseString(getResponse, (err, result) => {
           jsonObject = JSON.parse(JSON.stringify(result));
@@ -575,8 +641,10 @@ const createXWHEPClient = ({
         }
 
         const appName = jsonObject.xwhep.app[0].name;
+        console.log(`getApp(${cookies}, ${appName}`);
 
         if (!(appName in hashtableAppNames)) {
+          console.log(`getApp(${cookies}, inserting ${appName}`);
           hashtableAppNames[appName] = appUid;
         }
 
@@ -603,18 +671,16 @@ const createXWHEPClient = ({
     return new Promise((resolve, reject) => {
 
   	  var state = "";
-  	  var jsessionid = "";
 
-	  console.log(`getApps(${cookies})`);
+//	  console.log(`getApps(${cookies})`);
 
 	  if((cookies !== undefined) && (cookies[0] !== undefined)) {
     	var cookie = cookies[0];
     	console.log(`getApps(${cookies}) : cookie = ${cookie}`);
     	state = getCookie(cookies, STATENAME);
-    	jsessionid = getCookie(cookies, JSESSIONID);
       }
 
-	  console.log(`getApps(${cookies}) ; ${JSESSIONID} = ${jsessionid} ;  ${STATENAME} = ${state}`);
+//	  console.log(`getApps(${cookies}) ; ${STATENAME} = ${state}`);
 
 	  var creds = CREDENTIALS;
 	  if (state !== "") {
@@ -624,24 +690,20 @@ const createXWHEPClient = ({
       const options = {
         hostname,
         port,
-        // path: `${PATH_GETAPPS + CREDENTIALS}`,
         path: `${PATH_GETAPPS + creds}`,
         method: 'GET',
         rejectUnauthorized: false,
-        headers: {
-            Cookie: `${JSESSIONID}=${jsessionid}`,
-        },
       };
-      console.log('getApps() options', options);
+//      console.log('getApps() options', options);
       const req = https.request(options, (res) => {
-        console.log('statusCode:', res.statusCode);
-        console.log('headers:', res.headers);
+//        console.log('statusCode:', res.statusCode);
+//        console.log('headers:', res.headers);
         res.on('data', (d) => {
           const strd = String.fromCharCode.apply(null, new Uint16Array(d));
           getAppsResponse += strd;
         });
         res.on('end', () => {
-          console.log('getAppsResponse', getAppsResponse)
+//          console.log('getAppsResponse', getAppsResponse)
           parseString(getAppsResponse, (err, result) => {
             if ((result === null) || (result === '') || (result === undefined)) {
               reject('getApps() : connection Error');
@@ -658,7 +720,13 @@ const createXWHEPClient = ({
               const appuid = JSON.stringify(jsonData.xwhep.XMLVector[0].XMLVALUE[i].$.value).replace(/"/g, '');
               appuids[i] = appuid;
             }
-            const apppUidPromises = appuids.map(getApp);
+            const apppUidPromises = appuids.map(function (x) {
+            	return new Promise((resolve, reject) => {
+            		getApp(cookies, x).then((strxml) => {
+            		  resolve();
+            		}).catch((e) => {reject(`getApp(${x}) ${e}`);}); 
+            	});
+            });
             Promise.all(apppUidPromises).then((xmlStr) => {
               resolve(xmlStr);
               return;
@@ -699,7 +767,7 @@ const createXWHEPClient = ({
    * @see knownCPUs
    * @see knownOSes
    */
-  function registerApp(user, provider, creator, appName, _os, _cpu, binaryUrl) {
+  function registerApp(cookies, user, provider, creator, appName, _os, _cpu, binaryUrl) {
 	return new Promise((resolve, reject) => {
 	  if ((_os === undefined) || (_cpu === undefined) || (binaryUrl === undefined)) {
         reject('registerApp() : OS or CPU undefined');
@@ -724,8 +792,8 @@ const createXWHEPClient = ({
       console.log(`registerApp appUid = ${appUid}`);
 
       const appDescription = `<app><uid>${appUid}</uid><name>${appName}</name><type>DEPLOYABLE</type><accessrights>0x755</accessrights></app>`;
-      sendApp(appDescription).then(() => {
-    	setApplicationBinary(appUid, os, cpu, binaryUrl).then(() => {
+      sendApp(cookies, appDescription).then(() => {
+    	setApplicationBinary(cookies, appUid, os, cpu, binaryUrl).then(() => {
     	  resolve(appUid);
     	  return;
     	}).catch((err) => {
@@ -747,7 +815,7 @@ const createXWHEPClient = ({
    * @resolve undefined
    * @exception is thrown on error
    */
-  function setApplicationBinary(appUid, _os, _cpu, binaryUrl) {
+  function setApplicationBinary(cookies, appUid, _os, _cpu, binaryUrl) {
 
 	return new Promise((resolve, reject) => {
       if ((_os === undefined) || (_cpu === undefined) || (binaryUrl === undefined)) {
@@ -785,12 +853,12 @@ const createXWHEPClient = ({
         const dataUid = uuidV4();
         const dataDescription = `<data><uid>${dataUid}</uid><accessrights>0x755</accessrights><type>BINARY</type><name>fileName</name><cpu>${cpu}</cpu><os>${os}</os><status>UNAVAILABLE</status></data>`;
 
-        sendData(dataDescription).then(() => {
+        sendData(cookies, dataDescription).then(() => {
 
     	  console.log(`setApplicationBinary() dataFile ${dataFile}`);
 
-    	  uploadData(dataUid, dataFile).then(() => {
-    		get(dataUid).then((getResponse) => {
+    	  uploadData(cookies, dataUid, dataFile).then(() => {
+    		get(cookies, dataUid).then((getResponse) => {
     		  let jsonObject;
     		  parseString(getResponse, (err, result) => {
     			jsonObject = JSON.parse(JSON.stringify(result));
@@ -806,7 +874,7 @@ const createXWHEPClient = ({
     		  const appBinaryFieldName = getApplicationBinaryFieldName(os,cpu);
      		  console.log(`setApplicationBinary  setApplicationParam(${appUid}, ${appBinaryFieldName}, ${binaryURI.href})`);
 
-     		  setApplicationParam(appUid, appBinaryFieldName, binaryURI.href).then(() => {
+     		  setApplicationParam(cookies, appUid, appBinaryFieldName, binaryURI.href).then(() => {
      			console.log(`setApplicationBinary(${appUid}) ${appUid}#${appBinaryFieldName} = ${binaryURI}`);
      			resolve();
      			return;
@@ -831,7 +899,7 @@ const createXWHEPClient = ({
 
         const appBinaryFieldName = getApplicationBinaryFieldName(os,cpu);
         console.log(`setApplicationBinary  setApplicationParam(${appUid}, ${appBinaryFieldName}, ${binaryURI.href})`);
-        setApplicationParam(appUid, appBinaryFieldName, binaryURI.href).then(() => {
+        setApplicationParam(cookies, appUid, appBinaryFieldName, binaryURI.href).then(() => {
 		  console.log(`setApplicationBinary(${appUid}) ${appUid}#${appBinaryFieldName} = ${binaryURI}`);
 		  resolve();
           return;
@@ -855,24 +923,27 @@ const createXWHEPClient = ({
    * @exception is thrown if application is not found
    * @see #setPending(uid)
    */
-  async function register(user, provider, creator, appName, submitTxHash) {
+  async function register(cookies, user, provider, creator, appName, submitTxHash) {
 
-    if (!(appName in hashtableAppNames)) {
-      await getApps().then(() => {
-        if (!(appName in hashtableAppNames)) {
-          return Promise.reject(new Error(`register() : application not found ${appName}`));
-        }
-      });
-    }
+	return new Promise((resolve, reject) => {
 
-    return new Promise((resolve, reject) => {
-      const workUid = uuidV4();
+	  console.log(`register(${appName})`)
+	  if (!(appName in hashtableAppNames)) {
+	    console.log(`register(${appName}) call getApps()`)
+	    getApps(cookies).then(() => {
+          if (!(appName in hashtableAppNames)) {
+            reject(`register() : application not found ${appName}`);
+    		return;
+          }
+        });
+      }
 
       const appUid = hashtableAppNames[appName];
-
+      console.log(`register(${appName}) appuid = ${appUid}`)
+      const workUid = uuidV4();
       const workDescription = `<work><uid>${workUid}</uid><accessrights>0x755</accessrights><appuid>${appUid}</appuid><sgid>${submitTxHash}</sgid><status>UNAVAILABLE</status></work>`;
-      sendWork(workDescription).then(() => {
-        sendWork(workDescription).then(() => { // a 2nd time to force status to UNAVAILABLE
+      sendWork(cookies, workDescription).then(() => {
+        sendWork(cookies, workDescription).then(() => { // a 2nd time to force status to UNAVAILABLE
           resolve(workUid);
           return;
         }).catch((err) => {
@@ -898,21 +969,23 @@ const createXWHEPClient = ({
    * @exception is thrown if paramName does not represent a valid application parameter
    * @exception is thrown if parameter is read only (e.g. status, return code, etc.)
    */
-  function setApplicationParam(uid, paramName, paramValue) {
+  function setApplicationParam(cookies, uid, paramName, paramValue) {
 
-	console.log('setApplicationParam uid', uid);
-    console.log('setApplicationParam paramName', paramName);
-    console.log('setApplicationParam paramValue', paramValue);
+	return new Promise((resolve, reject) => {
+	  console.log('setApplicationParam uid', uid);
+	  console.log('setApplicationParam paramName', paramName);
+	  console.log('setApplicationParam paramValue', paramValue);
 
-    if (!(paramName in appAvailableParameters)) {
-        return Promise.reject(new Error(`setApplicationParam() : invalid app parameter ${paramName}`));
-    }
-    if (appAvailableParameters[paramName] === false) {
-        return Promise.reject(new Error(`setApplicationParam() : read only app parameter ${paramName}`));
-    }
+	  if (!(paramName in appAvailableParameters)) {
+        reject(`setApplicationParam() : invalid app parameter ${paramName}`);
+        return;
+	  }
+	  if (appAvailableParameters[paramName] === false) {
+        reject(`setApplicationParam() : read only app parameter ${paramName}`);
+        return;
+	  }
 
-    return new Promise((resolve, reject) => {
-      get(uid).then((getResponse) => {
+      get(cookies, uid).then((getResponse) => {
         let jsonObject;
         parseString(getResponse, (err, result) => {
           jsonObject = JSON.parse(JSON.stringify(result));
@@ -925,7 +998,7 @@ const createXWHEPClient = ({
 
         jsonObject.xwhep.app[0][paramName] = paramValue;
 
-        sendApp(json2xml(jsonObject, false)).then(() => {
+        sendApp(cookies, json2xml(jsonObject, false)).then(() => {
           resolve();
           return;
         }).catch((err) => {
@@ -953,18 +1026,20 @@ const createXWHEPClient = ({
    * @exception is thrown if parameter is read only (e.g. status, return code, etc.)
    */
 
-  function setWorkParam(uid, paramName, paramValue) {
+  function setWorkParam(cookies, uid, paramName, paramValue) {
 
-    if (!(paramName in workAvailableParameters)) {
-      return Promise.reject(new Error(`setWorkParam() : Invalid parameter ${paramName}`));
-    }
+	return new Promise((resolve, reject) => {
+	  if (!(paramName in workAvailableParameters)) {
+		reject(`setWorkParam() : Invalid parameter ${paramName}`);
+		return;
+	  }
 
-    if (workAvailableParameters[paramName] === false) {
-      return Promise.reject(new Error(`setWorkParam() : read only parameter ${paramName}`));
-    }
+	  if (workAvailableParameters[paramName] === false) {
+		reject(`setWorkParam() : read only parameter ${paramName}`);
+		return;
+	  }
 
-    return new Promise((resolve, reject) => {
-      get(uid).then((getResponse) => {
+      get(cookies, uid).then((getResponse) => {
         let jsonObject;
         parseString(getResponse, (err, result) => {
           jsonObject = JSON.parse(JSON.stringify(result));
@@ -982,19 +1057,19 @@ const createXWHEPClient = ({
 
         jsonObject.xwhep.work[0][paramName] = paramValue;
         console.log("setWorkParam(",uid,",",paramName,",", paramValue,")");
-        sendWork(json2xml(jsonObject, false)).then(() => {
-        resolve();
-        return;
-      }).catch((err) => {
-        reject(`setWorkParam() error : ${err}`);
+        sendWork(cookies, json2xml(jsonObject, false)).then(() => {
+          resolve();
+          return;
+        }).catch((err) => {
+          reject(`setWorkParam() sendWork error : ${err}`);
+          return;
+        });
+      }).catch((e) => {
+        reject(`setWorkParam(): Work not found (${uid}) : ${e}`);
         return;
       });
-    }).catch((e) => {
-      reject(`setWorkParam(): Work not found (${uid}) : ${e}`);
-      return;
     });
-  });
-}
+  }
 
   /**
    * This retrieves a parameter for the provided work.
@@ -1006,9 +1081,9 @@ const createXWHEPClient = ({
    * @exception is thrown if work is not found
    * @exception is thrown if paramName does not represent a valid work parameter
    */
-  function getWorkParam(uid, paramName) {
+  function getWorkParam(cookies, uid, paramName) {
     return new Promise((resolve, reject) => {
-      get(uid).then((getResponse) => {
+      get(cookies, uid).then((getResponse) => {
 
         let jsonObject;
         parseString(getResponse, (err, result) => {
@@ -1046,8 +1121,8 @@ const createXWHEPClient = ({
    * @exception is thrown if parameter is read only
    * @see #getWorkParam(uid, paramName)
    */
-  function getWorkStatus(uid) {
-    return getWorkParam(uid, 'status');
+  function getWorkStatus(cookies, uid) {
+    return getWorkParam(cookies, uid, 'status');
   }
 
   /**
@@ -1062,9 +1137,9 @@ const createXWHEPClient = ({
    * @exception is thrown if paramName does not represent a valid work parameter
    * @exception is thrown if parameter is read only (e.g. status, return code, etc.)
    */
-  function setPending(uid) {
+  function setPending(cookies, uid) {
     return new Promise((resolve, reject) => {
-      get(uid).then((getResponse) => {
+      get(cookies, uid).then((getResponse) => {
         let jsonObject;
         parseString(getResponse, (err, result) => {
           jsonObject = JSON.parse(JSON.stringify(result));
@@ -1083,7 +1158,7 @@ const createXWHEPClient = ({
         jsonObject.xwhep.work[0].status = 'PENDING';
         console.log(`setPending(${uid}) send : ${JSON.stringify(jsonObject)}`);
 
-        sendWork(json2xml(jsonObject, false)).then(() => {
+        sendWork(cookies, json2xml(jsonObject, false)).then(() => {
           resolve();
           return;
         }).catch((err) => {
@@ -1129,8 +1204,9 @@ const createXWHEPClient = ({
    * @resolve undefined
    * @exception is thrown on error
    */
-  const setStdinUri= (workUid, stdinContent) => (
+  const setStdinUri= (cookies, workUid, stdinContent) => (
 	new Promise((resolve, reject) => {
+		console.log(`setStdinUri(${cookies}, ${workUid}, ${stdinContent})`);
       if ((stdinContent === "") || (stdinContent === undefined)) {
     	  resolve();
     	  return;
@@ -1139,10 +1215,10 @@ const createXWHEPClient = ({
       console.log(`setStdinUri(${workUid})`);
       const dataUid = uuidV4();
       const dataDescription = `<data><uid>${dataUid}</uid><accessrights>0x755</accessrights><name>stdin.txt</name><status>UNAVAILABLE</status></data>`;
-      sendData(dataDescription).then(() => {
+      sendData(cookies, dataDescription).then(() => {
     	writeFile(dataUid, stdinContent.concat("                                                            ")).then((dataFile) =>{
-      	  uploadData(dataUid, dataFile).then(() => {
-            get(dataUid).then((getResponse) => {
+      	  uploadData(cookies, dataUid, dataFile).then(() => {
+            get(cookies, dataUid).then((getResponse) => {
               let jsonObject;
         	  parseString(getResponse, (err, result) => {
           		jsonObject = JSON.parse(JSON.stringify(result));
@@ -1153,7 +1229,7 @@ const createXWHEPClient = ({
               }
               const stdinUri = jsonObject.xwhep.data[0]['uri'];
               console.log(`setStdinUri(${workUid}) : ${stdinUri}`);
-          	  setWorkParam(workUid, 'stdinuri', stdinUri).then(() => {
+          	  setWorkParam(cookies, workUid, 'stdinuri', stdinUri).then(() => {
           	    console.log(`setStdinUri(${workUid}) ${workUid}#stdinuri = ${stdinUri}`);
        	        fs.unlink(dataFile);
        	        resolve();
@@ -1196,13 +1272,13 @@ const createXWHEPClient = ({
    * @resolve the new work uid
    * @exception is thrown if application is not found
    */
-  const submit = (user, provider, creator,appName, cmdLineParam, stdinContent,submitTxHash) => (
+  const submit = (cookies, user, provider, creator,appName, cmdLineParam, stdinContent,submitTxHash) => (
     new Promise((resolve, reject) => {
       console.log(`submit(${appName})`);
-      register(user, provider, creator,appName,submitTxHash).then((workUid) => {
-        setWorkParam(workUid, 'cmdline', cmdLineParam).then(() => {
-          setStdinUri(workUid, stdinContent).then(() => {
-            setPending(workUid).then(() => {
+      register(cookies, user, provider, creator,appName,submitTxHash).then((workUid) => {
+        setWorkParam(cookies, workUid, 'cmdline', cmdLineParam).then(() => {
+          setStdinUri(cookies, workUid, stdinContent).then(() => {
+            setPending(cookies, workUid).then(() => {
               resolve(workUid);
               return;
             }).catch((msg) => {
@@ -1210,11 +1286,11 @@ const createXWHEPClient = ({
               return;
             });
           }).catch((msg) => {
-            reject("submit() setWorkParam error : ", msg);
+            reject("submit() setStdinUri error : ", msg);
       	    return;
           });
         }).catch((msg) => {
-          reject("submit() setStdinUri error : ", msg);
+          reject("submit() setWorkParam error : ", msg);
           return;
         });
       }).catch((msg) => {
@@ -1234,16 +1310,30 @@ const createXWHEPClient = ({
    * @exception is thrown if work is not found
    * @exception is thrown if work result is not set
    */
-  function download(uri, downloadedPath) {
-    return new Promise((resolve, reject) => {
-      const uid = uri.substring(uri.lastIndexOf('/') + 1);
+  function download(cookies, uri, downloadedPath) {
+	return new Promise((resolve, reject) => {
+	  var state = "";
+	  if((cookies !== undefined) && (cookies[0] !== undefined)) {
+		var cookie = cookies[0];
+		console.log(`sendWork(${cookies}) : cookie = ${cookie}`);
+		state = getCookie(cookies, STATENAME);
+	  }
+
+	  console.log(`sendWork(${cookies}) ; ${STATENAME} = ${state}`);
+
+	  var creds = CREDENTIALS;
+	  if (state !== "") {
+		creds = `?${STATENAME}=${state}`;
+	  }
+
+	  const uid = uri.substring(uri.lastIndexOf('/') + 1);
 
       const downloadPath = `${PATH_DOWNLOADDATA}/${uid}`;
 
       const options = {
         hostname,
         port,
-        path: downloadPath + CREDENTIALS,
+        path: downloadPath + creds,
         method: 'GET',
         rejectUnauthorized: false,
       };
@@ -1321,9 +1411,9 @@ const createXWHEPClient = ({
    * @exception is thrown if work is not found
    * @exception is thrown if work status is not COMPLETED
    */
-  function getResult(uid) {
+  function getResult(cookies, uid) {
     return new Promise((resolve, reject) => {
-      get(uid).then((getResponse) => {
+      get(cookies, uid).then((getResponse) => {
         let jsonObject;
         parseString(getResponse, (err, result) => {
           jsonObject = JSON.parse(JSON.stringify(result));
@@ -1362,9 +1452,9 @@ const createXWHEPClient = ({
    * @exception is thrown if work is not found
    * @exception is thrown if work result is not set
    */
-  function downloadResult(uid) {
+  function downloadResult(cookies, uid) {
     return new Promise((resolve, reject) => {
-      getResult(uid).then((getResponse) => {
+      getResult(cookies, uid).then((getResponse) => {
         let jsonObject;
         parseString(getResponse, (err, result) => {
           jsonObject = JSON.parse(JSON.stringify(result));
@@ -1396,7 +1486,7 @@ const createXWHEPClient = ({
           return;
         }
         console.log(`downloadResult() calling download(${dataUri}, ${resultPath})`);
-        download(dataUri.toString(), resultPath).then((downloadedPath) => {
+        download(cookies, dataUri.toString(), resultPath).then((downloadedPath) => {
           console.log(`downloadResult() : ${downloadedPath}`);
           resolve(downloadedPath);
           return;
@@ -1447,15 +1537,29 @@ const createXWHEPClient = ({
    * @resolve undefined
    */
   // eslint-disable-next-line
-  function remove(uid) {
+  function remove(cookies, uid) {
     return new Promise((resolve, reject) => {
-      let getResponse = '';
+  	  var state = "";
+	  if((cookies !== undefined) && (cookies[0] !== undefined)) {
+		var cookie = cookies[0];
+		console.log(`sendWork(${cookies}) : cookie = ${cookie}`);
+		state = getCookie(cookies, STATENAME);
+	  }
+
+	  console.log(`sendWork(${cookies}) ; ${STATENAME} = ${state}`);
+
+	  var creds = CREDENTIALS;
+	  if (state !== "") {
+		creds = `?${STATENAME}=${state}`;
+	  }
+
+	  let getResponse = '';
 
       const getPath = `${PATH_REMOVE}/${uid}`;
       const options = {
         hostname,
         port,
-        path: getPath + CREDENTIALS,
+        path: getPath + creds,
         method: 'GET',
         rejectUnauthorized: false,
       };
@@ -1491,10 +1595,10 @@ const createXWHEPClient = ({
    * @exception is thrown if work is not found
    * @exception is thrown if work status is ERROR
    */
-  function waitCompleted(uid) {
+  function waitCompleted(cookies, uid) {
     return new Promise((resolve, reject) => {
       const theInterval = setInterval(() => {
-        getWorkStatus(uid).then((newStatus) => {
+        getWorkStatus(cookies, uid).then((newStatus) => {
           console.log(`waitCompleted ${newStatus}`);
 
           if (newStatus.toString() === 'ERROR') {
@@ -1530,17 +1634,17 @@ const createXWHEPClient = ({
    * @exception is thrown on submission error
    * @exception is thrown if work status is ERROR
    */
-  function submitAndWait(user, provider, creator, appName, cmdLineParam,stdinContent,submitTxHash) {
+  function submitAndWait(cookies, user, provider, creator, appName, cmdLineParam,stdinContent,submitTxHash) {
     return new Promise((resolve, reject) => {
       let workuid;
-      submit(user, provider, creator, appName, cmdLineParam,stdinContent,submitTxHash).then((uid) => {
+      submit(cookies, user, provider, creator, appName, cmdLineParam,stdinContent,submitTxHash).then((uid) => {
         workuid = uid;
         console.log('submitAndWait() submission done');
-        waitCompleted(uid).then(() => {
+        waitCompleted(cookies, uid).then(() => {
           console.log(`submitAndWait() COMPLETED ${workuid}`);
-          downloadResult(workuid).then(() => {
+          downloadResult(cookies, workuid).then(() => {
             console.log(`submitAndWait() downloaded ${workuid}`);
-            getResultPath(workuid).then((resultPath) => {
+            getResultPath(cookies, workuid).then((resultPath) => {
               console.log(`submitAndWait() path ${resultPath}`);
               resolve([workuid,resultPath]);
               return;
@@ -1574,11 +1678,11 @@ const createXWHEPClient = ({
    * @exception is thrown on submission error
    * @exception is thrown if work status is ERROR
    */
-  function submitAndWaitAndGetStdout(user, provider, creator, appName, cmdLineParam,stdinContent,submitTxHash) {
+  function submitAndWaitAndGetStdout(cookies, user, provider, creator, appName, cmdLineParam,stdinContent,submitTxHash) {
     return new Promise((resolve, reject) => {
       let workuid;
       let resultPath;
-      submitAndWait(user, provider, creator, appName, cmdLineParam,stdinContent,submitTxHash).then((results) => {
+      submitAndWait(cookies, user, provider, creator, appName, cmdLineParam,stdinContent,submitTxHash).then((results) => {
         [workuid, resultPath] = results;
         console.log('submitAndWaitAndGetResult() submitAndWait done');
         console.log(`submitAndWaitAndGetResult() path ${resultPath}`);
@@ -1634,9 +1738,9 @@ const createXWHEPClient = ({
  * @exception is thrown if work is not found
  * @exception is thrown if stdout file is not found
  */
-  function getStdout(uid) {
+  function getStdout(cookies, uid) {
     return new Promise((resolve, reject) => {
-      downloadResult(uid).then(() => {
+      downloadResult(cookies, uid).then(() => {
         console.log(`getStdout() downloaded ${uid}`);
         getResultPath(uid).then((resultPath) => {
           console.log(`getStdout() path ${resultPath}`);
@@ -1664,7 +1768,7 @@ const createXWHEPClient = ({
  * -1- iss : the issuer
  * -2- blockchainaddr : the hash of the user public key
  * @return a new Promise
- * @resolve a cookie to be used to access the server
+ * @resolve a cookies table to be used to access the server
  */
   async function auth(jwtoken) {
     return new Promise((resolve, reject) => {
@@ -1683,18 +1787,18 @@ const createXWHEPClient = ({
         },
       };
 
-      console.log('auth() options', options);
+//      console.log('auth() options', options);
       const req = https.request(options, (res) => {
-    	console.log('statusCode:', res.statusCode);
-        console.log('response.headers :', res.headers);
-    	console.log('response.headers.location :', res.headers.location);
+//    	console.log('statusCode:', res.statusCode);
+//        console.log('response.headers :', res.headers);
+//    	console.log('response.headers.location :', res.headers.location);
     	var location = new URL(res.headers.location);
-        console.log(`location.path : ${location}`);
-        console.log(`location.search: ${location.search}`);
+//        console.log(`location.path : ${location}`);
+//        console.log(`location.search: ${location.search}`);
         const state = location.search.substring(1);
-        console.log(`state: ${state}`);
+//        console.log(`state: ${state}`);
 
-    	console.log('response.headers.set-cookie :', res.headers['set-cookie']);
+//    	console.log('response.headers.set-cookie :', res.headers['set-cookie']);
         res.on('data', (d) => {});
 
         res.on('end', () => {
