@@ -552,7 +552,11 @@ ACTIVATIONDATE=* 20-7
 # If you wish to use a sand box tool set sandbox.enable to "true" else set
 # it to "false" or comment it.
 # If true, you must set sandbox.path and sandbox.start.args below
-#
+# Exemple with docker:
+# docker run -t -i --mount type=bind,src=`pwd`,dst=/tmp/xwhep -w /tmp/xwhep ubuntu /bin/bash
+#  SANDBOXENABLED=true
+#  SANDBOXPATH=docker
+#  SANDBOXSTARTARGS=-t -i --mount type=bind,src=`pwd`,dst=/tmp/xwhep -w /tmp/xwhep ubuntu /tmp/xwhep/
 # Default is false
 # SANDBOXENABLED=true
 
@@ -561,10 +565,10 @@ ACTIVATIONDATE=* 20-7
 #
 # UNDER MAC OS >= 10.5 you can use
 # SANDBOXPATH=/usr/bin/sandbox-exec
-# SANDBOXSTART.ARGS=-f /usr/share/sandbox/xgridagentd_task_nobody.sb
+# SANDBOXSTARTARGS=-f /usr/share/sandbox/xgridagentd_task_nobody.sb
 #
 # SANDBOXPATH=/path_to_sanabox/bin
-# SANDBOXSTART.ARGS=
+# SANDBOXSTARTARGS=
 ####
 
 #### worker keystore

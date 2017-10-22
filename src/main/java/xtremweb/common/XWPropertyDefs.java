@@ -2394,18 +2394,6 @@ public enum XWPropertyDefs {
 		public String defaultValue() {
 			return Boolean.FALSE.toString();
 		}
-
-		/**
-		 * This retrieves a property name as found in config file This is for
-		 * backward compatibility only
-		 *
-		 * @since 8.2.0
-		 * @return "sandbox.enabled"
-		 */
-		@Override
-		public String propertyName() {
-			return "sandbox.enabled";
-		}
 	},
 	/**
 	 * Worker : sandbox path
@@ -2426,18 +2414,6 @@ public enum XWPropertyDefs {
 		public String defaultValue() {
 			return OSEnum.getSandboxPath();
 		}
-
-		/**
-		 * This retrieves a property name as found in config file This is for
-		 * backward compatibility only
-		 *
-		 * @since 8.2.0
-		 * @return "sandbox.path"
-		 */
-		@Override
-		public String propertyName() {
-			return "sandbox.path";
-		}
 	},
 	/**
 	 * Worker : launch sandbox arguments
@@ -2448,19 +2424,7 @@ public enum XWPropertyDefs {
 	 * Default: null
 	 * </p>
 	 */
-	SANDBOXSTARTARGS {
-		/**
-		 * This retrieves a property name as found in config file This is for
-		 * backward compatibility only
-		 *
-		 * @since 8.2.0
-		 * @return "sandbox.start.args"
-		 */
-		@Override
-		public String propertyName() {
-			return "sandbox.start.args";
-		}
-	},
+	SANDBOXSTARTARGS,
 	/**
 	 * Worker : this tells to collect host traces
 	 * <p>
