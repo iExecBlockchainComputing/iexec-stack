@@ -317,6 +317,7 @@ public final class CommManager extends Thread {
 		final URI uri = commClient().newURI(w.getUID());
 		final XMLRPCCommandSend cmd = new XMLRPCCommandSend(uri, w);
 		cmd.setHost(Worker.getConfig().getHost());
+		logger.debug("CommManager#workSend " + cmd.toXml());
 		commClient().send(cmd);
 	}
 
@@ -1236,6 +1237,7 @@ public final class CommManager extends Thread {
 			logger.debug("CommManager#uploadResults " + content);
 			if (content.exists()) {
 				commClient.send(data);
+				logger.debug("CommManager#uploadResults " + data.toXml());
 				uploadData(resultURI);
 				theWork.setStatus(StatusEnum.COMPLETED);
 			}
