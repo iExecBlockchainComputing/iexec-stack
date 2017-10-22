@@ -51,12 +51,20 @@ public class HTTPJWTEthereumAuthHandler extends HTTPJWTHandler {
 	/**
 	 * This is the name of the cookie containing the JWT
 	 */
-	private static final String COOKIE_NAME = "ethauthtoken";
+	private static final String COOKIENAME_ETHAUTHTOKEN = "ethauthtoken";
+	/**
+	 * This is the name of the cookie containing the state
+	 */
+	private static final String COOKIENAME_STATE = XWPostParams.AUTH_STATE.toString();
 	/**
 	 * This is the JWT claim containing the ethereum address
 	 */
 	private static final String CLAIM_NAME = "blockchainaddr";
-
+	/**
+	 * This is the name of the header variable User-Agent"
+	 */
+	private static final String USERAGENTNAME = "User-Agent";
+	
 	/**
 	 * This is the default constructor which only calls super("HTTPStatHandler")
 	 * 
@@ -93,9 +101,28 @@ public class HTTPJWTEthereumAuthHandler extends HTTPJWTHandler {
 
 		final HttpSession session = request.getSession(true);
 		logger.debug("session = " + session.getId());
-		final Cookie cookie = getCookie(COOKIE_NAME);
+		final Cookie ethauthCookie = getCookie(COOKIENAME_ETHAUTHTOKEN);
 		String strState = (String) session.getAttribute(XWPostParams.AUTH_STATE.toString());
-		final DecodedJWT token = cookie != null ? getToken(cookie) : getToken(getState(strState));
+		if (strState == null) {
+			try {
+				final Cookie stateCookie = getCookie(COOKIENAME_STATE);
+				if(stateCookie != null) {
+					strState = stateCookie.getValue();
+				}
+			} catch(IllegalArgumentException e) {
+			}
+		}
+		final DecodedJWT token = ethauthCookie != null ? getToken(ethauthCookie) : getToken(getState(strState));
+
+		logger.debug("cookie = " + ethauthCookie);
+		logger.debug("getToken(cookie) = " + getToken(ethauthCookie));
+		logger.debug("strState = " + strState);
+		if(strState != null) {
+			logger.debug("getState(strState) = " + getState(strState));
+		}
+		if(ethauthCookie != null) {
+			logger.debug("cookie = " + ethauthCookie.getName() + ":" + ethauthCookie.getValue());
+		}
 
 		if (token == null) {
 			baseRequest.setHandled(false);
@@ -103,16 +130,20 @@ public class HTTPJWTEthereumAuthHandler extends HTTPJWTHandler {
 		}
 		logger.debug("ADDR = " + getEthereumAddress(token));
 
-		if (cookie != null) {
-			final String newState = newState(cookie);
+		if (ethauthCookie != null) {
+			final String newState = newState(ethauthCookie);
 			logger.debug("newState = " + newState);
 			session.setAttribute(XWPostParams.AUTH_STATE.toString(), newState);
-			storeState(newState, cookie);
+			final Cookie cookieUser = new Cookie(XWPostParams.AUTH_STATE.toString(), newState);
+			response.addCookie(cookieUser);
+			logger.debug("setCookie " + XWPostParams.AUTH_STATE.toString() + " = " + newState);
+			storeState(newState, ethauthCookie);
 			strState = newState;
 		}
 
 		final String url = localRootUrl + "?" + XWPostParams.AUTH_STATE + "=" + strState;
 		logger.debug("sendRedirectUrm = " + url);
+		logger.debug(USERAGENTNAME + " = "  + request.getHeader(USERAGENTNAME));
 		response.sendRedirect(url);
 
 		baseRequest.setHandled(true);
