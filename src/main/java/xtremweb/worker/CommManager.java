@@ -317,6 +317,7 @@ public final class CommManager extends Thread {
 		final URI uri = commClient().newURI(w.getUID());
 		final XMLRPCCommandSend cmd = new XMLRPCCommandSend(uri, w);
 		cmd.setHost(Worker.getConfig().getHost());
+		logger.debug("CommManager#workSend " + cmd.toXml());
 		commClient().send(cmd);
 	}
 
@@ -608,11 +609,9 @@ public final class CommManager extends Thread {
 
 		URI uri = null;
 
-		AppTypeEnum appType = app.getType();
-		String apptypestr = appType.toString();
+		final AppTypeEnum appType = app.getType();
+		final String apptypestr = appType.toString();
 		final boolean localapp = Worker.getConfig().getLocalApps().contains(apptypestr);
-		appType = null;
-		apptypestr = null;
 
 		logger.error("CommManager : can't use app library; please use executables");
 		uri = app.getBinary(cpu, os);
@@ -1238,6 +1237,7 @@ public final class CommManager extends Thread {
 			logger.debug("CommManager#uploadResults " + content);
 			if (content.exists()) {
 				commClient.send(data);
+				logger.debug("CommManager#uploadResults " + data.toXml());
 				uploadData(resultURI);
 				theWork.setStatus(StatusEnum.COMPLETED);
 			}

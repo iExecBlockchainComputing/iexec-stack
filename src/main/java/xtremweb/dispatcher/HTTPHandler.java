@@ -923,13 +923,21 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 		// logger.debug("Authorization = " +
 		// request.getHeader(HttpHeaders.AUTHORIZATION));
 		for (final Enumeration<String> e = request.getParameterNames(); e.hasMoreElements();) {
-			logger.debug("parameter " + e.nextElement());
+			logger.finest("parameter " + e.nextElement());
 		}
 		for (final Enumeration<String> e = request.getHeaderNames(); e.hasMoreElements();) {
-			logger.debug("header " + e.nextElement());
+			final String headerName = e.nextElement();
+			logger.finest("header " + headerName + " : " + request.getHeader(headerName));
 		}
-		logger.debug("cookies.length = " + (request.getCookies() == null ? "0" : request.getCookies().length));
 
+		final Cookie[] cookies = request.getCookies();
+		logger.debug("cookies.length = " + (cookies == null ? "0" : cookies.length));
+		if(cookies != null) {
+			for (int c = 0; c < cookies.length; c++) {
+				final Cookie cookie = cookies[c];
+				logger.finest("cookie " + cookie.getName() + " : " + cookie.getValue());
+			}
+		}
 		if (request.getParameterMap().size() <= 0) {
 
 			if (target.equals(PATH)) {
@@ -948,18 +956,18 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 		}
 
 		final HttpSession session = request.getSession(true);
-		final String mandatingLogin = request.getParameter(XWPostParams.XWMANDATINGLOGIN.toString()) != null
+		final String mandatingLogin = (request.getParameter(XWPostParams.XWMANDATINGLOGIN.toString()) != null
 				? request.getParameter(XWPostParams.XWMANDATINGLOGIN.toString())
-						: (String) session.getAttribute(XWPostParams.XWMANDATINGLOGIN.toString());
-		final String authState = request.getParameter(XWPostParams.AUTH_STATE.toString()) != null
+						: (String) session.getAttribute(XWPostParams.XWMANDATINGLOGIN.toString()));
+		final String authState = (request.getParameter(XWPostParams.AUTH_STATE.toString()) != null
 				? request.getParameter(XWPostParams.AUTH_STATE.toString())
-						: (String) session.getAttribute(XWPostParams.AUTH_STATE.toString());
-		final String authEmail = request.getParameter(XWPostParams.AUTH_EMAIL.toString()) != null
+						: (String) session.getAttribute(XWPostParams.AUTH_STATE.toString()));
+		final String authEmail = (request.getParameter(XWPostParams.AUTH_EMAIL.toString()) != null
 				? request.getParameter(XWPostParams.AUTH_EMAIL.toString())
-						: (String) session.getAttribute(XWPostParams.AUTH_EMAIL.toString());
-		final String authId = request.getParameter(XWPostParams.AUTH_IDENTITY.toString()) != null
+						: (String) session.getAttribute(XWPostParams.AUTH_EMAIL.toString()));
+		final String authId = (request.getParameter(XWPostParams.AUTH_IDENTITY.toString()) != null
 				? request.getParameter(XWPostParams.AUTH_IDENTITY.toString())
-						: (String) session.getAttribute(XWPostParams.AUTH_IDENTITY.toString());
+						: (String) session.getAttribute(XWPostParams.AUTH_IDENTITY.toString()));
 
 		getLogger().debug("oauthState = " + authState);
 		getLogger().debug("oauthEmail= " + authEmail);
@@ -1294,74 +1302,59 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 	private UserInterface userFromOpenId(final HttpServletRequest request) throws IOException {
 
 		final HttpSession session = request.getSession(true);
-		/*
-		 * String nonce =
-		 * request.getParameter(XWPostParams.AUTH_NONCE.toString()); String
-		 * email = request.getParameter(XWPostParams.AUTH_EMAIL.toString());
-		 * String id =
-		 * request.getParameter(XWPostParams.AUTH_IDENTITY.toString());
-		 *
-		 * if(nonce == null) { nonce = (String)
-		 * session.getAttribute(XWPostParams.AUTH_NONCE.toString()); } if(email
-		 * == null) { email = (String)
-		 * session.getAttribute(XWPostParams.AUTH_EMAIL.toString()); } if(id ==
-		 * null) { id = (String)
-		 * session.getAttribute(XWPostParams.AUTH_IDENTITY.toString()); }
-		 *
-		 */
-		final String authNonce = request.getParameter(XWPostParams.AUTH_NONCE.toString()) != null
+		final String authNonce = (request.getParameter(XWPostParams.AUTH_NONCE.toString()) != null
 				? request.getParameter(XWPostParams.AUTH_NONCE.toString())
-						: (String) session.getAttribute(XWPostParams.AUTH_NONCE.toString());
-				final String authEmail = request.getParameter(XWPostParams.AUTH_EMAIL.toString()) != null
-						? request.getParameter(XWPostParams.AUTH_EMAIL.toString())
-								: (String) session.getAttribute(XWPostParams.AUTH_EMAIL.toString());
-						final String authId = request.getParameter(XWPostParams.AUTH_IDENTITY.toString()) != null
-								? request.getParameter(XWPostParams.AUTH_IDENTITY.toString())
-										: (String) session.getAttribute(XWPostParams.AUTH_IDENTITY.toString());
+						: (String) session.getAttribute(XWPostParams.AUTH_NONCE.toString()));
+		final String authEmail = (request.getParameter(XWPostParams.AUTH_EMAIL.toString()) != null
+				? request.getParameter(XWPostParams.AUTH_EMAIL.toString())
+						: (String) session.getAttribute(XWPostParams.AUTH_EMAIL.toString()));
+		final String authId = (request.getParameter(XWPostParams.AUTH_IDENTITY.toString()) != null
+				? request.getParameter(XWPostParams.AUTH_IDENTITY.toString())
+						: (String) session.getAttribute(XWPostParams.AUTH_IDENTITY.toString()));
 
-								if ((authNonce == null) || (authEmail == null)) {
-									return null;
-								}
+		if ((authNonce == null) || (authEmail == null)) {
+			return null;
+		}
 
-								UserInterface ret = null;
+		UserInterface ret = null;
 
-								try {
-									HTTPOpenIdHandler.getInstance().verifyNonce(authNonce);
-									ret = DBInterface.getInstance().user(UserInterface.Columns.EMAIL.toString() + "= '" + authEmail + "'");
-									if (ret == null) {
-										if (Dispatcher.getConfig().getBoolean(XWPropertyDefs.DELEGATEDREGISTRATION) == false) {
-											throw new IOException("delegated registration is not allowed");
-										}
+		try {
+			HTTPOpenIdHandler.getInstance().verifyNonce(authNonce);
+			ret = DBInterface.getInstance().user(UserInterface.Columns.EMAIL.toString() + "= '" + authEmail + "'");
+			if (ret == null) {
+				if (Dispatcher.getConfig().getBoolean(XWPropertyDefs.DELEGATEDREGISTRATION) == false) {
+					throw new IOException("delegated registration is not allowed");
+				}
 
-										final UserInterface admin = Dispatcher.getConfig().getProperty(XWPropertyDefs.ADMINLOGIN) == null ? null
-												: DBInterface.getInstance()
-												.user(SQLRequest.MAINTABLEALIAS + "." + UserInterface.Columns.LOGIN.toString() + "='"
-														+ Dispatcher.getConfig().getProperty(XWPropertyDefs.ADMINLOGIN) + "'");
-										if (admin == null) {
-											throw new IOException("can't insert new OpenId user (cant't retrieve admin)");
-										}
-										final String random = authEmail + System.currentTimeMillis() + Math.random();
-										final byte[] strb = random.getBytes();
-										final MD5 md5 = new MD5(strb);
-										final String md5hex = md5.asHex();
-										final UserInterface client = new UserInterface();
-										client.setUID(new UID());
-										client.setOwner(Dispatcher.getConfig().getAdminUid());
-										client.setLogin(authId);
-										client.setPassword(md5hex);
-										client.setRights(UserRightEnum.STANDARD_USER);
-										client.setEMail(authEmail);
-										DBInterface.getInstance().addUser(admin, client);
-										ret = client;
-									}
-									session.setAttribute(XWPostParams.AUTH_NONCE.toString(), authNonce);
-									session.setAttribute(XWPostParams.AUTH_EMAIL.toString(), authEmail);
-								} catch (final Exception e) {
-									getLogger().exception("openid delegation error", e);
-									throw new IOException("openid delegation error : " + e.getMessage());
-								}
+				final UserInterface admin = (Dispatcher.getConfig().getProperty(XWPropertyDefs.ADMINLOGIN) == null ? null
+						: DBInterface.getInstance()
+						.user(SQLRequest.MAINTABLEALIAS + "." + UserInterface.Columns.LOGIN.toString() + "='"
+								+ Dispatcher.getConfig().getProperty(XWPropertyDefs.ADMINLOGIN) + "'"));
+				if (admin == null) {
+					throw new IOException("can't insert new OpenId user (cant't retrieve admin)");
+				}
+				final String random = authEmail + System.currentTimeMillis() + Math.random();
+				final byte[] strb = random.getBytes();
+				final MD5 md5 = new MD5(strb);
+				final String md5hex = md5.asHex();
+				final UserInterface client = new UserInterface();
+				client.setUID(new UID());
+				client.setOwner(Dispatcher.getConfig().getAdminUid());
+				client.setLogin(authId);
+				client.setPassword(md5hex);
+				client.setRights(UserRightEnum.STANDARD_USER);
+				client.setEMail(authEmail);
+				DBInterface.getInstance().addUser(admin, client);
+				ret = client;
+			}
+			session.setAttribute(XWPostParams.AUTH_NONCE.toString(), authNonce);
+			session.setAttribute(XWPostParams.AUTH_EMAIL.toString(), authEmail);
+		} catch (final Exception e) {
+			getLogger().exception("openid delegation error", e);
+			throw new IOException("openid delegation error : " + e.getMessage());
+		}
 
-								return ret;
+		return ret;
 	}
 
 	/**
@@ -1372,36 +1365,36 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 
 		final HttpSession session = request.getSession(true);
 
-		final String ethauthState = request.getParameter(XWPostParams.AUTH_STATE.toString()) != null
+		final String ethauthState = (request.getParameter(XWPostParams.AUTH_STATE.toString()) != null
 				? request.getParameter(XWPostParams.AUTH_STATE.toString())
-						: (String) session.getAttribute(XWPostParams.AUTH_STATE.toString());
+						: (String) session.getAttribute(XWPostParams.AUTH_STATE.toString()));
 
-				getLogger().debug("eth auth state = " + ethauthState);
+		getLogger().debug("eth auth state = " + ethauthState);
 
-				if (ethauthState == null) {
-					return null;
-				}
+		if (ethauthState == null) {
+			return null;
+		}
 
-				final DecodedJWT jwt = HTTPJWTEthereumAuthHandler.getInstance().getToken(HTTPJWTEthereumAuthHandler.getInstance().getState(ethauthState));
-				if (jwt == null) {
-					throw new IOException("JWT error");
-				}
-				final String authAddr = ((HTTPJWTEthereumAuthHandler)HTTPJWTEthereumAuthHandler.getInstance()).getEthereumAddress(jwt);
+		final DecodedJWT jwt = HTTPJWTEthereumAuthHandler.getInstance().getToken(HTTPJWTEthereumAuthHandler.getInstance().getState(ethauthState));
+		if (jwt == null) {
+			throw new IOException("JWT error");
+		}
+		final String authAddr = ((HTTPJWTEthereumAuthHandler)HTTPJWTEthereumAuthHandler.getInstance()).getEthereumAddress(jwt);
 
-				UserInterface ret = DBInterface.getInstance().user(UserInterface.Columns.LOGIN.toString() + "= '" + authAddr + "'");
-				getLogger().debug("userFromJWTEthereumAuth ret = " + (ret == null ? "null" :ret.toXml()));
-				if (ret == null) {
-					try {
-						ret = newUser(authAddr);
-					} catch (InvalidKeyException | AccessControlException e) {
-						getLogger().exception(e);
-						throw new IOException (e.toString());
-					}
-				}
-				session.setAttribute(XWPostParams.AUTH_EMAIL.toString(), authAddr);
-				session.setAttribute(XWPostParams.AUTH_STATE.toString(), ethauthState);
+		UserInterface ret = DBInterface.getInstance().user(UserInterface.Columns.LOGIN.toString() + "= '" + authAddr + "'");
+		getLogger().debug("userFromJWTEthereumAuth ret = " + (ret == null ? "null" :ret.toXml()));
+		if (ret == null) {
+			try {
+				ret = newUser(authAddr);
+			} catch (InvalidKeyException | AccessControlException e) {
+				getLogger().exception(e);
+				throw new IOException (e.toString());
+			}
+		}
+		session.setAttribute(XWPostParams.AUTH_EMAIL.toString(), authAddr);
+		session.setAttribute(XWPostParams.AUTH_STATE.toString(), ethauthState);
 
-				return ret;
+		return ret;
 	}
 	/**
 	 * This retrieves the user from a remove OAuth server
@@ -1412,39 +1405,39 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 	private UserInterface userFromOAuth(final HttpServletRequest request) throws IOException{
 
 		final HttpSession session = request.getSession(true);
-		final String authState = request.getParameter(XWPostParams.AUTH_STATE.toString()) != null
+		final String authState = (request.getParameter(XWPostParams.AUTH_STATE.toString()) != null 
 				? request.getParameter(XWPostParams.AUTH_STATE.toString())
-						: (String) session.getAttribute(XWPostParams.AUTH_STATE.toString());
-				final String authEmail = request.getParameter(XWPostParams.AUTH_EMAIL.toString()) != null
-						? request.getParameter(XWPostParams.AUTH_EMAIL.toString())
-								: (String) session.getAttribute(XWPostParams.AUTH_EMAIL.toString());
-						final String authId = request.getParameter(XWPostParams.AUTH_IDENTITY.toString()) != null
-								? request.getParameter(XWPostParams.AUTH_IDENTITY.toString())
-										: (String) session.getAttribute(XWPostParams.AUTH_IDENTITY.toString());
+						: (String) session.getAttribute(XWPostParams.AUTH_STATE.toString()));
+		final String authEmail = (request.getParameter(XWPostParams.AUTH_EMAIL.toString()) != null
+				? request.getParameter(XWPostParams.AUTH_EMAIL.toString())
+						: (String) session.getAttribute(XWPostParams.AUTH_EMAIL.toString()));
+		final String authId = (request.getParameter(XWPostParams.AUTH_IDENTITY.toString()) != null
+				? request.getParameter(XWPostParams.AUTH_IDENTITY.toString())
+						: (String) session.getAttribute(XWPostParams.AUTH_IDENTITY.toString()));
 
-								getLogger().debug("oauthState = " + authState);
-								getLogger().debug("oauthEmail= " + authEmail);
-								getLogger().debug("oauthId= " + authId);
+		getLogger().debug("oauthState = " + authState);
+		getLogger().debug("oauthEmail= " + authEmail);
+		getLogger().debug("oauthId= " + authId);
 
-								if ((authState == null) || (authEmail == null)) {
-									return null;
-								}
+		if ((authState == null) || (authEmail == null)) {
+			return null;
+		}
 
-								UserInterface ret = null;
-								try {
-									HTTPOAuthHandler.getInstance().checkState(authState);
-									ret = DBInterface.getInstance().user(UserInterface.Columns.EMAIL.toString() + "= '" + authEmail + "'");
-									if (ret == null) {
-										ret = newUser(authId, authEmail);
-									}
-								} catch (OAuthException | InvalidKeyException | AccessControlException e) {
-									throw new IOException (e.toString());
-								}
-								session.setAttribute(XWPostParams.AUTH_EMAIL.toString(), authEmail);
-								session.setAttribute(XWPostParams.AUTH_STATE.toString(), authState);
-								session.setAttribute(XWPostParams.AUTH_IDENTITY.toString(), authId);
+		UserInterface ret = null;
+		try {
+			HTTPOAuthHandler.getInstance().checkState(authState);
+			ret = DBInterface.getInstance().user(UserInterface.Columns.EMAIL.toString() + "= '" + authEmail + "'");
+			if (ret == null) {
+				ret = newUser(authId, authEmail);
+			}
+		} catch (OAuthException | InvalidKeyException | AccessControlException e) {
+			throw new IOException (e.toString());
+		}
+		session.setAttribute(XWPostParams.AUTH_EMAIL.toString(), authEmail);
+		session.setAttribute(XWPostParams.AUTH_STATE.toString(), authState);
+		session.setAttribute(XWPostParams.AUTH_IDENTITY.toString(), authId);
 
-								return ret;
+		return ret;
 	}
 
 	/**

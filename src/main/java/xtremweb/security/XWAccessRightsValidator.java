@@ -29,6 +29,7 @@ import xtremweb.common.Logger;
 import xtremweb.common.Table;
 import xtremweb.common.UID;
 import xtremweb.common.UserInterface;
+import xtremweb.common.UserRightEnum;
 
 /**
  * This grants access to objects
@@ -67,19 +68,19 @@ public class XWAccessRightsValidator {
 			throws AccessControlException, IOException {
 
 		if ((row == null) || (user == null)) {
-			logger.finest("Table#checkUserRights() user is null");
+			logger.finest("XWAccessRights#checkUserRights() user is null");
 			return false;
 		}
 		final UID thisUid = row.getUID();
 		final UID thisOwner = row.getOwner();
 		final UID userUid = user.getUID();
 		if ((thisOwner.equals(userUid)) || (userUid.equals(thisUid))) {
-			logger.finest("Table#checkUserRights() : owner equals user " + row.getAccessRights() + " & " + rights
+			logger.finest("XWAccessRights#checkUserRights() : owner equals user " + row.getAccessRights() + " & " + rights
 					+ " & " + XWAccessRights.USERALL + " = "
 					+ ((row.getAccessRights().value() & rights.value() & XWAccessRights.USERALL.value()) != 0));
 			return ((row.getAccessRights().value() & rights.value() & XWAccessRights.USERALL.value()) != 0);
 		}
-		logger.finest("Table#checkUserRights() user and owner differ : returns false");
+		logger.finest("XWAccessRights#checkUserRights() user and owner differ : returns false");
 		return false;
 	}
 
@@ -100,12 +101,12 @@ public class XWAccessRightsValidator {
 
 		if (ownerGroup != null) {
 			if ((userGroup == null) || (ownerGroup.equals(userGroup) == false)) {
-				logger.finest("Table#checkGroupRights() : returns false");
+				logger.finest("XWAccessRights#checkGroupRights() : returns false");
 				return false;
 			}
 		}
 
-		final String f = String.format("Table#checkGroupRights() : %x %x & %x = %s", row.getAccessRights().value(),
+		final String f = String.format("XWAccessRights#checkGroupRights(%s) : %x & %x & %x = %s", row.getUID(), row.getAccessRights().value(),
 				rights.value(), XWAccessRights.GROUPALL.value(),
 				"" + ((row.getAccessRights().value() & rights.value() & XWAccessRights.GROUPALL.value()) != 0));
 		logger.finest(f);
@@ -121,27 +122,13 @@ public class XWAccessRightsValidator {
 	 */
 	final private boolean checkOthersRights(final XWAccessRights rights) throws AccessControlException, IOException {
 
-		logger.finest("Table#checkOtherRights() : " + row.getAccessRights() + " & " + rights + " & "
-				+ XWAccessRights.OTHERALL + " = "
-				+ ((row.getAccessRights().value() & rights.value() & XWAccessRights.OTHERALL.value()) != 0));
+		final String f = String.format("XWAccessRights#checkOtherRights(%s) %x & %x & %x = %s ", row.getUID(), row.getAccessRights().value(),
+				rights.value(),
+				XWAccessRights.OTHERALL.value(),
+				"" + ((row.getAccessRights().value() & rights.value() & XWAccessRights.OTHERALL.value()) != 0));
+		logger.finest(f);
 
 		return ((row.getAccessRights().value() & rights.value() & XWAccessRights.OTHERALL.value()) != 0);
-	}
-
-	/**
-	 * This tests access rights
-	 *
-	 * @param user
-	 *            is the UId of the user who try to access
-	 * @param ownerGroup
-	 *            is the UID of the owner group
-	 * @param userGroup
-	 *            is the UID of the group of the user who try to access
-	 * @return always false
-	 */
-	final private boolean checkAccessRights(final UserInterface user, final UID ownerGroup, final UID userGroup)
-			throws AccessControlException, IOException {
-		return checkUserAccessRights(user) || checkGroupAccessRights(ownerGroup, userGroup) || checkOtherAccessRights();
 	}
 
 	/**
@@ -160,7 +147,12 @@ public class XWAccessRightsValidator {
 			return false;
 		}
 		final UID userGroup = user.getGroup();
-		return userCanRead(user) || groupCanRead(ownerGroup, userGroup) || otherCanRead();
+		final boolean readable = userCanRead(user) || groupCanRead(ownerGroup, userGroup) || otherCanRead();
+		final boolean stickyBitAccess = ((user.getRights().doesEqual(UserRightEnum.VWORKER_USER)) 
+				&& ((row.getAccessRights().value() & XWAccessRights.STICKYBIT_INT) == XWAccessRights.STICKYBIT_INT));
+		final String f = String.format("XWAccessRights#canRead(%s) : %b || %b", row.getUID(), readable, stickyBitAccess);
+		logger.finest(f);
+		return readable || stickyBitAccess;
 	}
 
 	/**
@@ -179,7 +171,12 @@ public class XWAccessRightsValidator {
 			return false;
 		}
 		final UID userGroup = user.getGroup();
-		return userCanWrite(user) || groupCanWrite(ownerGroup, userGroup) || otherCanWrite();
+		final boolean stickyBitAccess = ((user.getRights().doesEqual(UserRightEnum.VWORKER_USER)) 
+				&& ((row.getAccessRights().value() & XWAccessRights.STICKYBIT_INT) == XWAccessRights.STICKYBIT_INT));
+		final boolean writable = userCanWrite(user) || groupCanWrite(ownerGroup, userGroup) || otherCanWrite();
+		final String f = String.format("XWAccessRights#canWrite(%s) : %b || %b", row.getUID(), writable, stickyBitAccess);
+		logger.finest(f);
+		return writable || stickyBitAccess;
 	}
 
 	/**
@@ -198,44 +195,13 @@ public class XWAccessRightsValidator {
 			return false;
 		}
 		final UID userGroup = user.getGroup();
-		return userCanExec(user) || groupCanExec(ownerGroup, userGroup) || otherCanExec();
+		final boolean executable = userCanExec(user) || groupCanExec(ownerGroup, userGroup) || otherCanExec();
+		final boolean stickyBitAccess = ((user.getRights().doesEqual(UserRightEnum.VWORKER_USER)) 
+				&& ((row.getAccessRights().value() & XWAccessRights.STICKYBIT_INT) == XWAccessRights.STICKYBIT_INT));
+		final String f = String.format("XWAccessRights#canExec(%s) : %b || %b", row.getUID(), executable, stickyBitAccess);
+		logger.finest(f);
+		return executable || stickyBitAccess;
 	}
-
-	/**
-	 * This tests user access rights
-	 *
-	 * @param user
-	 *            is the UID of the user who try to access
-	 * @return true if the user is this owner and access rights are defined
-	 */
-	private final boolean checkUserAccessRights(final UserInterface user) throws AccessControlException, IOException {
-		return checkUserRights(user, XWAccessRights.USERALL);
-	}
-
-	/**
-	 * This tests user group access rights
-	 *
-	 * @param ownerGroup
-	 *            is the owner group UID
-	 * @param userGroup
-	 *            is the group UID of the user who try to access
-	 * @return true if the user belongs to this owner group and group has access
-	 *         rights
-	 */
-	final private boolean checkGroupAccessRights(final UID ownerGroup, final UID userGroup)
-			throws AccessControlException, IOException {
-		return checkGroupRights(ownerGroup, userGroup, XWAccessRights.GROUPALL);
-	}
-
-	/**
-	 * This tests access rights
-	 *
-	 * @return true if others have access rights
-	 */
-	private final boolean checkOtherAccessRights() throws AccessControlException, IOException {
-		return checkOthersRights(XWAccessRights.OTHERALL);
-	}
-
 	/**
 	 * This tests if user can read
 	 *

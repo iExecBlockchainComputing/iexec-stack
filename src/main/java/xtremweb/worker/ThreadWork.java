@@ -113,6 +113,12 @@ public class ThreadWork extends Thread {
 	 */
 	private static final String XWBINPATHNAME = "XWBINPATH";
 	/**
+	 * This is the name of the XWCMDARGS env var which may contain command args
+	 *
+	 * @since 11.3.0
+	 */
+	private static final String XWCMDARGS = "XWCMDARGS";
+	/**
 	 * This is the name of the XWSCRATCH env var which may contain the job PWD
 	 *
 	 * @since 8.0.0
@@ -1227,15 +1233,10 @@ public class ThreadWork extends Thread {
 		URI resulturi = currentWork.getResult();
 		if (resulturi == null) {
 
-			UID uid = new UID();
+			final UID uid = new UID();
 			resulturi = CommManager.getInstance().commClient().newURI(uid);
 			logger.debug("work setting new result URI : " + resulturi);
-			currentWork.setResult(resulturi);
 			data = new DataInterface(uid);
-			data.setURI(resulturi);
-			uid = null;
-			data.setCpu(CPUEnum.getCpu());
-			data.setOs(OSEnum.getOs());
 		} else {
 			try {
 				data = (DataInterface) CommManager.getInstance().commClient(resulturi).get(resulturi, false);
@@ -1243,12 +1244,18 @@ public class ThreadWork extends Thread {
 			} catch (final Exception e) {
 			}
 			if (data == null) {
-				data = new DataInterface(resulturi.getUID());
-				data.setURI(resulturi);
-				data.setCpu(CPUEnum.getCpu());
-				data.setOs(OSEnum.getOs());
+				logger.warn("was unable to retrieve work result URI : " + resulturi);
+				final UID uid = new UID();
+				data = new DataInterface(uid);
+				resulturi = CommManager.getInstance().commClient().newURI(uid);
 			}
 		}
+
+		currentWork.setResult(resulturi);
+		data.setURI(resulturi);
+		data.setCpu(CPUEnum.getCpu());
+		data.setOs(OSEnum.getOs());
+		data.setAccessRights(currentWork.getAccessRights());
 
 		if ((data.getName() == null) || (data.getName().length() <= 0)) {
 			if ((currentWork.getLabel() == null) || (currentWork.getLabel().length() <= 0)) {
@@ -1351,9 +1358,14 @@ public class ThreadWork extends Thread {
 		startProxy(hubAddrStr);
 		logger.debug("Execute Native Job " + workUID);
 		final StringBuilder command = new StringBuilder();
+		final StringBuilder commArgs = new StringBuilder();
 		for (final Iterator<String> iter = cmdLine.iterator(); iter.hasNext();) {
-			command.append(iter.next() + " ");
+			final String elem = iter.next();
+			commArgs.append(elem + " ");
+			command.append(elem + " ");
 		}
+
+		addEnvVar(XWCMDARGS, commArgs.toString());
 
 		logger.debug(workUID + " launches " + command);
 

@@ -737,7 +737,7 @@ public final class DBInterface {
 				final UserInterface admin = user(config.getAdminUid());
 				sendMail(admin, row, theClient.getLogin() + " can't update");
 			}
-			throw new AccessControlException(theClient.getLogin() + " can't update " + row.getUID());
+			throw new AccessControlException("update() : " + theClient.getLogin() + " can't update " + row.toXml());
 		}
 		row.update();
 		putToCache(row);
@@ -2826,7 +2826,7 @@ public final class DBInterface {
 				}
 				update(theClient, UserRightEnum.INSERTDATA, theData);
 			} else {
-				logger.error(theClient.getLogin() + " can't update " + data.getName());
+				logger.error("addData() : " + theClient.getLogin() + " can't update " + data.getName());
 				throw new AccessControlException(theClient.getLogin() + " can't update " + data.getName());
 			}
 
@@ -3152,8 +3152,7 @@ public final class DBInterface {
 		}
 
 		final UserRightEnum urights = newUser.getRights();
-		if ((urights == null) || (urights.higherOrEquals(UserRightEnum.ADVANCED_USER))
-				|| (urights.doesEqual(UserRightEnum.WORKER_USER))) {
+		if ((urights == null) || (urights.higherOrEquals(UserRightEnum.ADVANCED_USER)) || urights.isWorker()){
 			useraccessrights = XWAccessRights.USERALL;
 		}
 
@@ -3375,6 +3374,7 @@ public final class DBInterface {
 		if (appitf.getAccessRights() == null) {
 			appitf.setAccessRights(XWAccessRights.DEFAULT);
 		}
+		final int isStickyBit = appitf.getAccessRights().value() & XWAccessRights.STICKYBIT_INT;
 		final UID clientGroup = theClient.getGroup();
 
 		final UserInterface owner = user(appitf.getOwner());
@@ -3465,24 +3465,24 @@ public final class DBInterface {
 				theApp.setSolaris_sparc(appitf.getSolarisSparc());
 
 				if (theClient.getRights().lowerThan(UserRightEnum.ADVANCED_USER)) {
-					logger.debug("set app AR to USERALL");
-					appitf.setAccessRights(XWAccessRights.USERALL);
+					logger.debug("set app AR to USERALL " + new XWAccessRights(XWAccessRights.USERALL.value() | isStickyBit));
+					appitf.setAccessRights(new XWAccessRights(XWAccessRights.USERALL.value() | isStickyBit));
 				}
 				if (theClient.getRights().doesEqual(UserRightEnum.SUPER_USER)) {
 					if (appitf.getAccessRights() == null) {
-						logger.debug("set app AR to DEFAULT");
-						appitf.setAccessRights(XWAccessRights.DEFAULT);
+						logger.debug("set app AR to DEFAULT " + new XWAccessRights(XWAccessRights.DEFAULT.value() | isStickyBit));
+						appitf.setAccessRights(new XWAccessRights(XWAccessRights.DEFAULT.value() | isStickyBit));
 					}
 				} else {
 					if ((theClient.getRights().higherOrEquals(UserRightEnum.INSERTAPP)) && (clientGroup != null)) {
-						logger.debug("set app AR to OWNERGROUP");
-						appitf.setAccessRights(XWAccessRights.OWNERGROUP);
+						logger.debug("set app AR to OWNERGROUP " + new XWAccessRights(XWAccessRights.OWNERGROUP.value() | isStickyBit));
+						appitf.setAccessRights(new XWAccessRights(XWAccessRights.OWNERGROUP.value() | isStickyBit));
 					}
 				}
 				theApp.updateInterface(appitf);
 				update(theClient, UserRightEnum.INSERTAPP, theApp);
 			} else {
-				logger.error("DBInterface#addApplication" + theClient.getLogin() + " can't update " + appitf.getName());
+				logger.error("addApp() : " + theClient.getLogin() + " can't update " + appitf.getName());
 				throw new AccessControlException(theClient.getLogin() + " can't update " + appitf.getName());
 			}
 
@@ -3500,18 +3500,18 @@ public final class DBInterface {
 		}
 
 		if (theClient.getRights().lowerThan(UserRightEnum.ADVANCED_USER)) {
-			logger.debug("set app AR to USERALL");
-			appitf.setAccessRights(XWAccessRights.USERALL);
+			logger.debug("set app AR to USERALL " + new XWAccessRights(XWAccessRights.USERALL.value() | isStickyBit));
+			appitf.setAccessRights(new XWAccessRights(XWAccessRights.USERALL.value() | isStickyBit));
 		}
 		if (theClient.getRights().doesEqual(UserRightEnum.SUPER_USER)) {
 			if (appitf.getAccessRights() == null) {
-				logger.debug("set app AR to DEFAULT");
-				appitf.setAccessRights(XWAccessRights.DEFAULT);
+				logger.debug("set app AR to DEFAULT " + new XWAccessRights(XWAccessRights.DEFAULT.value() | isStickyBit));
+				appitf.setAccessRights(new XWAccessRights(XWAccessRights.DEFAULT.value() | isStickyBit));
 			}
 		} else {
 			if ((theClient.getRights().higherOrEquals(UserRightEnum.INSERTAPP)) && (clientGroup != null)) {
-				logger.debug("set app AR to OWNERGROUP");
-				appitf.setAccessRights(XWAccessRights.OWNERGROUP);
+				logger.debug("set app AR to OWNERGROUP " + new XWAccessRights(XWAccessRights.OWNERGROUP.value() | isStickyBit));
+				appitf.setAccessRights(new XWAccessRights(XWAccessRights.OWNERGROUP.value() | isStickyBit));
 			}
 		}
 
@@ -4588,25 +4588,8 @@ public final class DBInterface {
 	}
 
 	/**
-	 * This adds/updates a work according to work access rights. If client
-	 * rights is higher or equals to WORKER_USER, work access rights can be
-	 * bypassed (but not allowing work insertion) This allows workers to update
-	 * job (e.g. set job status to COMPLETED) This sets access rights to minimal
-	 * value e.g. : if application access rights are 0x700, job ones must be
-	 * 0x700 or lower (0x600, 0x500...)
-	 *
-	 *
-	 * @param client
-	 *            describes the requesting client
-	 * @param job
-	 *            is a MobileWork describing the work to insert
-	 * @return the provided job uid don activation; a new jobUID if a new job
-	 *         has been created; null on error
-	 * @exception IOException
-	 *                is thrown on DB access or I/O error
-	 * @exception InvalidKeyException
-	 *                is thrown on rights error (user unknown, not enough right,
-	 *                client is a worker that tries to insert a new work...)
+	 * This calls addWork(command.getClient(), command.getHost(), command.getParameter()) 
+	 * @see #addWork(UserInterface, HostInterface, WorkInterface)
 	 */
 	protected WorkInterface addWork(final XMLRPCCommand command)
 			throws IOException, InvalidKeyException, AccessControlException {
@@ -4645,24 +4628,24 @@ public final class DBInterface {
 
 		final UID appUID = job.getApplication();
 		if (appUID == null) {
-			throw new IOException("insertWork() : job defines no app ?!?");
+			throw new IOException("addWork() : job defines no app ?!?");
 		}
 
 		final AppInterface theApp = app(theClient, appUID);
 		if (theApp == null) {
-			throw new IOException("insertWork() : app not found " + appUID);
+			throw new IOException("addWork() : app not found " + appUID);
 		}
 		final UserInterface appOwner = user(theApp.getOwner());
 
 		if (appOwner == null) {
-			throw new IOException("insertWork() : app has no owner " + appUID);
+			throw new IOException("addWork() : app has no owner " + appUID);
 		}
 
 		final UID appOwnerGroup = appOwner.getGroup();
 
 		if (!theApp.canExec(theClient, appOwnerGroup) && (theClient.getRights().lowerThan(UserRightEnum.SUPER_USER))) {
 			throw new IOException(
-					"insertWork() : " + theClient.getLogin() + " don't have rights to submit job for app " + appUID);
+					"addWork() : " + theClient.getLogin() + " don't have rights to submit job for app " + appUID);
 		}
 
 		job.setService(theApp.isService());
@@ -4671,7 +4654,16 @@ public final class DBInterface {
 				: job.getAccessRights());
 
 		final int jobRightsInt = jobRights.value() & theApp.getAccessRights().value();
-		final XWAccessRights newJobRights = new XWAccessRights(jobRightsInt);
+		logger.finest(String.format("DBInterface#addWork() jobRights.value() & theApp.getAccessRights().value() : %x & %x = %x",
+				jobRights.value(),
+				theApp.getAccessRights().value(),
+				jobRights.value() & theApp.getAccessRights().value()));
+
+		final int appStickyBit = theApp.getAccessRights().value() & XWAccessRights.STICKYBIT_INT;
+		logger.finest(String.format("DBInterface#addWork() theApp.getAccessRights().value() & XWAccessRights.STICKYBIT_INT : %x & %x = %x",
+				theApp.getAccessRights().value(), XWAccessRights.STICKYBIT_INT, appStickyBit));
+
+		final XWAccessRights newJobRights = new XWAccessRights(jobRightsInt | appStickyBit);
 		job.setAccessRights(newJobRights);
 		final UserRightEnum clientRights = theClient.getRights();
 
@@ -4687,7 +4679,7 @@ public final class DBInterface {
 				final HostInterface theHost = (hostUID == null ? null : host(hostUID));
 				TaskInterface theTask = null;
 				if (theHost != null) {
-					if (clientRights.doesEqual(UserRightEnum.WORKER_USER)) {
+					if (clientRights.isWorker()) {
 						if (theHost != null) {
 							theTask = task(theWork, theHost);
 						}
@@ -4711,8 +4703,7 @@ public final class DBInterface {
 				}
 
 				final UserInterface jobOwner = user(theWork.getOwner());
-				final UserInterface realClient = (theClient.getRights().doesEqual(UserRightEnum.WORKER_USER)
-						? jobOwner : theClient);
+				final UserInterface realClient = (theClient.getRights().isWorker() ? jobOwner : theClient);
 
 				useData(realClient, job.getResult());
 				removeData(realClient, theWork.getResult());
@@ -4862,10 +4853,10 @@ public final class DBInterface {
 				sendMail(jobOwner, theWork, realClient.getLogin() + " has updated ");
 				update(rows);
 			} else {
-				throw new AccessControlException(theClient.getLogin() + " can't update " + jobUID);
+				throw new AccessControlException("addWork() : " + theClient.getLogin() + " can't update " + jobUID);
 			}
 		} else {
-			if (theClient.getRights() == UserRightEnum.WORKER_USER) {
+			if (theClient.getRights().isWorker()) {
 				throw new AccessControlException("a worker can not insert a new work");
 			}
 			if (jobUID == null) {
@@ -5047,6 +5038,7 @@ public final class DBInterface {
 		case STANDARD_USER:
 			_host.setAccessRights(XWAccessRights.USERALL);
 			break;
+		case VWORKER_USER:
 		case WORKER_USER:
 			if (user.getGroup() != null) {
 				_host.setAccessRights(XWAccessRights.OWNERGROUP);

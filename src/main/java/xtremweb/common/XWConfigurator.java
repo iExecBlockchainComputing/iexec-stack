@@ -2191,7 +2191,7 @@ public final class XWConfigurator extends Properties {
 	}
 
 	/**
-	 * This writes properites This insert a header containing the storage date
+	 * This calls store(header)
 	 *
 	 * @see #store(String)
 	 */
@@ -2201,17 +2201,18 @@ public final class XWConfigurator extends Properties {
 	}
 
 	/**
-	 * This writes properites
+	 * This calls store(header, configFile)
 	 *
 	 * @param header
 	 *            is written at the beginning to the file
+	 * @see #store(String, File)
 	 */
 	public void store(final String header) {
 		store(header, configFile);
 	}
 
 	/**
-	 * This writes properites
+	 * This writes properties. This insert a header containing the storage date
 	 *
 	 * @param header
 	 *            is written at the beginning to the file

@@ -158,9 +158,7 @@ public enum OSEnum {
 	}
 
 	/**
-	 * This array stores default sandbox pathnames Defaults are Sun xVM
-	 * VirtualBox paths
-	 *
+	 * This array stores default sandbox pathnames
 	 * @since 6.0.0
 	 */
 	public static final String[] sandboxes = { null, // NONE
