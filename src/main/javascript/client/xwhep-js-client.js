@@ -326,6 +326,8 @@ const createXWHEPClient = ({
   login, password, hostname, port,
 }) => {
   const CREDENTIALS = `?XWLOGIN=${encodeURIComponent(login)}&XWPASSWD=${encodeURIComponent(password)}`;
+  const MANDATVARIABLENAME="MANDATINGLOGIN";
+
 
   /**
    * This contains all known application names
@@ -405,24 +407,38 @@ const createXWHEPClient = ({
   /**
    * This sends the application to server
    * This is a private method not implemented in the smart contract
+   * @param cookies contains the JWT; this is not used if provider is set
+   * @provider provider is the identity of the application provider; 
+   *           this cancels cookies usage;
+   *           this must be used in conjunction with the mandataire defined 
+   *           by login and password attributes (ligne 326) 
    * @param xmlApp is an XML description of the application
    * @return a new Promise
    * @resolve undefined
+   * @see login
+   * @see password
    */
-  function sendApp(cookies, xmlApp) {
+  function sendApp(cookies, provider, xmlApp) {
     return new Promise((resolve, reject) => {
-      var state = "";
-      if((cookies !== undefined) && (cookies[0] !== undefined)) {
-    	var cookie = cookies[0];
-    	console.log(`sendWork(${cookies}) : cookie = ${cookie}`);
-    	state = getCookie(cookies, STATENAME);
-      }
 
-      console.log(`sendWork(${cookies}) ; ${STATENAME} = ${state}`);
+      var state = "";
 
       var creds = CREDENTIALS;
-      if (state !== "") {
-    	creds = `?${STATENAME}=${state}`;
+
+      if((provider !== undefined) && (provider !== "")) {
+          creds = `${CREDENTIALS}&${MANDATVARIABLENAME}=${provider}`;
+      }
+      else {
+    	  if((cookies !== undefined) && (cookies[0] !== undefined)) {
+    		var cookie = cookies[0];
+    		console.log(`sendWork(${cookies}) : cookie = ${cookie}`);
+    		state = getCookie(cookies, STATENAME);
+    	  }
+    	  console.log(`sendWork(${cookies}) ; ${STATENAME} = ${state}`);
+
+    	  if (state !== "") {
+    		creds = `?${STATENAME}=${state}`;
+    	  }
       }
       const options = {
         hostname,
@@ -792,7 +808,7 @@ const createXWHEPClient = ({
       console.log(`registerApp appUid = ${appUid}`);
 
       const appDescription = `<app><uid>${appUid}</uid><name>${appName}</name><type>DEPLOYABLE</type><accessrights>0x755</accessrights></app>`;
-      sendApp(cookies, appDescription).then(() => {
+      sendApp(cookies, provider, appDescription).then(() => {
     	setApplicationBinary(cookies, appUid, os, cpu, binaryUrl).then(() => {
     	  resolve(appUid);
     	  return;
