@@ -29,12 +29,12 @@
 # Author : O. Lodygensky
 # Date   : Oct 5th, 2010
 #
-# This helps to prepare different worker distributions
-# This needs ditrib name in command line argument
+# This helps to prepare different distributions
+# This needs distribution name in command line argument
 # e.g. : make-distribs.sh public private
 #
-# You must prepare one worker configuration file per distribution in ../conf/ directory
-# Worker configuration files must ends with "-$DISTRIBS[0..n]"
+# You must prepare distribution configurations in ../conf/ directory
+# Configuration files must end with "-$DISTRIBS[0..n]"
 #
 # Example:
 #
@@ -108,9 +108,10 @@ for distrib in $DISTRIBS ; do
 		echo "WARN : cancelling $distrib"
 		continue
     fi
-    rm -f $DCONFDIR/$XWWORKERCONFNAME* > /dev/null 2>&1
+
     DWORKERCONF=$CONFDIR/$XWWORKERCONFNAME-$distrib
     WORKERCONF=$DCONFDIR/$XWWORKERCONFNAME
+
     if [ -f $DWORKERCONF ] ; then
 	    cp -f $DWORKERCONF $WORKERCONF > /dev/null 2>&1
     	if [ $? -ne 0 ] ; then
@@ -214,11 +215,11 @@ for distrib in $DISTRIBS ; do
     fi
 
     for i in `ls $DCONFDIR/*` ; do
-	iname=`basename $i`
-	cat $i | sed "s/current/$CLUSTERNAME/g" > $DCONFDIR/tmp
-	[ $? -ne 0 ] &&	echo "WARN : can't sed $i"
-	mv $DCONFDIR/tmp $i 
-	[ $? -ne 0 ] &&	echo "WARN : can't mv $i"
+		iname=`basename $i`
+		cat $i | sed "s/current/$CLUSTERNAME/g" > $DCONFDIR/tmp
+		[ $? -ne 0 ] &&	echo "WARN : can't sed $i"
+		mv $DCONFDIR/tmp $i 
+		[ $? -ne 0 ] &&	echo "WARN : can't mv $i"
     done
 
 done
