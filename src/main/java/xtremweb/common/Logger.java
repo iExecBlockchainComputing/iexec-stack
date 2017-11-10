@@ -116,20 +116,19 @@ public class Logger {
 	 * This logs out an exception
 	 */
 	public void exception(final Exception e) {
-		final String str = e.toString();
-		final Throwable cause = e.getCause();
-		warn(str + " (" + (cause == null ? e.getMessage() : cause.toString()) + ")");
-		if (debug()) {
-			e.printStackTrace();
-		}
+		exception("", e);
 	}
 
 	/**
 	 * This logs out an exception
 	 */
 	public void exception(final String msg, final Exception e) {
-		error(msg);
-		exception(e);
+		final String str = msg == null ? e.toString() : msg + " " + e.toString();
+		final Throwable cause = e.getCause();
+		warn(str + " (" + (cause == null ? e.getMessage() : cause.toString()) + ")");
+		if (debug()) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
