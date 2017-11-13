@@ -74,7 +74,7 @@ public final class DBCommandDisconnect extends DBCommand implements CommCallback
 
 		mileStone.println("<disconnect>");
 
-		final UserInterface theClient = dbInterface.checkClient(command, UserRightEnum.DELETESESSION);
+		final UserInterface theClient = dbInterface.checkMandating(command, UserRightEnum.DELETESESSION);
 		final Collection<UID> sessions = dbInterface.getSessions(theClient, theClient.getUID());
 		if (sessions != null) {
 			final Iterator<UID> enums = sessions.iterator();

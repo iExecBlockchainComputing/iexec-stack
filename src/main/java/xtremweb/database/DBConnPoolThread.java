@@ -631,8 +631,7 @@ public class DBConnPoolThread extends Thread {
 			final String query = "SELECT " + row.rowSelection() + " FROM " + rowTableNames(row)
 					+ (conditions == null ? "" : " WHERE " + conditions) + " LIMIT " + config.requestLimit();
 
-			final Vector<UID> ret = (Vector<UID>) queryUID(query);
-			return ret;
+			return (Vector<UID>) queryUID(query);
 		} catch (final Exception e) {
 			logger.exception(e);
 			throw new IOException(e.toString());
