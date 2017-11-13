@@ -4593,7 +4593,8 @@ public final class DBInterface {
 	 */
 	public Collection<UID> broadcast(final XMLRPCCommand command)
 			throws IOException, InvalidKeyException, AccessControlException {
-
+		throw new IOException ("broadcast not implemented");
+/*
 		final UserInterface theClient = checkMandating(command, UserRightEnum.BROADCAST);
 		final WorkInterface job = (WorkInterface) command.getParameter();
 
@@ -4631,18 +4632,7 @@ public final class DBInterface {
 			}
 		}
 		return ret;
-	}
-
-	/**
-	 * This calls addWork(command.getClient(), command.getHost(), command.getParameter()) 
-	 * @see #addWork(UserInterface, HostInterface, WorkInterface)
-	 */
-	protected WorkInterface addWork(final XMLRPCCommand command)
-			throws IOException, InvalidKeyException, AccessControlException {
-		final UserInterface theClient = checkMandating(command, UserRightEnum.INSERTJOB);
-		final WorkInterface job = (WorkInterface) command.getParameter();
-		final HostInterface _host = command.getHost();
-		return addWork(theClient, _host, job);
+		*/
 	}
 
 	/**
@@ -4667,8 +4657,12 @@ public final class DBInterface {
 	 *                is thrown on rights error (user unknown, not enough right,
 	 *                client is a worker that tries to insert a new work...)
 	 */
-	private WorkInterface addWork(final UserInterface theClient, HostInterface _host, WorkInterface job)
+	protected WorkInterface addWork(final XMLRPCCommand command)
 			throws IOException, InvalidKeyException, AccessControlException {
+		final UserInterface mandatingClient = checkMandating(command, UserRightEnum.INSERTJOB);
+		final UserInterface mandatedClient = checkClient(command, UserRightEnum.INSERTJOB);
+		final WorkInterface job = (WorkInterface) command.getParameter();
+		final HostInterface _host = command.getHost();
 
 		final UID jobUID = job.getUID();
 
@@ -4677,7 +4671,10 @@ public final class DBInterface {
 			throw new IOException("addWork() : job defines no app ?!?");
 		}
 
-		final AppInterface theApp = app(theClient, appUID);
+		AppInterface theApp = app(mandatingClient, appUID);
+		if (theApp == null) {
+			theApp = app(mandatedClient, appUID);
+		}
 		if (theApp == null) {
 			throw new IOException("addWork() : app not found " + appUID);
 		}
@@ -4689,9 +4686,11 @@ public final class DBInterface {
 
 		final UID appOwnerGroup = appOwner.getGroup();
 
-		if (!theApp.canExec(theClient, appOwnerGroup) && (theClient.getRights().lowerThan(UserRightEnum.SUPER_USER))) {
+		if (!theApp.canExec(mandatingClient, appOwnerGroup) &&
+				(!theApp.canExec(mandatedClient, appOwnerGroup)) &&
+				(mandatingClient.getRights().lowerThan(UserRightEnum.SUPER_USER))) {
 			throw new IOException(
-					"addWork() : " + theClient.getLogin() + " don't have rights to submit job for app " + appUID);
+					"addWork() : " + mandatingClient.getLogin() + " don't have rights to submit job for app " + appUID);
 		}
 
 		job.setService(theApp.isService());
@@ -4711,15 +4710,15 @@ public final class DBInterface {
 
 		final XWAccessRights newJobRights = new XWAccessRights(jobRightsInt | appStickyBit);
 		job.setAccessRights(newJobRights);
-		final UserRightEnum clientRights = theClient.getRights();
+		final UserRightEnum clientRights = mandatingClient.getRights();
 
 		if (job.getOwner() == null) {
-			job.setOwner(theClient.getUID());
+			job.setOwner(mandatingClient.getUID());
 		}
 
-		final WorkInterface theWork = work(theClient, jobUID);
+		final WorkInterface theWork = work(mandatingClient, jobUID);
 		if (theWork != null) {
-			if (theWork.canWrite(theClient, appOwnerGroup) || clientRights.higherOrEquals(UserRightEnum.WORKER_USER)) {
+			if (theWork.canWrite(mandatingClient, appOwnerGroup) || clientRights.higherOrEquals(UserRightEnum.WORKER_USER)) {
 
 				final UID hostUID = (_host == null ? null : _host.getUID());
 				final HostInterface theHost = (hostUID == null ? null : host(hostUID));
@@ -4734,7 +4733,7 @@ public final class DBInterface {
 					}
 					if (theTask == null) {
 						throw new IOException(
-								theClient.getLogin() + " work " + jobUID + " has no task run by " + _host.getUID());
+								mandatingClient.getLogin() + " work " + jobUID + " has no task run by " + _host.getUID());
 					}
 				}
 
@@ -4749,7 +4748,7 @@ public final class DBInterface {
 				}
 
 				final UserInterface jobOwner = user(theWork.getOwner());
-				final UserInterface realClient = (theClient.getRights().isWorker() ? jobOwner : theClient);
+				final UserInterface realClient = (mandatingClient.getRights().isWorker() ? jobOwner : mandatingClient);
 
 				useData(realClient, job.getResult());
 				removeData(realClient, theWork.getResult());
@@ -4899,10 +4898,10 @@ public final class DBInterface {
 				sendMail(jobOwner, theWork, realClient.getLogin() + " has updated ");
 				update(rows);
 			} else {
-				throw new AccessControlException("addWork() : " + theClient.getLogin() + " can't update " + jobUID);
+				throw new AccessControlException("addWork() : " + mandatingClient.getLogin() + " can't update " + jobUID);
 			}
 		} else {
-			if (theClient.getRights().isWorker()) {
+			if (mandatingClient.getRights().isWorker()) {
 				throw new AccessControlException("a worker can not insert a new work");
 			}
 			if (jobUID == null) {
@@ -4915,7 +4914,7 @@ public final class DBInterface {
 			final Vector<Table> rows = new Vector<>();
 
 			job.setReplicatedUid(null);
-			logger.debug(theClient.getLogin() + " " + jobUID + " replications = " + job.getExpectedReplications()
+			logger.debug(mandatingClient.getLogin() + " " + jobUID + " replications = " + job.getExpectedReplications()
 			+ " by " + job.getReplicaSetSize());
 
 			// if job.getExpectedReplications() < 0, we replicate for ever
@@ -4953,15 +4952,15 @@ public final class DBInterface {
 				}
 				insert(newWork);
 
-				useData(theClient, newWork.getResult());
-				useData(theClient, newWork.getStdin());
-				useData(theClient, newWork.getDirin());
+				useData(mandatingClient, newWork.getResult());
+				useData(mandatingClient, newWork.getStdin());
+				useData(mandatingClient, newWork.getDirin());
 
 				rows.add(newWork);
-				theClient.incPendingJobs();
+				mandatingClient.incPendingJobs();
 			}
 
-			rows.add(theClient);
+			rows.add(mandatingClient);
 			theApp.incPendingJobs();
 			rows.add(theApp);
 			update(rows);
