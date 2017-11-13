@@ -36,10 +36,12 @@ import java.net.Socket;
 import java.net.SocketAddress;
 import java.net.URISyntaxException;
 import java.nio.channels.DatagramChannel;
+import java.nio.charset.Charset;
 import java.rmi.RemoteException;
 import java.security.AccessControlException;
 import java.security.InvalidKeyException;
 import java.security.cert.X509Certificate;
+import java.util.Base64;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Enumeration;
@@ -247,7 +249,6 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 		 */
 		public void write(final HttpServletResponse response) throws IOException {
 			final InputStream reader = getClass().getClassLoader().getResourceAsStream(getPath());
-
 			if (reader == null) {
 				throw new IOException(getPath() + " not found");
 			}
@@ -860,7 +861,10 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 
 	private UserInterface getUser() throws IOException {
 		UserInterface user = null;
-
+		user = userFromBasicAuth(request);
+		if(user != null) {
+			return user;
+		}
 		user = userFromJWTEthereumAuth(request);
 		if(user != null) {
 			return user;
@@ -1472,6 +1476,51 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 		} catch (final Exception e) {
 			throw new IOException("userFromPostParams error : " + e.getMessage());
 		}
+	}
+	
+	/**
+	 * This retrieves the user from login/password inside Authorization header
+	 *
+	 * @since 10.2.0
+	 */
+	private UserInterface userFromBasicAuth(final HttpServletRequest request) throws IOException {
+		final HttpSession session = request.getSession(true);
+
+		String login = null;
+		String password = null;;
+		
+		final String authorization = request.getHeader("Authorization");
+	    if (authorization != null && authorization.startsWith("Basic")) {
+	        // Authorization: Basic base64credentials
+	        String base64Credentials = authorization.substring("Basic".length()).trim();
+	        String credentials = new String(Base64.getDecoder().decode(base64Credentials),
+	                Charset.forName("UTF-8"));
+	        // credentials = username:password
+	        final String[] values = credentials.split(":",2);
+	        
+	        if (values!=null && values.length>1) {
+				login = values[0];
+				password = values[1];
+			}
+	        
+	        if ((login == null) || (password == null)) {
+				return null;
+			}
+	        
+	        try {
+				final UserInterface ret = DBInterface.getInstance()
+						.user(SQLRequest.MAINTABLEALIAS + "." + UserInterface.Columns.LOGIN.toString() + "='" + login
+								+ "' AND " + SQLRequest.MAINTABLEALIAS + "." + UserInterface.Columns.PASSWORD.toString()
+								+ "='" + password + "'");
+
+				session.setAttribute(XWPostParams.XWLOGIN.toString(), login);
+				session.setAttribute(XWPostParams.XWPASSWD.toString(), password);
+				return ret;
+			} catch (final Exception e) {
+				throw new IOException("userFromPostParams error : " + e.getMessage());
+			}
+        }
+		return null;	
 	}
 
 	/**
