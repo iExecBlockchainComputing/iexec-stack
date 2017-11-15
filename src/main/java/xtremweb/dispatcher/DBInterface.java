@@ -2345,16 +2345,6 @@ public final class DBInterface {
 			final WorkInterface readableRow = readableWork(mandatedClient, uid);
 			return select(readableRow);
 		}
-
- /*
-		final WorkInterface row = new WorkInterface();
-		final WorkInterface ret = getFromCache(u, uid, row);
-		if (ret != null) {
-			return ret;
-		}
-		final WorkInterface readableRow = readableWork(u, uid);
-		return select(readableRow);
-*/
 	}
 	/**
 	 * This retrieves a vector of tasks with the status, independently of access
