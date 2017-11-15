@@ -2310,6 +2310,53 @@ public final class DBInterface {
 	}
 
 	/**
+	 * This retrieves readable works for the given user
+	 *
+	 * @param command
+	 * @return a vector of works
+	 * @since 11.4.0
+	 */
+	protected WorkInterface work(final XMLRPCCommand command) throws InvalidKeyException, IOException, AccessControlException {
+		final UID uid = command.getURI().getUID();
+		if (uid == null) {
+			return null;
+		}
+
+ 		final WorkInterface row = new WorkInterface();
+		try {
+			final UserInterface mandatingClient = checkClient(command, UserRightEnum.GETJOB);
+			final WorkInterface ret = getFromCache(mandatingClient, uid, row);
+			if (ret != null) {
+				return ret;
+			}
+			final WorkInterface readableRow = readableWork(mandatingClient, uid);
+			final WorkInterface work = select(readableRow);
+			if(command.isMandated() && (work == null)) {
+				throw new AccessControlException("maybe mandated?");
+			}
+			return work;
+		}
+		catch(final IOException | AccessControlException e) {
+			final UserInterface mandatedClient = checkMandatedClient(command);
+			final WorkInterface ret = getFromCache(mandatedClient, uid, row);
+			if (ret != null) {
+				return ret;
+			}
+			final WorkInterface readableRow = readableWork(mandatedClient, uid);
+			return select(readableRow);
+		}
+
+ /*
+		final WorkInterface row = new WorkInterface();
+		final WorkInterface ret = getFromCache(u, uid, row);
+		if (ret != null) {
+			return ret;
+		}
+		final WorkInterface readableRow = readableWork(u, uid);
+		return select(readableRow);
+*/
+	}
+	/**
 	 * This retrieves a vector of tasks with the status, independently of access
 	 * rights
 	 *
@@ -4678,7 +4725,7 @@ public final class DBInterface {
 	protected WorkInterface addWork(final XMLRPCCommand command)
 			throws IOException, InvalidKeyException, AccessControlException {
 		final UserInterface mandatingClient = checkClient(command, UserRightEnum.INSERTJOB);
-		final UserInterface mandatedClient = checkClient(command, UserRightEnum.INSERTJOB);
+		final UserInterface mandatedClient = checkMandatedClient(command);
 		final WorkInterface job = (WorkInterface) command.getParameter();
 		final HostInterface _host = command.getHost();
 
@@ -5050,8 +5097,7 @@ public final class DBInterface {
 	protected WorkInterface getJob(final XMLRPCCommand command)
 			throws IOException, InvalidKeyException, AccessControlException {
 
-		final UserInterface theClient = checkClient(command, UserRightEnum.GETJOB);
-		return work(theClient, command.getURI().getUID());
+		return work(command);
 	}
 
 	/**

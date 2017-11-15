@@ -63,8 +63,8 @@ public abstract class SQLRequestAccessible extends SQLRequest {
 			+ " OR users.userrightid >= " + UserRightEnum.SUPER_USER.ordinal()    // is this an admin
 
 			// next : a VWORKER can access an object that has the sticky bit
-			+ " OR ( users.rights='" + UserRightEnum.VWORKER_USER + "'"
-			+ "  OR  users.userrightid >= " + UserRightEnum.ADVANCED_USER.ordinal()    // is this a privileged user
+			+ " OR (  (users.rights='" + UserRightEnum.VWORKER_USER + "'"
+			+ "     OR users.userrightid >= " + UserRightEnum.ADVANCED_USER.ordinal() +")"    // is this a privileged user
 			+ "  AND maintable.accessrights & " + XWAccessRights.STICKYBIT_INT + " = " + XWAccessRights.STICKYBIT_INT
 			+ ")"
 
@@ -97,7 +97,7 @@ public abstract class SQLRequestAccessible extends SQLRequest {
 	 */
 	public static final String CRITERIAS_HSQL = UserInterface.TABLENAME + ".uid='%s'" + " AND users.isdeleted='false'"
 			+ " AND (" + " users.uid=maintable.uid" + " OR users.uid=" + "maintable.owneruid" + " OR users.rights='"
-			+ UserRightEnum.SUPER_USER + "'" + " OR (users.rights='" + UserRightEnum.VWORKER_USER + "'" + " AND bitand("
+			+ UserRightEnum.SUPER_USER + "'" + " OR ((users.rights='" + UserRightEnum.VWORKER_USER + "' OR users.userrightid >= " + UserRightEnum.ADVANCED_USER.ordinal() +")" + " AND bitand("
 			+ "maintable.accessrights, " + XWAccessRights.STICKYBIT_INT + ") = " + XWAccessRights.STICKYBIT_INT + ")"
 			+ " OR (bitand(" + "maintable.accessrights, %d) = %d)" + " OR ((bitand("
 			+ "maintable.accessrights, %d) = %d)" + " AND users.usergroupuid IN (" + " SELECT usergroups.uid" + " FROM "
