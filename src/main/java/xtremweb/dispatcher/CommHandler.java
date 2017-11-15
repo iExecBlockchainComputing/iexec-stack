@@ -813,7 +813,7 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 
 		mileStone("<workRequest host=" + (_host != null ? _host.getName() : "null") + ">");
 		try {
-			final UserInterface user = DBInterface.getInstance().checkMandating(command, UserRightEnum.GETJOB);
+			final UserInterface user = DBInterface.getInstance().checkClient(command, UserRightEnum.GETJOB);
 
 			_host.setIPAddr(remoteIP);
 			final HostInterface host = DBInterface.getInstance().hostRegister(user, _host);
@@ -875,7 +875,7 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 		final UID jobUID = ((XMLRPCCommandWorkAliveByUID) command).getURI().getUID();
 
 		mileStone("<workAlive host=" + (_host != null ? _host.getName() : "null") + ">");
-		final UserInterface theClient = DBInterface.getInstance().checkMandating(command, UserRightEnum.GETJOB);
+		final UserInterface theClient = DBInterface.getInstance().checkClient(command, UserRightEnum.GETJOB);
 
 		_host.setIPAddr(remoteIP);
 		final HostInterface theHost = DBInterface.getInstance().hostRegister(theClient, _host);
@@ -956,7 +956,7 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 
 		HostInterface _host = command.getHost();
 		mileStone("<workAlive host=" + (_host != null ? _host.getName() : "null") + ">");
-		final UserInterface theClient = DBInterface.getInstance().checkMandating(command, UserRightEnum.GETJOB);
+		final UserInterface theClient = DBInterface.getInstance().checkClient(command, UserRightEnum.GETJOB);
 
 		_host.setIPAddr(remoteIP);
 		final HostInterface theHost = DBInterface.getInstance().hostRegister(theClient, _host);
@@ -1143,8 +1143,7 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 	 */
 	protected XMLable get(final XMLRPCCommandGet command)
 			throws IOException, InvalidKeyException, AccessControlException {
-		final DBCommandGet dbc = new DBCommandGet(DBInterface.getInstance()); 
-		return dbc.exec(command);
+		return get((XMLRPCCommand)command);
 	}
 
 	/**
@@ -1210,7 +1209,7 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 			throws IOException, InvalidKeyException, AccessControlException {
 
 		mileStone("<getHubAddr>");
-		DBInterface.getInstance().checkMandating(command, UserRightEnum.GETJOB);
+		DBInterface.getInstance().checkClient(command, UserRightEnum.GETJOB);
 
 		final Hashtable<String, String> ret = new Hashtable<>();
 		logger.debug("hub addr = " + System.getProperty(XWPropertyDefs.SMARTSOCKETSHUBADDR.toString()));

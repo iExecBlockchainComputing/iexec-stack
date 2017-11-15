@@ -256,34 +256,6 @@ public final class DBInterface {
 	}
 
 	/**
-	 * This retrieves an object interface from cache
-	 * @throws InvalidKeyException 
-	 * @param command represent the XMLRPCCommand
-	 * @since 11.0.0
-	 */
-	private Table getFromCache(final XMLRPCCommand command) throws IOException, AccessControlException, InvalidKeyException {
-
-		final UserInterface theClient = checkMandating(command, UserRightEnum.INSERTJOB);
-		final URI uri = command.getURI(); 
-		final Table ret = getFromCache(uri);
-
-		if (ret == null) {
-			return null;
-		}
-
-		final UserInterface owner = user(ret.getOwner());
-		final UID ownerGroup = (owner == null ? null : owner.getGroup());
-
-		final boolean accessdenied = !ret.canRead(theClient, ownerGroup)
-				&& theClient.getRights().lowerThan(UserRightEnum.ADVANCED_USER);
-
-		if (accessdenied) {
-			throw new AccessControlException(theClient.getLogin() + " can't access " + uri);
-		}
-		return ret;
-	}
-
-	/**
 	 * This retrieves an object from cache
 	 *
 	 * @since 8.2.0
@@ -849,6 +821,47 @@ public final class DBInterface {
 		ret = select(readableRow);
 		return ret;
 	}
+	/**
+	 * This retrieves an application from cache or from DB
+	 *
+	 * @param u
+	 *            is the requesting user
+	 * @param uid
+	 *            is the UID of the application to retrieve
+	 * @since 5.8.0
+	 * @return the application which uid is provided; null if uid is null
+	 * @throws InvalidKeyException 
+	 */
+	public AppInterface app(final XMLRPCCommand command, final UID uid) throws IOException, InvalidKeyException {
+
+		if (uid == null) {
+			return null;
+		}
+
+		final AppInterface row = new AppInterface();
+		try {
+			final UserInterface mandatingClient = checkClient(command, UserRightEnum.GETAPP);
+			final AppInterface ret = getFromCache(mandatingClient, uid, row);
+			if (ret != null) {
+				return ret;
+			}
+			final AppInterface readableRow = readableApp(mandatingClient, uid);
+			final AppInterface app = select(readableRow);
+			if(command.isMandated() && (app == null)) {
+				throw new AccessControlException("maybe mandated?");
+			}
+			return app;
+		}
+		catch(final IOException | AccessControlException e) {
+			final UserInterface mandatedClient = checkMandatedClient(command);
+			final AppInterface ret = getFromCache(mandatedClient, uid, row);
+			if (ret != null) {
+				return ret;
+			}
+			final AppInterface readableRow = readableApp(mandatedClient, uid);
+			return select(readableRow);
+		}
+	}
 
 	/**
 	 * This retrieves an app accordingly to conditions
@@ -952,7 +965,7 @@ public final class DBInterface {
 	 */
 	protected DataInterface data(final XMLRPCCommand command) throws IOException, AccessControlException, InvalidKeyException {
 
-		final UserInterface theClient = checkMandating(command, UserRightEnum.GETDATA);
+		final UserInterface theClient = checkClient(command, UserRightEnum.GETDATA);
 		final UID uid = command.getURI().getUID();
 		final DataInterface row = new DataInterface();
 		final DataInterface ret = getFromCache(theClient, uid, row);
@@ -997,9 +1010,9 @@ public final class DBInterface {
 	 * @since 5.8.0
 	 */
 	public int dataSize(final UserInterface user) throws IOException {
-		try {
-			datasUID(user).size();
-		} catch (final Exception e) {
+		final Collection<UID> datasuid = datasUID(user);
+		if(datasuid != null) {
+			return datasuid.size();
 		}
 		return 0;
 	}
@@ -2430,54 +2443,59 @@ public final class DBInterface {
 	}
 
 	/**
-	 * An user can be mandated: it can ask an action to be done in name of someone else.
-	 * Mandate comes as an XMLRPCCommand attribute (MANDATINGLOGIN)
-	 * If not mandated, this returns the XMLRPCCommand caller.
-	 * If mandated, (a) the XMLRPCCommand caller must have the right to be mandated (user right "MANDATED_USER").
-	 * (b) the mandating user, defined by MANDATINGLOGIN, must be register and have the actionLevel rights. 
+	 * An user can be mandated: it can act in name of someone else.
+	 * Mandate is an XMLRPCCommand attribute (MANDATINGLOGIN).
+	 * This checks if this command client has MANDATED_USER user right
+	 * 
 	 * @param command is the XMLRPCCommand to execute
 	 * @param actionLevel is the expected user rights to execute the XMLRPCCommand
-	 * @return the user to execute the command
+	 * @return the mandated client
 	 * @throws IOException
 	 * @throws InvalidKeyException
-	 * @throws AccessControlException
+	 * @throws AccessControlException if no mandating user or if not a MANDATED_UER
 	 * @since 11.0.0
 	 * @see XMLRPCCommand#MANDATINGLOGIN
 	 * @see UserRightEnum#MANDATED_USER
 	 */
-	protected UserInterface checkMandating(final XMLRPCCommand command, final UserRightEnum actionLevel)
+	protected UserInterface checkMandatedClient(final XMLRPCCommand command)
 			throws IOException, InvalidKeyException, AccessControlException {
 
-		final UserInterface client = command.getUser();
-		final String mandatingLogin = command.getMandatingLogin();
-		if((mandatingLogin == null) || (mandatingLogin.length() <= 0)) {
-			return checkClient(client, actionLevel);
+		if(!command.isMandated()) {
+			throw new AccessControlException ("not mandated");
 		}
-		final UserInterface mandatingUser = user(UserInterface.Columns.LOGIN.toString() + "= '" + command.getMandatingLogin() + "'");
-		if (mandatingUser == null) {
-			throw new InvalidKeyException("can't find mandating user " + mandatingLogin); 
-		}
-		checkClient(client, UserRightEnum.MANDATED_USER);
-		return checkClient(mandatingUser, actionLevel);
+		return checkClient(command.getUser(), UserRightEnum.MANDATED_USER);
 	}
 
 	/**
-	 * This tests whether client has the right to connect to this server and to
-	 * do the expected action, accordingly to the action level.
+	 * An user can act by itself or mandate someone else.
+	 * Mandate is an XMLRPCCommand attribute (MANDATINGLOGIN)
+	 * 
+	 * This checks if the original client has the right to act as actionLevel.
+	 * The original client is this command client, if this command MANDATINGLOGIN attr is not set,
+	 * or the client denoted by MANDATINGLOGIN.
+	 * 
 	 * @param command is the XMLRPCCommand to execute
 	 * @param actionLevel is the expected user rights to execute the XMLRPCCommand
-	 * @return the user to execute the command
+	 * @return the mandating client
 	 * @throws IOException
 	 * @throws InvalidKeyException
-	 * @throws AccessControlException
-	 * @since 11.4.0
+	 * @throws AccessControlException if no mandating user or if not a MANDATED_UER
+	 * @since 11.0.0
+	 * @see XMLRPCCommand#MANDATINGLOGIN
+	 * @see UserRightEnum#MANDATED_USER
 	 */
 	protected UserInterface checkClient(final XMLRPCCommand command, final UserRightEnum actionLevel)
 			throws IOException, InvalidKeyException, AccessControlException {
 
-		final UserInterface client = command.getUser();
-		return checkClient(client, actionLevel);
+		if(command.isMandated()) {
+			checkMandatedClient(command);
+
+			final UserInterface mandatingClient = user(UserInterface.Columns.LOGIN.toString() + "= '" + command.getMandatingLogin() + "'");
+			return checkClient(mandatingClient, actionLevel);
+		} 
+		return checkClient(command.getUser(), actionLevel);
 	}
+
 	/**
 	 * This tests whether client has the right to connect to this server and to
 	 * do the expected action, accordingly to the action level.
@@ -2516,11 +2534,11 @@ public final class DBInterface {
 	protected UserInterface checkClient(final UserInterface client, final UserRightEnum actionLevel)
 			throws IOException, InvalidKeyException, AccessControlException {
 
-		logger.finest("checkClient(" + client.toXml() + ", " + actionLevel + ")");
-
 		if ((client == null) || (actionLevel == null)) {
 			throw new IOException("Can't check client");
 		}
+
+		logger.finest("checkClient(" + client.toXml() + ", " + actionLevel + ")");
 
 		UserInterface result = null;
 
@@ -2643,7 +2661,7 @@ public final class DBInterface {
 			return false;
 		}
 
-		final UserInterface theClient = checkMandating(command, UserRightEnum.STANDARD_USER);
+		final UserInterface theClient = checkClient(command, UserRightEnum.STANDARD_USER);
 
 		if (removeWork(command)) {
 			return true;
@@ -2661,7 +2679,7 @@ public final class DBInterface {
 			return true;
 		}
 
-		final AppInterface theApp = app(theClient, uid);
+		final AppInterface theApp = app(command, uid);
 		boolean ret = false;
 		if (theApp != null) {
 
@@ -2697,7 +2715,7 @@ public final class DBInterface {
 	public boolean chmod(final XMLRPCCommand command)
 			throws IOException, InvalidKeyException, AccessControlException, ParseException {
 
-		final UserInterface theClient = checkMandating(command, UserRightEnum.STANDARD_USER);
+		final UserInterface theClient = checkClient(command, UserRightEnum.STANDARD_USER);
 
 		final UID uid = ((XMLRPCCommandChmod) command).getURI().getUID();
 		final String chmodstr = ((XMLRPCCommandChmod) command).getModifier().toHexString();
@@ -2709,7 +2727,7 @@ public final class DBInterface {
 			throw new IOException("chmodstr can't be null");
 		}
 
-		Table theRow = app(theClient, uid);
+		Table theRow = app(command, uid);
 		UserRightEnum userrights = UserRightEnum.INSERTAPP;
 		if (theRow == null) {
 			theRow = data(uid);
@@ -2838,7 +2856,7 @@ public final class DBInterface {
 			return;
 		}
 
-		final UserInterface theClient = checkMandating(command, UserRightEnum.INSERTDATA);
+		final UserInterface theClient = checkClient(command, UserRightEnum.INSERTDATA);
 		final Date theDate = new java.util.Date();
 
 		final UserInterface owner = user(data.getOwner());
@@ -2915,7 +2933,7 @@ public final class DBInterface {
 	public Collection<UID> getDatas(final XMLRPCCommand command)
 			throws IOException, InvalidKeyException, AccessControlException {
 
-		final UserInterface theClient = checkMandating(command, UserRightEnum.LISTDATA);
+		final UserInterface theClient = checkClient(command, UserRightEnum.LISTDATA);
 
 		if (theClient.getRights().higherOrEquals(UserRightEnum.ADVANCED_USER)) {
 			return datasUID(theClient);
@@ -2945,7 +2963,7 @@ public final class DBInterface {
 	public DataInterface getData(final XMLRPCCommand command)
 			throws IOException, InvalidKeyException, AccessControlException {
 
-		final UserInterface theClient = checkMandating(command, UserRightEnum.GETDATA);
+		checkClient(command, UserRightEnum.GETDATA);
 		return data(command.getURI().getUID());
 	}
 
@@ -2971,33 +2989,12 @@ public final class DBInterface {
 	 *                password...)
 	 * @exception AccessControlException
 	 *                is thrown if client does not have enough rights
-	 */
-	//	public Collection<UID> getUsers(final UserInterface client)
-	//			throws IOException, InvalidKeyException, AccessControlException {
-	//
-	//		final UserInterface theClient = checkClient(client, UserRightEnum.LISTUSER);
-	//		return usersUID(theClient);
-	//	}
-
-	/**
-	 * This retrieves users
-	 *
-	 * @param client
-	 *            is the requesting client
-	 * @return a Collection of users UID, null on error
-	 * @exception IOException
-	 *                is thrown on DB access or I/O error
-	 * @exception InvalidKeyException
-	 *                is thrown on client integrity error (user unknown, bad
-	 *                password...)
-	 * @exception AccessControlException
-	 *                is thrown if client does not have enough rights
 	 * @since 11.0.0
 	 */
 	public Collection<UID> getUsers(final XMLRPCCommand command)
 			throws IOException, InvalidKeyException, AccessControlException {
 
-		final UserInterface theClient = checkMandating(command, UserRightEnum.LISTUSER);
+		final UserInterface theClient = checkClient(command, UserRightEnum.LISTUSER);
 		return usersUID(theClient);
 	}
 
@@ -3023,7 +3020,7 @@ public final class DBInterface {
 	public UserInterface getUserByLogin(final XMLRPCCommand command, final String login)
 			throws IOException, InvalidKeyException, AccessControlException {
 
-		final UserInterface theClient = checkMandating(command, UserRightEnum.GETUSER);
+		final UserInterface theClient = checkClient(command, UserRightEnum.GETUSER);
 		return user(theClient, SQLRequest.MAINTABLEALIAS + "." + UserInterface.Columns.LOGIN + "='" + login + "'");
 	}
 
@@ -3048,7 +3045,7 @@ public final class DBInterface {
 	protected UserInterface getUser(final XMLRPCCommand command)
 			throws IOException, InvalidKeyException, AccessControlException {
 
-		final UserInterface theClient = checkMandating(command, UserRightEnum.GETUSER);
+		final UserInterface theClient = checkClient(command, UserRightEnum.GETUSER);
 		try {
 			final UID uid = command.getURI().getUID();
 			final UserInterface ret = user(theClient, uid);
@@ -3099,7 +3096,7 @@ public final class DBInterface {
 			throws IOException, InvalidKeyException, AccessControlException {
 
 		final UserInterface useritf = (UserInterface) command.getParameter();
-		final UserInterface theClient = checkMandating(command, UserRightEnum.INSERTUSER);
+		final UserInterface theClient = checkClient(command, UserRightEnum.INSERTUSER);
 		return addUser(theClient, useritf);
 	}
 
@@ -3196,12 +3193,7 @@ public final class DBInterface {
 		}
 
 		newUser.setAccessRights(useraccessrights);
-		useraccessrights = null;
-
 		update(theClient, UserRightEnum.INSERTUSER, newUser);
-
-		newUser = null;
-
 		return true;
 	}
 
@@ -3222,7 +3214,7 @@ public final class DBInterface {
 	public Collection<UID> getUserGroups(final XMLRPCCommand command)
 			throws IOException, InvalidKeyException, AccessControlException {
 
-		final UserInterface theClient = checkMandating(command, UserRightEnum.LISTUSERGROUP);
+		final UserInterface theClient = checkClient(command, UserRightEnum.LISTUSERGROUP);
 		return usergroupsUID(theClient);
 	}
 
@@ -3248,7 +3240,7 @@ public final class DBInterface {
 	public UserGroupInterface getUserGroup(final XMLRPCCommand command)
 			throws IOException, InvalidKeyException, AccessControlException {
 
-		final UserInterface theClient = checkMandating(command, UserRightEnum.GETUSERGROUP);
+		final UserInterface theClient = checkClient(command, UserRightEnum.GETUSERGROUP);
 		final UID uid = command.getURI().getUID();
 		return usergroup(theClient, uid);
 	}
@@ -3274,7 +3266,7 @@ public final class DBInterface {
 	public boolean addUserGroup(final XMLRPCCommand command)
 			throws IOException, InvalidKeyException, AccessControlException {
 
-		final UserInterface theClient = checkMandating(command, UserRightEnum.INSERTUSERGROUP);
+		final UserInterface theClient = checkClient(command, UserRightEnum.INSERTUSERGROUP);
 		final UserGroupInterface groupitf = (UserGroupInterface) command.getParameter();
 		final UID groupUid = groupitf.getUID();
 		if (groupUid == null) {
@@ -3368,7 +3360,7 @@ public final class DBInterface {
 	public void addApp(final XMLRPCCommand command)
 			throws IOException, InvalidKeyException, AccessControlException {
 
-		final UserInterface theClient = checkMandating(command, UserRightEnum.INSERTAPP);
+		final UserInterface theClient = checkClient(command, UserRightEnum.INSERTAPP);
 		final AppInterface appitf = (AppInterface) command.getParameter();
 		addApp(theClient, appitf);
 	}
@@ -3597,16 +3589,25 @@ public final class DBInterface {
 	public Collection<UID> getApplications(final XMLRPCCommand command)
 			throws IOException, InvalidKeyException {
 
-		final UserInterface mandatingClient = checkMandating(command, UserRightEnum.LISTAPP);
-		final UserInterface mandatedClient = checkClient(command, UserRightEnum.LISTAPP);
+		final Collection<UID> mandatingUID = new Vector<UID>();
+		try {
+			final UserInterface mandatingClient = checkClient(command, UserRightEnum.LISTAPP);
+			mandatingUID.addAll(appsUID(mandatingClient));
+		} catch(final java.security.AccessControlException e) {
+		}
+
+		if(!command.isMandated()) {
+			return mandatingUID;
+		}
+
+		final UserInterface mandatedClient = checkMandatedClient(command);
 		final Collection<UID> mandatedUID = appsUID(mandatedClient);
-		final Collection<UID> mandatingUID = appsUID(mandatingClient);
 		return mergeCollections(mandatingUID, mandatedUID);
 	}
 
 	/**
 	 * This retrieves an object
-	 *
+	 * AccessControlException is catched on each case since there may be a mandat
 	 * @param uid
 	 *            is the UID of the object to retrieve
 	 * @return the object or null if not found
@@ -3625,41 +3626,68 @@ public final class DBInterface {
 		final UserInterface client = command.getUser();
 		Table ret = null;
 
-		ret = getJob(command);
-		if (ret != null) {
-			return ret;
+		try {
+			ret = getJob(command);
+			if (ret != null) {
+				return ret;
+			}
+		} catch (final AccessControlException e) {
 		}
+		try {
 		ret = getTask(command);
 		if (ret != null) {
 			return ret;
 		}
+		} catch (final AccessControlException e) {
+		}
+		try {
 		ret = data(command);
 		if (ret != null) {
 			return ret;
 		}
+		} catch (final AccessControlException e) {
+		}
+		try {
 		ret = getApplication(command);
 		if (ret != null) {
 			return ret;
 		}
+		} catch (final AccessControlException e) {
+		}
+		try {
 		ret = getUser(command);
 		if (ret != null) {
 			return ret;
 		}
+		} catch (final AccessControlException e) {
+		}
+		try {
 		ret = getUserGroup(command);
 		if (ret != null) {
 			return ret;
 		}
+		} catch (final AccessControlException e) {
+		}
+		try {
 		ret = getSession(client, uid);
 		if (ret != null) {
 			return ret;
 		}
+		} catch (final AccessControlException e) {
+		}
+		try {
 		ret = getGroup(client, uid);
 		if (ret != null) {
 			return ret;
 		}
+		} catch (final AccessControlException e) {
+		}
+		try {
 		ret = getHost(command);
 		if (ret != null) {
 			return ret;
+		}
+		} catch (final AccessControlException e) {
 		}
 
 		return null;
@@ -3685,7 +3713,7 @@ public final class DBInterface {
 	public TaskInterface getTask(final XMLRPCCommand command)
 			throws IOException, InvalidKeyException, AccessControlException {
 
-		final UserInterface theClient = checkMandating(command, UserRightEnum.GETJOB);
+		final UserInterface theClient = checkClient(command, UserRightEnum.GETJOB);
 		final UID uid = command.getURI().getUID();
 		final TaskInterface theTask = task(theClient, uid);
 		if (theTask != null) {
@@ -3727,7 +3755,7 @@ public final class DBInterface {
 	public WorkInterface getWorkByExternalId(final XMLRPCCommand command)
 			throws IOException, InvalidKeyException, AccessControlException {
 
-		final UserInterface theClient = checkMandating(command, UserRightEnum.GETJOB);
+		final UserInterface theClient = checkClient(command, UserRightEnum.GETJOB);
 		final URI uri = command.getURI();
 		final String extId = uri.getPath().substring(1, uri.getPath().length());
 
@@ -3765,17 +3793,8 @@ public final class DBInterface {
 	private AppInterface getApplication(final XMLRPCCommand command)
 			throws IOException, InvalidKeyException, AccessControlException {
 
-		final UserInterface mandatingClient = checkMandating(command, UserRightEnum.GETAPP);
 		final UID uid = command.getURI().getUID();
-		final AppInterface theApp = app(mandatingClient, uid);
-		if(theApp != null) {
-			return theApp;
-		}
-		if(command.getMandatingLogin() == null) {
-			return null;
-		}
-		final UserInterface mandatedClient = checkClient(command, UserRightEnum.GETAPP);
-		return app(mandatedClient, uid);
+		return app(command, uid);
 	}
 
 	/**
@@ -3878,7 +3897,7 @@ public final class DBInterface {
 	private boolean removeGroup(final XMLRPCCommand command)
 			throws IOException, InvalidKeyException, AccessControlException {
 
-		final UserInterface theClient = checkMandating(command, UserRightEnum.DELETEGROUP);
+		final UserInterface theClient = checkClient(command, UserRightEnum.DELETEGROUP);
 		final UID groupUid = command.getURI().getUID();
 		final GroupInterface group = group(theClient, groupUid);
 		if (group == null) {
@@ -3916,7 +3935,7 @@ public final class DBInterface {
 	protected boolean removeSession(final XMLRPCCommand command)
 			throws IOException, InvalidKeyException, AccessControlException {
 
-		final UserInterface theClient = checkMandating(command, UserRightEnum.DELETEGROUP);
+		final UserInterface theClient = checkClient(command, UserRightEnum.DELETEGROUP);
 		final UID sessionUid = command.getURI().getUID();
 		if (sessionUid == null) {
 			return false;
@@ -3926,7 +3945,7 @@ public final class DBInterface {
 			return false;
 		}
 
-		if (deleteJobs(theClient, getSessionJobs(command)) == true) {
+		if (deleteJobs(theClient, getSessionJobs(command))) {
 			return delete(theClient, session);
 		}
 
@@ -3987,7 +4006,7 @@ public final class DBInterface {
 	private boolean removeTask(final XMLRPCCommand command)
 			throws IOException, InvalidKeyException, AccessControlException {
 
-		final UserInterface theClient = checkMandating(command, UserRightEnum.DELETEGROUP);
+		final UserInterface theClient = checkClient(command, UserRightEnum.DELETEGROUP);
 		final UID taskUid = command.getURI().getUID();
 		final TaskInterface theTask = task(theClient, taskUid);
 		if (theTask == null) {
@@ -4087,7 +4106,7 @@ public final class DBInterface {
 		}
 
 		boolean ret = false;
-		Vector<UID> useruids = (Vector<UID>) usersUID(theClient, SQLRequest.MAINTABLEALIAS + "."
+		final Vector<UID> useruids = (Vector<UID>) usersUID(theClient, SQLRequest.MAINTABLEALIAS + "."
 				+ UserInterface.Columns.USERGROUPUID.toString() + "='" + groupUID.toString() + "'");
 		if (useruids != null) {
 			final Iterator<UID> li = useruids.iterator();
@@ -4103,7 +4122,6 @@ public final class DBInterface {
 				}
 			}
 		}
-		useruids = null;
 
 		if (ret) {
 			ret = delete(theClient, group);
@@ -4154,7 +4172,7 @@ public final class DBInterface {
 	Collection<UID> getSessions(final XMLRPCCommand command)
 			throws IOException, InvalidKeyException, AccessControlException {
 
-		final UserInterface theClient = checkMandating(command, UserRightEnum.LISTSESSION);
+		final UserInterface theClient = checkClient(command, UserRightEnum.LISTSESSION);
 		return getSessions(theClient, theClient.getUID());
 	}
 
@@ -4214,7 +4232,7 @@ public final class DBInterface {
 	 */
 	public Collection<UID> getGroups(final XMLRPCCommand command)
 			throws IOException, InvalidKeyException, AccessControlException {
-		final UserInterface theClient = checkMandating(command, UserRightEnum.LISTGROUP);
+		final UserInterface theClient = checkClient(command, UserRightEnum.LISTGROUP);
 		return groupsUID(theClient,
 				SQLRequest.MAINTABLEALIAS + "." + TableColumns.OWNERUID.toString() + "='" + theClient.getUID() + "'");
 	}
@@ -4252,7 +4270,7 @@ public final class DBInterface {
 	public Collection<UID> getGroupJobs(final XMLRPCCommand command)
 			throws IOException, InvalidKeyException, AccessControlException {
 
-		final UserInterface theClient = checkMandating(command, UserRightEnum.LISTJOB);
+		final UserInterface theClient = checkClient(command, UserRightEnum.LISTJOB);
 		final UID uid = command.getURI().getUID();
 
 		final GroupInterface group = group(theClient, uid);
@@ -4288,7 +4306,7 @@ public final class DBInterface {
 	public Collection<UID> getSessionJobs(final XMLRPCCommand command)
 			throws IOException, InvalidKeyException, AccessControlException {
 
-		final UserInterface theClient = checkMandating(command, UserRightEnum.LISTJOB);
+		final UserInterface theClient = checkClient(command, UserRightEnum.LISTJOB);
 		final UID uid = command.getURI().getUID();
 		return worksUID(theClient, SQLRequest.MAINTABLEALIAS + "." + WorkInterface.Columns.SESSIONUID.toString() + "='"
 				+ uid.toString() + "'");
@@ -4339,7 +4357,7 @@ public final class DBInterface {
 	protected boolean addSession(final XMLRPCCommand command)
 			throws IOException, InvalidKeyException, AccessControlException {
 
-		final UserInterface theClient = checkMandating(command, UserRightEnum.INSERTSESSION);
+		final UserInterface theClient = checkClient(command, UserRightEnum.INSERTSESSION);
 		final SessionInterface sessionitf = (SessionInterface) command.getParameter();
 		final SessionInterface session = session(theClient, sessionitf.getUID());
 		if (session != null) {
@@ -4378,7 +4396,7 @@ public final class DBInterface {
 	protected boolean addGroup(final XMLRPCCommand command)
 			throws IOException, InvalidKeyException, AccessControlException {
 
-		final UserInterface theClient = checkMandating(command, UserRightEnum.INSERTGROUP);
+		final UserInterface theClient = checkClient(command, UserRightEnum.INSERTGROUP);
 		final GroupInterface groupitf = (GroupInterface) command.getParameter();
 		final GroupInterface group = group(theClient, groupitf.getUID());
 		if (group != null) {
@@ -4413,7 +4431,7 @@ public final class DBInterface {
 	 */
 	private boolean removeWork(final XMLRPCCommand command)
 			throws IOException, InvalidKeyException, AccessControlException {
-		final UserInterface theClient = checkMandating(command, UserRightEnum.DELETEJOB);
+		final UserInterface theClient = checkClient(command, UserRightEnum.DELETEJOB);
 		final UID jobUid = command.getURI().getUID();
 		return removeWork(theClient, jobUid);
 	}
@@ -4478,7 +4496,7 @@ public final class DBInterface {
 				final TaskInterface theTask = thetaskEnum.nextElement();
 				final UID hostUID = theTask.getHost();
 				final HostInterface theHost = host(hostUID);
-				if (delete(theClient, theTask) == true) {
+				if (delete(theClient, theTask)) {
 					if (theHost != null) {
 						switch (theWork.getStatus()) {
 						case RESULTREQUEST:
@@ -4659,7 +4677,7 @@ public final class DBInterface {
 	 */
 	protected WorkInterface addWork(final XMLRPCCommand command)
 			throws IOException, InvalidKeyException, AccessControlException {
-		final UserInterface mandatingClient = checkMandating(command, UserRightEnum.INSERTJOB);
+		final UserInterface mandatingClient = checkClient(command, UserRightEnum.INSERTJOB);
 		final UserInterface mandatedClient = checkClient(command, UserRightEnum.INSERTJOB);
 		final WorkInterface job = (WorkInterface) command.getParameter();
 		final HostInterface _host = command.getHost();
@@ -4671,10 +4689,7 @@ public final class DBInterface {
 			throw new IOException("addWork() : job defines no app ?!?");
 		}
 
-		AppInterface theApp = app(mandatingClient, appUID);
-		if (theApp == null) {
-			theApp = app(mandatedClient, appUID);
-		}
+		AppInterface theApp = app(command, appUID);
 		if (theApp == null) {
 			throw new IOException("addWork() : app not found " + appUID);
 		}
@@ -4926,7 +4941,7 @@ public final class DBInterface {
 				final WorkInterface newWork = new WorkInterface(job);
 				newWork.setUID(jobUID); // we insert the original work (to
 				// eventually be replicated)
-				if (firstJob == true) {
+				if (firstJob) {
 					newWork.setTotalReplica(Math.min(job.getReplicaSetSize(), job.getExpectedReplications())); // this
 					// is
 					// the
@@ -4987,7 +5002,7 @@ public final class DBInterface {
 	public StatusEnum jobStatus(final XMLRPCCommand command)
 			throws IOException, InvalidKeyException, AccessControlException {
 
-		final UserInterface theClient = checkMandating(command, UserRightEnum.GETJOB);
+		final UserInterface theClient = checkClient(command, UserRightEnum.GETJOB);
 		final WorkInterface work = work(theClient, command.getURI().getUID());
 		final UserInterface owner = user(work.getOwner());
 		final UID ownerGroup = (owner == null ? null : owner.getGroup());
@@ -5018,7 +5033,7 @@ public final class DBInterface {
 	public Collection<UID> getAllJobs(final XMLRPCCommand command)
 			throws IOException, InvalidKeyException, AccessControlException {
 
-		final UserInterface theClient = checkMandating(command, UserRightEnum.LISTJOB);
+		final UserInterface theClient = checkClient(command, UserRightEnum.LISTJOB);
 		final StatusEnum status = ((XMLRPCCommandGetWorks) command).getStatus();
 
 		if (theClient.getRights().higherOrEquals(UserRightEnum.ADVANCED_USER)) {
@@ -5035,7 +5050,7 @@ public final class DBInterface {
 	protected WorkInterface getJob(final XMLRPCCommand command)
 			throws IOException, InvalidKeyException, AccessControlException {
 
-		final UserInterface theClient = checkMandating(command, UserRightEnum.GETJOB);
+		final UserInterface theClient = checkClient(command, UserRightEnum.GETJOB);
 		return work(theClient, command.getURI().getUID());
 	}
 
@@ -5047,7 +5062,7 @@ public final class DBInterface {
 	protected HostInterface getHost(final XMLRPCCommand command)
 			throws IOException, InvalidKeyException, AccessControlException {
 
-		final UserInterface theClient = checkMandating(command, UserRightEnum.GETHOST);
+		final UserInterface theClient = checkClient(command, UserRightEnum.GETHOST);
 		return host(theClient, command.getURI().getUID());
 	}
 
@@ -5247,7 +5262,7 @@ public final class DBInterface {
 	 */
 	public boolean activateWorker(final XMLRPCCommand command)
 			throws IOException, InvalidKeyException, AccessControlException {
-		final UserInterface theClient = checkMandating(command, UserRightEnum.SUPER_USER);
+		final UserInterface theClient = checkClient(command, UserRightEnum.SUPER_USER);
 		final UID uid = command.getURI().getUID();
 		boolean flag = ((XMLRPCCommandActivateHost) command).getActivation();
 		return changeWorker(theClient, uid, HostInterface.Columns.ACTIVE, flag);
@@ -5352,7 +5367,7 @@ public final class DBInterface {
 	public Collection<UID> getAliveWorkers(final XMLRPCCommand command)
 			throws IOException, InvalidKeyException, AccessControlException {
 
-		final UserInterface theClient = checkMandating(command, UserRightEnum.LISTHOST);
+		final UserInterface theClient = checkClient(command, UserRightEnum.LISTHOST);
 		return hostsUID(theClient, "(unix_timestamp(now())-unix_timestamp(lastalive) < 1000)");
 	}
 
