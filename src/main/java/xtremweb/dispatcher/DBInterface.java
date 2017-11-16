@@ -832,6 +832,13 @@ public final class DBInterface {
 	 * @return the application which uid is provided; null if uid is null
 	 * @throws InvalidKeyException 
 	 */
+	public AppInterface app(final XMLRPCCommand command) throws IOException, InvalidKeyException {
+		final UID uid = command.getURI().getUID();
+		return app(command, uid);
+	}
+	/**
+	 * This retrieves an application from cache or from DB
+	 */
 	public AppInterface app(final XMLRPCCommand command, final UID uid) throws IOException, InvalidKeyException {
 
 		if (uid == null) {
