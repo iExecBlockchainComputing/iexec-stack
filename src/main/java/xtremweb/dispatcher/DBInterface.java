@@ -2760,6 +2760,12 @@ public final class DBInterface {
 		if (row == null) {
 			return false;
 		}
+		try {
+			uri.getUID();
+		}
+		catch(final Exception e) {
+			return false;
+		}
 
 		final UserInterface owner = user(row.getOwner());
 		final UID ownerGroup = (owner == null ? null : owner.getGroup());
@@ -3793,6 +3799,12 @@ public final class DBInterface {
 	private boolean removeData(final UserInterface theClient, final URI uri)
 			throws IOException, InvalidKeyException, AccessControlException {
 		if (uri == null) {
+			return false;
+		}
+		try {
+			uri.getUID();
+		}
+		catch(final Exception e) {
 			return false;
 		}
 		final UID uid = uri.getUID();
