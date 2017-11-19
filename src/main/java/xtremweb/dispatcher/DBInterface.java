@@ -48,6 +48,7 @@ import xtremweb.common.GroupInterface;
 import xtremweb.common.HostInterface;
 import xtremweb.common.Logger;
 import xtremweb.common.MD5;
+import xtremweb.common.MileStone;
 import xtremweb.common.SessionInterface;
 import xtremweb.common.StatusEnum;
 import xtremweb.common.Table;
@@ -73,6 +74,7 @@ import xtremweb.database.ColumnSelection;
 import xtremweb.database.DBConnPoolThread;
 import xtremweb.database.SQLRequest;
 import xtremweb.database.SQLRequestReadable;
+import xtremweb.database.SQLRequestWorkRequest;
 import xtremweb.database.SQLRequestWorkStatus;
 import xtremweb.security.X509Proxy;
 import xtremweb.security.XWAccessRights;
@@ -117,6 +119,8 @@ public final class DBInterface {
 	public static final DBInterface getInstance() {
 		return instance;
 	}
+
+	MileStone mileStone;
 
 	/**
 	 * This is the database connection
@@ -341,6 +345,8 @@ public final class DBInterface {
 	 */
 	public DBInterface(final XWConfigurator c) throws IOException {
 		logger = new Logger(this);
+		mileStone = new MileStone(this.getClass());
+
 		config = c;
 		dbConnPool = new DBConnPoolThread(config);
 		dbConnPool.start();
@@ -2316,6 +2322,93 @@ public final class DBInterface {
 		return select(readableRow);
 	}
 
+//	/**
+//	 * This retrieves readable works for the given user
+//	 *
+//	 * @param command
+//	 * @return a vector of works
+//	 * @since 11.4.0
+//	 */
+//	protected WorkInterface workRequest(final XMLRPCCommand command) throws InvalidKeyException, IOException, AccessControlException {
+//
+//		final HostInterface _host = command.getHost();
+//
+//		mileStone.println("<workRequest host=" + command.remoteAddresse() + ">");
+//		try {
+//			final UID uid = command.getURI().getUID();
+//			if (uid == null) {
+//				return null;
+//			}
+//
+//			final UserInterface user = checkClient(command, UserRightEnum.GETJOB);
+//
+//			_host.setIPAddr(command.getRemoteIP());
+//			final HostInterface host = DBInterface.getInstance().hostRegister(user, _host);
+//
+//			if (host == null) {
+//				throw new IOException("can't register host");
+//			}
+//			if (!host.isActive()) {
+//				throw new IOException("inactive host:" + host.getUID() + " - " + host.fromTableNames() + " - " + host.getIPAddr());
+//			}
+//
+//			final WorkInterface readableWork = new WorkInterface(new SQLRequestWorkRequest(host, user));
+//			final WorkInterface theWork = db.select(readableWork);
+//
+//			if (theWork == null) {
+//				mileStone.println("</select>");
+//				logger.info("SimpleScheduler#select() can't find any work");
+//				return null;
+//			}
+//
+//			// insert associated task
+//			final TaskInterface theTask = new TaskInterface(theWork);
+//			theWork.setRunning();
+//			theTask.setRunningBy(host.getUID());
+//			update(theWork);
+//			update(theTask);
+//
+//			return theWork;
+//		} finally {
+//			mileStone.println("</workRequest>");
+//			notifyAll();
+//		}
+//
+// */
+// 		final WorkInterface row = new WorkInterface();
+//		try {
+//			final UserInterface mandatingClient = checkClient(command, UserRightEnum.GETJOB);
+//			final WorkInterface ret = getFromCache(mandatingClient, uid, row);
+//			if (ret != null) {
+//				return ret;
+//			}
+/////*
+//// * 	private WorkInterface readableWork(final UserInterface u, final UID uid) throws IOException {
+////		if (uid == null) {
+////			return null;
+////		}
+////		final SQLRequestReadable r = new SQLRequestReadable(WorkInterface.TABLENAME, u, ColumnSelection.selectAll, uid);
+////		return new WorkInterface(r);
+////	}
+////
+//// */
+//			final WorkInterface readableRow = readableWork(mandatingClient, uid);
+//			final WorkInterface work = select(readableRow);
+//			if(command.isMandated() && (work == null)) {
+//				throw new AccessControlException("maybe mandated?");
+//			}
+//			return work;
+//		}
+//		catch(final IOException | AccessControlException e) {
+//			final UserInterface mandatedClient = checkMandatedClient(command);
+//			final WorkInterface ret = getFromCache(mandatedClient, uid, row);
+//			if (ret != null) {
+//				return ret;
+//			}
+//			final WorkInterface readableRow = readableWork(mandatedClient, uid);
+//			return select(readableRow);
+//		}
+//	}
 	/**
 	 * This retrieves readable works for the given user
 	 *

@@ -127,6 +127,111 @@ public abstract class XMLRPCCommand extends XMLable {
 	public final void setURI(final URI uri) {
 		setValueAt(URI, uri);
 	}
+	/**
+	 * This is the remote host name
+	 */
+	private String remoteName;
+
+	/**
+	 * This resets remote host name
+	 *
+	 * @since 8.2.0
+	 */
+	public void resetRemoteName() {
+		remoteName = null;
+	}
+
+	/**
+	 * This retrieves remote host name
+	 *
+	 * @return the remoteName
+	 */
+	public String getRemoteName() {
+		return remoteName;
+	}
+
+	/**
+	 * This sets the remote host name
+	 *
+	 * @param remoteName
+	 *            the remoteName to set
+	 */
+	public void setRemoteName(final String remoteName) {
+		this.remoteName = remoteName;
+	}
+
+	/**
+	 * This is the client IP address
+	 */
+	private String remoteIP;
+
+	/**
+	 * This resets the remote host IP address
+	 *
+	 * @since 8.2.0
+	 */
+	public void resetRemoteIP() {
+		remoteIP = null;
+	}
+
+	/**
+	 * This retrieves the remote host IP address
+	 *
+	 * @return the remoteIP
+	 */
+	public String getRemoteIP() {
+		return remoteIP;
+	}
+
+	/**
+	 * This sets the remote host IP address
+	 *
+	 * @param remoteIP
+	 *            the remoteIP to set
+	 */
+	public void setRemoteIP(final String remoteIP) {
+		this.remoteIP = remoteIP;
+	}
+
+	/**
+	 * This is the remote host port
+	 */
+	private int remotePort;
+
+	/**
+	 * This retrives the remote host port
+	 *
+	 * @return the remotePort
+	 */
+	public int getRemotePort() {
+		return remotePort;
+	}
+
+	/**
+	 * This sets the remote host port
+	 *
+	 * @param remotePort
+	 *            the remotePort to set
+	 */
+	public void setRemotePort(final int remotePort) {
+		this.remotePort = remotePort;
+	}
+
+	/**
+	 * This resets the remote host port
+	 *
+	 * @since 8.2.0
+	 */
+	public void resetRemotePort() {
+		remotePort = -1;
+	}
+	/**
+	 * The remote address is build as: remoteName + "/" + remoteIP + ":" + remotePort
+	 * @return a string containing the remote address
+	 */
+	public String remoteAddresse() {
+		return remoteName + "/" + remoteIP + ":" + remotePort;
+	}
 
 	/**
 	 * This is the caller identity

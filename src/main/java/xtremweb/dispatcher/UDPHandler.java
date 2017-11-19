@@ -131,7 +131,6 @@ public class UDPHandler extends xtremweb.dispatcher.CommHandler {
 
 	/**
 	 */
-	@Override
 	public void setPacket(final DatagramSocket s, final DatagramPacket p) throws RemoteException {
 		serverPacket = p;
 		packetIn.setData(p.getData());
@@ -143,13 +142,9 @@ public class UDPHandler extends xtremweb.dispatcher.CommHandler {
 			try {
 				serverSocket.setTrafficClass(0x08); // maximize throughput
 			} catch (final Exception e) {
-				warn(e.toString());
+				getLogger().warn(e.toString());
 			}
 		}
-		final InetSocketAddress socket = (InetSocketAddress) (serverPacket.getSocketAddress());
-		setRemoteName(socket.getHostName());
-		setRemoteIP(socket.getAddress().getHostAddress());
-		setRemotePort(socket.getPort());
 	}
 
 	/**
@@ -192,7 +187,7 @@ public class UDPHandler extends xtremweb.dispatcher.CommHandler {
 	 */
 	@Override
 	public void close() {
-		info("UDPHandler#close() does nothing (this is normal)");
+		getLogger().info("UDPHandler#close() does nothing (this is normal)");
 	}
 
 	/**
@@ -243,23 +238,19 @@ public class UDPHandler extends xtremweb.dispatcher.CommHandler {
 	@Override
 	public void run() {
 
-		XMLRPCCommand cmd = null;
-
 		try {
 			packetOut.reset();
 			answerSent = false;
-			try {
-				cmd = XMLRPCCommand.newCommand(packetIn.getString());
-			} catch (final Exception e) {
-				getLogger().error(remoteAddresse() + ") : " + e);
-				getLogger().exception(e);
-				cmd = null;
-			}
+			final XMLRPCCommand cmd = XMLRPCCommand.newCommand(packetIn.getString());
+
+			final InetSocketAddress socket = (InetSocketAddress) (serverPacket.getSocketAddress());
+			cmd.setRemoteName(socket.getHostName());
+			cmd.setRemoteIP(socket.getAddress().getHostAddress());
+			cmd.setRemotePort(socket.getPort());
 
 			super.run(cmd);
-			cmd = null;
 		} catch (final Exception e) {
-			getLogger().exception(remoteAddresse(), e);
+			getLogger().exception(e);
 		}
 	}
 }

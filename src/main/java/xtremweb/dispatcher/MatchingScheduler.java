@@ -37,6 +37,7 @@ import xtremweb.common.UID;
 import xtremweb.common.UserInterface;
 import xtremweb.common.WorkInterface;
 import xtremweb.communications.URI;
+import xtremweb.communications.XMLRPCCommandWorkRequest;
 import xtremweb.database.DBConnPoolThread;
 import xtremweb.database.SQLRequest;
 import xtremweb.database.SQLRequestWorkRequest;
@@ -83,7 +84,10 @@ public class MatchingScheduler extends SimpleScheduler {
 	 * @see SQLRequestWorkRequest
 	 */
 	@Override
-	public synchronized WorkInterface select(final HostInterface host, final UserInterface user) throws IOException {
+	public synchronized WorkInterface select(final XMLRPCCommandWorkRequest command) throws IOException {
+
+		final HostInterface host = command.getHost();
+		final UserInterface user = command.getUser();
 
 		if ((host == null) || (user == null)) {
 			notify();

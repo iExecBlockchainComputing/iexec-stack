@@ -26,10 +26,10 @@ package xtremweb.dispatcher;
 import java.io.IOException;
 import java.util.Collection;
 
-import xtremweb.common.HostInterface;
 import xtremweb.common.Logger;
-import xtremweb.common.UserInterface;
+import xtremweb.common.MileStone;
 import xtremweb.common.WorkInterface;
+import xtremweb.communications.XMLRPCCommandWorkRequest;
 
 /**
  * This is the abstract class that defines XtremWeb scheduler main methods set.
@@ -42,14 +42,20 @@ import xtremweb.common.WorkInterface;
  */
 public abstract class Scheduler {
 
-	private Logger logger;
+	protected Logger logger;
 
 	protected Scheduler() {
 		setLogger(new Logger(this));
+		mileStone = new MileStone(this.getClass());
 	}
 
 	/**
-	 * This retreives waiting jobs from DB
+	 * This aims to display some time stamps
+	 */
+	protected final MileStone mileStone;
+
+	/**
+	 * This retrieves waiting jobs from DB
 	 *
 	 * @return null if no work available; a MobileWork otherwise
 	 * @since 5.8.0
@@ -64,14 +70,10 @@ public abstract class Scheduler {
 	 * <li>the host owner must have the right to execute the job
 	 * </ul>
 	 *
-	 * @param host
-	 *            is the worker definition
-	 * @param user
-	 *            is the worker identity
 	 * @return a Work matching host; null if no work matches this host -or no
 	 *         pending work- found
 	 */
-	public abstract WorkInterface select(HostInterface host, UserInterface user) throws IOException;
+	public abstract WorkInterface select(XMLRPCCommandWorkRequest command) throws IOException;
 
 	/**
 	 * @return the logger
