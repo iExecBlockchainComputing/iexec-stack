@@ -160,10 +160,10 @@ while ( true ) ; do
 done
 
 
-docker cp ${CONTAINERNAME}:/xwhep/xtremweb-hep-master/build/dist/xwhep-10.6.0/xwhep-server-10.6.0.deb ${ROOTDIR}
-docker cp ${CONTAINERNAME}:/xwhep/xtremweb-hep-master/build/dist/xwhep-10.6.0/xwhep-server-conf-10.6.0.deb ${ROOTDIR}
-docker cp ${CONTAINERNAME}:/xwhep/xtremweb-hep-master/build/dist/xwhep-10.6.0/xwhep-worker-10.6.0.deb ${ROOTDIR}
-docker cp ${CONTAINERNAME}:/xwhep/xtremweb-hep-master/build/dist/xwhep-10.6.0/xwhep-client-10.6.0.deb ${ROOTDIR}
+docker cp ${CONTAINERNAME}:/xwhep/xtremweb-hep-master/build/dist/xwhep-11.4.0/xwhep-server-11.4.0.deb ${ROOTDIR}
+docker cp ${CONTAINERNAME}:/xwhep/xtremweb-hep-master/build/dist/xwhep-11.4.0/xwhep-server-conf-11.4.0.deb ${ROOTDIR}
+docker cp ${CONTAINERNAME}:/xwhep/xtremweb-hep-master/build/dist/xwhep-11.4.0/xwhep-worker-11.4.0.deb ${ROOTDIR}
+docker cp ${CONTAINERNAME}:/xwhep/xtremweb-hep-master/build/dist/xwhep-11.4.0/xwhep-client-11.4.0.deb ${ROOTDIR}
 
 docker kill ${CONTAINERNAME} 
 docker rm   ${CONTAINERNAME} 
@@ -174,10 +174,10 @@ cat << EOF_INFO
   =================
   You can now create and start worker & client containers.
   Please open another terminal and copy :
-    - ${ROOTDIR}/xwhep-server-10.6.0.deb to docker/server/ and build the worker container
-    - ${ROOTDIR}/xwhep-server-conf-10.6.0.deb to docker/server/ and build the worker container
-    - ${ROOTDIR}/xwhep-worker-10.6.0.deb to docker/worker/ and build the worker container
-    - ${ROOTDIR}/xwhep-client-10.6.0.deb to docker/client/ and build the client container
+    - ${ROOTDIR}/xwhep-server-11.4.0.deb to docker/server/ and build the worker container
+    - ${ROOTDIR}/xwhep-server-conf-11.4.0.deb to docker/server/ and build the worker container
+    - ${ROOTDIR}/xwhep-worker-11.4.0.deb to docker/worker/ and build the worker container
+    - ${ROOTDIR}/xwhep-client-11.4.0.deb to docker/client/ and build the client container
   =================
 
 EOF_INFO
