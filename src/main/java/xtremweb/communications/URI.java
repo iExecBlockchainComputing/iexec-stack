@@ -76,13 +76,16 @@ public class URI extends XMLable {
 	 * @return UID#isNull() if this contains an UID, false otherwise
 	 */
 	public boolean isNull() {
-		final UID uid = getUID();
-		if (uid != null) {
-			return uid.isNull();
+		try {
+			final UID uid = getUID();
+			if (uid != null) {
+				return uid.isNull();
+			}
+			return false;
+		} catch(final Exception e) {
+			return false;
 		}
-		return false;
 	}
-
 	/**
 	 * This constructs a new empty object
 	 */
@@ -206,7 +209,7 @@ public class URI extends XMLable {
 	}
 
 	/**
-	 * This returns a java.rmi.server.UID String representation
+	 * This returns this URI's UID, or null
 	 */
 	public UID getUID() {
 		if (getPath() == null) {

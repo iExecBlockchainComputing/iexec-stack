@@ -245,38 +245,32 @@ public class HTTPClient extends CommClient {
 				}
 			}
 
-			String proxyName = config.getProperty(XWPropertyDefs.PROXYSERVER);
+			final String proxyName = config.getProperty(XWPropertyDefs.PROXYSERVER);
 			if ((proxyName != null) && (proxyName.trim().length() > 0)) {
-				serverName = null;
 				serverName = XWTools.getHostName(proxyName);
 			}
-			proxyName = null;
 
-			String porttxt = config.getProperty(XWPropertyDefs.PROXYPORT);
+			final String porttxt = config.getProperty(XWPropertyDefs.PROXYPORT);
 			if ((porttxt != null) && (porttxt.trim().length() > 0)) {
 				final int proxyPort = config.getPort(Connection.PROXYPORT);
 				if (proxyPort > 0) {
 					serverPort = proxyPort;
 				}
 			}
-			porttxt = null;
 
 			URI uri2 = null;
-			String struri2 = null;
 			try {
-				struri2 = new String(uri.getScheme() + Connection.getSchemeSeparator() + serverName);
+				final StringBuilder struri2 = new StringBuilder(uri.getScheme() + Connection.getSchemeSeparator() + serverName);
 				if (serverPort > 0) {
-					struri2 += ":" + serverPort;
+					struri2.append(":" + serverPort);
 				}
 				if (uri.getPath() != null) {
-					struri2 += "/" + uri.getPath();
+					struri2.append("/" + uri.getPath());
 				}
-				uri2 = new URI(struri2);
+				uri2 = new URI(struri2.toString());
 			} catch (final Exception e) {
 				uri2 = uri;
 			}
-			struri2 = null;
-			uri = null;
 			uri = uri2;
 			uri2 = null;
 

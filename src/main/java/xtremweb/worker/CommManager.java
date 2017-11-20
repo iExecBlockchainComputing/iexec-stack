@@ -924,8 +924,7 @@ public final class CommManager extends Thread {
 	}
 
 	/**
-	 * This does nothing if parameter is null. This retrieves the data from an
-	 * HTTP server
+	 * This retrieves the data from an HTTP server
 	 *
 	 * @param uri
 	 *            is the data uri

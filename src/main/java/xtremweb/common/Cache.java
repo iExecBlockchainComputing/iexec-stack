@@ -829,8 +829,12 @@ public final class Cache extends XMLable {
 		if (uri == null) {
 			return;
 		}
-
-		add(new DataInterface(uri.getUID() == null ? new UID() : uri.getUID()), uri);
+		UID uid = new UID();
+		try {
+			uid = uri.getUID();
+		}catch(final Exception e) {
+		}
+		add(new DataInterface(uid), uri);
 	}
 
 	/**
