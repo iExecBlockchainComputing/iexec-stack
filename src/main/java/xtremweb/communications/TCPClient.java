@@ -44,7 +44,6 @@ import java.net.UnknownHostException;
 import java.nio.channels.SocketChannel;
 import java.security.AccessControlException;
 import java.security.InvalidKeyException;
-
 import javax.net.SocketFactory;
 import javax.net.ssl.SSLHandshakeException;
 import javax.net.ssl.SSLSocket;
@@ -198,6 +197,8 @@ public class TCPClient extends CommClient {
 						((SSLSocket) socket).startHandshake();
 						nio = false;
 					}
+				} catch(SSLHandshakeException e) {
+					throw e;
 				} catch (final IOException e) {
 					getLogger().exception("open", e);
 					try {
