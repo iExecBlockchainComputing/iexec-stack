@@ -100,7 +100,7 @@ END_OF_USAGE
 trap  fatal  SIGINT  SIGTERM
 
 
-
+XWVERSION="${XWVERSION}"
 ROOTDIR="$(dirname "$0")"
 SCRIPTNAME="$(basename "$0")"
 
@@ -160,10 +160,10 @@ while ( true ) ; do
 done
 
 
-docker cp ${CONTAINERNAME}:/xwhep/xtremweb-hep-master/build/dist/xwhep-11.4.1/xwhep-server-11.4.1.deb ${ROOTDIR}
-docker cp ${CONTAINERNAME}:/xwhep/xtremweb-hep-master/build/dist/xwhep-11.4.1/xwhep-server-conf-11.4.1.deb ${ROOTDIR}
-docker cp ${CONTAINERNAME}:/xwhep/xtremweb-hep-master/build/dist/xwhep-11.4.1/xwhep-worker-11.4.1.deb ${ROOTDIR}
-docker cp ${CONTAINERNAME}:/xwhep/xtremweb-hep-master/build/dist/xwhep-11.4.1/xwhep-client-11.4.1.deb ${ROOTDIR}
+docker cp ${CONTAINERNAME}:/xwhep/xtremweb-hep-master/build/dist/xwhep-${XWVERSION}/xwhep-server-${XWVERSION}.deb ${ROOTDIR}
+docker cp ${CONTAINERNAME}:/xwhep/xtremweb-hep-master/build/dist/xwhep-${XWVERSION}/xwhep-server-conf-${XWVERSION}.deb ${ROOTDIR}
+docker cp ${CONTAINERNAME}:/xwhep/xtremweb-hep-master/build/dist/xwhep-${XWVERSION}/xwhep-worker-${XWVERSION}.deb ${ROOTDIR}
+docker cp ${CONTAINERNAME}:/xwhep/xtremweb-hep-master/build/dist/xwhep-${XWVERSION}/xwhep-client-${XWVERSION}.deb ${ROOTDIR}
 
 docker kill ${CONTAINERNAME} 
 docker rm   ${CONTAINERNAME} 
@@ -174,10 +174,10 @@ cat << EOF_INFO
   =================
   You can now create and start worker & client containers.
   Please open another terminal and copy :
-    - ${ROOTDIR}/xwhep-server-11.4.1.deb to docker/server/ and build the worker container
-    - ${ROOTDIR}/xwhep-server-conf-11.4.1.deb to docker/server/ and build the worker container
-    - ${ROOTDIR}/xwhep-worker-11.4.1.deb to docker/worker/ and build the worker container
-    - ${ROOTDIR}/xwhep-client-11.4.1.deb to docker/client/ and build the client container
+    - ${ROOTDIR}/xwhep-server-${XWVERSION}.deb to docker/server/ and build the worker container
+    - ${ROOTDIR}/xwhep-server-conf-${XWVERSION}.deb to docker/server/ and build the worker container
+    - ${ROOTDIR}/xwhep-worker-${XWVERSION}.deb to docker/worker/ and build the worker container
+    - ${ROOTDIR}/xwhep-client-${XWVERSION}.deb to docker/client/ and build the client container
   =================
 
 EOF_INFO
