@@ -554,6 +554,9 @@
       "links": {},
       "address": "0xc57538846ec405ea25deb00e0f9b29a432d53507",
       "updated_at": 1507187064558
+    },
+    "1": {
+      "address": "0x607F4C5BB672230e8672085532f7e901544a7375"
     }
   },
   "schema_version": "0.0.5",
