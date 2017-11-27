@@ -26,7 +26,7 @@ import java.io.IOException;
 
 import org.junit.Test;
 
-import xtremweb.communications.XMLRPCCommandSend;
+import xtremweb.communications.XMLRPCCommandSendWork;
 
 
 
@@ -34,18 +34,18 @@ import xtremweb.communications.XMLRPCCommandSend;
 /**
  * This tests XML serialization
  * 
- * Created: 15 novembre 2012
+ * Created: 23 novembre 2017
  * 
  * @author Oleg Lodygensky
- * @since 8.2.0
+ * @since 11.5.0
  */
 
-public class XMLRPCCommandSendTest extends XMLRPCCommandTest {
+public class XMLRPCCommandSendWorkTest extends XMLRPCCommandTest {
 
-	public XMLRPCCommandSendTest() {
+	public XMLRPCCommandSendWorkTest() {
 		try {
-			setCmd(new XMLRPCCommandSend());
-			setCmd2(new XMLRPCCommandSend());
+			setCmd(new XMLRPCCommandSendWork());
+			setCmd2(new XMLRPCCommandSendWork());
 		} catch (final IOException e) {
 		}
 	}
