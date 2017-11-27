@@ -215,7 +215,7 @@ public final class HelloWorld {
 				// 1st, send data definition
 				//
 				logger.info("Sending data  '" + inputFileName + "' : " + data.toXml());
-				final XMLRPCCommandSend cmdSend = new XMLRPCCommandSend(dataUri, data);
+				final XMLRPCCommandSend cmdSend = XMLRPCCommandSend.newCommand(dataUri, data);
 				cmdSend.exec(client);
 				//
 				// then send data content
@@ -242,7 +242,7 @@ public final class HelloWorld {
 
 			logger.info("Submitting a new work for application '" + appUid + "' : " + work.toXml());
 
-			final XMLRPCCommandSend cmdSend = new XMLRPCCommandSend(uri, work);
+			final XMLRPCCommandSend cmdSend = XMLRPCCommandSend.newCommand(uri, work);
 			cmdSend.exec(client);
 			logger.info("Submitted " + work.getUID());
 
