@@ -26,8 +26,6 @@ import java.io.IOException;
 import java.security.AccessControlException;
 import java.security.InvalidKeyException;
 import xtremweb.common.CommCallback;
-import xtremweb.common.SessionInterface;
-import xtremweb.common.UserInterface;
 import xtremweb.common.XMLable;
 import xtremweb.communications.XMLRPCCommand;
 
@@ -36,10 +34,11 @@ import xtremweb.communications.XMLRPCCommand;
  * @since 11.0.0
  */
 
-public final class DBCommandSendSession extends DBCommand implements CommCallback {
+public final class DBCommandSendSession extends DBCommandSend implements CommCallback {
 
-	private DBInterface dbInterface;
-
+	public DBCommandSendSession() throws IOException {
+		super();
+	}
 	public DBCommandSendSession(final DBInterface dbi) throws IOException {
 		super();
 		dbInterface = dbi;

@@ -25,32 +25,54 @@ package xtremweb.dispatcher;
 import java.io.IOException;
 import java.security.AccessControlException;
 import java.security.InvalidKeyException;
+
 import xtremweb.common.CommCallback;
 import xtremweb.common.XMLable;
+import xtremweb.communications.IdRpc;
 import xtremweb.communications.XMLRPCCommand;
 
 /**
  * @author Oleg Lodygensky
- * @since 11.0.0
+ * @since 11.5.0
  */
 
-public final class DBCommandSendData extends DBCommandSend implements CommCallback {
+public abstract class DBCommandSend extends DBCommand implements CommCallback {
 
-	public DBCommandSendData() throws IOException {
-		super();
+	protected DBInterface dbInterface;
+	protected XMLRPCCommand rpc;
+
+	public static DBCommandSend newCommand(final IdRpc rpc) throws IOException, ClassCastException {
+		switch(rpc) {
+		case SENDAPP:
+			return new DBCommandSendApp();
+		case SENDDATA:
+			return new DBCommandSendData();
+		case SENDGROUP:
+			return new DBCommandSendGroup();
+		case SENDSESSION:
+			return new DBCommandSendSession();
+		case SENDUSER:
+			return new DBCommandSendUser();
+		case SENDUSERGROUP:
+			return new DBCommandSendUsergroup();
+		case SENDWORK:
+			return new DBCommandSendWork();
+		default:
+			throw new ClassCastException("invalid RPC " + rpc);
+		}
 	}
 
-	public DBCommandSendData(final DBInterface dbi) throws IOException {
+	public DBCommandSend() throws IOException {
+		super();
+	}
+	public DBCommandSend(final DBInterface dbi) throws IOException {
 		super();
 		dbInterface = dbi;
 	}
-
-	public XMLable exec(final XMLRPCCommand command)
-			throws IOException, InvalidKeyException, AccessControlException {
-
-		mileStone.println("<senddata>");
-		dbInterface.addData(command);
-		mileStone.println("</senddata>");
-		return null;
+	public void setDBInterface(final DBInterface dbi) {
+		dbInterface = dbi;
+		System.out.println("DBCommandSend.setDBInterface " + dbInterface);
 	}
+	public abstract XMLable exec(final XMLRPCCommand command)
+			throws IOException, InvalidKeyException, AccessControlException;
 }

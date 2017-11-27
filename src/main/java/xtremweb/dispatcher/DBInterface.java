@@ -401,7 +401,7 @@ public final class DBInterface {
 	 * @return dest with missing elements from src
 	 */
 	private Collection<UID> mergeCollections(final Collection<UID> src, final Collection<UID> dest) {
-		if(src == null) {
+		if((src == null) || (dest == null)) {
 			return dest ;
 		}
 		for (final Iterator<UID> it = src.iterator(); it.hasNext();) {
@@ -866,6 +866,9 @@ public final class DBInterface {
 			return app;
 		}
 		catch(final IOException | AccessControlException e) {
+			if (!command.isMandated()) {
+				throw new AccessControlException("not mandated");
+			}
 			final UserInterface mandatedClient = checkMandatedClient(command);
 			final AppInterface ret = getFromCache(mandatedClient, uid, row);
 			if (ret != null) {
@@ -2437,6 +2440,9 @@ public final class DBInterface {
 			return work;
 		}
 		catch(final IOException | AccessControlException e) {
+			if (!command.isMandated()) {
+				throw new AccessControlException("not mandated");
+			}
 			final UserInterface mandatedClient = checkMandatedClient(command);
 			final WorkInterface ret = getFromCache(mandatedClient, uid, row);
 			if (ret != null) {
@@ -2598,6 +2604,7 @@ public final class DBInterface {
 			throws IOException, InvalidKeyException, AccessControlException {
 
 		if(!command.isMandated()) {
+			Thread.currentThread().dumpStack();
 			throw new AccessControlException ("not mandated");
 		}
 		return checkClient(command.getUser(), UserRightEnum.MANDATED_USER);
@@ -2671,7 +2678,9 @@ public final class DBInterface {
 	protected UserInterface checkClient(final UserInterface client, final UserRightEnum actionLevel)
 			throws IOException, InvalidKeyException, AccessControlException {
 
+		logger.debug("checkClient(" + client + ", " + actionLevel + ")");
 		if ((client == null) || (actionLevel == null)) {
+			Thread.currentThread().dumpStack();
 			throw new IOException("Can't check client");
 		}
 
@@ -3735,7 +3744,10 @@ public final class DBInterface {
 		final Collection<UID> mandatingUID = new Vector<UID>();
 		try {
 			final UserInterface mandatingClient = checkClient(command, UserRightEnum.LISTAPP);
-			mandatingUID.addAll(appsUID(mandatingClient));
+			final Collection<UID> uids = appsUID(mandatingClient);
+			if(uids != null){
+				mandatingUID.addAll(uids);
+			}
 		} catch(final java.security.AccessControlException e) {
 		}
 
@@ -4827,7 +4839,7 @@ public final class DBInterface {
 	protected WorkInterface addWork(final XMLRPCCommand command)
 			throws IOException, InvalidKeyException, AccessControlException {
 		final UserInterface mandatingClient = checkClient(command, UserRightEnum.INSERTJOB);
-		final UserInterface mandatedClient = checkMandatedClient(command);
+		final UserInterface mandatedClient = command.isMandated() ? checkMandatedClient(command) : null;
 		final WorkInterface job = (WorkInterface) command.getParameter();
 		final HostInterface _host = command.getHost();
 
