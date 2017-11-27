@@ -868,7 +868,7 @@ public abstract class XMLRPCCommand extends XMLable {
 		try {
 			input.reset();
 			input.mark(XWTools.BUFFEREND);
-			return new XMLRPCCommandSend(input);
+			return XMLRPCCommandSend.newCommandSend(input);
 		} catch (final SAXException e) {
 			if (e instanceof XMLEndParseException) {
 				return ret;
@@ -1116,8 +1116,6 @@ public abstract class XMLRPCCommand extends XMLable {
 		} catch (final InvalidKeyException e) {
 			e.printStackTrace();
 		}
-
-		ret = null;
 
 		throw new IOException("Unknown XMLRPCCommand");
 	}

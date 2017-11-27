@@ -63,8 +63,8 @@ public abstract class SQLRequestAccessible extends SQLRequest {
 			+ " OR users.userrightid >= " + UserRightEnum.SUPER_USER.ordinal()    // is this an admin
 
 			// next : a VWORKER can access an object that has the sticky bit
-			+ " OR (  (users.rights='" + UserRightEnum.VWORKER_USER + "'"
-			+ "     OR users.userrightid >= " + UserRightEnum.ADVANCED_USER.ordinal() +")"    // is this a privileged user
+			+ " OR (  (users.userrightid='" + UserRightEnum.VWORKER_USER.ordinal() + "'"
+			+ "     OR users.userrightid >= " + UserRightEnum.MANDATED_USER.ordinal() +")"    // is this a privileged user
 			+ "  AND maintable.accessrights & " + XWAccessRights.STICKYBIT_INT + " = " + XWAccessRights.STICKYBIT_INT
 			+ ")"
 
