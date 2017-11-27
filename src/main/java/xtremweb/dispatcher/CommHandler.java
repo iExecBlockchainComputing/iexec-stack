@@ -45,12 +45,16 @@ import org.eclipse.jetty.server.Server;
 import xtremweb.common.AppInterface;
 import xtremweb.common.CommonVersion;
 import xtremweb.common.DataInterface;
+import xtremweb.common.GroupInterface;
 import xtremweb.common.HostInterface;
 import xtremweb.common.Logger;
 import xtremweb.common.MileStone;
+import xtremweb.common.SessionInterface;
 import xtremweb.common.StatusEnum;
 import xtremweb.common.TaskInterface;
+import xtremweb.common.TraceInterface;
 import xtremweb.common.UID;
+import xtremweb.common.UserGroupInterface;
 import xtremweb.common.UserInterface;
 import xtremweb.common.UserRightEnum;
 import xtremweb.common.Version;
@@ -391,7 +395,7 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 			idRpc = command.getIdRpc();
 
 			final String newConnection = "<newConnection IDRPC='" + idRpc.toString() + "'>";
-			debug(command, command.toXml());
+			debug(command, newConnection + " : " + command.toXml());
 			mileStone(command, newConnection);
 
 			switch (idRpc) {
@@ -424,58 +428,23 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 				result = getApps(command);
 				break;
 			case SEND:
+			case SENDAPP:
+			case SENDDATA:
+			case SENDGROUP:
+			case SENDSESSION:
+//			case SENDTRACE:
+			case SENDUSER:
+			case SENDUSERGROUP:
+			case SENDWORK:
 				if (command.getParameter() == null) {
 					throw new IOException("Can't retrieve command parameter");
 				}
-				try {
-					sendWork(command);
-					break;
-				} catch (final ClassCastException e) {
-				}
-				try {
-					sendData(command);
-					break;
-				} catch (final ClassCastException e) {
-				}
-				try {
-					sendGroup(command);
-					break;
-				} catch (final ClassCastException e) {
-				}
-				try {
-					sendSession(command);
-					break;
-				} catch (final ClassCastException e) {
-				}
-				try {
-					sendApp(command);
-					break;
-				} catch (final ClassCastException e) {
-				}
-				try {
-					sendUser(command);
-					break;
-				} catch (final ClassCastException e) {
-				}
-				try {
-					sendUserGroup(command);
-					break;
-				} catch (final ClassCastException e) {
-				}
-				try {
-					sendTrace(command);
-					break;
-				} catch (final ClassCastException e) {
-				}
-				throw new IOException("Insertion error: bad object type");
-			case SENDAPP:
-				sendApp(command);
+				final DBCommandSend dbc = DBCommandSend.newCommand(idRpc);
+				dbc.setDBInterface(DBInterface.getInstance());
+				dbc.exec(command);
 				break;
 			case GETDATAS:
 				result = getDatas(command);
-				break;
-			case SENDDATA:
-				sendData(command);
 				break;
 			case UPLOADDATA: {
 				resultSize = uploadData(command);
@@ -494,9 +463,6 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 				result = getGroupWorks(command);
 				break;
 			}
-			case SENDGROUP:
-				sendGroup(command);
-				break;
 			case ACTIVATEHOST: {
 				activateWorker(command);
 				break;
@@ -516,20 +482,11 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 			case GETSESSIONS:
 				result = getSessions(command);
 				break;
-			case SENDSESSION:
-				sendSession(command);
-				break;
 			case GETTASKS:
 				result = getTasks(command);
 				break;
 			case GETTRACES:
 				result = getTraces(command);
-				break;
-			case SENDTRACE:
-				sendTrace(command);
-				break;
-			case SENDUSER:
-				sendUser(command);
 				break;
 			case GETUSERBYLOGIN:
 				result = getUser(command);
@@ -540,16 +497,9 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 			case GETUSERGROUPS:
 				result = getUserGroups(command);
 				break;
-			case SENDUSERGROUP:
-				sendUserGroup(command);
-				break;
 			case GETWORKS:
 				result = getWorks(command);
 				break;
-			case SENDWORK: {
-				sendWork(command);
-				break;
-			}
 			case BROADCASTWORK: {
 				broadcast(command);
 				result = NOANSWER;
@@ -667,31 +617,31 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 
 	}
 
-//	/**
-//	 * Set workers running parameters.
-//	 *
-//	 * @param client
-//	 *            is the client identifier
-//	 * @param nbWorkers
-//	 *            is the expected number of workers to activate.
-//	 * @param p
-//	 *            are the parameters to set
-//	 * @return the number of activated workers, -1 on error
-//	 */
-//	private synchronized int setWorkersParameters(final UserInterface client, final int nbWorkers,
-//			final WorkerParameters p) throws IOException, InvalidKeyException, AccessControlException {
-//
-//		mileStone("<setWorkersParameters>");
-//
-//		final int ret = DBInterface.getInstance().activateWorkers(client, nbWorkers);
-//		tracesSendResultDelay = p.getSendResultDelay();
-//		tracesResultDelay = p.getResultDelay();
-//
-//		mileStone("</setWorkersParameters");
-//
-//		notifyAll();
-//		return ret;
-//	}
+	//	/**
+	//	 * Set workers running parameters.
+	//	 *
+	//	 * @param client
+	//	 *            is the client identifier
+	//	 * @param nbWorkers
+	//	 *            is the expected number of workers to activate.
+	//	 * @param p
+	//	 *            are the parameters to set
+	//	 * @return the number of activated workers, -1 on error
+	//	 */
+	//	private synchronized int setWorkersParameters(final UserInterface client, final int nbWorkers,
+	//			final WorkerParameters p) throws IOException, InvalidKeyException, AccessControlException {
+	//
+	//		mileStone("<setWorkersParameters>");
+	//
+	//		final int ret = DBInterface.getInstance().activateWorkers(client, nbWorkers);
+	//		tracesSendResultDelay = p.getSendResultDelay();
+	//		tracesResultDelay = p.getResultDelay();
+	//
+	//		mileStone("</setWorkersParameters");
+	//
+	//		notifyAll();
+	//		return ret;
+	//	}
 
 	/**
 	 * Get workers running parameters.
@@ -722,7 +672,7 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 	private void shutDown(final XMLRPCCommand cmd)
 			throws IOException, InvalidKeyException, AccessControlException {
 		throw new IOException("shutdown not implemented");
-//		shutDown(user, command.getHost());
+		//		shutDown(user, command.getHost());
 		// mileStone("<shutdown>");
 		// DBInterface.getInstance().shutDown(client, host);
 		// mileStone("</shutdown>");
@@ -995,20 +945,6 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 	}
 
 	/**
-	 * This creates or updates an application on server side This calls
-	 * DBInterface::addApplication() to check whether client has the right to do
-	 * so.
-	 *
-	 * @see DBInterface#addApp(UserInterface, AppInterface)
-	 */
-	protected void sendApp(final XMLRPCCommand command)
-			throws IOException, InvalidKeyException, AccessControlException {
-
-		final DBCommandSendApp dbc = new DBCommandSendApp(DBInterface.getInstance()); 
-		dbc.exec(command);
-	}
-
-	/**
 	 * This retrieves an object from server
 	 */
 	protected XMLable get(final XMLRPCCommand command)
@@ -1109,21 +1045,6 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 			throws IOException, InvalidKeyException, AccessControlException {
 		final DBCommandRemove remove = new DBCommandRemove(DBInterface.getInstance()); 
 		remove.exec(command);
-	}
-
-	/**
-	 * This creates or updates data on server side
-	 *
-	 * @param client
-	 *            is the caller attributes
-	 * @param data
-	 *            is the data to create
-	 */
-	protected void sendData(final XMLRPCCommand command)
-			throws IOException, InvalidKeyException, AccessControlException {
-
-		final DBCommandSendData dbc = new DBCommandSendData(DBInterface.getInstance()); 
-		dbc.exec(command);
 	}
 
 	/**
@@ -1273,21 +1194,6 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 	}
 
 	/**
-	 * This creates or updates a group on server side
-	 *
-	 * @param client
-	 *            contains user id/password
-	 * @param group
-	 *            is the group to send
-	 */
-	public void sendGroup(final XMLRPCCommand command)
-			throws IOException, InvalidKeyException, AccessControlException {
-
-		final DBCommandSendGroup dbc = new DBCommandSendGroup(DBInterface.getInstance()); 
-		dbc.exec(command);
-	}
-
-	/**
 	 * This retrieves this client groups
 	 *
 	 * @param client
@@ -1313,16 +1219,6 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 
 		final DBCommandGetGroupWorks dbc = new DBCommandGetGroupWorks(DBInterface.getInstance()); 
 		return dbc.exec(command);
-	}
-
-	/**
-	 * This creates or updates an session on server side
-	 */
-	public void sendSession(final XMLRPCCommand command)
-			throws IOException, InvalidKeyException, AccessControlException {
-		
-		final DBCommandSendSession dbc = new DBCommandSendSession(DBInterface.getInstance()); 
-		dbc.exec(command);
 	}
 
 	/**
@@ -1361,19 +1257,6 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 		} finally {
 			mileStone(command, "</getSessionWorks>");
 		}
-	}
-
-	/**
-	 * This creates or updates an work on server side This calls
-	 * DBInterface#insertWork()
-	 *
-	 * @see DBInterface#addWork(XMLRPCCommand)
-	 */
-	protected void sendWork(final XMLRPCCommand command)
-			throws IOException, InvalidKeyException, AccessControlException {
-
-		final DBCommandSendWork dbc = new DBCommandSendWork(DBInterface.getInstance()); 
-		dbc.exec(command);
 	}
 
 	/**
@@ -1497,34 +1380,10 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 	 *            contains client parameters
 	 * @return the number of activated workers, -1 on error
 	 */
-//	public int setWorkersNb(final UserInterface client, final int nb)
-//			throws IOException, InvalidKeyException, AccessControlException {
-//		return DBInterface.getInstance().activateWorkers(client, nb);
-//	}
-
-	/**
-	 * This adds a new user.
-	 *
-	 * @param client
-	 *            contains client parameters
-	 * @param user
-	 *            describes new user informations
-	 */
-	protected void sendUser(final XMLRPCCommand command)
-			throws IOException, InvalidKeyException, AccessControlException {
-		final DBCommandSendUser dbc = new DBCommandSendUser(DBInterface.getInstance()); 
-		dbc.exec(command);
-	}
-
-	/**
-	 * This adds/updates an user group. This forces group.project to true
-	 */
-	public void sendUserGroup(final XMLRPCCommand command)
-			throws IOException, InvalidKeyException, AccessControlException {
-
-		final DBCommandSendUser dbc = new DBCommandSendUser(DBInterface.getInstance()); 
-		dbc.exec(command);
-	}
+	//	public int setWorkersNb(final UserInterface client, final int nb)
+	//			throws IOException, InvalidKeyException, AccessControlException {
+	//		return DBInterface.getInstance().activateWorkers(client, nb);
+	//	}
 
 	/**
 	 * This retrieves all usergroups from server
@@ -1570,14 +1429,6 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 
 		final DBCommandGetTasks dbc = new DBCommandGetTasks(DBInterface.getInstance()); 
 		return dbc.exec(command);
-	}
-
-	/**
-	 * This is not implemented
-	 */
-	public void sendTrace(final XMLRPCCommand command)
-			throws IOException, InvalidKeyException, AccessControlException {
-		throw new IOException("sendTrace not implemented yet");
 	}
 
 	/**
@@ -1662,9 +1513,9 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 	public void traceWorkers(final UserInterface client, final Hashtable hosts)
 			throws IOException, InvalidKeyException, AccessControlException {
 		throw new IOException("traceWorkers is not implemented");
-//		mileStone("<traceWorkers>");
-//		DBInterface.getInstance().traceWorkers(client, hosts);
-//		mileStone("</traceWorkers>");
+		//		mileStone("<traceWorkers>");
+		//		DBInterface.getInstance().traceWorkers(client, hosts);
+		//		mileStone("</traceWorkers>");
 	}
 
 }

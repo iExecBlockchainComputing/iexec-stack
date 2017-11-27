@@ -315,7 +315,7 @@ public final class CommManager extends Thread {
 	InvalidKeyException, AccessControlException, SAXException {
 
 		final URI uri = commClient().newURI(w.getUID());
-		final XMLRPCCommandSend cmd = new XMLRPCCommandSend(uri, w);
+		final XMLRPCCommandSend cmd = XMLRPCCommandSend.newCommand(uri, w);
 		cmd.setHost(Worker.getConfig().getHost());
 		logger.debug("CommManager#workSend " + cmd.toXml());
 		commClient().send(cmd);
