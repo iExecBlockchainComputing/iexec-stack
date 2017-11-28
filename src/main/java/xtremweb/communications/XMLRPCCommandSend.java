@@ -92,7 +92,7 @@ public abstract class XMLRPCCommandSend extends XMLRPCCommand {
 	 * This constructs a new command
 	 */
 	public XMLRPCCommandSend(final URI uri, final IdRpc cmd) throws IOException {
-		super(null, cmd);
+		super(uri, cmd);
 	}
 
 	/**
