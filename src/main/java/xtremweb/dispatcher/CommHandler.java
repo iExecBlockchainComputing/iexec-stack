@@ -45,12 +45,16 @@ import org.eclipse.jetty.server.Server;
 import xtremweb.common.AppInterface;
 import xtremweb.common.CommonVersion;
 import xtremweb.common.DataInterface;
+import xtremweb.common.GroupInterface;
 import xtremweb.common.HostInterface;
 import xtremweb.common.Logger;
 import xtremweb.common.MileStone;
+import xtremweb.common.SessionInterface;
 import xtremweb.common.StatusEnum;
 import xtremweb.common.TaskInterface;
+import xtremweb.common.TraceInterface;
 import xtremweb.common.UID;
+import xtremweb.common.UserGroupInterface;
 import xtremweb.common.UserInterface;
 import xtremweb.common.UserRightEnum;
 import xtremweb.common.Version;
@@ -72,6 +76,7 @@ import xtremweb.communications.XMLRPCCommand;
 import xtremweb.communications.XMLRPCCommandGet;
 import xtremweb.communications.XMLRPCCommandGetWorkByExternalId;
 import xtremweb.communications.XMLRPCCommandWorkAliveByUID;
+import xtremweb.communications.XMLRPCCommandWorkRequest;
 import xtremweb.communications.XMLRPCResult;
 import xtremweb.communications.XWPostParams;
 
@@ -102,8 +107,11 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 	 */
 	private final MileStone mileStone;
 
+	protected void mileStone(final XMLRPCCommand command, final String msg) {
+		mileStone.println(msgWithRemoteAddresse(command, msg));
+	}
 	protected void mileStone(final String msg) {
-		mileStone.println(msgWithRemoteAddresse(msg));
+		mileStone.println(msg);
 	}
 
 	/** 10 sec */
@@ -143,104 +151,6 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 		commServer = s;
 	}
 
-	/**
-	 * This is the remote host name
-	 */
-	private String remoteName;
-
-	/**
-	 * This resets remote host name
-	 *
-	 * @since 8.2.0
-	 */
-	public void resetRemoteName() {
-		remoteName = null;
-	}
-
-	/**
-	 * This retrieves remote host name
-	 *
-	 * @return the remoteName
-	 */
-	public String getRemoteName() {
-		return remoteName;
-	}
-
-	/**
-	 * This sets the remote host name
-	 *
-	 * @param remoteName
-	 *            the remoteName to set
-	 */
-	public void setRemoteName(final String remoteName) {
-		this.remoteName = remoteName;
-	}
-
-	/**
-	 * This is the client IP address
-	 */
-	private String remoteIP;
-
-	/**
-	 * This resets the remote host IP address
-	 *
-	 * @since 8.2.0
-	 */
-	public void resetRemoteIP() {
-		remoteIP = null;
-	}
-
-	/**
-	 * This retrieves the remote host IP address
-	 *
-	 * @return the remoteIP
-	 */
-	public String getRemoteIP() {
-		return remoteIP;
-	}
-
-	/**
-	 * This sets the remote host IP address
-	 *
-	 * @param remoteIP
-	 *            the remoteIP to set
-	 */
-	public void setRemoteIP(final String remoteIP) {
-		this.remoteIP = remoteIP;
-	}
-
-	/**
-	 * This is the remote host port
-	 */
-	private int remotePort;
-
-	/**
-	 * This retrives the remote host port
-	 *
-	 * @return the remotePort
-	 */
-	public int getRemotePort() {
-		return remotePort;
-	}
-
-	/**
-	 * This sets the remote host port
-	 *
-	 * @param remotePort
-	 *            the remotePort to set
-	 */
-	public void setRemotePort(final int remotePort) {
-		this.remotePort = remotePort;
-	}
-
-	/**
-	 * This resets the remote host port
-	 *
-	 * @since 8.2.0
-	 */
-	public void resetRemotePort() {
-		remotePort = -1;
-	}
 
 	/**
 	 * This has been constructed from config file
@@ -266,8 +176,10 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 		super(name);
 		logger = new Logger(this);
 		logger.debug(name);
-		mileStone = new MileStone(xtremweb.dispatcher.CommHandler.class);
+		mileStone = new MileStone(this.getClass());
 		config = Dispatcher.getConfig();
+		System.out.println("commHandler " + config.getLoggerLevel());
+		logger.setLoggerLevel(config.getLoggerLevel());
 		isRunning = false;
 	}
 
@@ -276,61 +188,58 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 		config = c;
 	}
 
-	public String remoteAddresse() {
-		return "{" + remoteName + "/" + remoteIP + ":" + remotePort + "}";
-	}
 
-	protected String msgWithRemoteAddresse(final String msg) {
-		return remoteAddresse() + " : " + msg;
+	protected String msgWithRemoteAddresse(final XMLRPCCommand command, final String msg) {
+		return "{" + ( command != null ? command.remoteAddresse() : "" ) + "} : " + msg;
 	}
 
 	/**
 	 * This prefixes the finest message with the remote host name and port
 	 */
-	public void finest(final String msg) {
-		logger.finest(msgWithRemoteAddresse(msg));
+	public void finest(final XMLRPCCommand command, final String msg) {
+		logger.finest(msgWithRemoteAddresse(command, msg));
 	}
 
 	/**
 	 * This prefixes the debug message with the remote host name and port
 	 */
-	public void debug(final String msg) {
-		logger.debug(msgWithRemoteAddresse(msg));
+	public void debug(final XMLRPCCommand command, final String msg) {
+		logger.debug(msgWithRemoteAddresse(command, msg));
 	}
 
 	/**
 	 * This prefixes the info message with the remote host name and port
 	 */
-	public void info(final String msg) {
-		logger.info(msgWithRemoteAddresse(msg));
+	public void info(final XMLRPCCommand command, final String msg) {
+		logger.info(msgWithRemoteAddresse(command, msg));
 	}
 
 	/**
 	 * This prefixes the warning message with the remote host name and port
 	 */
-	public void warn(final String msg) {
-		logger.warn(msgWithRemoteAddresse(msg));
+	public void warn(final XMLRPCCommand command, final String msg) {
+		logger.warn(msgWithRemoteAddresse(command, msg));
 	}
 
 	/**
 	 * This prefixes the error message with the remote host name and port
 	 */
-	public void error(final String msg) {
-		logger.error(msgWithRemoteAddresse(msg));
+	public void error(final XMLRPCCommand command, final String msg) {
+		logger.error(msgWithRemoteAddresse(command, msg));
 	}
 
 	/**
 	 * This prefixes the error message with the remote host name and port
 	 */
-	public void error(final Exception e) {
-		logger.exception(msgWithRemoteAddresse(""), e);
+	public void error(final XMLRPCCommand command, final Exception e) {
+		logger.exception(msgWithRemoteAddresse(command, ""), e);
 	}
 
 	/**
 	 * This prefixes the error message with the remote host name and port
 	 */
-	public void error(final String msg, final Exception e) {
-		logger.exception(msgWithRemoteAddresse(msg), e);
+	public void error(final XMLRPCCommand command, final String msg, final Exception e) {
+		logger.exception(msgWithRemoteAddresse(command, msg), e);
 	}
 
 	/**
@@ -343,16 +252,16 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 	}
 
 	/**
-	 * This does nothing and must be overidden by any HTTP handler This is
+	 * This does nothing and must be implemented by any HTTP handler This is
 	 * inherited from org.mortbay.jetty.Handler
 	 */
 	@Override
 	public void setServer(final Server server) {
-		warn("" + this + " CommHandler#serServer(server = " + server + ") does nothing ");
+		logger.warn("" + this + " CommHandler#serServer(server = " + server + ") does nothing ");
 	}
 
 	/**
-	 * This does nothing and must be overidden by any HTTP handler This is
+	 * This does nothing and must be implemented by any HTTP handler This is
 	 * inherited from org.mortbay.jetty.Handler
 	 */
 	@Override
@@ -361,7 +270,7 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 	}
 
 	/**
-	 * This does nothing and must be overidden by any HTTP handler This is
+	 * This does nothing and must be implemented by any HTTP handler This is
 	 * inherited from org.mortbay.component.LifeCycle
 	 *
 	 * @return true
@@ -372,7 +281,7 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 	}
 
 	/**
-	 * This does nothing and must be overidden by any HTTP handler This is
+	 * This does nothing and must be implemented by any HTTP handler This is
 	 * inherited from org.mortbay.component.LifeCycle
 	 *
 	 * @return false
@@ -383,7 +292,7 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 	}
 
 	/**
-	 * This does nothing and must be overidden by any HTTP handler This is
+	 * This does nothing and must be implemented by any HTTP handler This is
 	 * inherited from org.mortbay.component.LifeCycle
 	 *
 	 * @return false
@@ -394,7 +303,7 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 	}
 
 	/**
-	 * This does nothing and must be overidden by any HTTP handler This is
+	 * This does nothing and must be implemented by any HTTP handler This is
 	 * inherited from org.mortbay.component.LifeCycle
 	 *
 	 * @return false
@@ -405,7 +314,7 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 	}
 
 	/**
-	 * This does nothing and must be overidden by any HTTP handler This is
+	 * This does nothing and must be implemented by any HTTP handler This is
 	 * inherited from org.mortbay.component.LifeCycle
 	 *
 	 * @return true
@@ -426,7 +335,7 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 	}
 
 	/**
-	 * This does nothing and must be overidden by any HTTP handler This is
+	 * This does nothing and must be implemented by any HTTP handler This is
 	 * inherited from org.mortbay.component.LifeCycle
 	 *
 	 * @return false
@@ -470,7 +379,7 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 	protected void run(final XMLRPCCommand command) {
 
 		if (command == null) {
-			error("CMD is null");
+			logger.error("CMD is null");
 			return;
 		}
 
@@ -486,8 +395,8 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 			idRpc = command.getIdRpc();
 
 			final String newConnection = "<newConnection IDRPC='" + idRpc.toString() + "'>";
-			debug(msgWithRemoteAddresse(newConnection) + " " + command.toXml());
-			mileStone(newConnection);
+			debug(command, newConnection + " : " + command.toXml());
+			mileStone(command, newConnection);
 
 			switch (idRpc) {
 			case DISCONNECT:
@@ -519,58 +428,23 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 				result = getApps(command);
 				break;
 			case SEND:
+			case SENDAPP:
+			case SENDDATA:
+			case SENDGROUP:
+			case SENDSESSION:
+//			case SENDTRACE:
+			case SENDUSER:
+			case SENDUSERGROUP:
+			case SENDWORK:
 				if (command.getParameter() == null) {
 					throw new IOException("Can't retrieve command parameter");
 				}
-				try {
-					sendWork(command);
-					break;
-				} catch (final ClassCastException e) {
-				}
-				try {
-					sendData(command);
-					break;
-				} catch (final ClassCastException e) {
-				}
-				try {
-					sendGroup(command);
-					break;
-				} catch (final ClassCastException e) {
-				}
-				try {
-					sendSession(command);
-					break;
-				} catch (final ClassCastException e) {
-				}
-				try {
-					sendApp(command);
-					break;
-				} catch (final ClassCastException e) {
-				}
-				try {
-					sendUser(command);
-					break;
-				} catch (final ClassCastException e) {
-				}
-				try {
-					sendUserGroup(command);
-					break;
-				} catch (final ClassCastException e) {
-				}
-				try {
-					sendTrace(command);
-					break;
-				} catch (final ClassCastException e) {
-				}
-				throw new IOException("Insertion error: bad object type");
-			case SENDAPP:
-				sendApp(command);
+				final DBCommandSend dbc = DBCommandSend.newCommand(idRpc);
+				dbc.setDBInterface(DBInterface.getInstance());
+				dbc.exec(command);
 				break;
 			case GETDATAS:
 				result = getDatas(command);
-				break;
-			case SENDDATA:
-				sendData(command);
 				break;
 			case UPLOADDATA: {
 				resultSize = uploadData(command);
@@ -589,9 +463,6 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 				result = getGroupWorks(command);
 				break;
 			}
-			case SENDGROUP:
-				sendGroup(command);
-				break;
 			case ACTIVATEHOST: {
 				activateWorker(command);
 				break;
@@ -611,20 +482,11 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 			case GETSESSIONS:
 				result = getSessions(command);
 				break;
-			case SENDSESSION:
-				sendSession(command);
-				break;
 			case GETTASKS:
 				result = getTasks(command);
 				break;
 			case GETTRACES:
 				result = getTraces(command);
-				break;
-			case SENDTRACE:
-				sendTrace(command);
-				break;
-			case SENDUSER:
-				sendUser(command);
 				break;
 			case GETUSERBYLOGIN:
 				result = getUser(command);
@@ -635,16 +497,9 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 			case GETUSERGROUPS:
 				result = getUserGroups(command);
 				break;
-			case SENDUSERGROUP:
-				sendUserGroup(command);
-				break;
 			case GETWORKS:
 				result = getWorks(command);
 				break;
-			case SENDWORK: {
-				sendWork(command);
-				break;
-			}
 			case BROADCASTWORK: {
 				broadcast(command);
 				result = NOANSWER;
@@ -662,7 +517,7 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 			case WORKALIVE:
 				// here is a big hack to force "old" worker to update
 				if (command.getCurrentVersion() == null) {
-					warn("Forcing worker to update " + command.getHost().getUID() + " (" + command.getHost().getName()
+					warn(command, "Forcing worker to update " + command.getHost().getUID() + " (" + command.getHost().getName()
 							+ ")");
 					final Hashtable h = new Hashtable();
 					h.put("currentversion", CURRENTVERSIONSTRING);
@@ -679,27 +534,27 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 				break;
 
 			default:
-				error("BAD Id: " + idRpc);
+				error(command, "BAD Id: " + idRpc);
 				accessStatus = 404;
 				break;
 			}
 		} catch (final EOFException e) {
-			error(e);
+			error(command, e);
 		} catch (final SocketException e) {
-			debug(e.toString());
+			debug(command, e.toString());
 		} catch (final IOException e) {
-			error("Disk access error " + e);
+			error(command, "Disk access error " + e);
 			result = new XMLRPCResult(XWReturnCode.DISK, e.getMessage());
 		} catch (final InvalidKeyException e) {
-			error("Right access error " + e);
+			error(command, "Right access error " + e);
 			result = new XMLRPCResult(XWReturnCode.AUTHENTICATION, e.getMessage());
 			accessStatus = 401;
 		} catch (final AccessControlException e) {
-			error("Right access error " + e);
+			error(command, "Right access error " + e);
 			result = new XMLRPCResult(XWReturnCode.AUTHORIZATION, e.getMessage());
 			accessStatus = 403;
 		} catch (final Exception e) {
-			error("Cannot get io socket ", e);
+			error(command, "Cannot get io socket ", e);
 		} finally {
 			if (result == null) {
 				result = NOANSWER;
@@ -716,7 +571,7 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 				}
 
 				// if (idRpc != IdRpc.SEND) {
-				debug("answer (" + idRpc.toString() + ") " + resultxml);
+				debug(command, "answer (" + idRpc.toString() + ") " + resultxml);
 				// }
 				write(result);
 			} catch (final Exception e) {
@@ -724,7 +579,7 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 			} finally {
 				resultxml = null;
 			}
-			mileStone("</newConnection>");
+			mileStone(command, "</newConnection>");
 		}
 
 		try {
@@ -751,10 +606,10 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 					os = "-";
 				}
 				AccessLogger.getInstance().println(accessPath, login, accessProto, accessStatus,
-						result != NOANSWER ? result.toXml().length() : resultSize, remoteName, os, idRpc);
+						result != NOANSWER ? result.toXml().length() : resultSize, command.getRemoteName(), os, idRpc);
 			}
 		} catch (final Exception e) {
-			error(e);
+			error(command, e);
 		}
 
 		result = null;
@@ -762,31 +617,31 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 
 	}
 
-//	/**
-//	 * Set workers running parameters.
-//	 *
-//	 * @param client
-//	 *            is the client identifier
-//	 * @param nbWorkers
-//	 *            is the expected number of workers to activate.
-//	 * @param p
-//	 *            are the parameters to set
-//	 * @return the number of activated workers, -1 on error
-//	 */
-//	private synchronized int setWorkersParameters(final UserInterface client, final int nbWorkers,
-//			final WorkerParameters p) throws IOException, InvalidKeyException, AccessControlException {
-//
-//		mileStone("<setWorkersParameters>");
-//
-//		final int ret = DBInterface.getInstance().activateWorkers(client, nbWorkers);
-//		tracesSendResultDelay = p.getSendResultDelay();
-//		tracesResultDelay = p.getResultDelay();
-//
-//		mileStone("</setWorkersParameters");
-//
-//		notifyAll();
-//		return ret;
-//	}
+	//	/**
+	//	 * Set workers running parameters.
+	//	 *
+	//	 * @param client
+	//	 *            is the client identifier
+	//	 * @param nbWorkers
+	//	 *            is the expected number of workers to activate.
+	//	 * @param p
+	//	 *            are the parameters to set
+	//	 * @return the number of activated workers, -1 on error
+	//	 */
+	//	private synchronized int setWorkersParameters(final UserInterface client, final int nbWorkers,
+	//			final WorkerParameters p) throws IOException, InvalidKeyException, AccessControlException {
+	//
+	//		mileStone("<setWorkersParameters>");
+	//
+	//		final int ret = DBInterface.getInstance().activateWorkers(client, nbWorkers);
+	//		tracesSendResultDelay = p.getSendResultDelay();
+	//		tracesResultDelay = p.getResultDelay();
+	//
+	//		mileStone("</setWorkersParameters");
+	//
+	//		notifyAll();
+	//		return ret;
+	//	}
 
 	/**
 	 * Get workers running parameters.
@@ -809,33 +664,7 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 	protected synchronized WorkInterface workRequest(final XMLRPCCommand command)
 			throws IOException, InvalidKeyException, AccessControlException {
 
-		final HostInterface _host = command.getHost();
-
-		mileStone("<workRequest host=" + (_host != null ? _host.getName() : "null") + ">");
-		try {
-			final UserInterface user = DBInterface.getInstance().checkClient(command, UserRightEnum.GETJOB);
-
-			_host.setIPAddr(remoteIP);
-			final HostInterface host = DBInterface.getInstance().hostRegister(user, _host);
-
-			if (host == null) {
-				throw new IOException("can't register host");
-			}
-			if (host.isActive() && host.getVersion().equals(CURRENTVERSIONSTRING)) {
-				return Dispatcher.getScheduler().select(host, user);
-			}
-		} catch (InvalidKeyException e) {
-			logger.exception("workRequest error", e);
-			throw e;
-		} catch (final Exception e) {
-			logger.exception("workRequest error", e);
-			throw new IOException(e);
-		} finally {
-			mileStone("</workRequest>");
-			notifyAll();
-		}
-		debug("worker " + _host.getName() + " gets nothing");
-		return null;
+		return Dispatcher.getScheduler().select((XMLRPCCommandWorkRequest)command);
 	}
 
 	/**
@@ -843,7 +672,7 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 	private void shutDown(final XMLRPCCommand cmd)
 			throws IOException, InvalidKeyException, AccessControlException {
 		throw new IOException("shutdown not implemented");
-//		shutDown(user, command.getHost());
+		//		shutDown(user, command.getHost());
 		// mileStone("<shutdown>");
 		// DBInterface.getInstance().shutDown(client, host);
 		// mileStone("</shutdown>");
@@ -874,10 +703,10 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 		boolean keepWorking = false;
 		final UID jobUID = ((XMLRPCCommandWorkAliveByUID) command).getURI().getUID();
 
-		mileStone("<workAlive host=" + (_host != null ? _host.getName() : "null") + ">");
+		mileStone(command, "<workAlive host=" + (_host != null ? _host.getName() : "null") + ">");
 		final UserInterface theClient = DBInterface.getInstance().checkClient(command, UserRightEnum.GETJOB);
 
-		_host.setIPAddr(remoteIP);
+		_host.setIPAddr(command.getRemoteIP());
 		final HostInterface theHost = DBInterface.getInstance().hostRegister(theClient, _host);
 
 		if (theHost == null) {
@@ -899,7 +728,7 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 				try {
 					keepWorking = theTask.setAlive(_host.getUID());
 				} catch (final Exception e) {
-					error(e);
+					error(command, e);
 				}
 			}
 			theTask.update();
@@ -909,11 +738,11 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 		}
 
 		if (!keepWorking) {
-			warn("workAlive(" + _host.getName() + "," + jobUID + ") stopping!");
+			warn(command, "workAlive(" + _host.getName() + "," + jobUID + ") stopping!");
 		}
 		final Hashtable result = new Hashtable();
 		result.put("keepWorking", new Boolean(keepWorking));
-		mileStone("</workAlive>");
+		mileStone(command, "</workAlive>");
 		return result;
 
 	}
@@ -955,10 +784,10 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 			throws IOException, InvalidKeyException, AccessControlException {
 
 		HostInterface _host = command.getHost();
-		mileStone("<workAlive host=" + (_host != null ? _host.getName() : "null") + ">");
+		mileStone(command, "<workAlive host=" + (_host != null ? _host.getName() : "null") + ">");
 		final UserInterface theClient = DBInterface.getInstance().checkClient(command, UserRightEnum.GETJOB);
 
-		_host.setIPAddr(remoteIP);
+		_host.setIPAddr(command.getRemoteIP());
 		final HostInterface theHost = DBInterface.getInstance().hostRegister(theClient, _host);
 
 		if (theHost == null) {
@@ -994,7 +823,7 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 
 			if (jobResults != null) {
 
-				debug("workAlive (" + _host.getName() + ") : jobResults.size () = " + jobResults.size());
+				debug(command, "workAlive (" + _host.getName() + ") : jobResults.size () = " + jobResults.size());
 
 				final Iterator<XMLValue> vIterator = jobResults.iterator();
 
@@ -1012,22 +841,22 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 							// we don't know that job, remove result on worker
 							// side
 							// (maybe it has been removed by user)
-							debug("workAlive (" + _host.getName() + ") : worker must stop " + workUID);
+							debug(command, "workAlive (" + _host.getName() + ") : worker must stop " + workUID);
 							finishedTasks.add(workUID);
 						} else {
 							final URI resultURI = w.getResult();
 							final StatusEnum workStatus = w.getStatus();
 
-							debug("resultURI = " + resultURI);
+							debug(command, "resultURI = " + resultURI);
 							if ((resultURI != null) && (resultURI.isXtremWeb())) {
 								final UID resultUID = resultURI.getUID();
 								final DataInterface workResult = DBInterface.getInstance().data(resultUID);
-								debug("workResult (" + resultURI + ") = " + workResult);
+								debug(command, "workResult (" + resultURI + ") = " + workResult);
 								if (workResult != null) {
 									final StatusEnum resultStatus = workResult.getStatus();
 									if ((workStatus == StatusEnum.DATAREQUEST)
 											|| (resultStatus == StatusEnum.DATAREQUEST)) {
-										warn("workAlive (" + _host.getName() + ") : reasking result for " + workUID);
+										warn(command, "workAlive (" + _host.getName() + ") : reasking result for " + workUID);
 										resultsVector.add(workUID);
 									}
 								}
@@ -1036,7 +865,7 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 							switch (workStatus) {
 							case ERROR:
 							case COMPLETED:
-								debug("workAlive (" + _host.getName() + ") : worker can delete " + resultURI);
+								debug(command, "workAlive (" + _host.getName() + ") : worker can delete " + resultURI);
 								finishedTasks.add(workUID);
 								break;
 							}
@@ -1054,35 +883,35 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 			hostuid = null;
 
 			if (newServer != null) {
-				info("workAlive (" + theHost.getName() + ") : new server = " + newServer);
+				info(command, "workAlive (" + theHost.getName() + ") : new server = " + newServer);
 				ret.put(XWPostParams.NEWSERVER.toString(), newServer);
 			}
 			newServer = null;
 
 			Integer aliveperiod = new Integer(config.getProperty(XWPropertyDefs.ALIVEPERIOD));
-			debug("alivePeriod = " + aliveperiod);
+			debug(command, "alivePeriod = " + aliveperiod);
 			ret.put(XWPostParams.ALIVEPERIOD.toString(), aliveperiod);
 			aliveperiod = null;
 		} catch (final IOException e) {
-			error(e);
+			error(command, e);
 		} finally {
 			if (theHost != null) {
 				try {
 					theHost.update();
 				} catch (final Exception e) {
-					error("cant update host " + e);
+					error(command, "cant update host " + e);
 				}
 			}
 		}
 
 		String newKeystoreUriStr = config.getProperty(XWPropertyDefs.KEYSTOREURI);
-		debug("\n\n\nnewKeystoreUriStr =  " + newKeystoreUriStr);
+		debug(command, "\n\n\nnewKeystoreUriStr =  " + newKeystoreUriStr);
 		if (newKeystoreUriStr != null) {
 			ret.put(XWPostParams.KEYSTOREURI.toString(), newKeystoreUriStr);
 		}
 		newKeystoreUriStr = null;
 
-		mileStone("</workAlive>");
+		mileStone(command, "</workAlive>");
 		return ret;
 
 	}
@@ -1116,20 +945,6 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 	}
 
 	/**
-	 * This creates or updates an application on server side This calls
-	 * DBInterface::addApplication() to check whether client has the right to do
-	 * so.
-	 *
-	 * @see DBInterface#addApp(UserInterface, AppInterface)
-	 */
-	protected void sendApp(final XMLRPCCommand command)
-			throws IOException, InvalidKeyException, AccessControlException {
-
-		final DBCommandSendApp dbc = new DBCommandSendApp(DBInterface.getInstance()); 
-		dbc.exec(command);
-	}
-
-	/**
 	 * This retrieves an object from server
 	 */
 	protected XMLable get(final XMLRPCCommand command)
@@ -1143,8 +958,7 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 	 */
 	protected XMLable get(final XMLRPCCommandGet command)
 			throws IOException, InvalidKeyException, AccessControlException {
-		final DBCommandGet dbc = new DBCommandGet(DBInterface.getInstance()); 
-		return dbc.exec(command);
+		return get((XMLRPCCommand)command);
 	}
 
 	/**
@@ -1209,13 +1023,13 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 	public Hashtable<String, String> getHubAddr(final XMLRPCCommand command)
 			throws IOException, InvalidKeyException, AccessControlException {
 
-		mileStone("<getHubAddr>");
+		mileStone(command, "<getHubAddr>");
 		DBInterface.getInstance().checkClient(command, UserRightEnum.GETJOB);
 
 		final Hashtable<String, String> ret = new Hashtable<>();
 		logger.debug("hub addr = " + System.getProperty(XWPropertyDefs.SMARTSOCKETSHUBADDR.toString()));
 		ret.put(Connection.HUBPNAME, System.getProperty(XWPropertyDefs.SMARTSOCKETSHUBADDR.toString()));
-		mileStone("</getHubAddr>");
+		mileStone(command, "</getHubAddr>");
 		return ret;
 	}
 
@@ -1231,21 +1045,6 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 			throws IOException, InvalidKeyException, AccessControlException {
 		final DBCommandRemove remove = new DBCommandRemove(DBInterface.getInstance()); 
 		remove.exec(command);
-	}
-
-	/**
-	 * This creates or updates data on server side
-	 *
-	 * @param client
-	 *            is the caller attributes
-	 * @param data
-	 *            is the data to create
-	 */
-	protected void sendData(final XMLRPCCommand command)
-			throws IOException, InvalidKeyException, AccessControlException {
-
-		final DBCommandSendData dbc = new DBCommandSendData(DBInterface.getInstance()); 
-		dbc.exec(command);
 	}
 
 	/**
@@ -1275,7 +1074,7 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 
 		long ret = 0;
 
-		mileStone("<uploadData>");
+		mileStone(command, "<uploadData>");
 		DataInterface theData = null;
 		File dFile = null;
 		StatusEnum dataStatus = StatusEnum.AVAILABLE;
@@ -1289,13 +1088,13 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 			dFile = theData.getPath();
 			readFile(dFile);
 		} catch (final InvalidKeyException e) {
-			mileStone("<error method='uploadData' msg='" + e.getMessage() + "' />");
+			mileStone(command, "<error method='uploadData' msg='" + e.getMessage() + "' />");
 			throw e;
 		} catch (final AccessControlException e) {
-			mileStone("<error method='uploadData' msg='" + e.getMessage() + "' />");
+			mileStone(command, "<error method='uploadData' msg='" + e.getMessage() + "' />");
 			throw e;
 		} catch (final IOException ioe) {
-			mileStone("<error method='uploadData' msg='" + ioe.getMessage() + "' />");
+			mileStone(command, "<error method='uploadData' msg='" + ioe.getMessage() + "' />");
 			if (dFile != null) {
 				dFile.delete();
 			}
@@ -1303,7 +1102,7 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 			dataStatus = StatusEnum.DATAREQUEST;
 			throw new IOException("uploadData(" + uid + ") IOerror on server side");
 		} catch (final Exception e) {
-			mileStone("<error method='uploadData' msg='" + e.getMessage() + "' />");
+			mileStone(command, "<error method='uploadData' msg='" + e.getMessage() + "' />");
 			logger.exception(e);
 			dataStatus = StatusEnum.ERROR;
 			throw new IOException(e.getMessage());
@@ -1321,7 +1120,7 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 			}
 			theData = null;
 			dFile = null;
-			mileStone("</uploadData>");
+			mileStone(command, "</uploadData>");
 		}
 		return ret;
 	}
@@ -1341,7 +1140,7 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 		DataInterface theData = null;
 		UID uid = command.getURI().getUID();
 
-		mileStone("<downloadData>");
+		mileStone(command, "<downloadData>");
 		try {
 			theData = (DataInterface)get(command);
 			if (theData == null) {
@@ -1351,11 +1150,11 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 			theData = DBInterface.getInstance().data(uid);
 
 			if ((theData.getSize() > 0) && (theData.getMD5() == null)) {
-				error("downloadData setstatus ERROR : size=" + theData.getSize() + ", md5=" + theData.getMD5());
+				error(command, "downloadData setstatus ERROR : size=" + theData.getSize() + ", md5=" + theData.getMD5());
 				theData.setStatus(StatusEnum.ERROR);
 				theData.update();
-				mileStone("<error method='downloadData' msg='MD5 error' />");
-				mileStone("</downloadData>");
+				mileStone(command, "<error method='downloadData' msg='MD5 error' />");
+				mileStone(command, "</downloadData>");
 				throw new IOException("downloadData(" + uid + ") MD5 should not be null");
 			}
 
@@ -1373,40 +1172,25 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 				throw new IOException("downloadData(" + uid + ") data error");
 			}
 		} catch (final InvalidKeyException e) {
-			mileStone("<error method='downloadData' msg='" + e.getMessage() + "' />");
+			mileStone(command, "<error method='downloadData' msg='" + e.getMessage() + "' />");
 			throw e;
 		} catch (final AccessControlException e) {
-			mileStone("<error method='downloadData' msg='" + e.getMessage() + "' />");
+			mileStone(command, "<error method='downloadData' msg='" + e.getMessage() + "' />");
 			throw e;
 		} catch (final Exception e) {
-			mileStone("<error method='downloadData' msg='" + e.getMessage() + "' />");
-			error(e);
+			mileStone(command, "<error method='downloadData' msg='" + e.getMessage() + "' />");
+			error(command, e);
 			if (theData != null) {
-				error("downloadData setstatus ERROR : " + e);
+				error(command, "downloadData setstatus ERROR : " + e);
 				theData.setStatus(StatusEnum.ERROR);
 				theData.update();
 			}
 			throw new IOException(e.toString());
 		} finally {
 			theData = null;
-			mileStone("</downloadData>");
+			mileStone(command, "</downloadData>");
 		}
 		return ret;
-	}
-
-	/**
-	 * This creates or updates a group on server side
-	 *
-	 * @param client
-	 *            contains user id/password
-	 * @param group
-	 *            is the group to send
-	 */
-	public void sendGroup(final XMLRPCCommand command)
-			throws IOException, InvalidKeyException, AccessControlException {
-
-		final DBCommandSendGroup dbc = new DBCommandSendGroup(DBInterface.getInstance()); 
-		dbc.exec(command);
 	}
 
 	/**
@@ -1438,16 +1222,6 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 	}
 
 	/**
-	 * This creates or updates an session on server side
-	 */
-	public void sendSession(final XMLRPCCommand command)
-			throws IOException, InvalidKeyException, AccessControlException {
-		
-		final DBCommandSendSession dbc = new DBCommandSendSession(DBInterface.getInstance()); 
-		dbc.exec(command);
-	}
-
-	/**
 	 * This retrieves all sessions from server
 	 *
 	 * @return a vector of UIDs
@@ -1467,11 +1241,13 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 	 * @param session
 	 *            is the session UID to retrieve works for
 	 */
-	public XMLVector getSessionWorks(final UserInterface client, final UID session)
+	public XMLVector getSessionWorks(final XMLRPCCommand command)
 			throws IOException, InvalidKeyException, AccessControlException {
 
 		try {
-			mileStone("<getSessionWorks>");
+			mileStone(command, "<getSessionWorks>");
+			final UserInterface client = command.getUser();
+			final UID session = command.getURI().getUID();
 			final Vector<UID> ret = (Vector<UID>) DBInterface.getInstance().getSessionJobs(client, session);
 			XMLVector v = null;
 			if (ret != null) {
@@ -1479,21 +1255,8 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 			}
 			return v;
 		} finally {
-			mileStone("</getSessionWorks>");
+			mileStone(command, "</getSessionWorks>");
 		}
-	}
-
-	/**
-	 * This creates or updates an work on server side This calls
-	 * DBInterface#insertWork()
-	 *
-	 * @see DBInterface#addWork(XMLRPCCommand)
-	 */
-	protected void sendWork(final XMLRPCCommand command)
-			throws IOException, InvalidKeyException, AccessControlException {
-
-		final DBCommandSendWork dbc = new DBCommandSendWork(DBInterface.getInstance()); 
-		dbc.exec(command);
 	}
 
 	/**
@@ -1617,34 +1380,10 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 	 *            contains client parameters
 	 * @return the number of activated workers, -1 on error
 	 */
-//	public int setWorkersNb(final UserInterface client, final int nb)
-//			throws IOException, InvalidKeyException, AccessControlException {
-//		return DBInterface.getInstance().activateWorkers(client, nb);
-//	}
-
-	/**
-	 * This adds a new user.
-	 *
-	 * @param client
-	 *            contains client parameters
-	 * @param user
-	 *            describes new user informations
-	 */
-	protected void sendUser(final XMLRPCCommand command)
-			throws IOException, InvalidKeyException, AccessControlException {
-		final DBCommandSendUser dbc = new DBCommandSendUser(DBInterface.getInstance()); 
-		dbc.exec(command);
-	}
-
-	/**
-	 * This adds/updates an user group. This forces group.project to true
-	 */
-	public void sendUserGroup(final XMLRPCCommand command)
-			throws IOException, InvalidKeyException, AccessControlException {
-
-		final DBCommandSendUser dbc = new DBCommandSendUser(DBInterface.getInstance()); 
-		dbc.exec(command);
-	}
+	//	public int setWorkersNb(final UserInterface client, final int nb)
+	//			throws IOException, InvalidKeyException, AccessControlException {
+	//		return DBInterface.getInstance().activateWorkers(client, nb);
+	//	}
 
 	/**
 	 * This retrieves all usergroups from server
@@ -1690,14 +1429,6 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 
 		final DBCommandGetTasks dbc = new DBCommandGetTasks(DBInterface.getInstance()); 
 		return dbc.exec(command);
-	}
-
-	/**
-	 * This is not implemented
-	 */
-	public void sendTrace(final XMLRPCCommand command)
-			throws IOException, InvalidKeyException, AccessControlException {
-		throw new IOException("sendTrace not implemented yet");
 	}
 
 	/**
@@ -1782,9 +1513,9 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 	public void traceWorkers(final UserInterface client, final Hashtable hosts)
 			throws IOException, InvalidKeyException, AccessControlException {
 		throw new IOException("traceWorkers is not implemented");
-//		mileStone("<traceWorkers>");
-//		DBInterface.getInstance().traceWorkers(client, hosts);
-//		mileStone("</traceWorkers>");
+		//		mileStone("<traceWorkers>");
+		//		DBInterface.getInstance().traceWorkers(client, hosts);
+		//		mileStone("</traceWorkers>");
 	}
 
 }

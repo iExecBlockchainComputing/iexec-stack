@@ -98,6 +98,16 @@ public abstract class XMLRPCCommand extends XMLable {
 	}
 
 	/**
+	 * This sets this command mandating login
+	 * @param dl is this command mandating login
+	 * @since 11.4.0
+	 */
+	public final boolean isMandated() {
+		final String mandatingLogin = getMandatingLogin();
+		return ((mandatingLogin != null) && (mandatingLogin.length() > 0));
+	}
+
+	/**
 	 * This is the URI column index
 	 */
 	protected static final int URI = 1;
@@ -116,6 +126,111 @@ public abstract class XMLRPCCommand extends XMLable {
 	 */
 	public final void setURI(final URI uri) {
 		setValueAt(URI, uri);
+	}
+	/**
+	 * This is the remote host name
+	 */
+	private String remoteName;
+
+	/**
+	 * This resets remote host name
+	 *
+	 * @since 8.2.0
+	 */
+	public void resetRemoteName() {
+		remoteName = null;
+	}
+
+	/**
+	 * This retrieves remote host name
+	 *
+	 * @return the remoteName
+	 */
+	public String getRemoteName() {
+		return remoteName;
+	}
+
+	/**
+	 * This sets the remote host name
+	 *
+	 * @param remoteName
+	 *            the remoteName to set
+	 */
+	public void setRemoteName(final String remoteName) {
+		this.remoteName = remoteName;
+	}
+
+	/**
+	 * This is the client IP address
+	 */
+	private String remoteIP;
+
+	/**
+	 * This resets the remote host IP address
+	 *
+	 * @since 8.2.0
+	 */
+	public void resetRemoteIP() {
+		remoteIP = null;
+	}
+
+	/**
+	 * This retrieves the remote host IP address
+	 *
+	 * @return the remoteIP
+	 */
+	public String getRemoteIP() {
+		return remoteIP;
+	}
+
+	/**
+	 * This sets the remote host IP address
+	 *
+	 * @param remoteIP
+	 *            the remoteIP to set
+	 */
+	public void setRemoteIP(final String remoteIP) {
+		this.remoteIP = remoteIP;
+	}
+
+	/**
+	 * This is the remote host port
+	 */
+	private int remotePort;
+
+	/**
+	 * This retrives the remote host port
+	 *
+	 * @return the remotePort
+	 */
+	public int getRemotePort() {
+		return remotePort;
+	}
+
+	/**
+	 * This sets the remote host port
+	 *
+	 * @param remotePort
+	 *            the remotePort to set
+	 */
+	public void setRemotePort(final int remotePort) {
+		this.remotePort = remotePort;
+	}
+
+	/**
+	 * This resets the remote host port
+	 *
+	 * @since 8.2.0
+	 */
+	public void resetRemotePort() {
+		remotePort = -1;
+	}
+	/**
+	 * The remote address is build as: remoteName + "/" + remoteIP + ":" + remotePort
+	 * @return a string containing the remote address
+	 */
+	public String remoteAddresse() {
+		return remoteName + "/" + remoteIP + ":" + remotePort;
 	}
 
 	/**
@@ -383,7 +498,6 @@ public abstract class XMLRPCCommand extends XMLable {
 	@Override
 	public String toXml() {
 
-//		System.out.println("System.getProperty(XWPropertyDefs.MANDATINGLOGIN)) = " + getMandatingLogin());
 		final StringBuilder ret = new StringBuilder(getOpenTag(getURI(), getMandatingLogin()));
 
 		if (user != null) {
@@ -421,11 +535,6 @@ public abstract class XMLRPCCommand extends XMLable {
 
 			logger.finest("XMLRPCCommand  ##  attribute #" + a + ": name=\"" + attribute + "\"" + ", value=\"" + value
 					+ "\"");
-//			System.out.println("XMLRPCCommand  ##  attribute #" + a + ": name=\"" + attribute + "\"" + ", value=\"" + value
-//					+ "\"");
-
-//			System.out.println ("getColumnLabel(MANDATINGLOGIN) = " + getColumnLabel(MANDATINGLOGIN));
-//			System.out.println ("attribute.compareToIgnoreCase(" + getColumnLabel(MANDATINGLOGIN) + " = " + attribute.compareToIgnoreCase(getColumnLabel(MANDATINGLOGIN)));
 
 			if (attribute.compareToIgnoreCase(getColumnLabel(MANDATINGLOGIN)) == 0) {
 				logger.finest("XMLRPCCommand  ##  creating mandating login from " + value);
@@ -759,7 +868,7 @@ public abstract class XMLRPCCommand extends XMLable {
 		try {
 			input.reset();
 			input.mark(XWTools.BUFFEREND);
-			return new XMLRPCCommandSend(input);
+			return XMLRPCCommandSend.newCommandSend(input);
 		} catch (final SAXException e) {
 			if (e instanceof XMLEndParseException) {
 				return ret;
@@ -1007,8 +1116,6 @@ public abstract class XMLRPCCommand extends XMLable {
 		} catch (final InvalidKeyException e) {
 			e.printStackTrace();
 		}
-
-		ret = null;
 
 		throw new IOException("Unknown XMLRPCCommand");
 	}

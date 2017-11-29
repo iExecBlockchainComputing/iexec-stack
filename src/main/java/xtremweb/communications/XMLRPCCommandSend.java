@@ -23,6 +23,7 @@
 
 package xtremweb.communications;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.rmi.RemoteException;
@@ -32,12 +33,21 @@ import java.security.InvalidKeyException;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
+import xtremweb.common.AppInterface;
+import xtremweb.common.DataInterface;
+import xtremweb.common.GroupInterface;
+import xtremweb.common.Logger;
+import xtremweb.common.SessionInterface;
 import xtremweb.common.Table;
 import xtremweb.common.UID;
+import xtremweb.common.UserGroupInterface;
 import xtremweb.common.UserInterface;
+import xtremweb.common.WorkInterface;
+import xtremweb.common.XMLEndParseException;
 import xtremweb.common.XMLReader;
 import xtremweb.common.XMLable;
 import xtremweb.common.XWConfigurator;
+import xtremweb.common.XWTools;
 
 /**
  * XMLRPCCommandSend.java
@@ -51,22 +61,38 @@ import xtremweb.common.XWConfigurator;
 /**
  * This class defines the XMLRPCCommand to send application definition
  */
-public class XMLRPCCommandSend extends XMLRPCCommand {
+public abstract class XMLRPCCommandSend extends XMLRPCCommand {
 
-	/**
-	 * This is the RPC id
-	 */
-	public static final IdRpc IDRPC = IdRpc.SEND;
-	/**
-	 * This is the XML tag
-	 */
-	public static final String THISTAG = IDRPC.toString();
+	public static final XMLRPCCommandSend newCommand(final URI uri, final Table obj) throws IOException{
+		if(obj instanceof AppInterface) {
+			return new XMLRPCCommandSendApp(uri, obj);
+		}
+		if(obj instanceof DataInterface) {
+			return new XMLRPCCommandSendData(uri, obj);
+		}
+		if(obj instanceof GroupInterface) {
+			return new XMLRPCCommandSendGroup(uri, obj);
+		}
+		if(obj instanceof SessionInterface) {
+			return new XMLRPCCommandSendSession(uri, obj);
+		}
+		if(obj instanceof UserInterface) {
+			return new XMLRPCCommandSendUser(uri, obj);
+		}
+		if(obj instanceof UserGroupInterface) {
+			return new XMLRPCCommandSendUserGroup(uri, obj);
+		}
+		if(obj instanceof WorkInterface) {
+			return new XMLRPCCommandSendWork(uri, obj);
+		}
+		throw new IOException("unkown ovject type");
+	}
 
 	/**
 	 * This constructs a new command
 	 */
-	public XMLRPCCommandSend() throws IOException {
-		super(null, IDRPC);
+	public XMLRPCCommandSend(final URI uri, final IdRpc cmd) throws IOException {
+		super(uri, cmd);
 	}
 
 	/**
@@ -77,8 +103,8 @@ public class XMLRPCCommandSend extends XMLRPCCommand {
 	 * @param p
 	 *            defines the object to send
 	 */
-	public XMLRPCCommandSend(final URI uri, final Table p) throws IOException {
-		super(uri, IDRPC);
+	public XMLRPCCommandSend(final URI uri, final IdRpc cmd, final Table p) throws IOException {
+		super(uri, cmd);
 		setParameter(p);
 	}
 
@@ -92,25 +118,10 @@ public class XMLRPCCommandSend extends XMLRPCCommand {
 	 * @param p
 	 *            defines the object to send
 	 */
-	public XMLRPCCommandSend(final URI uri, final UserInterface u, final Table p) throws IOException {
+	public XMLRPCCommandSend(final URI uri, final UserInterface u, final IdRpc cmd, final Table p) throws IOException {
 
-		this(uri, p);
+		this(uri, cmd, p);
 		setUser(u);
-	}
-
-	/**
-	 * This constructs a new object from XML attributes received from input
-	 * stream
-	 *
-	 * @param input
-	 *            is the input stream
-	 * @throws InvalidKeyException
-	 * @see xtremweb.common.XMLReader#read(InputStream)
-	 */
-	public XMLRPCCommandSend(final InputStream input) throws IOException, SAXException, InvalidKeyException {
-		this();
-		final XMLReader reader = new XMLReader(this);
-		reader.read(input);
 	}
 
 	/**
@@ -137,7 +148,7 @@ public class XMLRPCCommandSend extends XMLRPCCommand {
 	 * @see xtremweb.common.XMLReader#read(InputStream)
 	 */
 	@Override
-	public void xmlElementStart(final String uri, final String thetag, final String qname, final Attributes attrs)
+	final public void xmlElementStart(final String uri, final String thetag, final String qname, final Attributes attrs)
 			throws SAXException {
 
 		try {
@@ -193,22 +204,90 @@ public class XMLRPCCommandSend extends XMLRPCCommand {
 	}
 
 	/**
-	 * This is for testing only. The first argument must be a valid client
-	 * configuration file. Without a second argument, this dumps an
-	 * XMLRPCCommandSend object. If the second argument is an XML file
-	 * containing a description of an XMLRPCCommandSend this creates an object
-	 * from XML description and dumps it. <br />
-	 * Usage : java -cp xtremweb.jar xtremweb.communications.XMLRPCCommandSend
-	 * aConfigFile [anXMLDescriptionFile]
+	 * This constructs a new XMLRPCCommand object. This first checks the opening
+	 * tag and then instanciate the right object accordingly to the opening tag.
+	 *
+	 * @param in
+	 *            is the input stream to read command from
+	 * @exception IOException
+	 *                is thrown on I/O error or if provided parameter is null
+	 * @throws SAXException if no XMLRPCCommandSend available from input
+	 * @throws InvalidKeyException 
+	 * @since 11.5.0
 	 */
-	public static void main(final String[] argv) {
-		try {
-			final XWConfigurator config = new XWConfigurator(argv[0], false);
-			final XMLRPCCommandSend cmd = new XMLRPCCommandSend(new URI(config.getCurrentDispatcher(), new UID()),
-					config.getUser());
-			cmd.test(argv);
-		} catch (final Exception e) {
-			e.printStackTrace();
+	public static XMLRPCCommand newCommandSend(final InputStream in) throws IOException, SAXException, InvalidKeyException {
+
+		if (in == null) {
+			throw new IOException("InputStream is null");
 		}
+		final BufferedInputStream input = new BufferedInputStream(in);
+		XMLRPCCommand ret = null;
+		final Logger logger = new Logger(XMLRPCCommand.class);
+
+		try {
+			input.mark(XWTools.BUFFEREND);
+			return new XMLRPCCommandSendApp(input);
+		} catch (final XMLEndParseException e) {
+			return ret;
+		} catch (final SAXException e) {
+		}
+		logger.finest("not a command sendapp");
+		try {
+			input.reset();
+			input.mark(XWTools.BUFFEREND);
+			return new XMLRPCCommandSendData(input);
+		} catch (final XMLEndParseException e) {
+			return ret;
+		} catch (final SAXException e) {
+		}
+		logger.finest("not a command senddata");
+		try {
+			input.reset();
+			input.mark(XWTools.BUFFEREND);
+			return new XMLRPCCommandSendGroup(input);
+		} catch (final XMLEndParseException e) {
+			return ret;
+		} catch (final SAXException e) {
+		}
+		logger.finest("not a command sendgroup");
+		try {
+			input.reset();
+			input.mark(XWTools.BUFFEREND);
+			return new XMLRPCCommandSendSession(input);
+		} catch (final XMLEndParseException e) {
+			return ret;
+		} catch (final SAXException e) {
+		}
+		logger.finest("not a command sendsession");
+		try {
+			input.reset();
+			input.mark(XWTools.BUFFEREND);
+			return new XMLRPCCommandSendUser(input);
+		} catch (final XMLEndParseException e) {
+			return ret;
+		} catch (final SAXException e) {
+		}
+		logger.finest("not a command senduser");
+		try {
+			input.reset();
+			input.mark(XWTools.BUFFEREND);
+			return new XMLRPCCommandSendUserGroup(input);
+		} catch (final XMLEndParseException e) {
+			return ret;
+		} catch (final SAXException e) {
+		}
+		logger.finest("not a command sendusergroup");
+		try {
+			input.reset();
+			input.mark(XWTools.BUFFEREND);
+			return new XMLRPCCommandSendWork(input);
+		} catch (final XMLEndParseException e) {
+			return ret;
+		} catch (final SAXException e) {
+		}
+		logger.finest("not a command sendwork");
+
+		throw new InvalidKeyException("Unknown XMLRPCCommandSend");
 	}
+
 }

@@ -844,7 +844,8 @@ public final class Client {
 				final XWAccessRights rights = obj.getAccessRights();
 				rights.chmod(modstr);
 				obj.setAccessRights(rights);
-				final XMLRPCCommandSend cmd = new XMLRPCCommandSend(uri, obj);
+//				final XMLRPCCommandSend cmd = new XMLRPCCommandSend(uri, obj);
+				final XMLRPCCommandSend cmd = XMLRPCCommandSend.newCommand(uri, obj);
 				commClient().send(cmd);
 			}
 		}
@@ -2954,6 +2955,7 @@ public final class Client {
 	private void workRequest() throws IOException {
 
 		try {
+			config.getHost().setAcceptBin(true);
 			final WorkInterface work = commClient().workRequest(config.getHost());
 			println("Work received: " + work.toXml());
 		} catch (final Exception e) {

@@ -148,7 +148,9 @@ public class XWAccessRightsValidator {
 		}
 		final UID userGroup = user.getGroup();
 		final boolean readable = userCanRead(user) || groupCanRead(ownerGroup, userGroup) || otherCanRead();
-		final boolean stickyBitAccess = ((user.getRights().doesEqual(UserRightEnum.VWORKER_USER)) 
+		final boolean stickyBitAccessor = ((user.getRights().doesEqual(UserRightEnum.VWORKER_USER))
+				|| (user.getRights().higherOrEquals(UserRightEnum.ADVANCED_USER)));
+		final boolean stickyBitAccess = (stickyBitAccessor
 				&& ((row.getAccessRights().value() & XWAccessRights.STICKYBIT_INT) == XWAccessRights.STICKYBIT_INT));
 		final String f = String.format("XWAccessRights#canRead(%s) : %b || %b", row.getUID(), readable, stickyBitAccess);
 		logger.finest(f);
@@ -171,7 +173,9 @@ public class XWAccessRightsValidator {
 			return false;
 		}
 		final UID userGroup = user.getGroup();
-		final boolean stickyBitAccess = ((user.getRights().doesEqual(UserRightEnum.VWORKER_USER)) 
+		final boolean stickyBitAccessor = ((user.getRights().doesEqual(UserRightEnum.VWORKER_USER))
+				|| (user.getRights().higherOrEquals(UserRightEnum.ADVANCED_USER)));
+		final boolean stickyBitAccess = (stickyBitAccessor
 				&& ((row.getAccessRights().value() & XWAccessRights.STICKYBIT_INT) == XWAccessRights.STICKYBIT_INT));
 		final boolean writable = userCanWrite(user) || groupCanWrite(ownerGroup, userGroup) || otherCanWrite();
 		final String f = String.format("XWAccessRights#canWrite(%s) : %b || %b", row.getUID(), writable, stickyBitAccess);
@@ -196,7 +200,9 @@ public class XWAccessRightsValidator {
 		}
 		final UID userGroup = user.getGroup();
 		final boolean executable = userCanExec(user) || groupCanExec(ownerGroup, userGroup) || otherCanExec();
-		final boolean stickyBitAccess = ((user.getRights().doesEqual(UserRightEnum.VWORKER_USER)) 
+		final boolean stickyBitAccessor = ((user.getRights().doesEqual(UserRightEnum.VWORKER_USER))
+				|| (user.getRights().higherOrEquals(UserRightEnum.ADVANCED_USER)));
+		final boolean stickyBitAccess = (stickyBitAccessor
 				&& ((row.getAccessRights().value() & XWAccessRights.STICKYBIT_INT) == XWAccessRights.STICKYBIT_INT));
 		final String f = String.format("XWAccessRights#canExec(%s) : %b || %b", row.getUID(), executable, stickyBitAccess);
 		logger.finest(f);

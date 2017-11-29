@@ -56,18 +56,6 @@ public abstract class CommServer extends Thread {
 	 */
 	private int port;
 	/**
-	 * This is the client host name; for debug purposes only
-	 */
-	private String remoteName;
-	/**
-	 * This is the client IP addr; for debug purposes only
-	 */
-	private String remoteIP;
-	/**
-	 * This is the client port; for debug purposes only
-	 */
-	private int remotePort;
-	/**
 	 * This is the maximum simultaneous connections
 	 */
 	private int MAXCONNECTIONS;
@@ -108,6 +96,7 @@ public abstract class CommServer extends Thread {
 
 		setHandler(h);
 		setConfig(p);
+		logger.setLoggerLevel(config.getLoggerLevel());
 		MAXCONNECTIONS = p.getInt(XWPropertyDefs.MAXCONNECTIONS);
 		connPool = Collections.synchronizedList(new LinkedList());
 		getLogger().config("MAXCONNECTIONS = " + MAXCONNECTIONS);
@@ -126,14 +115,6 @@ public abstract class CommServer extends Thread {
 			getLogger().exception(e);
 			getLogger().fatal(e.toString());
 		}
-	}
-
-	protected String remoteAddresse() {
-		return new String("{" + getRemoteName() + "/" + getRemoteIP() + ":" + getRemotePort() + "}");
-	}
-
-	protected String msgWithRemoteAddresse(final String msg) {
-		return remoteAddresse() + " : " + msg;
 	}
 
 	/**
@@ -156,17 +137,15 @@ public abstract class CommServer extends Thread {
 
 		while (connPool.size() <= 0) {
 			try {
-				getLogger().debug(msgWithRemoteAddresse(
-						"popConnection sleeping (" + nbConnections + " > " + MAXCONNECTIONS + ")"));
+				getLogger().debug("popConnection sleeping (" + nbConnections + " > " + MAXCONNECTIONS + ")");
 				wait();
-				getLogger().debug(msgWithRemoteAddresse("popConnection woken up"));
+				getLogger().debug("popConnection woken up");
 			} catch (final InterruptedException e) {
 			}
 		}
 		final CommHandler myhandler = (CommHandler) connPool.remove(0);
 		nbConnections++;
-		getLogger().debug(
-				msgWithRemoteAddresse("popConnection " + nbConnections + " (" + ((Thread) myhandler).getId() + ")"));
+		getLogger().debug("popConnection " + nbConnections + " (" + ((Thread) myhandler).getId() + ")");
 		notifyAll();
 		return myhandler;
 	}
@@ -182,7 +161,7 @@ public abstract class CommServer extends Thread {
 		if (nbConnections < 0) {
 			nbConnections = 0;
 		}
-		getLogger().debug(msgWithRemoteAddresse("pushConnection " + nbConnections + " (" + ((Thread) h).getId() + ")"));
+		getLogger().debug("pushConnection " + nbConnections + " (" + ((Thread) h).getId() + ")");
 		notifyAll();
 	}
 
@@ -246,48 +225,4 @@ public abstract class CommServer extends Thread {
 		this.config = config;
 	}
 
-	/**
-	 * @return the remoteName
-	 */
-	public String getRemoteName() {
-		return remoteName;
-	}
-
-	/**
-	 * @param remoteName
-	 *            the remoteName to set
-	 */
-	public void setRemoteName(final String remoteName) {
-		this.remoteName = remoteName;
-	}
-
-	/**
-	 * @return the remoteIP
-	 */
-	public String getRemoteIP() {
-		return remoteIP;
-	}
-
-	/**
-	 * @param remoteIP
-	 *            the remoteIP to set
-	 */
-	public void setRemoteIP(final String remoteIP) {
-		this.remoteIP = remoteIP;
-	}
-
-	/**
-	 * @return the remotePort
-	 */
-	public int getRemotePort() {
-		return remotePort;
-	}
-
-	/**
-	 * @param remotePort
-	 *            the remotePort to set
-	 */
-	public void setRemotePort(final int remotePort) {
-		this.remotePort = remotePort;
-	}
 }

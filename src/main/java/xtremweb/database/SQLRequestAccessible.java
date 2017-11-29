@@ -60,26 +60,16 @@ public abstract class SQLRequestAccessible extends SQLRequest {
 													// a user can retrieve
 													// itself
 			+ " OR users.uid=maintable.owneruid" // is the requester the owner?
-			+ " OR users.rights='" + UserRightEnum.SUPER_USER + "'" // is the
-																	// requester
-																	// an
-																	// administrator
-																	// ?
-			+ " OR (users.rights='" + UserRightEnum.VWORKER_USER + "'" // a
-																		// VWORKER
-																		// can
-																		// access
-																		// an
-																		// object
-																		// that
-																		// has
-																		// the
-																		// sticky
-																		// bit
-			+ " AND maintable.accessrights & " + XWAccessRights.STICKYBIT_INT + " = " + XWAccessRights.STICKYBIT_INT
-			+ ")" + " OR (maintable.accessrights & %d = %d)" // is the object
-																// accessible
-																// for all users
+			+ " OR users.userrightid >= " + UserRightEnum.SUPER_USER.ordinal()    // is this an admin
+
+			// next : a VWORKER can access an object that has the sticky bit
+			+ " OR (  (users.userrightid='" + UserRightEnum.VWORKER_USER.ordinal() + "'"
+			+ "     OR users.userrightid >= " + UserRightEnum.MANDATED_USER.ordinal() +")"    // is this a privileged user
+			+ "  AND maintable.accessrights & " + XWAccessRights.STICKYBIT_INT + " = " + XWAccessRights.STICKYBIT_INT
+			+ ")"
+
+			// next :is the object accessible for all users
+			+ " OR (maintable.accessrights & %d = %d)"
 			+ " OR ("// finally, is the object defined in a group
 			+ "     (maintable.accessrights & %d = %d)" + "     AND users.usergroupuid IN (" // if
 																								// so,
@@ -107,7 +97,7 @@ public abstract class SQLRequestAccessible extends SQLRequest {
 	 */
 	public static final String CRITERIAS_HSQL = UserInterface.TABLENAME + ".uid='%s'" + " AND users.isdeleted='false'"
 			+ " AND (" + " users.uid=maintable.uid" + " OR users.uid=" + "maintable.owneruid" + " OR users.rights='"
-			+ UserRightEnum.SUPER_USER + "'" + " OR (users.rights='" + UserRightEnum.VWORKER_USER + "'" + " AND bitand("
+			+ UserRightEnum.SUPER_USER + "'" + " OR ((users.rights='" + UserRightEnum.VWORKER_USER + "' OR users.userrightid >= " + UserRightEnum.ADVANCED_USER.ordinal() +")" + " AND bitand("
 			+ "maintable.accessrights, " + XWAccessRights.STICKYBIT_INT + ") = " + XWAccessRights.STICKYBIT_INT + ")"
 			+ " OR (bitand(" + "maintable.accessrights, %d) = %d)" + " OR ((bitand("
 			+ "maintable.accessrights, %d) = %d)" + " AND users.usergroupuid IN (" + " SELECT usergroups.uid" + " FROM "

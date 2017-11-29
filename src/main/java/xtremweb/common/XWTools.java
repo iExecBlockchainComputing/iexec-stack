@@ -880,27 +880,23 @@ public class XWTools {
 			final X509Certificate[] gcerts = XWTools.retrieveCertificates(GOOGLE_ADDR, false);
 			for (int i = 0; i < gcerts.length; i++) {
 				final X509Certificate cert = gcerts[i];
-				try {
-					final String alias = cert.getSubjectDN().toString();
-					logger.finest("KeyStore set entry= " + alias + "; KeyStore.size = " + store.size());
-					store.setCertificateEntry(alias, cert);
-				} catch (final Exception e) {
-					logger.exception("Can't add new entry to keystore", e);
-				}
+				final String alias = cert.getSubjectDN().toString();
+				logger.finest("KeyStore set entry= " + alias + "; KeyStore.size = " + store.size());
+				store.setCertificateEntry(alias, cert);
 			}
+		} catch (final Exception e) {
+			logger.config("Can't add google certs to keystore");
+		}
+		try {
 			final X509Certificate[] ycerts = XWTools.retrieveCertificates(YAHOO_ADDR, false);
 			for (int i = 0; i < ycerts.length; i++) {
 				final X509Certificate cert = ycerts[i];
-				try {
-					final String alias = cert.getSubjectDN().toString();
-					logger.finest("KeyStore set entry= " + alias + "; KeyStore.size = " + store.size());
-					store.setCertificateEntry(alias, cert);
-				} catch (final Exception e) {
-					logger.exception("Can't add new entry to keystore", e);
-				}
+				final String alias = cert.getSubjectDN().toString();
+				logger.debug("KeyStore set entry= " + alias + "; KeyStore.size = " + store.size());
+				store.setCertificateEntry(alias, cert);
 			}
 		} catch (final Exception e) {
-			logger.exception("Can't add new entry to keystore", e);
+			logger.config("Can't add yahoo certs to keystore");
 		}
 		return store;
 	}

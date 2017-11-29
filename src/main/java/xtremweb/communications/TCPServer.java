@@ -244,9 +244,6 @@ public class TCPServer extends CommServer {
 
 							final CommHandler h = popConnection();
 							final Socket socket = nextReady.accept().socket();
-							setRemoteName(socket.getInetAddress().getHostName());
-							setRemoteIP(socket.getInetAddress().getHostAddress());
-							setRemotePort(socket.getPort());
 							socket.setSoTimeout(getConfig().getInt(XWPropertyDefs.SOTIMEOUT));
 							h.setCommServer(this);
 							h.setSocket(socket);
@@ -254,35 +251,22 @@ public class TCPServer extends CommServer {
 						}
 					}
 				} else {
-					SSLSocket socket = null;
+					final SSLSocket socket = (SSLSocket) sslSocketServer.accept();
+					CommHandler h = null;
 
-					getLogger().debug(msgWithRemoteAddresse("Connection management : accepting (" + getId() + ")"));
+					getLogger().debug("Connection management : accepting (" + getId() + ")");
 					try {
-						socket = (SSLSocket) sslSocketServer.accept();
 						socket.setSoTimeout(getConfig().getInt(XWPropertyDefs.SOTIMEOUT));
-						setRemoteName(socket.getInetAddress().getHostName());
-						setRemoteIP(socket.getInetAddress().getHostAddress());
-						setRemotePort(socket.getPort());
-					} catch (final Exception e) {
-						setRemoteName(null);
-						setRemoteIP(null);
-						getLogger().exception(e);
-						break;
-					}
-					CommHandler h = popConnection();
-					try {
+						h = popConnection();
 						h.setCommServer(this);
 						h.setSocket(socket);
 					} catch (final Exception e) {
-						getLogger().exception(msgWithRemoteAddresse("new connection exception"), e);
+						getLogger().exception("new connection exception", e);
 						socket.close();
-						h.resetSockets();
-						pushConnection(h);
-					} finally {
-						setRemoteName(null);
-						setRemoteIP(null);
-						socket = null;
-						h = null;
+						if (h != null) {
+							h.resetSockets();
+							pushConnection(h);
+						}
 					}
 				}
 			} catch (final Exception e) {

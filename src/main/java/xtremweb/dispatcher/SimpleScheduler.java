@@ -24,14 +24,20 @@
 package xtremweb.dispatcher;
 
 import java.io.IOException;
+import java.security.AccessControlException;
+import java.security.InvalidKeyException;
 import java.util.Collection;
 
+import xtremweb.common.CommonVersion;
 import xtremweb.common.HostInterface;
 import xtremweb.common.MileStone;
 import xtremweb.common.StatusEnum;
 import xtremweb.common.TaskInterface;
 import xtremweb.common.UserInterface;
+import xtremweb.common.UserRightEnum;
+import xtremweb.common.Version;
 import xtremweb.common.WorkInterface;
+import xtremweb.communications.XMLRPCCommandWorkRequest;
 import xtremweb.database.SQLRequestWorkRequest;
 
 /**
@@ -66,6 +72,9 @@ public class SimpleScheduler extends Scheduler {
 		return DBInterface.getInstance().works(StatusEnum.WAITING);
 	}
 
+	private static final Version CURRENTVERSION = CommonVersion.getCurrent();
+	private static final String CURRENTVERSIONSTRING = CURRENTVERSION.toString();
+
 	/**
 	 * Get the first task that is pending
 	 *
@@ -79,35 +88,16 @@ public class SimpleScheduler extends Scheduler {
 	 *                is thrown on error
 	 */
 	@Override
-	public synchronized WorkInterface select(final HostInterface host, final UserInterface user) throws IOException {
-		final DBInterface db = DBInterface.getInstance();
+	public synchronized WorkInterface select(final XMLRPCCommandWorkRequest command) throws IOException {
 
-		if (host == null) {
-			throw new IOException("MatchingScheduler#select() host is null");
+		if(command == null) {
+			throw new IOException("command is null");
 		}
-		getMileStone().println("<select>");
-
-		WorkInterface theWork = new WorkInterface(new SQLRequestWorkRequest(host, user));
-		theWork = db.select(theWork);
-
-		if (theWork == null) {
-			getMileStone().println("</select>");
-			getLogger().info("SimpleScheduler#select() can't find any work");
-			return null;
+		try {
+			return DBInterface.getInstance().work(command);
+		} catch (InvalidKeyException | AccessControlException e) {
+			throw new IOException(e);
 		}
-
-		// insert associated task
-		final TaskInterface theTask = new TaskInterface(theWork);
-		theWork.setRunning();
-		theTask.setRunningBy(host.getUID());
-		db.update(theWork);
-		db.update(theTask);
-
-		getMileStone().println("</select>");
-
-		theWork = null;
-
-		return theWork;
 	}
 
 	/**

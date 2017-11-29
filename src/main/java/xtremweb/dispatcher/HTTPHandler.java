@@ -573,7 +573,7 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 		if (response == null) {
 			mileStone("<error method='write' msg='no response' />");
 			mileStone("</write>");
-			error("Can't write : this.response is not set");
+			getLogger().error("Can't write : this.response is not set");
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			resetIdRpc();
 			notifyAll();
@@ -587,7 +587,7 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 			// response.getWriter().println(XMLable.XMLHEADER + "<" +
 			// XMLable.ROOTTAG + ">");
 			if (answer != null) {
-				debug("HTTPHandler#write(" + answer.toXml() + ")");
+				getLogger().debug("HTTPHandler#write(" + answer.toXml() + ")");
 				// response.getWriter().println(answer.toXml());
 				msg += answer.toXml();
 			}
@@ -1072,10 +1072,6 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 				return;
 			}
 
-			setRemoteName(request.getRemoteHost());
-			setRemoteIP(request.getRemoteAddr());
-			setRemotePort(request.getRemotePort());
-
 			if (dataUpload != null) {
 				String value = request.getParameter(XWPostParams.DATASIZE.toString());
 				if (value != null) {
@@ -1169,6 +1165,10 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 
 		try {
 			if (command != null) {
+				command.setRemoteName(request.getRemoteHost());
+				command.setRemoteIP(request.getRemoteAddr());
+				command.setRemotePort(request.getRemotePort());
+
 				logger.debug("cmd = " + command.toXml());
 
 				if (command.getIdRpc() == IdRpc.DOWNLOADDATA) {

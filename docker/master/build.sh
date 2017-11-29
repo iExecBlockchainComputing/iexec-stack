@@ -100,7 +100,7 @@ END_OF_USAGE
 trap  fatal  SIGINT  SIGTERM
 
 
-XWVERSION="${XWVERSION}"
+XWVERSION="11.5.0"
 ROOTDIR="$(dirname "$0")"
 SCRIPTNAME="$(basename "$0")"
 

@@ -959,6 +959,7 @@ public final class XWConfigurator extends Properties {
 			logger.fatal("Private key error");
 		}
 
+		XWTools.deleteDir(getTmpDir());
 		setTmpDir();
 
 		currentDispatcher = 0;
@@ -1384,10 +1385,17 @@ public final class XWConfigurator extends Properties {
 	 * @since 7.0.0
 	 */
 	public void setTmpDir() throws IOException {
-		final File dir = new File(getProperty(XWPropertyDefs.TMPDIR), "XW." + XWRole.getMyRole().toString() + "."
-				+ UID.getMyUid().toString() + "." + ((Vector<String>) dispatchers).elementAt(currentDispatcher));
-
-		setTmpDir(dir);
+		final String dirname = "XW." + XWRole.getMyRole().toString() + "."
+				+ UID.getMyUid().toString() + "." + ((Vector<String>) dispatchers).elementAt(currentDispatcher);
+		final String parent = getProperty(XWPropertyDefs.TMPDIR) == null ? System.getProperty(XWPropertyDefs.JAVATMPDIR) : getProperty(XWPropertyDefs.TMPDIR);  
+		if (parent.endsWith(dirname)) {
+			final File dir = new File(parent);
+			setTmpDir(dir);
+		}
+		else {
+			final File dir = new File(parent, dirname);
+			setTmpDir(dir);
+		}
 	}
 
 	public void setTmpDir(final String dir) throws IOException {

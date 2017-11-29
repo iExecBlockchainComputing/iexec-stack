@@ -148,7 +148,7 @@ public enum IdRpc {
 		@Override
 		public XMLRPCCommandSend newCommand(final URI uri, final UserInterface client, final Table obj)
 				throws IOException {
-			return new XMLRPCCommandSend(uri, client, obj);
+			return newXMLRPCCommandSend(uri, client, obj);
 		}
 
 		@Override
@@ -168,7 +168,7 @@ public enum IdRpc {
 		@Override
 		public XMLRPCCommandSend newCommand(final URI uri, final UserInterface client, final Table obj)
 				throws IOException {
-			return new XMLRPCCommandSend(uri, client, obj);
+			return newXMLRPCCommandSend(uri, client, obj);
 		}
 
 		@Override
@@ -230,7 +230,7 @@ public enum IdRpc {
 		@Override
 		public XMLRPCCommandSend newCommand(final URI uri, final UserInterface client, final Table obj)
 				throws IOException {
-			return new XMLRPCCommandSend(uri, client, obj);
+			return newXMLRPCCommandSend(uri, client, obj);
 		}
 
 		@Override
@@ -290,7 +290,7 @@ public enum IdRpc {
 		@Override
 		public XMLRPCCommandSend newCommand(final URI uri, final UserInterface client, final Table obj)
 				throws IOException {
-			return new XMLRPCCommandSend(uri, client, obj);
+			return newXMLRPCCommandSend(uri, client, obj);
 		}
 
 		@Override
@@ -399,7 +399,7 @@ public enum IdRpc {
 		@Override
 		public XMLRPCCommandSend newCommand(final URI uri, final UserInterface client, final Table obj)
 				throws IOException {
-			return new XMLRPCCommandSend(uri, client, obj);
+			return newXMLRPCCommandSend(uri, client, obj);
 		}
 
 		@Override
@@ -479,7 +479,7 @@ public enum IdRpc {
 		@Override
 		public XMLRPCCommandSend newCommand(final URI uri, final UserInterface client, final Table obj)
 				throws IOException {
-			return new XMLRPCCommandSend(uri, client, obj);
+			return newXMLRPCCommandSend(uri, client, obj);
 		}
 
 		@Override
@@ -519,7 +519,7 @@ public enum IdRpc {
 		@Override
 		public XMLRPCCommandSend newCommand(final URI uri, final UserInterface client, final Table obj)
 				throws IOException {
-			return new XMLRPCCommandSend(uri, client, obj);
+			return newXMLRPCCommandSend(uri, client, obj);
 		}
 
 		@Override
@@ -560,7 +560,7 @@ public enum IdRpc {
 		@Override
 		public XMLRPCCommandSend newCommand(final URI uri, final UserInterface client, final Table obj)
 				throws IOException {
-			return new XMLRPCCommandSend(uri, client, obj);
+			return newXMLRPCCommandSend(uri, client, obj);
 		}
 
 		@Override
@@ -620,7 +620,7 @@ public enum IdRpc {
 		@Override
 		public XMLRPCCommandSend newCommand(final URI uri, final UserInterface client, final Table obj)
 				throws IOException {
-			return new XMLRPCCommandSend(uri, client, obj);
+			return newXMLRPCCommandSend(uri, client, obj);
 		}
 
 		@Override
@@ -924,7 +924,7 @@ public enum IdRpc {
 		@Override
 		public XMLRPCCommandSend newCommand(final URI uri, final UserInterface client, final Table obj)
 				throws IOException {
-			return new XMLRPCCommandSend(uri, client, obj);
+			return newXMLRPCCommandSend(uri, client, obj);
 		}
 
 		@Override
@@ -1044,6 +1044,15 @@ public enum IdRpc {
 	public static final IdRpc LAST = DOWNLOADDATA;
 	public static final int SIZE = LAST.ordinal() + 1;
 
+	/**
+	 * @since 11.5.0
+	 */
+	private final static XMLRPCCommandSend newXMLRPCCommandSend(final URI uri, final UserInterface client, final Table obj) throws IOException {
+		final XMLRPCCommandSend cmd = XMLRPCCommandSend.newCommand(uri, obj);
+		cmd.setUser(client);
+		return cmd;
+	}
+	
 	/**
 	 * This creates a new XMLRPCCommand
 	 *

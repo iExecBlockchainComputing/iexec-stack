@@ -26,37 +26,40 @@ import java.io.IOException;
 import java.security.AccessControlException;
 import java.security.InvalidKeyException;
 
-import xtremweb.common.AppInterface;
-import xtremweb.common.CommCallback;
-import xtremweb.common.DataInterface;
-import xtremweb.common.HostInterface;
-import xtremweb.common.UserInterface;
-import xtremweb.common.WorkInterface;
 import xtremweb.common.XMLable;
 import xtremweb.communications.XMLRPCCommand;
+import xtremweb.communications.XMLRPCCommandSendApp;
 
 /**
  * @author Oleg Lodygensky
  * @since 11.0.0
  */
 
-public final class DBCommandSendApp extends DBCommand implements CommCallback {
+public final class DBCommandSendApp extends DBCommandSend {
 
-	private DBInterface dbInterface;
-
-	public DBCommandSendApp(final DBInterface dbi) throws IOException {
+	public DBCommandSendApp() throws IOException {
 		super();
-		dbInterface = dbi;
 	}
 
-	public XMLable exec(final XMLRPCCommand command)
+	public DBCommandSendApp(final DBInterface dbi) throws IOException {
+		super(dbi);
+	}
+
+	public XMLable exec(final XMLRPCCommandSendApp command)
 			throws IOException, InvalidKeyException, AccessControlException {
 
 		mileStone.println("<sendapp>");
+		System.out.println("DBCommandSendApp.exec " + dbInterface);
 		dbInterface.addApp(command);
 		dbInterface.updateAppsPool();
 		
 		mileStone.println("</sendapp>");
 		return null;
+	}
+
+
+	@Override
+	public XMLable exec(final XMLRPCCommand cmd) throws IOException, InvalidKeyException, AccessControlException {
+		return this.exec((XMLRPCCommandSendApp)cmd);
 	}
 }

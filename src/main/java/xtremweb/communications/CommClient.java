@@ -1191,8 +1191,8 @@ public abstract class CommClient implements ClientAPI {
 	public void send(final Table obj) throws InvalidKeyException, AccessControlException, IOException,
 			ClassNotFoundException, SAXException, URISyntaxException {
 		final URI uri = newURI();
-		final XMLRPCCommandSend cmd = new XMLRPCCommandSend(uri, obj);
-		send(cmd);
+		final XMLRPCCommandSend cmd = XMLRPCCommandSend.newCommand(uri, obj);
+		this.send(cmd);
 	}
 
 	/**
