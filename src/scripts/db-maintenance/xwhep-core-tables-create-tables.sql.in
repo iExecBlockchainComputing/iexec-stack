@@ -942,7 +942,12 @@ insert into users (uid,login,password,fname,lname,email,rights,owneruid,accessri
                "@DBADMINEMAIL@","WORKER_USER","@ADMINUID@","1792",
                (select userRightId from userRights where userRightName = 'WORKER_USER'));
 
--- Ff your dispatcher complains about handshake, try this :
+insert into users (uid,login,password,fname,lname,email,rights,owneruid,accessrights,userRightId)
+       values ("@VWORKERUID@","@DBVWORKER@","@DBVWORKERPASSWORD@", "@DBADMINFNAME@", "@DBADMINLNAME@",
+               "@DBADMINEMAIL@","VWORKER_USER","@ADMINUID@","1792",
+               (select userRightId from userRights where userRightName = 'VWORKER_USER'));
+
+-- If your dispatcher complains about handshake, try this :
 -- set password for xtremweb@localhost = old_password('xwpassword');
 
 
