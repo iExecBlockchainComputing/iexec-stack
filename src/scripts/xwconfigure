@@ -94,12 +94,14 @@ XWCLIENTCONFFILENAME=xtremweb.client.conf
 XWBRIDGECONFFILENAME=$XWCLIENTCONFFILENAME
 XWCLIENTCONFTEMPLATEFILENAME=xtremweb.client.conf.template
 XWWORKERCONFFILENAME=xtremweb.worker.conf
+XWVWORKERCONFFILENAME=xtremweb.vworker.conf
 
 XWSERVERCONFFILE=$CONFDIR/$XWSERVERCONFFILENAME
 XWCLIENTCONFFILE=$CONFDIR/$XWCLIENTCONFFILENAME
 XWBRIDGECONFFILE=$XWCLIENTCONFFILE
 XWCLIENTCONFTEMPLATEFILE=$CONFDIR/$XWCLIENTCONFTEMPLATEFILENAME
 XWWORKERCONFFILE=$CONFDIR/$XWWORKERCONFFILENAME
+XWVWORKERCONFFILE=$CONFDIR/$XWVWORKERCONFFILENAME
 
 SEDCMDS=$BINDIR/xwconfigure.seds
 
@@ -351,12 +353,14 @@ EOF
 	rm -Rf $INSTALLERSDIR/linux/dpkg/xwhep.bridgesgdg/$INSTALLDIR/
 	rm -Rf $INSTALLERSDIR/linux/dpkg/xwhep.server/$INSTALLDIR/
 	rm -Rf $INSTALLERSDIR/linux/dpkg/xwhep.worker/$INSTALLDIR/
+	rm -Rf $INSTALLERSDIR/linux/dpkg/xwhep.vworker/$INSTALLDIR/
 	
 	rm -Rf $INSTALLERSDIR/linux/rpm/xwhep.client/*
 	rm -Rf $INSTALLERSDIR/linux/rpm/xwhep.bridgedgsg/*
 	rm -Rf $INSTALLERSDIR/linux/rpm/xwhep.bridgesgdg/*
 	rm -Rf $INSTALLERSDIR/linux/rpm/xwhep.server/*
 	rm -Rf $INSTALLERSDIR/linux/rpm/xwhep.worker/*
+	rm -Rf $INSTALLERSDIR/linux/rpm/xwhep.vworker/*
 	
 	printf "."
 	
@@ -682,6 +686,48 @@ while [ -z $CONTINUER ] ; do
 	echo "XWWORKERPASSWORD='$XWWORKERPASSWORD'">> $XWCONFVALUES
 done
 
+CONTINUER=""
+while [ -z $CONTINUER ] ; do
+	if [ "$FORCEYES" = "NO" -o "$XWVWORKERLOGIN" = "" ] ; then
+		echo
+		printf "Please enter an XW vworker login which your vworkers will use to connect to XW server (this must be set) ['$XWVWORKERLOGIN'] : " 
+		read TEMP
+	else
+		TEMP=""
+	fi
+	[ -z "$TEMP" -a -n "$XWVWORKERLOGIN" ] && TEMP=$XWVWORKERLOGIN
+	XWVWORKERLOGIN=$TEMP
+	if [ -z "$XWVWORKERLOGIN" ] ; then
+		echo "XWVWORKERLOGIN can not be empty"
+	else
+		CONTINUER="OK"
+	fi
+	if [ "$XWVWORKERLOGIN" = "$XWADMINLOGIN" ] ; then
+		echo "XWVWORKERLOGIN and XWADMINLOGIN must be different"
+		CONTINUER=""
+	fi
+	echo "XWVWORKERLOGIN='$XWVWORKERLOGIN'">> $XWCONFVALUES
+done
+
+CONTINUER=""
+while [ -z $CONTINUER ] ; do
+	if [ "$FORCEYES" = "NO" -o "$XWVWORKERPASSWORD" = "" ] ; then
+		echo
+		printf "Please enter an XW vworker password which your vworkers will use to connect to XW server (this must be set) ['$XWVWORKERPASSWORD'] : " 
+		read TEMP
+	else
+		TEMP=""
+	fi
+	[ -z "$TEMP" -a -n "$XWVWORKERPASSWORD" ] && TEMP=$XWVWORKERPASSWORD
+	XWVWORKERPASSWORD=$TEMP
+	if [ -z "$XWVWORKERPASSWORD" ] ; then
+		echo "XWVWORKERPASSWORD can not be empty"
+	else
+		CONTINUER="OK"
+	fi
+	echo "XWVWORKERPASSWORD='$XWVWORKERPASSWORD'">> $XWCONFVALUES
+done
+
 [ "$XWSERVER" = "" ] && XWSERVER=`uname -n`
 if [ "$FORCEYES" = "NO" -o "$XWSERVER" = "" ] ; then
 	echo 
@@ -980,6 +1026,9 @@ echo "     XWADMINPASSWORD      = '$XWADMINPASSWORD'"
 echo "**** XtremWeb-HEP public worker configuration : "
 echo "     XWWORKERLOGIN        = '$XWWORKERLOGIN'"
 echo "     XWWORKERPASSWORD     = '$XWWORKERPASSWORD'"
+echo "**** XtremWeb-HEP public Vworker configuration : "
+echo "     XWVWORKERLOGIN       = '$XWVWORKERLOGIN'"
+echo "     XWVWORKERPASSWORD    = '$XWVWORKERPASSWORD'"
 echo "**** XtremWeb-HEP server configuration : "
 echo "     XWSERVER             = '$XWSERVER'"
 echo "     XWUPGRADEURL         = '$XWUPGRADEURL'"
@@ -1078,6 +1127,7 @@ XWADMINGROUPUID=` uuidgen  |  tr "A-Z" "a-z"`
 XWWORKERGROUPUID=`uuidgen  |  tr "A-Z" "a-z"`
 XWADMINUID=`      uuidgen  |  tr "A-Z" "a-z"`
 XWWORKERUID=`     uuidgen  |  tr "A-Z" "a-z"`
+XWVWORKERUID=`    uuidgen  |  tr "A-Z" "a-z"`
 
 rm -f $TMPFILE1
 rm -f $TMPFILE2
@@ -1129,8 +1179,17 @@ else
 	mv $TMPFILE1 $TMPFILE2
 fi
 
-mv $TMPFILE2 $XWSETUPDBSQL
+cat $TMPFILE2 | sed "s/@VWORKERUID@/$XWVWORKERUID/g" > $TMPFILE1
 rm -f $TMPFILE2
+printf "."
+cat $TMPFILE1 | sed "s/@DBVWORKER@/$XWVWORKERLOGIN/g" > $TMPFILE2
+rm -f $TMPFILE1
+printf "."
+cat $TMPFILE2 | sed "s/@DBVWORKERPASSWORD@/$XWVWORKERPASSWORD/g" > $TMPFILE1
+rm -f $TMPFILE2
+printf "."
+
+mv $TMPFILE1 $XWSETUPDBSQL
 echo "Done"
 
 if [ "$DBVENDOR" = "mysql" ] ; then
@@ -1276,6 +1335,22 @@ IFILE=$INSTALLERSDIR/linux/dpkg/xwhep.worker/DEBIAN/preinst
 cat $IFILE | sed "s/^SYSLOGIN=.*/SYSLOGIN=$XWUSER/g" >  $TMPFILE1
 mv -f $TMPFILE1 $IFILE
 printf "."
+
+IFILE=$INSTALLERSDIR/linux/dpkg/xwhep.vworker/DEBIAN/postinst
+cat $IFILE | sed "s/^SYSLOGIN=.*/SYSLOGIN=$XWUSER/g" >  $TMPFILE1
+mv -f $TMPFILE1 $IFILE
+printf "."
+IFILE=$INSTALLERSDIR/linux/dpkg/xwhep.vworker/DEBIAN/postrm
+cat $IFILE | sed "s/^SYSLOGIN=.*/SYSLOGIN=$XWUSER/g" >  $TMPFILE1
+mv -f $TMPFILE1 $IFILE
+printf "."
+IFILE=$INSTALLERSDIR/linux/dpkg/xwhep.vworker/DEBIAN/preinst
+cat $IFILE | sed "s/^SYSLOGIN=.*/SYSLOGIN=$XWUSER/g" >  $TMPFILE1
+mv -f $TMPFILE1 $IFILE
+printf "."
+
+
+
 IFILE=$INSTALLERSDIR/linux/rpm/xwhep.bridgedgsg/xwhep-bridgedgsg.spec
 cat $IFILE | sed "s/^%define SYSLOGIN .*/%define SYSLOGIN $XWUSER/g" >  $TMPFILE1
 mv -f $TMPFILE1 $IFILE
@@ -1285,6 +1360,10 @@ cat $IFILE | sed "s/^%define SYSLOGIN.*/%define SYSLOGIN $XWUSER/g" >  $TMPFILE1
 mv -f $TMPFILE1 $IFILE
 printf "."
 IFILE=$INSTALLERSDIR/linux/rpm/xwhep.worker/xwhep-worker.spec
+cat $IFILE | sed "s/^%define SYSLOGIN.*/%define SYSLOGIN $XWUSER/g" >  $TMPFILE1
+mv -f $TMPFILE1 $IFILE
+printf "."
+IFILE=$INSTALLERSDIR/linux/rpm/xwhep.vworker/xwhep-worker.spec
 cat $IFILE | sed "s/^%define SYSLOGIN.*/%define SYSLOGIN $XWUSER/g" >  $TMPFILE1
 mv -f $TMPFILE1 $IFILE
 printf "."
@@ -1312,7 +1391,7 @@ IFILE=$INSTALLERSDIR/macosx/xwhep.server/installer/Resources/postflight
 cat $IFILE | sed "s/^SYSLOGIN=.*/SYSLOGIN=$XWUSER/g" >  $TMPFILE1
 mv -f $TMPFILE1 $IFILE
 printf "."
-IFILE=$INSTALLERSDIR/macosx/xwhep.vworker/installer/Resources/postflight
+IFILE=$INSTALLERSDIR/macosx/xwhep.worker/installer/Resources/postflight
 cat $IFILE | sed "s/^SYSLOGIN=.*/SYSLOGIN=$XWUSER/g" >  $TMPFILE1
 mv -f $TMPFILE1 $IFILE
 printf "."
@@ -1336,9 +1415,30 @@ cp $BINDIR/createvdi $INSTALLERSDIR/macosx/xwhep.worker/installer/PckRoot/usr/lo
 printf "."
 cp $BINDIR/createiso $INSTALLERSDIR/macosx/xwhep.worker/installer/PckRoot/usr/local/bin/   > /dev/null 2>&1 || fatal "Can't copy createiso to $INSTALLERSDIR/macosx/xwhep.worker/installer/PckRoot/usr/local/bin/"
 printf "."
-IFILE=$INSTALLERSDIR/macosx/xwhep.worker/installer/Resources/postflight
+
+IFILE=$INSTALLERSDIR/macosx/xwhep.vworker/installer/Resources/postflight
 cat $IFILE | sed "s/^SYSLOGIN=.*/SYSLOGIN=$XWUSER/g" >  $TMPFILE1
 mv -f $TMPFILE1 $IFILE
+printf "."
+IFILE=$INSTALLERSDIR/macosx/xwhep.vworker/installer/PckRoot/Applications/xwhep.worker/bin/start.sh
+cat $IFILE | sed "s/^SYSLOGIN=.*/SYSLOGIN=$XWUSER/g" >  $TMPFILE1
+mv -f $TMPFILE1 $IFILE
+printf "."
+IFILE=$INSTALLERSDIR/macosx/xwhep.vworker/installer/PckRoot/Applications/xwhep.worker/bin/stop.sh
+cat $IFILE | sed "s/^SYSLOGIN=.*/SYSLOGIN=$XWUSER/g" >  $TMPFILE1
+mv -f $TMPFILE1 $IFILE
+printf "."
+IFILE=$INSTALLERSDIR/macosx/xwhep.vworker/installer/PckRoot/Applications/xwhep.worker/bin/uninstall.sh
+cat $IFILE | sed "s/^SYSLOGIN=.*/SYSLOGIN=$XWUSER/g" >  $TMPFILE1
+mv -f $TMPFILE1 $IFILE
+printf "."
+IFILE=$INSTALLERSDIR/macosx/xwhep.vworker/installer/PckRoot/usr/local/bin/xtremweb.worker
+cat $IFILE | sed "s/^SYSLOGIN=.*/SYSLOGIN=$XWUSER/g" >  $TMPFILE1
+mv -f $TMPFILE1 $IFILE
+printf "."
+cp $BINDIR/createvdi $INSTALLERSDIR/macosx/xwhep.vworker/installer/PckRoot/usr/local/bin/   > /dev/null 2>&1 || fatal "Can't copy createvdi to $INSTALLERSDIR/macosx/xwhep.worker/installer/PckRoot/usr/local/bin/"
+printf "."
+cp $BINDIR/createiso $INSTALLERSDIR/macosx/xwhep.vworker/installer/PckRoot/usr/local/bin/   > /dev/null 2>&1 || fatal "Can't copy createiso to $INSTALLERSDIR/macosx/xwhep.worker/installer/PckRoot/usr/local/bin/"
 printf "."
 
 echo "Done"
@@ -2123,13 +2223,46 @@ fi
 rm -f $TMPFILE2
 echo " Done"
 
+#
+# Preparing the vworker configuration file
+#
+rm -f $TMPFILE1
+rm -f $TMPFILE2
+printf "Preparing vworker configuration file '$XWVWORKERCONFFILE'"
+cp -f $XWWORKERCONFFILE $XWVWORKERCONFFILE
+if [ $? -ne 0 ] ; then
+	echo "Can't cp -f $XWWORKERCONFFILE $XWVWORKERCONFFILE"
+	exit 1
+fi
+printf "."
+SEDVAR=`echo "$XWVWORKERLOGIN" | sed -f $SEDCMDS`
+grep -E "^[[:space:]]*LOGIN[[:space:]]*=.*" $XWVWORKERCONFFILE > /dev/null 2>&1
+if [ $? -eq 0 ] ; then
+    cat $XWVWORKERCONFFILE | sed "s/^[[:space:]]*LOGIN[[:space:]]*=.*/LOGIN=$SEDVAR/g" > $TMPFILE1
+else
+    cp -f $XWVWORKERCONFFILE $TMPFILE1
+    echo "LOGIN=$SEDVAR" >> $TMPFILE1
+fi
+rm -f $TMPFILE2
+printf "."
+SEDVAR=`echo "$XWVWORKERPASSWORD" | sed -f $SEDCMDS`
+grep -E "^[[:space:]]*PASSWORD[[:space:]]*=.*" $TMPFILE1 > /dev/null 2>&1
+if [ $? -eq 0 ] ; then
+    cat $TMPFILE1 | sed "s/^[[:space:]]*PASSWORD[[:space:]]*=.*/PASSWORD=$SEDVAR/g" > $XWVWORKERCONFFILE
+else
+    cp -f $TMPFILE1 $XWVWORKERCONFFILE
+    echo "PASSWORD=$SEDVAR" >> $XWVWORKERCONFFILE
+fi
+
+echo "Done"
+
+
 
 #
 # Preparing worker conf file for macosx packages
 #
 OSXWORKERCONFFILE=$INSTALLERSDIR/macosx/xwhep.worker/installer/PckRoot/private/etc/xwhep.worker/conf/$XWWORKERCONFFILENAME
-echo "Copying worker configuration file $XWWORKERCONFFILE to $OSXWORKERCONFFILE"
-cp $XWWORKERCONFFILE $OSXWORKERCONFFILE
+cp $XWWORKERCONFFILE $OSXWORKERCONFFILE || fatal "Can't cp $XWWORKERCONFFILE $OSXWORKERCONFFILE"
 grep -E "^[[:space:]]*SSLKeyStore[[:space:]]*=.*" $OSXWORKERCONFFILE > /dev/null 2>&1
 if [ $? -eq 0 ] ; then
     cat $OSXWORKERCONFFILE | sed "s/^[[:space:]]*SSLKeyStore[[:space:]]*=.*/SSLKeyStore=\/private\/etc\/xwhep\.worker\/keystore\/$XWWORKERKEYSTOREFILENAME/g" > $TMPFILE1
@@ -2174,25 +2307,28 @@ cp $SOURCE $DEST > /dev/null 2>&1 || fatal "Can't copy $SOURCE to $DEST"
 SOURCE=$JETTYSERVLETAPI
 cp $SOURCE $DEST > /dev/null 2>&1 || fatal "Can't copy $SOURCE to $DEST"
 
+#
+# Preparing vworker for macosx
+#
+echo "Preparing vworker for macosx"
+cp -rf $INSTALLERSDIR/macosx/xwhep.worker $INSTALLERSDIR/macosx/xwhep.vworker || fatal "Can't cp -rf $INSTALLERSDIR/macosx/xwhep.worker $INSTALLERSDIR/macosx/xwhep.vworker" 
+OSXWORKERCONFFILE=$INSTALLERSDIR/macosx/xwhep.vworker/installer/PckRoot/private/etc/xwhep.worker/conf/$XWWORKERCONFFILENAME
+cp $XWVWORKERCONFFILE $OSXWORKERCONFFILE || fatal "Can't cp $XWVWORKERCONFFILE $OSXWORKERCONFFILE"
+grep -E "^[[:space:]]*SSLKeyStore[[:space:]]*=.*" $OSXWORKERCONFFILE > /dev/null 2>&1
+if [ $? -eq 0 ] ; then
+    cat $OSXWORKERCONFFILE | sed "s/^[[:space:]]*SSLKeyStore[[:space:]]*=.*/SSLKeyStore=\/private\/etc\/xwhep\.worker\/keystore\/$XWWORKERKEYSTOREFILENAME/g" > $TMPFILE1
+else
+    cp -f $XWWORKERCONFFILE $TMPFILE1
+    echo "SSLKeyStore=/private/etc/xwhep.worker/keystore/$XWWORKERKEYSTOREFILENAME" >> $TMPFILE1
+fi
+mv -f $TMPFILE1 $OSXWORKERCONFFILE
+
 
 #
-# Preparing virtualized worker conf file for macosx packages
-#
-cptodir="$INSTALLERSDIR/macosx/xwhep.vworker/installer/PckRoot/Applications/xwhep.vworker/"
-cp $ROOTDIR/AUTHORS $cptodir                  > /dev/null 2>&1 || fatal "Can't copy $ROOTDIR/AUTHORS to $cptodir"
-cp $ROOTDIR/ChangeLog $cptodir                > /dev/null 2>&1 || fatal "Can't copy $ROOTDIR/ChangeLog to $cptodir"
-cp $ROOTDIR/INSTALL $cptodir                  > /dev/null 2>&1 || fatal "Can't copy $ROOTDIR/INSTALL to $cptodir"
-cp $ROOTDIR/License $cptodir                  > /dev/null 2>&1 || fatal "Can't copy $ROOTDIR/License to $cptodir"
-cp $ROOTDIR/License.bouncycastle $cptodir     > /dev/null 2>&1 || fatal "Can't copy $ROOTDIR/License.bouncycastle to $cptodir"
-cp $ROOTDIR/License.smartsockets-1.4 $cptodir > /dev/null 2>&1 || fatal "Can't copy $ROOTDIR/License.smartsockets-1.4 to $cptodir"
-
-
-#
-# Preparing worker conf file for win32 packages
+# Preparing worker for win32 
 #
 WIN32WORKERCONFFILE=$INSTALLERSDIR/win32/xwhep.worker/innoSetup/worker/conf/$XWWORKERCONFFILENAME
-echo "Copying worker configuration file $XWWORKERCONFFILE to $WIN32WORKERCONFFILE"
-cp $XWWORKERCONFFILE $WIN32WORKERCONFFILE
+cp $XWWORKERCONFFILE $WIN32WORKERCONFFILE || fatal "Can't cp $XWWORKERCONFFILE $WIN32WORKERCONFFILE"
 grep -E "^[[:space:]]*SSLKeyStore[[:space:]]*=.*"  $WIN32WORKERCONFFILE > /dev/null 2>&1
 if [ $? -eq 0 ] ; then
     cat $WIN32WORKERCONFFILE | sed "s/^[[:space:]]*SSLKeyStore[[:space:]]*=.*/SSLKeyStore=\.\.\/keystore\/$XWWORKERKEYSTOREFILENAME/g" > $TMPFILE1
@@ -2236,6 +2372,25 @@ cp $SOURCE $DEST > /dev/null 2>&1 || fatal "Can't copy $SOURCE to $DEST"
 SOURCE=$JETTYSERVLETAPI
 cp $SOURCE $DEST > /dev/null 2>&1 || fatal "Can't copy $SOURCE to $DEST"
 
+
+echo "Done"
+
+
+#
+# Preparing vworker for win32 
+#
+echo "Preparing vworker for win32"
+cp -rf $INSTALLERSDIR/win32/xwhep.worker/* $INSTALLERSDIR/win32/xwhep.vworker/ || fatal "Can't cp -rf $INSTALLERSDIR/win32/xwhep.worker $INSTALLERSDIR/win32/xwhep.vworker"  
+WIN32WORKERCONFFILE=$INSTALLERSDIR/win32/xwhep.vworker/innoSetup/worker/conf/$XWWORKERCONFFILENAME
+cp -f $XWVWORKERCONFFILE $WIN32WORKERCONFFILE || fatal "Can't cp -f $XWVWORKERCONFFILE $WIN32WORKERCONFFILE"
+grep -E "^[[:space:]]*SSLKeyStore[[:space:]]*=.*"  $WIN32WORKERCONFFILE > /dev/null 2>&1
+if [ $? -eq 0 ] ; then
+    cat $WIN32WORKERCONFFILE | sed "s/^[[:space:]]*SSLKeyStore[[:space:]]*=.*/SSLKeyStore=\.\.\/keystore\/$XWWORKERKEYSTOREFILENAME/g" > $TMPFILE1
+else
+    cp -f $XWWORKERCONFFILE $TMPFILE1
+    echo "SSLKeyStore=../keystore/$XWWORKERKEYSTOREFILENAME" >> $TMPFILE1
+fi
+mv -f $TMPFILE1 $WIN32WORKERCONFFILE
 
 echo "Done"
 
@@ -2358,8 +2513,7 @@ rm -f $TMPFILE2
 echo "Done"
 
 WIN32CLIENTCONFFILE=$INSTALLERSDIR/win32/xwhep.client/innoSetup/client/conf/$XWCLIENTCONFFILENAME
-echo "Copying client configuration file $XWCLIENTCONFFILE to $WIN32CLIENTCONFFILE"
-cp $XWCLIENTCONFFILE $WIN32CLIENTCONFFILE
+cp $XWCLIENTCONFFILE $WIN32CLIENTCONFFILE || fatal "Can't cp $XWCLIENTCONFFILE $WIN32CLIENTCONFFILE" 
 echo "****************************************************************************************"
 grep -E "^[[:space:]]*SSLKeyStore[[:space:]]*=.*"  $WIN32CLIENTCONFFILE > /dev/null 2>&1
 if [ $? -eq 0 ] ; then
@@ -2517,20 +2671,17 @@ else
 fi
 
 mkdir -p                    $INSTALLERSDIR/macosx/xwhep.server/installer/PckRoot/private/etc/xwhep.server/keystore/
-cp -f $XWSERVERKEYSTOREFILE $INSTALLERSDIR/macosx/xwhep.server/installer/PckRoot/private/etc/xwhep.server/keystore/
-[ $? -ne 0 ] && fatal "Can't copy $XWSERVERKEYSTOREFILE"
+cp -f $XWSERVERKEYSTOREFILE $INSTALLERSDIR/macosx/xwhep.server/installer/PckRoot/private/etc/xwhep.server/keystore/ || fatal "Can't copy $XWSERVERKEYSTOREFILE"
 mkdir -p                    $INSTALLERSDIR/macosx/xwhep.worker/installer/PckRoot/private/etc/xwhep.worker/keystore/
-cp -f $XWWORKERKEYSTOREFILE $INSTALLERSDIR/macosx/xwhep.worker/installer/PckRoot/private/etc/xwhep.worker/keystore/
-[ $? -ne 0 ] && fatal "Can't copy $XWWORKERKEYSTOREFILE"
+cp -f $XWWORKERKEYSTOREFILE $INSTALLERSDIR/macosx/xwhep.worker/installer/PckRoot/private/etc/xwhep.worker/keystore/ || fatal "Can't copy $XWWORKERKEYSTOREFILE"
 mkdir -p                    $INSTALLERSDIR/macosx/xwhep.client/installer/PckRoot/Applications/xwhep.client/keystore/
-cp -f $XWCLIENTKEYSTOREFILE $INSTALLERSDIR/macosx/xwhep.client/installer/PckRoot/Applications/xwhep.client/keystore/
-[ $? -ne 0 ] && fatal "Can't copy $XWCLIENTKEYSTOREFILE"
+cp -f $XWCLIENTKEYSTOREFILE $INSTALLERSDIR/macosx/xwhep.client/installer/PckRoot/Applications/xwhep.client/keystore/ || fatal "Can't copy $XWCLIENTKEYSTOREFILE"
 mkdir -p                    $INSTALLERSDIR/win32/xwhep.client/innoSetup/client/keystore/
-cp -f $XWCLIENTKEYSTOREFILE $INSTALLERSDIR/win32/xwhep.client/innoSetup/client/keystore/
-[ $? -ne 0 ] && fatal "Can't copy $XWCLIENTKEYSTOREFILE"
+cp -f $XWCLIENTKEYSTOREFILE $INSTALLERSDIR/win32/xwhep.client/innoSetup/client/keystore/ || fatal "Can't copy $XWCLIENTKEYSTOREFILE"
 mkdir -p                    $INSTALLERSDIR/win32/xwhep.worker/innoSetup/worker/keystore/
-cp -f $XWWORKERKEYSTOREFILE $INSTALLERSDIR/win32/xwhep.worker/innoSetup/worker/keystore/
-[ $? -ne 0 ] && fatal "Can't copy $XWWORKERKEYSTOREFILE"
+cp -f $XWWORKERKEYSTOREFILE $INSTALLERSDIR/win32/xwhep.worker/innoSetup/worker/keystore/ || fatal "Can't copy $XWWORKERKEYSTOREFILE"
+mkdir -p                    $INSTALLERSDIR/win32/xwhep.vworker/innoSetup/worker/keystore/
+cp -f $XWWORKERKEYSTOREFILE $INSTALLERSDIR/win32/xwhep.vworker/innoSetup/worker/keystore/ || fatal "Can't copy $XWWORKERKEYSTOREFILE"
 
 #
 # We have found that sometime /tmp is not 777 ?!?!
@@ -2636,8 +2787,7 @@ echo "Done"
 # Preparing client conf file for Apple packages
 #
 OSXCLIENTCONFFILE=$INSTALLERSDIR/macosx/xwhep.client/installer/PckRoot/Applications/xwhep.client/conf/$XWCLIENTCONFFILENAME
-echo "Copying client configuration file $INSTALLERSDIR/xwhep.client/$VERSION/conf/$XWCLIENTCONFTEMPLATEFILENAME to $OSXCLIENTCONFFILE"
-cp $INSTALLERSDIR/xwhep.client/$VERSION/conf/$XWCLIENTCONFTEMPLATEFILENAME $OSXCLIENTCONFFILE
+cp $INSTALLERSDIR/xwhep.client/$VERSION/conf/$XWCLIENTCONFTEMPLATEFILENAME $OSXCLIENTCONFFILE || fatal "Can't cp $INSTALLERSDIR/xwhep.client/$VERSION/conf/$XWCLIENTCONFTEMPLATEFILENAME $OSXCLIENTCONFFILE" 
 grep -E "^[[:space:]]*SSLKeyStore[[:space:]]*=.*"  $OSXCLIENTCONFFILE > /dev/null 2>&1
 if [ $? -eq 0 ] ; then
     cat $OSXCLIENTCONFFILE | sed "s/^[[:space:]]*SSLKeyStore[[:space:]]*=.*/SSLKeyStore=\/Applications\/xwhep\.client\/keystore\/$XWCLIENTKEYSTOREFILENAME/g" > $TMPFILE1
@@ -3001,9 +3151,9 @@ if [ "$PKGS" = "YES" ] ; then
   if [ -x "$PACKAGEMAKER" ] ; then
     $PACKAGEMAKER -d $INSTALLERSDIR/macosx/xwhep.server/installer/xwhep-server.pmdoc -o $INSTALLERSDIR/macosx/xwhep.server/installer/xwhep-server-$VERSION.mpkg
     if [ $? -eq 0 ] ; then
-      echo "Done"
+      echo " Done"
     else
-      echo "Error"
+      echo " Error"
     fi
     echo
    else
@@ -3627,9 +3777,9 @@ if [ "$PKGS" = "YES" ] ; then
   if [ -x $PACKAGEMAKER ] ; then
     $PACKAGEMAKER -d $INSTALLERSDIR/macosx/xwhep.client/installer/xwhep-client.pmdoc -o $INSTALLERSDIR/macosx/xwhep.client/installer/xwhep-client-$VERSION.mpkg
     if [ $? -eq 0 ] ; then
-	  echo "Done"
+	  echo " Done"
     else
-	  echo "Error"
+	  echo " Error"
     fi
     echo
    else
@@ -3684,7 +3834,6 @@ cp $BINDIR/createiso $wkrRpmDir/bin/             > /dev/null 2>&1 || fatal "Can'
 RPMWORKERCONFFILE=$wkrRpmDir/conf/$XWWORKERCONFFILENAME
 cp $XWWORKERCONFFILE $RPMWORKERCONFFILE > /dev/null 2>&1 || fatal "Can't copy conf file to $wkrRpmDir/conf/"
 
-cp $XWWORKERCONFFILE $RPMWORKERCONFFILE
 SEDVAR=`echo "$INSTALLDIR" | sed -f $SEDCMDS`
 grep -E "^[[:space:]]*SSLKeyStore[[:space:]]*=.*" $RPMWORKERCONFFILE > /dev/null 2>&1
 if [ $? -eq 0 ] ; then
@@ -3734,7 +3883,6 @@ if [ "$PKGS" = "YES" ] ; then
 	(cd $rpmBuildDir && tar cvfz $INSTALLERSDIR/linux/rpm/xwhep.worker/SOURCES/xwhep-worker-$VERSION.tar.gz .) > /dev/null  2>&2
 	[ $? -ne 0 ] && fatal "Can't create tar file"
 fi
-printf "."
 
 echo " Done"
 
@@ -3784,6 +3932,10 @@ EOF
     [ -f $HOME/.rpmmacros_sav ] && mv $HOME/.rpmmacros_sav $HOME/.rpmmacros 
 fi
 
+
+
+
+
 #
 # Preparing worker DEBIAN package
 #
@@ -3826,6 +3978,136 @@ fi
 
 echo "Worker Debian package ready"
 
+
+
+
+#
+# Preparing vworker RPM package
+#
+rpmBuildDir="$INSTALLERSDIR/linux/rpm/xwhep.vworker/BUILD/"
+cp -rf $INSTALLERSDIR/linux/rpm/xwhep.worker/ $INSTALLERSDIR/linux/rpm/xwhep.vworker/   > /dev/null 2>&1 || fatal "Can't cp -rf $INSTALLERSDIR/linux/rpm/xwhep.worker/ $INSTALLERSDIR/linux/rpm/xwhep.vworker/"
+rm -f  $INSTALLERSDIR/linux/rpm/xwhep.vworker/SOURCES/xwhep-worker-$VERSION.tar.gz
+
+rpmDir="$rpmBuildDir/xwhep-worker-$VERSION"
+wkrRpmDir="$rpmDir/$INSTALLDIR/xwhep-worker-$VERSION"
+RPMWORKERCONFFILE=$wkrRpmDir/conf/$XWWORKERCONFFILENAME
+cp $XWVWORKERCONFFILE $RPMWORKERCONFFILE > /dev/null 2>&1 || fatal "Can't cp $XWVWORKERCONFFILE $RPMWORKERCONFFILE"
+
+SEDVAR=`echo "$INSTALLDIR" | sed -f $SEDCMDS`
+grep -E "^[[:space:]]*SSLKeyStore[[:space:]]*=.*" $RPMWORKERCONFFILE > /dev/null 2>&1
+if [ $? -eq 0 ] ; then
+    cat $RPMWORKERCONFFILE | sed "s/^[[:space:]]*SSLKeyStore[[:space:]]*=.*/SSLKeyStore=\/$SEDVAR\/xwhep-worker-$VERSION\/keystore\/$XWWORKERKEYSTOREFILENAME/g" > $TMPFILE1
+else
+    cp -f $RPMWORKERCONFFILE $TMPFILE1
+    echo "SSLKeyStore=/$SEDVAR/xwhep-worker-$VERSION/keystore/$XWWORKERKEYSTOREFILENAME" >> $TMPFILE1
+fi
+mv -f $TMPFILE1 $RPMWORKERCONFFILE
+
+
+
+rm -f $INSTALLERSDIR/linux/rpm/xwhep.vworker/SOURCES/xwhep-vworker-$VERSION.tar.gz
+[ $? -ne 0 ] && fatal "Can't remove tar file"
+if [ "$PKGS" = "YES" ] ; then
+	(cd $rpmBuildDir && tar cvfz $INSTALLERSDIR/linux/rpm/xwhep.vworker/SOURCES/xwhep-vworker-$VERSION.tar.gz .) > /dev/null  2>&2
+	[ $? -ne 0 ] && fatal "Can't create tar file"
+fi
+
+echo " Done"
+
+if [ $REDHATOS -eq 1 ] ; then
+    [ -f $HOME/.rpmmacros ] && cp $HOME/.rpmmacros $HOME/.rpmmacros_sav 
+
+    rm -f $HOME/.rpmmacros 
+    cat > $HOME/.rpmmacros  <<EOF
+%packager Oleg Lodygensky <oleg.lodygensky@lal.in2p3.fr>
+%_topdir $INSTALLERSDIR/linux/rpm/xwhep.vworker/
+%_tmppath /tmp
+EOF
+
+    rpmbuild -bb $INSTALLERSDIR/linux/rpm/xwhep.vworker/xwhep-worker.spec
+    if [ $? -ne 0 ] ; then
+
+		cp -f $HOME/.rpmmacros $CONFDIR/rpmmacros-worker
+
+		cat <<EOF > $INSTALLERSDIR/linux/rpm/xwhep.vworker/RPMBUILD.txt
+
+***********************************************************
+                        ATTENTION
+***********************************************************
+Can't create vworker RPM
+You may need root privileges to do so...
+
+You will then need an \$HOME/.rpmmacros file.
+This file has been created for you here : 
+  $CONFDIR/rpmmacros-worker
+
+You can invoke rpmbuild :
+
+$> cp -f $CONFDIR/rpmmacros-vworker \$HOME/.rpmmacros
+$> rpmbuild --buildroot $INSTALLERSDIR/linux/rpm/xwhep.vworker/BUILD/xwhep-vworker-$VERSION -bb $INSTALLERSDIR/linux/rpm/xwhep.vworker/xwhep-worker.spec
+
+The RPM is then ready in :
+  $INSTALLERSDIR/linux/rpm/xwhep.vworker/RPMS/noarch/
+
+EOF
+		cat $INSTALLERSDIR/linux/rpm/xwhep.vworker/RPMBUILD.txt
+		if [ "$FORCEYES" = "NO"  ] ; then
+			printf "(Hit Enter key) "
+			read
+		fi
+    fi
+
+    [ -f $HOME/.rpmmacros_sav ] && mv $HOME/.rpmmacros_sav $HOME/.rpmmacros 
+fi
+
+
+
+
+
+#
+# Preparing vworker DEBIAN package
+#
+echo
+echo "Preparing vworker Debian package"
+mkdir -p $INSTALLERSDIR/linux/dpkg/xwhep.vworker/DEBIAN > /dev/null  2>&1 || fatal "Can't mkdir -p $INSTALLERSDIR/linux/dpkg/xwhep.vworker/DEBIAN"
+cp -Rf $rpmDir/* $INSTALLERSDIR/linux/dpkg/xwhep.vworker/ > /dev/null 2>&1 || fatal "Can't copy $rpmDir/* to $INSTALLERSDIR/linux/dpkg/xwhep.vworker"
+find $INSTALLERSDIR/linux/dpkg/ -type d | xargs chmod 755
+chmod 755 $INSTALLERSDIR/linux/dpkg/xwhep.vworker/DEBIAN/pre*
+chmod 755 $INSTALLERSDIR/linux/dpkg/xwhep.vworker/DEBIAN/post*
+if [ "$PKGS" = "YES" -a  $DEBIANOS -eq 1 -o $MACOS -eq 1 ] ; then
+    dpkg-deb --build $INSTALLERSDIR/linux/dpkg/xwhep.vworker xwhep-vworker-$VERSION.deb
+    if [ $? -ne 0 ] ; then
+
+		cat <<EOF > $INSTALLERSDIR/linux/dpkg/xwhep-vworker.build.txt
+
+***********************************************************
+                        ATTENTION
+***********************************************************
+Can't create vworker Debian package
+You may need root privileges to do so...
+
+You can invoke dpkg-deb :
+
+$> dpkg-deb --build $INSTALLERSDIR/linux/dpkg/xwhep.vworker xwhep-vworker-$VERSION.deb
+
+The Debuan package is then ready in :
+  $INSTALLERSDIR/linux/dpkg/xwhep-vworker-$VERSION.deb
+
+EOF
+		cat $INSTALLERSDIR/linux/dpkg/xwhep-vworker.build.txt
+		if [ "$FORCEYES" = "NO"  ] ; then
+			printf "(Hit Enter key) "
+			read
+		fi
+    fi
+fi
+[ -f xwhep-vworker-$VERSION.deb ] && cp xwhep-vworker-$VERSION.deb $ROOTDIR/docker/worker/ 
+
+echo "Worker Debian package ready"
+
+
+
+
 #
 # Preparing worker Apple package
 #
@@ -3835,9 +4117,35 @@ if [ "$PKGS" = "YES" ] ; then
   if [ -x $PACKAGEMAKER ] ; then
     $PACKAGEMAKER -d $INSTALLERSDIR/macosx/xwhep.worker/installer/xwhep-worker.pmdoc -o $INSTALLERSDIR/macosx/xwhep.worker/installer/xwhep-worker-$VERSION.mpkg
     if [ $? -eq 0 ] ; then
-      echo "Done"
+      echo " Done"
     else
-      echo "Error"
+      echo " Error"
+    fi
+    echo
+   else
+     echo " Can't find $PACKAGEMAKER"
+     echo " To create Mac OS X installation package:"
+     echo " - install PackageMaker"
+     echo " - use it as follows"
+     echo " $> PackageMaker -d installers/macosx/xwhep.worker/installer/xwhep-worker.pmdoc -o installers/macosx/xwhep.worker/installer/xwhep-worker.mpkg"
+     echo
+  fi
+fi
+
+
+
+#
+# Preparing worker Apple package
+#
+if [ "$PKGS" = "YES" ] ; then
+  echo
+  printf "Preparing vworker Apple package"
+  if [ -x $PACKAGEMAKER ] ; then
+    $PACKAGEMAKER -d $INSTALLERSDIR/macosx/xwhep.vworker/installer/xwhep-worker.pmdoc -o $INSTALLERSDIR/macosx/xwhep.vworker/installer/xwhep-vworker-$VERSION.mpkg
+    if [ $? -eq 0 ] ; then
+      echo " Done"
+    else
+      echo " Error"
     fi
     echo
    else
