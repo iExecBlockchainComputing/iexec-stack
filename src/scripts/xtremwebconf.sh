@@ -113,6 +113,8 @@ BINFILE=$BINDIR/xtremweb
 LIBDIR=$ROOTDIR/lib
 CFGDIR=$ROOTDIR/conf
 CFGFILE=$CFGDIR/$PROG.conf
+RESOURCESDIR=$ROOTDIR/resources
+LOG4JCONFIGFILENAME=log4j.xml
 
 
 [ "X$PROG" = "Xxtremweb.rpc"     ] && CFGFILE=$CFGDIR/xtremweb.client.conf
@@ -537,6 +539,8 @@ fi
 #
 ZIPS=""
 JARS=""
+RESOURCES=""
+
 ls $LIBDIR/*.zip > /dev/null 2>&1
 if [ $? -eq 0 ] ; then
     ZIPS=`ls $LIBDIR/*.zip`
@@ -545,9 +549,13 @@ ls $LIBDIR/*.jar > /dev/null 2>&1
 if [ $? -eq 0 ] ; then
     JARS=`ls $LIBDIR/*.jar`
 fi
+ls $RESOURCESDIR/* > /dev/null 2>&1
+if [ $? -eq 0 ] ; then
+    RESOURCES=`ls $RESOURCESDIR/*`
+fi
 
 XW_CLASSES=""
-for i in $ZIPS $JARS ; do
+for i in $ZIPS $JARS $RESOURCES ; do
     if [ "X$i" = "Xxtremweb.jar" ]; then
 #        if [ "$PROG" != "xtremweb.worker" -a "$PROG" != "xtremweb.client" ]; then
         if [ "X$PROG" != "Xxtremweb.worker" ]; then
@@ -615,6 +623,9 @@ case $OSTYPE in
   
 esac
 
+LOG4JCONFIGFILE=$RESOURCESDIR/$LOG4JCONFIGFILENAME
+LOG4JOPTS="-Dlog4j.configurationFile"
+[ -f $LOG4JCONFIGFILE ] && JAVAOPTS="$JAVAOPTS $LOG4JOPTS=$LOG4JCONFIGFILE"
 
 
 JAVACMD="$JAVA -DHWMEM=$HWMEM $JAVAOPTS $JAVANETDEBUG $JETTYDEBUG $JAVATRUSTKEY $PROFILER -cp $MAINJAR:$XW_CLASSES:$PROFCLASS"
