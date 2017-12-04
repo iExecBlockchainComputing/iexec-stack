@@ -103,6 +103,7 @@ fi
 #
 start () {
     [ "X$LOGGERLEVEL" = "Xdebug" ] && echo $JAVA
+    [ "X$LOGGERLEVEL" = "XDEBUG" ] && echo $JAVA
 
 	echo "`date` [`uname -n` $PROG] INFO : checking launch url"
 	XWUPGRADEURL=`grep -i -E "^launcherurl.*" $CFGFILE | cut -d '=' -f 2`

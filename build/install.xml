@@ -45,6 +45,7 @@
   <property name="benchmark.dir" value="${basedir}/benchmark" />
   <property name="src.dir" value="${basedir}/src" />
   <property name="src.java.dir" value="${src.dir}/main/java/xtremweb" />
+  <property name="resources.dir" value="${src.dir}/main/resources" />
   <property name="src.c.dir" value="${src.dir}/natif/src/main/natif/xtremweb/archdep" />
   <property name="src.scripts.dir" value="${src.dir}/scripts" />
   <property name="lib.dir" value="${basedir}/classes" />
@@ -57,7 +58,6 @@
   <property name="macosxpkg.dir" value="${installers.dir}/macosx" />
   <property name="macosxpkg.server" value="${macosxpkg.dir}/xwhep.server" />
   <property name="macosxpkg.worker" value="${macosxpkg.dir}/xwhep.worker" />
-  <property name="macosxpkg.vworker" value="${macosxpkg.dir}/xwhep.vworker" />
   <property name="macosxpkg.client" value="${macosxpkg.dir}/xwhep.client" />
   <property name="rpm.dir" value="${installers.dir}/linux/rpm" />
   <property name="dpkg.dir" value="${installers.dir}/linux/dpkg" />
@@ -114,6 +114,7 @@
     <property name="dist.dir" value="${build.dir}/dist/${ant.project.name}-${version}" />
     <property name="dist.lib" value="${dist.dir}/lib" />
     <property name="dist.doc" value="${dist.dir}/doc" />
+    <property name="dist.resources" value="${dist.dir}/resources" />
 
     <property name="dist.dir.bin" value="${dist.dir}/bin" />
     <property name="dist.dir.keystore" value="${dist.dir}/keystore" />
@@ -126,17 +127,21 @@
     <property name="dist.dir.rpm.server" value="${dist.dir.rpm}/xwhep.server" />
     <property name="dist.dir.rpm.server.conf" value="${dist.dir.rpm}/xwhep.server.conf" />
     <property name="dist.dir.rpm.worker" value="${dist.dir.rpm}/xwhep.worker" />
+    <property name="dist.dir.rpm.vworker" value="${dist.dir.rpm}/xwhep.vworker" />
     <property name="dist.dir.dpkg" value="${dist.dir.linux}/dpkg" />
     <property name="dist.dir.dpkg.bridgedgsg" value="${dist.dir.dpkg}/xwhep.bridgedgsg" />
     <property name="dist.dir.dpkg.client" value="${dist.dir.dpkg}/xwhep.client" />
     <property name="dist.dir.dpkg.server" value="${dist.dir.dpkg}/xwhep.server" />
     <property name="dist.dir.dpkg.server.conf" value="${dist.dir.dpkg}/xwhep.server.conf" />
     <property name="dist.dir.dpkg.worker" value="${dist.dir.dpkg}/xwhep.worker" />
+    <property name="dist.dir.dpkg.vworker" value="${dist.dir.dpkg}/xwhep.vworker" />
     <property name="dist.dir.win32" value="${dist.dir.installers}/win32" />
     <property name="dist.dir.win32.client" value="${dist.dir.win32}/xwhep.client/" />
     <property name="dist.dir.client.innosetup" value="${dist.dir.win32.client}/innoSetup" />
     <property name="dist.dir.win32.worker" value="${dist.dir.win32}/xwhep.worker/" />
+    <property name="dist.dir.win32.vworker" value="${dist.dir.win32}/xwhep.vworker/" />
     <property name="dist.dir.worker.innosetup" value="${dist.dir.win32.worker}/innoSetup" />
+    <property name="dist.dir.vworker.innosetup" value="${dist.dir.win32.vworker}/innoSetup" />
     <property name="dist.dir.win32.server" value="${dist.dir.win32}/xwhep.server/" />
     <property name="dist.dir.server.innosetup" value="${dist.dir.win32.server}/innoSetup" />
     <property name="dist.dir.macosx" value="${dist.dir.installers}/macosx" />
@@ -403,7 +408,15 @@ version=${version}
       </fileset>
     </copy>
     
-    <patternset id="XW-LIBS">
+
+    <copy todir="${dist.resources}"
+          filtering="no" overwrite="yes">
+      <fileset dir="${resources.dir}" >
+        <include name="**"/>
+      </fileset>
+    </copy>
+
+  	<patternset id="XW-LIBS">
       <include name="*" />
     </patternset>
     <copy todir="${dist.dir}/lib/"
@@ -457,14 +470,19 @@ version=${version}
 
     <filter token="KEYDIR" value="."/>
 
-    <filter token="DEFAULTUSER" value=""/>
-    <filter token="DEFAULTPASSWORD" value=""/>
-    <filter token="DEFAULTUSER" value="${xtremweb.worker.login}"/>
-    <filter token="DEFAULTPASSWORD" value="${xtremweb.worker.password}"/>
+
+    <filter token="DEFAULTUSER" value="" />
+    <filter token="DEFAULTPASSWORD" value="" />
+    <copy file="${misc.dir}/xtremweb.client.conf.in" 
+          tofile="${dist.dir.macosx.client}/installer/PckRoot/Applications/xwhep.client/conf/xtremweb.client.conf"
+          filtering="yes" overwrite="yes" />
+
+    <filter token="DEFAULTUSER" value="${xtremweb.worker.login}" />
+    <filter token="DEFAULTPASSWORD" value="${xtremweb.worker.password}" />
 
     <echo>
-      xtremweb.worker.login=${xtremweb.worker.login}
-      xtremweb.worker.password=${xtremweb.worker.password}
+        xtremweb.worker.login=${xtremweb.worker.login}
+        xtremweb.worker.password=${xtremweb.worker.password}
     </echo>
 
     <mkdir dir="${dist.dir.keystore}" />
@@ -485,18 +503,32 @@ version=${version}
     <copy file="${misc.dir}/xwhep.sb" 
           todir="${dist.dir.macosx.worker}/installer/PckRoot/private/etc/xwhep.worker/conf"
           filtering="no" overwrite="yes" />
-    <copy file="${misc.dir}/worker-start.html" 
-          tofile="${dist.dir.macosx.vworker}/installer/PckRoot/Applications/xwhep.vworker/index.html"
-          filtering="no" overwrite="yes" />
-    <copy file="${src.scripts.dir}/xwstartvm.sh" 
-          todir="${dist.dir.macosx.vworker}/installer/PckRoot/private/etc/xwhep.vworker/bin"
-          filtering="no" overwrite="yes" />
 
-    <copy file="${misc.dir}/xtremweb.client.conf.in" 
-          tofile="${dist.dir.macosx.client}/installer/PckRoot/Applications/xwhep.client/conf/xtremweb.client.conf"
+
+    <filter token="DEFAULTUSER" value="${xtremweb.vworker.login}" />
+    <filter token="DEFAULTPASSWORD" value="${xtremweb.vworker.password}" />
+
+    <echo>
+        xtremweb.vworker.login=${xtremweb.vworker.login}
+        xtremweb.vworker.password=${xtremweb.vworker.password}
+    </echo>
+
+  	<copy file="${misc.dir}/xtremweb.worker.conf.in" 
+          tofile="${dist.dir}/conf/xtremweb.vworker.conf"
           filtering="yes" overwrite="yes" />
 
-    <filter token="KEYDIR" value="/private/etc/xwhep.server"/>
+    <copy file="${misc.dir}/xtremweb.worker.conf.in" 
+          tofile="${dist.dir.macosx.vworker}/installer/PckRoot/private/etc/xwhep.worker/conf/xtremweb.worker.conf"
+          filtering="yes" overwrite="yes" />
+    <copy file="${misc.dir}/worker-start.html" 
+          tofile="${dist.dir.macosx.vworker}/installer/PckRoot/Applications/xwhep.worker/index.html"
+          filtering="no" overwrite="yes" />
+    <copy file="${misc.dir}/xwhep.sb" 
+          todir="${dist.dir.macosx.vworker}/installer/PckRoot/private/etc/xwhep.worker/conf"
+          filtering="no" overwrite="yes" />
+
+
+	<filter token="KEYDIR" value="/private/etc/xwhep.server"/>
 
     <copy file="${misc.dir}/xtremweb.server.conf.in" 
           tofile="${dist.dir.macosx.server}/installer/PckRoot/private/etc/xwhep.server/conf/xtremweb.server.conf"
@@ -514,6 +546,8 @@ version=${version}
 
     <!-- Install Win32 Client -->
 
+    <filter token="DEFAULTUSER" value="" />
+    <filter token="DEFAULTPASSWORD" value="" />
 
     <copy file="${misc.dir}/xtremweb.client.conf.in" 
           tofile="${dist.dir.win32.client}/conf/xtremweb.client.conf"
@@ -530,6 +564,8 @@ version=${version}
 
     <!-- Install Win32 Worker -->
 
+    <filter token="DEFAULTUSER" value="${xtremweb.worker.login}" />
+    <filter token="DEFAULTPASSWORD" value="${xtremweb.worker.password}" />
 
     <copy file="${misc.dir}/xtremweb.worker.conf.in" 
           tofile="${dist.dir.win32.worker}/conf/xtremweb.worker.conf"
@@ -594,6 +630,71 @@ version=${version}
           filtering="no" overwrite="yes"
 	  file="${misc.dir}/worker-start.html" />
 
+  	
+    <!-- Install Win32 VWorker -->
+
+    <filter token="DEFAULTUSER" value="${xtremweb.vworker.login}" />
+    <filter token="DEFAULTPASSWORD" value="${xtremweb.vworker.password}" />
+
+    <copy file="${misc.dir}/xtremweb.worker.conf.in" 
+          tofile="${dist.dir.win32.vworker}/conf/xtremweb.worker.conf"
+          filtering="yes" overwrite="yes" />
+    <mkdir dir="${dist.dir.vworker.innosetup}/worker/bin" />
+    <mkdir dir="${dist.dir.vworker.innosetup}/worker/conf" />
+    <mkdir dir="${dist.dir.vworker.innosetup}/worker/doc" />
+    <mkdir dir="${dist.dir.vworker.innosetup}/worker/keystore" />
+    <mkdir dir="${dist.dir.vworker.innosetup}/worker/lib" />
+    <mkdir dir="${dist.dir.vworker.innosetup}/worker/misc" />
+    <copy file="${misc.dir}/xtremweb.worker.conf.in" 
+          tofile="${dist.dir.vworker.innosetup}/worker/conf/xtremweb.worker.conf"
+          filtering="yes" overwrite="yes" />
+    <copy file="${build.dir}/wrapper/conf/wrapper-worker.conf" 
+          tofile="${dist.dir.win32.vworker}/conf/wrapper-worker.conf"
+          filtering="no" overwrite="yes" />
+    <copy file="${build.dir}/wrapper/conf/wrapper-worker.conf" 
+          tofile="${dist.dir.vworker.innosetup}/worker/conf/wrapper-worker.conf"
+          filtering="no" overwrite="yes" />
+    <copy todir="${dist.dir.win32.vworker}/lib/"
+          filtering="no" overwrite="yes">
+      <fileset dir="${build.dir}/wrapper/lib">
+	      <include name="*" />
+      </fileset>
+    </copy>
+    <copy todir="${dist.dir.vworker.innosetup}/worker/lib/"
+          filtering="no" overwrite="yes">
+      <fileset dir="${build.dir}/wrapper/lib">
+	      <include name="*" />
+      </fileset>
+    </copy>
+
+    <copy todir="${dist.dir.vworker.innosetup}/worker/lib/"
+          filtering="no" overwrite="yes"
+	  file="${installers.dir}/win32/cygwin1.dll" />
+    <copy todir="${dist.dir.vworker.innosetup}/worker/misc/"
+          filtering="no" overwrite="yes"
+	  file="${src.c.dir}/xwwrk.ico" />
+    <copy todir="${dist.dir.vworker.innosetup}/worker/doc"
+          filtering="no" overwrite="yes"
+	  file="${misc.dir}/worker-start.html" />
+    <copy todir="${dist.dir.win32.vworker}/bin"
+          filtering="no" overwrite="yes">
+      <fileset dir="${build.dir}/wrapper/bin">
+	      <include name="*" />
+      </fileset>
+    </copy>
+    <copy todir="${dist.dir.vworker.innosetup}/worker/bin"
+          filtering="no" overwrite="yes">
+      <fileset dir="${build.dir}/wrapper/bin">
+	      <include name="InstallXWWorker-NT.bat" />
+	      <include name="StartXWWorker-NT.bat" />
+	      <include name="UninstallXWWorker-NT.bat" />
+	      <include name="Wrapper.exe" />
+	      <include name="xtremweb.worker.bat" />
+      </fileset>
+    </copy>
+    <copy todir="${dist.dir.win32.vworker}/doc"
+          filtering="no" overwrite="yes"
+	  file="${misc.dir}/worker-start.html" />
 
     <!-- Install Win32 Server -->
 
@@ -667,6 +768,9 @@ version=${version}
     <copy file="${dist.dir.keystore}/xwhepworker.keys" 
           todir="${dist.dir.macosx.worker}/installer/PckRoot/private/etc/xwhep.worker/keystore"
           failonerror="no" filtering="no" overwrite="yes" />
+    <copy file="${dist.dir.keystore}/xwhepworker.keys" 
+          todir="${dist.dir.macosx.vworker}/installer/PckRoot/private/etc/xwhep.worker/keystore"
+          failonerror="no" filtering="no" overwrite="yes" />
 
     <copy file="${lib.dir}/bcprov-jdk15on-151.jar"
           todir="${dist.dir.macosx.client}/installer/PckRoot/Applications/xwhep.client/lib"
@@ -730,17 +834,19 @@ version=${version}
       <fileset dir="${dist.dir.bin}/xwhep.client.app" />
     </copy>
 
-    <mkdir  dir="${dist.dir.macosx.client}" />
+  	<mkdir  dir="${dist.dir.macosx.client}" />
     <mkdir  dir="${dist.dir.macosx.worker}" />
     <mkdir  dir="${dist.dir.macosx.vworker}" />
     <mkdir  dir="${dist.dir.macosx.server}" />
     <mkdir  dir="${dist.dir.worker.innosetup}" />
+    <mkdir  dir="${dist.dir.vworker.innosetup}" />
     <mkdir  dir="${dist.dir.server.innosetup}" />
     <mkdir  dir="${dist.dir.rpm.bridgedgsg}" />
     <mkdir  dir="${dist.dir.rpm.client}" />
     <mkdir  dir="${dist.dir.rpm.server}" />
     <mkdir  dir="${dist.dir.rpm.server.conf}" />
     <mkdir  dir="${dist.dir.rpm.worker}" />
+    <mkdir  dir="${dist.dir.rpm.vworker}" />
 
     <filter token="XWVERSION" value="${version}"/>
     <filter token="SYSTEMUSER" value="${system.user}"/>
@@ -751,7 +857,7 @@ version=${version}
     </copy>
     <copy todir="${dist.dir.macosx.vworker}"
           filtering="yes" overwrite="yes">
-      <fileset dir="${macosxpkg.vworker}" />
+      <fileset dir="${macosxpkg.worker}" />
     </copy>
     <copy todir="${dist.dir.macosx.client}"
           filtering="yes" overwrite="yes">
@@ -766,6 +872,14 @@ version=${version}
       <fileset dir="${innosetup.dir}" />
     </copy>
     <copy todir="${dist.dir.win32.worker}"
+          filtering="yes" overwrite="yes">
+      <fileset file="${installers.dir}/win32/cygwin1.dll" />
+    </copy>
+    <copy todir="${dist.dir.vworker.innosetup}"
+          filtering="yes" overwrite="yes">
+      <fileset dir="${innosetup.dir}" />
+    </copy>
+    <copy todir="${dist.dir.win32.vworker}"
           filtering="yes" overwrite="yes">
       <fileset file="${installers.dir}/win32/cygwin1.dll" />
     </copy>
@@ -874,6 +988,8 @@ version=${version}
           file="${dpkg.dir}/xwhep-client.postrm"
           filtering="yes" overwrite="yes" />
 
+    <filter token="DEFAULTUSER" value="${xtremweb.worker.login}" />
+    <filter token="DEFAULTPASSWORD" value="${xtremweb.worker.password}" />
 
     <copy todir="${dist.dir.rpm.worker}"
           file="${rpm.dir}/xwhep-worker.spec"
@@ -901,7 +1017,38 @@ version=${version}
           file="${dpkg.dir}/xwhep-worker.postrm"
           filtering="yes" overwrite="yes" />
 
-    <copy file="${lib.dir}/bcprov-jdk15on-151.jar"
+    <filter token="DEFAULTUSER" value="${xtremweb.vworker.login}" />
+    <filter token="DEFAULTPASSWORD" value="${xtremweb.vworker.password}" />
+  	
+    <copy todir="${dist.dir.rpm.vworker}"
+          file="${rpm.dir}/xwhep-worker.spec"
+	  filtering="yes" overwrite="yes" />
+
+    <mkdir  dir="${dist.dir.dpkg.vworker}/DEBIAN" />
+    <copy tofile="${dist.dir.dpkg.vworker}/DEBIAN/control"
+          file="${dpkg.dir}/xwhep-worker.control"
+          filtering="yes" overwrite="yes" />
+    <copy todir="${dist.dir.dpkg.vworker}/DEBIAN/"
+          file="${dpkg.dir}/copyright"
+          filtering="no" overwrite="yes" />
+    <filter token="XWVERSION" value="${version}"/>
+    <filter token="SYSTEMUSER" value="${system.user}"/>
+    <copy tofile="${dist.dir.dpkg.vworker}/DEBIAN/preinst"
+          file="${dpkg.dir}/xwhep-worker.preinst"
+          filtering="yes" overwrite="yes" />
+    <copy tofile="${dist.dir.dpkg.vworker}/DEBIAN/postinst"
+          file="${dpkg.dir}/xwhep-worker.postinst"
+          filtering="yes" overwrite="yes" />
+    <copy tofile="${dist.dir.dpkg.vworker}/DEBIAN/prerm"
+          file="${dpkg.dir}/xwhep-worker.prerm"
+          filtering="yes" overwrite="yes" />
+    <copy tofile="${dist.dir.dpkg.vworker}/DEBIAN/postrm"
+          file="${dpkg.dir}/xwhep-worker.postrm"
+          filtering="yes" overwrite="yes" />
+
+  	
+  	
+  	<copy file="${lib.dir}/bcprov-jdk15on-151.jar"
 	  todir="${dist.dir.client.innosetup}/client/lib/"
           overwrite="yes" />
     <copy file="${lib.dir}/bcpkix-jdk15on-151.jar"
@@ -967,6 +1114,8 @@ version=${version}
     <filter token="DEFAULTPASSWORD" value="${xtremweb.admin.password}"/>
     <filter token="WORKERUSER" value="${xtremweb.worker.login}" />
     <filter token="WORKERPASSWORD" value="${xtremweb.worker.password}" />
+    <filter token="VWORKERUSER" value="${xtremweb.vworker.login}" />
+    <filter token="VWORKERPASSWORD" value="${xtremweb.vworker.password}" />
 
     <filter token="SYSTEMUSER" value="${system.user}"/>
 
