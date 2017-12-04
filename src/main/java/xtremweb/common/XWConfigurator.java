@@ -555,6 +555,8 @@ public final class XWConfigurator extends Properties {
 	public XWConfigurator() {
 		super();
 
+		defaults = new Properties();
+
 		setProperty(XWPropertyDefs.LOGGERLEVEL);
 
 		logger = new Logger(this);
@@ -1030,7 +1032,7 @@ public final class XWConfigurator extends Properties {
 			binCachedPath = getCacheDir().getCanonicalPath() + File.separator + "bin";
 			XWTools.checkDir(binCachedPath);
 		} catch (final Exception e) {
-			setProperty(XWPropertyDefs.TMPDIR, System.getProperty(XWPropertyDefs.JAVATMPDIR));
+			//setProperty(XWPropertyDefs.TMPDIR, System.getProperty(XWPropertyDefs.JAVATMPDIR));
 			setTmpDir(System.getProperty(XWPropertyDefs.JAVATMPDIR));
 		}
 		try {
@@ -1413,15 +1415,29 @@ public final class XWConfigurator extends Properties {
 		_host.setTotalTmp(dir.getTotalSpace() / XWTools.ONEMEGABYTES);
 		_host.setFreeTmp(dir.getFreeSpace() / XWTools.ONEMEGABYTES);
 		dir.deleteOnExit();
-
-		setProperty(XWPropertyDefs.TMPDIR, dir.getAbsolutePath());
+		this.defaults.put(XWPropertyDefs.TMPDIR, dir.getAbsolutePath());
+//		setProperty(XWPropertyDefs.TMPDIR, dir.getAbsolutePath());
 	}
 
 	/**
 	 * This retrieves the default temp dir
 	 */
 	public File getTmpDir() {
-		return new File(getProperty(XWPropertyDefs.TMPDIR));
+//		return new File(getProperty(XWPropertyDefs.TMPDIR));
+		try {
+			return new File(defaults.getProperty(XWPropertyDefs.TMPDIR.toString()));
+		}
+		catch(final Exception e) {
+		}
+		try {
+			setTmpDir(System.getProperty(XWPropertyDefs.JAVATMPDIR));
+			return new File(System.getProperty(XWPropertyDefs.JAVATMPDIR));
+		}
+		catch(final Exception e) {
+			logger.exception("can't set tmp dir", e);
+			logger.fatal("can't setTmpDir");
+		}
+		return null;
 	}
 
 	/**
@@ -2230,8 +2246,8 @@ public final class XWConfigurator extends Properties {
 			logger.config("Don't write config ; FORCENEWUID == " + getBoolean(XWPropertyDefs.FORCENEWUID));
 			return;
 		}
-		try {
-			store(new FileOutputStream(out), header);
+		try (final FileOutputStream o = new FileOutputStream(out)){
+			store(o, header);
 		} catch (final Exception e) {
 			logger.exception("Can't store config", e);
 		}
