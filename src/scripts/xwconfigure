@@ -3990,6 +3990,7 @@ rm -f  $INSTALLERSDIR/linux/rpm/xwhep.vworker/SOURCES/xwhep-worker-$VERSION.tar.
 
 rpmDir="$rpmBuildDir/xwhep-worker-$VERSION"
 wkrRpmDir="$rpmDir/$INSTALLDIR/xwhep-worker-$VERSION"
+mkdir -p $wkrRpmDir/conf/
 RPMWORKERCONFFILE=$wkrRpmDir/conf/$XWWORKERCONFFILENAME
 cp $XWVWORKERCONFFILE $RPMWORKERCONFFILE > /dev/null 2>&1 || fatal "Can't cp $XWVWORKERCONFFILE $RPMWORKERCONFFILE"
 
@@ -4006,6 +4007,7 @@ mv -f $TMPFILE1 $RPMWORKERCONFFILE
 
 
 rm -f $INSTALLERSDIR/linux/rpm/xwhep.vworker/SOURCES/xwhep-vworker-$VERSION.tar.gz
+mkdir -p $INSTALLERSDIR/linux/rpm/xwhep.vworker/SOURCES/
 [ $? -ne 0 ] && fatal "Can't remove tar file"
 if [ "$PKGS" = "YES" ] ; then
 	(cd $rpmBuildDir && tar cvfz $INSTALLERSDIR/linux/rpm/xwhep.vworker/SOURCES/xwhep-vworker-$VERSION.tar.gz .) > /dev/null  2>&2
