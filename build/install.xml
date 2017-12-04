@@ -45,6 +45,7 @@
   <property name="benchmark.dir" value="${basedir}/benchmark" />
   <property name="src.dir" value="${basedir}/src" />
   <property name="src.java.dir" value="${src.dir}/main/java/xtremweb" />
+  <property name="resources.dir" value="${src.dir}/main/resources" />
   <property name="src.c.dir" value="${src.dir}/natif/src/main/natif/xtremweb/archdep" />
   <property name="src.scripts.dir" value="${src.dir}/scripts" />
   <property name="lib.dir" value="${basedir}/classes" />
@@ -113,6 +114,7 @@
     <property name="dist.dir" value="${build.dir}/dist/${ant.project.name}-${version}" />
     <property name="dist.lib" value="${dist.dir}/lib" />
     <property name="dist.doc" value="${dist.dir}/doc" />
+    <property name="dist.resources" value="${dist.dir}/resources" />
 
     <property name="dist.dir.bin" value="${dist.dir}/bin" />
     <property name="dist.dir.keystore" value="${dist.dir}/keystore" />
@@ -406,7 +408,15 @@ version=${version}
       </fileset>
     </copy>
     
-    <patternset id="XW-LIBS">
+
+    <copy todir="${dist.resources}"
+          filtering="no" overwrite="yes">
+      <fileset dir="${resources.dir}" >
+        <include name="**"/>
+      </fileset>
+    </copy>
+
+  	<patternset id="XW-LIBS">
       <include name="*" />
     </patternset>
     <copy todir="${dist.dir}/lib/"
