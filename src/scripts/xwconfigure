@@ -2361,6 +2361,10 @@ SOURCE=$LIBDIR/smartsockets-1.4.jar
 cp $SOURCE $DEST > /dev/null 2>&1 || fatal "Can't copy $SOURCE to $DEST"
 SOURCE=$LIBDIR/log4j-1.2-api-2.10.0.jar
 cp $SOURCE $DEST > /dev/null 2>&1 || fatal "Can't copy $SOURCE to $DEST"
+SOURCE=$LIBDIR/log4j-api-2.10.0.jar
+cp $SOURCE $DEST > /dev/null 2>&1 || fatal "Can't copy $SOURCE to $DEST"
+SOURCE=$LIBDIR/log4j-core-2.10.0.jar
+cp $SOURCE $DEST > /dev/null 2>&1 || fatal "Can't copy $SOURCE to $DEST"
 SOURCE=$JETTY
 cp $SOURCE $DEST > /dev/null 2>&1 || fatal "Can't copy $SOURCE to $DEST"
 SOURCE=$JETTYUTIL
@@ -2543,6 +2547,10 @@ cp $SOURCE $DEST > /dev/null 2>&1 || fatal "Can't copy $SOURCE to $DEST"
 SOURCE=$LIBDIR/smartsockets-1.4.jar
 cp $SOURCE $DEST > /dev/null 2>&1 || fatal "Can't copy $SOURCE to $DEST"
 SOURCE=$LIBDIR/log4j-1.2-api-2.10.0.jar
+cp $SOURCE $DEST > /dev/null 2>&1 || fatal "Can't copy $SOURCE to $DEST"
+SOURCE=$LIBDIR/log4j-api-2.10.0.jar
+cp $SOURCE $DEST > /dev/null 2>&1 || fatal "Can't copy $SOURCE to $DEST"
+SOURCE=$LIBDIR/log4j-core-2.10.0.jar
 cp $SOURCE $DEST > /dev/null 2>&1 || fatal "Can't copy $SOURCE to $DEST"
 
 echo "Done"
@@ -2771,6 +2779,10 @@ cp $SOURCE $DEST > /dev/null 2>&1 || fatal "Can't copy $SOURCE to $DEST"
 SOURCE=$LIBDIR/smartsockets-1.4.jar
 cp $SOURCE $DEST > /dev/null 2>&1 || fatal "Can't copy $SOURCE to $DEST"
 SOURCE=$LIBDIR/log4j-1.2-api-2.10.0.jar
+cp $SOURCE $DEST > /dev/null 2>&1 || fatal "Can't copy $SOURCE to $DEST"
+SOURCE=$LIBDIR/log4j-api-2.10.0.jar
+cp $SOURCE $DEST > /dev/null 2>&1 || fatal "Can't copy $SOURCE to $DEST"
+SOURCE=$LIBDIR/log4j-core-2.10.0.jar
 cp $SOURCE $DEST > /dev/null 2>&1 || fatal "Can't copy $SOURCE to $DEST"
 
 
@@ -3984,6 +3996,7 @@ echo "Worker Debian package ready"
 #
 # Preparing vworker RPM package
 #
+printf "Preparing vworker RPM package to '$INSTALLERSDIR/linux/rpm/xwhep.vworker'"
 rpmBuildDir="$INSTALLERSDIR/linux/rpm/xwhep.vworker/BUILD/"
 cp -rf $INSTALLERSDIR/linux/rpm/xwhep.worker/ $INSTALLERSDIR/linux/rpm/xwhep.vworker/   > /dev/null 2>&1 || fatal "Can't cp -rf $INSTALLERSDIR/linux/rpm/xwhep.worker/ $INSTALLERSDIR/linux/rpm/xwhep.vworker/"
 rm -f  $INSTALLERSDIR/linux/rpm/xwhep.vworker/SOURCES/xwhep-worker-$VERSION.tar.gz
@@ -4006,11 +4019,11 @@ mv -f $TMPFILE1 $RPMWORKERCONFFILE
 
 
 
-rm -f $INSTALLERSDIR/linux/rpm/xwhep.vworker/SOURCES/xwhep-vworker-$VERSION.tar.gz
-mkdir -p $INSTALLERSDIR/linux/rpm/xwhep.vworker/SOURCES/
+rm -f $INSTALLERSDIR/linux/rpm/xwhep.vworker/SOURCES/xwhep-worker-$VERSION.tar.gz
 [ $? -ne 0 ] && fatal "Can't remove tar file"
+mkdir -p $INSTALLERSDIR/linux/rpm/xwhep.vworker/SOURCES/
 if [ "$PKGS" = "YES" ] ; then
-	(cd $rpmBuildDir && tar cvfz $INSTALLERSDIR/linux/rpm/xwhep.vworker/SOURCES/xwhep-vworker-$VERSION.tar.gz .) > /dev/null  2>&2
+	(cd $rpmBuildDir && tar cvfz $INSTALLERSDIR/linux/rpm/xwhep.vworker/SOURCES/xwhep-worker-$VERSION.tar.gz .) > /dev/null  2>&2
 	[ $? -ne 0 ] && fatal "Can't create tar file"
 fi
 
@@ -4072,7 +4085,7 @@ fi
 echo
 echo "Preparing vworker Debian package"
 mkdir -p $INSTALLERSDIR/linux/dpkg/xwhep.vworker/DEBIAN > /dev/null  2>&1 || fatal "Can't mkdir -p $INSTALLERSDIR/linux/dpkg/xwhep.vworker/DEBIAN"
-cp -Rf $rpmDir/* $INSTALLERSDIR/linux/dpkg/xwhep.vworker/ > /dev/null 2>&1 || fatal "Can't copy $rpmDir/* to $INSTALLERSDIR/linux/dpkg/xwhep.vworker"
+cp -Rf $rpmDir/ $INSTALLERSDIR/linux/dpkg/xwhep.vworker/ > /dev/null 2>&1 || fatal "Can't copy $rpmDir/* to $INSTALLERSDIR/linux/dpkg/xwhep.vworker"
 find $INSTALLERSDIR/linux/dpkg/ -type d | xargs chmod 755
 chmod 755 $INSTALLERSDIR/linux/dpkg/xwhep.vworker/DEBIAN/pre*
 chmod 755 $INSTALLERSDIR/linux/dpkg/xwhep.vworker/DEBIAN/post*
