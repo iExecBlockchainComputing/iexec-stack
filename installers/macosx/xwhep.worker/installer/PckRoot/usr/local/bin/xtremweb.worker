@@ -75,10 +75,10 @@ fi
 
 
 #
-# java 1.6 available ?
+# java 1.8 available ?
 #
-if [ ! -d /System/Library/Frameworks/JavaVM.framework/Versions/1.6/Home ]; then
-    echo "Java 1.6 not found"
+if [ ! -d /Library/Java/JavaVirtualMachines/jdk1.8.0_60.jdk/Contents/Home ]; then
+    echo "Java 1.8 not found"
     exit $ERRRFILE
 fi
 type java > /dev/null 2>&1
@@ -87,7 +87,7 @@ if [ $? -ne 0 ]; then
     exit $ERRRFILE
 fi
 
-export JAVA_HOME="/System/Library/Frameworks/JavaVM.framework/Versions/1.6/Home"
+export JAVA_HOME="/Library/Java/JavaVirtualMachines/jdk1.8.0_60.jdk/Contents/Home"
 export PATH=$JAVA_HOME/bin:$PATH
 
 #
@@ -199,7 +199,7 @@ start () {
     rm -f $SCRIPTTMPFILE
     
     echo "#!/bin/sh"                   > $SCRIPTTMPFILE
-    echo "export JAVA_HOME='/System/Library/Frameworks/JavaVM.framework/Versions/1.6/Home'" >> $SCRIPTTMPFILE
+    echo "export JAVA_HOME='/Library/Java/JavaVirtualMachines/jdk1.8.0_60.jdk/Contents/Home'" >> $SCRIPTTMPFILE
     echo "export PATH='$JAVA_HOME/bin:$PATH'" >> $SCRIPTTMPFILE
     echo "#`date` [`uname -n` $PROG]" >> $SCRIPTTMPFILE
     echo "$JAVA >> $LOGFILE 2>&1 & "  >> $SCRIPTTMPFILE
