@@ -2311,7 +2311,7 @@ cp $SOURCE $DEST > /dev/null 2>&1 || fatal "Can't copy $SOURCE to $DEST"
 # Preparing vworker for macosx
 #
 echo "Preparing vworker for macosx"
-cp -rf $INSTALLERSDIR/macosx/xwhep.worker $INSTALLERSDIR/macosx/xwhep.vworker || fatal "Can't cp -rf $INSTALLERSDIR/macosx/xwhep.worker $INSTALLERSDIR/macosx/xwhep.vworker" 
+cp -rf $INSTALLERSDIR/macosx/xwhep.worker/ $INSTALLERSDIR/macosx/xwhep.vworker/ || fatal "Can't cp -rf $INSTALLERSDIR/macosx/xwhep.worker $INSTALLERSDIR/macosx/xwhep.vworker" 
 OSXWORKERCONFFILE=$INSTALLERSDIR/macosx/xwhep.vworker/installer/PckRoot/private/etc/xwhep.worker/conf/$XWWORKERCONFFILENAME
 cp $XWVWORKERCONFFILE $OSXWORKERCONFFILE || fatal "Can't cp $XWVWORKERCONFFILE $OSXWORKERCONFFILE"
 grep -E "^[[:space:]]*SSLKeyStore[[:space:]]*=.*" $OSXWORKERCONFFILE > /dev/null 2>&1
