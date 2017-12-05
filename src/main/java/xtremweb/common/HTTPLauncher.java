@@ -105,11 +105,11 @@ public final class HTTPLauncher {
 		final File rootDir = config.getConfigFile().getParentFile().getParentFile();
 		File libDir = new File(rootDir, "lib");
 		if (!libDir.exists()) {
-			libDir = new File(System.getProperty(XWPropertyDefs.TMPDIR.toString()));
+			libDir = config.getTmpDir();
 		}
 		File binDir = new File(rootDir, "bin");
 		if (!binDir.exists()) {
-			binDir = new File(System.getProperty(XWPropertyDefs.TMPDIR.toString()));
+			binDir = config.getTmpDir();
 		}
 
 		while (true) {
@@ -191,7 +191,7 @@ public final class HTTPLauncher {
 				logger.config("jarFile = " + jarFile.getCanonicalPath());
 				Thread.sleep(SLEEPDELAY);
 
-				tmpPath = config.getProperty(XWPropertyDefs.TMPDIR);
+				tmpPath = config.getTmpDir().getCanonicalPath();
 				jarFilePath = jarFile.getCanonicalPath();
 				keystorePath = config.getProperty(XWPropertyDefs.SSLKEYSTORE);
 				configPath = config.getProperty(XWPropertyDefs.CONFIGFILE);
