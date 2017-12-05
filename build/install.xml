@@ -142,8 +142,6 @@
     <property name="dist.dir.win32.vworker" value="${dist.dir.win32}/xwhep.vworker/" />
     <property name="dist.dir.worker.innosetup" value="${dist.dir.win32.worker}/innoSetup" />
     <property name="dist.dir.vworker.innosetup" value="${dist.dir.win32.vworker}/innoSetup" />
-    <property name="dist.dir.win32.server" value="${dist.dir.win32}/xwhep.server/" />
-    <property name="dist.dir.server.innosetup" value="${dist.dir.win32.server}/innoSetup" />
     <property name="dist.dir.macosx" value="${dist.dir.installers}/macosx" />
     <property name="dist.dir.macosx.server" value="${dist.dir.macosx}/xwhep.server" />
     <property name="dist.dir.macosx.worker" value="${dist.dir.macosx}/xwhep.worker" />
@@ -696,53 +694,7 @@ version=${version}
           filtering="no" overwrite="yes"
 	  file="${misc.dir}/worker-start.html" />
 
-    <!-- Install Win32 Server -->
 
-
-    <copy file="${misc.dir}/xtremweb.server.conf.in" 
-          tofile="${dist.dir.win32.server}/conf/xtremweb.server.conf"
-          filtering="yes" overwrite="yes" />
-    <mkdir dir="${dist.dir.server.innosetup}/server/bin" />
-    <mkdir dir="${dist.dir.server.innosetup}/server/conf" />
-    <mkdir dir="${dist.dir.server.innosetup}/server/doc" />
-    <mkdir dir="${dist.dir.server.innosetup}/server/keystore" />
-    <mkdir dir="${dist.dir.server.innosetup}/server/lib" />
-    <mkdir dir="${dist.dir.server.innosetup}/server/misc" />
-    <copy file="${misc.dir}/xtremweb.server.conf.in" 
-          tofile="${dist.dir.server.innosetup}/server/conf/xtremweb.server.conf"
-          filtering="yes" overwrite="yes" />
-    <copy file="${build.dir}/wrapper/conf/wrapper-server.conf" 
-          tofile="${dist.dir.win32.server}/conf/wrapper-server.conf"
-          filtering="no" overwrite="yes" />
-    <copy file="${build.dir}/wrapper/conf/wrapper-server.conf" 
-          tofile="${dist.dir.server.innosetup}/server/conf/wrapper-server.conf"
-          filtering="no" overwrite="yes" />
-    <copy todir="${dist.dir.win32.server}/lib/"
-          filtering="no" overwrite="yes">
-      <fileset dir="${build.dir}/wrapper/lib">
-	      <include name="*" />
-      </fileset>
-    </copy>
-    <copy todir="${dist.dir.server.innosetup}/server/lib/"
-          filtering="no" overwrite="yes">
-      <fileset dir="${build.dir}/wrapper/lib">
-	      <include name="*" />
-      </fileset>
-    </copy>
-
-    <copy todir="${dist.dir.server.innosetup}/server/misc/"
-          filtering="no" overwrite="yes"
-	  file="${src.c.dir}/xwwrk.ico" />
-    <copy todir="${dist.dir.server.innosetup}/server/bin"
-          filtering="no" overwrite="yes">
-      <fileset dir="${build.dir}/wrapper/bin">
-	      <include name="InstallXWServer-NT.bat" />
-	      <include name="StartXWServer-NT.bat" />
-	      <include name="UninstallXWServer-NT.bat" />
-	      <include name="Wrapper.exe" />
-	      <include name="xtremweb.server.bat" />
-      </fileset>
-    </copy>
   </target>
 
 
@@ -882,10 +834,6 @@ version=${version}
     <copy todir="${dist.dir.win32.vworker}"
           filtering="yes" overwrite="yes">
       <fileset file="${installers.dir}/win32/cygwin1.dll" />
-    </copy>
-    <copy todir="${dist.dir.server.innosetup}"
-          filtering="yes" overwrite="yes">
-      <fileset dir="${innosetup.dir}" />
     </copy>
 
     <filter token="XWVERSION" value="${version}"/>
