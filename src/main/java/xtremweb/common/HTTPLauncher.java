@@ -174,7 +174,7 @@ public final class HTTPLauncher {
 			String configPath = null;
 			String xwcp = null;
 			String javacp = System.getProperty("java.class.path");
-			String javaCmd = "java ";
+			final StringBuilder javaCmd = new StringBuilder("java ");
 
 			try {
 				logger.debug("00 libDir = " + libDir.getCanonicalPath());
@@ -224,17 +224,26 @@ public final class HTTPLauncher {
 
 				final String hwmem = System.getProperty(XWPropertyDefs.HWMEM.toString()) == "" ? ""
 						: " -D" + XWPropertyDefs.HWMEM + "=" + System.getProperty(XWPropertyDefs.HWMEM.toString());
-				final String javaOpts = " -Dxtremweb.cache=" + tmpPath + " -Djava.library.path=" + tmpPath + hwmem
-						+ " -Dxtremweb.cp=" + xwcp + " -Djavax.net.ssl.trustStore=" + keystorePath + " -cp "
-						+ jarFilePath + File.pathSeparator + (javacp != null ? javacp : "") + " xtremweb.worker.Worker "
-						+ " --xwconfig " + configPath;
+				final String log4jconf = System.getProperty(XWPropertyDefs.LOG4JCONFIGFILE.propertyName()) == null ?
+						"" : " -D" + XWPropertyDefs.LOG4JCONFIGFILE.propertyName() + "=" + System.getProperty(XWPropertyDefs.LOG4JCONFIGFILE.propertyName());
+				final String loglevel= System.getProperty(XWPropertyDefs.LOGGERLEVEL.propertyName()) == null ?
+						"" : " -D" + XWPropertyDefs.LOGGERLEVEL.propertyName() + "=" + System.getProperty(XWPropertyDefs.LOGGERLEVEL.propertyName());
+
+				final StringBuilder javaOpts = new StringBuilder(" -D" + XWPropertyDefs.CACHEDIR.propertyName() + "=" + tmpPath
+						+ log4jconf + loglevel
+						+ " -D" + XWPropertyDefs.JAVALIBPATH.propertyName() + "=" + tmpPath + hwmem
+						+ " -D" + XWPropertyDefs.XWCP.propertyName() + "=" + xwcp
+						+ " -D" + XWPropertyDefs.JAVAKEYSTORE.propertyName() + "=" + keystorePath
+						+ " -cp " + jarFilePath + File.pathSeparator + (javacp != null ? javacp : "")
+						+ " xtremweb.worker.Worker "
+						+ " --xwconfig " + configPath);
 
 				if (OSEnum.getOs().isWin32()) {
-					javaCmd += " -Xrs ";
+					javaCmd.append(" -Xrs ");
 				}
-
+				
 				final String serveurOpt = " -server ";
-				final String cmd = javaCmd + serveurOpt + javaOpts;
+				final String cmd = javaCmd.toString() + serveurOpt + javaOpts.toString();
 
 				logger.config("Executing " + cmd);
 				final FileInputStream in = null;
@@ -250,7 +259,7 @@ public final class HTTPLauncher {
 
 				if (returnCode != XWReturnCode.SUCCESS) {
 
-					final String cmd1 = javaCmd + javaOpts;
+					final String cmd1 = javaCmd.toString() + javaOpts.toString();
 
 					logger.config("Trying to launch the worker without \"" + serveurOpt + "\" java option : " + cmd1);
 					exec = new Executor(cmd1, binDir.getCanonicalPath(), in, System.out, System.err,

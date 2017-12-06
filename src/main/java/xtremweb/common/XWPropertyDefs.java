@@ -324,7 +324,7 @@ public enum XWPropertyDefs {
 		 */
 		@Override
 		public String defaultValue() {
-			return System.getProperty("os.version");
+			return System.getProperty(propertyName());
 		}
 
 		/**
@@ -356,7 +356,7 @@ public enum XWPropertyDefs {
 		 */
 		@Override
 		public String defaultValue() {
-			return System.getProperty("java.version");
+			return System.getProperty(propertyName());
 		}
 
 		/**
@@ -369,6 +369,20 @@ public enum XWPropertyDefs {
 		@Override
 		public String propertyName() {
 			return "java.version";
+		}
+	},
+	/**
+	 * All : java library path
+	 * @since 11.5.0
+	 */
+	JAVALIBPATH {
+		@Override
+		public String defaultValue() {
+			return System.getProperty(propertyName());
+		}
+		@Override
+		public String propertyName() {
+			return "java.library.path";
 		}
 	},
 	/**
@@ -388,7 +402,7 @@ public enum XWPropertyDefs {
 		 */
 		@Override
 		public String defaultValue() {
-			return System.getProperty("sun.arch.data.model");
+			return System.getProperty(propertyName());
 		}
 
 		/**
@@ -420,6 +434,17 @@ public enum XWPropertyDefs {
 		@Override
 		public String propertyName() {
 			return "xtremweb.config";
+		}
+	},
+	/**
+	 * All : log4j config file
+	 * Property type : string
+	 * @since 11.5.0
+	 */
+	LOG4JCONFIGFILE {
+		@Override
+		public String propertyName() {
+			return "log4j.configurationFile";
 		}
 	},
 	/**
@@ -488,7 +513,7 @@ public enum XWPropertyDefs {
 		 */
 		@Override
 		public String defaultValue() {
-			return System.getProperty("user.home");
+			return System.getProperty(propertyName());
 		}
 
 		/**
@@ -3144,10 +3169,10 @@ public enum XWPropertyDefs {
 	 * This retrieves the default value. This must be overriden if not null
 	 * expected
 	 *
-	 * @return null
+	 * @return System.getProperty(propertyName());
 	 */
 	public String defaultValue() {
-		return null;
+		return System.getProperty(propertyName());
 	}
 
 	/**
