@@ -19,3 +19,5 @@ build/classes/obj/
 build/classes/xwclasses.mf
 /target/
 .DS_Store
+/.gradle/
+/.idea/

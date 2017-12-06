@@ -1,0 +1,16 @@
+apply plugin: 'java-library'
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    compile "org.bouncycastle:bcprov-jdk15on:1.51"
+
+    api 'org.apache.commons:commons-math3:3.6.1'
+
+    implementation 'com.google.guava:guava:23.0'
+
+    testImplementation 'junit:junit:4.12'
+}
+
