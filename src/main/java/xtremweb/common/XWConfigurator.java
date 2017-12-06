@@ -1033,7 +1033,7 @@ public final class XWConfigurator extends Properties {
 			XWTools.checkDir(binCachedPath);
 		} catch (final Exception e) {
 			//setProperty(XWPropertyDefs.TMPDIR, System.getProperty(XWPropertyDefs.JAVATMPDIR));
-			setTmpDir(System.getProperty(XWPropertyDefs.JAVATMPDIR));
+			setTmpDir();
 		}
 		try {
 			binCachedPath = getCacheDir().getCanonicalPath() + File.separator + "bin";
@@ -1386,58 +1386,28 @@ public final class XWConfigurator extends Properties {
 	 *
 	 * @since 7.0.0
 	 */
-	public void setTmpDir() throws IOException {
+	public File setTmpDir() throws IOException {
 		final String dirname = "XW." + XWRole.getMyRole().toString() + "."
-				+ UID.getMyUid().toString() + "." + ((Vector<String>) dispatchers).elementAt(currentDispatcher);
+				+ UID.getMyUid().toString();
 		final String parent = getProperty(XWPropertyDefs.TMPDIR) == null ? System.getProperty(XWPropertyDefs.JAVATMPDIR) : getProperty(XWPropertyDefs.TMPDIR);  
-		if (parent.endsWith(dirname)) {
-			final File dir = new File(parent);
-			setTmpDir(dir);
-		}
-		else {
-			final File dir = new File(parent, dirname);
-			setTmpDir(dir);
-		}
-	}
+		final String p = parent == null ? "/tmp" : parent; 
+		final File dir = p.endsWith(dirname) ? new File(p) : new File(p, dirname);
 
-	public void setTmpDir(final String dir) throws IOException {
-		setTmpDir(new File(dir));
-	}
-
-	/**
-	 * This sets and eventually creates the temporary directory
-	 *
-	 * @param dir
-	 * @throws IOException
-	 */
-	public void setTmpDir(final File dir) throws IOException {
 		XWTools.checkDir(dir);
 		_host.setTotalTmp(dir.getTotalSpace() / XWTools.ONEMEGABYTES);
 		_host.setFreeTmp(dir.getFreeSpace() / XWTools.ONEMEGABYTES);
 		dir.deleteOnExit();
 		this.defaults.put(XWPropertyDefs.TMPDIR, dir.getAbsolutePath());
 //		setProperty(XWPropertyDefs.TMPDIR, dir.getAbsolutePath());
+		return dir;
 	}
 
 	/**
 	 * This retrieves the default temp dir
+	 * @throws IOException 
 	 */
-	public File getTmpDir() {
-//		return new File(getProperty(XWPropertyDefs.TMPDIR));
-		try {
-			return new File(defaults.getProperty(XWPropertyDefs.TMPDIR.toString()));
-		}
-		catch(final Exception e) {
-		}
-		try {
-			setTmpDir(System.getProperty(XWPropertyDefs.JAVATMPDIR));
-			return new File(System.getProperty(XWPropertyDefs.JAVATMPDIR));
-		}
-		catch(final Exception e) {
-			logger.exception("can't set tmp dir", e);
-			logger.fatal("can't setTmpDir");
-		}
-		return null;
+	public File getTmpDir() throws IOException {
+		return setTmpDir();
 	}
 
 	/**
@@ -1531,7 +1501,7 @@ public final class XWConfigurator extends Properties {
 	 * @since 10.0.0
 	 * @return the package directory if set; the default tmp dir otherwise
 	 */
-	public File getDataPackageDir(final String pkgName) {
+	public File getDataPackageDir(final String pkgName) throws IOException {
 		final String path = getProperty(XWTools.PACKAGENAMEHEADER + pkgName);
 		if ((path == null) || (path.length() < 1)) {
 			logger.debug("getDataPackageDir : return tmpdir " + getTmpDir());
@@ -1557,8 +1527,9 @@ public final class XWConfigurator extends Properties {
 
 	/**
 	 * This retrieves the default works dir; it is created if necessary
+	 * @throws IOException 
 	 */
-	public File getWorksDir() {
+	public File getWorksDir() throws IOException {
 		final File d = new File(getTmpDir(), "works");
 		d.deleteOnExit();
 		return d;
@@ -2122,19 +2093,21 @@ public final class XWConfigurator extends Properties {
 
 	/**
 	 * This determines dispatchers file
+	 * @throws IOException 
 	 *
 	 * @since v1r2-rc1(RPC-V)
 	 */
-	private synchronized File dispatchersFile() {
+	private synchronized File dispatchersFile() throws IOException {
 		return new File(getTmpDir() + "XW." + "known_dispatchers");
 	}
 
 	/**
 	 * This determines dispatchers file
+	 * @throws IOException 
 	 *
 	 * @since XWHEP 1.0.0
 	 */
-	private synchronized File dataServersFile() {
+	private synchronized File dataServersFile() throws IOException {
 		return new File(getTmpDir() + "XW." + "known_dataservers");
 	}
 
@@ -2163,7 +2136,11 @@ public final class XWConfigurator extends Properties {
 	 * @since v1r2-rc1(RPC-V)
 	 */
 	public void saveDispatchers() {
-		saveServers(dispatchersFile(), dispatchersToString());
+		try {
+			saveServers(dispatchersFile(), dispatchersToString());
+		} catch (IOException e) {
+			logger.exception(e);
+		}
 	}
 
 	/**
@@ -2172,7 +2149,11 @@ public final class XWConfigurator extends Properties {
 	 * @since XWHEP 1.0.0
 	 */
 	public void saveDataServers() {
-		saveServers(dataServersFile(), dataServersToString());
+		try {
+			saveServers(dataServersFile(), dataServersToString());
+		} catch (IOException e) {
+			logger.exception(e);
+		}
 	}
 
 	/**
@@ -2202,7 +2183,11 @@ public final class XWConfigurator extends Properties {
 	 * @since XWHEP 1.0.0
 	 */
 	public void retrieveDispatchers() {
-		retrieveServers(dispatchers, dispatchersFile());
+		try {
+			retrieveServers(dispatchers, dispatchersFile());
+		} catch (IOException e) {
+			logger.exception(e);
+		}
 	}
 
 	/**
@@ -2211,7 +2196,11 @@ public final class XWConfigurator extends Properties {
 	 * @since XWHEP 1.0.0
 	 */
 	public void retrieveDataServers() {
-		retrieveServers(dataServers, dataServersFile());
+		try {
+			retrieveServers(dataServers, dataServersFile());
+		} catch (IOException e) {
+			logger.exception(e);
+		}
 	}
 
 	/**

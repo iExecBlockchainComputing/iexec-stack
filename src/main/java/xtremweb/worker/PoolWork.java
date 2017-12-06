@@ -72,16 +72,14 @@ public class PoolWork {
 		poolWorks = new Hashtable<>();
 		savingWorks = new Hashtable<>();
 
-		File worksDir = Worker.getConfig().getWorksDir();
-
 		try {
+			final File worksDir = Worker.getConfig().getWorksDir();
 			XWTools.deleteDir(worksDir);
 			XWTools.checkDir(worksDir);
 		} catch (final IOException e) {
 			logger.exception(e);
 			logger.fatal("unrecoverable exception " + e);
 		}
-		worksDir = null;
 	}
 
 	/**

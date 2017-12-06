@@ -35,6 +35,8 @@
 
 package xtremweb.worker;
 
+import java.io.IOException;
+
 import xtremweb.archdep.ArchDepFactory;
 import xtremweb.archdep.XWTracerNative;
 import xtremweb.common.Logger;
@@ -76,7 +78,11 @@ public class XWTracer extends Thread {
 
 		final XWTracerNative tracerImpl = ArchDepFactory.xwtracer();
 
-		tracerImpl.setOutputDir(Worker.getConfig().getTmpDir().toString());
+		try {
+			tracerImpl.setOutputDir(Worker.getConfig().getTmpDir().toString());
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
 
 		logger.info("Tracing");
 

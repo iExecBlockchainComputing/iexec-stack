@@ -27,6 +27,7 @@ import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.ConnectException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -71,8 +72,9 @@ public final class HTTPLauncher {
 	 * @param argv
 	 *            a <code>String[]</code> value : command line arguments which
 	 *            specificies the config file name
+	 * @throws IOException 
 	 */
-	private HTTPLauncher(final String[] a) {
+	private HTTPLauncher(final String[] a) throws IOException {
 		final String[] argv = a.clone();
 		CommandLineParser args = null;
 		try {
@@ -289,6 +291,11 @@ public final class HTTPLauncher {
 	}
 
 	public static void main(final String[] argv) {
-		new HTTPLauncher(argv);
+		try {
+			new HTTPLauncher(argv);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }

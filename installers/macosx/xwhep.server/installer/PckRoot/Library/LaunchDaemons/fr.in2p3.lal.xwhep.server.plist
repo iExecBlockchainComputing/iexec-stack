@@ -7,11 +7,11 @@
  <key>EnvironmentVariables</key>
   <dict>
    <key>JAVA_HOME</key>
-   <string>/System/Library/Frameworks/JavaVM.framework/Versions/1.6/Home</string>
+   <string>/Library/Java/JavaVirtualMachines/jdk1.8.0_60.jdk/Contents/Home</string>
   </dict>
  <key>ProgramArguments</key>
   <array>
-   <string>/System/Library/Frameworks/JavaVM.framework/Versions/1.6/Home/bin/java</string>
+   <string>/Library/Java/JavaVirtualMachines/jdk1.8.0_60.jdk/Contents/Home/bin/java</string>
    <string>-Djavax.net.ssl.trustStore=/private/etc/xwhep.server/keystore/xwhepserver.keys</string>
    <string>-Dxtremweb.cache=/tmp </string>
    <string>-Dxtremweb.cp=/private/etc/xwhep.server/lib</string>
