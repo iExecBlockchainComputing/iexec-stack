@@ -4,8 +4,39 @@ repositories {
     jcenter()
 }
 
+task hello {
+    doLast {
+        println 'Hello Gradle'
+        System.setProperty("version.major", System.getProperty("version.major"))
+    }
+}
+
+
+test {
+    println 'Setting version numbers'
+    systemProperty "version.major", 11
+    systemProperty "version.minor", 5
+    systemProperty "version.micro", 0
+}
+
+
 dependencies {
+
     compile "org.bouncycastle:bcprov-jdk15on:1.51"
+    compile "org.bouncycastle:bcpkix-jdk15on:1.51"
+    compile "org.eclipse.jetty:jetty-maven-plugin:9.3.8.v20160314"
+    compile "com.auth0:java-jwt:3.2.0"
+    compile "com.github.scribejava:scribejava-apis:3.3.0"
+    compile "commons-fileupload:commons-fileupload:1.2"
+    compile "commons-httpclient:commons-httpclient:3.0.1"
+    compile "org.expressme:JOpenId:1.08"
+    compile "javax.mail:mail:1.4.7"
+    compile "bouncycastle:bcprov-jdk16:140"
+    compile "antlr:antlr:2.7.2"// ? https://mvnrepository.com/artifact/antlr/antlr
+    compile "org.json:json:20160810" // ? https://mvnrepository.com/artifact/org.json/json
+    compile files('libXtremWeb/smartsockets-1.4.jar')
+
+
 
     api 'org.apache.commons:commons-math3:3.6.1'
 
@@ -13,4 +44,5 @@ dependencies {
 
     testImplementation 'junit:junit:4.12'
 }
+
 

@@ -1,0 +1,53 @@
+/*
+ * Copyrights     : CNRS
+ * Author         : Oleg Lodygensky
+ * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
+ * Web            : http://www.xtremweb-hep.org
+ * 
+ *      This file is part of XtremWeb-HEP.
+ *
+ *    XtremWeb-HEP is free software: you can redistribute it and/or modify
+ *    it under the terms of the GNU General Public License as published by
+ *    the Free Software Foundation, either version 3 of the License, or
+ *    (at your option) any later version.
+ *
+ *    XtremWeb-HEP is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *    GNU General Public License for more details.
+ *
+ *    You should have received a copy of the GNU General Public License
+ *    along with XtremWeb-HEP.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
+
+
+package xtremweb.common;
+
+import java.io.IOException;
+import java.util.jar.JarFile;
+import java.util.jar.Attributes;
+
+
+public class CommonVersion {
+    private static String major =  System.getProperty("version.major");
+    private static String minor =  System.getProperty("version.minor");
+    private static String micro =  System.getProperty("version.micro");
+    private static Version current = new Version(major, minor, micro);
+    //private static Version current = new Version(major, minor, micro);
+    //private static Version current = new Version("11", "5", "0");
+    //private static Version current = new Version("@XWVERSION@", "@VBRANCH@", "@BUILD_TIME@");
+    public static Version getCurrent() {
+        return current;
+    }
+    public static Version getFromJar(JarFile jf) throws IOException {
+        Attributes mf = jf.getManifest().getMainAttributes();
+        jf.close();
+        return new Version( mf.getValue("XW-rev"),
+                            mf.getValue("XW-branch"),
+                            mf.getValue("XW-build"));
+    }
+}
+
+
