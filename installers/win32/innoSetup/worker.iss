@@ -24,7 +24,9 @@ Source: "worker\lib\wrapper.jar"; DestDir: "{app}\lib"
 Source: "worker\lib\xtremweb.jar"; DestDir: "{app}\lib"
 Source: "worker\lib\bcprov-jdk16-140.jar"; DestDir: "{app}\lib"
 Source: "worker\lib\ibis-util-2.1.jar"; DestDir: "{app}\lib"
-Source: "worker\lib\log4j-1.2.17.jar"; DestDir: "{app}\lib"
+Source: "worker\lib\log4j-1.2-api-2.10.0.jar"; DestDir: "{app}\lib"
+Source: "worker\lib\log4j-api-2.10.0.jar"; DestDir: "{app}\lib"
+Source: "worker\lib\log4j-core-2.10.0.jar"; DestDir: "{app}\lib"
 Source: "worker\lib\slf4j-api-1.7.2.jar"; DestDir: "{app}\lib"
 Source: "worker\lib\slf4j-log4j12-1.7.2.jar"; DestDir: "{app}\lib"
 Source: "worker\lib\smartsockets-1.4.jar"; DestDir: "{app}\lib"
@@ -96,22 +98,22 @@ begin
   begin
       if RegValueExists(HKEY_LOCAL_MACHINE, 'SOFTWARE\JavaSoft\Java Runtime Environment', 'CurrentVersion') then
       begin
-        if RegQueryStringValue(HKEY_LOCAL_MACHINE, 'SOFTWARE\JavaSoft\Java Runtime Environment', 'CurrentVersion', Name) then
+        if RegQueryStringValue(HKEY_LOCAL_MACHINE, 'SOFTWARE\JavaSoft\JRE', 'CurrentVersion', Name) then
         begin
-          if CompareStr(Name,'1.6') < 0  then
+          if CompareStr(Name,'8.0') < 0  then
             begin
-              MsgBox('Bad Java version : ' + Name + #13#10'This software needs Java 1.6 or higher.', mbInformation, MB_OK);
+              MsgBox('Bad Java version : ' + Name + #13#10'This software needs Java 1.8 or higher.', mbInformation, MB_OK);
               DeinitializeSetup();
             end;
         end;
       end else
       begin
-        MsgBox('Java Runtime not found : ' #13#10'This software needs Java 1.6 or higher.', mbInformation, MB_OK);
+        MsgBox('Java Runtime not found : ' #13#10'This software needs Java 1.8 or higher.', mbInformation, MB_OK);
         DeinitializeSetup();
       end;
   end else
   begin
-    MsgBox('Java Runtime not found : ' #13#10'This software needs Java 1.6 or higher.', mbInformation, MB_OK);
+    MsgBox('Java Runtime not found : ' #13#10'This software needs Java 1.8 or higher.', mbInformation, MB_OK);
     DeinitializeSetup();
   end;
 End;
