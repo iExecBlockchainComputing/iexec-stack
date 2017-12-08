@@ -137,8 +137,8 @@ CFLAGS = $(CFLAGS_MD) $(CPUTYPE) -g -Wall $(CPPFLAGS)
 LDFLAGS = $(LDFLAGS_MD) $(CPUTYPE)  -L'$(TARGET_JAVA_HOME)$(FS)lib'
 
 
-BUILD    = ..$(FS)..$(FS)..$(FS)..$(FS)..$(FS)..$(FS)..$(FS)build
-CLASSDIR = $(BUILD)$(FS)classes
+BUILD    = ..$(FS)..$(FS)..$(FS)..$(FS)..$(FS)build
+CLASSDIR = $(BUILD)
 INSTALLDIR  = $(BUILD)$(FS)dist$(FS)lib
 JNIDIR = $(CLASSDIR)$(FS)jni
 OBJDIR = $(CLASSDIR)$(FS)obj$(FS)$(XWSUFFIX)

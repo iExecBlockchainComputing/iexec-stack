@@ -34,7 +34,15 @@
 	xmlns:jacoco="antlib:org.jacoco.ant"
 	xmlns:sonar="antlib:org.sonar.ant" >
 
+  <property name="src.c.dir" value="/home/ugo/iexecdev/xtremweb-hep/src/main/natif/xtremweb/archdep" />
+  <property name="build.dir" value="build" />
+  <property name="src.dir" value="${basedir}/src" />
+  <property name="src.test.dir" value="${src.dir}/test/" />
+  <property name="lib.dir" value="/home/ugo/iexecdev/xtremweb-hep/libXtremWeb" />
+  <property name="build.classes" value="/home/ugo/iexecdev/xtremweb-hep/build/classes/java/main/" />
 
+  <property name="misc.dir" value="/home/ugo/iexecdev/xtremweb-hep/misc" />
+  
   <!--target name="tstamp">
     <property file="${build.dir}/VERSION" prefix="v." />
     <tstamp>
@@ -174,16 +182,15 @@
 
   <target name="prepare" depends="configure">
     <!-- MAKE THE DIRECTORIES IF NEEDED -->
-    <!--mkdir dir="${build.dir}" />
-    <mkdir dir="${dist.dir}" />
-    <mkdir dir="${dist.bin.dir}" />
-    <mkdir dir="${build.classes}" />
-    <mkdir dir="${build.classes}/obj" />
-    <mkdir dir="${build.classes}/obj/${xwsuffix}" />
-    <mkdir dir="${build.classes}/jni" />
-    <mkdir dir="${build.classes}/xwclasses" />
-    <mkdir dir="${dist.lib}" />
-    <mkdir dir="${dist.doc}" /-->
+    <mkdir dir="/home/ugo/iexecdev/xtremweb-hep/build" />
+    <mkdir dir="/home/ugo/iexecdev/xtremweb-hep/build/dist" />
+    <mkdir dir="/home/ugo/iexecdev/xtremweb-hep/build/bin" />
+    <mkdir dir="/home/ugo/iexecdev/xtremweb-hep/build/obj" />
+    <mkdir dir="/home/ugo/iexecdev/xtremweb-hep/build/obj/${xwsuffix}" />
+    <mkdir dir="/home/ugo/iexecdev/xtremweb-hep/build/jni" />
+    <mkdir dir="/home/ugo/iexecdev/xtremweb-hep/build/xwclasses" />
+    <!--mkdir dir="${dist.lib}" /-->
+    <!--mkdir dir="${dist.doc}" -->
 
   <!-- CLASSPATH FOR COMPILATION -->
     <path id="project.classpath">
@@ -223,49 +230,26 @@
     </javac>
   </target>
 
-  <target name="archdep" depends="common">
+  <target name="archdep" depends="configure">
     <javac compiler="${compiler}"  
 	   classpath="${classpath}" 
 	   debug="${debug}" 
 		debuglevel="${debuglevel}"
     	includeAntRuntime="false"
 	   destdir="${build.classes}" 
-	   srcdir="${src.java.dir}"
+	   srcdir="src/main/java/xtremweb"
 	   source="1.8"
 	   deprecation="on">
       <patternset><include name="archdep/**" /></patternset> 
     </javac>
   </target>
   
-  <target  name="jni" depends="archdep">
-    <!-- generate jni headers -->
-<!--
- javah task does not work with openjdk
- :'(
--->
-<!--
-    <javah class="xtremweb.archdep.PortMapper"
-	   classpath="${classpath}" 
-	   outputfile="${src.c.dir}/PortMapper.h" />
-    <javah class="xtremweb.archdep.XWUtilImpl" 
-	   classpath="${classpath}" 
-	   outputfile="${src.c.dir}/XWUtilImpl.h" />
-    <javah class="xtremweb.archdep.XWTracerImpl"
-	   classpath="${classpath}" 
-	   outputfile="${src.c.dir}/XWTracerImpl.h" />
-    <javah class="xtremweb.archdep.XWInterruptsWin32" 
-	   classpath="${classpath}" 
-	   outputfile="${src.c.dir}/XWInterruptsImpl.h" />
-    <javah class="xtremweb.archdep.WinSaver"
-	   classpath="${classpath}" 
-	   outputfile="${src.c.dir}/WinSaver.h" />
-    <javah class="xtremweb.archdep.MacSaver" 
-	   classpath="${classpath}" 
-	   outputfile="${src.c.dir}/MacSaver.h" />
-    -->
-<!--
-     use exec task, because javah task does not with openjdk...
--->
+  <!-- generate jni headers -->
+  <target  name="jni" depends="prepare">
+
+	<!--
+		use exec task, because javah task does not with openjdk...
+	-->
     <exec dir="${src.c.dir}" executable="javah" failonerror="true">
       <arg line="-classpath ${classpath} -o ${src.c.dir}/PortMapper.h xtremweb.archdep.PortMapper" />
 		</exec>
@@ -292,15 +276,26 @@
       </fileset>
     </copy>
 
+	<echo>
+      suffix=${xwsuffix}
+      XWARCH=${xwarch}
+      TARGET=${target.os}
+      CROSS=${cross.prefix}
+      TARGET_JAVA_HOME=${cross.java.home}
+      XWVERSION=${version}
+    </echo>
+
     <!-- make install must copy the files (jni shared libraries) in ${dist.lib} -->
     <exec dir="${src.c.dir}" executable="make" failonerror="true">
-      <arg line="-f &apos;${build.dir}/natif.mk&apos; install" />
+      <!--arg line="-f &apos;${basedir}/src/main/resources/scripts/natif.mk&apos; install" /-->
+	  <arg line="-f &apos;${basedir}/resources/natif.mk&apos; install" />
       <env key="XWSUFFIX" value="${xwsuffix}" />
       <env key="XWARCH"   value="${xwarch}" />
       <env key="TARGET"   value="${target.os}" />
       <env key="CROSS"    value="${cross.prefix}" />
       <env key="TARGET_JAVA_HOME" value="${cross.java.home}" />
-      <env key="XWVERSION" value="${version}" />
+      <!--env key="XWVERSION" value="${version}" /-->
+      <env key="XWVERSION" value="11.5.0" />
     </exec>
   </target>
 
