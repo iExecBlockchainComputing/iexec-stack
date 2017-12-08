@@ -817,7 +817,7 @@ public final class CommManager extends Thread {
 
 			commClient = commClient(uri);
 
-			if (uri.isHttp() || uri.isAttic()) {
+			if (uri.isHttp() || uri.isHttps() || uri.isAttic()) {
 				wget(uri);
 				return;
 			}
