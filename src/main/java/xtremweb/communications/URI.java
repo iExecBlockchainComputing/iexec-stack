@@ -259,6 +259,20 @@ public class URI extends XMLable {
 	}
 
 	/**
+	 * This returns the name part of this URI 
+	 * (the string after the last '/' )
+	 * @since 11.5.0
+	 */
+	public String getName() {
+		if(uri == null) {
+			return null;
+		}
+		final String path = getPath();
+		final int lastslash = path.lastIndexOf('/');
+		return path.substring(lastslash + 1 > path.length() ? lastslash : lastslash + 1);
+	}
+
+	/**
 	 * This check whether scheme is file one
 	 *
 	 * @return true if scheme is file one

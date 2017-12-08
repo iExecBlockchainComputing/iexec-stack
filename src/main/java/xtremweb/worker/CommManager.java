@@ -963,7 +963,8 @@ public final class CommManager extends Thread {
 			if (fdata == null) {
 				throw new IOException(uri.toString() + " can't cache data");
 			}
-			data.setName(uri.getPath());
+//			data.setName(uri.getPath());
+			data.setName(uri.getName());
 			commClient.addToCache(data, uri);
 			data = null;
 
