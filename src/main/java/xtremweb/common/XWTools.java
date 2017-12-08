@@ -794,7 +794,7 @@ public class XWTools {
 	 * @throws CertificateEncodingException
 	 */
 	public static final X509Certificate[] retrieveCertificates(final String host, final boolean sav)
-			throws UnknownHostException, IOException, CertificateEncodingException {
+			throws IOException, CertificateEncodingException {
 		final int port = 443;
 
 		final SocketFactory factory = SSLSocketFactory.getDefault();
@@ -803,7 +803,7 @@ public class XWTools {
 		socket.startHandshake();
 
 		final X509Certificate[] certs = (X509Certificate[]) socket.getSession().getPeerCertificates();
-		final Logger logger = new Logger(HTTPOpenIdHandler.class);
+		final Logger logger = new Logger("XWTools");
 		logger.info(host + " : certs retrieved = " + certs.length);
 		int i = 0;
 		for (final X509Certificate cert : certs) {

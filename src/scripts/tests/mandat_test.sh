@@ -62,7 +62,7 @@ for u in ${USERS[*]} ; do
 	echo ""
 	echo "Accessing apps for user ${USER} mandating ${MANDATEDUSER}"
 	echo ""
-	${XWBINDIR}/xwapps --xwconfig ${MANDATEDUSER}.conf -DMANDATINGUSER=${USER}> ${FLIST}
+	${XWBINDIR}/xwapps --xwconfig ${MANDATEDUSER}.conf -DMANDATINGLOGIN=${USER}> ${FLIST}
 	(cat ${FLIST} | grep ls_pub > /dev/null ) && echo "  [SUCCESS]  : ${USER} accesses ls_pub, mandating ${MANDATEDUSER}" || echo "  [ERROR]  : ${USER} can't access ls_pub, mandating ${MANDATEDUSER}"
 	(cat ${FLIST} | grep ls_priv_user1 > /dev/null ) && echo "  [SUCCESS]  : ${USER} accesses ls_priv_user1, mandating ${MANDATEDUSER}" || echo "  [ERROR]  : ${USER} can't access ls_priv_user1, mandating ${MANDATEDUSER}"
 	(cat ${FLIST} | grep ls_priv_user2 > /dev/null ) && echo "  [SUCCESS]  : ${USER} accesses ls_priv_user2, mandating ${MANDATEDUSER}" || echo "  [ERROR]  : ${USER} can't access ls_priv_user2, mandating ${MANDATEDUSER}"
@@ -90,10 +90,10 @@ for u in ${USERS[*]} ; do
 	echo ""
 	echo "Job submission by ${USER} mandating ${MANDATEDUSER}"
 	echo ""
-	${XWBINDIR}/xwsubmit --xwconfig ${MANDATEDUSER}.conf -DMANDATINGUSER=${USER} ls_pub                   --xwlabel ${USER}_ls_pub > /dev/null                  && echo "  [SUCCESS]  : ${USER} can submit for ls_pub, mandating ${MANDATEDUSER}" || echo "  [ERROR]  : ${USER} can't submit for ls_pub, mandating ${MANDATEDUSER}"
-	${XWBINDIR}/xwsubmit --xwconfig ${MANDATEDUSER}.conf -DMANDATINGUSER=${USER} ls_priv_user1            --xwlabel ${USER}_ls_priv_user1 > /dev/null           && echo "  [SUCCESS]  : ${USER} can submit for ls_priv_user1, mandating ${MANDATEDUSER}" || echo "  [ERROR]  : ${USER} can't submit for ls_priv_user1, mandating ${MANDATEDUSER}"
-	${XWBINDIR}/xwsubmit --xwconfig ${MANDATEDUSER}.conf -DMANDATINGUSER=${USER} ls_priv_user2            --xwlabel ${USER}_ls_priv_user2 > /dev/null           && echo "  [SUCCESS]  : ${USER} can submit for ls_priv_user2, mandating ${MANDATEDUSER}" || echo "  [ERROR]  : ${USER} can't submit for ls_priv_user2, mandating ${MANDATEDUSER}"
-	${XWBINDIR}/xwsubmit --xwconfig ${MANDATEDUSER}.conf -DMANDATINGUSER=${USER} ls_priv_stickybit_user1  --xwlabel ${USER}_ls_priv_stickybit_user1 > /dev/null && echo "  [SUCCESS]  : ${USER} can submit for ls_priv_stickybit_user1, mandating ${MANDATEDUSER}" || echo "  [ERROR]  : ${USER} can't submit for ls_priv_stickybit_user1, mandating ${MANDATEDUSER}"
+	${XWBINDIR}/xwsubmit --xwconfig ${MANDATEDUSER}.conf -DMANDATINGLOGIN=${USER} ls_pub                   --xwlabel ${USER}_ls_pub > /dev/null                  && echo "  [SUCCESS]  : ${USER} can submit for ls_pub, mandating ${MANDATEDUSER}" || echo "  [ERROR]  : ${USER} can't submit for ls_pub, mandating ${MANDATEDUSER}"
+	${XWBINDIR}/xwsubmit --xwconfig ${MANDATEDUSER}.conf -DMANDATINGLOGIN=${USER} ls_priv_user1            --xwlabel ${USER}_ls_priv_user1 > /dev/null           && echo "  [SUCCESS]  : ${USER} can submit for ls_priv_user1, mandating ${MANDATEDUSER}" || echo "  [ERROR]  : ${USER} can't submit for ls_priv_user1, mandating ${MANDATEDUSER}"
+	${XWBINDIR}/xwsubmit --xwconfig ${MANDATEDUSER}.conf -DMANDATINGLOGIN=${USER} ls_priv_user2            --xwlabel ${USER}_ls_priv_user2 > /dev/null           && echo "  [SUCCESS]  : ${USER} can submit for ls_priv_user2, mandating ${MANDATEDUSER}" || echo "  [ERROR]  : ${USER} can't submit for ls_priv_user2, mandating ${MANDATEDUSER}"
+	${XWBINDIR}/xwsubmit --xwconfig ${MANDATEDUSER}.conf -DMANDATINGLOGIN=${USER} ls_priv_stickybit_user1  --xwlabel ${USER}_ls_priv_stickybit_user1 > /dev/null && echo "  [SUCCESS]  : ${USER} can submit for ls_priv_stickybit_user1, mandating ${MANDATEDUSER}" || echo "  [ERROR]  : ${USER} can't submit for ls_priv_stickybit_user1, mandating ${MANDATEDUSER}"
 done
 
 NBWORKS=$(${XWBINDIR}/xwworks | grep PENDING | wc -l)

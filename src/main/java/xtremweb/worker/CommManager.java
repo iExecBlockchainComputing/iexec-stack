@@ -817,7 +817,7 @@ public final class CommManager extends Thread {
 
 			commClient = commClient(uri);
 
-			if (uri.isHttp() || uri.isAttic()) {
+			if (uri.isHttp() || uri.isHttps() || uri.isAttic()) {
 				wget(uri);
 				return;
 			}
@@ -963,7 +963,8 @@ public final class CommManager extends Thread {
 			if (fdata == null) {
 				throw new IOException(uri.toString() + " can't cache data");
 			}
-			data.setName(uri.getPath());
+//			data.setName(uri.getPath());
+			data.setName(uri.getName());
 			commClient.addToCache(data, uri);
 			data = null;
 

@@ -127,7 +127,7 @@ public class TCPClient extends CommClient {
 	 *            is the URI to reach
 	 */
 	@Override
-	protected void open(final URI uri)
+	protected void open(URI uri)
 			throws IOException, UnknownHostException, NoRouteToHostException, SSLHandshakeException, ConnectException {
 
 		if (isOpened()) {
@@ -159,13 +159,13 @@ public class TCPClient extends CommClient {
 				}
 			}
 
-//			URI uri2 = null;
-//			try {
-//				uri2 = new URI(serverName, serverPort, uri.getUID());
-//			} catch (final Exception e) {
-//				uri2 = uri;
-//			}
-//			uri = uri2;
+			URI uri2 = null;
+			try {
+				uri2 = new URI(serverName, serverPort, uri.getUID());
+			} catch (final Exception e) {
+				uri2 = uri;
+			}
+			uri = uri2;
 
 			final File keyFile = config.getKeyStoreFile();
 
