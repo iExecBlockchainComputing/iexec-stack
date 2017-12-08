@@ -2001,6 +2001,16 @@ info "Importing server public key into client keystore (\${WORKERFILE})"
 \${KEYTOOL} -list  -keystore \${CLIENTFILE} -storepass "\${SSLKeyClientpassword}"
 [ \$? -ne 0 ] && fatal "can't list certificates from client keystore"
 
+#
+# Importing CACERTS
+# @since 11.5.0
+#
+info "Importing CACERTS"
+\${BINDIR}/import_cacerts_to_keystore.sh \${SERVERFILE} \${SSLKeyServerpassword}
+\${BINDIR}/import_cacerts_to_keystore.sh \${WORKERFILE} \${SSLKeyWorkerpassword}
+\${BINDIR}/import_cacerts_to_keystore.sh \${CLIENTFILE} \${SSLKeyClientpassword}
+
+
 
 #
 # Signing jar file
