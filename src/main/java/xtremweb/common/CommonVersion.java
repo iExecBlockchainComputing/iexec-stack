@@ -34,9 +34,9 @@ public class CommonVersion {
     private static String major =  System.getProperty("version.major");
     private static String minor =  System.getProperty("version.minor");
     private static String micro =  System.getProperty("version.micro");
-    private static Version current = new Version(major, minor, micro);
+    // private static Version current = new Version(major, minor, micro);
     //private static Version current = new Version(major, minor, micro);
-    //private static Version current = new Version("11", "5", "0");
+    private static Version current = new Version("11", "5", "0");
     //private static Version current = new Version("@XWVERSION@", "@VBRANCH@", "@BUILD_TIME@");
     public static Version getCurrent() {
         return current;
