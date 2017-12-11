@@ -34,6 +34,7 @@ import org.apache.tools.ant.filters.ReplaceTokens
 import java.time.Instant
 
 ant.importBuild 'jni.xml'
+processResources.dependsOn jni
 
 task createVersion(type: Copy) {
     // delete old one
