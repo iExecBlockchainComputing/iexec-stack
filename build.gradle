@@ -1,7 +1,6 @@
 apply plugin: 'java-library'
 
 repositories {
-    jcenter()
     mavenCentral()
 }
 
@@ -47,5 +46,5 @@ dependencies {
     compile files('libXtremWeb/smartsockets-1.4.jar')
 }
 
-ant.importBuild 'src/main/resources/jni.xml'
+ant.importBuild 'jni.xml'
 
