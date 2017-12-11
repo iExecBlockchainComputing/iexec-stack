@@ -1,0 +1,2290 @@
+
+\input texinfo   @c -*-texinfo-*-
+
+
+@c %**start of header
+
+@include version.texi
+
+
+@setfilename  xtremweb.info
+@settitle XWHEP @value{VERSION} User Guide
+@setchapternewpage on
+@defcodeindex op
+@c Put everything except function (command, in this case) names in one
+@c  index (arbitrarily chosen to be the concept index).
+@syncodeindex op cp
+@syncodeindex vr cp
+@syncodeindex pg cp
+@footnotestyle separate
+@paragraphindent 2
+@finalout
+@c %**end of header
+
+@ifinfo
+This file documents the installation, usage and programming with XWHEP.
+
+Copyright 1999, 2000, 2001, 2002, 2003 to Laboratoire de l'Accelerateur Lineaire.
+
+Licencing under the condition of the GNU GPL (visit www.gnu.org)
+@end ifinfo
+
+@c  This title page illustrates only one of the
+@c  two methods of forming a title page.
+
+@titlepage
+
+@title XWHEP @value{VERSION} User Guide
+
+@subtitle Installation, Usage and Programming
+@subtitle Edition @value{EDITION}, for XWHEP version @value{VERSION}
+@subtitle @value{UPDATED}
+@author Oleg Lodygensky
+
+
+@c  The following two commands
+@c  start the copyright page.
+@page
+@vskip 0pt plus 1filll
+Copyright @copyright{} 2001, 2002 by Laboratoire de l'Accelerateur LinÈaire (@uref{http://www.lal.in2p3.fr/,LAL}).
+
+Permission is granted to make and distribute verbatim copies of this
+manual provided the copyright notice and this permission notice are
+preserved on all copies.
+
+Permission is granted to copy and distribute modified versions of this
+manual under the conditions for verbatim copying, provided that the
+entire resulting derived work is distributed under the terms of a
+permission notice identical to this one.
+
+Permission is granted to copy and distribute translations of this manual
+into another language, under the above conditions for modified versions,
+except that this permission notice may be stated in a translation
+approved by the author.
+@end titlepage
+
+@c @settitle XWHEP User Guide
+
+@node Top
+
+
+@menu
+
+* Introduction::
+* Reading conventions::
+* XWHEP :: Overview, architecture and features
+* Getting XWHEP:: Downloading packages from @uref{http://dghep.lal.in2p3.fr/spip.php?article46, our web site}.
+* Setting up XWHEP:: Requirements and compilation
+* Monitoring the platform::Monitoring a deployment using @uref{http://ganglia.sourceforge.net/, ganglia}, @uref{http://www.mrunix.net/webalizer/,webalizer} and more
+* Running and using the platform:: Server , client and worker usages
+* Connecting XWHEP to other grids :: Sharing resources between different grid families
+* Troubleshooting and reporting bugs ::
+* Papers ::
+* Index ::
+* Table of contents::
+@end menu
+
+
+@node Introduction, Reading conventions, Top, Top
+@chapter Introduction
+
+XtremWeb for High Energy Physics (@emph{XWHEP}) is a global computing platform aiming
+to aggregate volunteer computing resources over the Internet.
+Contrary of what the name could make readers think, this is a general purpose platform,
+not specifically dedicated to High Energy Physics (@emph{HEP}) community.
+The name should preferably be understood as XtremWeb @strong{@emph{BY}} High Energy Physics.
+
+Historycally speaking, @uref{http://www.xtremweb.net/,XtremWeb} is a project initiated 
+by @uref{http://www.lri.fr/,Laboratoire de Recherche en Informatique (LRI)}.
+
+In a pluri-disciplinal initiative, @uref{http://www.lal.in2p3.fr/,Laboratoire de l'AccÈlÈrateur LinÈaire (LAL)}
+and LRI joined their efforts to make what was a research platform aiming to study 
+large scale distributed systems (@emph{LSDS}) to a full production platform, naturally using HEP applications
+as first use cases (naturally, since LAL is an HEP laboratory).
+This common work having been a success, LAL continued not only to work with the platform in production, 
+but also to extend and improve it in several ways under the name of XWHEP.@*
+
+XWHEP was initially based on XtremWeb 1.8.0.
+
+@*
+
+This document first presents XWHEP and its innovative features; then describes how to compile, install
+and deploy the platform. 
+The last chapter is about inter-grid connections, the goal of such a feature, its security issues
+and finally how to make such inter-connections operable.
+
+@*
+
+The targeted audience is not only developpers and administrators willing to deploy an LSDS, but also
+end users that can gain access to a new computing power. 
+Finally volunteer PC owners who would like to participate to exciting research fields will also
+find useful informations here, on how to install and manage their PC as part of a global virtual cluster.
+
+@*
+
+@c @node node-name,  next,  previous,  up
+
+@cindex Reading conventions
+@cindex Conventions
+@node Reading conventions, XWHEP, Introduction, Top
+@chapter Reading conventions
+
+@itemize @bullet
+@item variables are refered like this : $@{install.dir@};
+@item $@{version@} refers to the version of XWHEP (currently @value{VERSION});
+@item code samples are given using courrier font
+@example
+  $> @command{make distrib}
+@end example
+@end itemize
+
+@ifinfo
+This document describes  how to install and use the XWHEP Global
+computing Platform.
+@end ifinfo
+
+@contents
+
+@node XWHEP, Overview, Reading conventions, Top
+@chapter XWHEP
+
+@menu
+* Overview::
+* Architecture::
+* What can I do:: What can I do with XWHEP
+* Features::
+* User management::
+* User rights::
+* Access rights::
+* Security::
+* Volunteer computing management::
+* Data management::
+* Application management::
+* Job management::
+* Job state graph::
+* Planned features::
+@end menu
+
+@node Overview, Architecture, XWHEP, XWHEP
+@section Overview
+
+
+@uref{http://dghep.lal.in2p3.fr/spip.php?rubrique13, XWHEP} is a middleware permitting to deploy 
+a Global Computing platform (Large Scale Distributed System).
+XWHEP belongs to the so called @emph{Cycle Stealing} environment family. 
+Like the other Distributed System Platforms, an XWHEP platform uses remote resources
+(PCs, workstations, PDA, servers) connected to Internet or a pool of resources  inside a LAN.   
+Participants of an XWHEP platform cooperate by providing their computing ressources, 
+such as processor, memory and/or disk space.  
+
+XWHEP is a project belonging to light weight GRID systems. Its a Free Software (GPL),
+Open Source and non-profit software platform to explore scientific issues and applications 
+of Global Computing and Peer to Peer distributed systems.   
+
+The XWHEP software platform allows to setup and run Distributed System projects. 
+Such project must be based on a community of participants. 
+For example, XWHEP platforms allow a High School, a University... or a Company to setup and run 
+a Global Computing or Peer to Peer distributed system for either a specific application or a range of applications. 
+
+
+@cindex Architecture
+@cindex Overview
+@node Architecture, What can I do, Overview, XWHEP
+@section Architecture
+
+
+The XWHEP project is made of three parts:
+@itemize @bullet
+@item the server is the centralized part in charge of the platform management; it is detailed on section @ref{XWHEP server};
+@item the worker is a distributed part deployed on PCs over the internet to provide computing ressources; it is detailed on section @ref{XWHEP worker};
+@item the client is a distributed part deployed on PCs over the internet which interacts with the platform; it is detailed on section @ref{XWHEP client}.
+@end itemize
+
+This architecture corresponds to most of well known global computing
+projects where a centralized server ensures the platform coherency, integrity 
+and security, while distributed parts (clients and workers) have, respectively,
+the user interface and computationnal capacities responsabilities.@*
+The server and its distributed part are known as @emph{the middleware} and form 
+alltogether a deployment or a network.
+The centralized server is the only trusted entity.
+It must be highly secure and maintained by the platform administrator to
+ensure security and quality of service (@emph{QoS}) of the full platform.@*
+Distributed parts are entirely untrusted by essence.
+The middleware ensures a global security and QoS levels by implementing
+expected services and protocols.
+
+The middleware is written to ensure a good fault tolerancy by detecting faults
+and, more generally, by considering volatility as a feature (and not a misbehavior).
+One of the major features that was already implemented in XtremWeb 1.8.0 is the
+server replication (as described in @uref{http://www.lal.in2p3.fr/~lodygens/gc/RPCV-SC-2004.pdf, ``RPC-V: Toward Fault-Tolerant RPC for Internet Connected Desktop Grids with Volatile Nodes.''}).
+
+XWHEP extends the XtremWeb server by introducing the notion of datas
+and access rights.
+The server may act as a data server, but datas can be stored anywhere as soon as 
+they are accessible by URI. Current version includes @emph{HTTP} the Web standardized access protocol,
+@emph{ADICS} a peer to peer architecture for data intensive cycle sharing (see @uref{http://www.p2p-adics.org/, www.p2p-adics.org/})
+and implements its own new schema, @emph{xw://}.
+
+@*
+
+@center @strong{Architecture}
+@image{architecture,15cm,,,Architecture,jpg}
+
+@node What can I do, Features, Architecture, XWHEP
+@section What can I do with XWHEP
+As a system software, XWHEP allows you to: 
+@cindex Features
+
+@enumerate
+@item use a Peer-to-Peer computing platform. 
+@item participate (provide computing ressources) to a Global Computing or a Peer-to-Peer Project by joining an XWHEP platform (see the projects links on the main page), 
+@item be collaborator of XWHEP by helping us developing  XWHEP , 
+@item  easily build your own General Purpose Global Computing System. 
+@end enumerate 
+
+Participants may download the Worker software to participate. 
+ XWHEP  Worker examines constantly the workload of your PC. 
+When the workload becomes insignificant, your PC starts participating to a world wide experiment (research or large contests). 
+For most of the PCs, the computation is done during the night. 
+
+Any one can download the entire software (Worker, Server, Lan administrator) to setup their own XWHEP platform.
+
+Large institutions that are spred among several geographical sites and that are using cycle stealing to increase their computational power may use XWHEP to manage all the resources through a single environment. By downloading the entire XWHEP system you will be able to launch a Global Computing or a Peer-to-Peer Computing system. To do so, you will have to setup a community of workers. Dedicated Global Computing System particularly match the requirements of institutions like Schools, Universities, Laboratories, Libraries, Factories, Industries, ..., Companies that need a system allowing the use of idle resources during the nights or week-end. 
+
+@node Features, User management, What can I do, XWHEP
+@section Features
+@cindex Features
+
+XWHEP is a generic multi purposes desktop grid platform (DG) enabling eSciences computations over volatile nodes.
+
+Main features are :
+@cindex Manifest
+@itemize @bullet
+@item three tiers architecture with a centralized scheduller
+@item multi platforms (win32, linux, mac os x)
+@item virtual stable cluster over volatile volunteers individual PCs
+@item protocol agnostic
+@item data server
+@item multi applications
+@item multi users
+@item firewall bypassing
+@item automatic load balancing
+@item fault tolerance
+@end itemize
+
+@c XWHEP package includes:
+@c @cindex Package
+@c@cindex Manifest
+@c@itemize @bullet
+@c@item XWHEP Server software for Linux and Mac OS X.
+@c@item XWHEP Worker software for Linux, Mac OS X and Windows 32
+@c@item XWHEP Client software for Linux, Mac OS X and Windows 32
+@c@item inter grids connection
+@c@item user management
+@c@item data management
+@c@item access rights
+@c@item multi transport protocols (@emph{TCP, UDP})
+@c@item multi communication layers (@emph{HTTP, XW...}) easily extendable
+@c@item server certification and communication encryption
+@c@item application management including end user ones
+@c@item group management
+@c@item privacy 
+@c@item @emph{ping}, upload and download bandwidth usage statistics 
+@c@item customizable scheduler
+@c@item dissociation between scheduler and data server
+@c@item files per job
+@c@item files per application
+@c@item computing resource cycle stealing activation (monitoring keyboard, mouse and processor activities)
+@c@end itemize
+
+
+@node User management, User rights, Features, XWHEP
+@subsection User management
+@cindex Features
+
+The platform introduces the notion of users, which must be understood just like in a cluster.
+An user is an entity that has the rights to perform some actions within the platform such as
+insert an application, submit a job, retreive a job result and more.
+An user is defined by its login and password@footnote{Since XWHEP 5.0.0, the platform also permits to use @emph{X509 certificates}, but this is still usable under certains circunstances only.}.; users have the responsability to ensure confidentiality and integrity of these informations. 
+These informations are always needed to connect to the platform. They are sent with all messages; messages without these informations or with invalid ones are rejected by the server. 
+They also define actions the user has the rights to execute (see @ref{User rights}).
+We can understand here that roles are not statically defined; they are dynamically defined by actions an user is allowed to request to server. An user identity that can be used to submit applications, datas and jobs may be considered as a client (this identity can be used to do so if the server allows requested actions for that identity). An identity that can be used to compute jobs may be considered as a worker (i.e. a distributed computing element - see @ref{Volunteer computing management}).
+
+An user may belong to a user group and not more than one.
+This helps to confine datas, applications, jobs and workers.
+With this feature, the platform defines three usage levels: @strong{public}, @strong{group} and @strong{private} as shown in figure @ref{Usage levels, ``Usage levels''}. The public level is the default one where applications, datas and jobs are public, accessible by all users, accordingly to their access rights (see @ref{Access rights}).
+
+@anchor{Usage levels}
+@center @strong{Usage levels}
+@image{grouping2,10cm,,,Usage levels,jpg}
+
+@enumerate
+@item @strong{Public usage level}. 
+By default users are @emph{public}: they don't belong to any group. They can use public applications and datas, submit public jobs that can be run by public workers. Public applications, datas and jobs are those accessible by all users accordingly to their access rights (see @ref{Access rights}).
+
+A public worker is a worker that has enough user rights to execute public applications.
+A public applications must be inserted by an user that is defined with @emph{administrator user level} (see @ref{User rights}). The application access rights defines the job ones; this is enforced by the server and there is no way modify this: any job referring a public application is public.
+
+@item @strong{Group usage level}.
+Users belonging to an user group can not only access public applications, datas, jobs and workers, but also those of its group. Note that an user can belong to one user group only.
+Applications, datas, jobs and workers are in an user group if and only if their owner belongs to an user group. The group access rights does not allow users not belonging to the group to access objects of the group.
+
+A group worker is a public worker defined a group: its identity is defined in the group and has enough user rights to execute group application.
+A group applications must be inserted by an user that is defined with @emph{administrator user level}. The application access rights defines the job one; this is enforced by the server and there is no way modify this: any job referring a group application is a group job.
+
+Users defined in a group can still submit public jobs by referring a public applications. A group worker will execute any public job as soon as it is the same user group of the job owner.
+
+@item @strong{Private usage level}.
+Finally, applications, datas, jobs and workers may be private ones.
+Only the owner can access private objects.
+Users that don't have @emph{administrator user level} can insert private applications and private ones only.
+This mechanism aims to protect workers against malicious or erroneus code.
+The application access rights defines the job one; this is enforced by the server and there is no way modify this: any job referring a private application is a private job.
+Such jobs can only be executed by private workers only. A private worker is worker presenting a non privileged identity (i.e. anything but @strong{not} a public worker). A private worker will execute jobs of its owner only: private, group or public jobs.
+
+@end enumerate
+@*
+
+The middleware includes several commands to manage users within the platform; please refer to @ref{User management with the XWHEP client}.
+
+@node User rights, Access rights, User management, XWHEP
+@subsection User rights
+@cindex Features
+
+Each user identity is associated a user level which aims to determine actions the user can perform on the platform.
+Figure @ref{User rights} shows the user levels stack.
+
+@center @strong{User rights}
+@image{userrights,15cm,,,User rights,png}
+
+@*
+
+The user levels are as follow:
+@itemize @bullet
+@item @strong{Standard user level} defines a non privileged level which can be used to insert, modify and delete its own applications, datas, sessions, groups and jobs. 
+A standard user can not insert public applications, but private ones only.
+On the other hand, it can insert private, public and group jobs and datas.
+@item @strong{Advanced user level} defines a privileged level which is stacked over standard level and can also be used to insert, modify and delete public applications and workers.
+This is the minimal level to insert group and public applications.
+@item @strong{Super user level} defines a privileged level which is stacked over advanced level and can also be used to insert, modify and delete users and user groups.
+@item @strong{Worker level} is a very special case aiming to override access rights according to some security issues.
+This level is lower than standard one. 
+Hence it cannot be used to insert/modify/delete anything (applications, datas, jobs etc.).
+This level can only be used to download a job and its associated datas (typically to compute the job), update the job and insert its result (as a data).
+To do so, the worker must be noted as managing (e.g. running) the given job.
+If this condition is fullfilled, the worker can modify the job (i.e. set the job status to @emph{COMPLETED} etc.), overriding the job access rights. It also gains delegation rights to insert a new data, the job result, for another user (the job owner).
+@end itemize
+
+
+
+@*
+
+The middleware includes several commands to manage users within the platform; please refer to @ref{User management with the XWHEP client}.
+
+@node Access rights, Security, User rights, XWHEP
+@subsection Access rights
+@cindex Features
+
+The platform introduces the notion of access rights which must be understood as @emph{file system} ones.
+
+Access rights are used to confine access of applications, datas and jobs.
+They define authorizations for the owner, the group and other users :
+
+@itemize @bullet
+
+@item 0400    Allow read by owner.
+@item 0200    Allow write by owner.
+@item 0100    For applications, allow execution by owner.
+@item 0040    Allow read by group members.
+@item 0020    Allow write by group members.
+@item 0010    For applications, allow execution by group members.
+@item 0004    Allow read by others.
+@item 0002    Allow write by others.
+@item 0001    For applications, allow execution by others.
+
+@end itemize
+
+@*
+
+Access rights can be combined to define access levels:
+
+@itemize @bullet
+@item Private : 0x700
+@item Group : 0x750
+@item Public : 0x755
+@end itemize
+
+@*
+
+Access rights rules : 
+@itemize @bullet
+@item Access rights can only be modified by owner and privileged users.
+@item Application access rights are public by default if the application is inserted with advanced user level.
+They are private otherwise.@*
+There is no way to change applications access rights.
+@item Job access rights are those of the referred application.
+There is no way neither to override this rule, nor to change job access rights.@*
+Public applications are referred by public jobs only; group applications by groups jobs only; private applications by private jobs only.
+@item A job should never refer any datas with a lower access rights (e.g. a public job should never refer private or group datas). Because there is no predictable way to determine which worker will manage the job.
+If a user inserts a private datas and uses it with a public job, that job could only be successfully computed by a private worker. 
+In the case the job is managed by a public worker (which is highly probable since the job is public), that worker will not be able to retreive the private data expected by the public job. That public worker will then set the status of this public job as @emph{ERROR}.@*
+In one word, public jobs should always refer to public datas, group jobs should always refer to group datas; and private jobs should always refer to private datas.
+@item Data access rights are public by default. Data access rights only apply for datas stored on XWHEP server (see @ref{Data management}).
+@end itemize
+
+
+@*
+
+The middleware includes several commands to manage access rights within the platform; please refer to @ref{Client generic actions}.
+
+@node Security, Volunteer computing management, Access rights, XWHEP
+@subsection Security
+@cindex Features
+
+The platform trust nothing and implements all required mechanisms to ensure its integrity, as well as integrity of its installed applications, datas, jobs and connected workers.
+
+As described in this document, @ref{Access rights}, @ref{User management} and @ref{User rights} ensure all together the expected security level so that :
+@itemize @bullet
+@item user management ensures security
+@item user groups and access rights ensure confidentiality.
+@item the server itself ensure integrity and perennation.
+@end itemize
+
+@node Volunteer computing management, Data management, Security, XWHEP
+@subsection Volunteer computing management
+@cindex Features
+
+A volunteer computing resource is called a @emph{worker} in XWHEP.
+A worker is a computationnal entity aiming to execute jobs and return their results. 
+A worker is typically a personnal computer.@*
+The platform aggregates some informations from the worker but no personnal datas. 
+Informations are CPU type and performances, memory and disk availability, and IP adress.@*
+The platform uses worker CPU powers accordingly to worker local activation policies, in a non intrusive mode.
+The owner keeps total control of its machine and its installed worker. 
+See @ref{Control the XWHEP worker}.
+
+The platform administrator keeps the ability to revoke any workers at any time. 
+See @ref{Worker management with the XWHEP client}.
+
+@node Data management, Application management, Volunteer computing management, XWHEP
+@subsection Data management
+@cindex Features
+
+The middleware includes several commands to manage datas within the platform; please refer to @ref{Data management with the XWHEP client}.
+
+@node Application management, Job management, Data management, XWHEP
+@subsection Application management
+@cindex Features
+
+The middleware includes several commands to manage applications within the platform; please refer to @ref{Application management with the XWHEP client}.
+
+@node Job management, Job state graph, Application management, XWHEP
+@subsection Job management
+@cindex Features
+
+@node Job state graph, Planned features, Job management, XWHEP
+@subsection Job state graph
+@cindex Job state graph
+
+The middleware includes several commands to manage jobs within the platform; please refer to @ref{Jobs management with the XWHEP client}.
+
+@node Planned features, Getting XWHEP , Job state graph, XWHEP
+@section Planned features
+
+@itemize @bullet
+@item full usage of X509 certificates;
+@item result certification is not impletemented at all since it is a huge problem;
+@item worker sandbox is ready for Mac OS X 10.5 but not inserted in the current release. A sandbox feature is ready to use for all Linux platforms.
+@item replication and pessimistic message logging are implemented to prevent faults but not fully functionnal yet;
+@item server migration is planned
+@end itemize
+
+
+@node Getting  XWHEP, Downloading XWHEP source package, Planned features, Top
+@chapter Getting  XWHEP 
+
+@menu
+* Downloading XWHEP source package::
+* Downloading XWHEP binary package::
+@end menu
+
+The XWHEP package is downloadable from the @uref{http://dghep.lal.in2p3.fr/spip.php?article46, web site}.
+
+You will find there sources and installers.
+
+
+@node Downloading XWHEP source package, Downloading XWHEP binary package, Getting XWHEP, Getting XWHEP
+@section Downloading XWHEP source package
+@cindex Download
+
+There are two ways to get the XWHEP sources; you can:
+@itemize @bullet
+@item download them from the @uref{http://dghep.lal.in2p3.fr/spip.php?article46, web site};
+
+You get XWHEP-$@{version@}.tar.bz2.
+
+Untar it with the command 
+@example
+  @command{tar xvfj XWHEP-$@{version@}.tar.bz2}.
+@end example
+
+@item get them from the XWHEP SVN.
+
+One SVN commands are necessary:
+
+@example
+@command{svn co https://svn.lal.in2p3.fr/projects/XWHEP/tags/$@{version@}/  targetDir}
+@end example
+Where $@{version@} is the current version number (e.g 6.0.0).
+
+@end itemize
+
+@node Downloading XWHEP binary package, Setting up XWHEP , Downloading XWHEP source package, Getting  XWHEP 
+@section Downloading XWHEP binary package
+@cindex Download
+
+There are two ways to get the XWHEP sources; you can:
+@itemize @bullet
+@item download them from the @uref{http://dghep.lal.in2p3.fr/spip.php?article46, web site};
+
+You get XWHEP-$@{version@}-bin.tar.gz.
+
+Untar it with the command 
+
+@example
+  @command{tar xvfz XWHEP-$@{version@}-bin.tar.gz}.
+@end example
+
+@end itemize
+
+@node Setting up XWHEP, Pre-requisit, Downloading XWHEP binary package, Top
+@chapter Setting up XWHEP 
+
+The XWHEP deployment is a three steps process
+@itemize @bullet
+@item generate the binary package from source one (or directly download the binary package from @uref{http://dghep.lal.in2p3.fr/spip.php?rubrique13, XWHEP web site})
+@item generate server, worker and client installation packages from XWHEP binary package
+@item install server and deploy workers and clients
+@end itemize
+
+@*
+
+This chapter is divided as follow:
+@menu
+* Pre-requisit::
+* Building from sources::
+* Building the deployment packages::
+* Deploying the platform::
+@end menu
+
+@*
+
+@node  Pre-requisit, Building from sources, Setting up XWHEP , Setting up XWHEP 
+@cindex Requirements
+@cindex Pre-requisit
+@cindex Third Party Softwares
+@cindex Java Classes
+@section Pre-requisit
+
+There are some requirements in order to be able to use XWHEP packages (both source and binary).
+All requirements are tested at deployement time (see @ref{Building the deployment packages}).
+@*
+
+Pre-requisit to install XWHEP are:
+@itemize @bullet
+@cindex Unix
+@cindex Linux
+@cindex Mac Os X
+@c @item An XWHEP dedicated unix user.
+@c @*
+
+@c In order to configure, install and run the XWHEP server, a dedicated user is expected.
+@c This user (let 's say ' xtremweb ') must be in the apache server user group since your web server (if any) and the XWHEP server share files.
+
+@c If your web server is run with the user 'apache' of the group 'apache', then your 'xremweb' user should be in the group apache too.
+
+@c Some times, the apache user is 'www-data' and its groups is 'www-data' too; your 'xtremweb' user must then be in the 'www-data' group.
+
+@c Here is an example where we can see two users, 'apache' and 'xtremweb' in the same group 'www-data':
+@c @example
+@c  $> @command{more /etc/passwd}
+@c   www-data:x:20000:7500:apache user:/var/apache/files/www:/bin/tcsh
+@c   xtremweb:x:20001:7500: xtremweb user:/users/home/ xtremweb :/bin/tcsh
+@c   $> @command{more /etc/group}
+@c   www-data:x:7500:
+@c   $>
+@c @end example
+@c @*
+
+@c f you don't install and use the XWHEP PHP pages, following remarks are not required, but you still should create and use a dedicated user. You can go to the @ref{Building the sources, next section}.
+@c @*
+@c @*
+
+
+@cindex Mysql
+@cindex Database
+@item A Mysql server.
+You must have a MySQL server up and running. Be sure that the following condition are met :
+
+@enumerate
+@item Your server accept network connection. Please verify in the mysql configuration file (usually @file{/etc/mysql/my/cnf} that the field @command{skip networking} is commented.
+@item You have an account who holds enough privileges to add user and create databases. If you don't please ask your database administrator to help you.
+@end enumerate
+
+@cindex Java
+@cindex Java Developement Kit
+@cindex JVM 
+@item A Java environment (Sun JDK 1.5 or above is mandatory)
+
+	@uref{http://java.sun.com/}
+
+
+@item Several third partie Java classes are needed. They are included in XWHEP package:
+@cindex Third party Java classes
+@cindex jsse
+@cindex jnet
+@cindex jcert
+@cindex openxml
+@cindex SSH
+@cindex SSL
+@cindex Open SSL
+@cindex XML
+@cindex Open XML
+@cindex MinML
+@cindex ANTLR
+@cindex HsqlDb
+@cindex MysQL
+@cindex JDBC
+@itemize @bullet
+  @item jsse1.0.2 composed of @file{jcert.jar}, @file{jnet.jar}, @file{jsse.jar} for SSL (@uref{http://www.openssl.org/, OpenSSL});
+  @item @file{openxml-1.2.jar}(@uref{http://www.philo.de/xml/, OpenXML}), @file{MinML.jar}(@uref{http://www.wilson.co.uk/xml/minml.htm, MinML}) for parsing XML;
+  @item @file{antlr.jar} is a lexical translator (@uref{http://www.antlr.org, ANTLR}) to parse service calls;
+  @item @file{hsqldb.jar}, a 100% Java SQL DataBase Engine, (@uref{http://hsqldb.sourceforge.net/, HSQLDB}) to embed database in server;
+  @item @file{mysql-connector-java-5.1.6-bin.jar} (@uref{http://dev.mysql.com/downloads/mysql/5.1.html, MySQL}) to access MySQL databases;
+@end itemize
+
+@c @item The XWHEP server specifically needs :
+@c 
+@c @enumerate
+@c   @item All previously enumerated JAR files;
+@c   @item A relationnal database (typically mysql 5.0) (@uref{http://dev.mysql.com/});
+@c @cindex  Apache
+@c @cindex  PHP
+@c   @item And, @strong{optionnally}, an http server (typically apache) with  PHP 4.1 (at least) support, if server access through @emph{PHP} pages are expected.
+@c 
+@c          @uref{http://www.apache.org} @*
+@c          @uref{http://www.php.net}
+@c 
+@c   Tested configuration : Apache-1.3.9 and PHP 4.2.3 on Linux and Windows.
+@c 
+@c @end enumerate
+@c 
+@c 
+@c @item The XWHEP worker specifically needs :
+@c 
+@c @enumerate
+@c   @item XML, SSL and antlr JAR files.
+@c @end enumerate
+@c 
+@c @item The XWHEP client and monitor specifically need :
+@c 
+@c @enumerate
+@c   @item XML, SSL JAR files.
+@c @end enumerate
+@c 
+@end itemize
+
+
+
+
+@node Building from sources, Preparing the build process, Pre-requisit, Setting up XWHEP 
+@comment  node-name,  next,  previous,  up
+@section Building from sources
+@cindex Sources (building the)
+@cindex Building from sources (server administration)
+@cindex configure
+@cindex build.conf
+
+@menu
+* Sources package structure::
+* Preparing the build process::
+* Preparing the binary package::
+* What have been installed from source::
+@end menu
+ 
+
+You are not compelled to build XWHEP from sources, you can download the binary package from the @uref{http://dghep.lal.in2p3.fr/spip.php?rubrique13, XWHEP web site}. If you have done so, you can directly go to @ref{Building the deployment packages, next section}.
+
+
+The XWHEP middleware is written in Java language, hence the @uref{http://java.sun.com/,Java package} is the first
+requirement to build  and run XWHEP .@*
+The build process use the @uref{http://ant.apache.org/,Apache Ant} build tool; it first expects the JAVA_HOME
+environment variable to be set.
+
+Note for Windows users: it is possible to configure, build and install XWHEP in this platform, 
+using @uref{http://www.cygwin.com/, Cygwin}.
+This should work, but is not supported.
+
+@node Sources package structure, Preparing the build process, Building from sources , Building from sources 
+@subsection Sources package structure
+@cindex Manifest
+
+The package contains seven directories:
+@itemize @bullet
+
+	@item @file{benchmark/}, a set of scripts to benchmark the platform
+	@item @file{build/}, needed files to compile, install etc.;
+	@item @file{classes/}, Third Party classes;
+	@item @file{doc/}, this documentation files;
+	@item @file{misc/}, several needed files, such as config ones;
+	@item @file{php/}, WEB SITE (php scripts) files;
+	@item @file{src/}, sources directory hierarchy.
+@end itemize
+
+You don't  have to set any environnement variable, but for the following of
+the installation procedure, we assume that  @strong{$@{sources.dir@}} is the place
+where XWHEP sources are stored and @strong{$@{install.dir@}} is the installation directory 
+(where @command{make install} installs the binary package). 
+
+
+@node Preparing the build process, Preparing the binary package, Building from sources, Building from sources
+@comment  node-name,  next,  previous,  up
+@subsection Preparing the build process
+@cindex Building from sources (preparing the)
+
+
+Several parameters should be set in @file{build/build.conf} configuration file to
+build and install the binary package.
+
+@itemize @bullet
+
+@cindex install.dir (building from source)
+@item @command{install.dir} : contains the directory where the binary package will be installed
+
+@cindex install.www.dir (building from source)
+@item @command{install.www.dir} : contains the directory where the PHP pages will be copied
+
+@cindex ganglia.www.dir (building from source)
+@item @command{ganglia.www.dir} : contains the directory where the ganglia templates for XWHEP will be copied
+
+@cindex xwidl.opts (building from source)
+@item @command{xwidl.opts} : you should never modify this
+
+
+@end itemize
+
+
+@node Preparing the binary package, Building the deployment packages, Preparing the build process, Building from sources
+@comment  node-name,  next,  previous,  up
+@subsection Preparing the binary package
+@cindex Sources (installing from)
+@cindex Preparing the binary package
+
+The source package can prepare the binary package which aims to generate deployment packages. 
+Binary package usage is described in @ref{Building the deployment packages, next section}.
+
+At this point, you must have first read @ref{Preparing the build process}.
+
+As soon as @file{build/build.conf} has been edited, you can build and install the binary package using :
+
+
+@example
+  $> @command{make && make install}
+@end example
+
+ 
+Installation process includes several steps (assuming build.conf is correct...) :
+
+
+@itemize @bullet
+@item @command{distrib} : this compiles the Java files
+@item @command{package} : this install the binary package
+@item @command{doc} : this generates the JavaDoc (API documentation)
+@item @command{install} : this installs the binary package
+@item @command{uninstall} : this removes the binary package
+@item @command{clean} : this removes compiled Java files (but leaves the installed binary package)
+@end itemize
+
+@*
+
+
+@node What have been installed from source, Building the deployment packages, Preparing the binary package, Building from sources
+@subsection What have been installed
+
+@*
+
+@node Building the deployment packages,  Binary package structure,Preparing the binary package, Setting up XWHEP
+@comment  node-name,  next,  previous,  up
+@section Building the deployment packages.
+@cindex Installers
+
+@menu
+* Binary package structure::
+* Running the binary configuration script::
+* What have been installed from binary::
+@end menu
+
+
+The binary package aims to generate server, worker and client installation packages.
+These packages help to deploy the platform.
+@*
+At this point, you either generated the binary package from source package as described in @ref{Building from sources, previous section}, or downloaded the binary package from the @uref{http://dghep.lal.in2p3.fr/spip.php?rubrique15, web site}.
+
+
+We can not directly propose packages from our web site since it is impossible
+to create generic installers because each deployment has its own private datas (mysql configuration, electronic keys etc.).
+
+If you have downloaded the XWHEP source package, please refer to @ref{Building from sources, previous section}.
+@*
+
+
+@node Binary package structure, Running the binary configuration script, Building the deployment packages, Building the deployment packages
+@subsection Binary package structure
+@cindex Manifest
+
+The package contains seven directories:
+@itemize @bullet
+	@item @file{apptest/}, a simple application to test XWHEP
+	@item @file{bin/}, XWHEP scripts
+	@item @file{conf/}, configuration files
+	@item @file{doc/}, this documentation files;
+	@item @file{installers/}, linux, Win32 and Mac OS X packages
+	@item @file{keystore/}, electronic keys
+	@item @file{lib/}, needed jar files
+@end itemize
+
+You don't  have to set any environnement variable, but for the following of
+the installation procedure, we assume that  @strong{$@{install.dir@}} is the installation directory. 
+
+
+@comment  node-name,  next,  previous,  up
+
+@node Running the binary configuration script, Deploying the platform, Binary package structure, Building the deployment packages
+@subsection Running the binary package configuration script
+@cindex Binary package configuration script
+@cindex xwconfigure
+
+@c The @file{bin/} directory contains several scripts.
+@c You must invoke @file{bin/xwconfigure} to generate your deployment packages.
+@c This script checks requirements and ask about twenty questions to set the differents configuration files.
+@c 
+@c All your answers are stored in @file{conf/xwconfigure.values} so that if, for any reason, you interrupt @file{xwconfigure}, you can retreive your already answered questions and just press the @emph{Enter} key.
+@c If you erase this @file{xwconfigure.values} file, you will have to re-answer to all questions if you re-run the script.
+@c 
+@c 
+@c @image{userlayers,15cm,,,User layers,jpg}
+
+The procedure is explained in @uref{XWHEP-tutorial.html, the tutorial}.
+
+
+@node What have been installed from binary, Deploying the platform, Running the binary configuration script, Building the deployment packages
+@subsection What have been installed
+
+
+@*
+
+@node Deploying the platform, Monitoring the platform, Running the binary configuration script, Setting up XWHEP
+@section Deploying the platform
+@cindex Server installation
+@cindex Deployment
+
+If you have followed the procedure explained in @uref{XWHEP-tutorial.html, the tutorial}, you now have your installation packages ready.
+
+
+@node  Monitoring the platform, Running and using the platform, Deploying the platform, Top
+@comment  node-name,  next,  previous,  up
+@chapter Monitoring the platform
+@cindex Monitor
+
+The middleware comes with monitoring tools on three different levels:
+@itemize @bullet
+@item @strong{At the grid level}: Our middleware includes necessary tools to collect @emph{ganglia} metrics from an XWHEP deployment.
+@emph{Ganglia} is a free scalable distributed monitoring system for high-performance computing systems such as clusters and Grids. 
+It is available at @uref{http://ganglia.sourceforge.net/, http://ganglia.sourceforge.net/}.
+Our middleware also proposes ganglia Web templates to easily integrate ganglia Web front end.@*
+
+To use this monitoring facility, you must first install ganglia and its web front end on your server.
+Then copy the directory @file{<SRCDIR>/php/ganglia/templates/XtremWeb/} into @file{<GANGLIAWEBFRONTEND>/templates/}.
+You should then have a @file{<GANGLIAWEBFRONTEND>/templates/XtremWeb} containing several @file{*.tpl} files.
+
+You must start the @file{bin/xtremweb.ganglia} service which launches a @emph{pseudo} ganglia @emph{gmond}.
+This service replace ganglia gmond service and listen to port 8694.
+
+You must then configure ganglia @emph{gmetad} service with a new data source.
+To do so, insert the next line in your gmetad configuration file (typicaly @file{/etc/gmetad.conf}) where you can replace ``localhost'' by you server host name, but must keep port 8694:
+@example
+data_source "XWHEP" localhost:8694
+@end example
+
+You can now see you ganglia reports using you web browser and monitor your XWHEP deployment.
+
+
+@item @strong{At the communication level}: Our server automatically writes its log files, conforming to @uref{http://www.apache.org/docs/mod/mod_log_common.html, standard common logfile format (CLF)}. 
+You can find your server log files in @file{/tmp/XW.SERVER.<YOURSERVERNAME>/} (assuming @file{/tmp} is your server local path, as defined in your server configuration file).@*
+These log files can be parsed with any log analysis program, such as @emph{Webalizer} which is free and available at @uref{http://www.mrunix.net/webalizer/, http://www.mrunix.net/webalizer/}.
+@item @strong{At the server level}: Finally, our middleware proposes a script to be run on server side: @file{bin/monitoring.sh}.
+This script collects CPU, open files and available memory informations. It was mainly designed to debug the platform, but can still be used to monitor the server host (linux only).
+Output files (one per day) are in @emph{CSV} format and can be easily parsed to generate graphs.
+This CSV format is also readable by calculator like MS-Excel or Number by Apple.
+@end itemize
+@node Running and using the platform, XWHEP server, Monitoring the platform, Top
+@comment  node-name,  next,  previous,  up
+@chapter Running and using the platform
+
+This section describes how to manage and use the three XWHEP parts:
+@menu
+* XWHEP server::
+* XWHEP worker::
+* XWHEP client::
+@end menu
+
+@*
+
+@node XWHEP server, Configuring the XWHEP server, Running and using the platform, Running and using the platform
+@section XWHEP server
+@cindex Server, Scheduler
+
+@menu
+* Configuring the XWHEP server::
+* Launching the XWHEP server::
+@end menu
+
+The server is the centralized part in charge of the platform management. It aims to receive jobs requests from clients, schedule them on workers until succesfull completion, collect results and forward them back to clients.
+
+@*
+
+@cindex Server configuration
+@node Configuring the XWHEP server, Launching the XWHEP server, XWHEP server, XWHEP server
+@subsection Configuring the XWHEP server
+
+You will find a @file{conf/xtremweb.server.conf} file in the distribution.
+If you have downloaded the sources distribution, the installation process create it for you in your installation directory 
+by the @command{make install} command.
+
+
+The configuration of the file consists of a pair of @command{keys} and their values separated by the @samp{=} character. A line begining by @samp{#} is a comment.  
+
+@itemize @bullet
+
+@item Server configuration
+
+  @itemize @bullet
+@cindex xtremweb.role
+  @item @strong{xtremweb.role} must be set to @code{server}
+@cindex admin.login
+  @item @strong{admin.login} is the login of the platform administrator
+@cindex HomeDir
+  @item @strong{HomeDir} is the path containing applications and tasks 
+@cindex ModulesLogged
+  @item @strong{ModulesLogged} sets the expected modules list. Existing modules are DBI, Comm, Task:
+    @itemize @bullet
+@cindex DBI
+    @item DBI: Database Interface
+@cindex Comm
+    @item Comm: Communication received
+@cindex Task
+    @item Task: Tasks scheduled
+    @end itemize
+@cindex XWServer
+  @item @strong{XWServer} contains a space separated servers list; this is used for replication only.
+@cindex port.tcp
+    @item @strong{port.tcp} port to connect the server through TCP (default 4321)
+@cindex port.udp
+    @item @strong{port.udp} port to connect the server through UDP (default 4322)
+@cindex port.worker.http
+    @item @strong{port.worker.http} port where the worker may listen at  (default 4323)
+@cindex port.http
+    @item @strong{port.http} port to connect the server through HTTP  (default 4324)
+@cindex port.https
+    @item @strong{port.https} port to connect the server through HTTPS (default 4325)
+@cindex port.xmlrpc
+    @item @strong{port.xlmrpc} port to connect the server through XML RPC (default 4326)
+@cindex port.sunrpc
+    @item @strong{port.sunrpc} port to connect the server through SUN RPC (default 4327)
+@cindex java.nio
+    @item @strong{java.nio} defines wether to use NIO. Forced to false with HTTP layer (default 4329)
+
+  @end itemize
+
+@cindex Database configuration
+@item Database configuration
+
+  @itemize @bullet
+
+@cindex XWdbHost
+  @item @strong{XWdbHost} is the database server.
+@cindex XWdbName
+  @item @strong{XWdbName} is the database name Default in xtremweb.sql :"xtremweb"  .
+@cindex XWdbUser
+  @item @strong{XWdbUser} is the name of the user granted to access the database.
+@cindex XWdbPass
+  @item @strong{XWdbPass} is the password of the user granted to access the database.
+
+  @end itemize
+
+
+@cindex Security configuration, Server Security
+@item Security configuration
+
+  @itemize @bullet
+@cindex XWKeyStore
+  @item @strong{XWkeyStore} Put here the name of file containing the private key of the server and its certificate.
+@cindex XWpassPhrase
+  @item @strong{XWpassPhrase} is the password needed to access that file @samp{XWCertPass} by default.
+  @end itemize
+
+@cindex Logging facilities
+@item Logging facilities
+
+  @itemize @bullet
+  There are four levels: debug, info, warn and error.@*
+  
+  @end itemize
+
+@end itemize
+
+@*
+
+
+@node Launching the XWHEP server, XWHEP worker, Configuring the XWHEP server, XWHEP server
+@subsection Launching XWHEP server
+@cindex Server usage
+
+Scripts to launch the server are stored in the @file{bin/} directory.@*
+
+Be aware that the script uses some definition in @file{bin/xtremwebconf.sh}.@*
+One should read and edit this file.
+
+The script expect the configuration file to be located in @file{conf/} directory.
+
+The script @file{bin/xtremweb.server} helps to manage the server.
+It request one argument which may take four values : console, start, stop and restart:
+
+@itemize @bullet
+
+@item @strong{start} starts the server as daemon
+@item @strong{console} starts the server in the foreground (not as daemon)
+@item @strong{stop} stops the server
+@item @strong{restart} stops and restarts the server.
+
+@end itemize
+
+Example:
+@example 
+ xtremweb.server start
+@end example
+
+To launch the server, you must have sufficient privileges because the script try to execute
+the server under the "xtremweb'' user defined in your @file{xtremwebconf.sh} file.
+
+@*
+
+
+@node XWHEP worker, The worker configuration file, Launching the XWHEP server, Running and using the platform
+@section XWHEP worker
+@cindex worker
+
+@menu
+* The worker configuration file ::
+* Launch the XWHEP worker ::
+* Control the XWHEP worker ::
+@end menu
+
+The worker is the distributed part in charge of the computation. It aims to request jobs from the server and try to execute them. The worker compute in a non intruding way so that the owner of the machine is not disturb, accordingly to an activation policy defined in the @ref{The worker configuration file, configuration file}.
+
+@*
+
+@node  The worker configuration  file
+@subsection The worker configuration  file
+@cindex Worker configuration
+@cindex  xtremweb.worker.conf
+
+You will find a @file{conf/xtremweb.worker.conf} file in the distribution.
+If you have downloaded the sources distribution, the installation process create it for you in your installation directory 
+by the @command{make install} command.
+
+
+The default configuration file for the worker is named @file{xtremweb.worker.conf} and located in the @file{conf/} directory. If the worker can't access this file, it looks in your home directory in the subdirectory @file{$@{HOME@}/.xtremweb/xtremweb.worker.conf}
+(please, note the dot).@*
+You can also provide any other configuration file, see @ref{Launch the XWHEP worker}.
+
+The configuration of the file consists of several pairs of @samp{keys} and their values separated by the @code{:} character. A line begining by  @code{#} is a comment.  
+
+@itemize @bullet
+
+@cindex Connection configuration, Worker Connection configuration
+@item Connection configuration
+
+  @itemize @bullet
+  @item @strong{dispatcher.servers} sets the server to connect to; it a space separated servers list.@*
+  @item @strong{port.tcp} port to connect the server through TCP (default 4321)
+    @item @strong{port.udp} port to connect the server through UDP (default 4322)
+    @item @strong{port.worker.http} port where the worker may listen at  (default 4323)
+    @item @strong{port.http} port to connect the server through HTTP  (default 4324)
+    @item @strong{port.https} port to connect the server through HTTPS (default 4325)
+    @item @strong{port.xlmrpc} port to connect the server through XML RPC (default 4326)
+    @item @strong{port.sunrpc} port to connect the server through SUN RPC (default 4327)
+    @item @strong{java.nio} defines wether to use NIO. Forced to false with HTTP layer (default 4329)
+
+
+
+@cindex Activation Policy
+@item Activation Policy@*
+The activation policy defines the worker availability; a worker is available when it may compute in a non intruding way.
+  @itemize @bullet
+  @item @strong{activator.class} defines the activation policy (when the worker can compute?)@*
+  Available policies:
+    @itemize @bullet
+    @item @strong{xtremweb.worker.AlwaysActive} : this always allows the worker to compute; this is the default.
+    @item @strong{xtremweb.worker.DateActivator} : the worker availability is monitored by date and time.
+      @itemize @bullet
+      @item @strong{activator.date} defines dates and times 'a la' crontab, following these rules:
+        @itemize @bullet
+        @item this string can contains two parameters : the @strong{days of week}, then the @strong{hours of days}
+        @item be aware that defining days with no hours, defines full days (e.g. 24 hours)
+        @item several comma separated gaps may be provided
+        @item Field grammar:
+          @itemize
+          @item '*'   :  every possible values
+          @item <x>   :  a unic value
+          @item <x-y> :  a couple of values separated by an hyphen ('-') defining a gap from x to y
+          @end itemize
+        @item two fields are allowed :
+          @itemize
+          @item 1st field defines days of week
+            @itemize
+            @item '*' for every day
+            @item '1', 'sun' or 'sunday'
+            @item '2', 'mon' or 'monday'
+            @item ...
+            @item '7', 'sat' or 'saturday'
+            @item <N-M> a couple (of integers or Strings) defining days from N to M
+            @end itemize
+          @item 2nd field defines hours
+            @itemize
+            @item '*'    every hour
+            @item <N>    an integer defining a complete hour (0 <= N <= 23)
+            @item <N-M>  a couple of integers defining hours from N:00 to M:59 (0,0 <= N,M <= 23,23)
+            @end itemize
+          @end itemize
+        @item Examples:
+          @itemize
+          @item ``* *''      : every days, full day
+          @item ``* 1''      : every days, from 1:00AM  to 1:59AM
+          @item ``* 11-17''  : every days, from 11:00AM to 5:59PM
+          @item ``1 *''      : every sunday, full day
+          @item ``Thu''      : every thursday, full day
+          @item ``2-Thu    *''     : from tuesday  to thursday, fulle days
+          @item ``4-2''      : from thursday to tuesday, full days
+          @item ``Thu-Tue  18-3''   : from thursday to tuesday, from 6:00PM to 3:59AM
+          @item ``Thu-Tue  18-3, Sat-Sun *''   : from thursday to tuesday, from 6:00PM to 3:59AM  **AND**  every week end, full day
+          @end itemize
+        @end itemize
+      @end itemize
+    @item @strong{xtremweb.worker.CpuActivator} : the worker computing availability is monitored by the CPU activity.
+      @itemize @bullet
+      @item @strong{cpuload} defines the CPU activity level where the worker must stop working@*
+      If the owner of the machine request more than @strong{cpuload}% of its CPU, the worker stops working.
+      @item under @strong{win32} :  this is automatically replaced  by the @strong{xtremweb.worker.WinSaver}
+      @item under @strong{Mac OS X} :  this is automatically replaced  by the @strong{xtremweb.worker.DateActivator}
+      @end itemize
+    @item @strong{xtremweb.worker.MouseKbdActivator} : the worker computing availability is monitored by the 
+    mouse/keyboard activity.@*
+    If the owner don't use its mouse/keyboard for 30 seconds, the worker may compute until the owner use mouse/keyboard.@*
+    This does not work under @strong{Mac OS X}
+    @item @strong{xtremweb.worker.WinSaverActivator} : the worker computing availability is monitored by the 
+    screen saver activity : if the screen saver is running, the worker may compute.@*
+    This this is @strong{win32} only.
+    @item @strong{xtremweb.worker.MacSaverActivator} : the worker computing availability is monitored by the 
+    screen saver activity : if the screen saver is running, the worker may compute.@*
+    This is @strong{Mac OS X} only.@*
+    This does not work yet.
+    @end itemize
+  @end itemize
+
+@item Miscellaneous
+  @itemize @bullet
+  @item @strong{update.restartCommand} is not used
+  @item @strong{alive.period} is not used; this is set by the server at connection time.
+  @item @strong{tomcat.port} is not used yet.
+  @item @strong{path.tmpdir} defines the directory where the worker can store things; default is system default (i.e. /tmp).
+  @item @strong{workpool.size} sets the number of jobs the worker can compute simultaneously; default is the amount of CPU.
+  @item @strong{tracer.enable} tells whether worker activity traces should be collected and sent to the server; default if no.
+  @item @strong{notify.enable} tells to display an icon in the task tray.@*
+  This is @strong{win32} only.
+  @item @strong{Logging facilities}. Please refer to @ref{XWHEP  server, the server configuration file}.
+  @end itemize
+
+@cindex Security Configuration
+@cindex Worker Security
+@item Security Configuration
+
+  @itemize @bullet
+  @item @strong{sandbox.enable} defines whether to use the sandbox@. The sandbox is experimental and not provided in the distribution. For Mac OS X 10.5 and linux only.
+  @item @strong{sandbox.name} defines whether to use the sandbox. The sandbox is experimental and not provided in the distribution. For Mac OS X 10.5 and linux only.
+  @item @strong{sandbox.args} defines whether to use the sandbox. The sandbox is experimental and not provided in the distribution. For Mac OS X 10.5 and linux only.
+  @item @strong{sandbox.embedded} defines whether the sandbox can be found in the Java Jar file. The sandbox is experimental and not provided in the distribution. For Mac OS X 10.5 and linux only.
+  @item @strong{path.certfile} defines the SSL certificate file.
+  @end itemize
+  @end itemize
+    @end itemize
+@*
+@page
+
+@node Launch the XWHEP worker
+@subsection Launch the XWHEP worker
+@cindex Worker usage
+@menu
+* Launching under Linux::
+* Launching under Mac OS X::
+* Win32 installation::
+* Control the XWHEP worker::
+@end menu
+
+@node  Launching under Linux, Launching under Mac OS X , Launch the XWHEP worker, Launch the XWHEP worker
+@subsubsection Linux.
+@cindex Worker usage (linux)
+@cindex Linux worker (usage)
+
+Scripts to launch the worker are stored in the @file{bin/} directory.@*
+
+Be aware that the script uses some definition in @file{bin/xtremwebconf.sh}.@*
+One should read and edit this file.
+
+The script @file{bin/xtremweb.worker} helps to manage the worker.
+It request one argument which may take four values : console, start, stop and restart:
+
+@itemize
+
+@item @strong{start} starts the worker as daemon
+@item @strong{console} starts the worker without backgrounding it
+@item @strong{stop} stops the worker
+@item @strong{restart} stops and restarts the server.
+
+@end itemize
+
+Example:
+@example 
+ xtremweb.worker start
+@end example
+
+You can also run the worker without the script and provide your own configuration file:
+@example 
+java -jar lib/xtremweb.jar xtremweb.worker.Worker --xwconfig <a configuration file>
+@end example
+
+To launch the worker as daemon, you must have sufficient privileges because the script try to execute
+the server under the "xtremweb'' user defined in your @file{xtremwebconf.sh} file.
+
+@*
+
+@node  Launching under Mac OS X, Win32 installation , Launching under Linux, Launch the XWHEP worker
+@subsubsection Mac OS X.
+@cindex Worker usage (Mac OS X)
+@cindex Mac OS X worker (usage)
+
+The installer provide a worker that is launched at boot time.
+
+The way to manage the worker is similar to Linux platform, except the script is in @file{/Library/StartupItems/xtremweb.worker/}.
+Please refer to @xref{Launching under Linux, Linux worker} section.
+
+@node Win32 installation, Control the XWHEP worker, Launching under Mac OS X, Launch the XWHEP worker
+@subsubsection Win32.
+@cindex Windows worker (installation)
+@cindex Worker installation (Windows)
+
+Please note that all images included in this section are screen copies, hence they may
+contain text in french due to my Windows installation.@*
+Hope this is understandable for non french reader :).@*
+@*
+
+@*
+
+The package is provided as an @file{.exe} file downloadable from the
+@c @uref{http://dghep.lal.in2p3.fr/spip.php?rubrique14,  web site}.
+platform web site.
+
+As download finished, you can double click to run it; this creates a
+directory hierarchy typically in the @file{Program Files} folder, as shown in figure @ref{Typicall installation, ``Typicall installation''}.
+
+@*
+
+@anchor{Typicall installation}
+@center @strong{Typicall installation}
+@image{xwinstall0,15cm,,,Typicall installation,jpg}
+
+@*
+
+The @file{bin/} directory contains several scripts as shown in @ref{Install NT service, figure 3}.
+
+Among them are:
+@itemize
+@item xwworker.bat; double click to manually run the XWHEP worker;
+@item InstallXWWorker-NT.bat; double click to install the XWHEP worker as Windows service;
+@item UninstallXWWorker-NT.bat; double click to uninstall the XWHEP worker Windows service.
+@end itemize
+
+@cindex NT service (worker)
+@cindex Windows service (worker)
+@cindex Worker (Windows service)
+@anchor{Windows service}
+
+Preparing the worker package as Windows service is the best way to use it.
+It will then run in background without disturbing the owner of the machine; by default, it will
+only compute when the owner don't use it machine. @xref{The worker configuration file, configuration file}
+for more information on configuring the worker.
+
+Double click on @file{bin/InstallXWWorker-NT.bat} to install the worker as Windows service as shown in figure @ref{Install NT service, ``Install NT service''}.@*
+Installing an NT service requires administrator privileges; please ask your system administrator, if needed.
+
+@*
+
+@anchor{Install NT service}
+@center @strong{Install the worker as NT service}
+@image{xwinstall1,15cm,,,Install the worker NT service,jpg}
+
+@*
+
+You can check that the worker service has been correctly installed.
+
+This procedure will also help to manage the service : 
+@itemize
+@item manually start the service;
+@item manually stop the service;
+@end itemize
+
+
+To do so, first right click on  your workstation icon in your start menu or
+on your desktop, then click on ``manage'' item, as shown in figure @ref{Manage NT workstation, ``Manage NT workstation''}.@*
+@c  @ref{Figure 4 : Manage NT station 0, figure 4}.@*
+
+@*
+
+@c @anchor{Figure 4 : Manage NT station 0}
+@c @center @strong{Figure 4 : Right click on your station icon}
+@c @image{xwnt5,15cm,,,Right click on your station icon,jpg}
+
+@c @*
+
+@c Then click on the ``manage'' item in the menu as shown
+@c in @ref{Figure 5 : Manage NT station 1, figure 5}.@*
+
+@c @*
+
+@anchor{Manage NT workstation}
+@center @strong{Select the ``manage'' option}
+@image{xwnt6,5cm,,,Select the ``manage'' option,jpg}
+
+@*
+
+This open the workstation management window.@*
+Select the ``services and applications'' item, then the ``services'' item
+and look for the XWHEP service as shown in figure @ref{NT service installed, ``NT service installed''}.@*
+It should be the last one in the list, depending of your configuration.
+
+If you don't find the XWHEP worker in the list, it has not been correctly installed. 
+Please, return to @ref{Windows service, Install the worker as NT service} and try again.
+
+@*
+
+@anchor{NT service installed}
+@center @strong{Worker installed as NT service}
+@image{xwnt0,15cm,,,Worker installed as NT service,jpg}
+
+@*
+
+You can click on the XWHEP worker service to select it and
+click on the ``Start'' item as shown in figure @ref{Start the NT service, ``Start the NT service''}.@*
+Note that you don't have to manually start the XWHEP worker; it
+is configured to start at every boot of your machine.
+
+@*
+
+@anchor{Start the NT service}
+@center @strong{Start the worker NT service}
+@image{xwnt1,15cm,,,Start the worker NT service,jpg}
+
+@*
+
+A pop-up window then appears with a progression bar.
+as shown in figure @ref{Starting the NT service, ``Starting the NT service''}.@*
+
+If something goes wrong (not enough privileges, Java not correctly installed...)
+a warning window appears. Please, return to @ref{Windows service, Install the worker as NT service} and try again.
+
+@*
+
+@anchor{Starting the NT service}
+@center @strong{Starting the worker NT service}
+@image{xwnt4,8cm,,,Starting the worker NT service,jpg}
+
+@*
+
+If the service has successfully been started, the ``state'' column should 
+display ``started'' (noted as 
+@html 
+&nbsp;<i>D&eacute;marr&eacute;</i>&nbsp;
+@end html
+in figure @ref{NT service started, ``NT service started''})
+for the XWHEP worker service
+as shown in figure @ref{NT service started, ``NT service started''}.@*
+
+@*
+
+@anchor{NT service started}
+@center @strong{Worker NT service started}
+@image{xwnt2,15cm,,,Worker NT service started,jpg}
+
+@*
+
+If you want to stop the XWHEP worker service, click to select it and
+click on the ``Stop'' item as shown in figure @ref{Stop the NT service, ``Stop the NT service''}.@*
+
+@*
+
+@anchor{Stop the NT service}
+@center @strong{Stop the worker NT service}
+@image{xwnt3,15cm,,,Stop the worker NT service,jpg}
+
+@*
+
+If you want to completly remove the XWHEP worker service,
+double click on @file{bin/UninstallXWWorker-NT.bat} as chown in 
+figure @ref{Uninstall NT service, ``Uninstall NT service''}.@*
+You must have enough privileges to do so. If needed, please ask your system administrator.
+
+Note that this does not remove the XWHEP package from your computer.
+To do so, please use the standard Windows procedure through the ``configuration pannel''.
+@*
+
+@anchor{Uninstall NT service}
+@center @strong{Uninstall the worker NT service}
+@image{xwinstall2,15cm,,,Uninstall the worker NT service,jpg}
+
+@*
+
+Please see @ref{XWHEP worker} to see how to configure and run the worker.
+
+@*
+
+If you have followed the instructions detailed in @ref{Win32 installation}, the worker is automatically launched
+for you.
+
+Otherwise, you have to double click on @file{xwworker.bat}.
+
+@*
+
+@node Control the XWHEP worker, XWHEP client, Win32 installation, Launch the XWHEP worker
+@subsection Control the XWHEP worker
+@cindex Worker usage
+
+@anchor{Control the worker}
+@center @strong{Control the worker}
+@image{workerctrl2,15cm,,,Control the worker}
+
+
+@cindex Client Connection configuration, Client Security
+@node XWHEP client, The client configuration file, Control the XWHEP worker, Running and using the platform
+@section XWHEP client
+
+@menu
+* The client configuration file::
+* Launch an XWHEP client::
+* The client common parameters::
+* Client generic actions::
+* Worker management with the XWHEP client::
+* User management with the XWHEP client::
+* Data management with the XWHEP client::
+* Application management with the XWHEP client::
+* Jobs management with the XWHEP client::
+* Results management with the XWHEP client::
+* Client macro file::
+* Client GUI::
+@end menu
+
+The client is the distributed part in charge of the platform usage. It aims to insert/delete applications,
+users and jobs, as to retrieve results.
+.@*
+Actions are executed accordingly the user privilege level.
+
+@*
+
+@node The client configuration file, Launch an XWHEP client, XWHEP client, XWHEP client
+@subsection The client configuration  file
+
+The client configuration file is the same as for the worker.
+
+Please refer to @ref{The worker configuration file, the worker configuration file}.@*
+@*
+
+@node Launch an XWHEP client, The client common parameters, The client configuration file, XWHEP client
+@subsection Launch an XWHEP client
+
+The client is a console application which aims to manage datas, applications,
+users and jobs, as to retrieve job results.
+
+Scripts to run the client are stored in the @file{bin/} directory.@*
+
+Be aware that the script uses some definition in @file{bin/xtremwebconf.sh}.@*
+
+Several scripts are provided.
+
+@*
+
+The client accepts both command and parameters; next sections detail them.
+
+@cindex Client common parameters
+@node The client common parameters, Client generic actions, Launch an XWHEP client, XWHEP client
+@subsubsection The client common parameters.
+
+The client accepts some parameters which may be combined with all client actions.
+
+@itemize
+
+@item @command{--xwhelp} to get some helps
+  @itemize
+  @item this parameters is optionnal ;
+  @item this parameters needs no argument ;
+  @item if this parameter is provided, the script shows some helps and exits.
+  @end itemize
+@item @command{--xwgui} to get the graphic user interface (see @ref{Client GUI})
+  @itemize
+  @item this parameters is optionnal ;
+  @item this parameters needs no argument ;
+  @item if this parameter is provided, all other parameters are not used ;
+  @item if this parameter is provided, the client GUI is shown.
+  @end itemize
+@item @command{--xwconfig <a config file>} to provide a client configuration file.@*
+  @itemize
+  @item this parameters is optionnal ;
+  @item this parameters needs one argument : a config file;.
+  @item if this parameter is not provided, the script looks whether a @file{$HOME/.xtremweb/xwrc} file exists.
+  @end itemize
+@item @command{--xwmacro <a macro file>} to provide a ``macro'' file (see @ref{Client macro file, macro file description}.)
+  @itemize
+  @item this parameters is optionnal;
+  @item this parameters needs one argument : a ``macro'' file;.
+  @item if this parameter is provided, all other parameters are not used.
+  @end itemize
+@item @command{--xwformat <a format>} to get output in raw text, HTML, XML or CSV
+  @itemize
+  @item this parameters is optionnal.
+  @item this parameters needs one argument which may take one of theses values;
+    @itemize
+    @item @strong{XML} to get the output as XML;
+    @item @strong{HTML} to get the output as HTML;
+    @item @strong{CSV} to get the output as comma separated values.
+    @end itemize
+  @item if this parameter is not provided, default output is XML.
+  @end itemize
+
+@item @command{--xwclean} to clean the cache.
+@item @command{--xwverbose} to get the most verbose mode.
+@item @command{--xwnoverbose} to get the least verbose mode.
+@item @command{--xwclientloopdelay} to set the client time out.
+@end itemize
+
+@*
+
+
+Some client parameters apply to specific client actions only; they are listed here and explained later in client actions sections.
+
+@itemize
+
+@item @command{--xwlabel <a label>} to give a label to the job when submitting a new job
+@item @command{--xwsession <session UID>} to insert a job into a session when submitting a new job
+@item @command{--xwgroup <group UID>} to insert a job into a group when submitting a new job
+@item @command{--xwcert <URI | UID>} to associate an X509 certificate when submitting a new job
+@item @command{--xwexpectedhost <host UID>} to associate a worker when submitting a new job
+@item @command{--xwenv <URI|UID>} to provide an environment when submitting a new job
+@item @command{--xwstdin <URI|UID>} to provide a standard input when submitting a new job
+@item @command{--xwnoextract} to tell the client to not expand the archive when downloading a result (this cancels @command{--xwrmzip})
+@item @command{--xwrmzip} to tell the client to remove the archive when a result has been downloaded and extracted (this has no effect if @command{--xwnoextract} has also been provided)
+@item @command{--xwnoerase} to tell the client to not delete job when result has been downloaded
+@item @command{--xwoverride} to tell the client to redownload a file even if it exists on local FS
+
+@end itemize
+
+@*
+
+@cindex Client generic actions
+@node Client generic actions, Worker management with the XWHEP client, The client common parameters, XWHEP client
+@subsubsection Client generic actions
+
+There are two client actions that can be applied to all kind of object.
+
+@itemize
+
+@item @command{--xwremove <UID|URI>} to remove an object specified by its UID or URI. An object can be a user, an application, a job, a data... anything handled by the platform.
+@*
+A script to remove an object is provided with the package: @file{bin/xwrm}. Any removed object is marked as deleted in the database.@*
+
+@item @command{--xwchmod <UID|URI>} to modify an object access rights, specified by its UID or URI. An object can be a user, an application, a job, a data... anything handled by the platform.
+@*
+A script to change the access right of an object is provided with the package: @file{bin/xwchmod}.
+@end itemize
+
+@*
+
+@cindex Workers
+@node Worker management with the XWHEP client, User management with the XWHEP client, Client generic actions, XWHEP client
+@subsection Worker management with the XWHEP client
+
+@cindex Users
+@node User management with the XWHEP client, Data management with the XWHEP client, Worker management with the XWHEP client, XWHEP client
+@subsection User management with the XWHEP client
+
+The client accepts some parameters dedicated to user management : insert and delete users to/from the plateform.
+
+The user management accepts some @ref{The client common parameters, common parameters}.
+
+Here follow the client parameters dedicated to user management.
+
+@itemize
+
+@cindex List user, User list
+@anchor{xwgetusers}
+@item @command{--xwgetusers} : list the users present in the plaform.
+  @itemize
+  @item this parameters needs no argument;
+  @item this action requires administrator privileges to get full users list; otherwise one gets its own user informations only.
+  @end itemize
+
+@cindex Insert user, User insertion
+@item @command{--xwsenduser <login> <password> <email> <rights> <usergroup> [--xwcert <X.509 cert or proxy>]} insert a new user binary in the platform;
+  @itemize
+  @item this action requires administrator privileges;
+  @item this parameters needs four arguments in the exact following order:
+    @itemize
+    @item @strong{login} the login for this user.
+    @item @strong{password} the password for this user.
+    @item @strong{email} the email of this user.
+    @item @strong{rights} the privilge level for this user.
+    @item @strong{usergroup} to insert the user in a specific group.
+    @item @strong{--xwcert} to specify the certificate to use if needed for authentication.
+    @end itemize
+  @item the @strong{login} must be unic in the platform. If this login already exists, the insertion fails.
+  @end itemize
+
+@end itemize
+
+@*
+
+A set of scripts to manage the users is provided with the package : @file{bin/xwusers}, @file{bin/xwsenduser}, @file{bin/xwusergroups}, @file{bin/xwsendusergroup}...@*
+
+@*
+
+@cindex Datas
+@node Data management with the XWHEP client, Application management with the XWHEP client, User management with the XWHEP client, XWHEP client
+@subsection Data management with the XWHEP client
+
+The client accepts some parameters dedicated to data management : insert, retreive and delete data to/from the plateform.
+
+The data management accepts some @ref{The client common parameters, common parameters}.
+
+Here follow the client parameters dedicated to data management.
+
+@itemize
+
+@cindex List data, Data list
+@anchor{xwgetdatas}
+@item @command{--xwgetdatas} : list the datas present in the plaform.
+  @itemize
+  @item this parameters needs no argument.
+  @end itemize
+
+@cindex Insert data, Data insertion
+@item @command{--xwsenddata <Application Name> <CPU> <OS> <URI to binary>} insert a new data in the platform;
+  @itemize
+  @item this option needs four arguments in the exact following order:
+    @itemize
+    @item @strong{Application Name} is a name of your choice for this application;
+    @item @strong{CPU} indicates the type of architecture the binary file has been compiled for (ix86, alpha, ...)
+    @item @strong{OS}  indicates the type of operating system the binary file has been compiled for  (Linux, win32, ...)
+    @item @strong{URI} is the path as a URI to the binary file for this application that will be executed by workers for jobs associated
+    with this application.
+    @end itemize
+  @item this set of four arguments must be @strong{UNIC}  in the platform. If you insert e new application with the same arguments, then the existing application will be replaced by the new one.
+ If you have more than one binary for one application (e.g, for Mac OS X, Win32, Linux...), insert an application for each binary, with the same @strong{Application Name}, but with different @strong{CPU}, @strong{OS} and @strong{URI} options.
+  @end itemize
+
+@end itemize
+
+@*
+
+A set of scripts to manage the datas is provided with the package : @file{bin/xwdatas}, @file{bin/xwsenddata}.@*
+
+@*
+
+@cindex Applications
+@node Application management with the XWHEP client, Jobs management with the XWHEP client, Data management with the XWHEP client, XWHEP client
+@subsection Application management with the XWHEP client
+
+The client accepts some parameters dedicated to application management : insert and delete applications to/from the plateform.
+
+The application management accepts some @ref{The client common parameters, common parameters}.
+
+Here follow the client parameters dedicated to application management.
+
+@itemize
+
+@cindex List application, Application list
+@anchor{xwgetapps}
+@item @command{--xwgetapps} : list the applications present in the plaform.
+  @itemize
+  @item this parameters needs no argument.
+  @end itemize
+
+@cindex Insert application, Application insertion
+@item @command{--xwsendapp <Application Name> <CPU> <OS> <URI to binary>} insert a new application in the platform;
+  @itemize
+  @item this action requires administrator privileges;
+  @item this option needs four arguments in the exact following order:
+    @itemize
+    @item @strong{Application Name} is a name of your choice for this application;
+    @item @strong{CPU} indicates the type of architecture the binary file has been compiled for (ix86, alpha, ...)
+    @item @strong{OS}  indicates the type of operating system the binary file has been compiled for  (Linux, win32, ...)
+    @item @strong{URI} is the path as a URI to the binary file for this application that will be executed by workers for jobs associated
+    with this application.
+    @end itemize
+  @item this set of four arguments must be @strong{UNIC}  in the platform. If you insert e new application with the same arguments, then the existing application will be replaced by the new one.
+ If you have more than one binary for one application (e.g, for Mac OS X, Win32, Linux...), insert an application for each binary, with the same @strong{Application Name}, but with different @strong{CPU}, @strong{OS} and @strong{URI} options.
+  @end itemize
+
+@end itemize
+
+@*
+
+A set of scripts to manage the applications is provided with the package : @file{bin/xwapps}, @file{bin/xwsendapp}.@*
+
+@*
+
+@cindex Jobs, Works, Tasks
+@cindex Works
+@cindex Tasks
+@node Jobs management with the XWHEP client, Results management with the XWHEP client, Application management with the XWHEP client, XWHEP client
+@subsection Jobs management with the XWHEP client.
+
+The client accepts some parameters dedicated to jobs management : insert and delete jobs to/from the plateform.
+
+The job management accepts some @ref{The client common parameters, common parameters}.
+
+Here follow the client parameters dedicated to job management.
+
+@itemize
+
+@cindex List Job, Job list
+@anchor{xwgetworks}
+@item @command{--xwgetworks [jobUID, jobUID...]} : list job status.
+  @itemize
+  @item this returns jobs for the user as provided in @ref{The worker configuration file, the configuration file};
+  @item this parameters needs zero or more arguments;
+    @itemize
+    @item if no @strong{job UID} is provided, this retrieves all jobs for the user;
+    @item @strong{job UID} : one or more space separated jobUID may be provided.
+    @end itemize
+  @end itemize
+@cindex List Task, Task list
+@anchor{xwgettasks}
+@item @command{--xwgettasks [jobUID, jobUID...]} : list status of job instances (i.e. job and associated running worker).
+  @itemize
+  @item this returns job instance status for the user as provided in @ref{The worker configuration file, the configuration file};
+  @item this parameters needs zero or more arguments;
+    @itemize
+    @item @strong{job UID} job UID to retreive instance status for.
+    @end itemize
+  @end itemize
+@cindex Insert job, Job insertion
+@item @command{--xwsendwork <Application Name> [--xwenv <zip file> ] [--xwcert <cert or proxy>] [--xwlabel <label> ] [application parameters] [ '<' <input file>] } insert a new job.
+  @itemize
+  @item this requires job insertion privilege level (rights above or equal to 5 as shown by @ref{xwusers}).
+  @item this parameters needs at least one argument;
+    @itemize
+    @item @strong{application name} is required; it is the name of an installed application as shown by @ref{xwapps};
+@cindex environment, Runtime environment, Job environment
+    @item @strong{--xwenv <zipfile>} is optionnal and specify a zip file containing a set of files needed 
+    by the job at runtime. This is known as the @strong{job environment}. This option accepts a zip file,
+    a directory structure or a file name. In the last cases, the client create a new zip file containing
+    the provided directory and/or files for the job.
+    @item @strong{--xwlabel <label>} is optionnal and specifies a symbolic label of your choice for this job.
+    @item @strong{--xwcert <cert or proxy>} is optionnal and specifies what X.509 certificate or proxy tu use for this job.
+    @item @strong{application parameters} is optionnal and specific to the requested application;
+    @item @strong{input file} is optionnal and specify standard input for your job (this @strong{must} be after the character '@strong{<}');
+    @end itemize
+  @end itemize
+
+@end itemize
+
+@*
+
+A set of scripts to manage jobs are provided with the package in the @file{bin/} directory.@*
+@itemize
+@item xwworks;
+@item xwtasks.
+@item xwsendwork.
+@end itemize
+
+@*
+
+@node Results management with the XWHEP client, Client macro file, Jobs management with the XWHEP client, XWHEP client
+@subsection Results management with the XWHEP client.
+
+The client accepts some parameters dedicated to job results management : retreive and delete job results.
+
+The results management accepts some @ref{The client common parameters, common parameters}.
+
+Here follow the client parameters dedicated to results management.
+
+@itemize
+
+@cindex Job result
+@anchor{xwresult}
+@item @command{--xwresult [jobUID, jobUID...]} : retrieve job results.
+  @itemize
+  @item this downloads job results for the user as provided in @ref{The worker configuration file, the configuration file}.
+  Resuls are stored on the client runtime directory.
+  @item this parameters needs zero or more arguments;
+    @itemize
+    @item if no job UID is provided, this retrieves all results for the user;
+    @item job UID : one or more space separated jobUID may be provided.
+    @end itemize
+  @end itemize
+
+@end itemize
+
+@*
+
+
+@cindex Client macro file, Macro file, Macro
+@node Client macro file
+@subsection The client macro file
+
+The client accepts ``macro'' file, which is just a text file with one command per line.
+
+A macro file is provided to the client with the parameter @command{--xwmacro <a macro file>}.
+This parameter cancels all other client parameters but the @command{--xwconfig} parameter.
+
+Examples:
+@example
+ xtremweb.client --xwmacro <a macro file>
+ xtremweb.client --xwconfig <a configuration file> --xwmacro <a macro file>
+@end example
+
+@*
+
+
+@cindex Client GUI, graphic user interface
+@node Client GUI
+@subsection The client GUI
+
+When launching the client with the --xwgui parameter (or when launching either the Mac OS X or Windows client), the main frame pops up as shown in figure @ref{The client main frame, ``The client main frame''}.
+@*
+As shown on the title, we are not connected to the platform yet.
+
+@anchor{The client main frame}
+@center @strong{The client main frame}
+@image{mainframe,15cm,,, The client main frame}
+
+To connect, please select ``Login as...'' option in the ``File'' menu (figure @ref{The ``Login as...'' menu option, The ``Login as...'' menu option}).
+@anchor{The ``Login as...'' menu option}
+@center @strong{The ``Login as...'' menu option}
+@image{menulogin,15cm,, The ``Login as...'' menu option}
+
+The login dialog pops up as shown on figure @ref{Login dialog, ``Login dialog''}.
+You must fill the three fields.
+@anchor{Login dialog}
+@center @strong{The login dialog}
+@image{logindlg,10cm,, The login dialog}
+
+If the server is not reachable the server error dialog pops up (figure @ref{Server error dialog, Server error dialog}).
+@anchor{Server error dialog}
+@center @strong{The server error dialog}
+@image{servererr,8cm,, The server error dialog}
+
+If the login and/or password is not valid, or if the user is not authorized to connect, the error dialog pops up (figure @ref{Connect error dialog, Connect error dialog}).
+@anchor{Connect error dialog}
+@center @strong{The connect error dialog}
+@image{loginerr,8cm,, The connect error dialog}
+
+Once connected, the title displays the login (figure @ref{Connected, Connected}).
+@anchor{Connected}
+@center @strong{The user is connected}
+@image{connected,15cm,, The user is connected}
+
+Click on ``Refresh'' to get your jobs list.
+The progress bar shows the download progression (figure @ref{jobretreiving, Retreiving jobs}).
+@anchor{jobretreiving}
+@center @strong{Figure 20 : Retreving jobs}
+@image{jobsretreiving,15cm,, Retreiving jobs}
+
+As the download completes, your jobs are listed.
+The status bar shows the total of rows (figure @ref{jobretreived, Jobs retreived}).
+@anchor{jobretreived}
+@center @strong{Jobs retreived}
+@image{jobsretreived,15cm,, Jobs retreived}
+
+Click on ``Submit'' to submit a new job (figure @ref{submit0, Submit a new job}).
+@anchor{submit0}
+@center @strong{Submit a new job}
+@image{submit0,5cm,, submit0}
+
+Select an application from the dropdown menu (figure @ref{submit1, Select an application}).
+@anchor{submit1}
+@center @strong{Submit a new job; select an application}
+@image{submit1,5cm,, submit1}
+
+Give a job label (this is optionnal) (figure @ref{submit2, Give a label}).
+@anchor{submit2}
+@center @strong{Figure 24 : Submit a new job; give a label}
+@image{submit2,6cm,, submit2}
+
+Click on ``View'' (shown on figure @ref{jobretreived, Jobs retreived}) to see job details (figure @ref{jobdetails, Job details}).
+@anchor{jobdetails}
+@center @strong{Job details}
+@image{jobdetails,8cm,, Job details}
+
+
+@node Connecting XWHEP to other grids, The Gliding-in approach, Client GUI, Top
+@comment  node-name,  next,  previous,  up
+@chapter Connecting XWHEP to other grids
+@cindex Intergrid sharings
+@cindex Grid interconnection
+
+@menu
+* The Gliding-in approach::
+* Bridging XtremWeb and EGEE::
+* Configuring the XWHEP bridge::
+* Launching the XWHEP bridge::
+@end menu
+
+Pilot Jobs is a way to use a Grid infrastructure to deploy end user jobs with an external 
+scheduler (i.e. a scheduler which is not part of the infrastructure itself).
+XtremWeb and Condor teams have introduced this as @emph{Gliding-in} in 
+@emph{@sc{``XtremWeb & Condor : sharing resources between Internet connected Condor pools.''} (O. Lodygensky, G. Fedak, F. Cappello, V. Neri, M. Livny, D. Thain at CCGRID 2003, Tokyo, JAPAN; May 12-15, 2003.) }
+
+Security, monitoring and logging are the main issues in Pilot Jobs; see @uref{http://edms.cern.ch/document/855383}.
+
+@*
+XWHEP solves these issues thanks to its innovative features: 
+@itemize @bullet
+@item user rights management 
+@item user rights delegation 
+@item user groups 
+@item user group applications 
+@end itemize
+@*
+Security is ensured at three levels: 
+@itemize @bullet
+@item computing node. 
+@itemize @bullet
+@item XWHEP includes a sandbox to isolate end user job computation 
+@item only validated applications from repository are candidate to run on SG nodes 
+@end itemize
+@item Application and data integrity. 
+@itemize @bullet
+@item application repository and data servers (including XWHEP) ensure integrity 
+@end itemize
+@item User authentication 
+@itemize @bullet
+@item only X.509 certiﬁed users can use SG nodes 
+@item users provide proxy certiﬁcate to submit a job to XWHEP scheduler 
+@item this proxy is used to submit Pilot Jobs to SG
+@end itemize
+@end itemize
+
+@*
+
+@anchor{Pilot Jobs}
+@center @strong{Pilot Jobs}
+@image{pilotjobs2,15cm,,,Pilot Jobs,}
+
+@*
+
+@node The Gliding-in approach, Bridging XtremWeb and EGEE , Connecting XWHEP to other grids, Connecting XWHEP to other grids
+@section The Gliding-in approach
+
+
+The @emph{Gliding-in} approach to cluster resources spread in
+different Condor pool using the  Global Computing system (XtremWeb)
+was first introduced in @cite{xtremweb-condor}. The main principle
+consist in wrapping the XtremWeb worker as regular Condor task and
+submit this task to the Condor pool. Once the worker is executed on  a
+Condor resource, the worker pulls jobs from the DG~server,  executes
+the XtremWeb task and return the result to the XtremWeb server. As a
+consequence, the Condor resources communicates directly to the
+XtremWeb server.   Similar mechanisms are now commonly employed in
+Grid Computing @cite{condor_grid2}. For example Dirac uses a
+combination of  push/pull mechanism to execute jobs on several Grid
+clusters. The generic approach on the Grid is called a @emph{pilot
+  job}. Instead of submitting jobs directly to the Grids gatekeeper,
+this system submits so-called pilot jobs. When executed, the pilot job
+fetches jobs from an external job scheduler. 
+
+The gliding-in or pilot job approach has several advantages. While
+simple, this mechanism efficiently balance the load between
+heterogeneous computing sites. It benefits from the fault tolerance
+provided by the DG~server; if Grid nodes fail then jobs are
+rescheduled to the next available resources. 
+Finally, as the performance study of the  Falkon @cite{falkon} system shows, it
+gives better performances because series of jobs do not have to go
+through the gatekeeper queues which is generally characterized by
+long waiting time, and communication are direct between the computing element~(@emph{CE}) and the
+DG~server without intermediate agent such as the superworker. 
+From the security point of view, this approach breaks the Grid security rules
+which because jobs owner may be different than pilot job
+owners. This is a well known issue of pilot jobs and new solution such
+as @emph{gLExec} are proposed to circumvent this security hole. 
+
+
+
+@node Bridging XtremWeb and EGEE, User authentication and execution logging, The Gliding-in approach , Connecting XWHEP to other grids
+@section Bridging XtremWeb and EGEE.
+
+@menu
+* User authentication and execution logging::
+* Applications parameters and results protection::
+* Node integrity::
+* Access confinement::
+@end menu
+
+Our goal is to safely aggregate EGEE worker nodes in a single XtremWeb network. 
+In this network, we assume that the users connect to the dispatcher administration domain to submit tasks. 
+XtremWeb has the responsibility to ensure user authentication, hosts (workers) integrity, application and results protection and user execution logging.
+
+In the rest of the paper, we based our study of the security model on the gliding-in technology. XtremWeb Workers are submitted to EGEE computing elements using  JSDL wrappers.
+
+@node  User authentication and execution logging, Applications parameters and results protection, Bridging XtremWeb and EGEE
+@subsection User authentication and execution logging.
+The coordinator site manages a list of authorized users as ACLs. It is the responsibility of the system administrator to register new users (and revoke non desired ones) on the coordinator. After registration, the coordinator provides a key to be used by the user for each subsequent connection. For each connection, a challenge is ran in order to ensure that the user is registered on the coordinator. All communications between the user XW client and the coordinator are encrypted using SSL. Then the coordinator works as a proxy for the user: all tasks are submitted to the workers through the coordinator credential. All executions on the workers are logged in the security perspective:  all tasks contain a descriptor with the actual user credential so that workers and coordinator can take appropriate corrective action (user revocation), in case of security problem. 
+
+The design does not currently rely on certificates and presents a certain degree of risk for ``Man is the Middle'' (@emph{ MIM}) attacks but risks are very limited since 1) attacks should origin from within EGEE subclusters only (due to TCP protocols), and 2) workers and clients software include coordinator public key, then if one is able to securely ensure worker and client binaries installation to dedicated pools, the full system is not subject to @emph{ MIM} attacks since key exchanges will not be necessary any more.@*
+
+A certification system based on X.509 certificates is under integration in XtremWeb. Subsequent experiments and futures XtremWeb installations will implement one, based on Open-SSL, allowing extension of clients and workers authentication by the coordinator.
+
+@node Applications parameters and results protection, Node integrity, User authentication and execution logging, , Bridging XtremWeb and EGEE
+@subsection Applications, parameters and results protection.
+EGEE subclusters belonging to different administration domains fetch applications and tasks, and store results on the central coordinator. The only security issue concerning applications, parameters and results transfers is then about the connections between EGEE worker nodes and the coordinator. To ensure connection security between domains, 1) every connection from any client and worker to the coordinator is encrypted through @emph{ SSL} tunnels; 2) workers can only connect to the coordinator for which they have the public key. These two mechanisms prevent malicious participants to be able to intercept and read any connection, to connect to the coordinator and EGEE worker nodes to connect to a wrong XtremWeb coordinator.
+
+@node Node integrity, Access confinement, Applications parameters and results protection, , Bridging XtremWeb and EGEE
+@subsection Node integrity.
+If, for any reason, a malicious user succeeds on accessing the system and launching an aggressive application, XtremWeb workers still protect their host by implementing @emph{ sand-boxing}@cite{SANDBOX2,SANDBOX3,SANDBOX1} for binary applications. This is a secure way to execute applications, providing rights to do some actions and denying some others. One should note that Java applications are always executed inside a virtual machine which includes security@cite{JAVASECURITY}; XtremWeb uses this functionality in two levels, one for the worker itself and a more restrictive one for the downloaded Java byte code. On the contrary, binary (or @emph{ native}) applications have access to the full hosting system by nature; workers are configured to run any task of that type inside a sand-box which is fully customizable, from memory usage to file system operations.@*
+Java and sand-boxes, have performance costs@cite{SANDBOX-PERF}; one can then disable this functionality on highly secured systems, such as clusters under a fully closed firewall.
+
+@node Access confinement, Configuring the XWHEP bridge, Node integrity, , Bridging XtremWeb and EGEE
+@subsection Access confinement.
+
+XtremWeb 2.0.0 introduces the notion of user rights and access rights. These new features permit to extend user actions over the platform as well as to define groups.@*
+Access rights must be understood as linux file system ones (e.g. 0x755, uog+r etc.) and are used to define data (which is also a new paradigm in XtremWeb 2.0.0 but not discuss in this paper), application and job accesses. 
+The default access is @emph{0x755} which grants full access (read, write, execute) to owner, and limited access (read, execute) to users belonging to the owner group read and execute, as well as other users. Denying access to non group users, for example, consists to set access rights to @emph{0x750}. 
+The middleware includes the @emph{xwchmod} command to do so.@*
+Any user can insert its own applications in the platform. This feature could lead to security hazards since this could allow users to insert malicious applications. 
+This is solved by access rights. A @emph{ standard} user can only insert @emph{ private} applications; any submitted jobs referring private applications are private too. There is no way to modify these; even @emph{ xwchmod} can't help to modify access rights of private entities (applications or jobs). A private entity has its access rights set to @emph{ 0x700} which grants owner access only.@*
+Inserting group or public entities needs advanced privileges which grants this action.@*
+
+User rights, associated with access rights, permit to define public, groups and private levels.
+They define the action users can perform over the platform. 
+The three main level rights are @emph{ standard}, @emph{ worker} and @emph{ advanced}.
+The @emph{ standard} level grants data management, job submission and private application insertion as defined earlier.
+The @emph{ advanced} level grants full access to the platform including private, group and public entities, as well as users, user groups and workers management.@*
+To understand the last right level, @emph{ worker}, one must clearly understand that workers run under an identity registered on the coordinator. When a worker sends a message to request a job to compute, or for any other reason, it presents its identity, registered as an user identity and defining user rights level.@*
+This level right permits to delegate user rights to workers so that they can access entities as if they were the entity owner. 
+A public worker can bypass entities access rights in order to update them even if their access rights do not allow that action.
+This is used to update jobs status to @emph{ COMPLETED} when it has successfully been computed by a worker,
+or to store jobs results and set the owner to the job owner.@*
+At installation time, the platform includes a specific user defined with worker level right, aiming to deploy public workers.@*
+
+@image{grouping,15cm,,,Pilot Jobs,}
+
+
+On the other hand, we can also deploy private workers. 
+Workers are private ones if they use a standard identity without the worker user rights level.
+Private workers will only compute private jobs.@*
+
+Finally we can deploy group workers.
+Workers are group ones if they use an identity included in a group and defined with the worker user rights level.
+Group workers will only compute jobs of the same group.@*
+
+The figure @ref{fig:groups} shows worker groups and the types of job they can run.
+We see that private jobs are run on private workers only, and groups jobs are run on group workers only.
+Public jobs can only be run on public workers.
+
+
+@cindex Bridge configuration
+@node Configuring the XWHEP bridge,  Launching the XWHEP bridge, Access confinement, Connecting XWHEP to other grids
+@section Configuring the XWHEP bridge
+
+You will find a @file{conf/xtremweb.server.conf} file in the distribution.
+If you have downloaded the sources distribution, the installation process create it for you in your installation directory 
+by the @command{make install} command.
+
+
+The configuration of the file consists of a pair of @command{keys} and their values separated by the @samp{=} character. A line begining by @samp{#} is a comment.  
+
+@itemize @bullet
+
+@item Server configuration
+
+  @itemize @bullet
+@cindex xtremweb.role
+  @item @strong{xtremweb.role} must be set to @code{server}
+@cindex admin.login
+  @item @strong{admin.login} is the login of the platform administrator
+@cindex HomeDir
+  @item @strong{HomeDir} is the path containing applications and tasks 
+@cindex ModulesLogged
+  @item @strong{ModulesLogged} sets the expected modules list. Existing modules are DBI, Comm, Task:
+    @itemize @bullet
+@cindex DBI
+    @item DBI: Database Interface
+@cindex Comm
+    @item Comm: Communication received
+@cindex Task
+    @item Task: Tasks scheduled
+    @end itemize
+@cindex XWServer
+  @item @strong{XWServer} contains a space separated servers list; this is used for replication only.
+@cindex port.tcp
+    @item @strong{port.tcp} port to connect the server through TCP (default 4321)
+@cindex port.udp
+    @item @strong{port.udp} port to connect the server through UDP (default 4322)
+@cindex port.worker.http
+    @item @strong{port.worker.http} port where the worker may listen at  (default 4323)
+@cindex port.http
+    @item @strong{port.http} port to connect the server through HTTP  (default 4324)
+@cindex port.https
+    @item @strong{port.https} port to connect the server through HTTPS (default 4325)
+@cindex port.xmlrpc
+    @item @strong{port.xlmrpc} port to connect the server through XML RPC (default 4326)
+@cindex port.sunrpc
+    @item @strong{port.sunrpc} port to connect the server through SUN RPC (default 4327)
+@cindex java.nio
+    @item @strong{java.nio} defines wether to use NIO. Forced to false with HTTP layer (default 4329)
+
+  @end itemize
+
+@cindex Database configuration
+@item Database configuration
+
+  @itemize @bullet
+
+@cindex XWdbHost
+  @item @strong{XWdbHost} is the database server.
+@cindex XWdbName
+  @item @strong{XWdbName} is the database name Default in xtremweb.sql :"xtremweb"  .
+@cindex XWdbUser
+  @item @strong{XWdbUser} is the name of the user granted to access the database.
+@cindex XWdbPass
+  @item @strong{XWdbPass} is the password of the user granted to access the database.
+
+  @end itemize
+
+
+@cindex Security configuration, Server Security
+@item Security configuration
+
+  @itemize @bullet
+@cindex XWKeyStore
+  @item @strong{XWkeyStore} Put here the name of file containing the private key of the server and its certificate.
+@cindex XWpassPhrase
+  @item @strong{XWpassPhrase} is the password needed to access that file @samp{XWCertPass} by default.
+  @end itemize
+
+@cindex Logging facilities
+@item Logging facilities
+
+  @itemize @bullet
+  There are four levels: debug, info, warn and error.@*
+  
+  @end itemize
+
+@end itemize
+
+@*
+
+
+@node Launching the XWHEP bridge, Troubleshooting and reporting bugs, Configuring the XWHEP bridge, Connecting XWHEP to other grids
+@section Launching the XWHEP bridge
+@cindex Bridge usage
+
+Scripts to launch the server are stored in the @file{bin/} directory.@*
+
+Be aware that the script uses some definition in @file{bin/xtremwebconf.sh}.@*
+One should read and edit this file.
+
+The script expect the configuration file to be located in @file{conf/} directory.
+
+The script @file{bin/xtremweb.server} helps to manage the server.
+It request one argument which may take four values : console, start, stop and restart:
+
+@itemize @bullet
+
+@item @strong{start} starts the server as daemon
+@item @strong{console} starts the server in the foreground (not as daemon)
+@item @strong{stop} stops the server
+@item @strong{restart} stops and restarts the server.
+
+@end itemize
+
+Example:
+@example 
+ xtremweb.server start
+@end example
+
+To launch the server, you must have sufficient privileges because the script try to execute
+the server under the "xtremweb'' user defined in your @file{xtremwebconf.sh} file.
+
+@*
+
+
+
+@node Troubleshooting and reporting bugs, Index, Launching the XWHEP bridge, Top
+@comment  node-name,  next,  previous,  up
+@chapter Troubleshooting and reporting bugs 
+
+Please report any bugs, remarks, questions etc. to our Trac @uref{http://trac.lal.in2p3.fr/DGHEP, web site}: http://trac.lal.in2o3.fr/DGHEP@*
+
+
+@*
+
+
+@node Papers, Index, Troubleshooting and reporting bugs, Top
+@comment  node-name,  next,  previous,  up
+@chapter Papers
+``EDGeS:A Bridge Between Desktop Grids and Service Grids''
+G. Fedak,  H. He,  O. Lodygensky,  Z. Balaton,  Z. Farkas,  G. Gombas,  P. Kacsuk,  R. Lovas,  A. Csaba Marosi,  I. Kelley,  I. Taylor,  G. Terstyanszky,  T. Kiss,  M. Cardenas-Montes, A. Emmen,  F. Araujo.@*
+@uref{http://grid.lzu.edu.cn/chinagrid2008/index.html, ChinaGrid 2008}, Dunhuang, Gansu, CHINA; Aug 20-22, 2008.
+
+``Des systemes client-serveur aux systemes pair a pair''@*
+F. Cappello, G. Fedak, T. Morlier, O. Lodygensky@*
+Chapter in "Enclyclopedie Vuibert"; 2005.
+
+@uref{http://www.lal.in2p3.fr/~lodygens/gc/RPCV-SC-2004.pdf,RPC-V: Toward Fault-Tolerant RPC for Internet Connected Desktop Grids with Volatile Nodes.}@*
+S. Djilali, T. Herault, O. Lodygensky, T. Morlier, F. Cappello, G. Fedak.@*
+@uref{http://www.sc-conference.org/sc2004/, SuperComputing 2004, Pittsburgh PA, USA; November 2004.}
+
+@uref{http://www.lal.in2p3.fr/~lodygens/gc/fgcs.zip,Computing on Large Scale Distributed Systems: XtremWeb Architecture, Programming Models, Security, Tests and Convergence with Grid.}@*
+F. Cappello, S. Djilali, G. Fedak, T. Herault, F. Magniette, O. Lodygensky, V. Neri.@*
+@uref{http://www.sciencedirect.com/science?_ob=ArticleListURL&_method=list&_ArticleListID=451040338&_sort=d&view=c&_acct=C000044719&_version=1&_urlVersion=0&_userid=829662&md5=d040bef1a004bac5c9d73d2f824cf4f0,Chapter in "Future Generation Computer Systems}, Volume 21, Issue 3, March 2005, Pages 417-437"
+
+@uref{http://www.lal.in2p3.fr/~lodygens/gc/xw-c01.ps,XtremWeb & Condor : sharing resources between Internet connected Condor pools.}@*
+O. Lodygensky, G. Fedak, F. Cappello, V. Neri, M. Livny, D. Thain.@*
+@uref{http://ccgrid2003.apgrid.org/,CCGRID 2003, Tokyo, JAPAN; May 12-15, 2003.}
+
+@uref{http://www.lal.in2p3.fr/~lodygens/gc/chep2003.ps,Augernome & XtremWeb: Monte Carlos computation on a global computing platform.}@*
+O. Lodygensky, G. Fedak, F. Cappello, V. Neri, A. Cordier@*
+@uref{http://www-conf.slac.stanford.edu/chep03/,CHEP 03}, La Jolla CA, USA; March 24-28, 2003.
+
+@*
+
+@node Index, Table of contents, Troubleshooting and reporting bugs, Top
+@comment  node-name,  next,  previous,  up
+@chapter Index
+@printindex cp
+@page
+
+@node Table of contents, , Index, Top
+@comment  node-name,  next,  previous,  up
+@bye
+
+
+
