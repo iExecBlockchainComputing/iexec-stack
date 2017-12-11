@@ -39,36 +39,13 @@
   <property name="lib.dir" value="${basedir}/libXtremWeb" />
   <property name="build.classes" value="${basedir}/build/classes/java/main/" />
   <property name="misc.dir" value="${basedir}/misc" />
-  
-  <!--target name="tstamp">
-    <property file="${build.dir}/VERSION" prefix="v." />
-    <tstamp>
-      <format pattern="yyyyMMddHHmm" property="v.build" />
-    </tstamp>
-    <echoproperties prefix="v." />
-    <echoproperties prefix="v." destfile="${build.dir}/.build" /> 
-  </target-->
-
-  <!--target name="version" depends="tstamp" >
-    <property file="${build.dir}/.build" />    
-    <property name="v.rev" value="${v.major}.${v.minor}.${v.micro}" />
-    <property name="version" value="${v.rev}" />
-  </target-->
-
-
-  <!-- there is a problem if CommonVersion.java was removed while the version
-       has not changed -->
-  <!--target name="templates" depends="version" >
-    
-    <filter token="BUILD_TIME" value="${v.build}" />
-    <filter token="XWVERSION" value="${v.rev}" />
-    <filter token="VBRANCH" value="${v.branch}" />   
-    <copy file="${src.java.dir}/common/CommonVersion.java.in" 
-	  filtering="yes" overwrite="yes" tofile="${src.java.dir}/common/CommonVersion.java" />
-  </target-->
-
 	
-  <target name="configure" >
+  <target name="getversion" >
+	<property file="${basedir}/gradle.properties" />    
+	<property name="xwversion" value="${version}" />
+  </target>
+
+  <target name="configure" depends="getversion">
 
     <property environment="localEnv" />
 	<property name="target.os" value="${os.name}" />
@@ -149,26 +126,24 @@
       </or>
     </condition>
 
-    <property name="dist.dir" value="${build.dir}/dist/${ant.project.name}-${version}" />
+    <property name="dist.dir" value="${build.dir}/dist/${ant.project.name}-${xwversion}" />
     <property name="dist.bin.dir" value="${dist.dir}/bin" />
     <property name="dist.lib" value="${dist.dir}/lib" />
     <property name="dist.doc" value="${dist.dir}/doc" />
     
     <echo>
-      ant version = ${ant.version}
-
-      os         = ${os.name}
-      os.arch    = ${os.arch}
-      target     = ${target.os}
-      xwarch     = ${xwarch}
-      xwsuffix   = ${xwsuffix}
-      debug      = ${debug}
-      debuglevel = ${debuglevel}
-
-        cross=${cross.prefix}
-        target java home =${cross.java.home}
-    	target           =${target.os}
-    	xwversion=${version}
+		ant version = ${ant.version}
+		os         	= ${os.name}
+		os.arch    	= ${os.arch}
+		target     	= ${target.os}
+		xwarch     	= ${xwarch}
+		xwsuffix   	= ${xwsuffix}
+		debug      	= ${debug}
+		debuglevel 	= ${debuglevel}
+		cross		= ${cross.prefix}
+		target java home = ${cross.java.home}
+		target		= ${target.os}
+		xwversion	= ${xwversion}
     </echo>
 
   </target>
@@ -183,10 +158,8 @@
     <mkdir dir="${basedir}/build/obj/${xwsuffix}" />
     <mkdir dir="${basedir}/build/jni" />
     <mkdir dir="${basedir}/build/xwclasses" />
-    <!--mkdir dir="${dist.lib}" /-->
-    <!--mkdir dir="${dist.doc}" -->
 
-  <!-- CLASSPATH FOR COMPILATION -->
+  	<!-- CLASSPATH FOR COMPILATION -->
     <path id="project.classpath">
         <pathelement path="${src.dir}" />
         <pathelement path="${src.test.dir}" />
@@ -270,26 +243,15 @@
       </fileset>
     </copy>
 
-	<echo>
-      suffix=${xwsuffix}
-      XWARCH=${xwarch}
-      TARGET=${target.os}
-      CROSS=${cross.prefix}
-      TARGET_JAVA_HOME=${cross.java.home}
-      XWVERSION=${version}
-    </echo>
-
     <!-- make install must copy the files (jni shared libraries) in ${dist.lib} -->
     <exec dir="${src.c.dir}" executable="make" failonerror="true">
-      <!--arg line="-f &apos;${basedir}/src/main/resources/scripts/natif.mk&apos; install" /-->
-	  <arg line="-f &apos;${basedir}/src/main/resources/natif.mk&apos; install" />
+      <arg line="-f &apos;${basedir}/src/main/resources/natif.mk&apos; install" />
       <env key="XWSUFFIX" value="${xwsuffix}" />
       <env key="XWARCH"   value="${xwarch}" />
       <env key="TARGET"   value="${target.os}" />
       <env key="CROSS"    value="${cross.prefix}" />
       <env key="TARGET_JAVA_HOME" value="${cross.java.home}" />
-      <!--env key="XWVERSION" value="${version}" /-->
-      <env key="XWVERSION" value="11.5.0" />
+      <env key="XWVERSION" value="${xwversion}" />
     </exec>
   </target>
 
