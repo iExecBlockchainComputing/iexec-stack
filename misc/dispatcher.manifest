@@ -1,2 +1,0 @@
-Main-Class: xtremweb.dispatcher.Dispatcher
-Class-Path: xtremweb.jar jnet.jar jcert.jar jsse.jar mm.mysql-2.0.2-bin.jar MinML.jar
