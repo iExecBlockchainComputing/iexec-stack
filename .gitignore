@@ -10,4 +10,4 @@ build/
 /.gradle/
 /.idea/
 *.iml
-
+/src/main/java/xtremweb/common/CommonVersion.java
