@@ -37,6 +37,8 @@ import java.net.URL;
 import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 import java.security.KeyStore;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateExpiredException;
@@ -59,7 +61,6 @@ import javax.net.ssl.SSLSocketFactory;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
-import xtremweb.dispatcher.HTTPOpenIdHandler;
 
 /**
  *
@@ -901,7 +902,47 @@ public class XWTools {
 		return store;
 	}
 
-	/**
+    public static String sha256CheckSum(final File data) throws NoSuchAlgorithmException, FileNotFoundException, IOException
+    {
+        final MessageDigest md = MessageDigest.getInstance("SHA-256");
+        try (final FileInputStream fis = new FileInputStream(data)) {
+
+        	final byte[] dataBytes = new byte[1024];
+
+        	int nread = 0;
+	        while ((nread = fis.read(dataBytes)) != -1) {
+	          md.update(dataBytes, 0, nread);
+	        };
+	        final byte[] mdbytes = md.digest();
+
+	       //convert the byte to hex format method 2
+	        final StringBuffer hexString = new StringBuffer();
+	    	for (int i=0;i<mdbytes.length;i++) {
+	    	  hexString.append(Integer.toHexString(0xFF & mdbytes[i]));
+	    	}
+	
+	    	return hexString.toString();
+        } 
+    }
+
+    public static String sha256(final String data) throws NoSuchAlgorithmException
+    {
+    	final MessageDigest md = MessageDigest.getInstance("SHA-256");
+        md.update(data.getBytes());
+
+        byte byteData[] = md.digest();
+
+        final StringBuffer hexString = new StringBuffer();
+    	for (int i=0;i<byteData.length;i++) {
+    		String hex=Integer.toHexString(0xff & byteData[i]);
+   	     	if(hex.length()==1) hexString.append('0');
+   	     	hexString.append(hex);
+    	}
+    	return hexString.toString();
+    }
+
+
+    /**
 	 * This is for testing only
 	 */
 	public static void main(final String[] argv) {

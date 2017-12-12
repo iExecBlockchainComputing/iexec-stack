@@ -562,6 +562,46 @@ public final class AppInterface extends Table {
 			}
 		},
 		/**
+		 * This is the column index of the linux arm library
+		 * @since 11.5.0
+		 */
+		LDLINUX_ARM32URI {
+			/**
+			 * This creates an object from String representation for this column
+			 * value
+			 *
+			 * @param v
+			 *            the String representation
+			 * @return an URI representing the column value
+			 * @throws Exception
+			 *             is thrown on instantiation error
+			 */
+			@Override
+			public URI fromString(final String v) throws URISyntaxException {
+				return new URI(v);
+			}
+		},
+		/**
+		 * This is the column index of the linux arm library
+		 * @since 11.5.0
+		 */
+		LDLINUX_ARM64URI {
+			/**
+			 * This creates an object from String representation for this column
+			 * value
+			 *
+			 * @param v
+			 *            the String representation
+			 * @return an URI representing the column value
+			 * @throws Exception
+			 *             is thrown on instantiation error
+			 */
+			@Override
+			public URI fromString(final String v) throws URISyntaxException {
+				return new URI(v);
+			}
+		},
+		/**
 		 * This is the column index of the linux intel itanuim library, if any.
 		 *
 		 * @since 7.0.0
@@ -776,6 +816,46 @@ public final class AppInterface extends Table {
 		 * This is the column index of the linux amd64 binary, if any.
 		 */
 		LINUX_AMD64URI {
+			/**
+			 * This creates an object from String representation for this column
+			 * value
+			 *
+			 * @param v
+			 *            the String representation
+			 * @return an URI representing the column value
+			 * @throws Exception
+			 *             is thrown on instantiation error
+			 */
+			@Override
+			public URI fromString(final String v) throws URISyntaxException {
+				return new URI(v);
+			}
+		},
+		/**
+		 * This is the column index of the linux arm64 binary
+		 * @since 11.5.0
+		 */
+		LINUX_ARM64URI {
+			/**
+			 * This creates an object from String representation for this column
+			 * value
+			 *
+			 * @param v
+			 *            the String representation
+			 * @return an URI representing the column value
+			 * @throws Exception
+			 *             is thrown on instantiation error
+			 */
+			@Override
+			public URI fromString(final String v) throws URISyntaxException {
+				return new URI(v);
+			}
+		},
+		/**
+		 * This is the column index of the linux arm32 binary
+		 * @since 11.5.0
+		 */
+		LINUX_ARM32URI {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
@@ -1224,6 +1304,14 @@ public final class AppInterface extends Table {
 		} catch (final Exception e) {
 		}
 		try {
+			setLinux_arm64((URI) Columns.LINUX_ARM64URI.fromResultSet(rs));
+		} catch (final Exception e) {
+		}
+		try {
+			setLinux_arm32((URI) Columns.LINUX_ARM32URI.fromResultSet(rs));
+		} catch (final Exception e) {
+		}
+		try {
 			setLinux_x86_64((URI) Columns.LINUX_X86_64URI.fromResultSet(rs));
 		} catch (final Exception e) {
 		}
@@ -1273,6 +1361,14 @@ public final class AppInterface extends Table {
 		}
 		try {
 			setLDLinux_amd64((URI) Columns.LDLINUX_AMD64URI.fromResultSet(rs));
+		} catch (final Exception e) {
+		}
+		try {
+			setLDLinux_arm64((URI) Columns.LDLINUX_ARM64URI.fromResultSet(rs));
+		} catch (final Exception e) {
+		}
+		try {
+			setLDLinux_arm32((URI) Columns.LDLINUX_ARM32URI.fromResultSet(rs));
 		} catch (final Exception e) {
 		}
 		try {
@@ -1668,6 +1764,10 @@ public final class AppInterface extends Table {
 				return Columns.LINUX_PPCURI.toString();
 			case AMD64:
 				return Columns.LINUX_AMD64URI.toString();
+			case ARM64:
+				return Columns.LINUX_ARM64URI.toString();
+			case ARM32:
+				return Columns.LINUX_ARM32URI.toString();
 			case X86_64:
 				return Columns.LINUX_X86_64URI.toString();
 			case IA64:
@@ -1799,13 +1899,27 @@ public final class AppInterface extends Table {
 
 	/**
 	 * This retrieves the URI to get application binary for linux amd64
-	 *
 	 * @return a data URI
 	 */
 	public URI getLinuxAmd64() {
 		return (URI) getValue(Columns.LINUX_AMD64URI);
 	}
-
+	/**
+	 * This retrieves the URI to get application binary for linux arm64
+	 * @return a data URI
+	 * @since 11.5.0
+	 */
+	public URI getLinuxArm64() {
+		return (URI) getValue(Columns.LINUX_ARM64URI);
+	}
+	/**
+	 * This retrieves the URI to get application binary for linux arm32
+	 * @return a data URI
+	 * @since 11.5.0
+	 */
+	public URI getLinuxArm32() {
+		return (URI) getValue(Columns.LINUX_ARM32URI);
+	}
 	/**
 	 * This retrieves the URI to get application binary for linux x86 64
 	 *
@@ -1926,16 +2040,29 @@ public final class AppInterface extends Table {
 	public URI getLDLinuxIX86() {
 		return (URI) getValue(Columns.LDLINUX_IX86URI);
 	}
-
 	/**
 	 * This retrieves the URI to get application library for linux amd64
-	 *
 	 * @return a data URI
 	 */
 	public URI getLDLinuxAmd64() {
 		return (URI) getValue(Columns.LDLINUX_AMD64URI);
 	}
-
+	/**
+	 * This retrieves the URI to get application library for linux arm64
+	 * @return a data URI
+	 * @since 11.5.0
+	 */
+	public URI getLDLinuxArm64() {
+		return (URI) getValue(Columns.LDLINUX_ARM64URI);
+	}
+	/**
+	 * This retrieves the URI to get application library for linux arm32
+	 * @return a data URI
+	 * @since 11.5.0
+	 */
+	public URI getLDLinuxArm32() {
+		return (URI) getValue(Columns.LDLINUX_ARM32URI);
+	}
 	/**
 	 * This retrieves the URI to get application library for linux x86 64
 	 *
@@ -2327,6 +2454,10 @@ public final class AppInterface extends Table {
 				return setLinux_ppc(v);
 			case AMD64:
 				return setLinux_amd64(v);
+			case ARM64:
+				return setLinux_arm64(v);
+			case ARM32:
+				return setLinux_arm32(v);
 			case X86_64:
 				return setLinux_x86_64(v);
 			case IA64:
@@ -2406,6 +2537,10 @@ public final class AppInterface extends Table {
 				return setLDLinux_ppc(v);
 			case AMD64:
 				return setLDLinux_amd64(v);
+			case ARM64:
+				return setLDLinux_arm64(v);
+			case ARM32:
+				return setLDLinux_arm32(v);
 			case X86_64:
 				return setLDLinux_x86_64(v);
 			case IA64:
@@ -2462,16 +2597,29 @@ public final class AppInterface extends Table {
 	public boolean setLinux_ix86(final URI v) {
 		return setValue(Columns.LINUX_IX86URI, v);
 	}
-
 	/**
 	 * This sets the URI to retrieve application binary for linux amd64
-	 *
 	 * @return true if value has changed, false otherwise
 	 */
 	public boolean setLinux_amd64(final URI v) {
 		return setValue(Columns.LINUX_AMD64URI, v);
 	}
-
+	/**
+	 * This sets the URI to retrieve application binary for linux arm64
+	 * @return true if value has changed, false otherwise
+	 * @since 11.5.0
+	 */
+	public boolean setLinux_arm64(final URI v) {
+		return setValue(Columns.LINUX_ARM64URI, v);
+	}
+	/**
+	 * This sets the URI to retrieve application binary for linux arm32
+	 * @return true if value has changed, false otherwise
+	 * @since 11.5.0
+	 */
+	public boolean setLinux_arm32(final URI v) {
+		return setValue(Columns.LINUX_ARM32URI, v);
+	}
 	/**
 	 * This sets the URI to retrieve application binary for linux x86 64
 	 *
@@ -2592,16 +2740,29 @@ public final class AppInterface extends Table {
 	public boolean setLDLinux_ix86(final URI v) {
 		return setValue(Columns.LDLINUX_IX86URI, v);
 	}
-
 	/**
 	 * This sets the URI to retrieve application binary for linux amd64
-	 *
 	 * @return true if value has changed, false otherwise
 	 */
 	public boolean setLDLinux_amd64(final URI v) {
 		return setValue(Columns.LDLINUX_AMD64URI, v);
 	}
-
+	/**
+	 * This sets the URI to retrieve application binary for linux arm64
+	 * @return true if value has changed, false otherwise
+	 * @since 11.5.0
+	 */
+	public boolean setLDLinux_arm64(final URI v) {
+		return setValue(Columns.LDLINUX_ARM64URI, v);
+	}
+	/**
+	 * This sets the URI to retrieve application binary for linux arm32
+	 * @return true if value has changed, false otherwise
+	 * @since 11.5.0
+	 */
+	public boolean setLDLinux_arm32(final URI v) {
+		return setValue(Columns.LDLINUX_ARM32URI, v);
+	}
 	/**
 	 * This sets the URI to retrieve application binary for linux x86 64
 	 *

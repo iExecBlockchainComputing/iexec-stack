@@ -445,7 +445,11 @@ version=${version}
 
     <!-- Install config files -->
 
-    <copy file="${misc.dir}/xtremweb.server.conf.in" 
+    <copy file="${misc.dir}/xwconfigure.values" 
+          filtering="yes" overwrite="yes"
+          tofile="${dist.dir}/conf/xwconfigure.values" />
+
+  	<copy file="${misc.dir}/xtremweb.server.conf.in" 
           filtering="yes" overwrite="yes"
           tofile="${dist.dir}/conf/xtremweb.server.conf" />
     
@@ -749,14 +753,16 @@ version=${version}
       </filterset>
     </copy>
 
-    <copy file="${src.scripts.dir}/xwconfigure"
-          overwrite="yes"
+    <copy overwrite="yes"
           todir="${dist.dir.bin}" >
       <filterset begintoken="%" endtoken="%">
 	<filter token="INSTALLDIR" value="${install.dir}"/>
 	<filter token="XWVERSION" value="${version}"/>
 	<filter token="SYSTEMUSER" value="${system.user}"/>
       </filterset>
+        <fileset dir="${src.scripts.dir}/" >
+          <include name="xwconfigure**"/>
+        </fileset>
     </copy>
 
     <copy todir="${dist.doc}/xwhep.client/doc"

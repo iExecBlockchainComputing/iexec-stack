@@ -43,7 +43,6 @@ import javax.security.auth.x500.X500Principal;
 
 import xtremweb.common.BytePacket;
 import xtremweb.common.Logger;
-import xtremweb.common.MD5;
 import xtremweb.common.OSEnum;
 import xtremweb.common.StreamIO;
 import xtremweb.common.UID;
@@ -348,9 +347,7 @@ public class TCPHandler extends xtremweb.dispatcher.CommHandler {
 							final String issuerName = cert.getIssuerX500Principal().getName();
 							final String loginName = subjectName + "_" + issuerName;
 							final String random = loginName + Math.random();
-							final byte[] strb = random.getBytes();
-							final MD5 md5 = new MD5(strb);
-							final String md5hex = md5.asHex();
+							final String shastr = XWTools.sha256(random);
 
 							// login may be
 							// truncated; see UserIntergace.USERLOGINLENGTH
@@ -367,7 +364,7 @@ public class TCPHandler extends xtremweb.dispatcher.CommHandler {
 							if (user == null) {
 								client.setUID(newuid);
 								client.setLogin(loginName);
-								client.setPassword(md5hex);
+								client.setPassword(shastr);
 								client.setOwner(Dispatcher.getConfig().getAdminUid());
 								client.setRights(UserRightEnum.STANDARD_USER);
 								//

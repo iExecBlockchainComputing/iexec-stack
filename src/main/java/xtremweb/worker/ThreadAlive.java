@@ -33,6 +33,7 @@ import java.net.UnknownHostException;
 import java.rmi.RemoteException;
 import java.security.AccessControlException;
 import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -43,13 +44,13 @@ import org.xml.sax.SAXException;
 import xtremweb.common.CommonVersion;
 import xtremweb.common.DataInterface;
 import xtremweb.common.Logger;
-import xtremweb.common.MD5;
 import xtremweb.common.StreamIO;
 import xtremweb.common.UID;
 import xtremweb.common.XMLValue;
 import xtremweb.common.XWConfigurator;
 import xtremweb.common.XWPropertyDefs;
 import xtremweb.common.XWReturnCode;
+import xtremweb.common.XWTools;
 import xtremweb.communications.CommClient;
 import xtremweb.communications.Connection;
 import xtremweb.communications.URI;
@@ -134,7 +135,7 @@ public class ThreadAlive extends Thread {
 			try {
 				synchronize();
 			} catch (InvalidKeyException | AccessControlException | ClassNotFoundException | IOException
-					| URISyntaxException | SAXException e) {
+					| URISyntaxException | SAXException | NoSuchAlgorithmException e) {
 				logger.exception(e);
 			}
 			try {
@@ -245,11 +246,12 @@ public class ThreadAlive extends Thread {
 	 * @throws ClassNotFoundException
 	 * @throws AccessControlException
 	 * @throws InvalidKeyException
+	 * @throws NoSuchAlgorithmException 
 	 *
 	 * @see xtremweb.dispatcher.CommHandler#workAlive(IdServers, Hashtable)
 	 */
 	private void synchronize() throws IOException, URISyntaxException, InvalidKeyException, AccessControlException,
-			ClassNotFoundException, SAXException {
+			ClassNotFoundException, SAXException, NoSuchAlgorithmException {
 
 		Hashtable rmiResults = null;
 
@@ -377,7 +379,7 @@ public class ThreadAlive extends Thread {
 				throw new IOException("Can't retrieve new keystore data " + keystoreUri);
 			}
 
-			final String currentKeystoreMD5 = MD5.asHex(MD5.getHash(currentKeystoreFile));
+			final String currentKeystoreMD5 = XWTools.sha256CheckSum(currentKeystoreFile);
 
 			if (newKeystoreData.getMD5().compareTo(currentKeystoreMD5) != 0) {
 				logger.info("Downloading new keystore");

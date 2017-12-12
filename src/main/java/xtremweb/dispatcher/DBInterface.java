@@ -34,7 +34,6 @@ import java.util.Vector;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Enumeration;
-import java.util.Hashtable;
 import java.util.Iterator;
 
 import javax.mail.MessagingException;
@@ -47,7 +46,6 @@ import xtremweb.common.DataTypeEnum;
 import xtremweb.common.GroupInterface;
 import xtremweb.common.HostInterface;
 import xtremweb.common.Logger;
-import xtremweb.common.MD5;
 import xtremweb.common.MileStone;
 import xtremweb.common.SessionInterface;
 import xtremweb.common.StatusEnum;
@@ -2731,12 +2729,11 @@ public final class DBInterface {
 					final UID useruid = new UID();
 					final UserInterface newUserItf = new UserInterface(useruid);
 					final String random = subjectName + Math.random();
-					final MD5 md5 = new MD5(random.getBytes());
-					final String md5hex = md5.asHex();
+					final String shastring = XWTools.sha256(random);
 					newUserItf.setRights(UserRightEnum.STANDARD_USER);
 					newUserItf.setOwner(config.getAdminUid());
 					newUserItf.setLogin(loginName);
-					newUserItf.setPassword(md5hex);
+					newUserItf.setPassword(shastring);
 					newUserItf.setEMail("unknown");
 					newUserItf.setCertificate(certificate);
 					result = new UserInterface(newUserItf);
@@ -4913,6 +4910,10 @@ public final class DBInterface {
 					}
 				}
 
+				final Long wct = config.getLong(XWPropertyDefs.WALLCLOCKTIMEVALUE);
+				if (theWork.getMaxWallClockTime() > wct) {
+					theWork.setMaxWallClockTime(wct);
+				}
 				if ((theWork.getMinMemory() == 0) || (theWork.getMinMemory() < theApp.getMinMemory())) {
 					theWork.setMinMemory(theApp.getMinMemory());
 				}
@@ -5087,6 +5088,11 @@ public final class DBInterface {
 				job.setStatus(StatusEnum.UNAVAILABLE);
 			}
 
+			final Long wct = config.getLong(XWPropertyDefs.WALLCLOCKTIMEVALUE);
+			if (job.getMaxWallClockTime() > wct) {
+				job.setMaxWallClockTime(wct);
+			}
+
 			final Vector<Table> rows = new Vector<>();
 
 			job.setReplicatedUid(null);
@@ -5094,7 +5100,8 @@ public final class DBInterface {
 			+ " by " + job.getReplicaSetSize());
 
 			// if job.getExpectedReplications() < 0, we replicate for ever
-			int replica = job.getExpectedReplications() < 0 ? job.getExpectedReplications() - job.getReplicaSetSize()
+			int replica = job.getExpectedReplications() < 0 
+					? job.getExpectedReplications() - job.getReplicaSetSize()
 					: 0;
 			boolean firstJob = true;
 

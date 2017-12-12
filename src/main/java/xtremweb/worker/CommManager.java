@@ -44,6 +44,7 @@ import java.net.URL;
 import java.net.UnknownHostException;
 import java.security.AccessControlException;
 import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Enumeration;
@@ -60,7 +61,6 @@ import xtremweb.common.DataInterface;
 import xtremweb.common.DataTypeEnum;
 import xtremweb.common.HostInterface;
 import xtremweb.common.Logger;
-import xtremweb.common.MD5;
 import xtremweb.common.MileStone;
 import xtremweb.common.OSEnum;
 import xtremweb.common.StatusEnum;
@@ -868,7 +868,7 @@ public final class CommManager extends Thread {
 			final long start = System.currentTimeMillis();
 			long fsize = fdata.length();
 
-			if ((fdata.exists()) && (!bypass) && (data.getMD5().compareTo(MD5.asHex(MD5.getHash(fdata))) == 0)
+			if ((fdata.exists()) && (!bypass) && (data.getMD5().compareTo(XWTools.sha256CheckSum(fdata)) == 0)
 					&& (data.getSize() == fsize)) {
 				logger.config("Not necessary to download data " + data.getUID());
 				return;
@@ -898,9 +898,11 @@ public final class CommManager extends Thread {
 			Worker.getConfig().getHost().setDownloadBandwidth(bandwidth);
 			logger.info("Download bandwidth = " + bandwidth);
 
-			if ((data.getMD5().compareTo(MD5.asHex(MD5.getHash(fdata))) != 0) || (data.getSize() != fsize)) {
+			if ((data.getMD5().compareTo(XWTools.sha256CheckSum(fdata)) != 0) || (data.getSize() != fsize)) {
 				throw new IOException(uri.toString() + " MD5 or size differs");
 			}
+		} catch (NoSuchAlgorithmException e) {
+			logger.exception(e);
 		} finally {
 			if (fdata != null) {
 				for (int nbtry = 0; nbtry < 2; nbtry++) {
