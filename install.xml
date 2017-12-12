@@ -74,7 +74,7 @@
 
   <target name="getversion" >
     <property file="${basedir}/gradle.properties" />
-    <property name="xw.version" value="${xw.version}" />
+    <property name="xw.version" value="${version}" />
   </target>
 
 

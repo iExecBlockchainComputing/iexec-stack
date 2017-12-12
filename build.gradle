@@ -77,3 +77,55 @@ task fatJar(type: Jar) {
 }
 
 build.dependsOn fatJar
+
+
+
+import org.apache.tools.ant.filters.ReplaceTokens
+
+task createInstallers(type: Copy) {
+
+    def PROJECT_TAG = project.name + '-' + version
+
+    def root = '.'
+    def build = root + '/build'
+    def buildClasses = build + '/classes'
+    def libXtremWeb = root + 'libXtremWeb'
+    def src = root + '/src'
+    def java = src + '/main/java/xtremweb'
+    def c = src + '/main/natif/xtremweb/archdep'
+    def resources = src + '/main/resources'
+    def benchmark = resources + '/benchmark'
+    def doc = resources + '/doc'
+    def docker = resources + '/docker'
+    def installers = resources + '/installers'
+    def misc = resources + '/misc'
+    def scripts = resources + '/scripts'
+    def wrapper = resources + '/wrapper'
+    def linuxInstallers = installers + '/linux'
+    def rpm = installers + '/linux/rpm'
+    def dpkg = installers + '/linux/dpkg'
+
+    def opt = '/opt'
+    def install = opt + '/' + PROJECT_TAG
+
+    def dist = build + '/dist/' + PROJECT_TAG
+    def distlib = dist + '/lib'
+    def distdoc = dist + '/doc'
+    def distresources = dist + '/resources'
+    def distBin = dist + '/bin'
+    def distKeystore = dist + '/keystore'
+    def distLib = dist + '/lib'
+    def distInstallers = dist + '/installers'
+    def distLinux = distInstallers + '/linux'
+
+
+    //from docker into dist + '/docker'
+    //from doc into dist + '/doc'
+    //from resources into dist + '/resources'
+
+
+    from linuxInstallers
+    into dist + '/installers/linux'
+    filter(ReplaceTokens, tokens: [XWVERSION: '11.4.1', SYSTEMUSER: 'xwhep'])
+
+}
