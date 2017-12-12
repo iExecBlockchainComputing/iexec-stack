@@ -36,7 +36,6 @@ import xtremweb.common.CommandLineParser;
 import xtremweb.common.DataInterface;
 import xtremweb.common.DataTypeEnum;
 import xtremweb.common.Logger;
-import xtremweb.common.MD5;
 import xtremweb.common.MileStone;
 import xtremweb.common.StatusEnum;
 import xtremweb.common.UID;
@@ -206,7 +205,7 @@ public final class HelloWorld {
 				data.setStatus(StatusEnum.UNAVAILABLE);
 				data.setSize(dataFile.length());
 				data.setName(inputFileName);
-				data.setMD5(MD5.asHex(MD5.getHash(dataFile)));
+				data.setMD5(XWTools.sha256CheckSum(dataFile));
 				final DataTypeEnum inputType = DataTypeEnum.getFileType(dataFile);
 				if (inputType != null) {
 					data.setType(inputType);

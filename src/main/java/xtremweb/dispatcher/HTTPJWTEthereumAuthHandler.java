@@ -25,6 +25,7 @@ package xtremweb.dispatcher;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpSession;
@@ -131,7 +132,12 @@ public class HTTPJWTEthereumAuthHandler extends HTTPJWTHandler {
 		logger.debug("ADDR = " + getEthereumAddress(token));
 
 		if (ethauthCookie != null) {
-			final String newState = newState(ethauthCookie);
+			String newState;
+			try {
+				newState = newState(ethauthCookie);
+			} catch (NoSuchAlgorithmException e) {
+				throw new IOException(e);
+			}
 			logger.debug("newState = " + newState);
 			session.setAttribute(XWPostParams.AUTH_STATE.toString(), newState);
 			final Cookie cookieUser = new Cookie(XWPostParams.AUTH_STATE.toString(), newState);

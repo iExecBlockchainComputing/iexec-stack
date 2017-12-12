@@ -40,6 +40,7 @@ import java.nio.charset.Charset;
 import java.rmi.RemoteException;
 import java.security.AccessControlException;
 import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
 import java.util.Base64;
 import java.util.Collection;
@@ -72,7 +73,6 @@ import xtremweb.common.BytePacket;
 import xtremweb.common.DataInterface;
 import xtremweb.common.DataTypeEnum;
 import xtremweb.common.Logger;
-import xtremweb.common.MD5;
 import xtremweb.common.StatusEnum;
 import xtremweb.common.StreamIO;
 import xtremweb.common.Table;
@@ -865,7 +865,8 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 		if(user != null) {
 			return user;
 		}
-		user = userFromJWTEthereumAuth(request);
+		try {
+			user = userFromJWTEthereumAuth(request);
 		if(user != null) {
 			return user;
 		}
@@ -886,13 +887,15 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 			return user;
 		}
 		return null;
+		} catch (NoSuchAlgorithmException e) {
+			throw new IOException(e.getMessage());
+		}
 	}
 
 	/**
 	 * This handles incoming connections. This is inherited from
 	 * org.mortbay.jetty.Handler. This expects a POST parameter :
 	 * XWPostParams.COMMAND
-	 *
 	 * @see xtremweb.communications.XWPostParams
 	 */
 	@Override
@@ -1217,8 +1220,9 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 	 * This retrieves the user from its X509 certificate
 	 *
 	 * @throws IOException
+	 * @throws NoSuchAlgorithmException 
 	 */
-	private UserInterface userFromCertificate(final HttpServletRequest request) throws IOException {
+	private UserInterface userFromCertificate(final HttpServletRequest request) throws IOException, NoSuchAlgorithmException {
 
 		final Object certChain = request.getAttribute("javax.servlet.request.X509Certificate");
 
@@ -1257,9 +1261,7 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 		final String issuerName = certs[0].getIssuerX500Principal().getName();
 		final String loginName = subjectName + "_" + issuerName;
 		final String random = loginName + Math.random() + System.currentTimeMillis();
-		final byte[] strb = random.getBytes();
-		final MD5 md5 = new MD5(strb);
-		final String md5hex = md5.asHex();
+		final String shastr = XWTools.sha256(random);
 		client.setLogin(loginName); // login may be truncated; see
 		// UserIntergace.USERLOGINLENGTH
 
@@ -1282,7 +1284,7 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 
 		client.setUID(new UID());
 		client.setLogin(loginName);
-		client.setPassword(md5hex);
+		client.setPassword(shastr);
 		if (client.getEMail() == null) {
 			client.setEMail(loginName);
 		}
@@ -1338,14 +1340,12 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 					throw new IOException("can't insert new OpenId user (cant't retrieve admin)");
 				}
 				final String random = authEmail + System.currentTimeMillis() + Math.random();
-				final byte[] strb = random.getBytes();
-				final MD5 md5 = new MD5(strb);
-				final String md5hex = md5.asHex();
+				final String shastr = XWTools.sha256(random);
 				final UserInterface client = new UserInterface();
 				client.setUID(new UID());
 				client.setOwner(Dispatcher.getConfig().getAdminUid());
 				client.setLogin(authId);
-				client.setPassword(md5hex);
+				client.setPassword(shastr);
 				client.setRights(UserRightEnum.STANDARD_USER);
 				client.setEMail(authEmail);
 				DBInterface.getInstance().addUser(admin, client);
@@ -1364,8 +1364,9 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 	/**
 	 * This retrieves the user from a remove OAuth server
 	 * @throws IOException 
+	 * @throws NoSuchAlgorithmException 
 	 */
-	private UserInterface userFromJWTEthereumAuth(final HttpServletRequest request) throws IOException {
+	private UserInterface userFromJWTEthereumAuth(final HttpServletRequest request) throws IOException, NoSuchAlgorithmException {
 
 		final HttpSession session = request.getSession(true);
 
@@ -1402,11 +1403,12 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 	}
 	/**
 	 * This retrieves the user from a remove OAuth server
+	 * @throws NoSuchAlgorithmException 
 	 * @throws AccessControlException 
 	 * @throws InvalidKeyException 
 	 * @throws OAuthException 
 	 */
-	private UserInterface userFromOAuth(final HttpServletRequest request) throws IOException{
+	private UserInterface userFromOAuth(final HttpServletRequest request) throws IOException, NoSuchAlgorithmException{
 
 		final HttpSession session = request.getSession(true);
 		final String authState = (request.getParameter(XWPostParams.AUTH_STATE.toString()) != null 
@@ -1530,10 +1532,11 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 	 * @throws IOException 
 	 * @throws AccessControlException 
 	 * @throws InvalidKeyException 
+	 * @throws NoSuchAlgorithmException 
 	 * @since 11.0.0
 	 */
 	private UserInterface newUser(String login) 
-			throws IOException, InvalidKeyException, AccessControlException {
+			throws IOException, InvalidKeyException, AccessControlException, NoSuchAlgorithmException {
 		return newUser(login, "");
 	}
 	/**
@@ -1543,10 +1546,11 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 	 * @throws IOException 
 	 * @throws AccessControlException 
 	 * @throws InvalidKeyException 
+	 * @throws NoSuchAlgorithmException 
 	 * @since 11.0.0
 	 */
 	private UserInterface newUser(String login, final String emailaddr) 
-			throws IOException, InvalidKeyException, AccessControlException {
+			throws IOException, InvalidKeyException, AccessControlException, NoSuchAlgorithmException {
 		if ( ! Dispatcher.getConfig().getBoolean(XWPropertyDefs.DELEGATEDREGISTRATION)) {
 			throw new AccessControlException("DELEGATEDREGISTRATION is not allowed");
 		}
@@ -1560,14 +1564,12 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 		}
 
 		final String random = emailaddr + System.currentTimeMillis() + Math.random();
-		final byte[] strb = random.getBytes();
-		final MD5 md5 = new MD5(strb);
-		final String md5hex = md5.asHex();
+		final String shastr = XWTools.sha256(random);
 		final UserInterface client = new UserInterface();
 		client.setUID(new UID());
 		client.setOwner(Dispatcher.getConfig().getAdminUid());
 		client.setLogin(login);
-		client.setPassword(md5hex);
+		client.setPassword(shastr);
 		client.setRights(UserRightEnum.STANDARD_USER);
 		client.setEMail(emailaddr);
 		DBInterface.getInstance().addUser(admin, client);
@@ -1615,18 +1617,18 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 
 			dataUpload.write(dFile);
 			final long fsize = dFile.length();
-			final String fmd5sum = MD5.asHex(MD5.getHash(dFile));
+			final String shasum = XWTools.sha256CheckSum(dFile);
 			if (fsize != dataUploadSize) {
 				dFile.delete();
 				throw new IOException("Upload file size error should be " + dataUploadSize + " but found " + fsize);
 			}
-			if ((dataUploadmd5sum == null) || (dataUploadmd5sum.compareToIgnoreCase(fmd5sum) != 0)) {
+			if ((dataUploadmd5sum == null) || (dataUploadmd5sum.compareToIgnoreCase(shasum) != 0)) {
 				dFile.delete();
 				throw new IOException(
-						"Upload file MD5sum error should be " + dataUploadmd5sum + " but found " + fmd5sum);
+						"Upload file MD5sum error should be " + dataUploadmd5sum + " but found " + shasum);
 			}
 			theData.setSize(fsize);
-			theData.setMD5(fmd5sum);
+			theData.setMD5(shasum);
 			theData.setStatus(StatusEnum.AVAILABLE);
 			theData.update();
 			ret = dFile.length();

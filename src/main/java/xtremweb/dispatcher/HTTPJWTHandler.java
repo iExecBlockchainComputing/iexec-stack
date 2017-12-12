@@ -29,6 +29,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.AccessControlException;
+import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Enumeration;
@@ -60,7 +61,6 @@ import com.github.scribejava.core.oauth.OAuthService;
 
 import xtremweb.common.Logger;
 import xtremweb.common.LoggerLevel;
-import xtremweb.common.MD5;
 import xtremweb.common.XWPropertyDefs;
 import xtremweb.common.XWTools;
 import xtremweb.communications.Connection;
@@ -419,10 +419,10 @@ public abstract class HTTPJWTHandler extends Thread implements org.eclipse.jetty
 	 * This generates a new state (a random string) and stores it in stateDb
 	 *
 	 * @return the new generated state
+	 * @throws NoSuchAlgorithmException 
 	 */
-	protected String newState(final Cookie token) {
-		final MD5 md5 = new MD5(token.getValue() + System.currentTimeMillis() + Math.random());
-		return md5.asHex();
+	protected String newState(final Cookie token) throws NoSuchAlgorithmException {
+		return XWTools.sha256(token.getValue() + System.currentTimeMillis() + Math.random());
 	}
 
 	/**

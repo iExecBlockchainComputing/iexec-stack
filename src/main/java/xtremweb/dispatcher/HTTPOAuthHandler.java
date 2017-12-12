@@ -28,6 +28,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.security.KeyStore;
+import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -60,7 +61,6 @@ import com.github.scribejava.core.oauth.OAuthService;
 
 import xtremweb.common.Logger;
 import xtremweb.common.LoggerLevel;
-import xtremweb.common.MD5;
 import xtremweb.common.XWPropertyDefs;
 import xtremweb.common.XWTools;
 import xtremweb.communications.Connection;
@@ -830,10 +830,11 @@ public class HTTPOAuthHandler extends Thread implements org.eclipse.jetty.server
 	 *            is the HTTP request
 	 * @param operator
 	 *            is the OAuth operator (google, facebook etc.)
+	 * @throws NoSuchAlgorithmException 
 	 * @since 9.1.1
 	 */
 	private void oauthRequestForOPerator(final HttpServletRequest request, final Operator operator,
-			final HttpServletResponse response) throws IOException, OAuthException {
+			final HttpServletResponse response) throws IOException, OAuthException, NoSuchAlgorithmException {
 		if (operator == null) {
 			throw new OAuthException("operator is null");
 		}
@@ -903,10 +904,10 @@ public class HTTPOAuthHandler extends Thread implements org.eclipse.jetty.server
 	 * This generates a new state (a random string) and stores it in stateDb
 	 *
 	 * @return the new generated state
+	 * @throws NoSuchAlgorithmException 
 	 */
-	private String newState(final Operator op) {
-		final MD5 md5 = new MD5(op.getAppId() + System.currentTimeMillis() + Math.random());
-		return md5.asHex();
+	private String newState(final Operator op) throws NoSuchAlgorithmException {
+		return XWTools.sha256(op.getAppId() + System.currentTimeMillis() + Math.random());
 	}
 
 	/**

@@ -37,6 +37,7 @@ import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.security.AccessControlException;
 import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -55,7 +56,6 @@ import xtremweb.common.CPUEnum;
 import xtremweb.common.DataInterface;
 import xtremweb.common.DataTypeEnum;
 import xtremweb.common.Logger;
-import xtremweb.common.MD5;
 import xtremweb.common.MileStone;
 import xtremweb.common.OSEnum;
 import xtremweb.common.StatusEnum;
@@ -1319,7 +1319,11 @@ public class ThreadWork extends Thread {
 				}
 			}
 			if (resultFile.exists()) {
-				data.setMD5(MD5.asHex(MD5.getHash(resultFile)));
+				try {
+					data.setMD5(XWTools.sha256CheckSum(resultFile));
+				} catch (NoSuchAlgorithmException e) {
+					logger.exception(e);
+				}
 				data.setSize(resultFile.length());
 			} else {
 				logger.warn("ThreadWork#zipResult() resultFile does not exist");

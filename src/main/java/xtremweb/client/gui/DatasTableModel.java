@@ -54,13 +54,13 @@ import javax.swing.JTextField;
 import xtremweb.common.CPUEnum;
 import xtremweb.common.DataInterface;
 import xtremweb.common.DataTypeEnum;
-import xtremweb.common.MD5;
 import xtremweb.common.OSEnum;
 import xtremweb.common.StatusEnum;
 import xtremweb.common.TableColumns;
 import xtremweb.common.UID;
 import xtremweb.common.UserInterface;
 import xtremweb.common.XMLVector;
+import xtremweb.common.XWTools;
 import xtremweb.communications.URI;
 import xtremweb.security.XWAccessRights;
 
@@ -338,7 +338,7 @@ class DatasTableModel extends TableModel {
 				dataNameField.setText(contentFile.getName());
 			}
 			try {
-				((JTextField) vdialog.getFields().get(MD5LABEL)).setText(MD5.asHex(MD5.getHash(contentFile)));
+				((JTextField) vdialog.getFields().get(MD5LABEL)).setText(XWTools.sha256CheckSum(contentFile));
 				((JTextField) vdialog.getFields().get(SIZELABEL)).setText("" + contentFile.length());
 			} catch (final Exception e) {
 			}
