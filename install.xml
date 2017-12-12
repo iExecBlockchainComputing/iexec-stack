@@ -94,21 +94,6 @@
     <property name="dist.dir.keystore" value="${dist.dir}/keystore" />
     <property name="dist.dir.lib" value="${dist.dir}/lib" />
     <property name="dist.dir.installers" value="${dist.dir}/installers" />
-    <property name="dist.dir.linux" value="${dist.dir.installers}/linux" />
-    <property name="dist.dir.rpm" value="${dist.dir.linux}/rpm" />
-    <property name="dist.dir.rpm.bridgedgsg" value="${dist.dir.rpm}/xwhep.bridgedgsg" />
-    <property name="dist.dir.rpm.client" value="${dist.dir.rpm}/xwhep.client" />
-    <property name="dist.dir.rpm.server" value="${dist.dir.rpm}/xwhep.server" />
-    <property name="dist.dir.rpm.server.conf" value="${dist.dir.rpm}/xwhep.server.conf" />
-    <property name="dist.dir.rpm.worker" value="${dist.dir.rpm}/xwhep.worker" />
-    <property name="dist.dir.rpm.vworker" value="${dist.dir.rpm}/xwhep.vworker" />
-    <property name="dist.dir.dpkg" value="${dist.dir.linux}/dpkg" />
-    <property name="dist.dir.dpkg.bridgedgsg" value="${dist.dir.dpkg}/xwhep.bridgedgsg" />
-    <property name="dist.dir.dpkg.client" value="${dist.dir.dpkg}/xwhep.client" />
-    <property name="dist.dir.dpkg.server" value="${dist.dir.dpkg}/xwhep.server" />
-    <property name="dist.dir.dpkg.server.conf" value="${dist.dir.dpkg}/xwhep.server.conf" />
-    <property name="dist.dir.dpkg.worker" value="${dist.dir.dpkg}/xwhep.worker" />
-    <property name="dist.dir.dpkg.vworker" value="${dist.dir.dpkg}/xwhep.vworker" />
     <property name="dist.dir.win32" value="${dist.dir.installers}/win32" />
     <property name="dist.dir.win32.client" value="${dist.dir.win32}/xwhep.client/" />
     <property name="dist.dir.client.innosetup" value="${dist.dir.win32.client}/innoSetup" />
@@ -754,12 +739,6 @@ version=${version}
     <mkdir  dir="${dist.dir.worker.innosetup}" />
     <mkdir  dir="${dist.dir.vworker.innosetup}" />
     <mkdir  dir="${dist.dir.server.innosetup}" />
-    <mkdir  dir="${dist.dir.rpm.bridgedgsg}" />
-    <mkdir  dir="${dist.dir.rpm.client}" />
-    <mkdir  dir="${dist.dir.rpm.server}" />
-    <mkdir  dir="${dist.dir.rpm.server.conf}" />
-    <mkdir  dir="${dist.dir.rpm.worker}" />
-    <mkdir  dir="${dist.dir.rpm.vworker}" />
 
     <filter token="XWVERSION" value="${xw.version}"/>
     <filter token="SYSTEMUSER" value="${system.user}"/>
@@ -797,166 +776,11 @@ version=${version}
       <fileset file="${installers.dir}/win32/cygwin1.dll" />
     </copy>
 
-    <filter token="XWVERSION" value="${xw.version}"/>
-    <filter token="SYSTEMUSER" value="${system.user}"/>
-    <copy todir="${dist.dir.rpm.server}"
-          file="${rpm.dir}/xwhep-server.spec"
-	  filtering="yes" overwrite="yes" />
-    <copy todir="${dist.dir.rpm.server.conf}"
-          file="${rpm.dir}/xwhep-server-conf.spec"
-	  filtering="yes" overwrite="yes" />
-
-    <mkdir  dir="${dist.dir.dpkg.server}/DEBIAN" />
-  	<copy tofile="${dist.dir.dpkg.server}/DEBIAN/control"
-          file="${dpkg.dir}/xwhep-server.control"
-          filtering="yes" overwrite="yes" />
-  	<copy todir="${dist.dir.dpkg.server}/DEBIAN/"
-          file="${dpkg.dir}/copyright"
-          filtering="no" overwrite="yes" />
-    <copy tofile="${dist.dir.dpkg.server}/DEBIAN/preinst"
-          file="${dpkg.dir}/xwhep-server.preinst"
-          filtering="yes" overwrite="yes" />
-    <copy tofile="${dist.dir.dpkg.server}/DEBIAN/postinst"
-          file="${dpkg.dir}/xwhep-server.postinst"
-          filtering="yes" overwrite="yes" />
-    <copy tofile="${dist.dir.dpkg.server}/DEBIAN/prerm"
-          file="${dpkg.dir}/xwhep-server.prerm"
-          filtering="yes" overwrite="yes" />
-    <copy tofile="${dist.dir.dpkg.server}/DEBIAN/postrm"
-          file="${dpkg.dir}/xwhep-server.postrm"
-          filtering="yes" overwrite="yes" />
-
-    <mkdir  dir="${dist.dir.dpkg.server.conf}/DEBIAN" />
-    <copy todir="${dist.dir.dpkg.server.conf}/DEBIAN/"
-          file="${dpkg.dir}/copyright"
-          filtering="no" overwrite="yes" />
-    <copy tofile="${dist.dir.dpkg.server.conf}/DEBIAN/control"
-          file="${dpkg.dir}/xwhep-server-conf.control"
-          filtering="yes" overwrite="yes" />
-    <copy tofile="${dist.dir.dpkg.server.conf}/DEBIAN/preinst"
-          file="${dpkg.dir}/xwhep-server-conf.preinst"
-          filtering="yes" overwrite="yes" />
-    <copy tofile="${dist.dir.dpkg.server.conf}/DEBIAN/postinst"
-          file="${dpkg.dir}/xwhep-server-conf.postinst"
-          filtering="yes" overwrite="yes" />
-    <copy tofile="${dist.dir.dpkg.server.conf}/DEBIAN/prerm"
-          file="${dpkg.dir}/xwhep-server-conf.prerm"
-          filtering="yes" overwrite="yes" />
-    <copy tofile="${dist.dir.dpkg.server.conf}/DEBIAN/postrm"
-          file="${dpkg.dir}/xwhep-server-conf.postrm"
-          filtering="yes" overwrite="yes" />
-
-    <mkdir  dir="${dist.dir.dpkg.bridgedgsg}/DEBIAN" />
-    <copy todir="${dist.dir.rpm.bridgedgsg}"
-          file="${rpm.dir}/xwhep-bridgedgsg.spec"
-	  filtering="yes" overwrite="yes" />
-    <copy todir="${dist.dir.dpkg.bridgedgsg}/DEBIAN/"
-          file="${dpkg.dir}/copyright"
-          filtering="no" overwrite="yes" />
-    <copy tofile="${dist.dir.dpkg.bridgedgsg}/DEBIAN/control"
-          file="${dpkg.dir}/xwhep-bridgedgsg.control"
-          filtering="yes" overwrite="yes" />
-    <filter token="XWVERSION" value="${xw.version}"/>
-    <filter token="SYSTEMUSER" value="${system.user}"/>
-    <copy tofile="${dist.dir.dpkg.bridgedgsg}/DEBIAN/preinst"
-          file="${dpkg.dir}/xwhep-bridgedgsg.preinst"
-          filtering="yes" overwrite="yes" />
-    <copy tofile="${dist.dir.dpkg.bridgedgsg}/DEBIAN/postinst"
-          file="${dpkg.dir}/xwhep-bridgedgsg.postinst"
-          filtering="yes" overwrite="yes" />
-    <copy tofile="${dist.dir.dpkg.bridgedgsg}/DEBIAN/prerm"
-          file="${dpkg.dir}/xwhep-bridgedgsg.prerm"
-          filtering="yes" overwrite="yes" />
-    <copy tofile="${dist.dir.dpkg.bridgedgsg}/DEBIAN/postrm"
-          file="${dpkg.dir}/xwhep-bridgedgsg.postrm"
-          filtering="yes" overwrite="yes" />
-
-
-    <mkdir  dir="${dist.dir.dpkg.client}/DEBIAN" />
-    <copy todir="${dist.dir.rpm.client}"
-          file="${rpm.dir}/xwhep-client.spec"
-	  filtering="yes" overwrite="yes" />
-    <copy tofile="${dist.dir.dpkg.client}/DEBIAN/control"
-          file="${dpkg.dir}/xwhep-client.control"
-          filtering="yes" overwrite="yes" />
-    <copy todir="${dist.dir.dpkg.client}/DEBIAN/"
-          file="${dpkg.dir}/copyright"
-          filtering="no" overwrite="yes" />
-    <filter token="XWVERSION" value="${xw.version}"/>
-    <filter token="SYSTEMUSER" value="${system.user}"/>
-    <copy tofile="${dist.dir.dpkg.client}/DEBIAN/preinst"
-          file="${dpkg.dir}/xwhep-client.preinst"
-          filtering="yes" overwrite="yes" />
-    <copy tofile="${dist.dir.dpkg.client}/DEBIAN/postinst"
-          file="${dpkg.dir}/xwhep-client.postinst"
-          filtering="yes" overwrite="yes" />
-    <copy tofile="${dist.dir.dpkg.client}/DEBIAN/prerm"
-          file="${dpkg.dir}/xwhep-client.prerm"
-          filtering="yes" overwrite="yes" />
-    <copy tofile="${dist.dir.dpkg.client}/DEBIAN/postrm"
-          file="${dpkg.dir}/xwhep-client.postrm"
-          filtering="yes" overwrite="yes" />
 
     <filter token="DEFAULTUSER" value="${xtremweb.worker.login}" />
     <filter token="DEFAULTPASSWORD" value="${xtremweb.worker.password}" />
 
-    <copy todir="${dist.dir.rpm.worker}"
-          file="${rpm.dir}/xwhep-worker.spec"
-	  filtering="yes" overwrite="yes" />
 
-    <mkdir  dir="${dist.dir.dpkg.worker}/DEBIAN" />
-    <copy tofile="${dist.dir.dpkg.worker}/DEBIAN/control"
-          file="${dpkg.dir}/xwhep-worker.control"
-          filtering="yes" overwrite="yes" />
-    <copy todir="${dist.dir.dpkg.worker}/DEBIAN/"
-          file="${dpkg.dir}/copyright"
-          filtering="no" overwrite="yes" />
-    <filter token="XWVERSION" value="${xw.version}"/>
-    <filter token="SYSTEMUSER" value="${system.user}"/>
-    <copy tofile="${dist.dir.dpkg.worker}/DEBIAN/preinst"
-          file="${dpkg.dir}/xwhep-worker.preinst"
-          filtering="yes" overwrite="yes" />
-    <copy tofile="${dist.dir.dpkg.worker}/DEBIAN/postinst"
-          file="${dpkg.dir}/xwhep-worker.postinst"
-          filtering="yes" overwrite="yes" />
-    <copy tofile="${dist.dir.dpkg.worker}/DEBIAN/prerm"
-          file="${dpkg.dir}/xwhep-worker.prerm"
-          filtering="yes" overwrite="yes" />
-    <copy tofile="${dist.dir.dpkg.worker}/DEBIAN/postrm"
-          file="${dpkg.dir}/xwhep-worker.postrm"
-          filtering="yes" overwrite="yes" />
-
-    <filter token="DEFAULTUSER" value="${xtremweb.vworker.login}" />
-    <filter token="DEFAULTPASSWORD" value="${xtremweb.vworker.password}" />
-  	
-    <copy todir="${dist.dir.rpm.vworker}"
-          file="${rpm.dir}/xwhep-worker.spec"
-	  filtering="yes" overwrite="yes" />
-
-    <mkdir  dir="${dist.dir.dpkg.vworker}/DEBIAN" />
-    <copy tofile="${dist.dir.dpkg.vworker}/DEBIAN/control"
-          file="${dpkg.dir}/xwhep-worker.control"
-          filtering="yes" overwrite="yes" />
-    <copy todir="${dist.dir.dpkg.vworker}/DEBIAN/"
-          file="${dpkg.dir}/copyright"
-          filtering="no" overwrite="yes" />
-    <filter token="XWVERSION" value="${xw.version}"/>
-    <filter token="SYSTEMUSER" value="${system.user}"/>
-    <copy tofile="${dist.dir.dpkg.vworker}/DEBIAN/preinst"
-          file="${dpkg.dir}/xwhep-worker.preinst"
-          filtering="yes" overwrite="yes" />
-    <copy tofile="${dist.dir.dpkg.vworker}/DEBIAN/postinst"
-          file="${dpkg.dir}/xwhep-worker.postinst"
-          filtering="yes" overwrite="yes" />
-    <copy tofile="${dist.dir.dpkg.vworker}/DEBIAN/prerm"
-          file="${dpkg.dir}/xwhep-worker.prerm"
-          filtering="yes" overwrite="yes" />
-    <copy tofile="${dist.dir.dpkg.vworker}/DEBIAN/postrm"
-          file="${dpkg.dir}/xwhep-worker.postrm"
-          filtering="yes" overwrite="yes" />
-
-  	
-  	
   	<copy file="${lib.dir}/bcprov-jdk15on-151.jar"
 	  todir="${dist.dir.client.innosetup}/client/lib/"
           overwrite="yes" />
@@ -1047,11 +871,6 @@ version=${version}
     </delete>
 
   </target>
-
-
-
-
-
 
   <!-- *************************** END OF INSTALL ************************** -->
 
