@@ -4913,6 +4913,10 @@ public final class DBInterface {
 					}
 				}
 
+				final Long wct = config.getLong(XWPropertyDefs.WALLCLOCKTIMEVALUE);
+				if (theWork.getMaxWallClockTime() > wct) {
+					theWork.setMaxWallClockTime(wct);
+				}
 				if ((theWork.getMinMemory() == 0) || (theWork.getMinMemory() < theApp.getMinMemory())) {
 					theWork.setMinMemory(theApp.getMinMemory());
 				}
@@ -5087,6 +5091,11 @@ public final class DBInterface {
 				job.setStatus(StatusEnum.UNAVAILABLE);
 			}
 
+			final Long wct = config.getLong(XWPropertyDefs.WALLCLOCKTIMEVALUE);
+			if (job.getMaxWallClockTime() > wct) {
+				job.setMaxWallClockTime(wct);
+			}
+
 			final Vector<Table> rows = new Vector<>();
 
 			job.setReplicatedUid(null);
@@ -5094,7 +5103,8 @@ public final class DBInterface {
 			+ " by " + job.getReplicaSetSize());
 
 			// if job.getExpectedReplications() < 0, we replicate for ever
-			int replica = job.getExpectedReplications() < 0 ? job.getExpectedReplications() - job.getReplicaSetSize()
+			int replica = job.getExpectedReplications() < 0 
+					? job.getExpectedReplications() - job.getReplicaSetSize()
 					: 0;
 			boolean firstJob = true;
 

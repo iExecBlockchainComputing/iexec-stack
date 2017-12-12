@@ -1211,28 +1211,6 @@ public enum XWPropertyDefs {
 		}
 	},
 	/**
-	 * Server : wallclocktime usage; if true, wallclocktime is used Property
-	 * <p>
-	 * Property type : boolean
-	 * </p>
-	 * <p>
-	 * Default : true
-	 * </p>
-	 *
-	 * @since 8.2.0
-	 */
-	WALLCLOCKTIME {
-		/**
-		 * This retrieves the String representation of the default value
-		 *
-		 * @return "true"
-		 */
-		@Override
-		public String defaultValue() {
-			return Boolean.TRUE.toString();
-		}
-	},
-	/**
 	 * All : default max computing seconds Property name : "wallclocktimevalue"
 	 * <p>
 	 * Property type : integer

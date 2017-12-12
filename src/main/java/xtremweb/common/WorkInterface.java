@@ -1164,19 +1164,20 @@ public class WorkInterface extends Table {
 	}
 
 	/**
-	 * This retrieves the wallclocktime. If attr is not set it is forced its
+	 * This retrieves the wallclocktime attribute. If it is not set, it is forced its
 	 * default value
 	 *
 	 * @return the wall clock time in seconds
 	 * @since 8.2.0
 	 */
-	public int getMaxWallClockTime() {
+	public long getMaxWallClockTime() {
 		final Long ret = (Long) getValue(Columns.MAXWALLCLOCKTIME);
 		if (ret != null) {
-			return ret.intValue();
+			return ret.longValue();
 		}
-		setMaxWallClockTime(Long.parseLong(XWPropertyDefs.WALLCLOCKTIME.defaultValue()));
-		return 0;
+		final Long def = Long.parseLong(XWPropertyDefs.WALLCLOCKTIMEVALUE.defaultValue());
+		setMaxWallClockTime(def);
+		return def;
 	}
 
 	/**
