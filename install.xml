@@ -54,8 +54,6 @@
   <property name="macosxpkg.server" value="${macosxpkg.dir}/xwhep.server" />
   <property name="macosxpkg.worker" value="${macosxpkg.dir}/xwhep.worker" />
   <property name="macosxpkg.client" value="${macosxpkg.dir}/xwhep.client" />
-  <property name="rpm.dir" value="${installers.dir}/linux/rpm" />
-  <property name="dpkg.dir" value="${installers.dir}/linux/dpkg" />
   <property name="doc.dir" value="${res.dir}/doc"/>
   <property name="docker.dir" value="${res.dir}/docker"/>
 
