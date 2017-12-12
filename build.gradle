@@ -58,3 +58,22 @@ task createVersion(type: Copy) {
 // the createVersion task should be called before compileJava
 compileJava.dependsOn createVersion
 
+jar {
+    exclude("doc/**")
+}
+
+// task that creates a big jar that includes all dependencies
+// this will probably be removed once we switch to spring boot
+task fatJar(type: Jar) {
+    manifest {
+        attributes 'Implementation-Title': 'Gradle Jar File Example',
+                'Implementation-Version': version,
+                'Main-Class': 'xtremweb.dispatcher.Dispatcher xtremweb.common.HTTPLauncher xtremweb.client.Client'
+    }
+    exclude("doc/**")
+    baseName = project.name + '-all-dependencies'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}
+
+build.dependsOn fatJar

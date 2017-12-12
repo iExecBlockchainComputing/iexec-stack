@@ -38,7 +38,7 @@
   <property name="src.test.dir" value="${src.dir}/test/" />
   <property name="lib.dir" value="${basedir}/libXtremWeb" />
   <property name="build.classes" value="${basedir}/build/classes/java/main/" />
-  <property name="misc.dir" value="${basedir}/misc" />
+  <property name="misc.dir" value="${basedir}/src/main/resources/misc" />
 	
   <target name="getversion" >
 	<property file="${basedir}/gradle.properties" />    
