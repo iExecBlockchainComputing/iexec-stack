@@ -515,14 +515,6 @@ SSLKEYPASSWORD= @KEYSERVERPASSWORD@
 #DBCONNECTIONS=60
 
 #
-# this tells if wallclocktime should be used
-# if false, jobs can be infinite
-# if true, job are killed when they reach the wallclocktime 
-# since 8.2.0
-# default : true
-#WALLCLOCKTIME=true
-
-#
 # this is the maximum computing seconds per job
 # when a job reaches the wallclocktime, it is killed
 # since 8.2.0
