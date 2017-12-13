@@ -112,6 +112,11 @@ def distLinux = distInstallers + '/linux'
 
 import org.apache.tools.ant.filters.ReplaceTokens
 
+task copyBenchmark(type: Copy) {
+    from(benchmark + '/apptest')
+    into(dist + '/benchmark/apptest')
+}
+
 task copyDoc(type: Copy) {
     from doc
     into dist + '/doc'
@@ -172,36 +177,61 @@ task copyWorkerConf2(type: Copy){
                                    PASSWORD: '${xtremweb.vworker.password}'])
 }
 
-task copyScripts(type: Copy){
-    from(scripts + '/db-maintenance')
-    into(distBin + '/db-maintenance')
-
-    include('xwhep-core-tables-create-tables.sql.in')
-    include('xwsetversion.sql.in')
-    rename('xwsetversion.sql.in', 'xwsetversion.sql')
-
-    filter(ReplaceTokens, tokens: [XWVERSION: version])
-}
-
-task copyXWConfigure(type: Copy) {
+task copyScripts(type: Copy) {
     from(scripts)
     into(distBin)
+    exclude('xwconfigure')
+    exclude('/db-maintenance/xwsetversion.sql.in')
+    filter(ReplaceTokens, tokens: [
+            prefix: dist,
+            datadir: '../data',
+            exec_prefix: '.',
+            PACKAGE: project.name,
+            KEYPASSPHRASE: '${xw.keypassphrase}',
+            KEYSERVERPASSWORD: '${xw.server.keypassword}',
+            KEYWORKERPASSWORD: '${xw.worker.keypassword}',
+            KEYCLIENTPASSWORD: '${xw.client.keypassword}',
+            sysconfdir: '../conf',
+            INSTALLDIR: dist,
+            DEFAULTUSER: '${xtremweb.admin.login}',
+            DEFAULTPASSWORD: '${xtremweb.admin.password}',
+            WORKERUSER: '${xtremweb.worker.login}',
+            WORKERPASSWORD: '${xtremweb.worker.password}',
+            VWORKERUSER: '${xtremweb.vworker.login}',
+            VWORKERPASSWORD: '${xtremweb.vworker.password}',
+    ])
+}
+
+task copyXwconfigure(type: Copy) {
+    from(scripts)
     include('xwconfigure')
-    filter(ReplaceTokens, tokens: [XWVERSION: version,
-                                   SYSTEMUSER: 'xwhep',
-                                   INSTALLDIR: opt],
-                                    beginToken : '%', endToken : '%')
+    filter(ReplaceTokens, tokens: [XWVERSION: version, INSTALLDIR: opt], beginToken : '%', endToken : '%')
+    into(distBin)
+}
+
+task copyXwsetversion(type: Copy) {
+    from(scripts + '/db-maintenance')
+    rename('xwsetversion.sql.in', 'xwsetversion.sql')
+    filter(ReplaceTokens, tokens: [XWVERSION: version])
+    into(distBin + '/db-maintenance')
+}
+
+task chmodBin(type: Exec) {
+    commandLine("sh", "-c",
+            "chmod -R 755 " + distBin + " && " +
+                    "find " + distBin + " -iname *.sql* -exec chmod -x {} +" + " && " +
+                    "find " + distBin + " -iname *.seds -exec chmod -x {} +" + " && " +
+                    "find " + distBin + " -iname *.bat -exec chmod -x {} +" + " && " +
+                    "find " + distBin + " -iname *.xmls -exec chmod -x {} +"
+    )
 }
 
 task install(type: Copy) {
-
     from linuxInstallers
     into dist + '/installers/linux'
     filter(ReplaceTokens, tokens: [XWVERSION: "${version}".toString(),
                                    SYSTEMUSER: 'xwhep'])
 }
 
-install.dependsOn(copyDoc, copyDocker, copyResources, copyLib,
-        copyServerConf, copyClientConf, copyClientConf2, copyWorkerConf, copyWorkerConf2,
-copyScripts, copyXWConfigure)
-
+install.dependsOn(copyBenchmark, copyDoc, copyDocker, copyResources, copyLib,
+        copyServerConf, copyClientConf, copyClientConf2, copyWorkerConf, copyWorkerConf2, copyScripts, copyXwconfigure, copyXwsetversion)

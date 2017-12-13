@@ -253,25 +253,6 @@
 
 
   <!-- ************************ INSTALL ************************** -->
-  
-  <target name="install" depends="createDownload,ganglia">
-    <chmod dir="${dist.dir.bin}"
-	   perm="755" type="both" includes="**"/>
-    <chmod dir="${dist.dir.bin}"
-	   perm="-x" type="both" includes="*.sql*"/>
-    <chmod dir="${dist.dir.bin}"
-	   perm="-x" type="both" includes="*.seds"/>
-    <chmod dir="${dist.dir.bin}"
-	   perm="-x" type="both" includes="*.bat"/>
-    <chmod dir="${dist.dir.bin}"
-	   perm="-x" type="both" includes="*.xmls"/>
-
-    <echo>
-      Installation done
-    </echo>
-  </target>
-
-
 
   <target name="installFiles" depends="configure">
 
@@ -565,30 +546,6 @@
           todir="${dist.dir.macosx.server}/installer/PckRoot/private/etc/xwhep.server/keystore"
           failonerror="no" filtering="no" overwrite="yes" />
 
-
-    
-
-    <copy file="${src.scripts.dir}/db-maintenance/xwhep-core-tables-create-tables.sql.in"
-          filtering="no" overwrite="yes"
-          todir="${dist.dir.bin}/db-maintenance" />
-    <copy file="${src.scripts.dir}/db-maintenance/xwsetversion.sql.in"
-          filtering="yes" overwrite="yes"
-          tofile="${dist.dir.bin}/db-maintenance/xwsetversion.sql">
-      <filterset>
-	       <filter token="XWVERSION" value="${xw.version}"/>
-      </filterset>
-    </copy>
-
-    <copy file="${src.scripts.dir}/xwconfigure"
-          overwrite="yes"
-          todir="${dist.dir.bin}" >
-      <filterset begintoken="%" endtoken="%">
-      	<filter token="INSTALLDIR" value="${install.dir}"/>
-      	<filter token="XWVERSION" value="${xw.version}"/>
-      	<filter token="SYSTEMUSER" value="${system.user}"/>
-      </filterset>
-    </copy>
-
     <copy todir="${dist.doc}/xwhep.client/doc"
           filtering="no" overwrite="yes">
       <fileset dir="${doc.dir}">
@@ -689,13 +646,6 @@
       </fileset>
     </copy>
 
-    <!-- Install test -->
-    <copy overwrite="yes" todir="${dist.dir}/apptest">
-      <fileset dir="${benchmark.dir}/apptest">
-        <include name="apptest-*"/>
-      </fileset>
-    </copy>
-
     <!-- classpath for execution -->
     <path id="project.classpath" >
       <fileset dir="${dist.dir.lib}">
@@ -708,43 +658,6 @@
 
 
   <target name="setupScripts" depends="installFiles" >
-
-        <!-- ********************************************** -->
-        <!-- **** Note that every following copies uses *** -->
-        <!-- ****  filtering (i.e. uses defined tokens) *** -->
-        <!-- ********************************************** -->
-
-
-        <!-- **** Create xwgenkeys script file **** -->
-    <filter token="prefix" value="${dist.dir}"/>
-    <filter token="datadir" value="../data"/>
-    <filter token="exec_prefix" value="."/>
-    <filter token="PACKAGE" value="${project}"/>
-    <filter token="KEYPASSPHRASE" value="${xw.keypassphrase}"/>
-    <filter token="KEYSERVERPASSWORD" value="${xw.server.keypassword}"/>
-    <filter token="KEYWORKERPASSWORD" value="${xw.worker.keypassword}"/>
-    <filter token="KEYCLIENTPASSWORD" value="${xw.client.keypassword}"/>
-    <filter token="sysconfdir" value="../conf"/>
-    <filter token="INSTALLDIR" value="${dist.dir}"/>
-    <filter token="DEFAULTUSER" value="${xtremweb.admin.login}"/>
-    <filter token="DEFAULTPASSWORD" value="${xtremweb.admin.password}"/>
-    <filter token="WORKERUSER" value="${xtremweb.worker.login}" />
-    <filter token="WORKERPASSWORD" value="${xtremweb.worker.password}" />
-    <filter token="VWORKERUSER" value="${xtremweb.vworker.login}" />
-    <filter token="VWORKERPASSWORD" value="${xtremweb.vworker.password}" />
-
-    <filter token="SYSTEMUSER" value="${system.user}"/>
-
-    <copy overwrite="yes" 
-          filtering="yes"
-          todir="${dist.dir.bin}">
-      <fileset dir="${src.scripts.dir}/">
-        <include name="**" />
-      </fileset>
-    </copy>
-    <copy file="${src.scripts.dir}/db-maintenance/xwhep-core-tables-create-tables.sql.in"
-          filtering="no" overwrite="yes"
-          todir="${dist.dir.bin}/db-maintenance/" />
 
     <delete includeEmptyDirs="true" >
       <fileset dir="${dist.dir.bin}" >
