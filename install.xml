@@ -54,8 +54,6 @@
   <property name="macosxpkg.server" value="${macosxpkg.dir}/xwhep.server" />
   <property name="macosxpkg.worker" value="${macosxpkg.dir}/xwhep.worker" />
   <property name="macosxpkg.client" value="${macosxpkg.dir}/xwhep.client" />
-  <property name="rpm.dir" value="${installers.dir}/linux/rpm" />
-  <property name="dpkg.dir" value="${installers.dir}/linux/dpkg" />
   <property name="doc.dir" value="${res.dir}/doc"/>
   <property name="docker.dir" value="${res.dir}/docker"/>
 
@@ -236,63 +234,23 @@
       </not>
     </condition>
 
-<echo>
-user  login : ${dbUserLogin} ${dbUserPassword}
-admin login : ${xtremweb.admin.login} ${xtremweb.admin.password}
-DB su login : ${dbSuName} ${dbSuPassword}
-ENGINE : &quot;${dbEngine}&quot;
-launcher.url = ${launcher.url}
-system.user  = ${system.user}
-xwsuffix=${xwsuffix}
-xwarch=${xwarch}
-target.os=${target.os}
-cross.prefix=${cross.prefix}
-cross.java.home=${cross.java.home}
-version=${version}
-</echo>
-
-  </target>
-
-
-
-  <!-- ************************ UNINSTALL ************************ -->
-
-  <target name="uninstall" depends="configure">
-
-    <delete dir="${dist.dir}"
-            failonerror="false"
-            includeEmptyDirs="true"/>
     <echo>
-      Uninstall done
-
-      Note : Database not removed (except if called by uninstallAll)
-             To remove both, use uninstallAll
+    user  login : ${dbUserLogin} ${dbUserPassword}
+    admin login : ${xtremweb.admin.login} ${xtremweb.admin.password}
+    DB su login : ${dbSuName} ${dbSuPassword}
+    ENGINE : &quot;${dbEngine}&quot;
+    launcher.url = ${launcher.url}
+    system.user  = ${system.user}
+    xwsuffix=${xwsuffix}
+    xwarch=${xwarch}
+    target.os=${target.os}
+    cross.prefix=${cross.prefix}
+    cross.java.home=${cross.java.home}
+    version=${version}
     </echo>
+
   </target>
 
-  <target name="removeDB" depends="configure">
-    <sql classpath="${lib.dir}/mysql-connector-java-5.1.6-bin.jar"
-	 driver="com.mysql.jdbc.Driver"
-	 url="jdbc:mysql://${db.host}/${db.name}"
-	 userid="${dbSuName}"
-	 password="${dbSuPassword}"
-	 src="${src.scripts.dir}/xwrmdb.sql">
-    </sql>
-
-    <echo>
-      Database tables removed
-      Database itself should be removed manually!
-    </echo>
-  </target>
-
-
-  <!-- ************************ INSTALL WORKER ******************** -->
-  
-  <target name="installWorker" depends="installFiles">
-    <echo>
-      Done
-    </echo>
-  </target>
 
   <!-- ************************ INSTALL ************************** -->
   
@@ -373,7 +331,7 @@ version=${version}
     <copy todir="${dist.dir.macosx.server}/installer/PckRoot/private/etc/xwhep.server/lib"
           filtering="no" overwrite="yes">
       <fileset dir="${lib.dir}">
-	<patternset refid="XW-LIBS" />
+	      <patternset refid="XW-LIBS" />
       </fileset>
     </copy>
     
@@ -655,7 +613,7 @@ version=${version}
 
 
 
-  <target name="createDownload" depends="installScripts">
+  <target name="createDownload" depends="setupScripts">
 
     <filter token="XWVERSION" value="${xw.version}"/>
     <filter token="SYSTEMUSER" value="${system.user}"/>
@@ -694,7 +652,7 @@ version=${version}
           filtering="yes" overwrite="yes"
           tofile="${dist.dir.bin}/db-maintenance/xwsetversion.sql">
       <filterset>
-	<filter token="XWVERSION" value="${xw.version}"/>
+	       <filter token="XWVERSION" value="${xw.version}"/>
       </filterset>
     </copy>
 
@@ -702,9 +660,9 @@ version=${version}
           overwrite="yes"
           todir="${dist.dir.bin}" >
       <filterset begintoken="%" endtoken="%">
-	<filter token="INSTALLDIR" value="${install.dir}"/>
-	<filter token="XWVERSION" value="${xw.version}"/>
-	<filter token="SYSTEMUSER" value="${system.user}"/>
+      	<filter token="INSTALLDIR" value="${install.dir}"/>
+      	<filter token="XWVERSION" value="${xw.version}"/>
+      	<filter token="SYSTEMUSER" value="${system.user}"/>
       </filterset>
     </copy>
 
@@ -788,10 +746,10 @@ version=${version}
 
 
   	<copy file="${lib.dir}/bcprov-jdk15on-151.jar"
-	  todir="${dist.dir.client.innosetup}/client/lib/"
+	        todir="${dist.dir.client.innosetup}/client/lib/"
           overwrite="yes" />
     <copy file="${lib.dir}/bcpkix-jdk15on-151.jar"
-	  todir="${dist.dir.client.innosetup}/client/lib/"
+	        todir="${dist.dir.client.innosetup}/client/lib/"
           overwrite="yes" />
 
 
@@ -823,10 +781,6 @@ version=${version}
     </path>
     <property name="classpath" refid="project.classpath"/>
 
-  </target>
-
-
-  <target name="installScripts" depends="setupScripts">
   </target>
 
 
