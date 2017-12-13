@@ -78,20 +78,18 @@ task fatJar(type: Jar) {
 
 build.dependsOn fatJar
 
-
-
-import org.apache.tools.ant.filters.ReplaceTokens
-
 def PROJECT_TAG = project.name + '-' + version
+
 def root = '.'
 def build = root + '/build'
 def buildClasses = build + '/classes'
-def libXtremWeb = root + '/libXtremWeb'
+def libXtremWeb = root + 'libXtremWeb'
 def src = root + '/src'
 def java = src + '/main/java/xtremweb'
 def c = src + '/main/natif/xtremweb/archdep'
 def resources = src + '/main/resources'
 def benchmark = resources + '/benchmark'
+def templates = resources + '/templates'
 def doc = resources + '/doc'
 def docker = resources + '/docker'
 def installers = resources + '/installers'
@@ -99,6 +97,8 @@ def misc = resources + '/misc'
 def scripts = resources + '/scripts'
 def wrapper = resources + '/wrapper'
 def linuxInstallers = installers + '/linux'
+def rpm = installers + '/linux/rpm'
+def dpkg = installers + '/linux/dpkg'
 def opt = '/opt'
 def dist = build + '/dist/' + PROJECT_TAG
 def distlib = dist + '/lib'
@@ -109,8 +109,8 @@ def distKeystore = dist + '/keystore'
 def distLib = dist + '/lib'
 def distInstallers = dist + '/installers'
 def distLinux = distInstallers + '/linux'
-def templates = resources + '/templates'
 
+import org.apache.tools.ant.filters.ReplaceTokens
 
 task copyDoc(type: Copy) {
     from doc
@@ -172,6 +172,27 @@ task copyWorkerConf2(type: Copy){
                                    PASSWORD: '${xtremweb.vworker.password}'])
 }
 
+task copyScripts(type: Copy){
+    from(scripts + '/db-maintenance')
+    into(distBin + '/db-maintenance')
+
+    include('xwhep-core-tables-create-tables.sql.in')
+    include('xwsetversion.sql.in')
+    rename('xwsetversion.sql.in', 'xwsetversion.sql')
+
+    filter(ReplaceTokens, tokens: [XWVERSION: version])
+}
+
+task copyXWConfigure(type: Copy) {
+    from(scripts)
+    into(distBin)
+    include('xwconfigure')
+    filter(ReplaceTokens, tokens: [XWVERSION: version,
+                                   SYSTEMUSER: 'xwhep',
+                                   INSTALLDIR: opt],
+                                    beginToken : '%', endToken : '%')
+}
+
 task install(type: Copy) {
 
     from linuxInstallers
@@ -181,4 +202,6 @@ task install(type: Copy) {
 }
 
 install.dependsOn(copyDoc, copyDocker, copyResources, copyLib,
-        copyServerConf, copyClientConf, copyClientConf2, copyWorkerConf, copyWorkerConf2)
+        copyServerConf, copyClientConf, copyClientConf2, copyWorkerConf, copyWorkerConf2,
+copyScripts, copyXWConfigure)
+
