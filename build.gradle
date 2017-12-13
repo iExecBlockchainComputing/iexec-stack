@@ -82,50 +82,103 @@ build.dependsOn fatJar
 
 import org.apache.tools.ant.filters.ReplaceTokens
 
-task createInstallers(type: Copy) {
-
-    def PROJECT_TAG = project.name + '-' + version
-
-    def root = '.'
-    def build = root + '/build'
-    def buildClasses = build + '/classes'
-    def libXtremWeb = root + 'libXtremWeb'
-    def src = root + '/src'
-    def java = src + '/main/java/xtremweb'
-    def c = src + '/main/natif/xtremweb/archdep'
-    def resources = src + '/main/resources'
-    def benchmark = resources + '/benchmark'
-    def doc = resources + '/doc'
-    def docker = resources + '/docker'
-    def installers = resources + '/installers'
-    def misc = resources + '/misc'
-    def scripts = resources + '/scripts'
-    def wrapper = resources + '/wrapper'
-    def linuxInstallers = installers + '/linux'
-    def rpm = installers + '/linux/rpm'
-    def dpkg = installers + '/linux/dpkg'
-
-    def opt = '/opt'
-    def install = opt + '/' + PROJECT_TAG
-
-    def dist = build + '/dist/' + PROJECT_TAG
-    def distlib = dist + '/lib'
-    def distdoc = dist + '/doc'
-    def distresources = dist + '/resources'
-    def distBin = dist + '/bin'
-    def distKeystore = dist + '/keystore'
-    def distLib = dist + '/lib'
-    def distInstallers = dist + '/installers'
-    def distLinux = distInstallers + '/linux'
+def PROJECT_TAG = project.name + '-' + version
+def root = '.'
+def build = root + '/build'
+def buildClasses = build + '/classes'
+def libXtremWeb = root + '/libXtremWeb'
+def src = root + '/src'
+def java = src + '/main/java/xtremweb'
+def c = src + '/main/natif/xtremweb/archdep'
+def resources = src + '/main/resources'
+def benchmark = resources + '/benchmark'
+def doc = resources + '/doc'
+def docker = resources + '/docker'
+def installers = resources + '/installers'
+def misc = resources + '/misc'
+def scripts = resources + '/scripts'
+def wrapper = resources + '/wrapper'
+def linuxInstallers = installers + '/linux'
+def opt = '/opt'
+def dist = build + '/dist/' + PROJECT_TAG
+def distlib = dist + '/lib'
+def distdoc = dist + '/doc'
+def distresources = dist + '/resources'
+def distBin = dist + '/bin'
+def distKeystore = dist + '/keystore'
+def distLib = dist + '/lib'
+def distInstallers = dist + '/installers'
+def distLinux = distInstallers + '/linux'
+def templates = resources + '/templates'
 
 
-    //from docker into dist + '/docker'
-    //from doc into dist + '/doc'
-    //from resources into dist + '/resources'
+task copyDoc(type: Copy) {
+    from doc
+    into dist + '/doc'
+    include('*.png')
+    include('xtremweb.html')
+}
 
+task copyDocker (type: Copy) {
+    from docker
+    into dist + '/docker'
+}
+
+task copyResources(type: Copy) {
+    from resources
+    into dist + '/resources'
+    include('log4j.xml')
+}
+
+task copyLib(type: Copy){
+    from libXtremWeb
+    into dist + "/lib"
+}
+
+task copyServerConf(type: Copy){
+    from templates + '/xtremweb.server.conf.in'
+    into dist + "/conf"
+    rename { fileName -> fileName.replace('.in', '') }
+}
+
+task copyClientConf(type: Copy){
+    from templates + '/xtremweb.client.conf.in'
+    into dist + '/conf'
+    rename { fileName -> fileName.replace('.in', '.template') }
+}
+
+task copyClientConf2(type: Copy){
+    from templates + '/xtremweb.client.conf.in'
+    into dist + '/conf'
+    rename { fileName -> fileName.replace('.in', '') }
+    filter(ReplaceTokens, tokens:[LAUNCHERURL: 'http://nohost/'])
+}
+
+task copyWorkerConf(type: Copy) {
+    from templates + '/xtremweb.worker.conf.in'
+    into dist + '/conf'
+    rename { fileName -> fileName.replace('.in', '') }
+    filter(ReplaceTokens, tokens: [LAUNCHERURL: 'http://nohost/',
+                                   LOGIN: '${xtremweb.worker.login}',
+                                   PASSWORD: '${xtremweb.worker.password}'])
+}
+
+task copyWorkerConf2(type: Copy){
+    from templates + '/xtremweb.worker.conf.in'
+    into dist + '/conf'
+    rename {fileName -> fileName.replace('xtremweb.worker.conf.in', 'xtremweb.vworker.conf') }
+    filter(ReplaceTokens, tokens: [LAUNCHERURL: 'http://nohost/',
+                                   LOGIN: '${xtremweb.vworker.login}',
+                                   PASSWORD: '${xtremweb.vworker.password}'])
+}
+
+task install(type: Copy) {
 
     from linuxInstallers
     into dist + '/installers/linux'
-    filter(ReplaceTokens, tokens: [XWVERSION: '11.4.1', SYSTEMUSER: 'xwhep'])
-
+    filter(ReplaceTokens, tokens: [XWVERSION: "${version}".toString(),
+                                   SYSTEMUSER: 'xwhep'])
 }
+
+install.dependsOn(copyDoc, copyDocker, copyResources, copyLib,
+        copyServerConf, copyClientConf, copyClientConf2, copyWorkerConf, copyWorkerConf2)

@@ -292,41 +292,8 @@
     <!-- ****      encrypted                        *** -->
     <!-- ****                                       *** -->
     <!-- ********************************************** -->
-    
-    <patternset id="XW-DOC">
-      <include name="xtremweb.html" />
-      <include name="*png" />
-    </patternset>
-    <copy todir="${dist.dir}/doc/"
-          filtering="no" overwrite="yes">
-      <fileset dir="${doc.dir}">
-	<patternset refid="XW-DOC" />
-      </fileset>
-    </copy>
-    <copy todir="${dist.dir}/docker/"
-          filtering="no" overwrite="yes">
-      <fileset dir="${docker.dir}" >
-        <include name="**"/>
-      </fileset>
-    </copy>
-    
 
-    <copy todir="${dist.resources}"
-          filtering="no" overwrite="yes">
-      <fileset dir="${resources.dir}" >
-        <include name="**"/>
-      </fileset>
-    </copy>
-
-  	<patternset id="XW-LIBS">
-      <include name="*" />
-    </patternset>
-    <copy todir="${dist.dir}/lib/"
-          filtering="no" overwrite="yes">
-      <fileset dir="${lib.dir}">
-	<patternset refid="XW-LIBS" />
-      </fileset>
-    </copy>
+    <!-- MacosX install-->
 
     <copy todir="${dist.dir.macosx.server}/installer/PckRoot/private/etc/xwhep.server/lib"
           filtering="no" overwrite="yes">
@@ -339,60 +306,28 @@
       <equals trim="true" arg1="${insertDBUser}" arg2="true">
       </equals>
     </condition>
-    <!--
-	<delete file="${build.dir}/dbusers.property" />
-	-->
+
+
     <!-- **** Create java-config script file **** -->
     <filter token="INSTALLDIR" value="${installDir}"/>
     <filter token="HOMEDIR" value="/var/xwhep" />
     <filter token="KEYDIR" value="${installDir.keystore}" />
-
-    <!-- Install config files -->
-
-    <copy file="${misc.dir}/xtremweb.server.conf.in" 
-          filtering="yes" overwrite="yes"
-          tofile="${dist.dir}/conf/xtremweb.server.conf" />
-    
     <filter token="DATASERVERS" value="${data.servers}"/>
     <filter token="XWUSER" value="${xw.user}"/>
     <filter token="XWPASSWORD" value="${xw.password}"/>
     <filter token="LAUNCHERURL" value="${launcher.url}"/>
-
-    <echo>
-      xtremweb.admin.login=${xtremweb.admin.login}
-      xtremweb.admin.password=${xtremweb.admin.password}
-    </echo>
-
-    <copy file="${misc.dir}/xtremweb.client.conf.in" 
-          tofile="${dist.dir}/conf/xtremweb.client.conf"
-          filtering="yes" overwrite="yes" />
-    <copy file="${misc.dir}/xtremweb.client.conf.in" 
-          tofile="${dist.dir}/conf/xtremweb.client.conf.template"
-          filtering="no" overwrite="yes" />
-
     <filter token="KEYDIR" value="."/>
-
-
     <filter token="DEFAULTUSER" value="" />
     <filter token="DEFAULTPASSWORD" value="" />
-    <copy file="${misc.dir}/xtremweb.client.conf.in" 
+
+    <copy file="${misc.dir}/xtremweb.client.conf.in"
           tofile="${dist.dir.macosx.client}/installer/PckRoot/Applications/xwhep.client/conf/xtremweb.client.conf"
           filtering="yes" overwrite="yes" />
 
     <filter token="DEFAULTUSER" value="${xtremweb.worker.login}" />
     <filter token="DEFAULTPASSWORD" value="${xtremweb.worker.password}" />
 
-    <echo>
-        xtremweb.worker.login=${xtremweb.worker.login}
-        xtremweb.worker.password=${xtremweb.worker.password}
-    </echo>
-
     <mkdir dir="${dist.dir.keystore}" />
-    <filter token="KEYDIR" value="${installDir.keystore}" />
-
-    <copy file="${misc.dir}/xtremweb.worker.conf.in" 
-          tofile="${dist.dir}/conf/xtremweb.worker.conf"
-          filtering="yes" overwrite="yes" />
 
     <filter token="KEYDIR" value="/private/etc/xwhep.worker"/>
 
@@ -406,18 +341,8 @@
           todir="${dist.dir.macosx.worker}/installer/PckRoot/private/etc/xwhep.worker/conf"
           filtering="no" overwrite="yes" />
 
-
     <filter token="DEFAULTUSER" value="${xtremweb.vworker.login}" />
     <filter token="DEFAULTPASSWORD" value="${xtremweb.vworker.password}" />
-
-    <echo>
-        xtremweb.vworker.login=${xtremweb.vworker.login}
-        xtremweb.vworker.password=${xtremweb.vworker.password}
-    </echo>
-
-  	<copy file="${misc.dir}/xtremweb.worker.conf.in" 
-          tofile="${dist.dir}/conf/xtremweb.vworker.conf"
-          filtering="yes" overwrite="yes" />
 
     <copy file="${misc.dir}/xtremweb.worker.conf.in" 
           tofile="${dist.dir.macosx.vworker}/installer/PckRoot/private/etc/xwhep.worker/conf/xtremweb.worker.conf"
@@ -429,7 +354,6 @@
           todir="${dist.dir.macosx.vworker}/installer/PckRoot/private/etc/xwhep.worker/conf"
           filtering="no" overwrite="yes" />
 
-
 	<filter token="KEYDIR" value="/private/etc/xwhep.server"/>
 
     <copy file="${misc.dir}/xtremweb.server.conf.in" 
@@ -439,12 +363,11 @@
     <copy todir="${dist.dir.macosx.server}/installer/PckRoot/Applications/xwhep.server/doc"
           filtering="no" overwrite="yes">
       <fileset dir="${doc.dir}">
-	<patternset refid="XW-DOC" />
+	    <patternset refid="XW-DOC" />
       </fileset>
     </copy>
 
     <filter token="KEYDIR" value="../keystore"/>
-
 
     <!-- Install Win32 Client -->
 
