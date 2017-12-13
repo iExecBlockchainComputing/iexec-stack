@@ -30,7 +30,9 @@ dependencies {
     compile files('libXtremWeb/smartsockets-1.4.jar')
 }
 
+
 import org.apache.tools.ant.filters.ReplaceTokens
+
 import java.time.Instant
 
 ant.importBuild 'jni.xml'
@@ -43,16 +45,16 @@ task createVersion(type: Copy) {
     from 'src/main/java/xtremweb/common/CommonVersion.java.in'
     into 'src/main/java/xtremweb/common'
 
-	// remove the '.in' extension
+    // remove the '.in' extension
     rename { String fileName ->
         fileName.replace('.in', '')
     }
 
     // replace tokens in the template file
-    filter(ReplaceTokens, tokens: [BUILD_TIME	: Instant.now().toString(),
-                                   XWVERSION	: "${version}".toString(),
-                                   VBRANCH		: 'git rev-parse --abbrev-ref HEAD'.execute().text.trim()
-	])
+    filter(ReplaceTokens, tokens: [BUILD_TIME: Instant.now().toString(),
+                                   XWVERSION : "${version}".toString(),
+                                   VBRANCH   : 'git rev-parse --abbrev-ref HEAD'.execute().text.trim()
+    ])
 }
 
 // the createVersion task should be called before compileJava
@@ -108,73 +110,68 @@ def distBin = dist + '/bin'
 def distKeystore = dist + '/keystore'
 def distLib = dist + '/lib'
 def distInstallers = dist + '/installers'
-def distLinux = distInstallers + '/linux'
 
-import org.apache.tools.ant.filters.ReplaceTokens
+task copyMiscToDist(type: Copy) {
+    into dist
 
-task copyBenchmark(type: Copy) {
-    from(benchmark + '/apptest')
-    into(dist + '/benchmark/apptest')
+    into("/doc") {
+        from doc
+        include('*.png')
+        include('xtremweb.html')
+    }
+
+    into("/docker") {
+        from docker
+    }
+
+    into("/resources") {
+        from resources
+        include('log4j.xml')
+    }
+
+    into("/lib") {
+        from libXtremWeb
+    }
+
+    into("/benchmark/apptest") {
+        from(benchmark + '/apptest')
+    }
 }
 
-task copyDoc(type: Copy) {
-    from doc
-    into dist + '/doc'
-    include('*.png')
-    include('xtremweb.html')
-}
+task copyConf(type: Copy) {
+    into dist
 
-task copyDocker (type: Copy) {
-    from docker
-    into dist + '/docker'
-}
+    into("/conf") {
+        from templates + '/xtremweb.server.conf.in'
+        rename { fileName -> fileName.replace('.in', '') }
+    }
 
-task copyResources(type: Copy) {
-    from resources
-    into dist + '/resources'
-    include('log4j.xml')
-}
+    into("/conf") {
+        from templates + '/xtremweb.client.conf.in'
+        rename { fileName -> fileName.replace('.in', '.template') }
+    }
 
-task copyLib(type: Copy){
-    from libXtremWeb
-    into dist + "/lib"
-}
+    into("/conf") {
+        from(templates + '/xtremweb.client.conf.in')
+        rename { fileName -> fileName.replace('.in', '') }
+        filter(ReplaceTokens, tokens: [LAUNCHERURL: 'http://nohost/'])
+    }
 
-task copyServerConf(type: Copy){
-    from templates + '/xtremweb.server.conf.in'
-    into dist + "/conf"
-    rename { fileName -> fileName.replace('.in', '') }
-}
+    into("/conf") {
+        from templates + '/xtremweb.worker.conf.in'
+        rename { fileName -> fileName.replace('.in', '') }
+        filter(ReplaceTokens, tokens: [LAUNCHERURL: 'http://nohost/',
+                                       LOGIN      : '${xtremweb.worker.login}',
+                                       PASSWORD   : '${xtremweb.worker.password}'])
+    }
 
-task copyClientConf(type: Copy){
-    from templates + '/xtremweb.client.conf.in'
-    into dist + '/conf'
-    rename { fileName -> fileName.replace('.in', '.template') }
-}
-
-task copyClientConf2(type: Copy){
-    from templates + '/xtremweb.client.conf.in'
-    into dist + '/conf'
-    rename { fileName -> fileName.replace('.in', '') }
-    filter(ReplaceTokens, tokens:[LAUNCHERURL: 'http://nohost/'])
-}
-
-task copyWorkerConf(type: Copy) {
-    from templates + '/xtremweb.worker.conf.in'
-    into dist + '/conf'
-    rename { fileName -> fileName.replace('.in', '') }
-    filter(ReplaceTokens, tokens: [LAUNCHERURL: 'http://nohost/',
-                                   LOGIN: '${xtremweb.worker.login}',
-                                   PASSWORD: '${xtremweb.worker.password}'])
-}
-
-task copyWorkerConf2(type: Copy){
-    from templates + '/xtremweb.worker.conf.in'
-    into dist + '/conf'
-    rename {fileName -> fileName.replace('xtremweb.worker.conf.in', 'xtremweb.vworker.conf') }
-    filter(ReplaceTokens, tokens: [LAUNCHERURL: 'http://nohost/',
-                                   LOGIN: '${xtremweb.vworker.login}',
-                                   PASSWORD: '${xtremweb.vworker.password}'])
+    into("/conf"){
+        from templates + '/xtremweb.worker.conf.in'
+        rename { fileName -> fileName.replace('xtremweb.worker.conf.in', 'xtremweb.vworker.conf') }
+        filter(ReplaceTokens, tokens: [LAUNCHERURL: 'http://nohost/',
+                                       LOGIN      : '${xtremweb.vworker.login}',
+                                       PASSWORD   : '${xtremweb.vworker.password}'])
+    }
 }
 
 task copyScripts(type: Copy) {
@@ -183,29 +180,29 @@ task copyScripts(type: Copy) {
     exclude('xwconfigure')
     exclude('/db-maintenance/xwsetversion.sql.in')
     filter(ReplaceTokens, tokens: [
-            prefix: dist,
-            datadir: '../data',
-            exec_prefix: '.',
-            PACKAGE: project.name,
-            KEYPASSPHRASE: '${xw.keypassphrase}',
+            prefix           : dist,
+            datadir          : '../data',
+            exec_prefix      : '.',
+            PACKAGE          : project.name,
+            KEYPASSPHRASE    : '${xw.keypassphrase}',
             KEYSERVERPASSWORD: '${xw.server.keypassword}',
             KEYWORKERPASSWORD: '${xw.worker.keypassword}',
             KEYCLIENTPASSWORD: '${xw.client.keypassword}',
-            sysconfdir: '../conf',
-            INSTALLDIR: dist,
-            DEFAULTUSER: '${xtremweb.admin.login}',
-            DEFAULTPASSWORD: '${xtremweb.admin.password}',
-            WORKERUSER: '${xtremweb.worker.login}',
-            WORKERPASSWORD: '${xtremweb.worker.password}',
-            VWORKERUSER: '${xtremweb.vworker.login}',
-            VWORKERPASSWORD: '${xtremweb.vworker.password}',
+            sysconfdir       : '../conf',
+            INSTALLDIR       : dist,
+            DEFAULTUSER      : '${xtremweb.admin.login}',
+            DEFAULTPASSWORD  : '${xtremweb.admin.password}',
+            WORKERUSER       : '${xtremweb.worker.login}',
+            WORKERPASSWORD   : '${xtremweb.worker.password}',
+            VWORKERUSER      : '${xtremweb.vworker.login}',
+            VWORKERPASSWORD  : '${xtremweb.vworker.password}',
     ])
 }
 
 task copyXwconfigure(type: Copy) {
     from(scripts)
     include('xwconfigure')
-    filter(ReplaceTokens, tokens: [XWVERSION: version, INSTALLDIR: opt], beginToken : '%', endToken : '%')
+    filter(ReplaceTokens, tokens: [XWVERSION: version, INSTALLDIR: opt], beginToken: '%', endToken: '%')
     into(distBin)
 }
 
@@ -230,9 +227,8 @@ task chmodBin(type: Exec) {
 task install(type: Copy) {
     from linuxInstallers
     into dist + '/installers/linux'
-    filter(ReplaceTokens, tokens: [XWVERSION: "${version}".toString(),
+    filter(ReplaceTokens, tokens: [XWVERSION : "${version}".toString(),
                                    SYSTEMUSER: 'xwhep'])
 }
 
-install.dependsOn(copyBenchmark, copyDoc, copyDocker, copyResources, copyLib,
-        copyServerConf, copyClientConf, copyClientConf2, copyWorkerConf, copyWorkerConf2, chmodBin)
+install.dependsOn(copyMiscToDist, copyConf, chmodBin)
