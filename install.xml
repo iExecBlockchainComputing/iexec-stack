@@ -684,6 +684,9 @@ version=${version}
           todir="${dist.dir.macosx.server}/installer/PckRoot/private/etc/xwhep.server/keystore"
           failonerror="no" filtering="no" overwrite="yes" />
 
+
+    
+
     <copy file="${src.scripts.dir}/db-maintenance/xwhep-core-tables-create-tables.sql.in"
           filtering="no" overwrite="yes"
           todir="${dist.dir.bin}/db-maintenance" />
@@ -711,6 +714,9 @@ version=${version}
 	      <patternset refid="XW-DOC" />
       </fileset>
     </copy>
+
+
+
     <jarbundler dir="${dist.dir.bin}"
 		name="xwhep.client"
 		bundleid="xwhep.client.Client" 
