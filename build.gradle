@@ -217,6 +217,7 @@ task copyXwsetversion(type: Copy) {
 }
 
 task chmodBin(type: Exec) {
+    dependsOn(copyScripts, copyXwconfigure, copyXwsetversion)
     commandLine("sh", "-c",
             "chmod -R 755 " + distBin + " && " +
                     "find " + distBin + " -iname *.sql* -exec chmod -x {} +" + " && " +
@@ -234,4 +235,4 @@ task install(type: Copy) {
 }
 
 install.dependsOn(copyBenchmark, copyDoc, copyDocker, copyResources, copyLib,
-        copyServerConf, copyClientConf, copyClientConf2, copyWorkerConf, copyWorkerConf2, copyScripts, copyXwconfigure, copyXwsetversion)
+        copyServerConf, copyClientConf, copyClientConf2, copyWorkerConf, copyWorkerConf2, chmodBin)
