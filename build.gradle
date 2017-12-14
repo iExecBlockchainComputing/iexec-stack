@@ -85,7 +85,7 @@ def PROJECT_TAG = project.name + '-' + version
 def root = '.'
 def build = root + '/build'
 def buildClasses = build + '/classes'
-def libXtremWeb = root + 'libXtremWeb'
+def libXtremWeb = root + '/libXtremWeb'
 def src = root + '/src'
 def java = src + '/main/java/xtremweb'
 def c = src + '/main/natif/xtremweb/archdep'
@@ -135,6 +135,21 @@ task copyMiscToDist(type: Copy) {
 
     into("/benchmark/apptest") {
         from(benchmark + '/apptest')
+    }
+
+    into(".") {
+        from root
+        include('AUTHORS')
+        include('ChangeLog')
+        include('COPYING')
+        include('INSTALL')
+        include('License**')
+    }
+
+    into("/lib") {
+        from(build + '/libs')
+        include('xtremweb-11.5.0.jar')
+        rename('xtremweb-11.5.0.jar', 'xtremweb.jar')
     }
 }
 
@@ -224,6 +239,12 @@ task chmodBin(type: Exec) {
     )
 }
 
+task mkdir(type: Exec) {
+    commandLine("sh", "-c",
+            "mkdir " + dist + "/keystore"
+    )
+}
+
 task install(type: Copy) {
     from linuxInstallers
     into dist + '/installers/linux'
@@ -231,4 +252,4 @@ task install(type: Copy) {
                                    SYSTEMUSER: 'xwhep'])
 }
 
-install.dependsOn(copyMiscToDist, copyConf, chmodBin)
+install.dependsOn(copyMiscToDist, copyConf, chmodBin, mkdir)
