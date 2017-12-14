@@ -99,6 +99,7 @@ def misc = resources + '/misc'
 def scripts = resources + '/scripts'
 def wrapper = resources + '/wrapper'
 def linuxInstallers = installers + '/linux'
+def macInstallers = installers + '/macosx'
 def rpm = installers + '/linux/rpm'
 def dpkg = installers + '/linux/dpkg'
 def opt = '/opt'
@@ -110,6 +111,14 @@ def distBin = dist + '/bin'
 def distKeystore = dist + '/keystore'
 def distLib = dist + '/lib'
 def distInstallers = dist + '/installers'
+
+
+def macServer = macInstallers + '/xwhep.server'
+def macWorker = macInstallers + '/xwhep.worker'
+def macVworker = macInstallers + '/xwhep.vworker'
+def macClient = macInstallers + '/xwhep.client'
+
+
 
 task copyMiscToDist(type: Copy) {
     into dist
@@ -252,4 +261,110 @@ task install(type: Copy) {
                                    SYSTEMUSER: 'xwhep'])
 }
 
+task installMac(type: Copy) {
+    into (dist + '/installers/macosx'){
+        from macInstallers
+        filter(ReplaceTokens, tokens: [XWVERSION : "${version}".toString(),
+                                       SYSTEMUSER: 'xwhep'])
+    }
+
+    //Client
+    into(macClient + "//installerPckRoot/Applications/xwhep.client/conf"){
+        from templates + '/xtremweb.client.conf.in'
+        rename { fileName -> fileName.replace('xtremweb.client.conf.in', 'xtremweb.client.conf') }
+        filter(ReplaceTokens, tokens: [LAUNCHERURL: 'http://nohost/',
+                                       KEYDIR      : '.',
+                                       DEFAULTUSER      : '',
+                                       DEFAULTPASSWORD   : ''])
+    }
+    into(macClient + "/installer/PckRoot/Applications/xwhep.client/lib") {
+        from(build + '/libs')
+        include('bcprov-jdk15on-151.jar')
+        include('bcpkix-jdk15on-151.jar')
+    }
+
+    //Worker
+    into(macWorker + "/installer/PckRoot/private/etc/xwhep.worker/conf"){
+        from templates + '/xtremweb.worker.conf.in'
+        rename { fileName -> fileName.replace('xtremweb.worker.conf.in', 'xtremweb.worker.conf') }
+        filter(ReplaceTokens, tokens: [LAUNCHERURL: 'http://nohost/',
+                                       DATASERVERS      : '${data.servers}',
+                                       KEYDIR      : '/private/etc/xwhep.worker',
+                                       DEFAULTUSER      : '${xtremweb.worker.login}',
+                                       DEFAULTPASSWORD   : '${xtremweb.worker.password}'])
+    }
+    into(macWorker + "/installer/PckRoot/private/etc/xwhep.worker"){
+        from misc
+        include('worker-start.html')
+        rename('worker-start.html', 'index.html')
+    }
+    into(macWorker + "/installer/PckRoot/private/etc/xwhep.worker/conf"){
+        from misc
+        include('xwhep.sb')
+
+    }
+
+    //Vworker
+    into(macVorker + "/installer/PckRoot/private/etc/xwhep.worker/conf"){
+        from templates + '/xtremweb.worker.conf.in'
+        rename { fileName -> fileName.replace('xtremweb.worker.conf.in', 'xtremweb.worker.conf') }
+        filter(ReplaceTokens, tokens: [LAUNCHERURL: 'http://nohost/',
+                                       DATASERVERS      : '${data.servers}',
+                                       KEYDIR      : '/private/etc/xwhep.worker',
+                                       DEFAULTUSER      : '${xtremweb.vworker.login}',
+                                       DEFAULTPASSWORD   : '${xtremweb.vworker.password}'])
+    }
+    into(macVorker + "/installer/PckRoot/private/etc/xwhep.worker"){
+        from misc
+        include('worker-start.html')
+        rename('worker-start.html', 'index.html')
+    }
+    into(macVorker + "/installer/PckRoot/private/etc/xwhep.worker/conf"){
+        from misc
+        include('xwhep.sb')
+
+    }
+
+    //Server
+    into(macServer + "//installerPckRoot/Applications/xwhep.server/conf"){
+        from templates + '/xtremweb.server.conf.in'
+        rename { fileName -> fileName.replace('xtremweb.client.server.in', 'xtremweb.server.conf') }
+        filter(ReplaceTokens, tokens: [LAUNCHERURL: 'http://nohost/',
+                                       KEYDIR      : '/private/etc/xwhep.server',
+                                       DEFAULTUSER      : '',
+                                       DEFAULTPASSWORD   : ''])
+    }
+    into(macServer + '/installer/PckRoot/Applications/xwhep.server/doc') {
+        from doc
+        include('*.png')
+    }
+    into(macServer + "/installer/PckRoot/private/etc/xwhep.server/lib") {
+        from(build + '/libs')
+        include('bcprov-jdk15on-151.jar')
+        include('bcpkix-jdk15on-151.jar')
+    }
+
+
+
+
+}
+
+
+
 install.dependsOn(copyMiscToDist, copyConf, chmodBin, mkdir)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
