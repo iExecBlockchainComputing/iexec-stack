@@ -84,11 +84,8 @@ def PROJECT_TAG = project.name + '-' + version
 
 def root = '.'
 def build = root + '/build'
-def buildClasses = build + '/classes'
 def libXtremWeb = root + '/libXtremWeb'
 def src = root + '/src'
-def java = src + '/main/java/xtremweb'
-def c = src + '/main/natif/xtremweb/archdep'
 def resources = src + '/main/resources'
 def benchmark = resources + '/benchmark'
 def templates = resources + '/templates'
@@ -97,19 +94,10 @@ def docker = resources + '/docker'
 def installers = resources + '/installers'
 def misc = resources + '/misc'
 def scripts = resources + '/scripts'
-def wrapper = resources + '/wrapper'
 def linuxInstallers = installers + '/linux'
-def rpm = installers + '/linux/rpm'
-def dpkg = installers + '/linux/dpkg'
 def opt = '/opt'
 def dist = build + '/dist/' + PROJECT_TAG
-def distlib = dist + '/lib'
-def distdoc = dist + '/doc'
-def distresources = dist + '/resources'
 def distBin = dist + '/bin'
-def distKeystore = dist + '/keystore'
-def distLib = dist + '/lib'
-def distInstallers = dist + '/installers'
 
 task copyMiscToDist(type: Copy) {
     into dist
@@ -153,7 +141,7 @@ task copyMiscToDist(type: Copy) {
     }
 }
 
-task copyConf(type: Copy) {
+task copyLinuxConf(type: Copy) {
     into dist
 
     into("/conf") {
@@ -188,6 +176,107 @@ task copyConf(type: Copy) {
                                        PASSWORD   : '${xtremweb.vworker.password}'])
     }
 }
+
+task copyWindowsClient(type: Copy) {
+    into dist + "/installers/win32/xwhep.client"
+
+    into("/conf"){
+        from templates + '/xtremweb.client.conf.in'
+        rename { fileName -> fileName.replace('.in', '') }
+        filter(ReplaceTokens, tokens: [LAUNCHERURL: 'http://nohost/',
+                                       LOGIN      : '',
+                                       PASSWORD   : ''])
+    }
+
+    into("/lib"){
+       from libXtremWeb + "/bcprov-jdk15on-151.jar"
+    }
+
+    into("/lib"){
+        from libXtremWeb + "/bcpkix-jdk15on-151.jar"
+    }
+}
+
+task copyWindowsWorker(type: Copy) {
+    into dist + '/installers/win32/xwhep.worker'
+
+    into("."){
+        from resources + "/installers/win32/innoSetup"
+    }
+
+    into("/conf"){
+        from templates + 'xtremweb.worker.conf.in'
+        rename { fileName -> fileName.replace('.in', '') }
+        filter(ReplaceTokens, tokens: [LAUNCHERURL: 'http://nohost/',
+                                       LOGIN      : '${xtremweb.worker.login}',
+                                       PASSWORD   : '${xtremweb.worker.password}'])
+    }
+
+    into("/conf") {
+        from resources + "/wrapper/conf/wrapper-worker.conf"
+    }
+
+    into("/misc"){
+        from resources + "/misc/xwwrk.ico"
+    }
+
+    into("/doc") {
+        from misc + "/worker-start.html"
+    }
+
+    into("/bin") {
+        from resources + "/wrapper/bin"
+    }
+
+    into("/lib"){
+        from installers + "/win32/cygwin1.dll"
+    }
+
+    into("/lib"){
+        from resources + "/wrapper/lib/"
+    }
+}
+
+task copyWindowsVWorker(type: Copy) {
+    into dist + '/installers/win32/xwhep.vworker'
+
+    into("."){
+        from resources + "/installers/win32/innoSetup"
+    }
+
+    into("/conf"){
+        from templates + 'xtremweb.worker.conf.in'
+        rename { fileName -> fileName.replace('.in', '') }
+        filter(ReplaceTokens, tokens: [LAUNCHERURL: 'http://nohost/',
+                                       LOGIN      : '${xtremweb.vworker.login}',
+                                       PASSWORD   : '${xtremweb.vworker.password}'])
+    }
+
+    into("/conf") {
+        from resources + "/wrapper/conf/wrapper-worker.conf"
+    }
+
+    into("/lib"){
+        from installers + "/win32/cygwin1.dll"
+    }
+
+    into("/lib"){
+        from resources + "/wrapper/lib/"
+    }
+
+    into("/misc"){
+        from resources + "/misc/xwwrk.ico"
+    }
+
+    into("/doc") {
+        from misc + "/worker-start.html"
+    }
+
+    into("/bin") {
+        from resources + "/wrapper/bin"
+    }
+}
+
 
 task copyScripts(type: Copy) {
     from(scripts)
@@ -252,4 +341,5 @@ task install(type: Copy) {
                                    SYSTEMUSER: 'xwhep'])
 }
 
-install.dependsOn(copyMiscToDist, copyConf, chmodBin, mkdir)
+install.dependsOn(copyMiscToDist, copyLinuxConf, chmodBin, mkdir,
+        copyWindowsClient, copyWindowsWorker, copyWindowsVWorker)
