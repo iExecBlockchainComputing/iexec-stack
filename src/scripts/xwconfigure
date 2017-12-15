@@ -2275,7 +2275,7 @@ cp $SOURCE $DEST > /dev/null 2>&1 || fatal "Can't copy $SOURCE to $DEST"
 # Preparing vworker for macosx
 #
 echo "Preparing vworker for macosx"
-cp -rf $INSTALLERSDIR/macosx/xwhep.worker/ $INSTALLERSDIR/macosx/xwhep.vworker/ || fatal "Can't cp -rf $INSTALLERSDIR/macosx/xwhep.worker $INSTALLERSDIR/macosx/xwhep.vworker" 
+cp -rf $INSTALLERSDIR/macosx/xwhep.worker/* $INSTALLERSDIR/macosx/xwhep.vworker/ || fatal "Can't cp -rf $INSTALLERSDIR/macosx/xwhep.worker $INSTALLERSDIR/macosx/xwhep.vworker" 
 OSXWORKERCONFFILE=$INSTALLERSDIR/macosx/xwhep.vworker/installer/PckRoot/private/etc/xwhep.worker/conf/$XWWORKERCONFFILENAME
 cp $XWVWORKERCONFFILE $OSXWORKERCONFFILE || fatal "Can't cp $XWVWORKERCONFFILE $OSXWORKERCONFFILE"
 grep -E "^[[:space:]]*SSLKeyStore[[:space:]]*=.*" $OSXWORKERCONFFILE > /dev/null 2>&1
@@ -3962,7 +3962,7 @@ echo "Worker Debian package ready"
 #
 printf "Preparing vworker RPM package to '$INSTALLERSDIR/linux/rpm/xwhep.vworker'"
 rpmBuildDir="$INSTALLERSDIR/linux/rpm/xwhep.vworker/BUILD/"
-cp -rf $INSTALLERSDIR/linux/rpm/xwhep.worker/ $INSTALLERSDIR/linux/rpm/xwhep.vworker/   > /dev/null 2>&1 || fatal "Can't cp -rf $INSTALLERSDIR/linux/rpm/xwhep.worker/ $INSTALLERSDIR/linux/rpm/xwhep.vworker/"
+cp -rf $INSTALLERSDIR/linux/rpm/xwhep.worker/* $INSTALLERSDIR/linux/rpm/xwhep.vworker/   > /dev/null 2>&1 || fatal "Can't cp -rf $INSTALLERSDIR/linux/rpm/xwhep.worker/ $INSTALLERSDIR/linux/rpm/xwhep.vworker/"
 rm -f  $INSTALLERSDIR/linux/rpm/xwhep.vworker/SOURCES/xwhep-worker-$VERSION.tar.gz
 
 rpmDir="$rpmBuildDir/xwhep-worker-$VERSION"
@@ -4048,11 +4048,10 @@ fi
 #
 echo
 echo "Preparing vworker Debian package"
-mkdir -p $INSTALLERSDIR/linux/dpkg/xwhep.vworker/DEBIAN > /dev/null  2>&1 || fatal "Can't mkdir -p $INSTALLERSDIR/linux/dpkg/xwhep.vworker/DEBIAN"
-cp -Rf $rpmDir/ $INSTALLERSDIR/linux/dpkg/xwhep.vworker/ > /dev/null 2>&1 || fatal "Can't copy $rpmDir/* to $INSTALLERSDIR/linux/dpkg/xwhep.vworker"
-find $INSTALLERSDIR/linux/dpkg/ -type d | xargs chmod 755
-chmod 755 $INSTALLERSDIR/linux/dpkg/xwhep.vworker/DEBIAN/pre*
-chmod 755 $INSTALLERSDIR/linux/dpkg/xwhep.vworker/DEBIAN/post*
+mkdir -p $INSTALLERSDIR/linux/dpkg/xwhep.vworker/ > /dev/null 2>&1 || fatal "Can't mkdir $INSTALLERSDIR/linux/dpkg/xwhep.vworker"
+cp -Rf $INSTALLERSDIR/linux/dpkg/xwhep.worker/* $INSTALLERSDIR/linux/dpkg/xwhep.vworker/ > /dev/null 2>&1 || fatal "Can't copy $INSTALLERSDIR/linux/dpkg/xwhep.worker to $INSTALLERSDIR/linux/dpkg/xwhep.vworker"
+cp -f  $XWVWORKERCONFFILE $INSTALLERSDIR/linux/dpkg/xwhep.vworker/opt/xwhep-worker-12.0.1/conf/ > /dev/null 2>&1 || fatal "Can't copy  $XWVWORKERCONFFILE $INSTALLERSDIR/linux/dpkg/xwhep.vworker/opt/xwhep-worker-12.0.1/conf/"
+
 if [ "$PKGS" = "YES" -a  $DEBIANOS -eq 1 -o $MACOS -eq 1 ] ; then
     dpkg-deb --build $INSTALLERSDIR/linux/dpkg/xwhep.vworker xwhep-vworker-$VERSION.deb
     if [ $? -ne 0 ] ; then
