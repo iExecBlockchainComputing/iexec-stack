@@ -23,6 +23,16 @@
 
 package xtremweb.archdep;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+
+import xtremweb.common.XWTools;
+import xtremweb.exec.Executor;
+import xtremweb.exec.ExecutorLaunchException;
+
 //  XWUtilMacOSX.java
 //
 //  Created: 28 fevrier 2007
@@ -36,7 +46,81 @@ package xtremweb.archdep;
  */
 public class XWUtilMacOSX extends XWUtilImpl {
 
+	public static String LABEL_PROCMODEL = "machdep.cpu.brand_string";
+	public static String LABEL_SPEEDPROC = "hw.cpufrequency";
+	public static String LABEL_TOTALMEM = "hw.memsize";
 	public XWUtilMacOSX() {
-		// this is not implemented
+	}
+
+	/**
+	 * in Kb
+	 */
+	@Override
+	public long getTotalMem() {
+		try {
+			return Integer.parseInt(callsysctl(LABEL_TOTALMEM)) / XWTools.ONEKILOBYTES;
+		}
+		catch(final Exception e) {
+			return 0;
+		}
+	}
+
+	/**
+	 * in MHz
+	 */
+	@Override
+	public int getSpeedProc() {
+		try {
+			return Integer.parseInt(callsysctl(LABEL_SPEEDPROC)) / 1000000;
+		}
+		catch(final Exception e) {
+			return 0;
+		}
+	}
+
+	@Override
+	public String getProcModel() {
+		return callsysctl(LABEL_PROCMODEL);
+	}
+
+	/**
+	 * This call "sysctl -a" and search the given key in the output
+	 * @param key is the key to find
+	 * @return
+	 */
+	private String callsysctl(final String key) {
+
+		try (final FileOutputStream out = new FileOutputStream(new File(".", XWTools.STDOUT));
+			 final FileOutputStream err = new FileOutputStream(new File(".", XWTools.STDERR))) {
+
+			final Executor exec = new Executor("sysctl -a", (String)null, null, out, err);
+			
+			if (exec.startAndWait() != 0) {
+				return "";
+			}
+		} catch (IOException | ExecutorLaunchException | InterruptedException e1) {
+			new File(".", XWTools.STDOUT).delete();
+			new File(".", XWTools.STDERR).delete();
+			return "";
+		}
+
+		try (final BufferedReader bufferFile = new BufferedReader(new FileReader(new File(".", XWTools.STDOUT)))) {
+			String l = "";
+			while (l != null) {
+				if (l.indexOf(key) != -1) {
+					final int start = l.indexOf(':') + 1;
+					if (start != -1) {
+						return l.substring(start);
+					}
+				}
+				l = bufferFile.readLine();
+			}
+		} catch (final IOException e) {
+			return "";
+		} finally {
+			new File(".", XWTools.STDOUT).delete();
+			new File(".", XWTools.STDERR).delete();
+		}
+		return "";
 	}
 }

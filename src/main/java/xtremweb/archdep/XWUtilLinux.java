@@ -348,7 +348,6 @@ public class XWUtilLinux extends XWUtilImpl {
 
 	@Override
 	public String getProcModel() {
-		String valStr = null;
 		final File procInterrupts = new File(CPUINFO);
 
 		if (!procInterrupts.exists()) {
@@ -359,25 +358,21 @@ public class XWUtilLinux extends XWUtilImpl {
 		try (final BufferedReader bufferFile = new BufferedReader(new FileReader(procInterrupts))) {
 			String l = "";
 
-			while ((l != null) && (valStr == null)) {
+			while (l != null) {
 
 				if (l.indexOf("model name") != -1) {
 					final int start = l.indexOf(':') + 1;
 					if (start != -1) {
-						valStr = l.substring(start);
+						return l.substring(start);
 					}
 				}
 				l = bufferFile.readLine();
 			}
-			bufferFile.close();
 		} catch (final IOException e) {
 			logger.exception(e);
 			return "";
 		}
 
-		if (valStr != null) {
-			return valStr;
-		}
 		return "";
 	}
 
