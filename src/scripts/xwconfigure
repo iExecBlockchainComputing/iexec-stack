@@ -343,9 +343,9 @@ EOF
 	if [ $NEWKEYSTORE -eq 1 ] ; then
 		rm -f $KEYSTOREDIR/*.keys $KEYSTOREDIR/*.p12 $XWCERTFILE
 	fi
-	
+
 	printf "."
-	
+
 	rm  -f $INSTALLERSDIR/xwhep-client-$VERSION.zip
 	rm  -f $INSTALLERSDIR/linux/dpkg/*deb
 	rm -Rf $INSTALLERSDIR/linux/dpkg/xwhep.client/$INSTALLDIR/
@@ -354,16 +354,16 @@ EOF
 	rm -Rf $INSTALLERSDIR/linux/dpkg/xwhep.server/$INSTALLDIR/
 	rm -Rf $INSTALLERSDIR/linux/dpkg/xwhep.worker/$INSTALLDIR/
 	rm -Rf $INSTALLERSDIR/linux/dpkg/xwhep.vworker/$INSTALLDIR/
-	
+
+	printf "."
+
 	rm -Rf $INSTALLERSDIR/linux/rpm/xwhep.client/*
 	rm -Rf $INSTALLERSDIR/linux/rpm/xwhep.bridgedgsg/*
 	rm -Rf $INSTALLERSDIR/linux/rpm/xwhep.bridgesgdg/*
 	rm -Rf $INSTALLERSDIR/linux/rpm/xwhep.server/*
 	rm -Rf $INSTALLERSDIR/linux/rpm/xwhep.worker/*
 	rm -Rf $INSTALLERSDIR/linux/rpm/xwhep.vworker/*
-	
-	printf "."
-	
+
 	echo " Done"
 	exit 0
 }
@@ -1335,22 +1335,6 @@ IFILE=$INSTALLERSDIR/linux/dpkg/xwhep.worker/DEBIAN/preinst
 cat $IFILE | sed "s/^SYSLOGIN=.*/SYSLOGIN=$XWUSER/g" >  $TMPFILE1
 mv -f $TMPFILE1 $IFILE
 printf "."
-
-IFILE=$INSTALLERSDIR/linux/dpkg/xwhep.vworker/DEBIAN/postinst
-cat $IFILE | sed "s/^SYSLOGIN=.*/SYSLOGIN=$XWUSER/g" >  $TMPFILE1
-mv -f $TMPFILE1 $IFILE
-printf "."
-IFILE=$INSTALLERSDIR/linux/dpkg/xwhep.vworker/DEBIAN/postrm
-cat $IFILE | sed "s/^SYSLOGIN=.*/SYSLOGIN=$XWUSER/g" >  $TMPFILE1
-mv -f $TMPFILE1 $IFILE
-printf "."
-IFILE=$INSTALLERSDIR/linux/dpkg/xwhep.vworker/DEBIAN/preinst
-cat $IFILE | sed "s/^SYSLOGIN=.*/SYSLOGIN=$XWUSER/g" >  $TMPFILE1
-mv -f $TMPFILE1 $IFILE
-printf "."
-
-
-
 IFILE=$INSTALLERSDIR/linux/rpm/xwhep.bridgedgsg/xwhep-bridgedgsg.spec
 cat $IFILE | sed "s/^%define SYSLOGIN .*/%define SYSLOGIN $XWUSER/g" >  $TMPFILE1
 mv -f $TMPFILE1 $IFILE
@@ -1360,10 +1344,6 @@ cat $IFILE | sed "s/^%define SYSLOGIN.*/%define SYSLOGIN $XWUSER/g" >  $TMPFILE1
 mv -f $TMPFILE1 $IFILE
 printf "."
 IFILE=$INSTALLERSDIR/linux/rpm/xwhep.worker/xwhep-worker.spec
-cat $IFILE | sed "s/^%define SYSLOGIN.*/%define SYSLOGIN $XWUSER/g" >  $TMPFILE1
-mv -f $TMPFILE1 $IFILE
-printf "."
-IFILE=$INSTALLERSDIR/linux/rpm/xwhep.vworker/xwhep-worker.spec
 cat $IFILE | sed "s/^%define SYSLOGIN.*/%define SYSLOGIN $XWUSER/g" >  $TMPFILE1
 mv -f $TMPFILE1 $IFILE
 printf "."
@@ -1414,32 +1394,6 @@ printf "."
 cp $BINDIR/createvdi $INSTALLERSDIR/macosx/xwhep.worker/installer/PckRoot/usr/local/bin/   > /dev/null 2>&1 || fatal "Can't copy createvdi to $INSTALLERSDIR/macosx/xwhep.worker/installer/PckRoot/usr/local/bin/"
 printf "."
 cp $BINDIR/createiso $INSTALLERSDIR/macosx/xwhep.worker/installer/PckRoot/usr/local/bin/   > /dev/null 2>&1 || fatal "Can't copy createiso to $INSTALLERSDIR/macosx/xwhep.worker/installer/PckRoot/usr/local/bin/"
-printf "."
-
-IFILE=$INSTALLERSDIR/macosx/xwhep.vworker/installer/Resources/postflight
-cat $IFILE | sed "s/^SYSLOGIN=.*/SYSLOGIN=$XWUSER/g" >  $TMPFILE1
-mv -f $TMPFILE1 $IFILE
-printf "."
-IFILE=$INSTALLERSDIR/macosx/xwhep.vworker/installer/PckRoot/Applications/xwhep.worker/bin/start.sh
-cat $IFILE | sed "s/^SYSLOGIN=.*/SYSLOGIN=$XWUSER/g" >  $TMPFILE1
-mv -f $TMPFILE1 $IFILE
-printf "."
-IFILE=$INSTALLERSDIR/macosx/xwhep.vworker/installer/PckRoot/Applications/xwhep.worker/bin/stop.sh
-cat $IFILE | sed "s/^SYSLOGIN=.*/SYSLOGIN=$XWUSER/g" >  $TMPFILE1
-mv -f $TMPFILE1 $IFILE
-printf "."
-IFILE=$INSTALLERSDIR/macosx/xwhep.vworker/installer/PckRoot/Applications/xwhep.worker/bin/uninstall.sh
-cat $IFILE | sed "s/^SYSLOGIN=.*/SYSLOGIN=$XWUSER/g" >  $TMPFILE1
-mv -f $TMPFILE1 $IFILE
-printf "."
-IFILE=$INSTALLERSDIR/macosx/xwhep.vworker/installer/PckRoot/usr/local/bin/xtremweb.worker
-cat $IFILE | sed "s/^SYSLOGIN=.*/SYSLOGIN=$XWUSER/g" >  $TMPFILE1
-mv -f $TMPFILE1 $IFILE
-printf "."
-cp $BINDIR/createvdi $INSTALLERSDIR/macosx/xwhep.vworker/installer/PckRoot/usr/local/bin/   > /dev/null 2>&1 || fatal "Can't copy createvdi to $INSTALLERSDIR/macosx/xwhep.worker/installer/PckRoot/usr/local/bin/"
-printf "."
-cp $BINDIR/createiso $INSTALLERSDIR/macosx/xwhep.vworker/installer/PckRoot/usr/local/bin/   > /dev/null 2>&1 || fatal "Can't copy createiso to $INSTALLERSDIR/macosx/xwhep.worker/installer/PckRoot/usr/local/bin/"
-printf "."
 
 echo "Done"
 
