@@ -189,11 +189,9 @@ task copyWindowsClient(type: Copy) {
     }
 
     into("/lib"){
-       from libXtremWeb + "/bcprov-jdk15on-151.jar"
-    }
-
-    into("/lib"){
-        from libXtremWeb + "/bcpkix-jdk15on-151.jar"
+        from libXtremWeb
+        include("/bcprov-jdk15on-151.jar")
+        include("/bcpkix-jdk15on-151.jar")
     }
 }
 
