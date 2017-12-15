@@ -125,7 +125,7 @@ public final class HostInterface extends Table {
 		 */
 		NAME,
 		/**
-		 * This is the column index of the percentage of CPU uable by the worker
+		 * This is the column index of the percentage of CPU usable by the worker
 		 *
 		 * @since 8.0.0
 		 */

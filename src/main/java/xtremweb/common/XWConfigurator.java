@@ -1158,6 +1158,15 @@ public final class XWConfigurator extends Properties {
 				_host.setTotalMem(ArchDepFactory.xwutil().getTotalMem());
 			} catch (final UnsatisfiedLinkError e) {
 			}
+			final File f = new File(".");
+			try {
+				_host.setTotalTmp(f.getTotalSpace() / XWTools.ONEMEGABYTES);
+			} catch (final UnsatisfiedLinkError e) {
+			}
+			try {
+				_host.setFreeTmp(f.getFreeSpace() / XWTools.ONEMEGABYTES);
+			} catch (final UnsatisfiedLinkError e) {
+			}
 			try {
 				_host.setTotalSwap(ArchDepFactory.xwutil().getTotalSwap());
 			} catch (final UnsatisfiedLinkError e) {
