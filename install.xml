@@ -310,14 +310,18 @@
 
     <mkdir dir="${dist.dir.keystore}" />
 
+
     <filter token="KEYDIR" value="/private/etc/xwhep.worker"/>
 
     <copy file="${misc.dir}/xtremweb.worker.conf.in" 
           tofile="${dist.dir.macosx.worker}/installer/PckRoot/private/etc/xwhep.worker/conf/xtremweb.worker.conf"
           filtering="yes" overwrite="yes" />
+
     <copy file="${misc.dir}/worker-start.html" 
           tofile="${dist.dir.macosx.worker}/installer/PckRoot/Applications/xwhep.worker/index.html"
           filtering="no" overwrite="yes" />
+
+
     <copy file="${misc.dir}/xwhep.sb" 
           todir="${dist.dir.macosx.worker}/installer/PckRoot/private/etc/xwhep.worker/conf"
           filtering="no" overwrite="yes" />
@@ -334,6 +338,9 @@
     <copy file="${misc.dir}/xwhep.sb" 
           todir="${dist.dir.macosx.vworker}/installer/PckRoot/private/etc/xwhep.worker/conf"
           filtering="no" overwrite="yes" />
+
+
+
 
 	<filter token="KEYDIR" value="/private/etc/xwhep.server"/>
 
@@ -525,12 +532,6 @@
     <!-- Create the stand alone JAR file for the worker -->
 
       <!-- Install Mac OS X  -->
-    <copy file="${dist.dir.keystore}/xwhepworker.keys" 
-          todir="${dist.dir.macosx.worker}/installer/PckRoot/private/etc/xwhep.worker/keystore"
-          failonerror="no" filtering="no" overwrite="yes" />
-    <copy file="${dist.dir.keystore}/xwhepworker.keys" 
-          todir="${dist.dir.macosx.vworker}/installer/PckRoot/private/etc/xwhep.worker/keystore"
-          failonerror="no" filtering="no" overwrite="yes" />
 
     <copy file="${lib.dir}/bcprov-jdk15on-151.jar"
           todir="${dist.dir.macosx.client}/installer/PckRoot/Applications/xwhep.client/lib"
@@ -544,6 +545,13 @@
 
     <copy file="${dist.dir.keystore}/xwhepserver.keys" 
           todir="${dist.dir.macosx.server}/installer/PckRoot/private/etc/xwhep.server/keystore"
+          failonerror="no" filtering="no" overwrite="yes" />
+
+    <copy file="${dist.dir.keystore}/xwhepworker.keys"
+          todir="${dist.dir.macosx.worker}/installer/PckRoot/private/etc/xwhep.worker/keystore"
+          failonerror="no" filtering="no" overwrite="yes" />
+    <copy file="${dist.dir.keystore}/xwhepworker.keys"
+          todir="${dist.dir.macosx.vworker}/installer/PckRoot/private/etc/xwhep.worker/keystore"
           failonerror="no" filtering="no" overwrite="yes" />
 
     <copy todir="${dist.doc}/xwhep.client/doc"
@@ -632,19 +640,6 @@
 	        todir="${dist.dir.client.innosetup}/client/lib/"
           overwrite="yes" />
 
-
-
-    <!-- Install distrib -->
-
-    <copy overwrite="yes" todir="${dist.dir}/">
-      <fileset dir="${basedir}">
-        <include name="AUTHORS"/>
-        <include name="ChangeLog"/>
-        <include name="COPYING"/>
-        <include name="INSTALL"/>
-        <include name="License**"/>
-      </fileset>
-    </copy>
 
     <!-- classpath for execution -->
     <path id="project.classpath" >
