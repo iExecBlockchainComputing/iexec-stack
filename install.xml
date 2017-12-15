@@ -362,17 +362,18 @@
     <filter token="DEFAULTUSER" value="" />
     <filter token="DEFAULTPASSWORD" value="" />
 
-    <copy file="${misc.dir}/xtremweb.client.conf.in" 
+    <!--   copy file="${misc.dir}/xtremweb.client.conf.in"
           tofile="${dist.dir.win32.client}/conf/xtremweb.client.conf"
-          filtering="yes" overwrite="yes" />
+          filtering="yes" overwrite="yes" /-->
     <mkdir dir="${dist.dir.client.innosetup}/client/bin" />
     <mkdir dir="${dist.dir.client.innosetup}/client/conf" />
     <mkdir dir="${dist.dir.client.innosetup}/client/doc" />
     <mkdir dir="${dist.dir.client.innosetup}/client/keystore" />
     <mkdir dir="${dist.dir.client.innosetup}/client/lib" />
-    <copy file="${misc.dir}/xtremweb.client.conf.in" 
+
+    <!--copy file="${misc.dir}/xtremweb.client.conf.in"
           tofile="${dist.dir.client.innosetup}/client/conf/xtremweb.client.conf"
-          filtering="yes" overwrite="yes" />
+          filtering="yes" overwrite="yes" /-->
 
 
     <!-- Install Win32 Worker -->
@@ -380,56 +381,60 @@
     <filter token="DEFAULTUSER" value="${xtremweb.worker.login}" />
     <filter token="DEFAULTPASSWORD" value="${xtremweb.worker.password}" />
 
-    <copy file="${misc.dir}/xtremweb.worker.conf.in" 
+    <!--copy file="${misc.dir}/xtremweb.worker.conf.in"
           tofile="${dist.dir.win32.worker}/conf/xtremweb.worker.conf"
-          filtering="yes" overwrite="yes" />
+          filtering="yes" overwrite="yes" /-->
     <mkdir dir="${dist.dir.worker.innosetup}/worker/bin" />
     <mkdir dir="${dist.dir.worker.innosetup}/worker/conf" />
     <mkdir dir="${dist.dir.worker.innosetup}/worker/doc" />
     <mkdir dir="${dist.dir.worker.innosetup}/worker/keystore" />
     <mkdir dir="${dist.dir.worker.innosetup}/worker/lib" />
     <mkdir dir="${dist.dir.worker.innosetup}/worker/misc" />
-    <copy file="${misc.dir}/xtremweb.worker.conf.in" 
-          tofile="${dist.dir.worker.innosetup}/worker/conf/xtremweb.worker.conf"
-          filtering="yes" overwrite="yes" />
-    <copy file="${res.dir}/wrapper/conf/wrapper-worker.conf"
-          tofile="${dist.dir.win32.worker}/conf/wrapper-worker.conf"
-          filtering="no" overwrite="yes" />
-    <copy file="${res.dir}/wrapper/conf/wrapper-worker.conf"
-          tofile="${dist.dir.worker.innosetup}/worker/conf/wrapper-worker.conf"
-          filtering="no" overwrite="yes" />
-    <copy todir="${dist.dir.win32.worker}/lib/"
-          filtering="no" overwrite="yes">
-      <fileset dir="${res.dir}/wrapper/lib">
-	      <include name="*" />
-      </fileset>
-    </copy>
-    <copy todir="${dist.dir.worker.innosetup}/worker/lib/"
-          filtering="no" overwrite="yes">
-      <fileset dir="${res.dir}/wrapper/lib">
-	      <include name="*" />
-      </fileset>
-    </copy>
 
-    <copy todir="${dist.dir.worker.innosetup}/worker/lib/"
+
+    <!--copy file="${misc.dir}/xtremweb.worker.conf.in"
+          tofile="${dist.dir.worker.innosetup}/worker/conf/xtremweb.worker.conf"
+          filtering="yes" overwrite="yes" /-->
+
+    <!--copy file="${res.dir}/wrapper/conf/wrapper-worker.conf"
+          tofile="${dist.dir.win32.worker}/conf/wrapper-worker.conf"
+          filtering="no" overwrite="yes" /-->
+
+    <!--copy file="${res.dir}/wrapper/conf/wrapper-worker.conf"
+          tofile="${dist.dir.worker.innosetup}/worker/conf/wrapper-worker.conf"
+          filtering="no" overwrite="yes" /-->
+
+    <!--copy todir="${dist.dir.win32.worker}/lib/"
+          filtering="no" overwrite="yes">
+      <fileset dir="${res.dir}/wrapper/lib">
+	      <include name="*" />
+      </fileset>
+    </copy-->
+
+    <!--copy todir="${dist.dir.worker.innosetup}/worker/lib/"
+          filtering="no" overwrite="yes">
+      <fileset dir="${res.dir}/wrapper/lib">
+	      <include name="*" />
+      </fileset>
+    </copy-->
+
+
+    <!--copy todir="${dist.dir.worker.innosetup}/worker/lib/"
           filtering="no" overwrite="yes"
-	  file="${installers.dir}/win32/cygwin1.dll" />
-    <copy todir="${dist.dir.worker.innosetup}/worker/lib/"
+	  file="${installers.dir}/win32/cygwin1.dll" /-->
+    <!--copy todir="${dist.dir.worker.innosetup}/worker/misc/"
           filtering="no" overwrite="yes"
-	  file="${installers.dir}/win32/cygwin1.dll" />
-    <copy todir="${dist.dir.worker.innosetup}/worker/misc/"
+	  file="${src.c.dir}/xwwrk.ico" /-->
+    <!--copy todir="${dist.dir.worker.innosetup}/worker/doc"
           filtering="no" overwrite="yes"
-	  file="${src.c.dir}/xwwrk.ico" />
-    <copy todir="${dist.dir.worker.innosetup}/worker/doc"
-          filtering="no" overwrite="yes"
-	  file="${misc.dir}/worker-start.html" />
-    <copy todir="${dist.dir.win32.worker}/bin"
+	  file="${misc.dir}/worker-start.html" /-->
+    <!--copy todir="${dist.dir.win32.worker}/bin"
           filtering="no" overwrite="yes">
       <fileset dir="${res.dir}/wrapper/bin">
 	      <include name="*" />
       </fileset>
-    </copy>
-    <copy todir="${dist.dir.worker.innosetup}/worker/bin"
+    </copy-->
+    <!--copy todir="${dist.dir.worker.innosetup}/worker/bin"
           filtering="no" overwrite="yes">
       <fileset dir="${res.dir}/wrapper/bin">
 	      <include name="InstallXWWorker-NT.bat" />
@@ -438,10 +443,11 @@
 	      <include name="Wrapper.exe" />
 	      <include name="xtremweb.worker.bat" />
       </fileset>
-    </copy>
-    <copy todir="${dist.dir.win32.worker}/doc"
+    </copy-->
+
+    <!--copy todir="${dist.dir.win32.worker}/doc"
           filtering="no" overwrite="yes"
-	  file="${misc.dir}/worker-start.html" />
+	  file="${misc.dir}/worker-start.html" /-->
 
   	
     <!-- Install Win32 VWorker -->
@@ -449,53 +455,58 @@
     <filter token="DEFAULTUSER" value="${xtremweb.vworker.login}" />
     <filter token="DEFAULTPASSWORD" value="${xtremweb.vworker.password}" />
 
-    <copy file="${misc.dir}/xtremweb.worker.conf.in" 
+    <!--copy file="${misc.dir}/xtremweb.worker.conf.in"
           tofile="${dist.dir.win32.vworker}/conf/xtremweb.worker.conf"
-          filtering="yes" overwrite="yes" />
+          filtering="yes" overwrite="yes" /-->
+
     <mkdir dir="${dist.dir.vworker.innosetup}/worker/bin" />
     <mkdir dir="${dist.dir.vworker.innosetup}/worker/conf" />
     <mkdir dir="${dist.dir.vworker.innosetup}/worker/doc" />
     <mkdir dir="${dist.dir.vworker.innosetup}/worker/keystore" />
     <mkdir dir="${dist.dir.vworker.innosetup}/worker/lib" />
     <mkdir dir="${dist.dir.vworker.innosetup}/worker/misc" />
-    <copy file="${misc.dir}/xtremweb.worker.conf.in" 
-          tofile="${dist.dir.vworker.innosetup}/worker/conf/xtremweb.worker.conf"
-          filtering="yes" overwrite="yes" />
-    <copy file="${res.dir}/wrapper/conf/wrapper-worker.conf"
-          tofile="${dist.dir.win32.vworker}/conf/wrapper-worker.conf"
-          filtering="no" overwrite="yes" />
-    <copy file="${res.dir}/wrapper/conf/wrapper-worker.conf"
-          tofile="${dist.dir.vworker.innosetup}/worker/conf/wrapper-worker.conf"
-          filtering="no" overwrite="yes" />
-    <copy todir="${dist.dir.win32.vworker}/lib/"
-          filtering="no" overwrite="yes">
-      <fileset dir="${res.dir}/wrapper/lib">
-	      <include name="*" />
-      </fileset>
-    </copy>
-    <copy todir="${dist.dir.vworker.innosetup}/worker/lib/"
-          filtering="no" overwrite="yes">
-      <fileset dir="${res.dir}/wrapper/lib">
-	      <include name="*" />
-      </fileset>
-    </copy>
 
-    <copy todir="${dist.dir.vworker.innosetup}/worker/lib/"
+    <!--copy file="${misc.dir}/xtremweb.worker.conf.in"
+          tofile="${dist.dir.vworker.innosetup}/worker/conf/xtremweb.worker.conf"
+          filtering="yes" overwrite="yes" /-->
+
+    <!--copy file="${res.dir}/wrapper/conf/wrapper-worker.conf"
+          tofile="${dist.dir.win32.vworker}/conf/wrapper-worker.conf"
+          filtering="no" overwrite="yes" /-->
+
+    <!--copy file="${res.dir}/wrapper/conf/wrapper-worker.conf"
+          tofile="${dist.dir.vworker.innosetup}/worker/conf/wrapper-worker.conf"
+          filtering="no" overwrite="yes" /-->
+    <!--copy todir="${dist.dir.win32.vworker}/lib/"
+          filtering="no" overwrite="yes">
+      <fileset dir="${res.dir}/wrapper/lib">
+	      <include name="*" />
+      </fileset>
+    </copy-->
+
+    <!--copy todir="${dist.dir.vworker.innosetup}/worker/lib/"
+          filtering="no" overwrite="yes">
+      <fileset dir="${res.dir}/wrapper/lib">
+	      <include name="*" />
+      </fileset>
+    </copy-->
+
+    <!--copy todir="${dist.dir.vworker.innosetup}/worker/lib/"
           filtering="no" overwrite="yes"
-	  file="${installers.dir}/win32/cygwin1.dll" />
-    <copy todir="${dist.dir.vworker.innosetup}/worker/misc/"
+	  file="${installers.dir}/win32/cygwin1.dll" /-->
+    <!--copy todir="${dist.dir.vworker.innosetup}/worker/misc/"
           filtering="no" overwrite="yes"
-	  file="${src.c.dir}/xwwrk.ico" />
-    <copy todir="${dist.dir.vworker.innosetup}/worker/doc"
+	  file="${src.c.dir}/xwwrk.ico" /-->
+    <!--copy todir="${dist.dir.vworker.innosetup}/worker/doc"
           filtering="no" overwrite="yes"
-	  file="${misc.dir}/worker-start.html" />
-    <copy todir="${dist.dir.win32.vworker}/bin"
+	  file="${misc.dir}/worker-start.html" /-->
+    <!--copy todir="${dist.dir.win32.vworker}/bin"
           filtering="no" overwrite="yes">
       <fileset dir="${res.dir}/wrapper/bin">
 	      <include name="*" />
       </fileset>
-    </copy>
-    <copy todir="${dist.dir.vworker.innosetup}/worker/bin"
+    </copy-->
+    <!--copy todir="${dist.dir.vworker.innosetup}/worker/bin"
           filtering="no" overwrite="yes">
       <fileset dir="${res.dir}/wrapper/bin">
 	      <include name="InstallXWWorker-NT.bat" />
@@ -504,10 +515,11 @@
 	      <include name="Wrapper.exe" />
 	      <include name="xtremweb.worker.bat" />
       </fileset>
-    </copy>
-    <copy todir="${dist.dir.win32.vworker}/doc"
+    </copy-->
+
+    <!--copy todir="${dist.dir.win32.vworker}/doc"
           filtering="no" overwrite="yes"
-	  file="${misc.dir}/worker-start.html" />
+	  file="${misc.dir}/worker-start.html" /-->
 
 
   </target>
@@ -611,11 +623,13 @@
           filtering="yes" overwrite="yes">
       <fileset dir="${macosxpkg.server}" />
     </copy>
-    <copy todir="${dist.dir.worker.innosetup}"
+
+
+    <!--copy todir="${dist.dir.worker.innosetup}"
           filtering="yes" overwrite="yes">
       <fileset dir="${innosetup.dir}" />
-    </copy>
-    <copy todir="${dist.dir.win32.worker}"
+    </copy-->
+    <!--copy todir="${dist.dir.win32.worker}"
           filtering="yes" overwrite="yes">
       <fileset file="${installers.dir}/win32/cygwin1.dll" />
     </copy>
@@ -626,19 +640,19 @@
     <copy todir="${dist.dir.win32.vworker}"
           filtering="yes" overwrite="yes">
       <fileset file="${installers.dir}/win32/cygwin1.dll" />
-    </copy>
+    </copy-->
 
 
     <filter token="DEFAULTUSER" value="${xtremweb.worker.login}" />
     <filter token="DEFAULTPASSWORD" value="${xtremweb.worker.password}" />
 
 
-  	<copy file="${lib.dir}/bcprov-jdk15on-151.jar"
+  	<!--copy file="${lib.dir}/bcprov-jdk15on-151.jar"
 	        todir="${dist.dir.client.innosetup}/client/lib/"
           overwrite="yes" />
     <copy file="${lib.dir}/bcpkix-jdk15on-151.jar"
 	        todir="${dist.dir.client.innosetup}/client/lib/"
-          overwrite="yes" />
+          overwrite="yes" /-->
 
 
     <!-- classpath for execution -->
