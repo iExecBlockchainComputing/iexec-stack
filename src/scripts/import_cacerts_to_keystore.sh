@@ -86,7 +86,7 @@ IMPORTEOF_FR
 
 	else
 		${KEYTOOLCMD} << IMPORTEOF_EN
-o
+y
 IMPORTEOF_EN
 	fi
 
