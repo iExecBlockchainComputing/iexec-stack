@@ -901,7 +901,6 @@ public enum XWPropertyDefs {
 		public String defaultValue() {
 			return System.getProperty(JAVATMPDIR);
 		}
-
 		/**
 		 * This retrieves a property name as found in config file This is for
 		 * backward compatibility only

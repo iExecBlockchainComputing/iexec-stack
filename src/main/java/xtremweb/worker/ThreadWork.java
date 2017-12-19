@@ -241,7 +241,15 @@ public class ThreadWork extends Thread {
 
 		sandboxBinFile = null;
 		if (Worker.getConfig().getProperty(XWPropertyDefs.SANDBOXPATH) != null) {
-			sandboxBinFile = new File(Worker.getConfig().getProperty(XWPropertyDefs.SANDBOXPATH).trim());
+			try {
+				final String sandboxAttr = Worker.getConfig().getProperty(XWPropertyDefs.SANDBOXPATH).trim().toUpperCase();
+				final AppTypeEnum appTypeEnum = AppTypeEnum.valueOf(sandboxAttr);
+				sandboxBinFile = appTypeEnum.getPath();
+				logger.debug("sandboxBinFile = " + sandboxBinFile);
+			} catch(final Exception e) {
+				sandboxBinFile = new File(Worker.getConfig().getProperty(XWPropertyDefs.SANDBOXPATH).trim());
+				logger.debug("sandboxBinFile = " + sandboxBinFile);
+			}
 		}
 		Runtime.getRuntime().addShutdownHook(new Thread("ThreadWorkCleaner") {
 			@Override
@@ -962,7 +970,15 @@ public class ThreadWork extends Thread {
 				sbBinPath = sandboxBinFile;
 
 				if (Worker.getConfig().getProperty(XWPropertyDefs.SANDBOXSTARTARGS) != null) {
-					sbArgs.append(Worker.getConfig().getProperty(XWPropertyDefs.SANDBOXSTARTARGS));
+					try {
+						final String sandboxAttr = Worker.getConfig().getProperty(XWPropertyDefs.SANDBOXPATH).trim().toUpperCase();
+						final AppTypeEnum appTypeEnum = AppTypeEnum.valueOf(sandboxAttr);
+						sbArgs.append(
+								appTypeEnum.getCommandLineArgs(Worker.getConfig().getProperty(XWPropertyDefs.SANDBOXSTARTARGS),
+										currentWork.getScratchDir()));
+					} catch(final Exception e) {
+						sbArgs.append(Worker.getConfig().getProperty(XWPropertyDefs.SANDBOXSTARTARGS));
+					}
 				}
 			}
 		}

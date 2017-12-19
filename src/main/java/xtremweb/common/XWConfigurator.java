@@ -80,6 +80,7 @@ import xtremweb.communications.URI;
 import xtremweb.security.PEMPrivateKey;
 import xtremweb.security.PEMPublicKey;
 import xtremweb.security.X509Proxy;
+import xtremweb.worker.Worker;
 
 public final class XWConfigurator extends Properties {
 
@@ -755,27 +756,22 @@ public final class XWConfigurator extends Properties {
 			}
 
 			final String pstr = p.toString();
-			final String plowercase = pstr.toLowerCase();
-			final String pstrSysEnv = System.getenv(pstr);
-			final String plowerSysEnv = System.getenv(plowercase);
+			final String pSysEnv = System.getenv(pstr);
 			final String pSysProp = System.getProperty(pstr);
-			final String plowerSysProp = System.getProperty(plowercase);
 			final String pProp = getProperty(pstr);
-			final String plowerProp = getProperty(plowercase);
-			if (pstrSysEnv != null) {
-				setProperty(p, pstrSysEnv);
-			} else if (plowerSysEnv != null) {
-				setProperty(p, plowerSysEnv);
+			logger.debug("pProp(" + p + ") = " + pProp);
+			logger.debug("pSysProp(" + p + ") = " + pSysProp);
+			logger.debug("pSysEnv(" + p + ") = " + pSysEnv);
+			if (pProp != null) {
+				setProperty(p, pProp);
 			} else if (pSysProp != null) {
 				setProperty(p, pSysProp);
-			} else if (plowerSysProp != null) {
-				setProperty(p, plowerSysProp);
-			} else if (pProp != null) {
-				setProperty(p, pProp);
-			} else if (plowerProp != null) {
-				setProperty(p, plowerProp);
-			} else {
-				setProperty(p, getProperty(p));
+			}
+			else if (pSysEnv != null) {
+				setProperty(p, pSysEnv);
+			}
+			else {
+				setProperty(p);
 			}
 		}
 
@@ -803,39 +799,34 @@ public final class XWConfigurator extends Properties {
 		setProperty(XWPropertyDefs.MANDATINGLOGIN, mandat, true);
 		setMandate(getProperty(XWPropertyDefs.MANDATINGLOGIN));
 
-		String login = getProperty(XWPropertyDefs.LOGIN);
-		if (login == null) {
-			throw new IOException("No login name provided");
-		}
-		setProperty(XWPropertyDefs.LOGIN, login);
-		final String passwd = getProperty(XWPropertyDefs.PASSWORD);
-		if ((login == null) && (!XWRole.isDispatcher())) {
-			throw new IOException("You must provide a Passsword");
-		}
-		setProperty(XWPropertyDefs.PASSWORD, passwd);
-		_user.setLogin(getProperty(XWPropertyDefs.LOGIN));
-		_user.setPassword(getProperty(XWPropertyDefs.PASSWORD));
+		if (!XWRole.isDispatcher()) {
+			final String login = getProperty(XWPropertyDefs.LOGIN);
+			final String passwd = getProperty(XWPropertyDefs.PASSWORD);
+			if ((login == null) || (login.length() < 1) ||
+					(passwd == null) || (passwd.length() < 1)){
+				throw new IOException("You must provide Login and password");
+			}
+			_user.setLogin(login);
+			_user.setPassword(passwd);
+			try {
+				final String uidstr = getProperty(XWPropertyDefs.USERUID);
+				if (uidstr != null) {
+					_user.setUID(new UID(uidstr));
+				}
+			} catch (final IllegalArgumentException e) {
+			}
+		} else {
 
-		try {
 			final String uidstr = getProperty(XWPropertyDefs.ADMINUID);
 			if (uidstr != null) {
 				_adminuid = new UID(uidstr);
 			}
-		} catch (final IllegalArgumentException e) {
-		}
-
-		login = getProperty(XWPropertyDefs.ADMINLOGIN);
-		if (login == null) {
-			throw new IOException("No admin login provided");
-		}
-		setProperty(XWPropertyDefs.ADMINLOGIN, login);
-
-		try {
-			final String uidstr = getProperty(XWPropertyDefs.USERUID);
-			if (uidstr != null) {
-				_user.setUID(new UID(uidstr));
+	
+			final String login = getProperty(XWPropertyDefs.ADMINLOGIN);
+			if (login == null) {
+				throw new IOException("No admin login provided");
 			}
-		} catch (final IllegalArgumentException e) {
+			setProperty(XWPropertyDefs.ADMINLOGIN, login);
 		}
 
 		keyStoreFile = getFile(XWPropertyDefs.SSLKEYSTORE);
@@ -924,8 +915,8 @@ public final class XWConfigurator extends Properties {
 				final String subjectName = publicKey.getSubjectName();
 				final String issuerName = publicKey.getIssuerName();
 
-				// a subject name may not necessarely be unic
-				// subject name associated to issuer name is necessarely unic!
+				// a subject name may not necessarily be unique
+				// subject name associated to issuer name is necessarily unique!
 				final String loginName = subjectName + "_" + issuerName;
 				_user.setLogin(loginName);
 				_user.setPassword(null);
@@ -1140,6 +1131,8 @@ public final class XWConfigurator extends Properties {
 			return;
 		}
 
+		System.out.println("01");
+
 		_host.setAcceptBin(getBoolean(XWPropertyDefs.ACCEPTBIN));
 		if (ArchDepFactory.xwutil() != null) {
 			try {
@@ -1218,7 +1211,29 @@ public final class XWConfigurator extends Properties {
 			setDataPackagesDir(localDatasProperty, localDatasProperty);
 		}
 
-		if (!(new File(getProperty(XWPropertyDefs.SANDBOXPATH))).exists()) {
+		File sandboxBinFile = null;
+		try {
+			//
+			// since 12.1.0 we can use AppTypeEnum.DOCKER as sandbox
+			// This has the advantage that AppTypEnum knows where is docker tool binary, for each OS
+			//
+			final String sandboxAttr = Worker.getConfig().getProperty(XWPropertyDefs.SANDBOXPATH).trim().toUpperCase();
+			final AppTypeEnum appTypeEnum = AppTypeEnum.valueOf(sandboxAttr);
+			sandboxBinFile = appTypeEnum.getPath();
+			logger.debug("sandboxBinFile = " + sandboxBinFile);
+		} catch(final Exception e) {
+		}
+		if (sandboxBinFile == null) {
+			try {
+				//
+				// since 12.1.0 we can still define the full sandbox path
+				//
+				sandboxBinFile = new File(Worker.getConfig().getProperty(XWPropertyDefs.SANDBOXPATH).trim());
+				logger.debug("sandboxBinFile = " + sandboxBinFile);
+			} catch(final Exception e) {
+			}
+		}
+		if ((sandboxBinFile != null) && !sandboxBinFile.exists()) {
 			logger.warn("Not Using Sandboxing \"" + getProperty(XWPropertyDefs.SANDBOXPATH) + "\" : file not found. "
 					+ "Please check config file variable \"" + XWPropertyDefs.SANDBOXPATH + "\". Default is : "
 					+ getProperty(XWPropertyDefs.SANDBOXPATH));
@@ -1398,6 +1413,7 @@ public final class XWConfigurator extends Properties {
 	public File setTmpDir() throws IOException {
 		final String dirname = "XW." + XWRole.getMyRole().toString() + "."
 				+ UID.getMyUid().toString();
+		System.out.println("setTmpDir : getProperty(XWPropertyDefs.TMPDIR) = " + getProperty(XWPropertyDefs.TMPDIR));  
 		final String parent = getProperty(XWPropertyDefs.TMPDIR) == null ? System.getProperty(XWPropertyDefs.JAVATMPDIR) : getProperty(XWPropertyDefs.TMPDIR);  
 		final String p = parent == null ? "/tmp" : parent; 
 		final File dir = p.endsWith(dirname) ? new File(p) : new File(p, dirname);
@@ -1407,6 +1423,7 @@ public final class XWConfigurator extends Properties {
 		_host.setFreeTmp(dir.getFreeSpace() / XWTools.ONEMEGABYTES);
 		dir.deleteOnExit();
 		this.defaults.put(XWPropertyDefs.TMPDIR, dir.getAbsolutePath());
+		System.out.println("setTmpDir : dir.getAbsolutePath() = " + dir.getAbsolutePath());  
 //		setProperty(XWPropertyDefs.TMPDIR, dir.getAbsolutePath());
 		return dir;
 	}
@@ -1568,7 +1585,10 @@ public final class XWConfigurator extends Properties {
 	 *            - the property to set
 	 */
 	public void setProperty(final XWPropertyDefs prop) {
-		setProperty(prop.toString(), prop.defaultValue());
+		final String p = prop.defaultValue();
+		if (p != null ) {
+			setProperty(prop.toString(), p);
+		}
 	}
 
 	/**
@@ -1616,16 +1636,14 @@ public final class XWConfigurator extends Properties {
 			v = prop.defaultValue();
 		}
 		if (v == null) {
-			v = new String();
+			v = "";
 		}
 		setProperty(prop.toString(), v.trim());
 		if (sys == true) {
 			System.setProperty(prop.toString(), getProperty(prop));
 		}
 		logger.config("setProperty(" + prop.toString() + ", " + v + ") = " + getProperty(prop));
-		v = null;
 	}
-
 	/**
 	 *
 	 * @since 7.3.0

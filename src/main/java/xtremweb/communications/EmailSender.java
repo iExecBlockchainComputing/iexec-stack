@@ -55,8 +55,12 @@ public class EmailSender {
 		host = System.getProperty(XWPropertyDefs.MAILSERVERADDRESS.toString());
 		emailProtocol = System.getProperty(XWPropertyDefs.MAILPROTOCOL.toString());
 		final Properties props = System.getProperties();
-		props.put("mail.host", host);
-		props.put("mail.transport.protocol", emailProtocol);
+		if (host != null) {
+			props.put("mail.host", host);
+		}
+		if (emailProtocol != null) {
+			props.put("mail.transport.protocol", emailProtocol);
+		}
 		session = Session.getDefaultInstance(props, null);
 		session.setDebug(sessionDebug);
 		final String emailaddr = System.getProperty(XWPropertyDefs.MAILSENDERADDRESS.toString());
