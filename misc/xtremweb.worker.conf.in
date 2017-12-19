@@ -530,11 +530,11 @@ ACTIVATIONDATE=* 20-7
 # XtremWeb needs to use some disk space to store temporary files.
 # If you need to use an other directory uncomment this line and specify your own
 #
-# Default is /tmp
+# Default is $JAVATMPDIR
 # Note : please use full path; don't use ~ or any variable (e.g. $HOME)
 #        they are not correctly interpreted
-#
-# TMPDIR=/tmp
+# 18/12/17 : Docker cant mount-bind following symbolic links; please keep /tmp
+TMPDIR=/tmp
 ####
 
 
@@ -556,7 +556,13 @@ ACTIVATIONDATE=* 20-7
 # docker run -t -i --mount type=bind,src=`pwd`,dst=/tmp/xwhep -w /tmp/xwhep ubuntu /bin/bash
 #  SANDBOXENABLED=true
 #  SANDBOXPATH=docker
-#  SANDBOXSTARTARGS=-t -i --mount type=bind,src=`pwd`,dst=/tmp/xwhep -w /tmp/xwhep ubuntu /tmp/xwhep/
+#
+# Note on SANDBOXSTARTARGS:
+#    src=pwd must be present; it is automatically replace by job PWD
+#    the job application name is appended to SANDBOXSTARTARGS 
+#    @see xtremweb.common.AppTypeEnum.DOCKER.getCommandLineArgs(String, String, String)
+#
+#  SANDBOXSTARTARGS= run --mount type=bind,src=pwd,dst=/tmp/xwhep -w /tmp/xwhep ubuntu
 # Default is false
 # SANDBOXENABLED=true
 
