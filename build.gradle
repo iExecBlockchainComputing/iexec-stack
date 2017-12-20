@@ -371,23 +371,23 @@ task copyMacVworker(type: Copy) {
     dependsOn(copyMac)
     into(distMacInstallers + '/xwhep.vworker/installer/PckRoot')
 
-    into(privateEtc + "/xwhep.vworker/conf"){
+    into(privateEtc + "/xwhep.worker/conf"){
         from templates + '/xtremweb.worker.conf.in'
-        rename { fileName -> fileName.replace('xtremweb.worker.conf.in', 'xtremweb.vworker.conf') }
+        rename { fileName -> fileName.replace('xtremweb.worker.conf.in', 'xtremweb.worker.conf') }
         filter(ReplaceTokens, tokens: [LAUNCHERURL: 'http://nohost/',
                                        DATASERVERS      : '${data.servers}',
-                                       KEYDIR      : privateEtc + '/xwhep.vworker',
+                                       KEYDIR      : privateEtc + '/xwhep.worker',
                                        DEFAULTUSER      : '${xtremweb.vworker.login}',
                                        DEFAULTPASSWORD   : '${xtremweb.vworker.password}'])
     }
 
-    into(privateEtc + "/xwhep.vworker"){
+    into(privateEtc + "/xwhep.worker"){
         from misc
         include('worker-start.html')
         rename('worker-start.html', 'index.html')
     }
 
-    into(privateEtc + "/xwhep.vworker/conf"){
+    into(privateEtc + "/xwhep.worker/conf"){
         from misc
         include('xwhep.sb')
     }
