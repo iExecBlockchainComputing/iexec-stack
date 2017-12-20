@@ -1347,6 +1347,14 @@ IFILE=$INSTALLERSDIR/linux/rpm/xwhep.worker/xwhep-worker.spec
 cat $IFILE | sed "s/^%define SYSLOGIN.*/%define SYSLOGIN $XWUSER/g" >  $TMPFILE1
 mv -f $TMPFILE1 $IFILE
 printf "."
+
+
+IFILE=$INSTALLERSDIR/linux/rpm/xwhep.vworker/xwhep-worker.spec
+cat $IFILE | sed "s/^%define SYSLOGIN.*/%define SYSLOGIN $XWUSER/g" >  $TMPFILE1
+mv -f $TMPFILE1 $IFILE
+printf "."
+: '
+
 IFILE=$INSTALLERSDIR/macosx/xwhep.client/installer/Resources/postflight
 cat $IFILE | sed "s/^SYSLOGIN=.*/SYSLOGIN=$XWUSER/g" >  $TMPFILE1
 mv -f $TMPFILE1 $IFILE
@@ -1394,6 +1402,34 @@ printf "."
 cp $BINDIR/createvdi $INSTALLERSDIR/macosx/xwhep.worker/installer/PckRoot/usr/local/bin/   > /dev/null 2>&1 || fatal "Can't copy createvdi to $INSTALLERSDIR/macosx/xwhep.worker/installer/PckRoot/usr/local/bin/"
 printf "."
 cp $BINDIR/createiso $INSTALLERSDIR/macosx/xwhep.worker/installer/PckRoot/usr/local/bin/   > /dev/null 2>&1 || fatal "Can't copy createiso to $INSTALLERSDIR/macosx/xwhep.worker/installer/PckRoot/usr/local/bin/"
+
+printf "."
+
+IFILE=$INSTALLERSDIR/macosx/xwhep.vworker/installer/Resources/postflight
+cat $IFILE | sed "s/^SYSLOGIN=.*/SYSLOGIN=$XWUSER/g" >  $TMPFILE1
+mv -f $TMPFILE1 $IFILE
+printf "."
+IFILE=$INSTALLERSDIR/macosx/xwhep.vworker/installer/PckRoot/Applications/xwhep.worker/bin/start.sh
+cat $IFILE | sed "s/^SYSLOGIN=.*/SYSLOGIN=$XWUSER/g" >  $TMPFILE1
+mv -f $TMPFILE1 $IFILE
+printf "."
+IFILE=$INSTALLERSDIR/macosx/xwhep.vworker/installer/PckRoot/Applications/xwhep.worker/bin/stop.sh
+cat $IFILE | sed "s/^SYSLOGIN=.*/SYSLOGIN=$XWUSER/g" >  $TMPFILE1
+mv -f $TMPFILE1 $IFILE
+printf "."
+IFILE=$INSTALLERSDIR/macosx/xwhep.vworker/installer/PckRoot/Applications/xwhep.worker/bin/uninstall.sh
+cat $IFILE | sed "s/^SYSLOGIN=.*/SYSLOGIN=$XWUSER/g" >  $TMPFILE1
+mv -f $TMPFILE1 $IFILE
+printf "."
+IFILE=$INSTALLERSDIR/macosx/xwhep.vworker/installer/PckRoot/usr/local/bin/xtremweb.worker
+cat $IFILE | sed "s/^SYSLOGIN=.*/SYSLOGIN=$XWUSER/g" >  $TMPFILE1
+mv -f $TMPFILE1 $IFILE
+printf "."
+cp $BINDIR/createvdi $INSTALLERSDIR/macosx/xwhep.vworker/installer/PckRoot/usr/local/bin/   > /dev/null 2>&1 || fatal "Can't copy createvdi to $INSTALLERSDIR/macosx/xwhep.worker/installer/PckRoot/usr/local/bin/"
+printf "."
+cp $BINDIR/createiso $INSTALLERSDIR/macosx/xwhep.vworker/installer/PckRoot/usr/local/bin/   > /dev/null 2>&1 || fatal "Can't copy createiso to $INSTALLERSDIR/macosx/xwhep.worker/installer/PckRoot/usr/local/bin/"
+printf "."
+'
 
 echo "Done"
 
@@ -1664,7 +1700,7 @@ else
 fi
 rm -f $TMPFILE1
 printf "."
-
+: '
 cptodir="$INSTALLERSDIR/macosx/xwhep.server/installer/PckRoot/Applications/xwhep.server"
 cp $ROOTDIR/AUTHORS $cptodir              > /dev/null 2>&1 || fatal "Can't copy $ROOTDIR/AUTHORS to $cptodir"
 cp $ROOTDIR/ChangeLog $cptodir            > /dev/null 2>&1 || fatal "Can't copy $ROOTDIR/ChangeLog to $cptodir"
@@ -1701,7 +1737,7 @@ else
 	fi
 fi
 mv -f $TMPFILE1 $OSXSERVERCONFFILE
-
+'
 echo " Done"
 
 #
@@ -2225,6 +2261,7 @@ echo "Done"
 #
 # Preparing worker conf file for macosx packages
 #
+#: <<'END'
 OSXWORKERCONFFILE=$INSTALLERSDIR/macosx/xwhep.worker/installer/PckRoot/private/etc/xwhep.worker/conf/$XWWORKERCONFFILENAME
 cp $XWWORKERCONFFILE $OSXWORKERCONFFILE || fatal "Can't cp $XWWORKERCONFFILE $OSXWORKERCONFFILE"
 grep -E "^[[:space:]]*SSLKeyStore[[:space:]]*=.*" $OSXWORKERCONFFILE > /dev/null 2>&1
@@ -2287,7 +2324,7 @@ else
 fi
 mv -f $TMPFILE1 $OSXWORKERCONFFILE
 
-
+: <<'END'
 #
 # Preparing worker for win32 
 #
@@ -2361,7 +2398,7 @@ fi
 mv -f $TMPFILE1 $WIN32WORKERCONFFILE
 
 echo "Done"
-
+END
 #
 # Preparing the client configuration file
 #
@@ -2480,6 +2517,8 @@ rm -f $TMPFILE2
 
 echo "Done"
 
+
+: <<'END'
 WIN32CLIENTCONFFILE=$INSTALLERSDIR/win32/xwhep.client/innoSetup/client/conf/$XWCLIENTCONFFILENAME
 cp $XWCLIENTCONFFILE $WIN32CLIENTCONFFILE || fatal "Can't cp $XWCLIENTCONFFILE $WIN32CLIENTCONFFILE" 
 echo "****************************************************************************************"
@@ -2518,6 +2557,7 @@ SOURCE=$LIBDIR/log4j-core-2.10.0.jar
 cp $SOURCE $DEST > /dev/null 2>&1 || fatal "Can't copy $SOURCE to $DEST"
 
 echo "Done"
+END
 
 #
 # Generating keys
@@ -2641,7 +2681,7 @@ else
     echo "Keystores unmodified"
     echo "*******************"
 fi
-
+#: <<'END'
 mkdir -p                    $INSTALLERSDIR/macosx/xwhep.server/installer/PckRoot/private/etc/xwhep.server/keystore/
 cp -f $XWSERVERKEYSTOREFILE $INSTALLERSDIR/macosx/xwhep.server/installer/PckRoot/private/etc/xwhep.server/keystore/ || fatal "Can't copy $XWSERVERKEYSTOREFILE"
 mkdir -p                    $INSTALLERSDIR/macosx/xwhep.worker/installer/PckRoot/private/etc/xwhep.worker/keystore/
@@ -2654,7 +2694,7 @@ mkdir -p                    $INSTALLERSDIR/win32/xwhep.worker/innoSetup/worker/k
 cp -f $XWWORKERKEYSTOREFILE $INSTALLERSDIR/win32/xwhep.worker/innoSetup/worker/keystore/ || fatal "Can't copy $XWWORKERKEYSTOREFILE"
 mkdir -p                    $INSTALLERSDIR/win32/xwhep.vworker/innoSetup/worker/keystore/
 cp -f $XWWORKERKEYSTOREFILE $INSTALLERSDIR/win32/xwhep.vworker/innoSetup/worker/keystore/ || fatal "Can't copy $XWWORKERKEYSTOREFILE"
-
+#END
 #
 # We have found that sometime /tmp is not 777 ?!?!
 #
@@ -2690,6 +2730,12 @@ rm -f  $INSTALLERSDIR/xwhep.client/$VERSION/bin/$OPENIDSH         > /dev/null  2
 rm -Rf  $INSTALLERSDIR/xwhep.client/$VERSION/bin/ganglia          > /dev/null  2>&1
 printf "."
 
+
+
+
+
+
+#: <<'END'
 cp -f $INSTALLERSDIR/xwhep.client/$VERSION/bin/* $INSTALLERSDIR/macosx/xwhep.client/installer/PckRoot/Applications/xwhep.client/bin/ > /dev/null  2>&1
 printf "."
 
@@ -2719,6 +2765,11 @@ cp $SOURCE $DEST > /dev/null 2>&1 || fatal "Can't copy $SOURCE to $DEST"
 
 cp -f $INSTALLERSDIR/xwhep.client/$VERSION/bin/xtremweb.client.bat $INSTALLERSDIR/win32/xwhep.client/innoSetup/client/bin/ > /dev/null  2>&1
 printf "."
+#END
+
+
+
+
 
 mkdir -p $INSTALLERSDIR/xwhep.client/$VERSION/conf         > /dev/null 2>&1 || fatal "Can't mkdir -p $INSTALLERSDIR/xwhep.client/$VERSION/conf"
 cp $XWCLIENTCONFTEMPLATEFILE $INSTALLERSDIR/xwhep.client/$VERSION/conf > /dev/null 2>&1 || fatal "Can't copy $XWCLIENTCONFTEMPLATEFILE to $INSTALLERSDIR/xwhep.client/$VERSION/conf"
@@ -2759,6 +2810,8 @@ fi
 echo "Done"
 
 
+
+#: <<'END'
 #
 # Preparing client conf file for Apple packages
 #
@@ -2779,6 +2832,9 @@ fi
 mv -f $TMPFILE1 $OSXCLIENTCONFFILE
 
 echo " Done"
+#END
+
+
 
 
 
@@ -3118,6 +3174,8 @@ if [ $? -eq 0 ] ; then
   fi
 fi
 
+
+#: <<'END'
 #
 # Preparing server Apple package
 #
@@ -3141,6 +3199,7 @@ if [ "$PKGS" = "YES" ] ; then
      echo
   fi
 fi
+#END
 
 #
 # Preparing DG to SG bridge RPM package
@@ -3617,9 +3676,12 @@ mv -f $TMPFILE1 $CONFDIR/$XWCLIENTCONFTEMPLATEFILENAME
 
 cp -f $XWCLIENTKEYSTOREFILE $wkrRpmDir/keystore/ > /dev/null 2>&1 || fatal "Can't copy keystore file to $wkrRpmDir/keystore"
 
+
+#: <<'END'
 mkdir -p $INSTALLERSDIR/macosx/xwhep.client/installer/PckRoot/Applications/xwhep.client/keystore/
 cp -f $XWCLIENTKEYSTOREFILE $INSTALLERSDIR/macosx/xwhep.client/installer/PckRoot/Applications/xwhep.client/keystore/
 [ $? -ne 0 ] && fatal "Can't copy $XWCLIENTKEYSTOREFILE to $INSTALLERSDIR/macosx/xwhep.client/installer/PckRoot/Applications/xwhep.client/keystore/"
+#END
 
 SOURCE=$LIBDIR/xtremweb.jar
 DEST=$wkrRpmDir/lib/
@@ -3744,6 +3806,7 @@ fi
 
 echo "Client Debian package ready"
 
+#: <<'END'
 #
 # Preparing client Apple package
 #
@@ -3766,7 +3829,8 @@ if [ "$PKGS" = "YES" ] ; then
      echo " $> PackageMaker -d installers/macosx/xwhep.client/installer/xwhep-client.pmdoc -o installers/macosx/xwhep.client/installer/xwhep-client.mpkg"
      echo
   fi
-fi
+fi 
+#END
 
 #
 # Preparing worker RPM package
@@ -4099,7 +4163,7 @@ echo "Worker Debian package ready"
 
 
 
-
+#: <<'END'
 #
 # Preparing worker Apple package
 #
@@ -4125,7 +4189,6 @@ if [ "$PKGS" = "YES" ] ; then
 fi
 
 
-
 #
 # Preparing worker Apple package
 #
@@ -4149,7 +4212,7 @@ if [ "$PKGS" = "YES" ] ; then
      echo
   fi
 fi
-
+#END
 
 cat <<EOF
 
