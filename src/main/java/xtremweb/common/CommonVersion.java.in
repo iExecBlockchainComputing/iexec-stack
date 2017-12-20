@@ -31,10 +31,13 @@ import java.util.jar.Attributes;
 
 
 public class CommonVersion {
+
     private static Version current = new Version("@XWVERSION@", "@VBRANCH@", "@BUILD_TIME@");
+
     public static Version getCurrent() {
         return current;
     }
+
     public static Version getFromJar(JarFile jf) throws IOException {
         Attributes mf = jf.getManifest().getMainAttributes();
         jf.close();
