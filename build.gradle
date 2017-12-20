@@ -429,6 +429,11 @@ task copyLinux(type: Copy) {
     dependsOn(copyLinuxInstallers)
 
     into dist
+    
+    into("/conf") {
+        from misc + "/xwconfigure.values"
+    }
+
 
     into("/conf") {
         from templates + '/xtremweb.server.conf.in'
