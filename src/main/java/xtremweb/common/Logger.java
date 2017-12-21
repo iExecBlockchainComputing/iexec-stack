@@ -122,7 +122,7 @@ public class Logger {
 	/**
 	 * This logs out an exception
 	 */
-	public void exception(final String msg, final Exception e) {
+	public void exception(final String msg, final Throwable e) {
 		final String str = msg == null ? e.toString() : msg + " " + e.toString();
 		final Throwable cause = e.getCause();
 		warn(str + " (" + (cause == null ? e.getMessage() : cause.toString()) + ")");

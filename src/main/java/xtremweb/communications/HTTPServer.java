@@ -165,8 +165,8 @@ public class HTTPServer extends CommServer {
 			fstore.deleteOnExit();
 			final KeyStore store = prop.getKeyStore();
 			store.store(sstore, password.toCharArray());
-			getLogger().debug("HTTPS keystore = " + fstore.getCanonicalPath());
-			final SslContextFactory sslContextFactory = new SslContextFactory(fstore.getCanonicalPath());
+			getLogger().debug("HTTPS keystore = " + fstore.getAbsolutePath());
+			final SslContextFactory sslContextFactory = new SslContextFactory(fstore.getAbsolutePath());
 			sslContextFactory.setKeyStorePassword(password);
 			sslContextFactory.setKeyManagerPassword(passphrase);
 			sslContextFactory.setTrustStore(store);

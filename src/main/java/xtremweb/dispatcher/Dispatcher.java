@@ -136,17 +136,14 @@ public class Dispatcher {
 	public void go() throws Exception {
 
 		timer = new Timer();
-		System.out.println("00");
 
 		try {
 			db = new DBInterface(config);
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
-		System.out.println("01");
 
 		tset = new HashTaskSet();
-		System.out.println("02");
 		try {
 			setScheduler(
 					(Scheduler) (Class.forName(config.getProperty(XWPropertyDefs.SCHEDULERCLASS)).newInstance()));
@@ -154,7 +151,6 @@ public class Dispatcher {
 			logger.exception(e);
 			logger.fatal(e.toString());
 		}
-		System.out.println("03");
 
 		try {
 			setProxyValidator(new X509ProxyValidator());
@@ -162,7 +158,6 @@ public class Dispatcher {
 			setProxyValidator(null);
 			logger.exception("Can't create ProxyValidator", e);
 		}
-		System.out.println("04");
 
 		try {
 			getProxyValidator().setCACertificateEntries(config.getKeyStore());
@@ -170,7 +165,6 @@ public class Dispatcher {
 			logger.exception("Can't add CA certificates to keystore", e);
 		}
 
-		System.out.println("05");
 		try {
 			certValidator = new PEMPublicKeyValidator();
 		} catch (final Exception e) {
@@ -178,7 +172,6 @@ public class Dispatcher {
 			logger.exception("Can't create PEMPublicKeyValidator", e);
 		}
 
-		System.out.println("06");
 		tset.start();
 		try {
 			while (!tset.isReady()) {
@@ -190,7 +183,6 @@ public class Dispatcher {
 		}
 
 		try {
-			System.out.println("07");
 
 			@SuppressWarnings("unused")
 			final AccessLogger accessLogger = new AccessLogger(config.getFile(XWPropertyDefs.HOMEDIR),

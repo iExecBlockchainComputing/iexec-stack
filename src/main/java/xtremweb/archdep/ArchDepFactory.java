@@ -175,7 +175,7 @@ public class ArchDepFactory {
 			final File f = new File(System.getProperty(XWPropertyDefs.CACHEDIR.toString()), libResName);
 			f.deleteOnExit();
 
-			logger.finest("Copying " + libResName + " to " + f.getCanonicalPath());
+			logger.finest("Copying " + libResName + " to " + f.getAbsolutePath());
 
 			String libpath = System.getProperty(JAVALIBPATH);
 
@@ -187,7 +187,7 @@ public class ArchDepFactory {
 					&& (libpath.indexOf(System.getProperty(XWPropertyDefs.CACHEDIR.toString())) == -1)) {
 				libpath = libpath.concat(File.pathSeparator + "." + File.pathSeparator
 						+ System.getProperty(XWPropertyDefs.CACHEDIR.toString()) + File.pathSeparator
-						+ f.getParentFile().getCanonicalPath());
+						+ f.getParentFile().getAbsolutePath());
 			}
 
 			System.setProperty(JAVALIBPATH, libpath);
@@ -202,7 +202,7 @@ public class ArchDepFactory {
 
 			if (f.exists()) {
 				try {
-					System.load(f.getCanonicalPath());
+					System.load(f.getAbsolutePath());
 				} catch (final UnsatisfiedLinkError ule) {
 					ule.printStackTrace();
 					System.loadLibrary(libResName);

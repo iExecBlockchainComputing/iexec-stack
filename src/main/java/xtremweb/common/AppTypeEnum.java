@@ -81,33 +81,38 @@ public enum AppTypeEnum {
 		}
 		/**
 		 * This retrieves application command line arguments
-		 * @param defaultcmdline is the docker command line found from config file; it must contains "src=pwd"
-		 * which is replaced by src=<the content of pwd parameter>
-		 * @param pwd is the current working directory
+		 * @param defaultcmdline is the docker command line found from config file; 
+		 * "setxwpwd" are automatically replaced by the value of the parameter pwd
+		 * @param pwd is the current working directory to to set in place of setxwpwd, if any
 		 * @return an empty string
 		 * @since 12.1.0
 		 */
+		//		@Override
+		//		public String getCommandLineArgs(final String defaultcmdline, final String pwd)  {
+		//			final String setxwpwd = "setxwpwd";
+		//			final Logger logger = new Logger(this);
+		//			logger.setLoggerLevel(LoggerLevel.valueOf(System.getProperty(XWPropertyDefs.LOGGERLEVEL.toString())));
+		//			logger.debug("getCommandLineArgs(" + defaultcmdline + "," + pwd + ") = defaultcmdline.replaceAll(" + setxwpwd + "," + pwd + ")" + defaultcmdline.replaceAll(setxwpwd, pwd));
+		//			return defaultcmdline.replaceAll(setxwpwd, pwd);
+		//		}
+		//	},
+		/**
+		 * This retrieves application default command line arguments
+		 * @return "run"
+		 * @since 12.1.0
+		 */
 		@Override
-		public String getCommandLineArgs(final String defaultcmdline, final String pwd)  {
-			//			final StringBuilder ret = new StringBuilder("run --mount type=bind,src=pwd,dst=/tmp/xwhep -w /tmp/xwhep ubuntu");
-			final String srcpwd = "src=pwd";
-			final Logger logger = new Logger(this);
-			logger.setLoggerLevel(LoggerLevel.valueOf(System.getProperty(XWPropertyDefs.LOGGERLEVEL.toString())));
-			logger.debug("getCommandLineArgs(" + defaultcmdline + "," + pwd + ")");
-			final int firstidx = defaultcmdline.indexOf(srcpwd);
-			logger.debug("getCommandLineArgs() firstidx = " + firstidx );
-			if(firstidx < 1) {
-				return "";
-			}
-			logger.debug("getCommandLineArgs() defaultcmdline.substring(0, " + firstidx + ") = " + defaultcmdline.substring(0, firstidx));
-			final StringBuilder ret = new StringBuilder(defaultcmdline.substring(0, firstidx));
-			ret.append("src="+pwd);
-			final int lastidx = firstidx + srcpwd.length();
-			logger.debug("getCommandLineArgs() lastidx = " + lastidx);
-			logger.debug("getCommandLineArgs() defaultcmdline.substring("+lastidx+") = " + defaultcmdline.substring(lastidx));
-			ret.append(defaultcmdline.substring(lastidx));
-			logger.debug("getCommandLineArgs() = " + ret.toString());
-			return ret.toString();
+		public String getStartCommandLineArgs()  {
+			return " run --rm ";
+		}
+		/**
+		 * This retrieves command line arguments to mount PWD volume
+		 * @param pwd represents the path of the present working directory
+		 * @since 12.1.0
+		 */
+		@Override
+		public String getMountVolumeCommandLine(final File pwd)  {
+			return  " --mount type=bind,src=" + pwd.getAbsolutePath() + ",dst=" + pwd.getAbsolutePath();
 		}
 	},
 	/**
@@ -232,38 +237,23 @@ public enum AppTypeEnum {
 	public File getPath() throws FileNotFoundException {
 		throw new FileNotFoundException(NOBINPATH + this);
 	}
-
 	/**
-	 * This retrieves application command line arguments
-	 *
+	 * This retrieves application default command line arguments
 	 * @return an empty string
 	 * @since 12.1.0
 	 */
-	public String getCommandLineArgs()  {
+	public String getStartCommandLineArgs() {
 		return "";
 	}
 	/**
-	 * This retrieves application command line arguments
-	 * @param defaultcmdline is the default command line arguments
-	 * @param is the current working directory
+	 * This retrieves command line arguments to mount PWD volume
+	 * @param pwd represents the path of the present working directory
 	 * @return an empty string
 	 * @since 12.1.0
 	 */
-	public String getCommandLineArgs(final String defaultcmdline, final File pwd)  {
-		return getCommandLineArgs(defaultcmdline,
-				pwd == null ? "" : pwd.getAbsolutePath());
-	}
-	/**
-	 * This retrieves application command line arguments
-	 * @param defaultcmdline is the default command line arguments
-	 * @param is the current working directory
-	 * @return an empty string
-	 * @since 12.1.0
-	 */
-	public String getCommandLineArgs(final String defaultcmdline, final String pwd)  {
+	public String getMountVolumeCommandLine(final File pwd) {
 		return "";
 	}
-
 	/**
 	 * This dumps path
 	 *

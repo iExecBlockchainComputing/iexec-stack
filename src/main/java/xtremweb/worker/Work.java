@@ -256,7 +256,7 @@ public final class Work extends WorkInterface {
 	}
 
 	public String getScratchDirName() throws IOException {
-		return scratchDir.getCanonicalPath();
+		return scratchDir.getAbsolutePath();
 	}
 
 	public boolean isRunning() {

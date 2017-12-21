@@ -636,7 +636,7 @@ public final class XWConfigurator extends Properties {
 				try {
 					configFile = new File(stdLoc[i]);
 					if (configFile.exists()) {
-						setProperty(XWPropertyDefs.CONFIGFILE, configFile.getCanonicalPath());
+						setProperty(XWPropertyDefs.CONFIGFILE, configFile.getAbsolutePath());
 						break;
 					}
 				} catch (final Exception e) {
@@ -748,7 +748,7 @@ public final class XWConfigurator extends Properties {
 			if (p == XWPropertyDefs.XWCP) {
 				try {
 					setProperty(XWPropertyDefs.XWCP,
-							configFile.getParentFile().getParentFile().getCanonicalPath() + File.separator + "lib");
+							configFile.getParentFile().getParentFile().getAbsolutePath() + File.separator + "lib");
 				} catch (final Exception e) {
 					setProperty(XWPropertyDefs.XWCP,
 							configFile.getParentFile().getParentFile().getPath() + File.separator + "lib");
@@ -762,10 +762,11 @@ public final class XWConfigurator extends Properties {
 			logger.debug("pProp(" + p + ") = " + pProp);
 			logger.debug("pSysProp(" + p + ") = " + pSysProp);
 			logger.debug("pSysEnv(" + p + ") = " + pSysEnv);
-			if (pProp != null) {
-				setProperty(p, pProp);
-			} else if (pSysProp != null) {
+			if (pSysProp != null) {
 				setProperty(p, pSysProp);
+			}
+			else if (pProp != null) {
+				setProperty(p, pProp);
 			}
 			else if (pSysEnv != null) {
 				setProperty(p, pSysEnv);
@@ -839,7 +840,7 @@ public final class XWConfigurator extends Properties {
 
 			try {
 				keyStoreFile = new File("xwhep" + XWRole.getMyRole().toString().toLowerCase() + ".keys");
-				setProperty(XWPropertyDefs.SSLKEYSTORE, keyStoreFile.getCanonicalPath());
+				setProperty(XWPropertyDefs.SSLKEYSTORE, keyStoreFile.getAbsolutePath());
 				extractResource("data/xwhep" + XWRole.getMyRole().toString().toLowerCase() + ".keys", keyStoreFile);
 			} catch (final Exception e) {
 				logger.exception(e);
@@ -867,7 +868,7 @@ public final class XWConfigurator extends Properties {
 		}
 
 		if ((keyStore != null) && (keyStoreFile != null)) {
-			setProperty(XWPropertyDefs.SSLKEYSTORE, keyStoreFile.getCanonicalPath());
+			setProperty(XWPropertyDefs.SSLKEYSTORE, keyStoreFile.getAbsolutePath());
 		} else {
 			setProperty(XWPropertyDefs.SSLKEYSTORE, "");
 		}
@@ -1016,18 +1017,18 @@ public final class XWConfigurator extends Properties {
 			}
 		}
 		if (getProperty(XWPropertyDefs.CACHEDIR) == null) {
-			setProperty(XWPropertyDefs.CACHEDIR, getCacheDir().getCanonicalPath());
+			setProperty(XWPropertyDefs.CACHEDIR, getCacheDir().getAbsolutePath());
 		}
 
 		try {
-			binCachedPath = getCacheDir().getCanonicalPath() + File.separator + "bin";
+			binCachedPath = getCacheDir().getAbsolutePath() + File.separator + "bin";
 			XWTools.checkDir(binCachedPath);
 		} catch (final Exception e) {
 			//setProperty(XWPropertyDefs.TMPDIR, System.getProperty(XWPropertyDefs.JAVATMPDIR));
 			setTmpDir();
 		}
 		try {
-			binCachedPath = getCacheDir().getCanonicalPath() + File.separator + "bin";
+			binCachedPath = getCacheDir().getAbsolutePath() + File.separator + "bin";
 			XWTools.checkDir(binCachedPath);
 		} catch (final Exception e) {
 			logger.error("Can't set binCachePath" + e.toString());
@@ -1131,8 +1132,6 @@ public final class XWConfigurator extends Properties {
 			return;
 		}
 
-		System.out.println("01");
-
 		_host.setAcceptBin(getBoolean(XWPropertyDefs.ACCEPTBIN));
 		if (ArchDepFactory.xwutil() != null) {
 			try {
@@ -1168,14 +1167,14 @@ public final class XWConfigurator extends Properties {
 			logger.fatal("can't load xwutil library");
 		}
 
-		final String localAppsProperty = getProperty(XWPropertyDefs.SHAREDAPPS).toUpperCase();
+		final String localAppsProperty = getProperty(XWPropertyDefs.SHAREDAPPS);
 		final StringBuilder localAppNames = new StringBuilder();
 
 		logger.debug("localAppsProperty = " + localAppsProperty);
 
 		if (localAppsProperty != null) {
 
-			localApps = XWTools.split(localAppsProperty, ",");
+			localApps = XWTools.split(localAppsProperty.toUpperCase(), ",");
 
 			if (localApps != null) {
 
@@ -1413,7 +1412,7 @@ public final class XWConfigurator extends Properties {
 	public File setTmpDir() throws IOException {
 		final String dirname = "XW." + XWRole.getMyRole().toString() + "."
 				+ UID.getMyUid().toString();
-		System.out.println("setTmpDir : getProperty(XWPropertyDefs.TMPDIR) = " + getProperty(XWPropertyDefs.TMPDIR));  
+//		System.out.println("setTmpDir : getProperty(XWPropertyDefs.TMPDIR) = " + getProperty(XWPropertyDefs.TMPDIR));  
 		final String parent = getProperty(XWPropertyDefs.TMPDIR) == null ? System.getProperty(XWPropertyDefs.JAVATMPDIR) : getProperty(XWPropertyDefs.TMPDIR);  
 		final String p = parent == null ? "/tmp" : parent; 
 		final File dir = p.endsWith(dirname) ? new File(p) : new File(p, dirname);
@@ -1423,7 +1422,7 @@ public final class XWConfigurator extends Properties {
 		_host.setFreeTmp(dir.getFreeSpace() / XWTools.ONEMEGABYTES);
 		dir.deleteOnExit();
 		this.defaults.put(XWPropertyDefs.TMPDIR, dir.getAbsolutePath());
-		System.out.println("setTmpDir : dir.getAbsolutePath() = " + dir.getAbsolutePath());  
+//		System.out.println("setTmpDir : dir.getAbsolutePath() = " + dir.getAbsolutePath());  
 //		setProperty(XWPropertyDefs.TMPDIR, dir.getAbsolutePath());
 		return dir;
 	}
@@ -1545,7 +1544,7 @@ public final class XWConfigurator extends Properties {
 	 */
 	public File getCacheDir() throws IOException {
 
-		final String c = getTmpDir().getCanonicalPath() + ".cache";
+		final String c = getTmpDir().getAbsolutePath() + ".cache";
 		final File d = new File(c);
 		XWTools.checkDir(d);
 		return d;
@@ -1784,7 +1783,7 @@ public final class XWConfigurator extends Properties {
 	public String getPath(final XWPropertyDefs key) throws IOException {
 		final File f = getFile(key);
 		if (f != null) {
-			return f.getCanonicalPath();
+			return f.getAbsolutePath();
 		}
 		return null;
 	}
@@ -2278,7 +2277,7 @@ public final class XWConfigurator extends Properties {
 		try {
 			XWTools.checkDir(getCacheDir());
 			XWTools.checkDir(getTmpDir());
-			binCachedPath = getCacheDir().getCanonicalPath() + File.separator + "bin";
+			binCachedPath = getCacheDir().getAbsolutePath() + File.separator + "bin";
 			XWTools.checkDir(binCachedPath);
 		} catch (final Exception e) {
 			logger.exception(e);
@@ -2295,7 +2294,7 @@ public final class XWConfigurator extends Properties {
 
 			XWTools.checkDir(getCacheDir());
 			XWTools.checkDir(getTmpDir());
-			binCachedPath = getCacheDir().getCanonicalPath() + File.separator + "bin";
+			binCachedPath = getCacheDir().getAbsolutePath() + File.separator + "bin";
 			XWTools.checkDir(binCachedPath);
 		} catch (final Exception e) {
 			logger.exception(e);

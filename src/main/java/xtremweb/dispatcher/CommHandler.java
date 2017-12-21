@@ -663,7 +663,14 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 	 */
 	protected synchronized WorkInterface workRequest(final XMLRPCCommand command)
 			throws IOException, InvalidKeyException, AccessControlException {
-
+		final HostInterface _host = command.getHost();
+		mileStone(command, "<workRequest host=" + (_host != null ? _host.getName() : "null") + " />");
+		if(_host != null) {
+			final UserInterface theClient = DBInterface.getInstance().checkClient(command, UserRightEnum.GETJOB);
+			_host.setIPAddr(command.getRemoteIP());
+			final HostInterface theHost = DBInterface.getInstance().hostRegister(theClient, _host);
+			command.setHost(theHost);
+		}
 		return Dispatcher.getScheduler().select((XMLRPCCommandWorkRequest)command);
 	}
 
