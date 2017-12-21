@@ -1,7 +1,7 @@
 #!/bin/sh
 #=============================================================================
 #
-#  File    : xwstartdocker.sh
+#  File    : xwstopdocker.sh
 #  Date    : November, 2011
 #  Author  : Oleg Lodygensky
 #
@@ -82,13 +82,7 @@ fatal ()
   echo  "$(date "$DATE_FORMAT")  $SCRIPTNAME  FATAL : $msg"
   
   [ "$FORCE" = "TRUE" ]  &&  clean
-  
-  ( [ "$VERBOSE" ]  &&  set -x
-    "$VBMGT"  controlvm  "$VMNAME"  poweroff  > /dev/null 2>&1 )
-  #
-  # Inside 'fatal', the VM state is unknown and possibly inconsistent.
-  # So, the above 'poweroff' request does NOT make much sense.
-  
+ 
   exit 1
 }
 
@@ -103,13 +97,13 @@ clean ()
   info_message  "clean '$VMNAME'"
   
   [ "$VERBOSE" ]  &&  echo  > /dev/stderr
-  debug_message  "clean :  VMNAME='$VMNAME'"
-  [ "$VMNAME" ]  ||  return
+  [ "${CONTAINERNAME}" ]  ||  return
+  debug_message  "clean :  CONTAINERNAME=${CONTAINERNAME}"
   
-  LOCKFILE="$LOCKPATH"_"$VMNAME"
-  
-  wait_for_other_virtualbox_management_to_finish  clean
-  info_message  "clean:  Retrieve VirtualBox info"
+  ( [ "$VERBOSE" ]  &&  set -x
+	docker stop ${CONTAINERNAME} &&docker rm ${CONTAINERNAME} )
+  ( [ "$VERBOSE" ]  &&  set -x
+	docker rmi ${IMAGENAME} )
 }
 
 
@@ -151,9 +145,7 @@ IMAGENAME="xwimg_${XWJOBUID}"
 CONTAINERNAME="xwcontainer_${XWJOBUID}"
  
 
-# clean everything
-docker stop ${CONTAINERNAME} &&docker rm ${CONTAINERNAME} && docker rmi ${IMAGENAME}
-
+clean
 
 exit 0
 ###########################################################
