@@ -140,8 +140,8 @@ task copyMiscToDist(type: Copy) {
 
     into("/lib") {
         from(build + '/libs')
-        include('xtremweb-11.5.0.jar')
-        rename('xtremweb-11.5.0.jar', 'xtremweb.jar')
+        include('xtremweb-' + version + '.jar')
+        rename('xtremweb-' + version + '.jar', 'xtremweb.jar')
     }
 }
 
@@ -399,7 +399,7 @@ task copyMacServer(type: Copy) {
 
     into("/Applications/xwhep.server/conf"){
         from templates + '/xtremweb.server.conf.in'
-        rename { fileName -> fileName.replace('xtremweb.client.server.in', 'xtremweb.server.conf') }
+        rename { fileName -> fileName.replace('xtremweb.server.conf.in', 'xtremweb.server.conf') }
         filter(ReplaceTokens, tokens: [LAUNCHERURL: 'http://nohost/',
                                        KEYDIR      : privateEtc + '/xwhep.server',
                                        DEFAULTUSER      : '',
@@ -412,9 +412,10 @@ task copyMacServer(type: Copy) {
     }
 
     into(privateEtc + "/xwhep.server/lib") {
-        from(libXtremWeb)
-        include('bcprov-jdk15on-151.jar')
-        include('bcpkix-jdk15on-151.jar')
+        from(dist + '/lib')
+        //include('bcprov-jdk15on-151.jar')
+        //include('bcpkix-jdk15on-151.jar')
+        //include('xtremweb.jar')
     }
 }
 
