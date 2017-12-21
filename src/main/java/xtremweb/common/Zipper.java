@@ -419,7 +419,7 @@ public class Zipper {
 				case 1:
 					final File f2 = new File(inputFile, files[0]);
 					if (!f2.isDirectory() && (f2.length() < XWTools.LONGFILESIZE)) {
-						fileName = inputFile.getCanonicalPath() + File.separator + files[0];
+						fileName = inputFile.getAbsolutePath() + File.separator + files[0];
 
 						logger.finest("not necessary to zip file = " + fileName);
 						return false;
@@ -617,7 +617,7 @@ public class Zipper {
 		final Zipper zipper = new Zipper(LoggerLevel.DEBUG);
 		zipper.setCreation(false);
 		zipper.setFileName(fileName);
-		final boolean ret = zipper.unzip(testDir.getCanonicalPath());
+		final boolean ret = zipper.unzip(testDir.getAbsolutePath());
 		XWTools.deleteDir(testDir);
 		return ret;
 	}

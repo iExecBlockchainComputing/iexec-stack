@@ -177,24 +177,24 @@ public final class HTTPLauncher {
 			final StringBuilder javaCmd = new StringBuilder("java ");
 
 			try {
-				logger.debug("00 libDir = " + libDir.getCanonicalPath());
+				logger.debug("00 libDir = " + libDir.getAbsolutePath());
 				if (config.getProperty(XWPropertyDefs.XWCP) != null) {
 					libDir = new File(config.getProperty(XWPropertyDefs.XWCP));
 					if (libDir.isFile()) {
 						libDir = libDir.getParentFile();
 					}
 				}
-				logger.config("libDir = " + libDir.getCanonicalPath());
+				logger.config("libDir = " + libDir.getAbsolutePath());
 
 				if ((jarFile == null) || !jarFile.exists()) {
 					jarFile = new File(libDir, XWTools.JARFILENAME);
 				}
 
-				logger.config("jarFile = " + jarFile.getCanonicalPath());
+				logger.config("jarFile = " + jarFile.getAbsolutePath());
 				Thread.sleep(SLEEPDELAY);
 
-				tmpPath = config.getTmpDir().getCanonicalPath();
-				jarFilePath = jarFile.getCanonicalPath();
+				tmpPath = config.getTmpDir().getAbsolutePath();
+				jarFilePath = jarFile.getAbsolutePath();
 				keystorePath = config.getProperty(XWPropertyDefs.SSLKEYSTORE);
 				configPath = config.getProperty(XWPropertyDefs.CONFIGFILE);
 				xwcp = config.getProperty(XWPropertyDefs.XWCP);
@@ -247,7 +247,7 @@ public final class HTTPLauncher {
 
 				logger.config("Executing " + cmd);
 				final FileInputStream in = null;
-				exec = new Executor(cmd, binDir.getCanonicalPath(), in, System.out, System.err,
+				exec = new Executor(cmd, binDir.getAbsolutePath(), in, System.out, System.err,
 						Long.parseLong(config.getProperty(XWPropertyDefs.TIMEOUT)));
 				int rc = exec.startAndWait();
 				XWReturnCode returnCode = XWReturnCode.fromInt(rc);
@@ -262,7 +262,7 @@ public final class HTTPLauncher {
 					final String cmd1 = javaCmd.toString() + javaOpts.toString();
 
 					logger.config("Trying to launch the worker without \"" + serveurOpt + "\" java option : " + cmd1);
-					exec = new Executor(cmd1, binDir.getCanonicalPath(), in, System.out, System.err,
+					exec = new Executor(cmd1, binDir.getAbsolutePath(), in, System.out, System.err,
 							Long.parseLong(config.getProperty(XWPropertyDefs.TIMEOUT)));
 					rc = exec.startAndWait();
 					returnCode = XWReturnCode.fromInt(rc);

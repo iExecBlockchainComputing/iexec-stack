@@ -1337,7 +1337,7 @@ public final class Client {
 							type = DataTypeEnum.BINARY;
 						}
 						binaryUri = sendData(os, cpu, type, accessRights,
-								new URI("file://" + binaryFile.getCanonicalPath()), binaryFile.getName());
+								new URI("file://" + binaryFile.getAbsolutePath()), binaryFile.getName());
 					} else {
 						logger.debug("no binary found (no URI, no file)");
 					}
@@ -2762,7 +2762,7 @@ public final class Client {
 					}
 					final File zipFile = new File(zipper.getFileName());
 					URI zipUri = sendData(OSEnum.NONE, CPUEnum.NONE, dirinType, XWAccessRights.DEFAULT,
-							new URI("file://" + zipFile.getCanonicalPath()), zipFile.getName());
+							new URI("file://" + zipFile.getAbsolutePath()), zipFile.getName());
 					work.setDirin(zipUri);
 					if (newZip) {
 						final File file = new File(zipper.getFileName());
@@ -2793,7 +2793,7 @@ public final class Client {
 				}
 				if (stdin != null) {
 					final URI stdinUri = sendData(OSEnum.NONE, CPUEnum.NONE, DataTypeEnum.TEXT, XWAccessRights.DEFAULT,
-							new URI("file://" + stdin.getCanonicalPath()), stdin.getName());
+							new URI("file://" + stdin.getAbsolutePath()), stdin.getName());
 					work.setStdin(stdinUri);
 				}
 			}
@@ -2869,7 +2869,7 @@ public final class Client {
 				}
 				if (certFile != null) {
 					final URI certUri = sendData(OSEnum.NONE, CPUEnum.NONE, DataTypeEnum.X509, XWAccessRights.USERALL,
-							new URI("file://" + certFile.getCanonicalPath()), certFile.getName());
+							new URI("file://" + certFile.getAbsolutePath()), certFile.getName());
 					work.setUserProxy(certUri);
 				}
 			}

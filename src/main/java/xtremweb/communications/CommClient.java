@@ -1394,7 +1394,7 @@ public abstract class CommClient implements ClientAPI {
 			throws InvalidKeyException, AccessControlException, IOException {
 
 		if (!content.exists()) {
-			throw new IOException(content.getCanonicalPath() + " not found");
+			throw new IOException(content.getAbsolutePath() + " not found");
 		}
 
 		try {

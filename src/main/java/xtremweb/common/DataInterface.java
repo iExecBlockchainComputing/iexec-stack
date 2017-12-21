@@ -1098,7 +1098,7 @@ public final class DataInterface extends Table {
 	 * @return the data path
 	 */
 	public String getPathName() throws IOException {
-		return getPath().getCanonicalPath();
+		return getPath().getAbsolutePath();
 	}
 
 	/**
@@ -1116,7 +1116,7 @@ public final class DataInterface extends Table {
 	 * @return the directory name
 	 */
 	public String getDirName() throws IOException {
-		return getDir().getCanonicalPath();
+		return getDir().getAbsolutePath();
 	}
 
 	/**

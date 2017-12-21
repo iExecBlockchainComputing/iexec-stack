@@ -173,6 +173,7 @@ public class MatchingScheduler extends SimpleScheduler {
 		} finally {
 			theTask = null;
 
+			getMileStone().println("</select>");
 			notify();
 
 			if (ioe != null) {
@@ -182,7 +183,6 @@ public class MatchingScheduler extends SimpleScheduler {
 			}
 		}
 
-		getMileStone().println("</select>");
 
 		return theWork;
 

@@ -4050,10 +4050,10 @@ echo
 echo "Preparing vworker Debian package"
 mkdir -p $INSTALLERSDIR/linux/dpkg/xwhep.vworker/ > /dev/null 2>&1 || fatal "Can't mkdir $INSTALLERSDIR/linux/dpkg/xwhep.vworker"
 cp -Rf $INSTALLERSDIR/linux/dpkg/xwhep.worker/* $INSTALLERSDIR/linux/dpkg/xwhep.vworker/ > /dev/null 2>&1 || fatal "Can't copy $INSTALLERSDIR/linux/dpkg/xwhep.worker to $INSTALLERSDIR/linux/dpkg/xwhep.vworker"
-cp -f  $XWVWORKERCONFFILE $INSTALLERSDIR/linux/dpkg/xwhep.vworker/opt/xwhep-worker-12.0.1/conf/$XWWORKERCONFFILENAME > /dev/null 2>&1 || fatal "Can't copy  $XWVWORKERCONFFILE $INSTALLERSDIR/linux/dpkg/xwhep.vworker/opt/xwhep-worker-12.0.1/conf/$XWWORKERCONFFILENAME"
+cp -f  $XWVWORKERCONFFILE $INSTALLERSDIR/linux/dpkg/xwhep.vworker/opt/xwhep-worker-$VERSION/conf/$XWWORKERCONFFILENAME > /dev/null 2>&1 || fatal "Can't copy  $XWVWORKERCONFFILE $INSTALLERSDIR/linux/dpkg/xwhep.vworker/opt/xwhep-worker-$VERSION/conf/$XWWORKERCONFFILENAME"
 chmod +x  $INSTALLERSDIR/linux/dpkg/xwhep.vworker/DEBIAN/* > /dev/null 2>&1 || fatal "Can't chmod +x  $INSTALLERSDIR/linux/dpkg/xwhep.vworker/DEBIAN/*"
 
-DPKGWORKERCONFFILE=$INSTALLERSDIR/linux/dpkg/xwhep.vworker/opt/xwhep-worker-12.0.1/conf/$XWWORKERCONFFILENAME
+DPKGWORKERCONFFILE=$INSTALLERSDIR/linux/dpkg/xwhep.vworker/opt/xwhep-worker-$VERSION/conf/$XWWORKERCONFFILENAME
 
 SEDVAR=`echo "$INSTALLDIR" | sed -f $SEDCMDS`
 grep -E "^[[:space:]]*SSLKeyStore[[:space:]]*=.*" $DPKGWORKERCONFFILE > /dev/null 2>&1
