@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+
+<meta name="viewport" content="initial-scale=1.0, maximum-scale=2.0">
+<link rel="stylesheet" type="text/css" href="css/jquery.dataTables.css">
+<script type="text/javascript" language="javascript" src="js/jquery.js"></script>
+<script type="text/javascript" language="javascript" src="js/jquery.dataTables.js"></script>
+<script type="text/javascript" language="javascript" class="init">
+
+$(document).ready(function() {
+$('#users').dataTable( {
+ "aProcessing": true,
+ "aServerSide": true,
+"ajax": "/xwdbviews/users.php",
+} );
+} );
+
+</script>
+</head>
+
+<body class="dt-example">
+<table id="users" class="display" cellspacing="0" width="100%">
+<thead>
+<tr>
+<th>Login</th>
+<th>Rights</th>
+<th>First Name</th>
+<th>Last Name</th>
+<th>Email</th>
+<th>nbJobs</th>
+<th>pendingJobs</th>
+<th>runningJobs</th>
+<th>errorJobs</th>
+<th>usedcputime</th>
+</tr>
+</thead>
+</table>
+
+
+</body>
+</html>

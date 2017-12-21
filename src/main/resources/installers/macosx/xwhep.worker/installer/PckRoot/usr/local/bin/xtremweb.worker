@@ -1,0 +1,356 @@
+#!/bin/bash
+#
+# This script is for Mac OS X only
+# This starts and stops the xwhep worker
+#
+# description: xwhep worker is the xwhep computing element
+#
+# bin file    : /usr/local/bin/xtremweb.worker
+# config file : /private/etc/xwhep.worker/conf/xtremweb.worker.conf
+# jar file    : /private/etc/xwhep.worker/lib/xtremweb.jar
+#
+# return : 0 on success
+#          1 on usage error
+#          2 on file error (files not found)
+#          3 on user error (user not found)
+#          4 if not in the expected state :
+#               ** stop  asked but not running
+#               ** start asked but already running
+#
+
+
+
+#
+# loading default values
+#
+
+PROG="xtremweb.worker"
+DIR="xwhep.worker"
+ROOTDIR=`dirname $0`
+if [ "$ROOTDIR" == "." ]; then
+  ROOTDIR=`pwd`
+fi
+
+
+# the account name to run the software
+SYSLOGIN="@SYSTEMUSER@"
+
+# the running directory
+SCRATCH=/tmp
+
+#
+# next should not be changed
+#
+HOST=`uname -a | cut -d ' ' -f 2`
+BINDIR=$ROOTDIR/
+BINFILE=$BINDIR/$DIR
+LIBDIR=/private/etc/$DIR/lib/
+CFGDIR=/private/etc/$DIR/conf/
+CFGFILE=$CFGDIR/$PROG.conf
+PIDFILE=$CFGDIR/$PROG.pid
+LOGFILE=/var/log/$PROG-$HOST.log
+LOGBAKFILE=$LOGFILE.bak
+
+JAVACLASS="xtremweb.common.HTTPLauncher"
+
+# next is the name of the created script to execute
+SCRIPTTMPFILE="/tmp/xwworker.tmp.sh"
+
+#
+# return codes
+#
+ERROK=0
+ERRUSAGE=1
+ERRFILE=2
+ERRCONNECTION=3
+ERRSTATE=4
+ERRUSER=5
+RETVAL=$ERROK
+
+
+if [ ! -f $CFGFILE ]; then
+    echo "$PROG: $CFGFILE unreachable"
+    exit $ERRFILE
+fi
+
+
+#
+# java 1.8 available ?
+#
+if [ ! -d /Library/Java/JavaVirtualMachines/jdk1.8.0_60.jdk/Contents/Home ]; then
+    echo "Java 1.8 not found"
+    exit $ERRRFILE
+fi
+type java > /dev/null 2>&1
+if [ $? -ne 0 ]; then
+    echo "java not found"
+    exit $ERRRFILE
+fi
+
+export JAVA_HOME="/Library/Java/JavaVirtualMachines/jdk1.8.0_60.jdk/Contents/Home"
+export PATH=$JAVA_HOME/bin:$PATH
+
+#
+# determine java options
+#
+JAVAOPTS=""
+#TMPFILE="tmp."$PROG
+#rm -f $TMPFILE
+#java -Xdebug 2> $TMPFILE > /dev/null
+#if [ ! -s $TMPFILE ]; then
+#    JAVAOPTS=" -Xdebug"
+#fi
+#rm -f $TMPFILE
+#java -Xms64m  2> $TMPFILE > /dev/null
+#if [ ! -s $TMPFILE ]; then
+#    JAVAOPTS=" -Xms64m"
+#fi
+#rm -f $TMPFILE
+#java -Xmx128m  2> $TMPFILE > /dev/null
+#if [ ! -s $TMPFILE ]; then
+#    JAVAOPTS=" -Xmx128m"
+#fi
+#rm -f $TMPFILE
+#java  -Xss64m  2> $TMPFILE > /dev/null
+#if [ ! -s $TMPFILE ]; then
+#    JAVAOPTS="  -Xss64m"
+#fi
+#rm -f $TMPFILE
+
+
+#
+# java CLASSPATH
+#
+XW_CLASSES=$LIBDIR/xtremweb.jar
+
+
+#
+# java program call with options
+#
+JAVA=`type -p java`
+#JAVA=$JAVA" $JAVAOPTS -cp $XW_CLASSES"
+#JAVA=$JAVA" -cp $XW_CLASSES"
+
+
+
+
+#
+# This starts xwhep worker as daemon
+# return : 0 on success
+#          3 if already running
+#
+start () {
+
+#
+# is there any keystore ?
+#
+    KEYSTORE=`grep -E "^[[:space:]]*SSLKeyStore" $CFGFILE | cut -d '=' -f2`
+    JAVATRUSTKEY=""
+
+    if [ "X$KEYSTORE" != "X" ]; then
+	JAVATRUSTKEY="-Djavax.net.ssl.trustStore=$KEYSTORE"
+    fi
+
+
+    if [ -f $LOGFILE ]; then
+        mv -f $LOGFILE $LOGBAKFILE
+    fi
+
+    touch $LOGFILE
+
+    echo "`date` [`uname -n` $PROG] INFO : starting $PROG" >> $LOGFILE
+
+    if [ "X$SYSLOGIN" != "X" ]; then
+	chown $SYSLOGIN $LOGFILE
+    else
+	echo "`date` [`uname -n` $PROG] WARN : SYSLOGIN is not set; this package will run as root; this is not a good idea" >> $LOGFILE
+    fi
+
+    if [ ! -d $SCRATCH ]; then
+        echo "`date` [`uname -n` $PROG] ERROR : $SCRATCH is not a valid directory : can't start" >> $LOGFILE
+        RETVAL=$ERRFILE
+        return $RETVAL
+    fi
+
+    cd $SCRATCH
+    if [ $? -ne 0 ]; then
+        echo "`date` [`uname -n` $PROG] ERROR : can't cd to $SCRATCH : can't start" >> $LOGFILE
+        RETVAL=$ERRFILE
+        return $RETVAL
+    fi
+
+    if [ -f $PIDFILE ]; then
+        kill -s SIGINFO `cat $PIDFILE` > /dev/null 2>&1
+        if [ $? -eq 0 ]; then
+            echo "`date` [`uname -n` $PROG] ERROR : $PROG already running : can't start" >> $LOGFILE
+            RETVAL=$ERRSTATE
+            return $RETVAL
+        fi
+    fi
+
+    rm -f $PIDFILE
+    touch $PIDFILE
+    if [ "X$SYSLOGIN" != "X" ]; then
+	chown $SYSLOGIN $PIDFILE
+    fi
+
+    JAVA="$JAVA $JAVATRUSTKEY -Dxtremweb.cache=/tmp -Dxtremweb.cp=$LIBDIR -cp $XWJAR:$XW_CLASSES  $JAVACLASS --xwconfig $CFGFILE"
+
+    rm -f $SCRIPTTMPFILE
+    
+    echo "#!/bin/sh"                   > $SCRIPTTMPFILE
+    echo "export JAVA_HOME='/Library/Java/JavaVirtualMachines/jdk1.8.0_60.jdk/Contents/Home'" >> $SCRIPTTMPFILE
+    echo "export PATH='$JAVA_HOME/bin:$PATH'" >> $SCRIPTTMPFILE
+    echo "#`date` [`uname -n` $PROG]" >> $SCRIPTTMPFILE
+    echo "$JAVA >> $LOGFILE 2>&1 & "  >> $SCRIPTTMPFILE
+    echo "echo \$! >>  $PIDFILE"      >> $SCRIPTTMPFILE
+
+    if [ "X$SYSLOGIN" != "X" ]; then
+	chown $SYSLOGIN $SCRIPTTMPFILE
+    fi
+
+    chmod uog+x $SCRIPTTMPFILE
+
+    if [ "X$SYSLOGIN" != "X" ]; then
+	SU="su -l $SYSLOGIN $SCRIPTTMPFILE"
+    else
+	SU="$SCRIPTTMPFILE"
+    fi
+
+    echo "`date` [`uname -n` $PROG] INFO : executing $SU" >> $LOGFILE
+    $SU
+
+    chmod uog+r $PIDFILE
+    renice 19 -u $SYSLOGIN
+    RETVAL=$ERROK
+    return $RETVAL
+}
+
+#
+# This stops xwhep worker
+# return : 0 on success
+#          3 if not running
+#
+stop(){
+    MYPID=$$
+
+    echo "`date` [`uname -n` $PROG] INFO : stopping" >> $LOGFILE
+
+    if [ ! -f $PIDFILE ]; then
+        echo "`date` [`uname -n` $PROG] ERROR : $PROG not running : can't stop ($PIDFILE not found)" >> $LOGFILE
+        RETVAL=$ERRSTATE
+        return $RETVAL
+    fi
+
+#    JOBSPID=`ps auxwww | grep '$PROG' | grep -v grep | grep -v stop | sed "s/[[:space:]][[:space:]]*/ /g" | cut -d " " -f 2`
+#    for i in $JOBSPID; do
+#        [ $i -eq $MYPID ] && continue
+#	kill -9 $i >> $LOGFILE  2>&1
+##	if [ $? -ne 0 ]; then
+##            echo "`date` [`uname -n` $PROG] ERROR : $PROG not running : can't stop (can't signal process)" >> $LOGFILE
+##            RETVAL=$ERRSTATE
+##            return $RETVAL
+##	fi
+#    done
+
+
+
+#
+# process ids
+#
+    PIDS=""
+#
+# parent process ids
+#
+    PPIDS=""
+
+
+    PPIDSTMP="/tmp/xw.$PROG.ppids"
+    PIDSTMP="/tmp/xw.$PROG.pids"
+    rm -f $PPIDSTMP
+    rm -f $PIDSTMP
+
+#
+# retreive parent process ids
+#
+    ps -fwww -u xwhep | grep $PROG | grep -v grep | grep -v stop| while read user pid ppid cmd
+    do
+        rm -f $PPIDSTMP
+	[ "X$PPIDS" = "X" ] && PPIDS=$pid && echo $PPIDS > $PPIDSTMP
+	[ "X$ppid" = "X1" ] && continue
+#	echo $user $pid $ppid $cmd
+	PPIDS="$PPIDS $ppid"
+#	echo POUET
+#	echo $PPIDS | grep $pid
+	echo $PPIDS | grep $pid > /dev/null
+	[ $? -ne 0 ] && PPIDS="$PPIDS $pid"
+	echo "$PPIDS" > $PPIDSTMP
+    done
+
+#
+# retreive process ids
+#
+#    PPIDS=`cat $PPIDSTMP`
+#    echo "PPIDS=$PPIDS"
+    ps -f -u xwhep | while read user pid ppid cmd
+    do
+	PP_FOUND=0
+	for i in `cat $PPIDSTMP` ; do
+	    if [ $i = $ppid ] ; then
+		PP_FOUND=1
+		break
+	    fi
+	done
+	[ $PP_FOUND -eq 0 ] && continue
+	rm -f $PIDSTMP
+	PIDS="$PIDS $pid"
+	echo "$PIDS" > $PIDSTMP
+    done
+
+    for i in `cat $PIDSTMP $PPIDSTMP` ; do
+	echo "`date` [`uname -n` $PROG] INFO : kill -9 $i " >> $LOGFILE 2>&1
+	kill -9 $i  >> $LOGFILE 2>&1
+    done
+
+ 
+    rm -f $PPIDSTMP
+    rm -f $PIDSTMP
+
+    rm -f $PIDFILE
+
+    echo "`date` [`uname -n` $PROG] INFO : stopped" >> $LOGFILE
+    return $ERROK
+}
+
+#
+# This restarts xwhep worker
+#
+restart(){
+    stop  $*
+    start $*
+}
+
+# See how we were called.
+case "$1" in
+    start)
+        shift
+        start $*
+        ;;
+    stop)
+        shift
+        stop $*
+        ;;
+    restart)
+        shift
+        restart
+        ;;
+    *)
+        echo "Usage : $0 {start | stop| restart}"
+        exit $ERRUSAGE
+esac
+
+exit $RETVAL
+
+#
+# End Of File
+#

@@ -1,0 +1,2 @@
+Main-Class: xtremweb.dispatcher.bench.Bench
+Class-Path: mm.mysql-2.0.2-bin.jar

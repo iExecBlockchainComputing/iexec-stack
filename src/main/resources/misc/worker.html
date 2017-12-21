@@ -1,0 +1,913 @@
+<!--
+#
+# Copyrights     : CNRS
+# Author         : Oleg Lodygensky
+# Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
+# Web            : http://www.xtremweb-hep.org
+# 
+#      This file is part of XtremWeb-HEP.
+#
+#    XtremWeb-HEP is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    XtremWeb-HEP is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with XtremWeb-HEP.  If not, see <http://www.gnu.org/licenses/>.
+#
+#
+
+-->
+
+
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1"><style type="text/css">
+<!--
+body
+{
+font-family : Times New Roman, Times;
+font-size : 16;
+background-color : #545454;
+padding:0% 5% 0% 5%;width:90%
+align:center;
+}
+
+.basdepage {
+padding: 15px;
+clear: left;
+float: left;
+background-color:#a0a0a0;
+font-style: italic;
+text-align:right
+}
+
+div
+{
+width: 800px;
+text-align : center;
+}
+
+.titre
+{
+  float:left;
+  font-size : 24px;
+  text-align : left;
+  vertical-align : middle;
+  background-color:#a0a0a0;
+  color : #050064;
+  height:100px;
+}
+
+.soustitre
+{
+border-top-left-radius: 15px;
+border-top-right-radius: 15px;
+float:left;
+font-size : 16px;
+font-style : italic;
+text-align : center;
+background-color:#a0a0a0;
+color : white;
+margin-bottom:1px;
+padding-bottom:10px;
+}
+
+.tuple
+{
+padding-top:2px;
+padding-bottom:2px;
+clear:both;
+float:right;
+border:0px solid grey;
+}
+
+.tabpanetrailer
+{
+background-color:#a0a0a0;
+border-bottom-left-radius: 15px;
+border-bottom-right-radius: 15px;
+clear:both;
+float:right;
+border:0px solid grey;
+}
+.param
+{
+clear:left;
+width : 30%;
+text-align : center;
+float:left;
+color : black;
+}
+.value
+{
+clear:right;
+font-style : italic;
+width : 70%;
+font-size : 14px;
+text-align : center;
+float:left;
+color : black;
+}
+
+.tabpane
+{
+border-radius: 15px;
+padding:3px;
+font-size: 14px;
+text-align : center;
+background-color : lightgrey;
+color : #050064;
+float:left;
+clear:both;
+}
+
+.aide
+{
+clear:both;
+background-color : white;
+color : gray;
+width : 100%;
+height:80px;
+text-align : center;
+visibility:hidden;
+}
+
+div.tabContent {
+    border: #a0a0a0 solid 3px;
+    float: left;
+    padding: 12px;
+    clear:both;
+}
+
+ol#toc {
+    height: 2em;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+ol#toc a {
+    background-color: #454545;
+    color: white;
+    display: block;
+    float: left;
+    height: 2em;
+    padding-left: 10px;
+    text-decoration: none;
+}
+
+ol#toc a:hover {
+/*
+    background-color: #3af;
+*/
+}
+
+ol#toc a:hover span {
+    color: black;
+
+}
+
+ol#toc li {
+    float: left;
+    margin: 0 1px 0 0;
+}
+
+ol#toc li.current a {
+    background-color:#a0a0a0;
+    color: #fff;
+    font-weight: bold;
+}
+
+
+ol#toc span {
+    display: block;
+    line-height: 2em;
+    padding-right: 10px;
+}
+-->
+</style>
+<script type="text/javascript">
+/**
+ * This shows/hides a div
+ * @since 8.1.0
+ */
+ function showHide(theID) {
+	var ele = document.getElementById(theID);
+	if(ele.style.display == "block") {
+    		ele.style.display = "none";
+  	}
+	else {
+		ele.style.display = "block";
+	}
+}
+  /**
+   * We want to get worker configuration at startup
+   * But it seems we can't parallaliez ajax calls,
+   * This is solved by body onload() that calls
+   * - getWorkerLevel() which calls
+   * - getHost() which calls
+   * - getProjects()  which calls
+   * - getActivators() which calls
+   * - getActivatorParams() which calls
+   * - getAvailability() which calls
+   * - getRunning() which calls
+   * - getMaxRun()
+   */
+
+/***************************************
+ * This displays/hides contextual help
+ ***************************************/
+function showActHelp(form, top, helpText)
+  {
+  var aides = new Array();
+  var params = new Array();
+  aides[0] = 'This fully enables computation';
+  aides[1] = 'This enables computation according to schedule gaps';
+  params[0] = false;
+  params[1] = true;
+  var divAide = document.getElementById('divAide');
+  var actParams = document.getElementById('activatorParams');
+  var Index = document.getElementById('selectActivator').selectedIndex;
+
+  if(divAide != null) {
+    if(helpText != null)
+      divAide.innerHTML = helpText;
+    else
+      divAide.innerHTML = aides[Index];
+    divAide.style.top = top;
+    divAide.style.visibility = 'visible';
+  }
+  if(params[Index] == true)
+    actParams.style.visibility = 'visible';
+  else
+    actParams.style.visibility = 'hidden';
+  }
+/***************************************
+ * This hides contextual help
+ ***************************************/
+function hideHelp() {
+  var divAide = document.getElementById('divAide');
+  divAide.style.visibility = 'hidden';
+}
+
+/***************************************
+ * This creates a new XMLHTTPRequest object
+ ***************************************/
+function getXmlHttpObject()
+{
+    var ret=null;
+    try
+    {
+	// Firefox, Opera 8.0+, Safari
+	ret=new XMLHttpRequest();
+    }
+    catch (e)
+    {
+	// Internet Explorer
+	try
+	{
+	    ret=new ActiveXObject("Msxml2.XMLHTTP");
+	}
+	catch (e)
+	{
+	    ret=new ActiveXObject("Microsoft.XMLHTTP");
+	}
+    }
+    return ret;
+}
+
+/***************************************
+ * XMLHTTPRequest objects
+ ***************************************/
+var xmlHttpGetRunning;
+var xmlHttpGetAvailability;
+var xmlHttpGetActivators;
+var xmlHttpGetActivatorParams;
+var xmlHttpSetActivator;
+var xmlHttpSetMaxRun;
+var xmlHttpGetMaxRun;
+var xmlHttpGetApplication;
+var xmlHttpGetHost;
+var xmlHttpGetProjects;
+var xmlHttpGetWorkerLevel;
+
+
+/***************************************
+ * This retrieves worker info
+ * This is called by getWorkerLevel() 
+ ***************************************/
+function getHost()
+{ 
+    xmlHttpGetHost=getXmlHttpObject();
+    if (xmlHttpGetHost==null)
+    {
+	return;
+    }
+
+    var url="/?gethost=1";
+    xmlHttpGetHost.onreadystatechange=getHostStateChanged;
+    xmlHttpGetHost.open("POST",url,true);
+    xmlHttpGetHost.send(null);
+}
+
+/***************************************
+ * This handles getHost events
+ * This calls getProjects() when getHost response is received
+ ***************************************/
+function getHostStateChanged()
+{ 
+    if (xmlHttpGetHost.readyState!=4)
+    {
+        return;
+    }
+
+    var xmlDoc=xmlHttpGetHost.responseXML.documentElement;
+
+    try {
+        document.getElementById("uid").innerHTML=
+            xmlDoc.getElementsByTagName("host")[0].getAttribute("uid");
+    }
+    catch(err)
+    {
+    }
+    try {
+        document.getElementById("hostname").innerHTML=
+	    xmlDoc.getElementsByTagName("host")[0].getAttribute("name");
+    }
+    catch(err)
+    {
+    }
+    try {
+        document.getElementById("avgping").innerHTML=
+            xmlDoc.getElementsByTagName("host")[0].getAttribute("avgping");
+    }
+    catch(err)
+    {
+    }
+    try {
+        document.getElementById("ip").innerHTML=
+            xmlDoc.getElementsByTagName("host")[0].getAttribute("ipaddr");
+    }
+    catch(err)
+    {
+    }
+    try {
+        document.getElementById("natedip").innerHTML=
+            xmlDoc.getElementsByTagName("host")[0].getAttribute("natedipaddr");
+    }
+    catch(err)
+    {
+    }
+    try {
+        document.getElementById("hwaddr").innerHTML=
+            xmlDoc.getElementsByTagName("host")[0].getAttribute("hwaddr");
+    }
+    catch(err)
+    {
+    }
+    try {
+        document.getElementById("timezone").innerHTML=
+            xmlDoc.getElementsByTagName("host")[0].getAttribute("timezone");
+    }
+    catch(err)
+    {
+    }
+    try {
+        document.getElementById("os").innerHTML=
+            xmlDoc.getElementsByTagName("host")[0].getAttribute("os");
+    }
+    catch(err)
+    {
+    }
+    try {
+   	document.getElementById("cputype").innerHTML=
+       	    xmlDoc.getElementsByTagName("host")[0].getAttribute("cputype");
+    }
+    catch(err)
+    {
+    }
+    try {
+       	document.getElementById("cpunb").innerHTML=
+       	    xmlDoc.getElementsByTagName("host")[0].getAttribute("cpunb");
+    }
+    catch(err)
+    {
+    }
+    try {
+       	document.getElementById("cpuspeed").innerHTML=
+       	    xmlDoc.getElementsByTagName("host")[0].getAttribute("cpuspeed");
+    }
+    catch(err)
+    {
+    }
+    try {
+   	document.getElementById("totalmem").innerHTML=
+       	    xmlDoc.getElementsByTagName("host")[0].getAttribute("totalmem");
+    }
+    catch(err)
+    {
+    }
+    try {
+       	document.getElementById("totalswap").innerHTML=
+       	    xmlDoc.getElementsByTagName("host")[0].getAttribute("totalswap");
+    }
+    catch(err)
+    {
+    }
+    try {
+       	document.getElementById("timeout").innerHTML=
+       	    xmlDoc.getElementsByTagName("host")[0].getAttribute("timeout");
+    }
+    catch(err)
+    {
+    }
+    try {
+       	document.getElementById("traces").innerHTML=
+       	    xmlDoc.getElementsByTagName("host")[0].getAttribute("traces");
+    }
+    catch(err)
+    {
+    }
+    try {
+       	document.getElementById("acceptbin").innerHTML=
+       	    xmlDoc.getElementsByTagName("host")[0].getAttribute("acceptbin");
+    }
+    catch(err)
+    {
+    }
+    try {
+   	document.getElementById("version").innerHTML=
+       	    xmlDoc.getElementsByTagName("host")[0].getAttribute("version");
+    }
+    catch(err)
+    {
+    }
+    try {
+       	document.getElementById("active").innerHTML=
+       	    xmlDoc.getElementsByTagName("host")[0].getAttribute("active");
+    }
+    catch(err)
+    {
+    }
+    try {
+       	document.getElementById("runs").innerHTML=
+       	    xmlDoc.getElementsByTagName("host")[0].getAttribute("nbjobs");
+    }
+    catch(err)
+    {
+    }
+    getProjects();
+}
+/***************************************
+ * This retrievess activators
+ ***************************************/
+function getRunning()
+{ 
+  xmlHttpGetRunning=getXmlHttpObject();
+  if (xmlHttpGetRunning==null)
+    {
+      return;
+    }
+  var url="/?getrunning=1";
+  xmlHttpGetRunning.onreadystatechange=getRunningStateChanged;
+  xmlHttpGetRunning.open("GET",url,true);
+  xmlHttpGetRunning.send(null);
+}
+/***************************************
+ * This handles getRunning events
+ ***************************************/
+function getRunningStateChanged()
+{ 
+  if (xmlHttpGetRunning.readyState!=4)
+    {
+      return;
+    }
+  
+  try {
+    document.getElementById("running").innerHTML = xmlHttpGetRunning.responseText;
+  }
+  catch(err)
+  {
+  }
+  getMaxRun();
+}
+/***************************************
+ * This retrievess availability
+ ***************************************/
+function getAvailability()
+{ 
+  xmlHttpGetAvailability=getXmlHttpObject();
+  if (xmlHttpGetAvailability==null)
+    {
+      return;
+    }
+  var url="/?getavailability=1";
+  xmlHttpGetAvailability.onreadystatechange=getAvailabilityStateChanged;
+  xmlHttpGetAvailability.open("GET",url,true);
+  xmlHttpGetAvailability.send(null);
+}
+/***************************************
+ * This handles getAvailability events
+ ***************************************/
+function getAvailabilityStateChanged()
+{ 
+  if (xmlHttpGetAvailability.readyState!=4)
+    {
+      return;
+    }
+  
+  try {
+    document.getElementById("availability").innerHTML = xmlHttpGetAvailability.responseText;
+  }
+  catch(err)
+  {
+  }
+  getRunning();
+}
+/***************************************
+ * This retrievess activators
+ * This retrievess activators from server
+ ***************************************/
+function getActivators()
+{ 
+  xmlHttpGetActivators=getXmlHttpObject();
+  if (xmlHttpGetActivators==null)
+    {
+      return;
+    }
+  var url="/?getactivators=1";
+  xmlHttpGetActivators.onreadystatechange=getActivatorsStateChanged;
+  xmlHttpGetActivators.open("GET",url,true);
+  xmlHttpGetActivators.send(null);
+}
+/***************************************
+ * This handles getActivators events
+ * This calls getActivatorParams() on completion
+ ***************************************/
+function getActivatorsStateChanged()
+{ 
+  if (xmlHttpGetActivators.readyState!=4)
+    {
+      return;
+    }
+
+  try {
+    document.getElementById("activators").innerHTML = xmlHttpGetActivators.responseText;
+  }
+  catch(err)
+  {
+  }
+  getActivatorParams();
+}
+/***************************************
+ * This retrievess activator params
+ ***************************************/
+function getActivatorParams()
+{ 
+  xmlHttpGetActivatorParams=getXmlHttpObject();
+  if (xmlHttpGetActivators==null)
+    {
+      return;
+    }
+  var url="/?getactivatorparams=1";
+  xmlHttpGetActivatorParams.onreadystatechange=getActivatorParamsStateChanged;
+  xmlHttpGetActivatorParams.open("GET",url,true);
+  xmlHttpGetActivatorParams.send(null);
+}
+/***************************************
+ * This handles getActivatorParams events
+ ***************************************/
+function getActivatorParamsStateChanged()
+{ 
+  if (xmlHttpGetActivatorParams.readyState!=4)
+    {
+      return;
+    }
+
+  try {
+    document.getElementById("activatorParams").value = xmlHttpGetActivatorParams.responseText;
+  }
+  catch(err)
+  {
+  }
+  getAvailability();
+}
+/***************************************
+ * This set the activation policy
+ ***************************************/
+function setActivator()
+{ 
+  xmlHttpSetActivator=getXmlHttpObject();
+  if (xmlHttpSetActivator==null)
+    {
+      return;
+    }
+  var actName = document.getElementById('selectActivator').value;
+  var params = document.getElementById('activatorParams').value;
+  var url="/?selectActivator=" + actName + "&activatorParams=" + params;
+  xmlHttpSetActivator.onreadystatechange=setActivatorStateChanged;
+  xmlHttpSetActivator.open("GET",url,true);
+  xmlHttpSetActivator.send(null);
+}
+/***************************************
+ * This handles setActivator events : this does nothing
+ * This calls getActivatorParameters 
+ ***************************************/
+function setActivatorStateChanged()
+{ 
+  if (xmlHttpSetActivator.readyState!=4)
+    {
+      return;
+    }
+  getActivatorParams();
+}
+/***************************************
+ * This sets the maximum run
+ ***************************************/
+function setMaxRun()
+{ 
+  xmlHttpSetMaxRun=getXmlHttpObject();
+  if (xmlHttpSetMaxRun==null)
+    {
+      return;
+    }
+  var maxrun = document.getElementById('maxrun').value;
+  var url="?setmaxrun=" + maxrun;
+  xmlHttpSetMaxRun.onreadystatechange=setMaxRunStateChanged;
+  xmlHttpSetMaxRun.open("GET",url,true);
+  xmlHttpSetMaxRun.send(null);
+}
+/***************************************
+ * This handles setMaxRun events : this does nothing
+ ***************************************/
+function setMaxRunStateChanged()
+{ 
+  if (xmlHttpSetMaxRun.readyState!=4)
+    {
+      return;
+    }
+}
+/***************************************
+ * This retrievess the maximum run
+ ***************************************/
+function getMaxRun()
+{ 
+  xmlHttpGetMaxRun=getXmlHttpObject();
+  if (xmlHttpGetMaxRun==null)
+    {
+      return;
+    }
+  var url="/?getmaxrun=1";
+  xmlHttpGetMaxRun.onreadystatechange=getMaxRunStateChanged;
+  xmlHttpGetMaxRun.open("GET",url,true);
+  xmlHttpGetMaxRun.send(null);
+}
+/***************************************
+ * This handles getMaxRun events : this does nothing
+ ***************************************/
+function getMaxRunStateChanged()
+{ 
+  if (xmlHttpGetMaxRun.readyState!=4)
+    {
+      return;
+    }
+    try {
+      document.getElementById("maxrun").value = xmlHttpGetMaxRun.responseText;
+    }
+    catch(err)
+    {
+    }
+}
+/***************************************
+ * This retrievess projects
+ ***************************************/
+function getProjects()
+{ 
+  xmlHttpGetProjects=getXmlHttpObject();
+  if (xmlHttpGetProjects==null)
+    {
+      return;
+    }
+  var url="/?getprojects=1";
+  xmlHttpGetProjects.onreadystatechange=getProjectsStateChanged;
+  xmlHttpGetProjects.open("GET",url,true);
+  xmlHttpGetProjects.send(null);
+}
+
+/***************************************
+ * This handles getProjects events
+ * This calls getActivators() when getProject response is received
+ ***************************************/
+function getProjectsStateChanged()
+{ 
+    if (xmlHttpGetProjects.readyState!=4)
+    {
+        return;
+    }
+
+    try {
+        document.getElementById("projects").innerHTML = xmlHttpGetProjects.responseText;
+    }
+    catch(err)
+    {
+    }
+    getActivators();
+}
+/***************************************
+ * This retrievess current application
+ ***************************************/
+function getApplication()
+{ 
+    xmlHttpGetApplication=getXmlHttpObject();
+    if (xmlHttpGetApplication==null)
+    {
+	return;
+    }
+    var url="/?getapplication=1";
+    xmlHttpGetApplication.onreadystatechange=getApplicationStateChanged;
+    xmlHttpGetApplication.open("GET",url,true);
+    xmlHttpGetApplication.send(null);
+}
+
+/***************************************
+ * This handles getApplication events
+ ***************************************/
+function getApplicationStateChanged()
+{ 
+    if (xmlHttpGetApplication.readyState!=4)
+    {
+        return;
+    }
+
+    try {
+        document.getElementById("application").innerHTML = xmlHttpGetApplication.responseText;
+    }
+    catch(err)
+    {
+    }
+}
+/***************************************
+ * This retrievess worker info
+ * This is called by body onload()
+ ***************************************/
+function getWorkerLevel()
+{ 
+    xmlHttpGetWorkerLevel=getXmlHttpObject();
+    if (xmlHttpGetWorkerLevel==null)
+    {
+	return;
+    }
+    var url="/?getworkerlevel=1";
+    xmlHttpGetWorkerLevel.onreadystatechange=getWorkerLevelStateChanged;
+    xmlHttpGetWorkerLevel.open("GET",url,true);
+    xmlHttpGetWorkerLevel.send(null);
+}
+
+/***************************************
+ * This handles getWorkerLevel events
+ * This calls getHost() when getWorkerLevel response is received
+ ***************************************/
+function getWorkerLevelStateChanged()
+{ 
+    if (xmlHttpGetWorkerLevel.readyState!=4)
+    {
+        return;
+    }
+
+    try {
+        document.getElementById("workerlevel").innerHTML = xmlHttpGetWorkerLevel.responseText;
+    }
+    catch(err)
+    {
+    }
+    getHost();
+}
+
+/******************************************************/
+/******************************************************/
+/**                  End of Scripts                  **/
+/******************************************************/
+/******************************************************/
+
+</script>
+</head>
+
+<body onload="getWorkerLevel()">
+  
+  <div class="titre">
+
+    <div style="float:left;width:80%;text-align:center; vertical-align:top;height:100px">
+      <img src="http://www.xtremweb-hep.org/lal/l-coul-300.jpg" height="100px" style="float:left;vertical-align:text-top" />
+      <br />XWHEP Worker configuration
+    </div>
+    
+    <div style="float:right;width:20%;height:100px;vertical-align:bottom;background-color:red;">
+      <a style="color: white;" href="/?exit=1">
+	<p>Stop <br />the worker now</p>
+      </a>
+    </div>
+
+  </div>
+
+  
+  <div class="aide" id="divAide"></div>
+
+  
+  <div style="width:100%" id="workerlevel"></div>
+  
+
+  <div>
+    <div class="tabContent">
+    <div class="tabpane">
+      <div class="soustitre"><span >Summary</span><span><a style="float:right;margin-right:15px;" href="javascript:showHide('theSummary');" >show/hide</a></span></div>
+    <div id="theSummary" style="display:block">
+      <div class="tuple"><span class="param">UID</span><span class="value" id="uid"></span></div>
+      <div class="tuple"><span class="param">Name</span><span class="value" id="hostname"></span></div>
+      <div class="tuple"><span class="param">IP</span><span class="value" id="ip"></span></div>
+      <div class="tuple"><span class="param">Nated IP</span><span class="value" id="natedip"></span></div>
+      <div class="tuple"><span class="param">Mac addr</span><span class="value" id="hwaddr"></span></div>
+      <div class="tuple"><span class="param">Time Zone</span><span class="value" id="timezone"></span></div>
+      <div class="tuple"><span class="param">Avg Ping</span><span class="value" id="avgping"></span></div>
+      <div class="tuple"><span class="param">OS</span><span class="value" id="os"></span></div>
+      <div class="tuple"><span class="param">CPU type</span><span class="value" id="cputype"></span></div>
+      <div class="tuple"><span class="param">CPU nb</span><span class="value" id="cpunb"></span></div>
+      <div class="tuple"><span class="param">CPU speed</span><span class="value" id="cpuspeed"></span></div>
+      <div class="tuple"><span class="param">Total RAM</span><span class="value" id="totalmem"></span></div>
+      <div class="tuple"><span class="param">Total Swap</span><span class="value" id="totalswap"></span></div>
+      <div class="tuple"><span class="param">Time Out</span><span class="value" id="timeout"></span></div>
+      <div class="tuple"><span class="param">Traces</span><span class="value" id="traces"></span></div>
+      <div class="tuple"><span class="param">Accept bin</span><span class="value" id="acceptbin"></span></div>
+      <div class="tuple"><span class="param">Version</span><span class="value" id="version"></span></div>
+    </div> <!--  id="theSummary" -->
+      <div class="tabpanetrailer">&nbsp;</div>
+    </div>
+    </div>
+    
+    <div class="tabContent">
+    <div class="tabpane">
+      <div class="soustitre"><span >Configuration</span><span><a style="float:right;margin-right:15px;" href="javascript:showHide('theConfiguration');" >show/hide</a></span></div>
+    <div id="theConfiguration" style="display:block">
+      <div class="tuple"><span class="param">Active</span><span class="value" id="active"></span></div>
+      
+      <div class="tuple"><span class="param">Available</span><span class="value" id="availability"></span></div>
+      
+      <div class="tuple">
+	<span class="param" style="float:left;align-text:center">Project</span>
+	<span class="value" id="projects"></span>
+      </div>
+      
+      <div class="tuple"><span class="param">Running</span><span class="value" id="running"></span></div>
+      <div class="tuple"><span class="param">Already run</span><span class="value" id="runs"></span></div>
+
+      <div class="tuple" style="background-color:#bababa;padding:5px 5px 5px 5px;border:1px solid #444400;width:98%">
+	<span class="param">Max run</span>
+	<span class="value" >
+	  <input id="maxrun" name="maxJobs" value=""
+		 onblur="hideHelp()"
+		 onfocus='showActHelp(this.form, 120, "The worker stops when max jobs is reached.<br /> A negative value means no limit")' type="text">
+	</span>
+	<input value="Set max" id="submitMaxRun" onclick="setMaxRun()" type="submit">
+      </div>
+      
+      <div class="tuple" style="background-color:#ababab;padding:5px 5px 5px 5px;border:1px solid #444400;width:98%">
+	<div class="param">Activation policy</div>
+	<div class="value" id="activators">
+	  <select name="selectActivator" id="selectActivator" onchange="showActHelp(this.form, 170)">
+            <option value="xtremweb.worker.AlwaysActive">always</option>
+            <option value="xtremweb.worker.DateActivator" selected="selected">crontab</option>
+	  </select>
+	</div>
+	
+	<div class="param">
+	  Activation params
+	</div>
+	<div class="value" id="policyparams">
+	  <input id="activatorParams" value="" onblur="hideHelp()" onfocus='showActHelp(this.form, 102, "e.g.: <li>each night from 8PM to 7AM <code><u><i>* 20-7</i></u></code><li>full weekend computation <code><u><i>Sat-Sun *</i></u></code><li>the two previous combined <code><u><i>* 20-7,Sat-Sun *</i></u></code>")' type="text">
+	</div>
+	
+	<input value="Set activator" id="submitActivator" onclick="setActivator()" type="submit">
+      </div>
+</div>
+
+      <div class="tabpanetrailer">&nbsp;</div>
+
+  </div>
+  </div>
+
+
+  <div class="basdepage">
+    <div style="padding:0 15% 0 15%; float:left; width: 18%;"><a href="http://www.xtremweb-hep.org/spip.php?rubrique13" style="color:#050064;font-size:18px">XWHEP</a></div>
+    <div style="text-align:center;padding:0 15% 0 15%; float:right; width: 18%;"><a href="http://www.xtremweb-hep.org/lal/worker-start.php" style="color:#050064;font-size:18px">My worker statistics</a></div>
+  </div>
+  
+
+</div>
+
+
+</body>
+</html>

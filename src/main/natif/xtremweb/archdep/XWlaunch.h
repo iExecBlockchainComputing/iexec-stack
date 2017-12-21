@@ -1,0 +1,12 @@
+#define XW_NOTIFY	WM_USER+10
+#define XW_ICONNOTIFY	WM_USER+11
+#define XW_RUN		0
+#define XW_QUIT		1
+#define XW_STOP		2
+#define XW_SUSPEND	3
+#define XW_AUTO		0
+#define XW_USER	        1
+#define USER_IDLE       1
+#define USER_ACTIVE     0
+#define XW_DELAY        10000
+#define XW_USEREVENT    WM_USER+12

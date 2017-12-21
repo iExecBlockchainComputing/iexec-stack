@@ -1,0 +1,134 @@
+
+#-----#  curl  https://xwservpub.lal.in2p3.fr:4326/getuserbylogin/oleg  #-----#
+<?xml version='1.0' encoding='UTF-8'?><xwhep>
+<user uid="fc700ad4-6706-40e2-b4ea-3298ec1f49d0"
+  owneruid="8d053af3-35fd-4e9e-a15b-08b6bb3be646"
+  accessrights="0x755"
+  isdeleted="false"
+  usergroupuid="b365dc6b-b4d2-45e2-8b30-fa48b7ee3c83"
+  certificate="*****"
+  login="oleg"
+  password="*****"
+  email="oleg.lodygensky@gmail.comÃ"
+  nbjobs="317971"
+  pendingjobs="0"
+  runningjobs="164686"
+  errorjobs="100072"
+  usedcputime="366859558940"
+  rights="STANDARD_USER"
+  />
+</xwhep>
+
+#-----#  curl  https://xwservpub.lal.in2p3.fr:4326/get/8d053af3-35fd-4e9e-a15b-08b6bb3be646   #-----#
+<?xml version='1.0' encoding='UTF-8'?><xwhep>
+<xmlrpcresult MESSAGE="https://www.google.com/accounts/o8/id?id=AItOawmt7lqipy7f_pd-aVJ3dj4DwV_DpEjMjaQ can't access xw://xwservpub.lal.in2p3.fr/8d053af3-35fd-4e9e-a15b-08b6bb3be646"
+  RETURNCODE="AUTHORIZATION"
+  TIMESTAMP="1379601992245"
+  ></xmlrpcresult>
+</xwhep>
+
+#-----#  curl  https://xwservpub.lal.in2p3.fr:4326/get/fc700ad4-6706-40e2-b4ea-3298ec1f49d0   #-----#
+<?xml version='1.0' encoding='UTF-8'?><xwhep>
+<user uid="fc700ad4-6706-40e2-b4ea-3298ec1f49d0"
+  owneruid="8d053af3-35fd-4e9e-a15b-08b6bb3be646"
+  accessrights="0x755"
+  isdeleted="false"
+  usergroupuid="b365dc6b-b4d2-45e2-8b30-fa48b7ee3c83"
+  certificate="*****"
+  login="oleg"
+  password="*****"
+  email="oleg.lodygensky@gmail.comÃ"
+  nbjobs="317971"
+  pendingjobs="0"
+  runningjobs="164686"
+  errorjobs="100072"
+  usedcputime="366859558940"
+  rights="STANDARD_USER"
+  />
+</xwhep>
+
+#-----#  curl  https://xwservpub.lal.in2p3.fr:4326/get/da6ec799-1d7f-4093-9712-556c4b2d3b73   #-----#
+<?xml version='1.0' encoding='UTF-8'?><xwhep>
+<app uid="da6ec799-1d7f-4093-9712-556c4b2d3b73"
+  owneruid="8d053af3-35fd-4e9e-a15b-08b6bb3be646"
+  accessrights="0x755"
+  isdeleted="false"
+  name="ls"
+  isservice="false"
+  type="DEPLOYABLE"
+  avgexectime="14601"
+  minmemory="0"
+  mincpuspeed="0"
+  nbjobs="75"
+  pendingjobs="0"
+  runningjobs="508"
+  errorjobs="0"
+  linux_ix86uri="xw://xwservpub.xtremweb-hep.org/a760c7cf-082a-49fd-97c0-75b10f34f87d"
+  linux_amd64uri="xw://xwservpub.lal.in2p3.fr/3d713ff5-ef84-4d4a-8bee-9d2c1f436df5"
+  />
+</xwhep>
+
+#-----#  curl  https://xwservpub.lal.in2p3.fr:4326/get/74291f6f-57cf-432b-aa1b-09995efc368e   #-----#
+<?xml version='1.0' encoding='UTF-8'?><xwhep>
+<host uid="74291f6f-57cf-432b-aa1b-09995efc368e"
+  owneruid="7eebcf47-813e-4e51-b4d0-96d7e27a0ca0"
+  accessrights="0x755"
+  isdeleted="false"
+  name="pc-89155.lal.in2p3.fr"
+  cpuload="50"
+  natedipaddr="134.158.89.155"
+  ipaddr="134.158.89.155"
+  hwaddr=""
+  timezone="Europe/Paris"
+  avgping="46"
+  nbping="3939"
+  uploadbandwidth="0.0"
+  downloadbandwidth="0.0"
+  os="MACOSX"
+  osversion="10.8.3"
+  javaversion="1.6.0_45"
+  javadatamodel="64"
+  poolworksize="1"
+  cputype="X86_64"
+  cpunb="1"
+  cpumodel="unknown"
+  totalmem="0"
+  totalswap="0"
+  totaltmp="638939721728"
+  freetmp="183598596096"
+  project=""
+  lastalive="2013-06-04 10:03:49"
+  active="true"
+  incomingconnections="true"
+  available="true"
+  pilotjob="false"
+  sgid=""
+  timeout="15000"
+  traces="false"
+  acceptbin="true"
+  sharedapps=""
+  sharedpackages=""
+  version="8.2.2-head"
+  pendingjobs="0"
+  runningjobs="0"
+  errorjobs="0"
+  />
+</xwhep>
+
+#-----#  curl  https://xwservpub.lal.in2p3.fr:4326/get/5772940b-cab1-4785-93ba-4ea9ef9f6216   #-----#
+<?xml version='1.0' encoding='UTF-8'?><xwhep>
+<task uid="5772940b-cab1-4785-93ba-4ea9ef9f6216"
+  owneruid="2e1d3835-3b3d-4206-a76e-01cc0a48384f"
+  accessrights="0x755"
+  isdeleted="false"
+  workuid="5772940b-cab1-4785-93ba-4ea9ef9f6216"
+  hostuid="dadb5b7a-9eed-41cd-a187-9ec4670b8034"
+  status="ERROR"
+  insertiondate="2011-04-08 17:32:04"
+  startdate="2011-04-08 17:32:04"
+  laststartdate="2011-04-08 17:32:04"
+  alivecount="0"
+  lastalive="2011-04-08 17:32:04"
+  duration="0"
+  />
+</xwhep>
