@@ -553,25 +553,17 @@ TMPDIR=/tmp
 # it to "false" or comment it.
 # If true, you must set sandbox.path and sandbox.start.args below
 # Example with docker:
-# docker run -t -i --mount type=bind,src=`pwd`,dst=/tmp/xwhep -w /tmp/xwhep ubuntu /bin/bash
+# docker run -t -i --mount type=bind,src=<work_dir>,dst=/tmp/xwheppwd --mount type=bind,src=<app_dir>,dst=/tmp/xwhepapp -w /tmp/xwhep ubuntu /tmp/xwhepapp/<appname>
 #  SANDBOXENABLED=true
 #  SANDBOXPATH=docker
 #
 # Note on SANDBOXSTARTARGS:
-#    src=pwd must be present; it is automatically replace by job PWD
-#    the job application name is appended to SANDBOXSTARTARGS 
-#    @see xtremweb.common.AppTypeEnum.DOCKER.getCommandLineArgs(String, String, String)
+#    must contain the Docker image to launch
 #
-#  SANDBOXSTARTARGS= run --mount type=bind,src=pwd,dst=/tmp/xwhep -w /tmp/xwhep ubuntu
+#  SANDBOXSTARTARGS=ubuntu
+#
 # Default is false
 # SANDBOXENABLED=true
-
-# give here the full path and name of the sandbox system and the
-# command line arguments without quotes
-#
-# UNDER MAC OS >= 10.5 you can use
-# SANDBOXPATH=/usr/bin/sandbox-exec
-# SANDBOXSTARTARGS=-f /usr/share/sandbox/xgridagentd_task_nobody.sb
 #
 # SANDBOXPATH=/path_to_sandbox/bin
 # SANDBOXSTARTARGS=
