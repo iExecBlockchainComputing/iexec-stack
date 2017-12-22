@@ -35,6 +35,7 @@ import org.apache.tools.ant.filters.ReplaceTokens
 
 import java.time.Instant
 
+
 ant.importBuild 'jni.xml'
 processResources.dependsOn jni
 
@@ -56,6 +57,7 @@ task createVersion(type: Copy) {
                                    VBRANCH   : 'git rev-parse --abbrev-ref HEAD'.execute().text.trim()
     ])
 }
+createVersion.dependsOn clean
 
 // the createVersion task should be called before compileJava
 compileJava.dependsOn createVersion
@@ -470,13 +472,8 @@ task copyLinux(type: Copy) {
 }
 
 
-task install {
+task buildAll {
     dependsOn(chmodBin, copyWindowsClient, copyWindowsWorker, copyWindowsVWorker, copyMacClient, copyMacWorker, copyMacVworker, copyMacServer, copyLinux)
 }
 
-
-
-
-
-
-
+buildAll.dependsOn getTasksByName('build', true)
