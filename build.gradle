@@ -147,7 +147,7 @@ task copyMiscToDist(type: Copy) {
 
 task mkdirKeystore(type: Exec) {
     commandLine("sh", "-c",
-            "mkdir " + dist + "/keystore"
+            "mkdir -p " + dist + "/keystore"
     )
 }
 
