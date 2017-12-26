@@ -766,7 +766,7 @@ public abstract class XMLRPCCommand extends XMLable {
 				return ret;
 			}
 		} catch (final InvalidKeyException e) {
-			e.printStackTrace();
+			logger.exception(e);
 		}
 		logger.finest("not a command version");
 		try {
@@ -778,7 +778,7 @@ public abstract class XMLRPCCommand extends XMLable {
 				return ret;
 			}
 		} catch (final InvalidKeyException e) {
-			e.printStackTrace();
+			logger.exception(e);
 		}
 		logger.finest("not a command ping");
 		try {
@@ -790,7 +790,7 @@ public abstract class XMLRPCCommand extends XMLable {
 				return ret;
 			}
 		} catch (final InvalidKeyException e) {
-			e.printStackTrace();
+			logger.exception(e);
 		}
 		logger.finest("not a command disconnect");
 		try {
@@ -802,7 +802,7 @@ public abstract class XMLRPCCommand extends XMLable {
 				return ret;
 			}
 		} catch (final InvalidKeyException e) {
-			e.printStackTrace();
+			logger.exception(e);
 		}
 		logger.finest("not a command getuserby login");
 		try {
@@ -814,7 +814,7 @@ public abstract class XMLRPCCommand extends XMLable {
 				return ret;
 			}
 		} catch (final InvalidKeyException e) {
-			e.printStackTrace();
+			logger.exception(e);
 		}
 		logger.finest("not a command get");
 		try {
@@ -826,7 +826,7 @@ public abstract class XMLRPCCommand extends XMLable {
 				return ret;
 			}
 		} catch (final InvalidKeyException e) {
-			e.printStackTrace();
+			logger.exception(e);
 		}
 		logger.finest("not a XMLRPCCommandGetWorkByExternalId");
 		try {
@@ -838,7 +838,7 @@ public abstract class XMLRPCCommand extends XMLable {
 				return ret;
 			}
 		} catch (final InvalidKeyException e) {
-			e.printStackTrace();
+			logger.exception(e);
 		}
 		logger.finest("not a command gettask");
 		try {
@@ -850,7 +850,7 @@ public abstract class XMLRPCCommand extends XMLable {
 				return ret;
 			}
 		} catch (final InvalidKeyException e) {
-			e.printStackTrace();
+			logger.exception(e);
 		}
 		logger.finest("not a command getworks");
 		try {
@@ -862,7 +862,7 @@ public abstract class XMLRPCCommand extends XMLable {
 				return ret;
 			}
 		} catch (final InvalidKeyException e) {
-			e.printStackTrace();
+			logger.exception(e);
 		}
 		logger.finest("not a command gethubaddr");
 		try {
@@ -874,7 +874,7 @@ public abstract class XMLRPCCommand extends XMLable {
 				return ret;
 			}
 		} catch (final InvalidKeyException e) {
-			e.printStackTrace();
+			logger.exception(e);
 		}
 		logger.finest("not a command send");
 		try {
@@ -886,7 +886,7 @@ public abstract class XMLRPCCommand extends XMLable {
 				return ret;
 			}
 		} catch (final InvalidKeyException e) {
-			e.printStackTrace();
+			logger.exception(e);
 		}
 		logger.finest("not a command gettasks");
 		try {
@@ -898,7 +898,7 @@ public abstract class XMLRPCCommand extends XMLable {
 				return ret;
 			}
 		} catch (final InvalidKeyException e) {
-			e.printStackTrace();
+			logger.exception(e);
 		}
 		logger.finest("not a command download data");
 		try {
@@ -910,7 +910,7 @@ public abstract class XMLRPCCommand extends XMLable {
 				return ret;
 			}
 		} catch (final InvalidKeyException e) {
-			e.printStackTrace();
+			logger.exception(e);
 		}
 		logger.finest("not a command getapps");
 		try {
@@ -922,7 +922,7 @@ public abstract class XMLRPCCommand extends XMLable {
 				return ret;
 			}
 		} catch (final InvalidKeyException e) {
-			e.printStackTrace();
+			logger.exception(e);
 		}
 		logger.finest("not a command getdatas");
 		try {
@@ -934,7 +934,7 @@ public abstract class XMLRPCCommand extends XMLable {
 				return ret;
 			}
 		} catch (final InvalidKeyException e) {
-			e.printStackTrace();
+			logger.exception(e);
 		}
 		logger.finest("not a command getgroupworks");
 		try {
@@ -946,7 +946,7 @@ public abstract class XMLRPCCommand extends XMLable {
 				return ret;
 			}
 		} catch (final InvalidKeyException e) {
-			e.printStackTrace();
+			logger.exception(e);
 		}
 		logger.finest("not a command getgroups");
 		try {
@@ -958,7 +958,7 @@ public abstract class XMLRPCCommand extends XMLable {
 				return ret;
 			}
 		} catch (final InvalidKeyException e) {
-			e.printStackTrace();
+			logger.exception(e);
 		}
 		logger.finest("not a command gethosts");
 		try {
@@ -970,7 +970,7 @@ public abstract class XMLRPCCommand extends XMLable {
 				return ret;
 			}
 		} catch (final InvalidKeyException e) {
-			e.printStackTrace();
+			logger.exception(e);
 		}
 		logger.finest("not a command getsessionworks");
 		try {
@@ -982,7 +982,7 @@ public abstract class XMLRPCCommand extends XMLable {
 				return ret;
 			}
 		} catch (final InvalidKeyException e) {
-			e.printStackTrace();
+			logger.exception(e);
 		}
 		logger.finest("not a command getsessions");
 		try {
@@ -994,7 +994,7 @@ public abstract class XMLRPCCommand extends XMLable {
 				return ret;
 			}
 		} catch (final InvalidKeyException e) {
-			e.printStackTrace();
+			logger.exception(e);
 		}
 		logger.finest("not a command activatehost");
 		try {
@@ -1006,7 +1006,7 @@ public abstract class XMLRPCCommand extends XMLable {
 				return ret;
 			}
 		} catch (final InvalidKeyException e) {
-			e.printStackTrace();
+			logger.exception(e);
 		}
 		logger.finest("not a command broadcastwork");
 		try {
@@ -1018,7 +1018,7 @@ public abstract class XMLRPCCommand extends XMLable {
 				return ret;
 			}
 		} catch (final InvalidKeyException e) {
-			e.printStackTrace();
+			logger.exception(e);
 		}
 		logger.finest("not a command getusergroups");
 		try {
@@ -1030,7 +1030,7 @@ public abstract class XMLRPCCommand extends XMLable {
 				return ret;
 			}
 		} catch (final InvalidKeyException e) {
-			e.printStackTrace();
+			logger.exception(e);
 		}
 		logger.finest("not a command getusers");
 		try {
@@ -1042,7 +1042,7 @@ public abstract class XMLRPCCommand extends XMLable {
 				return ret;
 			}
 		} catch (final InvalidKeyException e) {
-			e.printStackTrace();
+			logger.exception(e);
 		}
 		logger.finest("not a command remove");
 		try {
@@ -1054,7 +1054,7 @@ public abstract class XMLRPCCommand extends XMLable {
 				return ret;
 			}
 		} catch (final InvalidKeyException e) {
-			e.printStackTrace();
+			logger.exception(e);
 		}
 		logger.finest("not a command uploaddata");
 		try {
@@ -1066,7 +1066,7 @@ public abstract class XMLRPCCommand extends XMLable {
 				return ret;
 			}
 		} catch (final InvalidKeyException e) {
-			e.printStackTrace();
+			logger.exception(e);
 		}
 		logger.finest("not a command chmod");
 		try {
@@ -1078,7 +1078,7 @@ public abstract class XMLRPCCommand extends XMLable {
 				return ret;
 			}
 		} catch (final InvalidKeyException e) {
-			e.printStackTrace();
+			logger.exception(e);
 		}
 		logger.finest("not a command workrequest");
 		try {
@@ -1090,7 +1090,7 @@ public abstract class XMLRPCCommand extends XMLable {
 				return ret;
 			}
 		} catch (final InvalidKeyException e) {
-			e.printStackTrace();
+			logger.exception(e);
 		}
 		logger.finest("not a command workalive");
 		try {
@@ -1102,7 +1102,7 @@ public abstract class XMLRPCCommand extends XMLable {
 				return ret;
 			}
 		} catch (final InvalidKeyException e) {
-			e.printStackTrace();
+			logger.exception(e);
 		}
 		logger.finest("not a command workalivebyuid");
 		try {
@@ -1114,7 +1114,7 @@ public abstract class XMLRPCCommand extends XMLable {
 				return ret;
 			}
 		} catch (final InvalidKeyException e) {
-			e.printStackTrace();
+			logger.exception(e);
 		}
 
 		throw new IOException("Unknown XMLRPCCommand");
