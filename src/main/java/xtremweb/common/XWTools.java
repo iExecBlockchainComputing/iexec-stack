@@ -807,19 +807,21 @@ public class XWTools {
 
 		final X509Certificate[] certs = (X509Certificate[]) socket.getSession().getPeerCertificates();
 		final Logger logger = new Logger("XWTools");
-		logger.info(host + " : certs retrieved = " + certs.length);
+		logger.debug(host + " : certs retrieved = " + certs.length);
 		int i = 0;
 		for (final X509Certificate cert : certs) {
 			PrintStream out = System.out;
-			logger.info("CN        = " + cert.getSubjectX500Principal().getName());
-			logger.info("Issuer CN = " + cert.getIssuerX500Principal().getName());
+			logger.debug("CN        = " + cert.getSubjectX500Principal().getName());
+			logger.debug("Issuer CN = " + cert.getIssuerX500Principal().getName());
 			if (sav) {
-				logger.info("Saving to " + host + "_" + i + ".pem");
+				logger.debug("Saving to " + host + "_" + i + ".pem");
 				out = new PrintStream(new File(host + "_" + i++ + ".pem"));
 			}
-			out.println("-----BEGIN CERTIFICATE-----");
-			out.println(new sun.misc.BASE64Encoder().encode(cert.getEncoded()));
-			out.println("-----END CERTIFICATE-----");
+			if((sav) || (logger.debug())) {
+				out.println("-----BEGIN CERTIFICATE-----");
+				out.println(new sun.misc.BASE64Encoder().encode(cert.getEncoded()));
+				out.println("-----END CERTIFICATE-----");
+			}
 			if (sav) {
 				out.close();
 			}
