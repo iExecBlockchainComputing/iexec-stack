@@ -287,7 +287,7 @@ public abstract class XMLRPCCommandSend extends XMLRPCCommand {
 		}
 		logger.finest("not a command sendwork");
 
-		throw new InvalidKeyException("Unknown XMLRPCCommandSend");
+		throw new SAXException("Unknown XMLRPCCommandSend");
 	}
 
 }
