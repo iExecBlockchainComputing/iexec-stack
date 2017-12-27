@@ -128,30 +128,30 @@ public class Worker {
 					defaults.load(def);
 				}
 				setConfig((XWConfigurator) args.getOption(CommandLineOptions.CONFIG));
-				getConfig().store();
+				config.store();
 			} catch (final Exception e) {
 				logger.fatal("can retreive config file");
 			}
 		}
 
-		getConfig().dump(System.out, "XWHEP Worker started ");
+		config.dump(System.out, "XWHEP Worker started ");
 
 		final CommManager commThread = new CommManager();
 
 		boolean configerror = false;
 		String configerrmsg = null;
-		String project = getConfig().getHost().getProject().trim();
+		final String project = config.getHost().getProject();
 		while (isRunning()) {
 			configerror = false;
 			configerrmsg = null;
 			try {
-				final String pass = getConfig().getUser().getPassword();
-				getConfig().setUser(commThread.commClient().getUser(getConfig().getUser().getLogin()));
-				getConfig().getUser().setPassword(pass);
-				getConfig().getUser().setCertificate(null);
+				final String pass = config.getUser().getPassword();
+				config.setUser(commThread.commClient().getUser(config.getUser().getLogin()));
+				config.getUser().setPassword(pass);
+				config.getUser().setCertificate(null);
 
 				if ((project != null) && (project.length() > 0)) {
-					final UID groupuid = getConfig().getUser().getGroup();
+					final UID groupuid = config.getUser().getGroup();
 					configerror = (groupuid == null);
 
 					if (configerror) {
@@ -165,7 +165,7 @@ public class Worker {
 						throw new ConfigurationException("can't retrieve worker group " + groupuid);
 					}
 
-					configerror = (project.compareTo(group.getLabel()) != 0);
+					configerror = (project.trim().compareTo(group.getLabel()) != 0);
 
 					if (configerror) {
 						throw new ConfigurationException("worker is in group \"" + group.getLabel() + "\";"
@@ -193,7 +193,6 @@ public class Worker {
 		}
 
 		configerrmsg = null;
-		project = null;
 
 		commThread.setDaemon(true);
 		commThread.start();
@@ -205,18 +204,18 @@ public class Worker {
 			logger.fatal("Worker::run () uncaught exception" + ex);
 		}
 
-		final ThreadAlive aliveThread = new ThreadAlive(getConfig());
+		final ThreadAlive aliveThread = new ThreadAlive(config);
 		aliveThread.setDaemon(true);
 		aliveThread.start();
 
-		if (getConfig().http()) {
+		if (config.http()) {
 			//
 			// This creates an HTTP server that helps the resource owner
 			// to manage its worker
 			//
 			try {
 				final HTTPServer httpServer = new HTTPServer();
-				httpServer.initComm(getConfig(), new HTTPHandler());
+				httpServer.initComm(config, new HTTPHandler());
 				httpServer.addHandler(new HTTPStatHandler());
 				httpServer.addHandler(HTTPSharedDataHandler.PATH, new HTTPSharedDataHandler());
 				httpServer.start();
@@ -225,7 +224,7 @@ public class Worker {
 			}
 		}
 
-		if (getConfig().getHost().isTracing()) {
+		if (config.getHost().isTracing()) {
 			final XWTracer tracerThread = new XWTracer(true);
 			tracerThread.setDaemon(true);
 			tracerThread.start();

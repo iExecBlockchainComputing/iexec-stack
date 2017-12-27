@@ -99,7 +99,7 @@ public class XWExecPureJava implements XWExec {
 			final File inputFile = new File(workingDir, stdin);
 
 			try {
-				logger.debug("stdin :" + inputFile.getCanonicalPath());
+				logger.debug("stdin :" + inputFile.getAbsolutePath());
 				stdinFile = new FileInputStream(inputFile);
 			} catch (final Exception e) {
 				logger.error("executeNativeJob: cannot open stdin file" + e);

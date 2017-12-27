@@ -59,7 +59,7 @@ public class XWUtilSolaris extends XWUtilDummy {
 		}
 
 		try {
-			workProcess = machine.exec("/usr/sbin/psrinfo -v > " + tempFile.getCanonicalPath());
+			workProcess = machine.exec("/usr/sbin/psrinfo -v > " + tempFile.getAbsolutePath());
 		} catch (final IOException e) {
 			logger.error("XWUtilSolaris : cannot spawn a new process" + e);
 			return -1;

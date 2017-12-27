@@ -79,6 +79,41 @@ public enum AppTypeEnum {
 			}
 			throw new FileNotFoundException(NOBINPATH + this);
 		}
+		/**
+		 * This retrieves application command line arguments
+		 * @param defaultcmdline is the docker command line found from config file; 
+		 * "setxwpwd" are automatically replaced by the value of the parameter pwd
+		 * @param pwd is the current working directory to to set in place of setxwpwd, if any
+		 * @return an empty string
+		 * @since 12.1.0
+		 */
+		//		@Override
+		//		public String getCommandLineArgs(final String defaultcmdline, final String pwd)  {
+		//			final String setxwpwd = "setxwpwd";
+		//			final Logger logger = new Logger(this);
+		//			logger.setLoggerLevel(LoggerLevel.valueOf(System.getProperty(XWPropertyDefs.LOGGERLEVEL.toString())));
+		//			logger.debug("getCommandLineArgs(" + defaultcmdline + "," + pwd + ") = defaultcmdline.replaceAll(" + setxwpwd + "," + pwd + ")" + defaultcmdline.replaceAll(setxwpwd, pwd));
+		//			return defaultcmdline.replaceAll(setxwpwd, pwd);
+		//		}
+		//	},
+		/**
+		 * This retrieves application default command line arguments
+		 * @return "run"
+		 * @since 12.1.0
+		 */
+		@Override
+		public String getStartCommandLineArgs()  {
+			return " run --rm ";
+		}
+		/**
+		 * This retrieves command line arguments to mount PWD volume
+		 * @param pwd represents the path of the present working directory
+		 * @since 12.1.0
+		 */
+		@Override
+		public String getMountVolumeCommandLine(final File pwd)  {
+			return  " --mount type=bind,src=" + pwd.getAbsolutePath() + ",dst=" + pwd.getAbsolutePath();
+		}
 	},
 	/**
 	 * On Dec 2nd, 2011, this denotes our 1st shared application. This denotes
@@ -202,7 +237,23 @@ public enum AppTypeEnum {
 	public File getPath() throws FileNotFoundException {
 		throw new FileNotFoundException(NOBINPATH + this);
 	}
-
+	/**
+	 * This retrieves application default command line arguments
+	 * @return an empty string
+	 * @since 12.1.0
+	 */
+	public String getStartCommandLineArgs() {
+		return "";
+	}
+	/**
+	 * This retrieves command line arguments to mount PWD volume
+	 * @param pwd represents the path of the present working directory
+	 * @return an empty string
+	 * @since 12.1.0
+	 */
+	public String getMountVolumeCommandLine(final File pwd) {
+		return "";
+	}
 	/**
 	 * This dumps path
 	 *

@@ -491,7 +491,7 @@ public class XWTools {
 			}
 		}
 		if ((!dir.exists()) && (!dir.mkdirs())) {
-			throw new IOException("can't create directory : " + dir.getCanonicalPath());
+			throw new IOException("can't create directory : " + dir.getAbsolutePath());
 		}
 	}
 

@@ -32,9 +32,7 @@ dependencies {
 
 
 import org.apache.tools.ant.filters.ReplaceTokens
-
 import java.time.Instant
-
 
 ant.importBuild 'jni.xml'
 processResources.dependsOn jni
@@ -57,6 +55,7 @@ task createVersion(type: Copy) {
                                    VBRANCH   : 'git rev-parse --abbrev-ref HEAD'.execute().text.trim()
     ])
 }
+
 createVersion.dependsOn clean
 
 // the createVersion task should be called before compileJava
@@ -470,6 +469,7 @@ task copyLinux(type: Copy) {
                                        PASSWORD   : '${xtremweb.vworker.password}'])
     }
 }
+
 
 
 task buildAll {

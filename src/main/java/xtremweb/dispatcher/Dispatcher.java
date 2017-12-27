@@ -137,12 +137,16 @@ public class Dispatcher {
 
 		timer = new Timer();
 
-		db = new DBInterface(config);
+		try {
+			db = new DBInterface(config);
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
 
 		tset = new HashTaskSet();
 		try {
 			setScheduler(
-					(Scheduler) (Class.forName(getConfig().getProperty(XWPropertyDefs.SCHEDULERCLASS)).newInstance()));
+					(Scheduler) (Class.forName(config.getProperty(XWPropertyDefs.SCHEDULERCLASS)).newInstance()));
 		} catch (final Exception e) {
 			logger.exception(e);
 			logger.fatal(e.toString());
@@ -156,7 +160,7 @@ public class Dispatcher {
 		}
 
 		try {
-			getProxyValidator().setCACertificateEntries(getConfig().getKeyStore());
+			getProxyValidator().setCACertificateEntries(config.getKeyStore());
 		} catch (final Exception e) {
 			logger.exception("Can't add CA certificates to keystore", e);
 		}
@@ -181,31 +185,31 @@ public class Dispatcher {
 		try {
 
 			@SuppressWarnings("unused")
-			final AccessLogger accessLogger = new AccessLogger(getConfig().getFile(XWPropertyDefs.HOMEDIR),
+			final AccessLogger accessLogger = new AccessLogger(config.getFile(XWPropertyDefs.HOMEDIR),
 					XWTools.getLocalHostName());
 
 			final TCPServer tcpServer = new TCPServer();
-			tcpServer.initComm(getConfig(), new TCPHandler(getConfig()));
+			tcpServer.initComm(config, new TCPHandler(config));
 			tcpServer.start();
 
 			logger.warn("UDP server not started");
 
-			if (getConfig().http()) {
+			if (config.http()) {
 				final HTTPServer httpServer = new HTTPServer();
-				// httpServer.initComm(getConfig(), new
-				// HTTPHandler(getConfig()));
+				// httpServer.initComm(config, new
+				// HTTPHandler(config));
 
 				// Handler needs HTTP session to handle openid call returns
 				final SessionHandler main_sessionHandler = new SessionHandler();
-				main_sessionHandler.setHandler(new HTTPHandler(getConfig()));
-				httpServer.initComm(getConfig(), main_sessionHandler);
+				main_sessionHandler.setHandler(new HTTPHandler(config));
+				httpServer.initComm(config, main_sessionHandler);
 				httpServer.addHandler(HTTPHandler.PATH, main_sessionHandler);
 
 				// OpenId Handler needs HTTP session
 				// final SessionHandler opid_sessionHandler = new
 				// SessionHandler();
 				// final HTTPOpenIdHandler oh = new HTTPOpenIdHandler();
-				// HTTPOpenIdHandler.setCACertificateEntries(getConfig().getKeyStore());
+				// HTTPOpenIdHandler.setCACertificateEntries(config.getKeyStore());
 				// opid_sessionHandler.setHandler(oh);
 				// httpServer.addHandler(HTTPOpenIdHandler.handlerPath,
 				// opid_sessionHandler);
@@ -216,12 +220,14 @@ public class Dispatcher {
 				oauth_sessionHandler.setHandler(oah);
 				httpServer.addHandler(HTTPOAuthHandler.handlerPath, oauth_sessionHandler);
 
-				// JWT Handler needs HTTP session
-				final SessionHandler jwt_sessionHandler = new SessionHandler();
-				final HTTPJWTEthereumAuthHandler jwth = new HTTPJWTEthereumAuthHandler();
-				jwt_sessionHandler.setHandler(jwth);
-				httpServer.addHandler(HTTPJWTEthereumAuthHandler.handlerPath, jwt_sessionHandler);
-
+				if((config.getProperty(XWPropertyDefs.JWTETHSECRET) != null) &&
+						(config.getProperty(XWPropertyDefs.JWTETHISSUER) != null)) { 
+					// JWT Handler needs HTTP session
+					final SessionHandler jwt_sessionHandler = new SessionHandler();
+					final HTTPJWTEthereumAuthHandler jwth = new HTTPJWTEthereumAuthHandler();
+					jwt_sessionHandler.setHandler(jwth);
+					httpServer.addHandler(HTTPJWTEthereumAuthHandler.handlerPath, jwt_sessionHandler);
+				}
 				// StatsHandler does not need HTTP session
 				httpServer.addHandler(HTTPStatsHandler.PATH, new HTTPStatsHandler());
 				httpServer.start();
@@ -231,7 +237,7 @@ public class Dispatcher {
 			logger.fatal("Dispatcher main(): " + e);
 		}
 
-		final Collection<String> services = XWTools.split(getConfig().getProperty(XWPropertyDefs.SERVICES));
+		final Collection<String> services = XWTools.split(config.getProperty(XWPropertyDefs.SERVICES));
 		if (services != null) {
 			for (final Iterator<String> iter = services.iterator(); iter.hasNext();) {
 				try {
@@ -246,13 +252,13 @@ public class Dispatcher {
 		}
 
 		logger.info("XWHEP Dispatcher(" + CommonVersion.getCurrent().full() + ") started [" + new Date() + "]");
-		logger.info("DB vendor  = " + getConfig().getProperty(XWPropertyDefs.DBVENDOR));
-		logger.info("mileStone  = " + getConfig().getProperty(XWPropertyDefs.MILESTONES));
-		logger.info("Time out   = " + getConfig().getProperty(XWPropertyDefs.TIMEOUT));
-		logger.info("Disk opt'd = " + getConfig().getProperty(XWPropertyDefs.OPTIMIZEDISK));
-		logger.info("Net  opt'd = " + getConfig().getProperty(XWPropertyDefs.OPTIMIZENETWORK));
-		logger.info("NIO        = " + getConfig().getProperty(XWPropertyDefs.JAVANIO));
-		getConfig().dump(System.out, "XWHEP Dispatcher started ");
+		logger.info("DB vendor  = " + config.getProperty(XWPropertyDefs.DBVENDOR));
+		logger.info("mileStone  = " + config.getProperty(XWPropertyDefs.MILESTONES));
+		logger.info("Time out   = " + config.getProperty(XWPropertyDefs.TIMEOUT));
+		logger.info("Disk opt'd = " + config.getProperty(XWPropertyDefs.OPTIMIZEDISK));
+		logger.info("Net  opt'd = " + config.getProperty(XWPropertyDefs.OPTIMIZENETWORK));
+		logger.info("NIO        = " + config.getProperty(XWPropertyDefs.JAVANIO));
+		config.dump(System.out, "XWHEP Dispatcher started ");
 	}
 
 	public static void shutdown() {

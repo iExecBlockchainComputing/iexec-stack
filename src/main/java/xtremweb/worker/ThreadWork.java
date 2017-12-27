@@ -241,7 +241,15 @@ public class ThreadWork extends Thread {
 
 		sandboxBinFile = null;
 		if (Worker.getConfig().getProperty(XWPropertyDefs.SANDBOXPATH) != null) {
-			sandboxBinFile = new File(Worker.getConfig().getProperty(XWPropertyDefs.SANDBOXPATH).trim());
+			try {
+				final String sandboxAttr = Worker.getConfig().getProperty(XWPropertyDefs.SANDBOXPATH).trim().toUpperCase();
+				final AppTypeEnum appTypeEnum = AppTypeEnum.valueOf(sandboxAttr);
+				sandboxBinFile = appTypeEnum.getPath();
+				logger.debug("sandboxBinFile = " + sandboxBinFile);
+			} catch(final Exception e) {
+				sandboxBinFile = new File(Worker.getConfig().getProperty(XWPropertyDefs.SANDBOXPATH).trim());
+				logger.debug("sandboxBinFile = " + sandboxBinFile);
+			}
 		}
 		Runtime.getRuntime().addShutdownHook(new Thread("ThreadWorkCleaner") {
 			@Override
@@ -324,7 +332,7 @@ public class ThreadWork extends Thread {
 					status = executeJob();
 				} catch (final Throwable e) {
 					killed = true;
-					logger.exception("job launch error", new Exception(e));
+					logger.exception("job launch error", e);
 					status = StatusEnum.ERROR;
 					currentWork.clean();
 					currentWork.setErrorMsg(e.getMessage());
@@ -848,7 +856,7 @@ public class ThreadWork extends Thread {
 			if (!scriptPath.exists()) {
 				throw new IOException("can find local script " + scriptPath);
 			}
-			ret = scriptPath.getCanonicalPath();
+			ret = scriptPath.getAbsolutePath();
 		}
 
 		return ret;
@@ -891,7 +899,7 @@ public class ThreadWork extends Thread {
 				throw new IOException("can find local script " + scriptPath);
 			}
 			scriptPath.setExecutable(true);
-			ret = scriptPath.getCanonicalPath();
+			ret = scriptPath.getAbsolutePath();
 		}
 
 		return ret;
@@ -928,7 +936,11 @@ public class ThreadWork extends Thread {
 		final String appName = app.getName();
 		final String appType = (at != null ? at.toString() : null);
 
-		if ((appType != null) && Worker.getConfig().getLocalApps().contains(appType)) {
+		final Boolean containsAppType = Worker.getConfig().getLocalApps() == null ? 
+				false :
+					Worker.getConfig().getLocalApps().contains(appType);
+
+		if ((appType != null) && containsAppType) {
 			logger.debug("Applications " + appName + " (" + appType + ") is a shared app");
 			final String scriptPathName = getLaunchScriptPath();
 			appBinPath = new File(scriptPathName);
@@ -962,7 +974,15 @@ public class ThreadWork extends Thread {
 				sbBinPath = sandboxBinFile;
 
 				if (Worker.getConfig().getProperty(XWPropertyDefs.SANDBOXSTARTARGS) != null) {
-					sbArgs.append(Worker.getConfig().getProperty(XWPropertyDefs.SANDBOXSTARTARGS));
+					try {
+						final String sandboxAttr = Worker.getConfig().getProperty(XWPropertyDefs.SANDBOXPATH).trim().toUpperCase();
+						final AppTypeEnum appTypeEnum = AppTypeEnum.valueOf(sandboxAttr);
+						sbArgs.append(appTypeEnum.getStartCommandLineArgs());
+						sbArgs.append(appTypeEnum.getMountVolumeCommandLine(currentWork.getScratchDir()));
+						sbArgs.append(appTypeEnum.getMountVolumeCommandLine(appBinPath));
+						sbArgs.append(" " + Worker.getConfig().getProperty(XWPropertyDefs.SANDBOXSTARTARGS));
+					} catch(final Exception e) {
+					}
 				}
 			}
 		}
@@ -972,7 +992,7 @@ public class ThreadWork extends Thread {
 		}
 
 		if (sbBinPath != null) {
-			ret.append(sbBinPath.getCanonicalPath());
+			ret.append(sbBinPath.getAbsolutePath());
 			if (sbArgs.length() > 0) {
 				ret.append(" " + sbArgs);
 			}
@@ -982,7 +1002,7 @@ public class ThreadWork extends Thread {
 			ret.append(" " + javajar);
 		}
 
-		final String path = appBinPath.getCanonicalPath();
+		final String path = appBinPath.getAbsolutePath();
 		ret.append(" " + path);
 		addEnvVar(XWBINPATHNAME, path);
 
@@ -1093,9 +1113,9 @@ public class ThreadWork extends Thread {
 
 		logger.debug("installFile = " + fData);
 
-		zipper.setFileName(fData.getCanonicalPath());
+		zipper.setFileName(fData.getAbsolutePath());
 		try {
-			zipper.unzip(home.getCanonicalPath());
+			zipper.unzip(home.getAbsolutePath());
 			return home;
 		} catch (final Exception e) {
 			logger.exception(e);
@@ -1160,7 +1180,7 @@ public class ThreadWork extends Thread {
 		// if (uri != null) {
 		// logger.debug("prepareWorkingDirectory : using app library");
 		// File libFile = installFile(uri, currentWork.getScratchDir());
-		// addEnvVar(XWLIBPATHNAME, libFile.getCanonicalPath());
+		// addEnvVar(XWLIBPATHNAME, libFile.getAbsolutePath());
 		// libFile = null;
 		// }
 
@@ -1180,7 +1200,7 @@ public class ThreadWork extends Thread {
 				} else {
 					dirinFile = uriPassThrough(dirinuri, currentWork.getScratchDir());
 				}
-				addEnvVar(XWDIRINPATHNAME, dirinFile.getCanonicalPath());
+				addEnvVar(XWDIRINPATHNAME, dirinFile.getAbsolutePath());
 			} catch (final Exception e) {
 				logger.exception(e);
 			}
@@ -1193,7 +1213,7 @@ public class ThreadWork extends Thread {
 		final URI stdinuri = currentWork.getStdin() != null ? currentWork.getStdin() : app.getDefaultStdin();
 		if ((stdinuri != null) && (!stdinuri.isNull())) {
 			final File stdinFile = installFile(stdinuri, currentWork.getScratchDir());
-			addEnvVar(XWSTDINPATHNAME, stdinFile.getCanonicalPath());
+			addEnvVar(XWSTDINPATHNAME, stdinFile.getAbsolutePath());
 		} else {
 			logger.debug("prepareWorkingDirectory : job has no stdin");
 		}
@@ -1205,7 +1225,7 @@ public class ThreadWork extends Thread {
 		if (basedirinuri != null) {
 			logger.debug("prepareWorkingDirectory : using base app dirin");
 			final File baseDirinFile = installFile(basedirinuri, currentWork.getScratchDir());
-			addEnvVar(XWDIRINPATHNAME, baseDirinFile.getCanonicalPath());
+			addEnvVar(XWDIRINPATHNAME, baseDirinFile.getAbsolutePath());
 		}
 
 		zipper.resetFilesList();
@@ -1273,7 +1293,7 @@ public class ThreadWork extends Thread {
 			CommManager.getInstance().commClient().lock(resulturi);
 			islocked = true;
 			resultFile = CommManager.getInstance().commClient().getContentFile(resulturi);
-			final String resultFilePath = resultFile.getCanonicalPath();
+			final String resultFilePath = resultFile.getAbsolutePath();
 			logger.debug("ThreadWork#zipResult() " + resulturi + " " + "resultFile = " + resultFilePath);
 
 			//
@@ -1383,7 +1403,7 @@ public class ThreadWork extends Thread {
 		}
 
 		logger.debug("" + workUID + " executing on dir " + currentWork.getScratchDirName() + " stdin "
-				+ (stdin == null ? "null" : stdin.getCanonicalPath()));
+				+ (stdin == null ? "null" : stdin.getAbsolutePath()));
 
 		try (final FileInputStream in = (stdin != null ? new FileInputStream(stdin) : null);
 				final FileOutputStream out = new FileOutputStream(new File(scratchDir, XWTools.STDOUT));

@@ -814,17 +814,17 @@ public final class MainFrame extends JFrame implements ActionListener {
 
 		JOptionPane.showMessageDialog(this,
 				"Current version : " + CommonVersion.getCurrent() + "\nServer  version : " + versionWarn
-						+ "\nWritten by Oleg Lodygensky\n" + "LAL IN2P3 CNRS France - " + url
-						+ "\n\nBased on XtremWeb 1.8.0 by LRI INRIA France\n\n" + "This software is under GPL license\n"
-						+ "THIS SOFTWARE IS PROVIDED \"AS IS\" AND ANY EXPRESSED OR IMPLIED WARRANTIES,\n"
-						+ "INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS\n"
-						+ "FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS\n"
-						+ "BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL\n"
-						+ "DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n"
-						+ "LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY\n"
-						+ "OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE\n"
-						+ "OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF\n"
-						+ "THE POSSIBILITY OF SUCH DAMAGE.\n\n",
+				+ "\nWritten by Oleg Lodygensky\n" + "LAL IN2P3 CNRS France - " + url
+				+ "\n\nBased on XtremWeb 1.8.0 by LRI INRIA France\n\n" + "This software is under GPL license\n"
+				+ "THIS SOFTWARE IS PROVIDED \"AS IS\" AND ANY EXPRESSED OR IMPLIED WARRANTIES,\n"
+				+ "INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS\n"
+				+ "FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS\n"
+				+ "BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL\n"
+				+ "DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n"
+				+ "LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY\n"
+				+ "OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE\n"
+				+ "OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF\n"
+				+ "THE POSSIBILITY OF SUCH DAMAGE.\n\n",
 				"XWHEP Version", JOptionPane.INFORMATION_MESSAGE);
 	}
 
@@ -846,7 +846,7 @@ public final class MainFrame extends JFrame implements ActionListener {
 						"Connection error!!!\n\n" + "This may be due to :\n" + "  - server is not reachable;\n"
 								+ "  - communication layer is wrong" + " (try another one in 'Comm' menu);\n"
 								+ "  - wrong login/password.",
-						TableModel.WARNING, JOptionPane.ERROR_MESSAGE);
+								TableModel.WARNING, JOptionPane.ERROR_MESSAGE);
 				startWorker.setEnabled(false);
 			}
 
@@ -970,62 +970,55 @@ public final class MainFrame extends JFrame implements ActionListener {
 		new Thread() {
 			@Override
 			public void run() {
-				try {
-					setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+				setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
-					// try to find a free port to ensure worker can start
-					// a new HTTP server in order to be able to stop the worker
-					workerPort = client.getConfig().getPort(Connection.HTTPWORKERPORT);
+				// try to find a free port to ensure worker can start
+				// a new HTTP server in order to be able to stop the worker
+				workerPort = client.getConfig().getPort(Connection.HTTPWORKERPORT);
 
-					boolean success = false;
+				boolean success = false;
 
-					final JOptionPane pane = new JOptionPane("Please wait   " + cursors[0],
-							JOptionPane.INFORMATION_MESSAGE);
-					pane.setVisible(true);
-					int i = 0;
-					while (!success) {
-						try {
-							workerURL = new URL("http://localhost:" + workerPort + "/");
-							final URLConnection connection = workerURL.openConnection();
-							connection.connect();
-							workerPort++;
+				final JOptionPane pane = new JOptionPane("Please wait   " + cursors[0],
+						JOptionPane.INFORMATION_MESSAGE);
+				pane.setVisible(true);
+				int i = 0;
+				while (!success) {
+					try {
+						workerURL = new URL("http://localhost:" + workerPort + "/");
+						final URLConnection connection = workerURL.openConnection();
+						connection.connect();
+						workerPort++;
 
-							pane.setMessage("Please wait   " + cursors[++i % 4]);
-						} catch (final Exception e) {
-							logger.exception(e);
-							success = true;
-						}
+						pane.setMessage("Please wait   " + cursors[++i % 4]);
+					} catch (final Exception e) {
+						logger.exception(e);
+						success = true;
 					}
-
-					pane.setVisible(true);
-
-					// create a configuration file
-					final XWConfigurator clone = (XWConfigurator) client.getConfig().clone();
-					clone.setProperty(XWPropertyDefs.ROLE, XWRole.WORKER.toString());
-					clone.setProperty(Connection.HTTPPORT.toString(), "" + workerPort);
-					clone.setProperty(XWPropertyDefs.STARTSERVERHTTP, "true");
-
-					final File out = new File(System.getProperty(XWPropertyDefs.JAVATMPDIR.toString()),
-							"workerconf.txt");
-
-					clone.setConfigFile(out);
-					clone.setProperty(XWPropertyDefs.CONFIGFILE, out.getCanonicalPath());
-
-					clone.store("# Launched by client", out);
-
-					final String[] argv = { "--xwconfig", out.getCanonicalPath() };
-
-					setCursor(null);
-
-					final Worker worker = new Worker();
-					worker.initialize(argv);
-					worker.run();
-				} catch (final IOException e) {
-					new JOptionPane("Worker launch error : " + e, JOptionPane.ERROR_MESSAGE).setVisible(true);
-					startWorker.setEnabled(true);
-					showWorker.setEnabled(false);
-					setCursor(null);
 				}
+
+				pane.setVisible(true);
+
+				// create a configuration file
+				final XWConfigurator clone = (XWConfigurator) client.getConfig().clone();
+				clone.setProperty(XWPropertyDefs.ROLE, XWRole.WORKER.toString());
+				clone.setProperty(Connection.HTTPPORT.toString(), "" + workerPort);
+				clone.setProperty(XWPropertyDefs.STARTSERVERHTTP, "true");
+
+				final File out = new File(System.getProperty(XWPropertyDefs.JAVATMPDIR.toString()),
+						"workerconf.txt");
+
+				clone.setConfigFile(out);
+				clone.setProperty(XWPropertyDefs.CONFIGFILE, out.getAbsolutePath());
+
+				clone.store("# Launched by client", out);
+
+				final String[] argv = { "--xwconfig", out.getAbsolutePath() };
+
+				setCursor(null);
+
+				final Worker worker = new Worker();
+				worker.initialize(argv);
+				worker.run();
 			}
 		}.start();
 

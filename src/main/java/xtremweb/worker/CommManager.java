@@ -611,7 +611,9 @@ public final class CommManager extends Thread {
 
 		final AppTypeEnum appType = app.getType();
 		final String apptypestr = appType.toString();
-		final boolean localapp = Worker.getConfig().getLocalApps().contains(apptypestr);
+		final boolean localapp = Worker.getConfig().getLocalApps() == null ? 
+				false: 
+					Worker.getConfig().getLocalApps().contains(apptypestr);
 
 		logger.error("CommManager : can't use app library; please use executables");
 		uri = app.getBinary(cpu, os);
@@ -1128,6 +1130,7 @@ public final class CommManager extends Thread {
 					try {
 						downloadApp(newWork.getApplication());
 					} catch (final Exception e) {
+						logger.exception("Download app err : ", e);
 						throw new IOException("can't download app : " + e.getMessage());
 					}
 
