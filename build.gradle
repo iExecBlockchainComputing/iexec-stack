@@ -204,6 +204,8 @@ task copyXwhepgenkeys(type: Copy) {
         from(scripts)
         include('xwhepgenkeys.template')
         rename('xwhepgenkeys.template', 'xwhepgenkeys')
+        include('xwhepupdateopenidcerts.template')
+        rename('xwhepupdateopenidcerts.template', 'xwhepupdateopenidcerts')
 
         def props = new Properties()
         file(resources+"/conf"+'/xwconfigure.values').withInputStream {
