@@ -88,6 +88,7 @@ def build = root + '/build'
 def libXtremWeb = root + '/libXtremWeb'
 def src = root + '/src'
 def resources = src + '/main/resources'
+def conf = resources + '/conf'
 def benchmark = resources + '/benchmark'
 def templates = resources + '/templates'
 def doc = resources + '/doc'
@@ -202,11 +203,38 @@ task chmodBin(type: Exec) {
     )
 }
 
+// define a method to populate customProperties
+ext.getCustomProperties = {
+
+    def props = new Properties()
+    // add all properties from conf file
+    file(conf + "/xwconfigure.values").withInputStream { props.load(it) }
+    for (String key : props.stringPropertyNames()) {
+        props.setProperty(key, props.getProperty(key).replace('\'', ''))
+    }
+
+    // add other custom properties
+    props.setProperty("ADMINUID", 'uuidgen | tr \"A-Z\" \"a-z\"'.execute().text.trim())
+    props.setProperty("WORKERUID", 'uuidgen | tr \"A-Z\" \"a-z\"'.execute().text.trim())
+    props.setProperty("VWORKERUID", 'uuidgen | tr \"A-Z\" \"a-z\"'.execute().text.trim())
+    props.setProperty("ADMINGROUPUID", 'uuidgen | tr \"A-Z\" \"a-z\"'.execute().text.trim())
+    props.setProperty("PUBLICWORKERSGROUPUID", 'uuidgen | tr \"A-Z\" \"a-z\"'.execute().text.trim())
+    props.setProperty("XWVERSION", version)
+
+    return props
+}
+
+task copySQLCreateTables(type: Copy) {
+    from templates + "/xwhep-core-tables-create-tables.sql.in"
+    into(dist + "/bin/db-maintenance/")
+    rename { fileName -> fileName.replace('.in', '') }
+    filter(ReplaceTokens, tokens: getCustomProperties())
+}
 
 task copyWindowsClient(type: Copy) {
     into dist + "/installers/win32/xwhep.client"
 
-    into("/conf"){
+    into("/conf") {
         from templates + '/xtremweb.client.conf.in'
         rename { fileName -> fileName.replace('.in', '') }
         filter(ReplaceTokens, tokens: [LAUNCHERURL: 'http://nohost/',
@@ -214,11 +242,11 @@ task copyWindowsClient(type: Copy) {
                                        PASSWORD   : ''])
     }
 
-    into("/lib"){
+    into("/lib") {
         from libXtremWeb + "/bcprov-jdk15on-151.jar"
     }
 
-    into("/lib"){
+    into("/lib") {
         from libXtremWeb + "/bcpkix-jdk15on-151.jar"
     }
 }
@@ -226,11 +254,11 @@ task copyWindowsClient(type: Copy) {
 task copyWindowsWorker(type: Copy) {
     into dist + '/installers/win32/xwhep.worker'
 
-    into("."){
+    into(".") {
         from resources + "/installers/win32/innoSetup"
     }
 
-    into("/conf"){
+    into("/conf") {
         from templates + 'xtremweb.worker.conf.in'
         rename { fileName -> fileName.replace('.in', '') }
         filter(ReplaceTokens, tokens: [LAUNCHERURL: 'http://nohost/',
@@ -242,7 +270,7 @@ task copyWindowsWorker(type: Copy) {
         from resources + "/wrapper/conf/wrapper-worker.conf"
     }
 
-    into("/misc"){
+    into("/misc") {
         from resources + "/misc/xwwrk.ico"
     }
 
@@ -254,11 +282,11 @@ task copyWindowsWorker(type: Copy) {
         from resources + "/wrapper/bin"
     }
 
-    into("/lib"){
+    into("/lib") {
         from installers + "/win32/cygwin1.dll"
     }
 
-    into("/lib"){
+    into("/lib") {
         from resources + "/wrapper/lib/"
     }
 }
@@ -266,11 +294,11 @@ task copyWindowsWorker(type: Copy) {
 task copyWindowsVWorker(type: Copy) {
     into dist + '/installers/win32/xwhep.vworker'
 
-    into("."){
+    into(".") {
         from resources + "/installers/win32/innoSetup"
     }
 
-    into("/conf"){
+    into("/conf") {
         from templates + 'xtremweb.worker.conf.in'
         rename { fileName -> fileName.replace('.in', '') }
         filter(ReplaceTokens, tokens: [LAUNCHERURL: 'http://nohost/',
@@ -282,15 +310,15 @@ task copyWindowsVWorker(type: Copy) {
         from resources + "/wrapper/conf/wrapper-worker.conf"
     }
 
-    into("/lib"){
+    into("/lib") {
         from installers + "/win32/cygwin1.dll"
     }
 
-    into("/lib"){
+    into("/lib") {
         from resources + "/wrapper/lib/"
     }
 
-    into("/misc"){
+    into("/misc") {
         from resources + "/misc/xwwrk.ico"
     }
 
@@ -312,7 +340,7 @@ task makeMacDir(type: Exec) {
 task copyMac(type: Copy) {
     dependsOn(makeMacDir)
     into(distMacInstallers)
-    into("."){
+    into(".") {
         from macInstallers
         filter(ReplaceTokens, tokens: [XWVERSION : "${version}".toString(),
                                        SYSTEMUSER: 'xwhep'])
@@ -324,13 +352,13 @@ task copyMacClient(type: Copy) {
 
     into(distMacInstallers + '/xwhep.client/installer/PckRoot')
 
-    into("/Applications/xwhep.client/conf"){
+    into("/Applications/xwhep.client/conf") {
         from templates + '/xtremweb.client.conf.in'
         rename { fileName -> fileName.replace('xtremweb.client.conf.in', 'xtremweb.client.conf') }
-        filter(ReplaceTokens, tokens: [LAUNCHERURL: 'http://nohost/',
-                                       KEYDIR      : '.',
-                                       DEFAULTUSER      : '',
-                                       DEFAULTPASSWORD   : ''])
+        filter(ReplaceTokens, tokens: [LAUNCHERURL    : 'http://nohost/',
+                                       KEYDIR         : '.',
+                                       DEFAULTUSER    : '',
+                                       DEFAULTPASSWORD: ''])
     }
 
     into("/Applications/xwhep.client/lib") {
@@ -345,23 +373,23 @@ task copyMacWorker(type: Copy) {
 
     into(distMacInstallers + '/xwhep.worker/installer/PckRoot')
 
-    into(privateEtc + "/xwhep.worker/conf"){
+    into(privateEtc + "/xwhep.worker/conf") {
         from templates + '/xtremweb.worker.conf.in'
         rename { fileName -> fileName.replace('xtremweb.worker.conf.in', 'xtremweb.worker.conf') }
-        filter(ReplaceTokens, tokens: [LAUNCHERURL: 'http://nohost/',
-                                       DATASERVERS      : '${data.servers}',
-                                       KEYDIR      : privateEtc + '/xwhep.worker',
-                                       DEFAULTUSER      : '${xtremweb.worker.login}',
-                                       DEFAULTPASSWORD   : '${xtremweb.worker.password}'])
+        filter(ReplaceTokens, tokens: [LAUNCHERURL    : 'http://nohost/',
+                                       DATASERVERS    : '${data.servers}',
+                                       KEYDIR         : privateEtc + '/xwhep.worker',
+                                       DEFAULTUSER    : '${xtremweb.worker.login}',
+                                       DEFAULTPASSWORD: '${xtremweb.worker.password}'])
     }
 
-    into(privateEtc + "/xwhep.worker"){
+    into(privateEtc + "/xwhep.worker") {
         from misc
         include('worker-start.html')
         rename('worker-start.html', 'index.html')
     }
 
-    into(privateEtc + "/xwhep.worker/conf"){
+    into(privateEtc + "/xwhep.worker/conf") {
         from misc
         include('xwhep.sb')
 
@@ -372,23 +400,23 @@ task copyMacVworker(type: Copy) {
     dependsOn(copyMac)
     into(distMacInstallers + '/xwhep.vworker/installer/PckRoot')
 
-    into(privateEtc + "/xwhep.worker/conf"){
+    into(privateEtc + "/xwhep.worker/conf") {
         from templates + '/xtremweb.worker.conf.in'
         rename { fileName -> fileName.replace('xtremweb.worker.conf.in', 'xtremweb.worker.conf') }
-        filter(ReplaceTokens, tokens: [LAUNCHERURL: 'http://nohost/',
-                                       DATASERVERS      : '${data.servers}',
-                                       KEYDIR      : privateEtc + '/xwhep.worker',
-                                       DEFAULTUSER      : '${xtremweb.vworker.login}',
-                                       DEFAULTPASSWORD   : '${xtremweb.vworker.password}'])
+        filter(ReplaceTokens, tokens: [LAUNCHERURL    : 'http://nohost/',
+                                       DATASERVERS    : '${data.servers}',
+                                       KEYDIR         : privateEtc + '/xwhep.worker',
+                                       DEFAULTUSER    : '${xtremweb.vworker.login}',
+                                       DEFAULTPASSWORD: '${xtremweb.vworker.password}'])
     }
 
-    into(privateEtc + "/xwhep.worker"){
+    into(privateEtc + "/xwhep.worker") {
         from misc
         include('worker-start.html')
         rename('worker-start.html', 'index.html')
     }
 
-    into(privateEtc + "/xwhep.worker/conf"){
+    into(privateEtc + "/xwhep.worker/conf") {
         from misc
         include('xwhep.sb')
     }
@@ -398,13 +426,13 @@ task copyMacServer(type: Copy) {
     dependsOn(copyMac)
     into(distMacInstallers + '/xwhep.server/installer/PckRoot')
 
-    into("/Applications/xwhep.server/conf"){
+    into("/Applications/xwhep.server/conf") {
         from templates + '/xtremweb.server.conf.in'
         rename { fileName -> fileName.replace('xtremweb.server.conf.in', 'xtremweb.server.conf') }
-        filter(ReplaceTokens, tokens: [LAUNCHERURL: 'http://nohost/',
-                                       KEYDIR      : privateEtc + '/xwhep.server',
-                                       DEFAULTUSER      : '',
-                                       DEFAULTPASSWORD   : ''])
+        filter(ReplaceTokens, tokens: [LAUNCHERURL    : 'http://nohost/',
+                                       KEYDIR         : privateEtc + '/xwhep.server',
+                                       DEFAULTUSER    : '',
+                                       DEFAULTPASSWORD: ''])
     }
 
     into('/Applications/xwhep.server/doc') {
@@ -431,7 +459,7 @@ task copyLinux(type: Copy) {
     dependsOn(copyLinuxInstallers)
 
     into dist
-    
+
     into("/conf") {
         from misc + "/xwconfigure.values"
     }
@@ -461,7 +489,7 @@ task copyLinux(type: Copy) {
                                        PASSWORD   : '${xtremweb.worker.password}'])
     }
 
-    into("/conf"){
+    into("/conf") {
         from templates + '/xtremweb.worker.conf.in'
         rename { fileName -> fileName.replace('xtremweb.worker.conf.in', 'xtremweb.vworker.conf') }
         filter(ReplaceTokens, tokens: [LAUNCHERURL: 'http://nohost/',
@@ -473,7 +501,8 @@ task copyLinux(type: Copy) {
 
 
 task buildAll {
-    dependsOn(chmodBin, copyWindowsClient, copyWindowsWorker, copyWindowsVWorker, copyMacClient, copyMacWorker, copyMacVworker, copyMacServer, copyLinux)
+    dependsOn(chmodBin, copyWindowsClient, copyWindowsWorker, copyWindowsVWorker, copyMacClient, copyMacWorker,
+            copyMacVworker, copyMacServer, copyLinux, copySQLCreateTables)
 }
 
 buildAll.dependsOn getTasksByName('build', true)
