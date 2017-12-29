@@ -234,6 +234,21 @@ task copyXwhepgenkeys(type: Copy) {
 
 }
 
+task cleanKeystoreDir(type: Delete) {
+    delete fileTree(dir: dist + "/keystore")
+}
+
+task generateKeys(type: Exec) {
+    dependsOn(copyXwhepgenkeys, cleanKeystoreDir)
+    commandLine("sh", "-c",
+            distBin + '/xwhepgenkeys'+ " && " +
+            "if [ \$? -eq 0 ] ; then echo \"Keystores generated\" ; else echo \"ERROR: keystores generation error\"; exit 1 ; fi" + " && " +
+            distBin + '/xwhepupdateopenidcerts'+ " && " +
+            "if [ \$? -eq 0 ] ; then echo \"OpenID server certificates inserted in XWHEP server keystore\" ; else echo \"ERROR: can't insert OpenID server certificates into XWHEP server keystore\" ; fi"
+    )
+}
+
+
 task chmodBin(type: Exec) {
     dependsOn(copyMiscToDist, copyScripts, copyXwconfigure, copyXwhepgenkeys, copyXwsetversion, mkdirKeystore)
     commandLine("sh", "-c",
