@@ -43,11 +43,11 @@
 ROLE=client
 
 # Next defines URL where launcher can find XtremWeb binary
-LAUNCHERURL=@LAUNCHERURL@
+LAUNCHERURL=@XWUPGRADEURL@
 
 ####### XtremWeb dispatcher
 # There put the location of the root XtremWeb server
-DISPATCHERS=@DISPATCHERS@
+DISPATCHERS=@XWSERVER@
 # Next line shows how to set several servers (names must be delimited by space or tabulation)
 #DISPATCHERS=host1 host2 host 3
 
@@ -115,8 +115,8 @@ DISPATCHERS=@DISPATCHERS@
 #MANDATINGLOGIN=
 
 # Login and password to connect to the server (required)
-LOGIN=@DEFAULTUSER@
-PASSWORD=@DEFAULTPASSWORD@
+LOGIN=@XWADMINLOGIN@
+PASSWORD=@XWADMINPASSWORD@
 
 # next defines whether to use NIO
 # default value : true
@@ -322,6 +322,10 @@ SSLKEYSTORE=../keystore/xwhepclient.keys
 #  WARN
 #  ERROR
 LOGGERLEVEL=INFO
+
+SSLKEYPASSPHRASE=@SSLKEYCLIENTPASSWORD@
+SSLKEYPASSWORD=@SSLKEYCLIENTPASSWORD@
+SSLKeyStore=@SSLKEYSTORECLIENT@
 
 #####
 ##### End of File

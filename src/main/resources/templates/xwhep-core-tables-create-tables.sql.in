@@ -937,17 +937,17 @@ show warnings;
 -- accessrights = 1792 = 0x700
 -- ---------------------------------------------------------------------------
 insert into users (uid,login,password,fname,lname,email,rights,owneruid,accessrights,userRightId)
-       values ("@ADMINUID@","@DBADMIN@","@DBADMINPASSWORD@", "@DBADMINFNAME@", "@DBADMINLNAME@",
+       values ("@ADMINUID@","@DBADMINLOGIN@","@DBADMINPASSWORD@", "@DBADMINFNAME@", "@DBADMINLNAME@",
                "@DBADMINEMAIL@","SUPER_USER","@ADMINUID@","1792",
                (select userRightId from userRights where userRightName = 'SUPER_USER'));
 
 insert into users (uid,login,password,fname,lname,email,rights,owneruid,accessrights,userRightId)
-       values ("@WORKERUID@","@DBWORKER@","@DBWORKERPASSWORD@", "@DBADMINFNAME@", "@DBADMINLNAME@",
+       values ("@WORKERUID@","@DBWORKERLOGIN@","@DBWORKERPASSWORD@", "@DBADMINFNAME@", "@DBADMINLNAME@",
                "@DBADMINEMAIL@","WORKER_USER","@ADMINUID@","1792",
                (select userRightId from userRights where userRightName = 'WORKER_USER'));
 
 insert into users (uid,login,password,fname,lname,email,rights,owneruid,accessrights,userRightId)
-       values ("@VWORKERUID@","@DBVWORKER@","@DBVWORKERPASSWORD@", "@DBADMINFNAME@", "@DBADMINLNAME@",
+       values ("@VWORKERUID@","@DBVWORKERLOGIN@","@DBVWORKERPASSWORD@", "@DBADMINFNAME@", "@DBADMINLNAME@",
                "@DBADMINEMAIL@","VWORKER_USER","@ADMINUID@","1792",
                (select userRightId from userRights where userRightName = 'VWORKER_USER'));
 
@@ -960,13 +960,13 @@ insert into users (uid,login,password,fname,lname,email,rights,owneruid,accessri
 -- There may be error messages if you don't have enough privileges
 -- If so, contact you DB amdinistrator
 -- ---------------------------------------------------------------------------
-grant all privileges on * to @DBUSER@@localhost             identified by '@DBUSERPASSWORD@' with grant option;
+grant all privileges on * to @DBUSERLOGIN@@localhost             identified by '@DBUSERPASSWORD@' with grant option;
 
-grant all privileges on * to @DBUSER@@localhost.localdomain identified by '@DBUSERPASSWORD@' with grant option;
+grant all privileges on * to @DBUSERLOGIN@@localhost.localdomain identified by '@DBUSERPASSWORD@' with grant option;
 
-grant all privileges on * to @DBUSER@@'@XWHOST@'            identified by '@DBUSERPASSWORD@' with grant option;
+grant all privileges on * to @DBUSERLOGIN@@'@XWHOST@'            identified by '@DBUSERPASSWORD@' with grant option;
 
--- set password for @DBUSER@@localhost = old_password ('@DBUSERPASSWORD@');
+-- set password for @DBUSERLOGIN@@localhost = old_password ('@DBUSERPASSWORD@');
 
 
 -- ===========================================================================
