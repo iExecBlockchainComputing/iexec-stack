@@ -82,7 +82,6 @@ task fatJar(type: Jar) {
 build.dependsOn fatJar
 
 def PROJECT_TAG = project.name + '-' + version
-
 def root = '.'
 def build = root + '/build'
 def libXtremWeb = root + '/libXtremWeb'
@@ -103,7 +102,6 @@ def dist = build + '/dist/' + PROJECT_TAG
 def distBin = dist + '/bin'
 def distMacInstallers = dist + "/installers/macosx"
 def privateEtc = '/private/etc'
-
 
 task copyMiscToDist(type: Copy) {
     into dist
@@ -198,67 +196,6 @@ task copyXwsetversion(type: Copy) {
     into(distBin + '/db-maintenance')
 }
 
-task copyKeystoreGenerationScripts(type: Copy) {
-
-    into(dist+"/bin")
-
-    into(".") {
-        from(scripts)
-        include('xwhepgenkeys.template')
-        rename('xwhepgenkeys.template', 'xwhepgenkeys')
-        include('xwhepupdateopenidcerts.template')
-        rename('xwhepupdateopenidcerts.template', 'xwhepupdateopenidcerts')
-
-        def props = new Properties()
-        file(resources+"/conf"+'/xwconfigure.values').withInputStream {
-            props.load(it)
-        }
-
-        Set<String> keys = props.stringPropertyNames();
-        for (String key : keys) {
-            props.setProperty(key, props.getProperty(key).replace('\'',''));
-        }
-
-        def certname = "cn=" + props.CERTCN + ",o=" + props.CERTO + ",c=" + props.CERTC
-        if (props.CERTOU != "") {
-            certname += ",ou=" + props.CERTOU
-        }
-        if (props.CERTL != "") {
-            certname += ",l=" + props.CERTL
-        }
-        props.setProperty("CERTNAME", certname)
-
-        filter(ReplaceTokens, tokens: props)
-    }
-
-}
-
-task cleanKeystoreDir(type: Delete) {
-    delete fileTree(dir: dist + "/keystore")
-}
-
-task generateKeys(type: Exec) {
-    dependsOn(copyKeystoreGenerationScripts, cleanKeystoreDir)
-    commandLine("sh", "-c",
-            distBin + '/xwhepgenkeys'+ " && " +
-            "if [ \$? -eq 0 ] ; then echo \"Keystores generated\" ; else echo \"ERROR: keystores generation error\"; exit 1 ; fi" + " && " +
-            distBin + '/xwhepupdateopenidcerts'+ " && " +
-            "if [ \$? -eq 0 ] ; then echo \"OpenID server certificates inserted in XWHEP server keystore\" ; else echo \"ERROR: can't insert OpenID server certificates into XWHEP server keystore\" ; fi"
-    )
-}
-
-
-task chmodBin(type: Exec) {
-    dependsOn(copyMiscToDist, copyScripts, copyXwconfigure, copyKeystoreGenerationScripts, copyXwsetversion, mkdirKeystore)
-    commandLine("sh", "-c",
-            "chmod -R 755 " + distBin + " && " +
-                    "find " + distBin + " -iname *.sql* -exec chmod -x {} +" + " && " +
-                    "find " + distBin + " -iname *.seds -exec chmod -x {} +" + " && " +
-                    "find " + distBin + " -iname *.bat -exec chmod -x {} +" + " && " +
-                    "find " + distBin + " -iname *.xmls -exec chmod -x {} +"
-    )
-}
-
 // Define custom properties that can be used everywhere
 ext.getCustomProperties = {
 
@@ -278,12 +215,66 @@ ext.getCustomProperties = {
     props.setProperty("XWVERSION", version)
 
     def path = 'pwd'.execute().text.trim()
-    def keystore = path + "/build/dist/" + PROJECT_TAG +"/keystore/"
-    props.setProperty("SSLKEYSTOREWORKER", keystore + "xwhepworker.keys")
-    props.setProperty("SSLKEYSTOREVWORKER", keystore + "xwhepworker.keys")
-    props.setProperty("SSLKEYSTORECLIENT", keystore + "xwhepclient.keys")
+    def keystore = path + "/build/dist/" + PROJECT_TAG + "/keystore/"
+    def keystorePrefix = keystore.replace('/', '\\/').replace('.', '\\.')
+    props.setProperty("SSLKEYSTOREWORKER", keystorePrefix + "xwhepworker\\.keys")
+    props.setProperty("SSLKEYSTOREVWORKER", keystorePrefix + "xwhepworker\\.keys")
+    props.setProperty("SSLKEYSTORECLIENT", keystorePrefix + "xwhepclient\\.keys")
+
+    def certname = "cn=" + props.CERTCN + ",o=" + props.CERTO + ",c=" + props.CERTC
+    if (props.CERTOU != "") {
+        certname += ",ou=" + props.CERTOU
+    }
+    if (props.CERTL != "") {
+        certname += ",l=" + props.CERTL
+    }
+    props.setProperty("CERTNAME", certname)
 
     return props
+}
+
+
+task copyKeystoreGenerationScripts(type: Copy) {
+
+    into(dist + "/bin")
+
+    into(".") {
+        from(scripts)
+        include('xwhepgenkeys.template')
+        rename { fileName -> fileName.replace('.template', '') }
+
+        include('xwhepupdateopenidcerts.template')
+        rename { fileName -> fileName.replace('.template', '') }
+
+        filter(ReplaceTokens, tokens: getCustomProperties())
+    }
+
+}
+
+task cleanKeystoreDir(type: Delete) {
+    delete fileTree(dir: dist + "/keystore")
+}
+
+task generateKeys(type: Exec) {
+    dependsOn(copyKeystoreGenerationScripts, cleanKeystoreDir)
+    commandLine("sh", "-c",
+            distBin + '/xwhepgenkeys' + " && " +
+                    "if [ \$? -eq 0 ] ; then echo \"Keystores generated\" ; else echo \"ERROR: keystores generation error\"; exit 1 ; fi" + " && " +
+                    distBin + '/xwhepupdateopenidcerts' + " && " +
+                    "if [ \$? -eq 0 ] ; then echo \"OpenID server certificates inserted in XWHEP server keystore\" ; else echo \"ERROR: can't insert OpenID server certificates into XWHEP server keystore\" ; fi"
+    )
+}
+
+
+task chmodBin(type: Exec) {
+    dependsOn(copyMiscToDist, copyScripts, copyXwconfigure, copyKeystoreGenerationScripts, copyXwsetversion, mkdirKeystore)
+    commandLine("sh", "-c",
+            "chmod -R 755 " + distBin + " && " +
+                    "find " + distBin + " -iname *.sql* -exec chmod -x {} +" + " && " +
+                    "find " + distBin + " -iname *.seds -exec chmod -x {} +" + " && " +
+                    "find " + distBin + " -iname *.bat -exec chmod -x {} +" + " && " +
+                    "find " + distBin + " -iname *.xmls -exec chmod -x {} +"
+    )
 }
 
 task copySQLCreateTables(type: Copy) {
@@ -293,7 +284,7 @@ task copySQLCreateTables(type: Copy) {
     filter(ReplaceTokens, tokens: getCustomProperties())
 }
 
-task copyConfFiles(type: Copy){
+task copyConfFiles(type: Copy) {
     into dist
 
     // copy values to use in the conf
@@ -305,27 +296,16 @@ task copyConfFiles(type: Copy){
     into("/conf") {
         from templates + "/xtremweb.server.conf.in"
         rename { fileName -> fileName.replace('.in', '') }
-        filter(ReplaceTokens, tokens: getCustomProperties())
-    }
 
-    // copy worker conf
-    into("/conf") {
         from templates + '/xtremweb.worker.conf.in'
         rename { fileName -> fileName.replace('.in', '') }
-        filter(ReplaceTokens, tokens: getCustomProperties())
-    }
 
-    // copy vworker conf
-    into("/conf") {
         from templates + '/xtremweb.vworker.conf.in'
         rename { fileName -> fileName.replace('.in', '') }
-        filter(ReplaceTokens, tokens: getCustomProperties())
-    }
 
-    // copy client conf
-    into("/conf") {
         from(templates + '/xtremweb.client.conf.in')
         rename { fileName -> fileName.replace('.in', '') }
+
         filter(ReplaceTokens, tokens: getCustomProperties())
     }
 }
@@ -556,7 +536,7 @@ task copyLinuxInstallers(type: Copy) {
 
 task buildAll {
     dependsOn(chmodBin, copyWindowsClient, copyWindowsWorker, copyWindowsVWorker, copyMacClient, copyMacWorker,
-            copyMacVworker, copyMacServer, copyLinuxInstallers,copySQLCreateTables, copyConfFiles)
+            copyMacVworker, copyMacServer, copyLinuxInstallers, copySQLCreateTables, copyConfFiles)
 }
 
 buildAll.dependsOn getTasksByName('build', true)
