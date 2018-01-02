@@ -203,7 +203,7 @@ task chmodBin(type: Exec) {
     )
 }
 
-// define a method to populate customProperties
+// Define custom properties that can be used everywhere
 ext.getCustomProperties = {
 
     def props = new Properties()
@@ -221,6 +221,12 @@ ext.getCustomProperties = {
     props.setProperty("PUBLICWORKERSGROUPUID", 'uuidgen | tr \"A-Z\" \"a-z\"'.execute().text.trim())
     props.setProperty("XWVERSION", version)
 
+    def path = 'pwd'.execute().text.trim()
+    def keystore = path + "/build/dist/" + PROJECT_TAG +"/keystore/"
+    props.setProperty("SSLKEYSTOREWORKER", keystore + "xwhepworker.keys")
+    props.setProperty("SSLKEYSTOREVWORKER", keystore + "xwhepworker.keys")
+    props.setProperty("SSLKEYSTORECLIENT", keystore + "xwhepclient.keys")
+
     return props
 }
 
@@ -229,6 +235,43 @@ task copySQLCreateTables(type: Copy) {
     into(dist + "/bin/db-maintenance/")
     rename { fileName -> fileName.replace('.in', '') }
     filter(ReplaceTokens, tokens: getCustomProperties())
+}
+
+task copyConfFiles(type: Copy){
+    into dist
+
+    // copy values to use in the conf
+    into("/conf") {
+        from conf + "/xwconfigure.values"
+    }
+
+    // copy server conf
+    into("/conf") {
+        from templates + "/xtremweb.server.conf.in"
+        rename { fileName -> fileName.replace('.in', '') }
+        filter(ReplaceTokens, tokens: getCustomProperties())
+    }
+
+    // copy worker conf
+    into("/conf") {
+        from templates + '/xtremweb.worker.conf.in'
+        rename { fileName -> fileName.replace('.in', '') }
+        filter(ReplaceTokens, tokens: getCustomProperties())
+    }
+
+    // copy vworker conf
+    into("/conf") {
+        from templates + '/xtremweb.vworker.conf.in'
+        rename { fileName -> fileName.replace('.in', '') }
+        filter(ReplaceTokens, tokens: getCustomProperties())
+    }
+
+    // copy client conf
+    into("/conf") {
+        from(templates + '/xtremweb.client.conf.in')
+        rename { fileName -> fileName.replace('.in', '') }
+        filter(ReplaceTokens, tokens: getCustomProperties())
+    }
 }
 
 task copyWindowsClient(type: Copy) {
@@ -455,54 +498,9 @@ task copyLinuxInstallers(type: Copy) {
                                    SYSTEMUSER: 'xwhep'])
 }
 
-task copyLinux(type: Copy) {
-    dependsOn(copyLinuxInstallers)
-
-    into dist
-
-    into("/conf") {
-        from misc + "/xwconfigure.values"
-    }
-
-
-    into("/conf") {
-        from templates + '/xtremweb.server.conf.in'
-        rename { fileName -> fileName.replace('.in', '') }
-    }
-
-    into("/conf") {
-        from templates + '/xtremweb.client.conf.in'
-        rename { fileName -> fileName.replace('.in', '.template') }
-    }
-
-    into("/conf") {
-        from(templates + '/xtremweb.client.conf.in')
-        rename { fileName -> fileName.replace('.in', '') }
-        filter(ReplaceTokens, tokens: [LAUNCHERURL: 'http://nohost/'])
-    }
-
-    into("/conf") {
-        from templates + '/xtremweb.worker.conf.in'
-        rename { fileName -> fileName.replace('.in', '') }
-        filter(ReplaceTokens, tokens: [LAUNCHERURL: 'http://nohost/',
-                                       LOGIN      : '${xtremweb.worker.login}',
-                                       PASSWORD   : '${xtremweb.worker.password}'])
-    }
-
-    into("/conf") {
-        from templates + '/xtremweb.worker.conf.in'
-        rename { fileName -> fileName.replace('xtremweb.worker.conf.in', 'xtremweb.vworker.conf') }
-        filter(ReplaceTokens, tokens: [LAUNCHERURL: 'http://nohost/',
-                                       LOGIN      : '${xtremweb.vworker.login}',
-                                       PASSWORD   : '${xtremweb.vworker.password}'])
-    }
-}
-
-
-
 task buildAll {
     dependsOn(chmodBin, copyWindowsClient, copyWindowsWorker, copyWindowsVWorker, copyMacClient, copyMacWorker,
-            copyMacVworker, copyMacServer, copyLinux, copySQLCreateTables)
+            copyMacVworker, copyMacServer, copyLinuxInstallers,copySQLCreateTables, copyConfFiles)
 }
 
 buildAll.dependsOn getTasksByName('build', true)

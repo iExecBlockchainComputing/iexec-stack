@@ -1123,74 +1123,6 @@ TMPFILE2=`date "+%Y%m%d_%H%M%S"`".xwtmp2"
 #
 # Preparing the SQL script to install MySQL database, with lowercase UUIDs
 #
-XWADMINGROUPUID=` uuidgen  |  tr "A-Z" "a-z"`
-XWWORKERGROUPUID=`uuidgen  |  tr "A-Z" "a-z"`
-XWADMINUID=`      uuidgen  |  tr "A-Z" "a-z"`
-XWWORKERUID=`     uuidgen  |  tr "A-Z" "a-z"`
-XWVWORKERUID=`    uuidgen  |  tr "A-Z" "a-z"`
-
-rm -f $TMPFILE1
-rm -f $TMPFILE2
-rm -f $XWSETUPDBSQL
-printf "Preparing database script"
-cat $XWSETUPDBSQLIN | sed "s/@DBNAME@/$DBNAME/g" >  $TMPFILE1
-cat $TMPFILE1 | sed "s/@DBUSER@/$DBUSERLOGIN/g" > $TMPFILE2
-rm -f $TMPFILE1
-printf "."
-cat $TMPFILE2 | sed "s/@DBUSERPASSWORD@/$DBUSERPASSWORD/g" > $TMPFILE1
-rm -f $TMPFILE2
-printf "."
-cat $TMPFILE1 | sed "s/@ADMINGROUPUID@/$XWADMINGROUPUID/g" > $TMPFILE2
-rm -f $TMPFILE1
-printf "."
-cat $TMPFILE2 | sed "s/@PUBLICWORKERSGROUPUID@/$XWWORKERGROUPUID/g" > $TMPFILE1
-rm -f $TMPFILE2
-printf "."
-cat $TMPFILE1 | sed "s/@ADMINUID@/$XWADMINUID/g" > $TMPFILE2
-rm -f $TMPFILE1
-printf "."
-cat $TMPFILE2 | sed "s/@WORKERUID@/$XWWORKERUID/g" > $TMPFILE1
-rm -f $TMPFILE2
-printf "."
-cat $TMPFILE1 | sed "s/@DBADMIN@/$XWADMINLOGIN/g" > $TMPFILE2
-rm -f $TMPFILE1
-printf "."
-cat $TMPFILE2 | sed "s/@DBADMINPASSWORD@/$XWADMINPASSWORD/g" > $TMPFILE1
-rm -f $TMPFILE2
-printf "."
-cat $TMPFILE1 | sed "s/@DBWORKER@/$XWWORKERLOGIN/g" > $TMPFILE2
-rm -f $TMPFILE1
-printf "."
-cat $TMPFILE2 | sed "s/@DBWORKERPASSWORD@/$XWWORKERPASSWORD/g" > $TMPFILE1
-rm -f $TMPFILE2
-printf "."
-SEDVAR=`echo "$DBHOST" | sed -f $SEDCMDS`
-cat $TMPFILE1 | sed 's/@XWHOST@/$SEDVAR/g' > $TMPFILE2
-rm -f $TMPFILE1
-printf "."
-cat $TMPFILE2 | sed "s/@DBENGINE@/$DBENGINE/g" > $TMPFILE1
-rm -f $TMPFILE2
-printf "."
-
-if [ -z "$DBADMINLOGIN" ] ; then 
-	cat $TMPFILE1 | sed -e "s/^GRANT.*//g" | sed -e "s/^set password for.*//g" > $TMPFILE2
-	rm -f $TMPFILE1
-else
-	mv $TMPFILE1 $TMPFILE2
-fi
-
-cat $TMPFILE2 | sed "s/@VWORKERUID@/$XWVWORKERUID/g" > $TMPFILE1
-rm -f $TMPFILE2
-printf "."
-cat $TMPFILE1 | sed "s/@DBVWORKER@/$XWVWORKERLOGIN/g" > $TMPFILE2
-rm -f $TMPFILE1
-printf "."
-cat $TMPFILE2 | sed "s/@DBVWORKERPASSWORD@/$XWVWORKERPASSWORD/g" > $TMPFILE1
-rm -f $TMPFILE2
-printf "."
-
-mv $TMPFILE1 $XWSETUPDBSQL
-echo "Done"
 
 if [ "$DBVENDOR" = "mysql" ] ; then
 	
@@ -1437,7 +1369,7 @@ echo "Done"
 # Preparing the server configuration file
 #
 rm -f $TMPFILE1
-rm -f $TMPFILE2
+rm -f $TMPFILE
 printf "Preparing server configuration file '$XWSERVERCONFFILE'"
 SEDVAR=`echo "$DBHOST" | sed -f $SEDCMDS`
 grep -E  "^[[:space:]]*DBHOST[[:space:]]*=.*" $XWSERVERCONFFILE > /dev/null 2>&1
@@ -2137,6 +2069,7 @@ echo " Done"
 #
 # Preparing the worker configuration file
 #
+# TODO: this part to remove
 rm -f $TMPFILE1
 rm -f $TMPFILE2
 printf "Preparing worker configuration file '$XWWORKERCONFFILE'"
