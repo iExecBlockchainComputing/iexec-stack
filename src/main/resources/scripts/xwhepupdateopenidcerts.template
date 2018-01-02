@@ -74,11 +74,11 @@ type $KEYTOOL > /dev/null 2>&1 || fatal "can't find $KEYTOOL applications"
 #
 # This is the server key passphrase
 #
-SSLKEYPASSPHRASE=$SAFE_SSLKEYPASSPHRASE
+SSLKEYPASSPHRASE=@SSLKEYPASSPHRASE@
 #
 # This is the server keystore password
 #
-SSLKeyServerpassword=$SAFE_SSLKEYSERVERPASSWORD
+SSLKeyServerpassword=@SSLKEYSERVERPASSWORD@
 
 echo "Inserting known OpenId servers certificate paths into server keystore"
 echo " - google"

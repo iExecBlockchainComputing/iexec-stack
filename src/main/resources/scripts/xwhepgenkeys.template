@@ -63,8 +63,8 @@ BINDIR=$PREFIX/../bin
 LIBDIR=$PREFIX/../lib
 JARFILE=$LIBDIR/xtremweb.jar
 KEYSDIR=$PREFIX/../keystore
-X509CERTDIR=$X509CERTDIR
-USERCERTDIR=$USERCERTDIR
+X509CERTDIR=@X509CERTDIR@
+USERCERTDIR=@USERCERTDIR@
 JETTY=$LIBDIR/jetty-server-9.3.8.v20160314.jar
 JETTYUTIL=$LIBDIR/jetty-util-9.3.8.v20160314.jar
 JETTYHTTP=$LIBDIR/jetty-http-9.3.8.v20160314.jar
@@ -76,7 +76,7 @@ OID_MAINCLASS="xtremweb.dispatcher.HTTPOpenIdHandler"
 
 DATE=`date "+%Y%m%d%H%M%S"`
 
-SERVERALIAS="${XWSERVER}"
+SERVERALIAS="@XWSERVER@"
 WORKERALIAS="xtremweb-hep.worker.$DATE"
 CLIENTALIAS="xtremweb-hep.client.$DATE"
 
@@ -90,7 +90,7 @@ WORKERFILE=${KEYSDIR}/$XWWORKERKEYSTOREFILENAME
 CLIENTFILE=${KEYSDIR}/$XWCLIENTKEYSTOREFILENAME
 CERTFILE=${KEYSDIR}/$XWCERTFILENAME
 
-CERTNAME="$CERTNAME"
+CERTNAME="@CERTNAME@"
 
 OPENSSL=openssl
 KEYTOOL=keytool
@@ -105,21 +105,21 @@ type ${OPENSSL}   > /dev/null 2>&1 || fatal "can't find ${OPENSSL}"
 #
 # This is the server key passphrase
 #
-SSLKEYPASSPHRASE=$SAFE_SSLKEYPASSPHRASE
+SSLKEYPASSPHRASE=@SSLKEYPASSPHRASE@
 #
 # This is the server keystore password
 #
-SSLKeyServerpassword=$SAFE_SSLKEYSERVERPASSWORD
+SSLKeyServerpassword=@SSLKEYSERVERPASSWORD@
 #
 # This is both the worker key passphrase and worker keystore password 
 # since worker is distributed on unsecure nodes...
 #
-SSLKeyWorkerpassword=$SAFE_SSLKEYWORKERPASSWORD
+SSLKeyWorkerpassword=@SSLKEYWORKERPASSWORD@
 #
 # This is both the client key passphrase and client keystore password 
 # since client is distributed on unsecure nodes...
 #
-SSLKeyClientpassword=$SAFE_SSLKEYCLIENTPASSWORD
+SSLKeyClientpassword=@SSLKEYCLIENTPASSWORD@
 
 
 [ ! -d ${KEYSDIR} ]   && mkdir -p ${KEYSDIR}
@@ -150,13 +150,6 @@ IMPORTKEY=1
 
 if [ $IMPORTKEY -eq 1 ] ; then
 	info "Certificates found; importing certificates into server keystore"
-#	SERVERALIAS="${XWSERVER}"
-
-##	${KEYTOOL} -exportcert -keystore ${SERVERFILE} -alias ${SERVERALIAS} -file ${CERTFILE}                 -storepass "${SSLKeyServerpassword}" -rfc
-#	${KEYTOOL} -export -keystore ${SERVERFILE} -alias ${SERVERALIAS} -file ${CERTFILE} -storepass "${SSLKeyServerpassword}" -rfc
-#	[ $? -ne 0 ] && fatal "${KEYTOOL} : something is wrong with found certificates"
-#	${OPENSSL} x509 -in ${CERTFILE}  -text -noout
-#	[ $? -ne 0 ] && fatal "${OPENSSL} : something is wrong with found certificates"
 
 	${OPENSSL} pkcs12 -export -in ${SERVERCERT} -inkey ${SERVERKEY} -out ${SERVERP12}  -passout pass:${SSLKeyServerpassword} -name ${SERVERALIAS} 
 	[ $? -ne 0 ] && fatal "${OPENSSL} : can't translate found certificates to PKCS12"

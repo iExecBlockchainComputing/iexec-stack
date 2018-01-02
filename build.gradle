@@ -162,6 +162,7 @@ task copyScripts(type: Copy) {
     exclude('xwconfigure')
     exclude('/db-maintenance/xwsetversion.sql.in')
     exclude('xwhepgenkeys.template')
+    exclude('xwhepupdateopenidcerts.template')
     filter(ReplaceTokens, tokens: [
             prefix           : dist,
             datadir          : '../data',
@@ -196,7 +197,7 @@ task copyXwsetversion(type: Copy) {
     into(distBin + '/db-maintenance')
 }
 
-task copyXwhepgenkeys(type: Copy) {
+task copyKeystoreGenerationScripts(type: Copy) {
 
     into(dist+"/bin")
 
@@ -224,12 +225,9 @@ task copyXwhepgenkeys(type: Copy) {
         if (props.CERTL != "") {
             certname += ",l=" + props.CERTL
         }
+        props.setProperty("CERTNAME", certname)
 
-        filter(ReplaceTokens, tokens: [CERTNAME: certname], beginToken: '$', endToken: '')
-        filter(ReplaceTokens, tokens: props, beginToken: '$SAFE_', endToken: '')
-        filter(ReplaceTokens, tokens: [XWSERVER: props.XWSERVER], beginToken: '${', endToken: '}')
-        props.remove("XWSERVER")
-        filter(ReplaceTokens, tokens: props, beginToken: '$', endToken: '')
+        filter(ReplaceTokens, tokens: props)
     }
 
 }
@@ -239,7 +237,7 @@ task cleanKeystoreDir(type: Delete) {
 }
 
 task generateKeys(type: Exec) {
-    dependsOn(copyXwhepgenkeys, cleanKeystoreDir)
+    dependsOn(copyKeystoreGenerationScripts, cleanKeystoreDir)
     commandLine("sh", "-c",
             distBin + '/xwhepgenkeys'+ " && " +
             "if [ \$? -eq 0 ] ; then echo \"Keystores generated\" ; else echo \"ERROR: keystores generation error\"; exit 1 ; fi" + " && " +
@@ -250,7 +248,7 @@ task generateKeys(type: Exec) {
 
 
 task chmodBin(type: Exec) {
-    dependsOn(copyMiscToDist, copyScripts, copyXwconfigure, copyXwhepgenkeys, copyXwsetversion, mkdirKeystore)
+    dependsOn(copyMiscToDist, copyScripts, copyXwconfigure, copyKeystoreGenerationScripts, copyXwsetversion, mkdirKeystore)
     commandLine("sh", "-c",
             "chmod -R 755 " + distBin + " && " +
                     "find " + distBin + " -iname *.sql* -exec chmod -x {} +" + " && " +
