@@ -1227,44 +1227,7 @@ IFILE=$BINDIR/xtremwebconf.sh
 cat $IFILE | sed "s/^XWUSER=.*/XWUSER=$XWUSER/g" >  $TMPFILE1
 mv -f $TMPFILE1 $IFILE
 printf "."
-IFILE=$INSTALLERSDIR/linux/dpkg/xwhep.server/DEBIAN/postinst
-cat $IFILE | sed "s/^SYSLOGIN=.*/SYSLOGIN=$XWUSER/g" >  $TMPFILE1
-mv -f $TMPFILE1 $IFILE
-printf "."
-IFILE=$INSTALLERSDIR/linux/dpkg/xwhep.server/DEBIAN/postrm
-cat $IFILE | sed "s/^SYSLOGIN=.*/SYSLOGIN=$XWUSER/g" >  $TMPFILE1
-mv -f $TMPFILE1 $IFILE
-printf "."
-IFILE=$INSTALLERSDIR/linux/dpkg/xwhep.server/DEBIAN/preinst
-cat $IFILE | sed "s/^SYSLOGIN=.*/SYSLOGIN=$XWUSER/g" >  $TMPFILE1
-mv -f $TMPFILE1 $IFILE
-printf "."
-IFILE=$INSTALLERSDIR/linux/dpkg/xwhep.worker/DEBIAN/postinst
-cat $IFILE | sed "s/^SYSLOGIN=.*/SYSLOGIN=$XWUSER/g" >  $TMPFILE1
-mv -f $TMPFILE1 $IFILE
-printf "."
-IFILE=$INSTALLERSDIR/linux/dpkg/xwhep.worker/DEBIAN/postrm
-cat $IFILE | sed "s/^SYSLOGIN=.*/SYSLOGIN=$XWUSER/g" >  $TMPFILE1
-mv -f $TMPFILE1 $IFILE
-printf "."
-IFILE=$INSTALLERSDIR/linux/dpkg/xwhep.worker/DEBIAN/preinst
-cat $IFILE | sed "s/^SYSLOGIN=.*/SYSLOGIN=$XWUSER/g" >  $TMPFILE1
-mv -f $TMPFILE1 $IFILE
-printf "."
-IFILE=$INSTALLERSDIR/linux/rpm/xwhep.server/xwhep-server.spec
-cat $IFILE | sed "s/^%define SYSLOGIN.*/%define SYSLOGIN $XWUSER/g" >  $TMPFILE1
-mv -f $TMPFILE1 $IFILE
-printf "."
-IFILE=$INSTALLERSDIR/linux/rpm/xwhep.worker/xwhep-worker.spec
-cat $IFILE | sed "s/^%define SYSLOGIN.*/%define SYSLOGIN $XWUSER/g" >  $TMPFILE1
-mv -f $TMPFILE1 $IFILE
-printf "."
 
-
-IFILE=$INSTALLERSDIR/linux/rpm/xwhep.vworker/xwhep-worker.spec
-cat $IFILE | sed "s/^%define SYSLOGIN.*/%define SYSLOGIN $XWUSER/g" >  $TMPFILE1
-mv -f $TMPFILE1 $IFILE
-printf "."
 : '
 
 IFILE=$INSTALLERSDIR/macosx/xwhep.client/installer/Resources/postflight
@@ -1417,23 +1380,6 @@ mv -f $TMPFILE2 $XWGMOND
 chmod +x $XWGMOND
 echo "Done"
 
-#
-# Preparing the worker configuration file
-#
-rm -f $TMPFILE1
-rm -f $TMPFILE2
-printf "Preparing worker configuration file '$XWWORKERCONFFILE'"
-
-echo " Done"
-
-#
-# Preparing the vworker configuration file
-#
-rm -f $TMPFILE1
-rm -f $TMPFILE2
-printf "Preparing vworker configuration file '$XWVWORKERCONFFILE'"
-
-echo "Done"
 
 #
 # Preparing worker conf file for macosx packages
@@ -1576,6 +1522,7 @@ mv -f $TMPFILE1 $WIN32WORKERCONFFILE
 
 echo "Done"
 END
+
 #
 # Preparing the client configuration file
 #
@@ -2145,65 +2092,6 @@ if [ "$PKGS" = "YES" ] ; then
   fi
 fi
 #END
-
-#
-# Preparing DG to SG bridge RPM package
-#
-
-wkrRpmDir="$rpmDir/$INSTALLDIR/xwhep-bridgedgsg-$VERSION"
-
-printf "."
-
-rm -f $TMPFILE1 $TMPFILE2
-SEDVAR=`echo "$DBHOST" | sed -f $SEDCMDS`
-grep -E "DBHOST[[:space:]]*=.*" $BINDIR/xwhep.bridgedg2sg.pl > /dev/null 2>&1
-if [ $? -eq 0 ] ; then
-    cat $BINDIR/xwhep.bridgedg2sg.pl | sed  "s/^[[:space:]]*my \$DBHOST[[:space:]]*=.*/my \$DBHOST=\"$SEDVAR\";/g" >  $TMPFILE1
-else
-    cp -f $BINDIR/xwhep.bridgedg2sg.pl $TMPFILE1
-    echo "my \$DBHOST=\"$SEDVAR\";" >> $TMPFILE1
-fi
-printf "."
-SEDVAR=`echo "$DBNAME" | sed -f $SEDCMDS`
-grep -E "DBNAME[[:space:]]*=.*" $TMPFILE1 > /dev/null 2>&1
-if [ $? -eq 0 ] ; then
-    cat $TMPFILE1 | sed "s/^[[:space:]]*my \$DBNAME[[:space:]]*=.*/my \$DBNAME=\"$SEDVAR\";/g" >  $TMPFILE2
-else
-    cp -f $TMPFILE1 $TMPFILE2
-    echo "my \$DBNAME=\"$SEDVAR\";" >> $TMPFILE2
-fi
-rm -f $TMPFILE1
-printf "."
-SEDVAR=`echo "$DBUSERLOGIN" | sed -f $SEDCMDS`
-grep -E "DBUSER[[:space:]]*=.*" $TMPFILE2 > /dev/null 2>&1
-if [ $? -eq 0 ] ; then
-    cat $TMPFILE2 | sed "s/^[[:space:]]*my \$DBUSER[[:space:]]*=.*/my \$DBUSER=\"$SEDVAR\";/g" > $TMPFILE1
-else
-    cp -f $TMPFILE2 $TMPFILE1
-    echo "my \$DBUSER=\"$SEDVAR\";" >> $TMPFILE1
-fi
-rm -f $TMPFILE2
-printf "."
-SEDVAR=`echo "$DBUSERPASSWORD" | sed -f $SEDCMDS`
-grep -E "dbpassword[[:space:]]*=.*" $TMPFILE1 > /dev/null 2>&1
-if [ $? -eq 0 ] ; then
-    cat $TMPFILE1 | sed "s/^[[:space:]]*my \$dbpassword[[:space:]]*=.*/my \$dbpassword=\"$SEDVAR\";/g" > $TMPFILE2
-else
-    cp -f $TMPFILE1 $TMPFILE2
-    echo "my \$dbpassword=\"$SEDVAR\";" >> $TMPFILE2
-fi
-rm -f $TMPFILE1
-printf "."
-mv $TMPFILE2 $BINDIR/xwhep.bridgedg2sg.pl
-chmod +x  $BINDIR/xwhep.bridgedg2sg.pl
-
-cp $BINDIR/* $wkrRpmDir/bin/              > /dev/null  2>&1
-rm -f $wkrRpmDir/bin/*sql                 > /dev/null  2>&1
-rm -f $wkrRpmDir/bin/context.sh           > /dev/null  2>&1
-rm -f $wkrRpmDir/bin/xwhep.bridgesg2dg.pm > /dev/null  2>&1
-
-echo " Done"
-
 
 #
 # Preparing client RPM package

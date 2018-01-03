@@ -27,7 +27,7 @@ LOG="/var/log/xwhep-server.log"
 XW_INSTALLDIR="/opt/xwhep-server-@XWVERSION@"
 VARXWHEP="/var/xwhep/server"
 PROG="xtremweb.server"
-SYSLOGIN="@SYSTEMUSER@"
+SYSLOGIN=@XWUSER@
 
 touch $LOG
 date >> $LOG  2>&1 

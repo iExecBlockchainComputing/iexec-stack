@@ -28,7 +28,7 @@ INSTALLDIR="/opt/xwhep-server-@XWVERSION@"
 BINDIR="$INSTALLDIR/bin"
 PROG="xtremweb.server"
 XWGANGLIA="xtremweb.ganglia"
-SYSLOGIN="@SYSTEMUSER@"
+SYSLOGIN=@XWUSER@
 VERSION="@XWVERSION@"
 
 touch $LOG

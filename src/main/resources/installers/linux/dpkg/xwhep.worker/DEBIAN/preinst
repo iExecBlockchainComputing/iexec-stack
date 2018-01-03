@@ -27,7 +27,7 @@ LOG="/var/log/xwhep-worker.log"
 XW_INSTALLDIR="/opt/xwhep-worker-@XWVERSION@"
 BINDIR="$INSTALLDIR/bin"
 PROG="xtremweb.worker"
-SYSLOGIN="@SYSTEMUSER@"
+SYSLOGIN=@XWUSER@
 
 touch $LOG
 date >> $LOG  2>&1 

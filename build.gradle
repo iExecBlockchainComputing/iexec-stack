@@ -310,6 +310,16 @@ task copyConfFiles(type: Copy) {
     }
 }
 
+task copyLinuxInstallers(type: Copy) {
+    from linuxInstallers
+    into dist + '/installers/linux'
+    filter(ReplaceTokens, tokens: getCustomProperties())
+}
+
+task copyLinuxDPKGclient(type: Copy){
+    
+}
+
 task copyWindowsClient(type: Copy) {
     into dist + "/installers/win32/xwhep.client"
 
@@ -525,13 +535,6 @@ task copyMacServer(type: Copy) {
         //include('bcpkix-jdk15on-151.jar')
         //include('xtremweb.jar')
     }
-}
-
-task copyLinuxInstallers(type: Copy) {
-    from linuxInstallers
-    into dist + '/installers/linux'
-    filter(ReplaceTokens, tokens: [XWVERSION : "${version}".toString(),
-                                   SYSTEMUSER: 'xwhep'])
 }
 
 task buildAll {
