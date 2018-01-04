@@ -1,0 +1,124 @@
+import org.apache.tools.ant.filters.ReplaceTokens
+
+apply from: 'common.gradle'
+
+task makeMacDir(type: Exec) {
+     commandLine("sh", "-c",
+             "mkdir -p " + project.distMacInstallers
+     )
+}
+
+task copyMac(type: Copy) {
+     dependsOn(makeMacDir)
+     into(project.distMacInstallers)
+     into(".") {
+          from project.macInstallers
+          filter(ReplaceTokens, tokens: [XWVERSION : "${version}".toString(),
+                                         SYSTEMUSER: 'xwhep'])
+     }
+}
+
+task copyMacClient(type: Copy) {
+     dependsOn(copyMac)
+
+     into(project.distMacInstallers + '/xwhep.client/installer/PckRoot')
+
+     into("/Applications/xwhep.client/conf") {
+          from project.templates + '/xtremweb.client.conf.in'
+          rename { fileName -> fileName.replace('xtremweb.client.conf.in', 'xtremweb.client.conf') }
+          filter(ReplaceTokens, tokens: [LAUNCHERURL    : 'http://nohost/',
+                                         KEYDIR         : '.',
+                                         DEFAULTUSER    : '',
+                                         DEFAULTPASSWORD: ''])
+     }
+
+     into("/Applications/xwhep.client/lib") {
+          from(project.libXtremWeb)
+          include('bcprov-jdk15on-151.jar')
+          include('bcpkix-jdk15on-151.jar')
+     }
+}
+
+task copyMacWorker(type: Copy) {
+     dependsOn(copyMac)
+
+     into(project.distMacInstallers + '/xwhep.worker/installer/PckRoot')
+
+     into(project.privateEtc + "/xwhep.worker/conf") {
+          from project.templates + '/xtremweb.worker.conf.in'
+          rename { fileName -> fileName.replace('xtremweb.worker.conf.in', 'xtremweb.worker.conf') }
+          filter(ReplaceTokens, tokens: [LAUNCHERURL    : 'http://nohost/',
+                                         DATASERVERS    : '${data.servers}',
+                                         KEYDIR         : privateEtc + '/xwhep.worker',
+                                         DEFAULTUSER    : '${xtremweb.worker.login}',
+                                         DEFAULTPASSWORD: '${xtremweb.worker.password}'])
+     }
+
+     into(project.privateEtc + "/xwhep.worker") {
+          from misc
+          include('worker-start.html')
+          rename('worker-start.html', 'index.html')
+     }
+
+     into(project.privateEtc + "/xwhep.worker/conf") {
+          from misc
+          include('xwhep.sb')
+
+     }
+}
+
+task copyMacVworker(type: Copy) {
+     dependsOn(copyMac)
+     into(project.distMacInstallers + '/xwhep.vworker/installer/PckRoot')
+
+     into(project.privateEtc + "/xwhep.worker/conf") {
+          from project.templates + '/xtremweb.worker.conf.in'
+          rename { fileName -> fileName.replace('xtremweb.worker.conf.in', 'xtremweb.worker.conf') }
+          filter(ReplaceTokens, tokens: [LAUNCHERURL    : 'http://nohost/',
+                                         DATASERVERS    : '${data.servers}',
+                                         KEYDIR         : project.privateEtc + '/xwhep.worker',
+                                         DEFAULTUSER    : '${xtremweb.vworker.login}',
+                                         DEFAULTPASSWORD: '${xtremweb.vworker.password}'])
+     }
+
+     into(project.privateEtc + "/xwhep.worker") {
+          from misc
+          include('worker-start.html')
+          rename('worker-start.html', 'index.html')
+     }
+
+     into(project.privateEtc + "/xwhep.worker/conf") {
+          from misc
+          include('xwhep.sb')
+     }
+}
+
+task copyMacServer(type: Copy) {
+     dependsOn(copyMac)
+     into(project.distMacInstallers + '/xwhep.server/installer/PckRoot')
+
+     into("/Applications/xwhep.server/conf") {
+          from project.templates + '/xtremweb.server.conf.in'
+          rename { fileName -> fileName.replace('xtremweb.server.conf.in', 'xtremweb.server.conf') }
+          filter(ReplaceTokens, tokens: [LAUNCHERURL    : 'http://nohost/',
+                                         KEYDIR         : project.privateEtc + '/xwhep.server',
+                                         DEFAULTUSER    : '',
+                                         DEFAULTPASSWORD: ''])
+     }
+
+     into('/Applications/xwhep.server/doc') {
+          from project.doc
+          include('*.png')
+     }
+
+     into(project.privateEtc + "/xwhep.server/lib") {
+          from(project.dist + '/lib')
+          //include('bcprov-jdk15on-151.jar')
+          //include('bcpkix-jdk15on-151.jar')
+          //include('xtremweb.jar')
+     }
+}
+
+task copyMacInstaller {
+     dependsOn(copyMacClient, copyMacWorker, copyMacVworker, copyMacServer)
+}

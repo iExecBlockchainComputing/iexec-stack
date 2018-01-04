@@ -27,7 +27,7 @@ LOG="/var/log/xwhep-worker.log"
 INSTALLDIR="/opt/xwhep-worker-@XWVERSION@"
 BINDIR="$INSTALLDIR/bin"
 PROG="xtremweb.worker"
-SYSLOGIN="@SYSTEMUSER@"
+SYSLOGIN=@XWUSER@
 
 USRBIN=/usr/bin
 USRBINXWCREATEVDI=$USRBIN/xwcreatevdi

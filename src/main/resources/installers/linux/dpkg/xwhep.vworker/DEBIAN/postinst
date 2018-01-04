@@ -30,7 +30,7 @@ CONFDIR="$INSTALLDIR/conf"
 CONFILE=$CONFDIR/xtremweb.worker.conf
 PROG="xtremweb.worker"
 INITD="/etc/init.d"
-SYSLOGIN="@SYSTEMUSER@"
+SYSLOGIN=@XWUSER@
 
 USRBIN=/usr/bin
 USRLOCALBIN=/usr/local/bin

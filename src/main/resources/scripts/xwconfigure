@@ -349,8 +349,6 @@ EOF
 	rm  -f $INSTALLERSDIR/xwhep-client-$VERSION.zip
 	rm  -f $INSTALLERSDIR/linux/dpkg/*deb
 	rm -Rf $INSTALLERSDIR/linux/dpkg/xwhep.client/$INSTALLDIR/
-	rm -Rf $INSTALLERSDIR/linux/dpkg/xwhep.bridgedgsg/$INSTALLDIR/
-	rm -Rf $INSTALLERSDIR/linux/dpkg/xwhep.bridgesgdg/$INSTALLDIR/
 	rm -Rf $INSTALLERSDIR/linux/dpkg/xwhep.server/$INSTALLDIR/
 	rm -Rf $INSTALLERSDIR/linux/dpkg/xwhep.worker/$INSTALLDIR/
 	rm -Rf $INSTALLERSDIR/linux/dpkg/xwhep.vworker/$INSTALLDIR/
@@ -358,8 +356,6 @@ EOF
 	printf "."
 
 	rm -Rf $INSTALLERSDIR/linux/rpm/xwhep.client/*
-	rm -Rf $INSTALLERSDIR/linux/rpm/xwhep.bridgedgsg/*
-	rm -Rf $INSTALLERSDIR/linux/rpm/xwhep.bridgesgdg/*
 	rm -Rf $INSTALLERSDIR/linux/rpm/xwhep.server/*
 	rm -Rf $INSTALLERSDIR/linux/rpm/xwhep.worker/*
 	rm -Rf $INSTALLERSDIR/linux/rpm/xwhep.vworker/*
@@ -466,10 +462,6 @@ fi
 test -w $XWCLIENTCONFFILE > /dev/null  2>&1
 if [ $? -ne 0 ] ; then
 	usage "Can't write $XWCLIENTCONFFILE" "STOP"
-fi
-test -w $XWBRIDGECONFFILE > /dev/null  2>&1
-if [ $? -ne 0 ] ; then
-	usage "Can't write $XWBRIDGECONFFILE" "STOP"
 fi
 
 usage
@@ -1235,56 +1227,7 @@ IFILE=$BINDIR/xtremwebconf.sh
 cat $IFILE | sed "s/^XWUSER=.*/XWUSER=$XWUSER/g" >  $TMPFILE1
 mv -f $TMPFILE1 $IFILE
 printf "."
-IFILE=$INSTALLERSDIR/linux/dpkg/xwhep.bridgedgsg/DEBIAN/postinst
-cat $IFILE | sed "s/^SYSLOGIN=.*/SYSLOGIN=$XWUSER/g" >  $TMPFILE1
-mv -f $TMPFILE1 $IFILE
-printf "."
-IFILE=$INSTALLERSDIR/linux/dpkg/xwhep.bridgedgsg/DEBIAN/preinst
-cat $IFILE | sed "s/^SYSLOGIN=.*/SYSLOGIN=$XWUSER/g" >  $TMPFILE1
-mv -f $TMPFILE1 $IFILE
-printf "."
-IFILE=$INSTALLERSDIR/linux/dpkg/xwhep.server/DEBIAN/postinst
-cat $IFILE | sed "s/^SYSLOGIN=.*/SYSLOGIN=$XWUSER/g" >  $TMPFILE1
-mv -f $TMPFILE1 $IFILE
-printf "."
-IFILE=$INSTALLERSDIR/linux/dpkg/xwhep.server/DEBIAN/postrm
-cat $IFILE | sed "s/^SYSLOGIN=.*/SYSLOGIN=$XWUSER/g" >  $TMPFILE1
-mv -f $TMPFILE1 $IFILE
-printf "."
-IFILE=$INSTALLERSDIR/linux/dpkg/xwhep.server/DEBIAN/preinst
-cat $IFILE | sed "s/^SYSLOGIN=.*/SYSLOGIN=$XWUSER/g" >  $TMPFILE1
-mv -f $TMPFILE1 $IFILE
-printf "."
-IFILE=$INSTALLERSDIR/linux/dpkg/xwhep.worker/DEBIAN/postinst
-cat $IFILE | sed "s/^SYSLOGIN=.*/SYSLOGIN=$XWUSER/g" >  $TMPFILE1
-mv -f $TMPFILE1 $IFILE
-printf "."
-IFILE=$INSTALLERSDIR/linux/dpkg/xwhep.worker/DEBIAN/postrm
-cat $IFILE | sed "s/^SYSLOGIN=.*/SYSLOGIN=$XWUSER/g" >  $TMPFILE1
-mv -f $TMPFILE1 $IFILE
-printf "."
-IFILE=$INSTALLERSDIR/linux/dpkg/xwhep.worker/DEBIAN/preinst
-cat $IFILE | sed "s/^SYSLOGIN=.*/SYSLOGIN=$XWUSER/g" >  $TMPFILE1
-mv -f $TMPFILE1 $IFILE
-printf "."
-IFILE=$INSTALLERSDIR/linux/rpm/xwhep.bridgedgsg/xwhep-bridgedgsg.spec
-cat $IFILE | sed "s/^%define SYSLOGIN .*/%define SYSLOGIN $XWUSER/g" >  $TMPFILE1
-mv -f $TMPFILE1 $IFILE
-printf "."
-IFILE=$INSTALLERSDIR/linux/rpm/xwhep.server/xwhep-server.spec
-cat $IFILE | sed "s/^%define SYSLOGIN.*/%define SYSLOGIN $XWUSER/g" >  $TMPFILE1
-mv -f $TMPFILE1 $IFILE
-printf "."
-IFILE=$INSTALLERSDIR/linux/rpm/xwhep.worker/xwhep-worker.spec
-cat $IFILE | sed "s/^%define SYSLOGIN.*/%define SYSLOGIN $XWUSER/g" >  $TMPFILE1
-mv -f $TMPFILE1 $IFILE
-printf "."
 
-
-IFILE=$INSTALLERSDIR/linux/rpm/xwhep.vworker/xwhep-worker.spec
-cat $IFILE | sed "s/^%define SYSLOGIN.*/%define SYSLOGIN $XWUSER/g" >  $TMPFILE1
-mv -f $TMPFILE1 $IFILE
-printf "."
 : '
 
 IFILE=$INSTALLERSDIR/macosx/xwhep.client/installer/Resources/postflight
@@ -1437,23 +1380,6 @@ mv -f $TMPFILE2 $XWGMOND
 chmod +x $XWGMOND
 echo "Done"
 
-#
-# Preparing the worker configuration file
-#
-rm -f $TMPFILE1
-rm -f $TMPFILE2
-printf "Preparing worker configuration file '$XWWORKERCONFFILE'"
-
-echo " Done"
-
-#
-# Preparing the vworker configuration file
-#
-rm -f $TMPFILE1
-rm -f $TMPFILE2
-printf "Preparing vworker configuration file '$XWVWORKERCONFFILE'"
-
-echo "Done"
 
 #
 # Preparing worker conf file for macosx packages
@@ -1596,6 +1522,7 @@ mv -f $TMPFILE1 $WIN32WORKERCONFFILE
 
 echo "Done"
 END
+
 #
 # Preparing the client configuration file
 #
@@ -1689,7 +1616,6 @@ rm -f  $INSTALLERSDIR/xwhep.client/$VERSION/bin/xtremweb.jra2*    > /dev/null  2
 rm -f  $INSTALLERSDIR/xwhep.client/$VERSION/bin/xtremweb.monitor* > /dev/null  2>&1
 rm -f  $INSTALLERSDIR/xwhep.client/$VERSION/bin/xtremweb.server   > /dev/null  2>&1
 rm -f  $INSTALLERSDIR/xwhep.client/$VERSION/bin/xwconfigure*      > /dev/null  2>&1
-rm -f  $INSTALLERSDIR/xwhep.client/$VERSION/bin/xwhep.bridge*     > /dev/null  2>&1
 rm -f  $INSTALLERSDIR/xwhep.client/$VERSION/bin/xwhep.probe*      > /dev/null  2>&1
 rm -f  $INSTALLERSDIR/xwhep.client/$VERSION/bin/$GENKEYS          > /dev/null  2>&1
 rm -f  $INSTALLERSDIR/xwhep.client/$VERSION/bin/$OPENIDSH         > /dev/null  2>&1
@@ -2168,421 +2094,6 @@ fi
 #END
 
 #
-# Preparing DG to SG bridge RPM package
-#
-
-printf "Preparing DG to SG bridge RPM package to '$INSTALLERSDIR/linux/rpm/xwhep.bridgedgsg'"
-mkdir -p $INSTALLERSDIR/linux/rpm/xwhep.bridgedgsg/RPMS/    > /dev/null 2>&1 || fatal "Can't mkdir -p $INSTALLERSDIR/linux/rpm/xwhep.bridgedgsg/RPMS/"
-mkdir -p $INSTALLERSDIR/linux/rpm/xwhep.bridgedgsg/SOURCES/ > /dev/null 2>&1 || fatal "Can't mkdir -p $INSTALLERSDIR/linux/rpm/xwhep.bridgedgsg/SOURCES/"
-mkdir -p $INSTALLERSDIR/linux/rpm/xwhep.bridgedgsg/SPECS/   > /dev/null 2>&1 || fatal "Can't mkdir -p $INSTALLERSDIR/linux/rpm/xwhep.bridgedgsg/SPECS/"
-mkdir -p $INSTALLERSDIR/linux/rpm/xwhep.bridgedgsg/SRPMS/   > /dev/null 2>&1 || fatal "Can't mkdir -p $INSTALLERSDIR/linux/rpm/xwhep.bridgedgsg/SRPMS/"
-
-rpmBuildDir="$INSTALLERSDIR/linux/rpm/xwhep.bridgedgsg/BUILD/"
-rpmDir="$rpmBuildDir/xwhep-bridgedgsg-$VERSION"
-mkdir -p $rpmDir > /dev/null 2>&1 || fatal "Can't mkdir -p $rpmDir"
-
-printf "."
-
-wkrRpmDir="$rpmDir/$INSTALLDIR/xwhep-bridgedgsg-$VERSION"
-mkdir -p $wkrRpmDir/bin      > /dev/null 2>&1 || fatal "Can't mkdir -p $wkrRpmDir/bin"
-mkdir -p $wkrRpmDir/conf     > /dev/null 2>&1 || fatal "Can't mkdir -p $wkrRpmDir/conf"
-mkdir -p $wkrRpmDir/keystore > /dev/null 2>&1 || fatal "Can't mkdir -p $wkrRpmDir/keystore"
-mkdir -p $wkrRpmDir/lib      > /dev/null 2>&1 || fatal "Can't mkdir -p $wkrRpmDir/lib"
-mkdir -p $wkrRpmDir/doc      > /dev/null 2>&1 || fatal "Can't mkdir -p $wkrRpmDir/doc"
-
-printf "."
-
-cp $ROOTDIR/AUTHORS $wkrRpmDir/                  > /dev/null 2>&1 || fatal "Can't copy $ROOTDIR/AUTHORS to $wkrRpmDir/"
-cp $ROOTDIR/ChangeLog $wkrRpmDir/                > /dev/null 2>&1 || fatal "Can't copy $ROOTDIR/ChangeLog to $wkrRpmDir/"
-cp $ROOTDIR/INSTALL $wkrRpmDir/                  > /dev/null 2>&1 || fatal "Can't copy $ROOTDIR/INSTALL to $wkrRpmDir/"
-cp $ROOTDIR/License $wkrRpmDir/                  > /dev/null 2>&1 || fatal "Can't copy $ROOTDIR/License to $wkrRpmDir/"
-cp $ROOTDIR/License.bouncycastle $wkrRpmDir/     > /dev/null 2>&1 || fatal "Can't copy $ROOTDIR/License.bouncycastle to $wkrRpmDir/"
-cp $ROOTDIR/License.smartsockets-1.4 $wkrRpmDir/ > /dev/null 2>&1 || fatal "Can't copy $ROOTDIR/License.smartsockets-1.4 to $wkrRpmDir/"
-
-cp $BINDIR/xtremwebconf.sh $wkrRpmDir/bin/ > /dev/null 2>&1 || fatal "Can't copy bin file to $wkrRpmDir/bin"
-
-rm -f $TMPFILE1 $TMPFILE2
-SEDVAR=`echo "$DBHOST" | sed -f $SEDCMDS`
-grep -E "DBHOST[[:space:]]*=.*" $BINDIR/xwhep.bridgedg2sg.pl > /dev/null 2>&1
-if [ $? -eq 0 ] ; then
-    cat $BINDIR/xwhep.bridgedg2sg.pl | sed  "s/^[[:space:]]*my \$DBHOST[[:space:]]*=.*/my \$DBHOST=\"$SEDVAR\";/g" >  $TMPFILE1
-else
-    cp -f $BINDIR/xwhep.bridgedg2sg.pl $TMPFILE1
-    echo "my \$DBHOST=\"$SEDVAR\";" >> $TMPFILE1
-fi
-printf "."
-SEDVAR=`echo "$DBNAME" | sed -f $SEDCMDS`
-grep -E "DBNAME[[:space:]]*=.*" $TMPFILE1 > /dev/null 2>&1
-if [ $? -eq 0 ] ; then
-    cat $TMPFILE1 | sed "s/^[[:space:]]*my \$DBNAME[[:space:]]*=.*/my \$DBNAME=\"$SEDVAR\";/g" >  $TMPFILE2
-else
-    cp -f $TMPFILE1 $TMPFILE2
-    echo "my \$DBNAME=\"$SEDVAR\";" >> $TMPFILE2
-fi
-rm -f $TMPFILE1
-printf "."
-SEDVAR=`echo "$DBUSERLOGIN" | sed -f $SEDCMDS`
-grep -E "DBUSER[[:space:]]*=.*" $TMPFILE2 > /dev/null 2>&1
-if [ $? -eq 0 ] ; then
-    cat $TMPFILE2 | sed "s/^[[:space:]]*my \$DBUSER[[:space:]]*=.*/my \$DBUSER=\"$SEDVAR\";/g" > $TMPFILE1
-else
-    cp -f $TMPFILE2 $TMPFILE1
-    echo "my \$DBUSER=\"$SEDVAR\";" >> $TMPFILE1
-fi
-rm -f $TMPFILE2
-printf "."
-SEDVAR=`echo "$DBUSERPASSWORD" | sed -f $SEDCMDS`
-grep -E "dbpassword[[:space:]]*=.*" $TMPFILE1 > /dev/null 2>&1
-if [ $? -eq 0 ] ; then
-    cat $TMPFILE1 | sed "s/^[[:space:]]*my \$dbpassword[[:space:]]*=.*/my \$dbpassword=\"$SEDVAR\";/g" > $TMPFILE2
-else
-    cp -f $TMPFILE1 $TMPFILE2
-    echo "my \$dbpassword=\"$SEDVAR\";" >> $TMPFILE2
-fi
-rm -f $TMPFILE1
-printf "."
-mv $TMPFILE2 $BINDIR/xwhep.bridgedg2sg.pl
-chmod +x  $BINDIR/xwhep.bridgedg2sg.pl
-
-cp $BINDIR/* $wkrRpmDir/bin/              > /dev/null  2>&1
-rm -f $wkrRpmDir/bin/*sql                 > /dev/null  2>&1
-rm -f $wkrRpmDir/bin/context.sh           > /dev/null  2>&1
-rm -f $wkrRpmDir/bin/xwhep.bridgesg2dg.pm > /dev/null  2>&1
-
-
-RPMBRIDGECONFFILE=$wkrRpmDir/conf/$XWBRIDGECONFFILENAME
-cp $XWBRIDGECONFFILE $RPMBRIDGECONFFILE > /dev/null 2>&1 || fatal "Can't copy conf file to rpm/conf/"
-
-printf "."
-
-cp $XWBRIDGECONFFILE $RPMBRIDGECONFFILE
-SEDVAR=`echo "$INSTALLDIR" | sed -f $SEDCMDS`
-grep -E "^[[:space:]]*SSLKeyStore[[:space:]]*=.*" $RPMBRIDGECONFFILE > /dev/null 2>&1
-if [ $? -eq 0 ] ; then
-    cat $RPMBRIDGECONFFILE | sed "s/^[[:space:]]*SSLKeyStore[[:space:]]*=.*/SSLKeyStore=\/$SEDVAR\/xwhep-bridgedgsg-$VERSION\/keystore\/$XWBRIDGEKEYSTOREFILENAME/g" > $TMPFILE1
-else
-    cp -f $RPMBRIDGECONFFILE $TMPFILE1
-    echo "SSLKeyStore=/$SEDVAR/xwhep-bridgedgsg-$VERSION/keystore/$XWBRIDGEKEYSTOREFILENAME" >> $TMPFILE1
-fi
-
-printf "."
-
-grep -E "^[[:space:]]*LOGIN[[:space:]]*=.*" $TMPFILE1 > /dev/null 2>&1
-if [ $? -eq 0 ] ; then
-    cat $TMPFILE1 | sed "s/^[[:space:]]*LOGIN[[:space:]]*=.*/LOGIN=$XWADMINLOGIN/g" > $TMPFILE2
-else
-    cp -f $TMPFILE1 $TMPFILE2
-    echo "LOGIN=$XWADMINPASSWORD" >> $TMPFILE2
-fi
-
-printf "."
-grep -E "^[[:space:]]*password[[:space:]]*=.*" $TMPFILE2 > /dev/null 2>&1
-if [ $? -eq 0 ] ; then
-    cat $TMPFILE2 | sed "s/^[[:space:]]*password[[:space:]]*=.*/password=$XWADMINPASSWORD/g" > $TMPFILE1
-else
-    cp -f $TMPFILE2 $TMPFILE1
-    echo "password=$XWADMINPASSWORD" >> $TMPFILE1
-fi
-
-mv -f $TMPFILE1 $RPMBRIDGECONFFILE
-
-printf "."
-
-cp -f $XWBRIDGEKEYSTOREFILE $wkrRpmDir/keystore/ > /dev/null 2>&1 || fatal "Can't copy keystore file to $wkrRpmDir/keystore"
-cp $LIBDIR/* $wkrRpmDir/lib/                     > /dev/null 2>&1 || fatal "Can't copy jar file to $wkrRpmDir/lib"
-cp -Rf $DOCDIR/* $wkrRpmDir/doc/                 > /dev/null 2>&1 || fatal "Can't copy docs to $wkrRpmDir/bin"
-
-chmod +x $wkrRpmDir/bin/* > /dev/null 2>&1 || fatal "Can't chmod +x"
-chmod -x $wkrRpmDir/bin/*.sql* $wkrRpmDir/bin/*.seds $wkrRpmDir/bin/*.bat $wkrRpmDir/bin/*.xml > /dev/null  2>&1
-
-printf "."
-
-rm -f $INSTALLERSDIR/linux/rpm/xwhep.bridgedgsg/SOURCES/xwhep-bridgedgsg-$VERSION.tar.gz
-[ $? -ne 0 ] && fatal "Can't remove tar file"
-if [ "$PKGS" = "YES" ] ; then
-	(cd $rpmBuildDir && tar cvfz $INSTALLERSDIR/linux/rpm/xwhep.bridgedgsg/SOURCES/xwhep-bridgedgsg-$VERSION.tar.gz .) > /dev/null  2>&2
-	[ $? -ne 0 ] && fatal "Can't create tar file"
-fi
-printf "."
-
-echo " Done"
-
-if [ $REDHATOS -eq 1 ] ; then
-    [ -f $HOME/.rpmmacros ] && cp $HOME/.rpmmacros $HOME/.rpmmacros_sav 
-
-    rm -f $HOME/.rpmmacros 
-    cat > $HOME/.rpmmacros  <<EOF
-%packager Oleg Lodygensky <oleg.lodygensky@lal.in2p3.fr>
-%_topdir $INSTALLERSDIR/linux/rpm/xwhep.bridgedgsg/
-%_tmppath /tmp
-EOF
-
-    rpmbuild  --buildroot $INSTALLERSDIR/linux/rpm/xwhep.bridgedgsg/BUILD/xwhep-bridgedgsg-$VERSION -bb $INSTALLERSDIR/linux/rpm/xwhep.bridgedgsg/xwhep-bridgedgsg.spec
-    if [ $? -ne 0 ] ; then
-
-		cp -f $HOME/.rpmmacros  $CONFDIR/rpmmacros-bridgedgsg
-
-		cat <<EOF > $INSTALLERSDIR/linux/rpm/xwhep.bridgedgsg/RPMBUILD.txt
-
-***********************************************************
-                        ATTENTION
-***********************************************************
-Can't create bridgedgsg RPM
-You may need root privileges to do so...
-
-You will then need an \$HOME/.rpmmacros file.
-This file has been created for you here : 
-  $CONFDIR/rpmmacros-bridgedgsg
-
-You can invoke rpmbuild :
-
-$> cp -f $CONFDIR/rpmmacros-bridgedgsg \$HOME/.rpmmacros
-$> rpmbuild --buildroot $INSTALLERSDIR/linux/rpm/xwhep.bridgedgsg/BUILD/xwhep-bridgedgsg-$VERSION -bb  $INSTALLERSDIR/linux/rpm/xwhep.bridgedgsg/xwhep-bridgedgsg.spec
-
-The RPM is then ready in :
-  $INSTALLERSDIR/linux/rpm/xwhep.bridgedgsg/RPMS/noarch/
-
-EOF
-		cat $INSTALLERSDIR/linux/rpm/xwhep.bridgedgsg/RPMBUILD.txt
-		if [ "$FORCEYES" = "NO"  ] ; then
-			printf "(Hit Enter key) "
-			read
-		fi
-    fi
-
-    [ -f $HOME/.rpmmacros_sav ] && mv $HOME/.rpmmacros_sav $HOME/.rpmmacros 
-fi
-
-#
-# Preparing bridgedgsg DEBIAN package
-#
-echo
-echo "Preparing bridgedgsg Debian package"
-mkdir -p $INSTALLERSDIR/linux/dpkg/xwhep.bridgedgsg/DEBIAN > /dev/null  2>&1
-[ ! -d $INSTALLERSDIR/linux/dpkg/xwhep.bridgedgsg/DEBIAN ] && fatal "Can't mkdir -p $INSTALLERSDIR/linux/dpkg/xwhep.bridgedgsg/DEBIAN"
-cp -Rf $rpmDir/* $INSTALLERSDIR/linux/dpkg/xwhep.bridgedgsg/ > /dev/null 2>&1 || fatal "Can't copy $rpmDir/* $INSTALLERSDIR/linux/dpkg/xwhep.bridgedgsg/"
-find $INSTALLERSDIR/linux/dpkg/ -type d | xargs chmod 755
-chmod 755 $INSTALLERSDIR/linux/dpkg/xwhep.bridgedgsg/DEBIAN/pre*
-chmod 755 $INSTALLERSDIR/linux/dpkg/xwhep.bridgedgsg/DEBIAN/post*
-if [ "$PKGS" = "YES" -a $DEBIANOS -eq 1 -o $MACOS -eq 1 ] ; then
-    dpkg-deb --build $INSTALLERSDIR/linux/dpkg/xwhep.bridgedgsg xwhep-bridgedgsg-$VERSION.deb
-    if [ $? -ne 0 ] ; then
-
-		cat <<EOF > $INSTALLERSDIR/linux/dpkg/xwhep-bridgedgsg.build.txt
-
-***********************************************************
-                        ATTENTION
-***********************************************************
-Can't create bridgedgsg Debian package
-You may need root privileges to do so...
-
-You can invoke dpkg-deb :
-
-$> dpkg-deb --build $INSTALLERSDIR/linux/dpkg/xwhep.bridgedgsg xwhep-bridgedgsg-$VERSION.deb
-
-The Debian package is then ready in :
-  $INSTALLERSDIR/linux/dpkg/xwhep-bridgedgsg-$VERSION.deb
-
-EOF
-		cat $INSTALLERSDIR/linux/dpkg/xwhep-bridgedgsg.build.txt
-		if [ "$FORCEYES" = "NO"  ] ; then
-			printf "(Hit Enter key) "
-			read
-		fi
-    fi
-fi
-
-echo "Bridgedgsg Debian package ready"
-
-
-#
-# Preparing SG to DG bridge RPM package
-#
-
-printf "Preparing SG to DG bridge RPM package to '$INSTALLERSDIR/linux/rpm/xwhep.bridgesgdg'"
-mkdir -p $INSTALLERSDIR/linux/rpm/xwhep.bridgesgdg/RPMS/    > /dev/null 2>&1 || fatal "Can't mkdir -p $INSTALLERSDIR/linux/rpm/xwhep.bridgesgdg/RPMS/"
-mkdir -p $INSTALLERSDIR/linux/rpm/xwhep.bridgesgdg/SOURCES/ > /dev/null 2>&1 || fatal "Can't mkdir -p $INSTALLERSDIR/linux/rpm/xwhep.bridgesgdg/SOURCES/"
-mkdir -p $INSTALLERSDIR/linux/rpm/xwhep.bridgesgdg/SPECS/   > /dev/null 2>&1 || fatal "Can't mkdir -p $INSTALLERSDIR/linux/rpm/xwhep.bridgesgdg/SPECS/"
-mkdir -p $INSTALLERSDIR/linux/rpm/xwhep.bridgesgdg/SRPMS/   > /dev/null 2>&1 || fatal "Can't mkdir -p $INSTALLERSDIR/linux/rpm/xwhep.bridgesgdg/SRPMS/"
-
-rpmBuildDir="$INSTALLERSDIR/linux/rpm/xwhep.bridgesgdg/BUILD/"
-rpmDir="$rpmBuildDir/xwhep-bridgesgdg-$VERSION"
-mkdir -p $rpmDir > /dev/null 2>&1 || fatal "Can't mkdir -p $rpmDir"
-
-printf "."
-
-wkrRpmDir="$rpmDir/$INSTALLDIR/xwhep-bridgesgdg-$VERSION"
-mkdir -p $wkrRpmDir/bin      > /dev/null 2>&1 || fatal "Can't mkdir -p $wkrRpmDir/bin"
-mkdir -p $wkrRpmDir/conf     > /dev/null 2>&1 || fatal "Can't mkdir -p $wkrRpmDir/conf"
-mkdir -p $wkrRpmDir/keystore > /dev/null 2>&1 || fatal "Can't mkdir -p $wkrRpmDir/keystore"
-mkdir -p $wkrRpmDir/lib      > /dev/null 2>&1 || fatal "Can't mkdir -p $wkrRpmDir/lib"
-mkdir -p $wkrRpmDir/doc      > /dev/null 2>&1 || fatal "Can't mkdir -p $wkrRpmDir/doc"
-
-printf "."
-
-cp $BINDIR/xtremwebconf.sh $wkrRpmDir/bin/ > /dev/null 2>&1 || fatal "Can't copy bin file to $wkrRpmDir/bin"
-
-cp $ROOTDIR/AUTHORS $wkrRpmDir/                  > /dev/null 2>&1 || fatal "Can't copy $ROOTDIR/AUTHORS to $wkrRpmDir/"
-cp $ROOTDIR/ChangeLog $wkrRpmDir/                > /dev/null 2>&1 || fatal "Can't copy $ROOTDIR/ChangeLog to $wkrRpmDir/"
-cp $ROOTDIR/INSTALL $wkrRpmDir/                  > /dev/null 2>&1 || fatal "Can't copy $ROOTDIR/INSTALL to $wkrRpmDir/"
-cp $ROOTDIR/License $wkrRpmDir/                  > /dev/null 2>&1 || fatal "Can't copy $ROOTDIR/License to $wkrRpmDir/"
-cp $ROOTDIR/License.bouncycastle $wkrRpmDir/     > /dev/null 2>&1 || fatal "Can't copy $ROOTDIR/License.bouncycastle to $wkrRpmDir/"
-cp $ROOTDIR/License.smartsockets-1.4 $wkrRpmDir/ > /dev/null 2>&1 || fatal "Can't copy $ROOTDIR/License.smartsockets-1.4 to $wkrRpmDir/"
-
-
-cp $BINDIR/* $wkrRpmDir/bin/           > /dev/null  2>&1
-rm -f $wkrRpmDir/bin/context.sh        > /dev/null  2>&1
-rm -f $wkrRpmDir/bin/*sql              > /dev/null  2>&1
-rm -f $wkrRpmDir/bin/xwhep.sgbridge.pm > /dev/null  2>&1
-
-
-RPMBRIDGECONFFILE=$wkrRpmDir/conf/$XWBRIDGECONFFILENAME
-cp $XWBRIDGECONFFILE $RPMBRIDGECONFFILE > /dev/null 2>&1 || fatal "Can't copy conf file to rpm/conf/"
-
-printf "."
-
-cp $XWBRIDGECONFFILE $RPMBRIDGECONFFILE
-SEDVAR=`echo "$INSTALLDIR" | sed -f $SEDCMDS`
-grep -E "^[[:space:]]*SSLKeyStore[[:space:]]*=.*" $RPMBRIDGECONFFILE > /dev/null 2>&1
-if [ $? -eq 0 ] ; then
-    cat $RPMBRIDGECONFFILE | sed "s/^[[:space:]]*SSLKeyStore[[:space:]]*=.*/SSLKeyStore=\/$SEDVAR\/xwhep-bridgesgdg-$VERSION\/keystore\/$XWBRIDGEKEYSTOREFILENAME/g" > $TMPFILE1
-else
-    cp -f $RPMBRIDGECONFFILE $TMPFILE1
-    echo "SSLKeyStore=/$SEDVAR/xwhep-bridgesgdg-$VERSION/keystore/$XWBRIDGEKEYSTOREFILENAME" >> $TMPFILE1
-fi
-
-printf "."
-
-grep -E "^[[:space:]]*LOGIN[[:space:]]*=.*" $TMPFILE1 > /dev/null 2>&1
-if [ $? -eq 0 ] ; then
-    cat $TMPFILE1 | sed "s/^[[:space:]]*LOGIN[[:space:]]*=.*/LOGIN=$XWADMINLOGIN/g" > $TMPFILE2
-else
-    cp -f $TMPFILE1 $TMPFILE2
-    echo "LOGIN=$XWADMINPASSWORD" >> $TMPFILE2
-fi
-
-printf "."
-grep -E "^[[:space:]]*password[[:space:]]*=.*" $TMPFILE2 > /dev/null 2>&1
-if [ $? -eq 0 ] ; then
-    cat $TMPFILE2 | sed "s/^[[:space:]]*password[[:space:]]*=.*/password=$XWADMINPASSWORD/g" > $TMPFILE1
-else
-    cp -f $TMPFILE2 $TMPFILE1
-    echo "password=$XWADMINPASSWORD" >> $TMPFILE1
-fi
-
-rm -f $TMPFILE2
-mv -f $TMPFILE1 $RPMBRIDGECONFFILE
-
-printf "."
-
-cp -f $XWBRIDGEKEYSTOREFILE $wkrRpmDir/keystore/ > /dev/null 2>&1 || fatal "Can't copy keystore file to $wkrRpmDir/keystore"
-cp $LIBDIR/* $wkrRpmDir/lib/                     > /dev/null 2>&1 || fatal "Can't copy jar file to $wkrRpmDir/lib"
-cp -Rf $DOCDIR/* $wkrRpmDir/doc/                 > /dev/null 2>&1 || fatal "Can't copy docs to $wkrRpmDir/bin"
-
-chmod +x $wkrRpmDir/bin/* > /dev/null 2>&1 || fatal "Can't chmod +x"
-chmod -x $wkrRpmDir/bin/*.sql* $wkrRpmDir/bin/*.seds $wkrRpmDir/bin/*.bat $wkrRpmDir/bin/*.xml > /dev/null  2>&1
-
-printf "."
-
-rm -f $INSTALLERSDIR/linux/rpm/xwhep.bridgesgdg/SOURCES/xwhep-bridgesgdg-$VERSION.tar.gz
-[ $? -ne 0 ] && fatal "Can't remove tar file"
-if [ "$PKGS" = "YES" ] ; then
-	(cd $rpmBuildDir && tar cvfz $INSTALLERSDIR/linux/rpm/xwhep.bridgesgdg/SOURCES/xwhep-bridgesgdg-$VERSION.tar.gz .) > /dev/null  2>&2
-	[ $? -ne 0 ] && fatal "Can't create tar file"
-fi
-printf "."
-
-echo " Done"
-
-if [ $REDHATOS -eq 1 ] ; then
-    [ -f $HOME/.rpmmacros ] && cp $HOME/.rpmmacros $HOME/.rpmmacros_sav 
-
-    rm -f $HOME/.rpmmacros 
-    cat > $HOME/.rpmmacros  <<EOF
-%packager Oleg Lodygensky <oleg.lodygensky@lal.in2p3.fr>
-%_topdir $INSTALLERSDIR/linux/rpm/xwhep.bridgesgdg/
-%_tmppath /tmp
-EOF
-
-    rpmbuild --buildroot $INSTALLERSDIR/linux/rpm/xwhep.bridgesgdg/BUILD/xwhep-bridgesgdg-$VERSION -bb $INSTALLERSDIR/linux/rpm/xwhep.bridgesgdg/xwhep-bridgesgdg.spec
-    if [ $? -ne 0 ] ; then
-
-		cp -f $HOME/.rpmmacros  $CONFDIR/rpmmacros-bridgesgdg
-
-		cat <<EOF > $INSTALLERSDIR/linux/rpm/xwhep.bridgesgdg/RPMBUILD.txt
-
-***********************************************************
-                        ATTENTION
-***********************************************************
-Can't create bridgesgdg RPM
-You may need root privileges to do so...
-
-You will then need an \$HOME/.rpmmacros file.
-This file has been created for you here : 
-  $CONFDIR/rpmmacros-bridgesgdg
-
-You can invoke rpmbuild :
-
-$> cp -f $CONFDIR/rpmmacros-bridgesgdg \$HOME/.rpmmacros
-$> rpmbuild --buildroot $INSTALLERSDIR/linux/rpm/xwhep.bridgesgdg/BUILD/xwhep-bridgesgdg-$VERSION -bb  $INSTALLERSDIR/linux/rpm/xwhep.bridgesgdg/xwhep-bridgesgdg.spec
-
-The RPM is then ready in :
-  $INSTALLERSDIR/linux/rpm/xwhep.bridgesgdg/RPMS/noarch/
-
-EOF
-		cat $INSTALLERSDIR/linux/rpm/xwhep.bridgesgdg/RPMBUILD.txt
-		if [ "$FORCEYES" = "NO"  ] ; then
-			printf "(Hit Enter key) "
-			read
-		fi
-    fi
-
-    [ -f $HOME/.rpmmacros_sav ] && mv $HOME/.rpmmacros_sav $HOME/.rpmmacros 
-fi
-
-#
-# Preparing bridgesgdg DEBIAN package
-#
-echo
-echo "Preparing bridgesgdg Debian package"
-mkdir -p $INSTALLERSDIR/linux/dpkg/xwhep.bridgesgdg/DEBIAN > /dev/null  2>&1
-[ ! -d $INSTALLERSDIR/linux/dpkg/xwhep.bridgesgdg/DEBIAN ] && fatal "Can't mkdir -p $INSTALLERSDIR/linux/dpkg/xwhep.bridgesgdg/DEBIAN"
-cp -Rf $rpmDir/* $INSTALLERSDIR/linux/dpkg/xwhep.bridgesgdg/ > /dev/null 2>&1 || fatal "Can't copy $rpmDir/* $INSTALLERSDIR/linux/dpkg/xwhep.bridgesgdg/"
-find $INSTALLERSDIR/linux/dpkg/ -type d | xargs chmod 755
-chmod 755 $INSTALLERSDIR/linux/dpkg/xwhep.bridgesgdg/DEBIAN/pre*
-chmod 755 $INSTALLERSDIR/linux/dpkg/xwhep.bridgesgdg/DEBIAN/post*
-if [ "$PKGS" = "YES" -a $DEBIANOS -eq 1 -o $MACOS -eq 1 ] ; then
-    dpkg-deb --build $INSTALLERSDIR/linux/dpkg/xwhep.bridgesgdg xwhep-bridgesgdg-$VERSION.deb
-    if [ $? -ne 0 ] ; then
-
-		cat <<EOF > $INSTALLERSDIR/linux/dpkg/xwhep-bridgesgdg.build.txt
-
-***********************************************************
-                        ATTENTION
-***********************************************************
-Can't create bridgesgdg Debian package
-You may need root privileges to do so...
-
-You can invoke dpkg-deb :
-
-$> dpkg-deb --build $INSTALLERSDIR/linux/dpkg/xwhep.bridgesgdg xwhep-bridgesgdg-$VERSION.deb
-
-The Debuan package is then ready in :
-  $INSTALLERSDIR/linux/dpkg/xwhep-bridgesgdg-$VERSION.deb
-
-EOF
-		cat $INSTALLERSDIR/linux/dpkg/xwhep-bridgesgdg.build.txt
-		if [ "$FORCEYES" = "NO"  ] ; then
-			printf "(Hit Enter key) "
-			read
-		fi
-    fi
-fi
-
-echo "Bridgesgdg Debian package ready"
-
-
-#
 # Preparing client RPM package
 #
 
@@ -2938,10 +2449,6 @@ EOF
     [ -f $HOME/.rpmmacros_sav ] && mv $HOME/.rpmmacros_sav $HOME/.rpmmacros 
 fi
 
-
-
-
-
 #
 # Preparing worker DEBIAN package
 #
@@ -2983,8 +2490,6 @@ fi
 [ -f xwhep-worker-$VERSION.deb ] && cp xwhep-worker-$VERSION.deb $ROOTDIR/docker/worker/ 
 
 echo "Worker Debian package ready"
-
-
 
 
 #
@@ -3068,10 +2573,6 @@ EOF
 
     [ -f $HOME/.rpmmacros_sav ] && mv $HOME/.rpmmacros_sav $HOME/.rpmmacros 
 fi
-
-
-
-
 
 #
 # Preparing vworker DEBIAN package
@@ -3192,14 +2693,6 @@ Available packages :
    - Debian DPKG in $INSTALLERSDIR/linux/dpkg/xwhep.server
    - Apple  PKG  in $INSTALLERSDIR/macosx/xwhep.server
 
-  * Desktop Grid to Service Grid bridge
-   - RedHat RPM  in $INSTALLERSDIR/linux/rpm/xwhep.bridgedgsg
-   - Debian DPKG in $INSTALLERSDIR/linux/dpkg/xwhep.bridgedgsg
-
-  * Service Grid to Desktop Grid bridge
-   - RedHat RPM  in $INSTALLERSDIR/linux/rpm/xwhep.bridgesgdg
-   - Debian DPKG in $INSTALLERSDIR/linux/dpkg/xwhep.bridgesgdg
-
   * client
    - RedHat RPM  in $INSTALLERSDIR/linux/rpm/xwhep.client
    - Debian DPKG in $INSTALLERSDIR/linux/dpkg/xwhep.client
@@ -3216,7 +2709,6 @@ Available packages :
 
   * client
    - Zip file (platform independant)  in $INSTALLERSDIR/xwhep-client-$VERSION.zip
-
 
 You can manually :
   * start the server

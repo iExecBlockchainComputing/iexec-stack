@@ -1,0 +1,253 @@
+import org.apache.tools.ant.filters.ReplaceTokens
+
+apply from: 'common.gradle'
+
+task copyLinuxDPKGClient(type: Copy){
+    into project.dist + "/installers/linux/dpkg/xwhep.client/opt/xwhep-client-" + project.version
+
+    into("."){
+        from project.root + "/AUTHORS"
+        from project.root + "/ChangeLog"
+        from project.root + "/INSTALL"
+        from project.root + "/License"
+        from project.root + "/License.bouncycastle"
+        from project.root + "/License.smartsockets-1.4"
+    }
+
+    into("/bin"){
+        from project.distBin
+    }
+
+    into("/keystore"){
+        from project.root + "/build/dist/" + project.PROJECT_TAG + "/keystore/xwhepclient.keys"
+    }
+
+    into("/conf"){
+        from project.templates + "/xtremweb.client.conf.in"
+        rename { fileName -> fileName.replace('.in', '') }
+        def customProperties = getCustomProperties();
+        customProperties.setProperty("SSLKEYSTORECLIENT", "/opt/xwhep-client-" + project.version + "/keystore/xwhepclient.keys")
+        filter(ReplaceTokens, tokens: customProperties)
+    }
+
+    into("/lib"){
+        from project.distLib + "/xtremweb.jar"
+        from project.distLib + "/bcprov-jdk16-140.jar"
+        from project.distLib + "/ibis-util-2.1.jar"
+        from project.distLib + "/slf4j-api-1.7.2.jar"
+        from project.distLib + "/slf4j-log4j12-1.7.2.jar"
+        from project.distLib + "/smartsockets-1.4.jar"
+        from project.distLib + "/log4j-1.2-api-2.10.0.jar"
+    }
+
+    into("/doc"){
+        from project.distDoc
+    }
+}
+
+task buildLinuxDPKGClient(type: Exec) {
+    dependsOn(copyLinuxDPKGClient)
+    commandLine("sh", "-c",
+            "chmod -R 755 " + project.dist + "/installers/linux/dpkg/xwhep.client/DEBIAN/pre* && " +
+                    "chmod -R 755 " + project.dist + "/installers/linux/dpkg/xwhep.client/DEBIAN/post* && " +
+                    "dpkg-deb --build " + project.dist + "/installers/linux/dpkg/xwhep.client xwhep-client-" + project.version +".deb"
+    )
+}
+
+task copyLinuxDPKGServer(type: Copy){
+    into project.dist + "/installers/linux/dpkg/xwhep.server/opt/xwhep-server-" + project.version
+
+    into("."){
+        from project.root + "/AUTHORS"
+        from project.root + "/ChangeLog"
+        from project.root + "/INSTALL"
+        from project.root + "/License"
+        from project.root + "/License.bouncycastle"
+        from project.root + "/License.smartsockets-1.4"
+    }
+
+    into("/bin"){
+        from project.distBin + "/xtremwebconf.sh"
+        from project.distBin + "/xtremweb"
+        from project.distBin + "/xtremweb.server"
+        from project.distBin + "/xtremweb.ganglia"
+        from project.distBin + "/xtremweb.gmond.pl"
+    }
+
+    into("/bin/db-maintenance"){
+        from project.distBin + "/db-maintenance"
+    }
+
+    into("/lib"){
+        from project.distLib
+    }
+
+    into("/doc"){
+        from project.distDoc
+    }
+}
+
+task buildLinuxDPKGServer(type: Exec) {
+    dependsOn(copyLinuxDPKGServer)
+    commandLine("sh", "-c",
+            "chmod -R 755 " + project.dist + "/installers/linux/dpkg/xwhep.server/DEBIAN/pre* && " +
+                    "chmod -R 755 " + project.dist + "/installers/linux/dpkg/xwhep.server/DEBIAN/post* && " +
+                    "dpkg-deb --build " + project.dist + "/installers/linux/dpkg/xwhep.server xwhep-server-" + project.version +".deb"
+    )
+}
+
+task copyLinuxDPKGServerConf(type: Copy){
+    into project.dist + "/installers/linux/dpkg/xwhep.server.conf/opt/xwhep-server-conf-" + project.version
+
+    into("/keystore"){
+        from project.root + "/build/dist/" + project.PROJECT_TAG + "/keystore/xwhepserver.keys"
+    }
+
+    into("/conf"){
+        from project.templates + "/xtremweb.server.conf.in"
+        rename { fileName -> fileName.replace('.in', '') }
+        filter(ReplaceTokens, tokens: getCustomProperties())
+    }
+}
+
+task buildLinuxDPKGServerConf(type: Exec) {
+    dependsOn(copyLinuxDPKGServerConf)
+    commandLine("sh", "-c",
+            "chmod -R 755 " + project.dist + "/installers/linux/dpkg/xwhep.server.conf/DEBIAN/pre* && " +
+                    "chmod -R 755 " + project.dist + "/installers/linux/dpkg/xwhep.server.conf/DEBIAN/post* && " +
+                    "dpkg-deb --build " + project.dist + "/installers/linux/dpkg/xwhep.server.conf xwhep-server-conf-" + project.version +".deb"
+    )
+}
+
+task copyLinuxDPKGWorker(type: Copy){
+    into project.dist + "/installers/linux/dpkg/xwhep.worker/opt/xwhep-worker-" + project.version
+
+    into("."){
+        from project.root + "/AUTHORS"
+        from project.root + "/ChangeLog"
+        from project.root + "/INSTALL"
+        from project.root + "/License"
+        from project.root + "/License.bouncycastle"
+        from project.root + "/License.smartsockets-1.4"
+    }
+
+    into("/bin"){
+        from project.distBin + "/xtremwebconf.sh"
+        from project.distBin + "/xtremweb"
+        from project.distBin + "/xtremweb.monitor"
+        from project.distBin + "/xtremweb.monitor.pl"
+        from project.distBin + "/xtremweb.worker"
+        from project.distBin + "/createvdi"
+        from project.distBin + "/createiso"
+    }
+
+    into("/keystore"){
+        from project.root + "/build/dist/" + project.PROJECT_TAG + "/keystore/xwhepworker.keys"
+    }
+
+    into("/conf"){
+        from project.templates + "/xtremweb.worker.conf.in"
+        rename { fileName -> fileName.replace('.in', '') }
+        def customProperties = getCustomProperties();
+        customProperties.setProperty("SSLKEYSTOREWORKER", "/opt/xwhep-worker-" + project.version + "/keystore/xwhepworker.keys")
+        filter(ReplaceTokens, tokens: customProperties)
+    }
+
+    into("/lib"){
+        from project.distLib + "/bcprov-jdk16-140.jar"
+        from project.distLib + "/jetty-io-9.3.8.v20160314.jar"
+        from project.distLib + "/log4j-1.2-api-2.10.0.jar"
+        from project.distLib + "/slf4j-log4j12-1.7.2.jar"
+        from project.distLib + "/ibis-util-2.1.jar"
+        from project.distLib + "/jetty-server-9.3.8.v20160314.jar"
+        from project.distLib + "/servlet-api-3.1.jar"
+        from project.distLib + "/smartsockets-1.4.jar"
+        from project.distLib + "/jetty-http-9.3.8.v20160314.jar"
+        from project.distLib + "/jetty-util-9.3.8.v20160314.jar"
+        from project.distLib + "/slf4j-api-1.7.2.jar"
+        from project.distLib + "/xtremweb.jar"
+
+    }
+
+    into("/doc"){
+        from project.distDoc
+    }
+}
+
+task buildLinuxDPKGWorker(type: Exec) {
+    dependsOn(copyLinuxDPKGWorker)
+    commandLine("sh", "-c",
+            "chmod -R 755 " + project.dist + "/installers/linux/dpkg/xwhep.worker/DEBIAN/pre* && " +
+                    "chmod -R 755 " + project.dist + "/installers/linux/dpkg/xwhep.worker/DEBIAN/post* && " +
+                    "dpkg-deb --build " + project.dist + "/installers/linux/dpkg/xwhep.worker xwhep-worker-" + project.version +".deb"
+    )
+}
+
+task copyLinuxDPKGVWorker(type: Copy){
+    into project.dist + "/installers/linux/dpkg/xwhep.vworker/opt/xwhep-vworker-" + project.version
+
+    into("."){
+        from project.root + "/AUTHORS"
+        from project.root + "/ChangeLog"
+        from project.root + "/INSTALL"
+        from project.root + "/License"
+        from project.root + "/License.bouncycastle"
+        from project.root + "/License.smartsockets-1.4"
+    }
+
+    into("/bin"){
+        from project.distBin + "/xtremwebconf.sh"
+        from project.distBin + "/xtremweb"
+        from project.distBin + "/xtremweb.monitor"
+        from project.distBin + "/xtremweb.monitor.pl"
+        from project.distBin + "/xtremweb.worker"
+        from project.distBin + "/createvdi"
+        from project.distBin + "/createiso"
+    }
+
+    into("/keystore"){
+        from project.root + "/build/dist/" + project.PROJECT_TAG + "/keystore/xwhepworker.keys"
+    }
+
+    into("/conf"){
+        from project.templates + "/xtremweb.vworker.conf.in"
+        rename { fileName -> fileName.replace('.in', '') }
+        def customProperties = getCustomProperties();
+        customProperties.setProperty("SSLKEYSTOREWORKER", "/opt/xwhep-worker-" + project.version + "/keystore/xwhepworker.keys")
+        filter(ReplaceTokens, tokens: customProperties)
+    }
+
+    into("/lib"){
+        from project.distLib + "/bcprov-jdk16-140.jar"
+        from project.distLib + "/jetty-io-9.3.8.v20160314.jar"
+        from project.distLib + "/log4j-1.2-api-2.10.0.jar"
+        from project.distLib + "/slf4j-log4j12-1.7.2.jar"
+        from project.distLib + "/ibis-util-2.1.jar"
+        from project.distLib + "/jetty-server-9.3.8.v20160314.jar"
+        from project.distLib + "/servlet-api-3.1.jar"
+        from project.distLib + "/smartsockets-1.4.jar"
+        from project.distLib + "/jetty-http-9.3.8.v20160314.jar"
+        from project.distLib + "/jetty-util-9.3.8.v20160314.jar"
+        from project.distLib + "/slf4j-api-1.7.2.jar"
+        from project.distLib + "/xtremweb.jar"
+
+    }
+
+    into("/doc"){
+        from project.distDoc
+    }
+}
+
+task buildLinuxDPKGVWorker(type: Exec) {
+    dependsOn(copyLinuxDPKGVWorker)
+    commandLine("sh", "-c",
+            "chmod -R 755 " + project.dist + "/installers/linux/dpkg/xwhep.vworker/DEBIAN/pre* && " +
+                    "chmod -R 755 " + project.dist + "/installers/linux/dpkg/xwhep.vworker/DEBIAN/post* && " +
+                    "dpkg-deb --build " + project.dist + "/installers/linux/dpkg/xwhep.vworker xwhep-vworker-" + project.version +".deb"
+    )
+}
+
+task dpkg{
+    dependsOn(buildLinuxDPKGClient, buildLinuxDPKGServer,
+            buildLinuxDPKGServerConf, buildLinuxDPKGWorker, buildLinuxDPKGVWorker)
+}

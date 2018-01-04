@@ -942,12 +942,12 @@ insert into users (uid,login,password,fname,lname,email,rights,owneruid,accessri
                (select userRightId from userRights where userRightName = 'SUPER_USER'));
 
 insert into users (uid,login,password,fname,lname,email,rights,owneruid,accessrights,userRightId)
-       values ("@WORKERUID@","@DBWORKERLOGIN@","@DBWORKERPASSWORD@", "@DBADMINFNAME@", "@DBADMINLNAME@",
+       values ("@WORKERUID@","@XWWORKERLOGIN@","@XWWORKERPASSWORD@", "@DBADMINFNAME@", "@DBADMINLNAME@",
                "@DBADMINEMAIL@","WORKER_USER","@ADMINUID@","1792",
                (select userRightId from userRights where userRightName = 'WORKER_USER'));
 
 insert into users (uid,login,password,fname,lname,email,rights,owneruid,accessrights,userRightId)
-       values ("@VWORKERUID@","@DBVWORKERLOGIN@","@DBVWORKERPASSWORD@", "@DBADMINFNAME@", "@DBADMINLNAME@",
+       values ("@VWORKERUID@","@XWVWORKERLOGIN@","@XWVWORKERPASSWORD@", "@DBADMINFNAME@", "@DBADMINLNAME@",
                "@DBADMINEMAIL@","VWORKER_USER","@ADMINUID@","1792",
                (select userRightId from userRights where userRightName = 'VWORKER_USER'));
 

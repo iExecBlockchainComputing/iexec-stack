@@ -62,7 +62,7 @@ BuildRoot: %{_builddir}/%{name}-%{version}
 %define INITD /etc/init.d
 %define INITDWORKER %{INITD}/%{XWWORKER}
 %define INITDMONITOR %{INITD}/%{XWMONITOR}
-%define SYSLOGIN @SYSTEMUSER@
+%define SYSLOGIN @XWUSER@
 %define LOG /var/log/xwhep-worker.log
 %define VBHL /usr/bin/vboxheadless
 %define VBAPPNAME virtualbox

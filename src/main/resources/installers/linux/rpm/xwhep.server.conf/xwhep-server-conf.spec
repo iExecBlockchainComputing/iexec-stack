@@ -51,7 +51,7 @@ BuildRoot: %{_builddir}/%{name}-%{version}
 %define XW_BINDIR %{XW_INSTALLDIR}/bin
 %define XW_CONFDIR %{XW_INSTALLDIR}/conf
 %define XW_KEYDIR %{XW_INSTALLDIR}/keystore
-%define SYSLOGIN @SYSTEMUSER@
+%define SYSLOGIN @XWUSER@
 %define LOG /var/log/xwhep-server.log
 
 
