@@ -264,7 +264,7 @@ task copyLinuxInstallers(type: Copy) {
 
 
 task buildAll {
-    dependsOn(chmodBin, copyWindowsInstaller, copyMacInstaller, copyLinuxInstallers, dpkg, copySQLCreateTables, copyConfFiles)
+    dependsOn(chmodBin, copyWindowsInstaller, copyMacInstaller, copyLinuxInstallers, copySQLCreateTables, copyConfFiles)
 }
 
 buildAll.dependsOn getTasksByName('build', true)
