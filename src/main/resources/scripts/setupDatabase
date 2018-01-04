@@ -49,9 +49,6 @@ cd $ROOTDIR/..
 ROOTDIR=`pwd`
 cd $currentDir
 
-VERSION=%XWVERSION%
-INSTALLDIR=%INSTALLDIR%
-
 BINDIR=$ROOTDIR/bin
 CONFDIR=$ROOTDIR/conf
 DOCDIR=$ROOTDIR/doc
@@ -406,24 +403,6 @@ fi
 if [ -z "$XWSERVER" ] ; then
 	usage "Variable XWSERVER not set; please correct $XWCONFVALUES file " "STOP" 
 fi
-if [ -z "$SSLKEYPASSPHRASE" ] ; then
-	usage "Variable SSLKEYPASSPHRASE not set; please correct $XWCONFVALUES file " "STOP" 
-fi
-if [ -z "$SSLKEYSERVERPASSWORD" ] ; then
-	usage "Variable SSLKEYSERVERPASSWORD not set; please correct $XWCONFVALUES file " "STOP" 
-fi
-if [ -z "$SSLKEYWORKERPASSWORD" ] ; then
-	usage "Variable SSLKEYWORKERPASSWORD not set; please correct $XWCONFVALUES file " "STOP" 
-fi
-if [ -z "$SSLKEYCLIENTPASSWORD" ] ; then
-	usage "Variable SSLKEYCLIENTPASSWORD not set; please correct $XWCONFVALUES file " "STOP" 
-fi
-if [ -z "$X509CERTDIR" ] ; then
-	usage "Variable X509CERTDIR not set; please correct $XWCONFVALUES file " "STOP" 
-fi
-if [ -z "$USERCERTDIR" ] ; then
-	usage "Variable USERCERTDIR not set; please correct $XWCONFVALUES file " "STOP" 
-fi
 if [ -z "$XWUPGRADEURL" ] ; then
 	usage "Variable XWUPGRADEURL not set; please correct $XWCONFVALUES file " "STOP" 
 fi
@@ -545,81 +524,6 @@ if [ "$DBVENDOR" = "mysql" ] ; then
 	fi
 fi
 
-TMPFILE1=`date "+%Y%m%d_%H%M%S"`".xwtmp1"
-TMPFILE2=`date "+%Y%m%d_%H%M%S"`".xwtmp2"
-
-#
-# Preparing the SQL script to install MySQL database, with lowercase UUIDs
-#
-XWADMINGROUPUID=` uuidgen  |  tr "A-Z" "a-z"`
-XWWORKERGROUPUID=`uuidgen  |  tr "A-Z" "a-z"`
-XWADMINUID=`      uuidgen  |  tr "A-Z" "a-z"`
-XWWORKERUID=`     uuidgen  |  tr "A-Z" "a-z"`
-XWVWORKERUID=`    uuidgen  |  tr "A-Z" "a-z"`
-
-rm -f $TMPFILE1
-rm -f $TMPFILE2
-rm -f $XWSETUPDBSQL
-printf "Preparing database script"
-cat $XWSETUPDBSQLIN | sed "s/@DBNAME@/$DBNAME/g" >  $TMPFILE1
-cat $TMPFILE1 | sed "s/@DBUSER@/$DBUSERLOGIN/g" > $TMPFILE2
-rm -f $TMPFILE1
-printf "."
-cat $TMPFILE2 | sed "s/@DBUSERPASSWORD@/$DBUSERPASSWORD/g" > $TMPFILE1
-rm -f $TMPFILE2
-printf "."
-cat $TMPFILE1 | sed "s/@ADMINGROUPUID@/$XWADMINGROUPUID/g" > $TMPFILE2
-rm -f $TMPFILE1
-printf "."
-cat $TMPFILE2 | sed "s/@PUBLICWORKERSGROUPUID@/$XWWORKERGROUPUID/g" > $TMPFILE1
-rm -f $TMPFILE2
-printf "."
-cat $TMPFILE1 | sed "s/@ADMINUID@/$XWADMINUID/g" > $TMPFILE2
-rm -f $TMPFILE1
-printf "."
-cat $TMPFILE2 | sed "s/@WORKERUID@/$XWWORKERUID/g" > $TMPFILE1
-rm -f $TMPFILE2
-printf "."
-cat $TMPFILE1 | sed "s/@DBADMIN@/$XWADMINLOGIN/g" > $TMPFILE2
-rm -f $TMPFILE1
-printf "."
-cat $TMPFILE2 | sed "s/@DBADMINPASSWORD@/$XWADMINPASSWORD/g" > $TMPFILE1
-rm -f $TMPFILE2
-printf "."
-cat $TMPFILE1 | sed "s/@DBWORKER@/$XWWORKERLOGIN/g" > $TMPFILE2
-rm -f $TMPFILE1
-printf "."
-cat $TMPFILE2 | sed "s/@DBWORKERPASSWORD@/$XWWORKERPASSWORD/g" > $TMPFILE1
-rm -f $TMPFILE2
-printf "."
-SEDVAR=`echo "$DBHOST" | sed -f $SEDCMDS`
-cat $TMPFILE1 | sed 's/@XWHOST@/$SEDVAR/g' > $TMPFILE2
-rm -f $TMPFILE1
-printf "."
-cat $TMPFILE2 | sed "s/@DBENGINE@/$DBENGINE/g" > $TMPFILE1
-rm -f $TMPFILE2
-printf "."
-
-if [ -z "$DBADMINLOGIN" ] ; then 
-	cat $TMPFILE1 | sed -e "s/^GRANT.*//g" | sed -e "s/^set password for.*//g" > $TMPFILE2
-	rm -f $TMPFILE1
-else
-	mv $TMPFILE1 $TMPFILE2
-fi
-
-cat $TMPFILE2 | sed "s/@VWORKERUID@/$XWVWORKERUID/g" > $TMPFILE1
-rm -f $TMPFILE2
-printf "."
-cat $TMPFILE1 | sed "s/@DBVWORKER@/$XWVWORKERLOGIN/g" > $TMPFILE2
-rm -f $TMPFILE1
-printf "."
-cat $TMPFILE2 | sed "s/@DBVWORKERPASSWORD@/$XWVWORKERPASSWORD/g" > $TMPFILE1
-rm -f $TMPFILE2
-printf "."
-
-mv $TMPFILE1 $XWSETUPDBSQL
-echo "Done"
-
 if [ "$DBVENDOR" = "mysql" ] ; then
 	
 	if [ $NEWDB -eq 1 ] ; then
@@ -716,13 +620,14 @@ if [ "$DBVENDOR" = "mysql" ] ; then
 		fi
 	done
 	
-	echo "Set current version to '$VERSION'"
+	echo "Seting current version with xwsetversion.sql"
 	mysql $MYSQLOPTS "$DBNAME" < $XWSETVERSIONSQL
 	if [ $? -ne 0 ] ; then
 		fatal "\"mysql $MYSQLOPTS $DBNAME < $XWSETVERSIONSQL\" failed"
 	fi
 fi
 
+cat <<EOF
 
 >>>>>>>>>>>>>>>>>>>>>
 ! Database is ready !
@@ -749,7 +654,7 @@ As soon as everything is ok you should :
     - xwconfigure-02-client
 
 
-That's all folks
+That's all for database
 
 EOF
 
