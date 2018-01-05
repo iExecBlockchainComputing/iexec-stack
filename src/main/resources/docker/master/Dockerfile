@@ -60,9 +60,10 @@ WORKDIR /xwhep
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive && apt-get install -y apt-utils
 RUN export DEBIAN_FRONTEND=noninteractive && apt-get install -y openjdk-8-jdk mysql-server mysql-client zip unzip wget make ant gcc uuid uuid-runtime vim git
 #RUN service mysql start
+RUN cd /tmp && wget https://services.gradle.org/distributions/gradle-4.4.1-bin.zip && unzip gradle-4.4.1-bin.zip
 RUN wget https://github.com/lodygens/xtremweb-hep/archive/master.zip
 RUN unzip master.zip
-RUN export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/ && cd /xwhep/xtremweb-hep-master/build/ && make clean && make
+RUN export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/ && cd /xwhep/xtremweb-hep-master/ && /tmp/gradle-4.4.1/bin/gradle build install
 RUN cp /xwhep/xwconfigure.values /xwhep/xtremweb-hep-master/build/dist/xwhep-$XWVERSION/conf/
 RUN service mysql start && export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/ && cd /xwhep/xtremweb-hep-master/build/dist/xwhep-$XWVERSION/  && ./bin/xwconfigure --yes || ./bin/xwconfigure --yes
 
