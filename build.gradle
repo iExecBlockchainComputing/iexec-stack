@@ -19,6 +19,8 @@ dependencies {
     compile "antlr:antlr:2.7.2"// ? https://mvnrepository.com/artifact/antlr/antlr
     compile "org.json:json:20160810" // ? https://mvnrepository.com/artifact/org.json/json
 
+    compile ('org.web3j:core:3.2.0')
+
     api 'org.apache.commons:commons-math3:3.6.1'
 
     implementation 'com.google.guava:guava:23.0'
