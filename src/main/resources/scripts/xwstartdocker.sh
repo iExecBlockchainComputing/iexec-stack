@@ -213,7 +213,7 @@ else
 	IMAGENAME=""
 fi
 
-docker run --rm --name ${CONTAINERNAME} ${IMAGENAME} ${ARGS}
+docker run -v $(pwd):/host --rm --name ${CONTAINERNAME} ${IMAGENAME} ${ARGS}
 
 
 # clean everything
