@@ -418,10 +418,7 @@ chmod -x "$BINDIR"/*.seds "$BINDIR"/*.bat "$BINDIR"/*.xml
 
 
 # Test MySQL
-type mysql > /dev/null  2>&1
-if [ $? -ne 0 ] ; then
-	fatal "Mysql is not found in \$PATH"
-fi
+type mysql > /dev/null  2>&1 || fatal "Mysql is not found in \$PATH"
 
 # Test Java
 [ -f /etc/java.conf ] && . /etc/java.conf 
@@ -1077,10 +1074,7 @@ fi
 if [ "$DBVENDOR" = "mysql" ] ; then
 	
 	echo 
-	mysql $MYSQLOPTS -e ''
-	if [ $? -ne 0 ] ; then
-		fatal "\"mysql $MYSQLOPTS -e ''\" failed.  Please verify if MySQL is correctly installed."
-	fi
+	mysql $MYSQLOPTS -e '' || fatal "\"mysql $MYSQLOPTS -e ''\" failed.  Please verify if MySQL is correctly installed."
 	
 	#
 	# Database exists, but do the schema and the tables exist?
@@ -1106,10 +1100,7 @@ if [ "$DBVENDOR" = "mysql" ] ; then
 		
 		if [ "$YESNO" = "y" -o "$YESNO" = "Y" ] ; then
 			echo "Resetting database schema '$DBNAME'"
-			mysql $MYSQLOPTS "$DBNAME" < $XWRMDBSQL
-			if [ $? -ne 0 ] ; then
-				fatal "\"mysql $MYSQLOPTS $DBNAME < $XWRMDBSQL\" failed"
-			fi
+			mysql $MYSQLOPTS "$DBNAME" < $XWRMDBSQL || fatal "\"mysql $MYSQLOPTS $DBNAME < $XWRMDBSQL\" failed"
 			NEWDB=1
 		fi
 	else
@@ -1198,18 +1189,12 @@ if [ "$DBVENDOR" = "mysql" ] ; then
 
 		echo "Preparing database schema '$DBNAME'"
 
-		mysql $MYSQLOPTS < $XWSETUPDBSQL
-		if [ $? -ne 0 ] ; then
-			fatal "\"mysql $MYSQLOPTS < $XWSETUPDBSQL\" failed"
-		fi
+		mysql $MYSQLOPTS < $XWSETUPDBSQL || fatal "\"mysql $MYSQLOPTS < $XWSETUPDBSQL\" failed"
 		
 		# Create DB foreign keys for live tables
 		if [ "$DBENGINE" = "InnoDB" ] && [ -r "$XWSETUPDBSQL_FK" ]; then
 			echo "DB engine for '$DBNAME' is InnoDB :  Creating foreign keys for live tables ..."
-			mysql $MYSQLOPTS "$DBNAME" < "$XWSETUPDBSQL_FK"
-			if [ $? -ne 0 ] ; then
-				fatal "\"mysql $MYSQLOPTS < $XWSETUPDBSQL_FK\" failed"
-			fi
+			mysql $MYSQLOPTS "$DBNAME" < "$XWSETUPDBSQL_FK" || fatal "\"mysql $MYSQLOPTS < $XWSETUPDBSQL_FK\" failed"
 		fi
 		
 		# Create DB triggers for data and history coming from version 8.x
@@ -1217,10 +1202,7 @@ if [ "$DBVENDOR" = "mysql" ] ; then
 		do
 			if [ -r "$XWSETUPDBSQL_TRIGGERS" ]; then
 				echo "Creating DB triggers using $(basename ${XWSETUPDBSQL_TRIGGERS}) ..."
-				mysql $MYSQLOPTS "$DBNAME" < "$XWSETUPDBSQL_TRIGGERS"
-				if [ $? -ne 0 ] ; then
-					fatal "\"mysql $MYSQLOPTS < $XWSETUPDBSQL_TRIGGERS\" failed"
-				fi
+				mysql $MYSQLOPTS "$DBNAME" < "$XWSETUPDBSQL_TRIGGERS" || fatal "\"mysql $MYSQLOPTS < $XWSETUPDBSQL_TRIGGERS\" failed"
 			fi
 		done
 		
@@ -1249,10 +1231,7 @@ if [ "$DBVENDOR" = "mysql" ] ; then
 		do
 			if [ -r "$XWSETUPDBSQL_VIEWS" ]; then
 				echo "Creating DB views using $(basename ${XWSETUPDBSQL_VIEWS}) ..."
-				mysql $MYSQLOPTS "$DBNAME" < "$XWSETUPDBSQL_VIEWS"
-				if [ $? -ne 0 ] ; then
-					fatal "\"mysql $MYSQLOPTS < $XWSETUPDBSQL_VIEWS\" failed"
-				fi
+				mysql $MYSQLOPTS "$DBNAME" < "$XWSETUPDBSQL_VIEWS" || fatal "\"mysql $MYSQLOPTS < $XWSETUPDBSQL_VIEWS\" failed"
 			fi
 		done
 		
@@ -1278,10 +1257,7 @@ if [ "$DBVENDOR" = "mysql" ] ; then
 		if [ $? -ne 0 ] ; then
 			echo "Database schema '$DBNAME' : is not compliant to '$VFILE'; updating"
 			UPDATEFILE=$(echo $CHECKFILE | sed "s/check/update/")
-			mysql $MYSQLOPTS "$DBNAME" < $UPDATEFILE
-			if [ $? -ne 0 ] ; then
-				fatal "Update to '$VFILE' failed"
-			fi
+			mysql $MYSQLOPTS "$DBNAME" < $UPDATEFILE || fatal "Update to '$VFILE' failed"
 			echo "Database schema '$DBNAME' : updated to '$VFILE'"
 		else
 			echo "Database schema '$DBNAME' : is compliant to $VFILE"
@@ -1289,10 +1265,7 @@ if [ "$DBVENDOR" = "mysql" ] ; then
 	done
 	
 	echo "Set current version to '$VERSION'"
-	mysql $MYSQLOPTS "$DBNAME" < $XWSETVERSIONSQL
-	if [ $? -ne 0 ] ; then
-		fatal "\"mysql $MYSQLOPTS $DBNAME < $XWSETVERSIONSQL\" failed"
-	fi
+	mysql $MYSQLOPTS "$DBNAME" < $XWSETVERSIONSQL || fatal "\"mysql $MYSQLOPTS $DBNAME < $XWSETVERSIONSQL\" failed"
 fi
 
 #
@@ -1700,7 +1673,6 @@ else
 fi
 rm -f $TMPFILE1
 printf "."
-: '
 cptodir="$INSTALLERSDIR/macosx/xwhep.server/installer/PckRoot/Applications/xwhep.server"
 cp $ROOTDIR/AUTHORS $cptodir              > /dev/null 2>&1 || fatal "Can't copy $ROOTDIR/AUTHORS to $cptodir"
 cp $ROOTDIR/ChangeLog $cptodir            > /dev/null 2>&1 || fatal "Can't copy $ROOTDIR/ChangeLog to $cptodir"
@@ -1737,7 +1709,7 @@ else
 	fi
 fi
 mv -f $TMPFILE1 $OSXSERVERCONFFILE
-'
+
 echo " Done"
 
 #
@@ -2261,7 +2233,6 @@ echo "Done"
 #
 # Preparing worker conf file for macosx packages
 #
-#: <<'END'
 OSXWORKERCONFFILE=$INSTALLERSDIR/macosx/xwhep.worker/installer/PckRoot/private/etc/xwhep.worker/conf/$XWWORKERCONFFILENAME
 cp $XWWORKERCONFFILE $OSXWORKERCONFFILE || fatal "Can't cp $XWWORKERCONFFILE $OSXWORKERCONFFILE"
 grep -E "^[[:space:]]*SSLKeyStore[[:space:]]*=.*" $OSXWORKERCONFFILE > /dev/null 2>&1
@@ -2284,6 +2255,8 @@ cp $ROOTDIR/License.smartsockets-1.4 $cptodir > /dev/null 2>&1 || fatal "Can't c
 SOURCE=$LIBDIR/xtremweb.jar
 DEST=$INSTALLERSDIR/macosx/xwhep.worker/installer/PckRoot/private/etc/xwhep.worker/lib/
 mkdir -p $INSTALLERSDIR/macosx/xwhep.worker/installer/PckRoot/private/etc/xwhep.worker/lib/
+cp $SOURCE $DEST > /dev/null 2>&1 || fatal "Can't copy $SOURCE to $DEST"
+SOURCE=$LIBDIR/commons-httpclient-3.0.1.jar
 cp $SOURCE $DEST > /dev/null 2>&1 || fatal "Can't copy $SOURCE to $DEST"
 SOURCE=$LIBDIR/bcprov-jdk16-140.jar
 cp $SOURCE $DEST > /dev/null 2>&1 || fatal "Can't copy $SOURCE to $DEST"
@@ -2324,10 +2297,11 @@ else
 fi
 mv -f $TMPFILE1 $OSXWORKERCONFFILE
 
-: <<'END'
 #
 # Preparing worker for win32 
 #
+mkdir -p $INSTALLERSDIR/win32/xwhep.worker/innoSetup/worker/conf/
+mkdir -p $INSTALLERSDIR/win32/xwhep.worker/innoSetup/worker/lib/
 WIN32WORKERCONFFILE=$INSTALLERSDIR/win32/xwhep.worker/innoSetup/worker/conf/$XWWORKERCONFFILENAME
 cp $XWWORKERCONFFILE $WIN32WORKERCONFFILE || fatal "Can't cp $XWWORKERCONFFILE $WIN32WORKERCONFFILE"
 grep -E "^[[:space:]]*SSLKeyStore[[:space:]]*=.*"  $WIN32WORKERCONFFILE > /dev/null 2>&1
@@ -2351,6 +2325,8 @@ SOURCE=$LIBDIR/xtremweb.jar
 DEST="$INSTALLERSDIR/win32/xwhep.worker/innoSetup/worker/lib/"
 cp $SOURCE $DEST > /dev/null 2>&1 || fatal "Can't copy $SOURCE to $DEST"
 SOURCE=$LIBDIR/bcprov-jdk16-140.jar
+cp $SOURCE $DEST > /dev/null 2>&1 || fatal "Can't copy $SOURCE to $DEST"
+SOURCE=$LIBDIR/commons-httpclient-3.0.1.jar
 cp $SOURCE $DEST > /dev/null 2>&1 || fatal "Can't copy $SOURCE to $DEST"
 SOURCE=$LIBDIR/ibis-util-2.1.jar
 cp $SOURCE $DEST > /dev/null 2>&1 || fatal "Can't copy $SOURCE to $DEST"
@@ -2398,7 +2374,7 @@ fi
 mv -f $TMPFILE1 $WIN32WORKERCONFFILE
 
 echo "Done"
-END
+
 #
 # Preparing the client configuration file
 #
@@ -2518,7 +2494,8 @@ rm -f $TMPFILE2
 echo "Done"
 
 
-: <<'END'
+mkdir -p $INSTALLERSDIR/win32/xwhep.client/innoSetup/client/conf/
+mkdir -p $INSTALLERSDIR/win32/xwhep.client/innoSetup/client/lib/
 WIN32CLIENTCONFFILE=$INSTALLERSDIR/win32/xwhep.client/innoSetup/client/conf/$XWCLIENTCONFFILENAME
 cp $XWCLIENTCONFFILE $WIN32CLIENTCONFFILE || fatal "Can't cp $XWCLIENTCONFFILE $WIN32CLIENTCONFFILE" 
 echo "****************************************************************************************"
@@ -2557,7 +2534,7 @@ SOURCE=$LIBDIR/log4j-core-2.10.0.jar
 cp $SOURCE $DEST > /dev/null 2>&1 || fatal "Can't copy $SOURCE to $DEST"
 
 echo "Done"
-END
+
 
 #
 # Generating keys
@@ -2681,7 +2658,6 @@ else
     echo "Keystores unmodified"
     echo "*******************"
 fi
-#: <<'END'
 mkdir -p                    $INSTALLERSDIR/macosx/xwhep.server/installer/PckRoot/private/etc/xwhep.server/keystore/
 cp -f $XWSERVERKEYSTOREFILE $INSTALLERSDIR/macosx/xwhep.server/installer/PckRoot/private/etc/xwhep.server/keystore/ || fatal "Can't copy $XWSERVERKEYSTOREFILE"
 mkdir -p                    $INSTALLERSDIR/macosx/xwhep.worker/installer/PckRoot/private/etc/xwhep.worker/keystore/
@@ -2694,7 +2670,6 @@ mkdir -p                    $INSTALLERSDIR/win32/xwhep.worker/innoSetup/worker/k
 cp -f $XWWORKERKEYSTOREFILE $INSTALLERSDIR/win32/xwhep.worker/innoSetup/worker/keystore/ || fatal "Can't copy $XWWORKERKEYSTOREFILE"
 mkdir -p                    $INSTALLERSDIR/win32/xwhep.vworker/innoSetup/worker/keystore/
 cp -f $XWWORKERKEYSTOREFILE $INSTALLERSDIR/win32/xwhep.vworker/innoSetup/worker/keystore/ || fatal "Can't copy $XWWORKERKEYSTOREFILE"
-#END
 #
 # We have found that sometime /tmp is not 777 ?!?!
 #
@@ -2735,7 +2710,6 @@ printf "."
 
 
 
-#: <<'END'
 cp -f $INSTALLERSDIR/xwhep.client/$VERSION/bin/* $INSTALLERSDIR/macosx/xwhep.client/installer/PckRoot/Applications/xwhep.client/bin/ > /dev/null  2>&1
 printf "."
 
@@ -2765,7 +2739,6 @@ cp $SOURCE $DEST > /dev/null 2>&1 || fatal "Can't copy $SOURCE to $DEST"
 
 cp -f $INSTALLERSDIR/xwhep.client/$VERSION/bin/xtremweb.client.bat $INSTALLERSDIR/win32/xwhep.client/innoSetup/client/bin/ > /dev/null  2>&1
 printf "."
-#END
 
 
 
@@ -2811,7 +2784,6 @@ echo "Done"
 
 
 
-#: <<'END'
 #
 # Preparing client conf file for Apple packages
 #
@@ -2832,7 +2804,6 @@ fi
 mv -f $TMPFILE1 $OSXCLIENTCONFFILE
 
 echo " Done"
-#END
 
 
 
@@ -3175,7 +3146,6 @@ if [ $? -eq 0 ] ; then
 fi
 
 
-#: <<'END'
 #
 # Preparing server Apple package
 #
@@ -3199,7 +3169,6 @@ if [ "$PKGS" = "YES" ] ; then
      echo
   fi
 fi
-#END
 
 #
 # Preparing DG to SG bridge RPM package
@@ -3677,11 +3646,9 @@ mv -f $TMPFILE1 $CONFDIR/$XWCLIENTCONFTEMPLATEFILENAME
 cp -f $XWCLIENTKEYSTOREFILE $wkrRpmDir/keystore/ > /dev/null 2>&1 || fatal "Can't copy keystore file to $wkrRpmDir/keystore"
 
 
-#: <<'END'
 mkdir -p $INSTALLERSDIR/macosx/xwhep.client/installer/PckRoot/Applications/xwhep.client/keystore/
 cp -f $XWCLIENTKEYSTOREFILE $INSTALLERSDIR/macosx/xwhep.client/installer/PckRoot/Applications/xwhep.client/keystore/
 [ $? -ne 0 ] && fatal "Can't copy $XWCLIENTKEYSTOREFILE to $INSTALLERSDIR/macosx/xwhep.client/installer/PckRoot/Applications/xwhep.client/keystore/"
-#END
 
 SOURCE=$LIBDIR/xtremweb.jar
 DEST=$wkrRpmDir/lib/
@@ -3806,7 +3773,6 @@ fi
 
 echo "Client Debian package ready"
 
-#: <<'END'
 #
 # Preparing client Apple package
 #
@@ -3830,7 +3796,6 @@ if [ "$PKGS" = "YES" ] ; then
      echo
   fi
 fi 
-#END
 
 #
 # Preparing worker RPM package
@@ -3890,6 +3855,8 @@ SOURCE=$LIBDIR/xtremweb.jar
 DEST=$wkrRpmDir/lib/
 cp $SOURCE $DEST > /dev/null 2>&1 || fatal "Can't copy $SOURCE to $DEST"
 SOURCE=$LIBDIR/bcprov-jdk16-140.jar
+cp $SOURCE $DEST > /dev/null 2>&1 || fatal "Can't copy $SOURCE to $DEST"
+SOURCE=$LIBDIR/commons-httpclient-3.0.1.jar
 cp $SOURCE $DEST > /dev/null 2>&1 || fatal "Can't copy $SOURCE to $DEST"
 SOURCE=$LIBDIR/ibis-util-2.1.jar
 cp $SOURCE $DEST > /dev/null 2>&1 || fatal "Can't copy $SOURCE to $DEST"
@@ -3981,8 +3948,7 @@ fi
 #
 echo
 echo "Preparing worker Debian package"
-mkdir -p $INSTALLERSDIR/linux/dpkg/xwhep.worker/DEBIAN > /dev/null  2>&1
-[ ! -d $INSTALLERSDIR/linux/dpkg/xwhep.worker/DEBIAN ] && fatal "Can't mkdir -p $INSTALLERSDIR/linux/dpkg/xwhep.worker/DEBIAN"
+mkdir -p $INSTALLERSDIR/linux/dpkg/xwhep.worker/DEBIAN   > /dev/null 2>&1 ||  fatal "Can't mkdir -p $INSTALLERSDIR/linux/dpkg/xwhep.worker/DEBIAN"
 cp -Rf $rpmDir/* $INSTALLERSDIR/linux/dpkg/xwhep.worker/ > /dev/null 2>&1 || fatal "Can't copy $rpmDir/* to $INSTALLERSDIR/linux/dpkg/xwhep.worker"
 find $INSTALLERSDIR/linux/dpkg/ -type d | xargs chmod 755
 chmod 755 $INSTALLERSDIR/linux/dpkg/xwhep.worker/DEBIAN/pre*
@@ -4163,7 +4129,6 @@ echo "Worker Debian package ready"
 
 
 
-#: <<'END'
 #
 # Preparing worker Apple package
 #
@@ -4212,7 +4177,6 @@ if [ "$PKGS" = "YES" ] ; then
      echo
   fi
 fi
-#END
 
 cat <<EOF
 

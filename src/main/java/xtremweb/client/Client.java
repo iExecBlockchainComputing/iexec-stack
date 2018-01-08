@@ -287,6 +287,7 @@ public final class Client {
 			}
 		}
 
+		logger.debug("commClients.put(" + uri.getScheme() + ")");
 		commClients.put(uri.getScheme(), client);
 
 		client.setAutoClose(false);

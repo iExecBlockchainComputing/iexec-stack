@@ -163,8 +163,8 @@ public abstract class CommClient implements ClientAPI {
 	 * @see xtremweb.communications.URI#URI(String, UID)
 	 */
 	public URI newURI(final UID uid) throws URISyntaxException {
-		logger.finest("CommClient#newURI " + config.getCurrentDispatcher() + ":" + getPort() + "/" + uid);
 		final URI ret = new URI(config.getCurrentDispatcher(), uid);
+		logger.finest("CommClient#newURI : " + ret);
 		return ret;
 	}
 
@@ -325,7 +325,6 @@ public abstract class CommClient implements ClientAPI {
 		try {
 			if (commHandlers.get(Connection.xwScheme()) == null) {
 				final String defaultLayer = config.getProperty(XWPropertyDefs.COMMLAYER);
-
 				addHandler(Connection.xwScheme(), defaultLayer);
 			}
 			if (commHandlers.get(Connection.xwsScheme()) == null) {
@@ -377,6 +376,7 @@ public abstract class CommClient implements ClientAPI {
 			throw new InstantiationException("Comm Handlers not initialized");
 		}
 		try {
+			CommClient ret = (CommClient) (Class.forName((String) commHandlers.get(scheme))).newInstance();
 			return (CommClient) (Class.forName((String) commHandlers.get(scheme))).newInstance();
 		} catch (final IllegalAccessException e) {
 			throw new InstantiationException(e.getMessage());

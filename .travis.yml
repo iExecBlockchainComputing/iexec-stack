@@ -4,8 +4,4 @@ jdk:
 notifications:
   - email: false
 script:
-  - pwd
-  - ls -l
-  - cd ./build/
-  - chmod +x travis-ci.sh build.sh
-  - ./travis-ci.sh
+  - gradle build install

@@ -529,10 +529,10 @@ fi
 
 #-----------------------------------------------------------------------------
 #  From template, create :
-#  -  The shell script to start the virtual machine,
-#  -  The shell script to stop  the virtual machine,
-#  -  The BAT   script to start the virtual machine,
-#  -  The BAT   script to stop  the virtual machine.
+#  -  The shell script to start the container,
+#  -  The shell script to stop  the container,
+#  -  The BAT   script to start the container,
+#  -  The BAT   script to stop  the container.
 #  Then insert those scripts inside XtremWeb-HEP.
 #-----------------------------------------------------------------------------
 APP_START_SH=""

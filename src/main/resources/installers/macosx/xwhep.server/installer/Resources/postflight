@@ -89,7 +89,7 @@ if [ $OSMAJOR -lt 10 ] ; then
     return $ERRUSAGE
 fi
 
-if [ ! -d /Library/Java/JavaVirtualMachines/jdk1.8.0_60.jdk/Contents/Home/ ] ; then
+if [ ! ls -d /Library/Java/JavaVirtualMachines/jdk1.8*/Contents/Home ] ; then
     echo "* [`date`] [$PROG] ERROR : Can't find Java 1.8" >> $LOGFILE 2>&1
     echo "*****************************" >> $LOGFILE 2>&1
     return $ERRUSAGE
