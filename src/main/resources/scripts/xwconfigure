@@ -48,8 +48,8 @@ cd $ROOTDIR/..
 ROOTDIR=`pwd`
 cd $currentDir
 
-VERSION=%XWVERSION%
-INSTALLDIR=%INSTALLDIR%
+VERSION=@XWVERSION@
+INSTALLDIR=@INSTALLDIR@
 
 BINDIR=$ROOTDIR/bin
 CONFDIR=$ROOTDIR/conf
@@ -92,7 +92,7 @@ XWGMOND=$BINDIR/xtremweb.gmond.pl
 XWSERVERCONFFILENAME=xtremweb.server.conf
 XWCLIENTCONFFILENAME=xtremweb.client.conf
 XWBRIDGECONFFILENAME=$XWCLIENTCONFFILENAME
-XWCLIENTCONFTEMPLATEFILENAME=xtremweb.client.conf.template
+XWCLIENTCONFTEMPLATEFILENAME=xtremweb.client.conf
 XWWORKERCONFFILENAME=xtremweb.worker.conf
 XWVWORKERCONFFILENAME=xtremweb.vworker.conf
 
@@ -1355,31 +1355,6 @@ fi
 mv -f $TMPFILE1 $OSXSERVERCONFFILE
 '
 echo " Done"
-
-#
-# Preparing xw-ganglia
-#
-printf "Preparing xtremweb.ganglia"
-rm -f $TMPFILE1
-rm -f $TMPFILE2
-SEDVAR=`echo "$DBHOST" | sed -f $SEDCMDS`
-cat $XWGMOND | sed  "s/^[[:space:]]*my \$DBHOST[[:space:]]*=.*/my \$DBHOST=\"$SEDVAR\";/g" >  $TMPFILE1
-printf "."
-SEDVAR=`echo "$DBNAME" | sed -f $SEDCMDS`
-cat $TMPFILE1 | sed "s/^[[:space:]]*my \$database[[:space:]]*=.*/my \$database=\"$SEDVAR\";/g" >  $TMPFILE2
-rm -f $TMPFILE1
-printf "."
-SEDVAR=`echo "$DBUSERLOGIN" | sed -f $SEDCMDS`
-cat $TMPFILE2 | sed "s/^[[:space:]]*my \$DBUSER[[:space:]]*=.*/my \$DBUSER=\"$SEDVAR\";/g" > $TMPFILE1
-rm -f $TMPFILE2
-printf "."
-SEDVAR=`echo "$DBUSERPASSWORD" | sed -f $SEDCMDS`
-cat $TMPFILE1 | sed "s/^[[:space:]]*my \$dbpassword[[:space:]]*=.*/my \$dbpassword=\"$SEDVAR\";/g" > $TMPFILE2
-rm -f $TMPFILE1
-mv -f $TMPFILE2 $XWGMOND
-chmod +x $XWGMOND
-echo "Done"
-
 
 #
 # Preparing worker conf file for macosx packages
