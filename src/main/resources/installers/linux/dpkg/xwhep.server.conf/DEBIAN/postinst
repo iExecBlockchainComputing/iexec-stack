@@ -27,7 +27,7 @@ INSTALLDIR="/opt/xwhep-server-@XWVERSION@"
 CONFDIR=$INSTALLDIR/conf
 KEYDIR=$INSTALLDIR/keystore
 PROG="xtremweb.server configuration"
-SYSLOGIN="@SYSTEMUSER@"
+SYSLOGIN="@XWUSER@"
 XWGANGLIA="xtremweb.ganglia"
 XWSERVER="xtremweb.server"
 

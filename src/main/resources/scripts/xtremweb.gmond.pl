@@ -73,10 +73,10 @@ autoflush STDOUT 1;
 #
 # default values
 #
-my $DBUSER = "root";
-my $dbpassword = "";
-my $DBHOST = "localhost";
-my $database = "xtremweb";
+my $DBUSER = "@XWUSER@";
+my $dbpassword = "@DBADMINPASSWORD@";
+my $DBHOST = "@DBHOST@";
+my $database = "@DBNAME@";
 
 my $clusterName = "XtremWeb-HEP";
 chomp($clusterName=`uname -n`);

@@ -48,8 +48,8 @@ cd $ROOTDIR/..
 ROOTDIR=`pwd`
 cd $currentDir
 
-VERSION=%XWVERSION%
-INSTALLDIR=%INSTALLDIR%
+VERSION=@XWVERSION@
+INSTALLDIR=@INSTALLDIR@
 
 BINDIR=$ROOTDIR/bin
 CONFDIR=$ROOTDIR/conf
@@ -92,7 +92,7 @@ XWGMOND=$BINDIR/xtremweb.gmond.pl
 XWSERVERCONFFILENAME=xtremweb.server.conf
 XWCLIENTCONFFILENAME=xtremweb.client.conf
 XWBRIDGECONFFILENAME=$XWCLIENTCONFFILENAME
-XWCLIENTCONFTEMPLATEFILENAME=xtremweb.client.conf.template
+XWCLIENTCONFTEMPLATEFILENAME=xtremweb.client.conf
 XWWORKERCONFFILENAME=xtremweb.worker.conf
 XWVWORKERCONFFILENAME=xtremweb.vworker.conf
 
@@ -349,8 +349,6 @@ EOF
 	rm  -f $INSTALLERSDIR/xwhep-client-$VERSION.zip
 	rm  -f $INSTALLERSDIR/linux/dpkg/*deb
 	rm -Rf $INSTALLERSDIR/linux/dpkg/xwhep.client/$INSTALLDIR/
-	rm -Rf $INSTALLERSDIR/linux/dpkg/xwhep.bridgedgsg/$INSTALLDIR/
-	rm -Rf $INSTALLERSDIR/linux/dpkg/xwhep.bridgesgdg/$INSTALLDIR/
 	rm -Rf $INSTALLERSDIR/linux/dpkg/xwhep.server/$INSTALLDIR/
 	rm -Rf $INSTALLERSDIR/linux/dpkg/xwhep.worker/$INSTALLDIR/
 	rm -Rf $INSTALLERSDIR/linux/dpkg/xwhep.vworker/$INSTALLDIR/
@@ -358,8 +356,6 @@ EOF
 	printf "."
 
 	rm -Rf $INSTALLERSDIR/linux/rpm/xwhep.client/*
-	rm -Rf $INSTALLERSDIR/linux/rpm/xwhep.bridgedgsg/*
-	rm -Rf $INSTALLERSDIR/linux/rpm/xwhep.bridgesgdg/*
 	rm -Rf $INSTALLERSDIR/linux/rpm/xwhep.server/*
 	rm -Rf $INSTALLERSDIR/linux/rpm/xwhep.worker/*
 	rm -Rf $INSTALLERSDIR/linux/rpm/xwhep.vworker/*
@@ -463,10 +459,6 @@ fi
 test -w $XWCLIENTCONFFILE > /dev/null  2>&1
 if [ $? -ne 0 ] ; then
 	usage "Can't write $XWCLIENTCONFFILE" "STOP"
-fi
-test -w $XWBRIDGECONFFILE > /dev/null  2>&1
-if [ $? -ne 0 ] ; then
-	usage "Can't write $XWBRIDGECONFFILE" "STOP"
 fi
 
 usage
@@ -1114,74 +1106,6 @@ TMPFILE2=`date "+%Y%m%d_%H%M%S"`".xwtmp2"
 #
 # Preparing the SQL script to install MySQL database, with lowercase UUIDs
 #
-XWADMINGROUPUID=` uuidgen  |  tr "A-Z" "a-z"`
-XWWORKERGROUPUID=`uuidgen  |  tr "A-Z" "a-z"`
-XWADMINUID=`      uuidgen  |  tr "A-Z" "a-z"`
-XWWORKERUID=`     uuidgen  |  tr "A-Z" "a-z"`
-XWVWORKERUID=`    uuidgen  |  tr "A-Z" "a-z"`
-
-rm -f $TMPFILE1
-rm -f $TMPFILE2
-rm -f $XWSETUPDBSQL
-printf "Preparing database script"
-cat $XWSETUPDBSQLIN | sed "s/@DBNAME@/$DBNAME/g" >  $TMPFILE1
-cat $TMPFILE1 | sed "s/@DBUSER@/$DBUSERLOGIN/g" > $TMPFILE2
-rm -f $TMPFILE1
-printf "."
-cat $TMPFILE2 | sed "s/@DBUSERPASSWORD@/$DBUSERPASSWORD/g" > $TMPFILE1
-rm -f $TMPFILE2
-printf "."
-cat $TMPFILE1 | sed "s/@ADMINGROUPUID@/$XWADMINGROUPUID/g" > $TMPFILE2
-rm -f $TMPFILE1
-printf "."
-cat $TMPFILE2 | sed "s/@PUBLICWORKERSGROUPUID@/$XWWORKERGROUPUID/g" > $TMPFILE1
-rm -f $TMPFILE2
-printf "."
-cat $TMPFILE1 | sed "s/@ADMINUID@/$XWADMINUID/g" > $TMPFILE2
-rm -f $TMPFILE1
-printf "."
-cat $TMPFILE2 | sed "s/@WORKERUID@/$XWWORKERUID/g" > $TMPFILE1
-rm -f $TMPFILE2
-printf "."
-cat $TMPFILE1 | sed "s/@DBADMIN@/$XWADMINLOGIN/g" > $TMPFILE2
-rm -f $TMPFILE1
-printf "."
-cat $TMPFILE2 | sed "s/@DBADMINPASSWORD@/$XWADMINPASSWORD/g" > $TMPFILE1
-rm -f $TMPFILE2
-printf "."
-cat $TMPFILE1 | sed "s/@DBWORKER@/$XWWORKERLOGIN/g" > $TMPFILE2
-rm -f $TMPFILE1
-printf "."
-cat $TMPFILE2 | sed "s/@DBWORKERPASSWORD@/$XWWORKERPASSWORD/g" > $TMPFILE1
-rm -f $TMPFILE2
-printf "."
-SEDVAR=`echo "$DBHOST" | sed -f $SEDCMDS`
-cat $TMPFILE1 | sed 's/@XWHOST@/$SEDVAR/g' > $TMPFILE2
-rm -f $TMPFILE1
-printf "."
-cat $TMPFILE2 | sed "s/@DBENGINE@/$DBENGINE/g" > $TMPFILE1
-rm -f $TMPFILE2
-printf "."
-
-if [ -z "$DBADMINLOGIN" ] ; then 
-	cat $TMPFILE1 | sed -e "s/^GRANT.*//g" | sed -e "s/^set password for.*//g" > $TMPFILE2
-	rm -f $TMPFILE1
-else
-	mv $TMPFILE1 $TMPFILE2
-fi
-
-cat $TMPFILE2 | sed "s/@VWORKERUID@/$XWVWORKERUID/g" > $TMPFILE1
-rm -f $TMPFILE2
-printf "."
-cat $TMPFILE1 | sed "s/@DBVWORKER@/$XWVWORKERLOGIN/g" > $TMPFILE2
-rm -f $TMPFILE1
-printf "."
-cat $TMPFILE2 | sed "s/@DBVWORKERPASSWORD@/$XWVWORKERPASSWORD/g" > $TMPFILE1
-rm -f $TMPFILE2
-printf "."
-
-mv $TMPFILE1 $XWSETUPDBSQL
-echo "Done"
 
 if [ "$DBVENDOR" = "mysql" ] ; then
 	
@@ -1276,56 +1200,7 @@ IFILE=$BINDIR/xtremwebconf.sh
 cat $IFILE | sed "s/^XWUSER=.*/XWUSER=$XWUSER/g" >  $TMPFILE1
 mv -f $TMPFILE1 $IFILE
 printf "."
-IFILE=$INSTALLERSDIR/linux/dpkg/xwhep.bridgedgsg/DEBIAN/postinst
-cat $IFILE | sed "s/^SYSLOGIN=.*/SYSLOGIN=$XWUSER/g" >  $TMPFILE1
-mv -f $TMPFILE1 $IFILE
-printf "."
-IFILE=$INSTALLERSDIR/linux/dpkg/xwhep.bridgedgsg/DEBIAN/preinst
-cat $IFILE | sed "s/^SYSLOGIN=.*/SYSLOGIN=$XWUSER/g" >  $TMPFILE1
-mv -f $TMPFILE1 $IFILE
-printf "."
-IFILE=$INSTALLERSDIR/linux/dpkg/xwhep.server/DEBIAN/postinst
-cat $IFILE | sed "s/^SYSLOGIN=.*/SYSLOGIN=$XWUSER/g" >  $TMPFILE1
-mv -f $TMPFILE1 $IFILE
-printf "."
-IFILE=$INSTALLERSDIR/linux/dpkg/xwhep.server/DEBIAN/postrm
-cat $IFILE | sed "s/^SYSLOGIN=.*/SYSLOGIN=$XWUSER/g" >  $TMPFILE1
-mv -f $TMPFILE1 $IFILE
-printf "."
-IFILE=$INSTALLERSDIR/linux/dpkg/xwhep.server/DEBIAN/preinst
-cat $IFILE | sed "s/^SYSLOGIN=.*/SYSLOGIN=$XWUSER/g" >  $TMPFILE1
-mv -f $TMPFILE1 $IFILE
-printf "."
-IFILE=$INSTALLERSDIR/linux/dpkg/xwhep.worker/DEBIAN/postinst
-cat $IFILE | sed "s/^SYSLOGIN=.*/SYSLOGIN=$XWUSER/g" >  $TMPFILE1
-mv -f $TMPFILE1 $IFILE
-printf "."
-IFILE=$INSTALLERSDIR/linux/dpkg/xwhep.worker/DEBIAN/postrm
-cat $IFILE | sed "s/^SYSLOGIN=.*/SYSLOGIN=$XWUSER/g" >  $TMPFILE1
-mv -f $TMPFILE1 $IFILE
-printf "."
-IFILE=$INSTALLERSDIR/linux/dpkg/xwhep.worker/DEBIAN/preinst
-cat $IFILE | sed "s/^SYSLOGIN=.*/SYSLOGIN=$XWUSER/g" >  $TMPFILE1
-mv -f $TMPFILE1 $IFILE
-printf "."
-IFILE=$INSTALLERSDIR/linux/rpm/xwhep.bridgedgsg/xwhep-bridgedgsg.spec
-cat $IFILE | sed "s/^%define SYSLOGIN .*/%define SYSLOGIN $XWUSER/g" >  $TMPFILE1
-mv -f $TMPFILE1 $IFILE
-printf "."
-IFILE=$INSTALLERSDIR/linux/rpm/xwhep.server/xwhep-server.spec
-cat $IFILE | sed "s/^%define SYSLOGIN.*/%define SYSLOGIN $XWUSER/g" >  $TMPFILE1
-mv -f $TMPFILE1 $IFILE
-printf "."
-IFILE=$INSTALLERSDIR/linux/rpm/xwhep.worker/xwhep-worker.spec
-cat $IFILE | sed "s/^%define SYSLOGIN.*/%define SYSLOGIN $XWUSER/g" >  $TMPFILE1
-mv -f $TMPFILE1 $IFILE
-printf "."
 
-
-IFILE=$INSTALLERSDIR/linux/rpm/xwhep.vworker/xwhep-worker.spec
-cat $IFILE | sed "s/^%define SYSLOGIN.*/%define SYSLOGIN $XWUSER/g" >  $TMPFILE1
-mv -f $TMPFILE1 $IFILE
-printf "."
 : '
 
 IFILE=$INSTALLERSDIR/macosx/xwhep.client/installer/Resources/postflight
@@ -1410,254 +1285,11 @@ echo "Done"
 # Preparing the server configuration file
 #
 rm -f $TMPFILE1
-rm -f $TMPFILE2
+rm -f $TMPFILE
 printf "Preparing server configuration file '$XWSERVERCONFFILE'"
-SEDVAR=`echo "$DBHOST" | sed -f $SEDCMDS`
-grep -E  "^[[:space:]]*DBHOST[[:space:]]*=.*" $XWSERVERCONFFILE > /dev/null 2>&1
-if [ $? -eq 0 ] ; then
-    cat $XWSERVERCONFFILE | sed  "s/^[[:space:]]*DBHOST[[:space:]]*=.*/DBHOST=$SEDVAR/g" >  $TMPFILE2
-else
-	grep -E  "^[[:space:]]*#.*DBHOST[[:space:]]*=.*" $XWSERVERCONFFILE > /dev/null 2>&1
-	if [ $? -eq 0 ] ; then
-    	cat $XWSERVERCONFFILE | sed  "s/^[[:space:]]*#.*DBHOST[[:space:]]*=.*/DBHOST=$SEDVAR/g" >  $TMPFILE2
-	else
-    	cp -f $XWSERVERCONFFILE $TMPFILE2
-    	echo "DBHOST=$SEDVAR" >> $TMPFILE2
-	fi
-fi
-printf "."
-
-SEDVAR=`echo "$XWUPGRADEURL" | sed -f $SEDCMDS`
-grep -E "^[[:space:]]*LAUNCHERURL[[:space:]]*=.*" $TMPFILE2 > /dev/null 2>&1
-if [ $? -eq 0 ] ; then
-    cat $TMPFILE2 | sed "s/^[[:space:]]*LAUNCHERURL[[:space:]]*=.*/LAUNCHERURL=$SEDVAR/g" >  $TMPFILE1
-else
-    cp -f $TMPFILE2 $TMPFILE1
-    echo "LAUNCHERURL=$SEDVAR" >> $TMPFILE1
-fi
-printf "."
-
-
-SEDVAR=`echo "$DBVENDOR" | sed -f $SEDCMDS`
-grep -E "^[[:space:]]*DBVENDOR[[:space:]]*=.*" $TMPFILE1 > /dev/null 2>&1
-if [ $? -eq 0 ] ; then
-    cat $TMPFILE1 | sed  "s/^[[:space:]]*DBVENDOR[[:space:]]*=.*/DBVENDOR=$SEDVAR/g" >  $TMPFILE2
-else
-	grep -E "^[[:space:]]*#.*DBVENDOR[[:space:]]*=.*" $TMPFILE1 > /dev/null 2>&1
-	if [ $? -eq 0 ] ; then
-	    cat $TMPFILE1 | sed  "s/^[[:space:]]*#.*DBVENDOR[[:space:]]*=.*/DBVENDOR=$SEDVAR/g" >  $TMPFILE2
-	else
-    	cp -f $TMPFILE1 $TMPFILE2
-    	echo "DBVENDOR=$SEDVAR" >> $TMPFILE2
-	fi
-fi
-printf "."
-SEDVAR=`echo "$DBENGINE" | sed -f $SEDCMDS`
-grep -E "^[[:space:]]*DBENGINE[[:space:]]*=.*" $TMPFILE2 > /dev/null 2>&1
-if [ $? -eq 0 ] ; then
-    cat $TMPFILE2 | sed  "s/^[[:space:]]*DBENGINE[[:space:]]*=.*/DBENGINE=$SEDVAR/g" >  $TMPFILE1
-else
-	grep -E "^[[:space:]]*#.*DBENGINE[[:space:]]*=.*" $TMPFILE2 > /dev/null 2>&1
-	if [ $? -eq 0 ] ; then
-    	cat $TMPFILE2 | sed  "s/^[[:space:]]*#.*DBENGINE[[:space:]]*=.*/DBENGINE=$SEDVAR/g" >  $TMPFILE1
-	else
-    	cp -f $TMPFILE2 $TMPFILE1
-	    echo "DBENGINE=$SEDVAR" >> $TMPFILE1
-	fi
-fi
-printf "."
-SEDVAR=`echo "$DBNAME" | sed -f $SEDCMDS`
-grep -E "^[[:space:]]*DBNAME[[:space:]]*=.*"  $TMPFILE1 > /dev/null 2>&1
-if [ $? -eq 0 ] ; then
-    cat $TMPFILE1 | sed "s/^[[:space:]]*DBNAME[[:space:]]*=.*/DBNAME=$SEDVAR/g" >  $TMPFILE2
-else
-	grep -E "^[[:space:]]*#.*DBNAME[[:space:]]*=.*"  $TMPFILE1 > /dev/null 2>&1
-	if [ $? -eq 0 ] ; then
-	    cat $TMPFILE1 | sed "s/^[[:space:]]*#.*DBNAME[[:space:]]*=.*/DBNAME=$SEDVAR/g" >  $TMPFILE2
-	else
-	    cp -f $TMPFILE1 $TMPFILE2
-	    echo "DBNAME=$SEDVAR" >> $TMPFILE2
-	fi
-fi
-rm -f $TMPFILE1
-printf "."
-SEDVAR=`echo "$DBUSERLOGIN" | sed -f $SEDCMDS`
-grep -E "^[[:space:]]*DBUSER[[:space:]]*=.*"  $TMPFILE2 > /dev/null 2>&1
-if [ $? -eq 0 ] ; then
-    cat $TMPFILE2 | sed "s/^[[:space:]]*DBUSER[[:space:]]*=.*/DBUSER=$SEDVAR/g" > $TMPFILE1
-else
-	grep -E "^^[[:space:]]*#.*DBUSER[[:space:]]*=.*"  $TMPFILE2 > /dev/null 2>&1
-	if [ $? -eq 0 ] ; then
-	    cat $TMPFILE2 | sed "s/^[[:space:]]*#.*DBUSER[[:space:]]*=.*/DBUSER=$SEDVAR/g" > $TMPFILE1
-	else
-	    cp -f $TMPFILE2 $TMPFILE1
-	    echo "DBUSER=$SEDVAR" >> $TMPFILE1
-	fi
-fi
-rm -f $TMPFILE2
-printf "."
-SEDVAR=`echo "$DBUSERPASSWORD" | sed -f $SEDCMDS`
-grep -E "^[[:space:]]*DBPASS[[:space:]]*=.*"  $TMPFILE1 > /dev/null 2>&1
-if [ $? -eq 0 ] ; then
-    cat $TMPFILE1 | sed "s/^[[:space:]]*DBPASS[[:space:]]*=.*/DBPASS=$SEDVAR/g" > $TMPFILE2
-else
-	grep -E "^[[:space:]]*#.*DBPASS[[:space:]]*=.*"  $TMPFILE1 > /dev/null 2>&1
-	if [ $? -eq 0 ] ; then
-	    cat $TMPFILE1 | sed "s/^[[:space:]]*#.*DBPASS[[:space:]]*=.*/DBPASS=$SEDVAR/g" > $TMPFILE2
-	else
-	    cp -f $TMPFILE1 $TMPFILE2
-	    echo "DBPASS=$SEDVAR" >> $TMPFILE2
-	fi
-fi
-rm -f $TMPFILE1
-printf "."
-SEDVAR=`echo "$XWADMINLOGIN" | sed -f $SEDCMDS`
-grep -E "^[[:space:]]*ADMINLOGIN[[:space:]]*=.*" $TMPFILE2 > /dev/null 2>&1
-if [ $? -eq 0 ] ; then
-    cat $TMPFILE2 | sed "s/^[[:space:]]*ADMINLOGIN[[:space:]]*=.*/ADMINLOGIN=$SEDVAR/g" > $TMPFILE1
-else
-	grep -E "^[[:space:]]*#.*ADMINLOGIN[[:space:]]*=.*" $TMPFILE2 > /dev/null 2>&1
-	if [ $? -eq 0 ] ; then
-	    cat $TMPFILE2 | sed "s/^[[:space:]]*#.*ADMINLOGIN[[:space:]]*=.*/ADMINLOGIN=$SEDVAR/g" > $TMPFILE1
-	else
-    	cp -f $TMPFILE2 $TMPFILE1
-	    echo "ADMINLOGIN=$SEDVAR" >> $TMPFILE1
-	fi
-fi
-rm -f $TMPFILE2
-printf "."
-SEDVAR=`echo "$XWADMINPASSWORD" | sed -f $SEDCMDS`
-grep -e "^[[:space:]]*ADMINPASSWORD[[:space:]]*=.*" $TMPFILE1 > /dev/null 2>&1
-if [ $? -eq 0 ] ; then
-    cat $TMPFILE1 | sed "s/^[[:space:]]*ADMINPASSWORD[[:space:]]*=.*/ADMINPASSWORD=$SEDVAR/g" > $TMPFILE2
-else
-	grep -e "^[[:space:]]*#.*ADMINPASSWORD[[:space:]]*=.*" $TMPFILE1 > /dev/null 2>&1
-	if [ $? -eq 0 ] ; then
-	    cat $TMPFILE1 | sed "s/^[[:space:]]*#.*ADMINPASSWORD[[:space:]]*=.*/ADMINPASSWORD=$SEDVAR/g" > $TMPFILE2
-	else
-	    cp -f $TMPFILE1 $TMPFILE2
-	    echo "ADMINPASSWORD=$SEDVAR" >> $TMPFILE2
-	fi
-fi
-rm -f $TMPFILE1
-printf "."
-SEDVAR=`echo "$XWWORKERLOGIN" | sed -f $SEDCMDS`
-grep -E "^[[:space:]]*WORKERLOGIN[[:space:]]*=.*" $TMPFILE2 > /dev/null 2>&1
-if [ $? -eq 0 ] ; then
-    cat $TMPFILE2 | sed "s/^[[:space:]]*WORKERLOGIN[[:space:]]*=.*/WORKERLOGIN=$SEDVAR/g" > $TMPFILE1
-else
-	grep -E "^[[:space:]]*#.*WORKERLOGIN[[:space:]]*=.*" $TMPFILE2 > /dev/null 2>&1
-	if [ $? -eq 0 ] ; then
-	    cat $TMPFILE2 | sed "s/^[[:space:]]*#.*WORKERLOGIN[[:space:]]*=.*/WORKERLOGIN=$SEDVAR/g" > $TMPFILE1
-	else
-	    cp -f $TMPFILE2 $TMPFILE1
-	    echo "WORKERLOGIN=$SEDVAR" >> $TMPFILE1
-	fi
-fi
-rm -f $TMPFILE2
-printf "."
-SEDVAR=`echo "$XWWORKERPASSWORD" | sed -f $SEDCMDS`
-grep -E "^[[:space:]]*WORKERPASSWORD[[:space:]]*=.*" $TMPFILE1 > /dev/null 2>&1
-if [ $? -eq 0 ] ; then
-    cat $TMPFILE1 | sed "s/^[[:space:]]*WORKERPASSWORD[[:space:]]*=.*/WORKERPASSWORD=$SEDVAR/g" > $TMPFILE2
-else
-	grep -E "^[[:space:]]*#.*WORKERPASSWORD[[:space:]]*=.*" $TMPFILE1 > /dev/null 2>&1
-	if [ $? -eq 0 ] ; then
-	    cat $TMPFILE1 | sed "s/^[[:space:]]*#.*WORKERPASSWORD[[:space:]]*=.*/WORKERPASSWORD=$SEDVAR/g" > $TMPFILE2
-	else
-	    cp -f $TMPFILE1 $TMPFILE2
-    	echo "WORKERPASSWORD=$SEDVAR" >> $TMPFILE2
-	fi
-fi
-rm -f $TMPFILE1
-printf "."
-if [ "$DBVENDOR" = "mysql" ] ; then
-    XWWORKERUID=`mysql $MYSQLOPTS "$DBNAME" -e "select uid from users where login='$XWWORKERLOGIN'" | tail -1`
-fi
-SEDVAR=`echo "$XWWORKERUID" | sed -f $SEDCMDS`
-grep -E "^[[:space:]]*WORKERUID[[:space:]]*=.*" $TMPFILE2 > /dev/null 2>&1
-if [ $? -eq 0 ] ; then
-    cat $TMPFILE2 | sed "s/^[[:space:]]*WORKERUID[[:space:]]*=.*/WORKERUID=$SEDVAR/g" > $TMPFILE1
-else
-	grep -E "^[[:space:]]*#.*WORKERUID[[:space:]]*=.*" $TMPFILE2 > /dev/null 2>&1
-	if [ $? -eq 0 ] ; then
-	    cat $TMPFILE2 | sed "s/^[[:space:]]*#.*WORKERUID[[:space:]]*=.*/WORKERUID=$SEDVAR/g" > $TMPFILE1
-	else
-	    cp -f $TMPFILE2 $TMPFILE1
-	    echo "WORKERUID=$SEDVAR" >> $TMPFILE1
-	fi
-fi
-rm -f $TMPFILE2
-printf "."
-
-if [ "$DBVENDOR" = "mysql" ] ; then
-    XWADMINUID=`mysql $MYSQLOPTS "$DBNAME" -e "select uid from users where login='$XWADMINLOGIN'" | tail -1`
-fi
-SEDVAR=`echo "$XWADMINUID" | sed -f $SEDCMDS`
-grep -E "^[[:space:]]*ADMINUID[[:space:]]*=.*" $TMPFILE1 > /dev/null 2>&1
-if [ $? -eq 0 ] ; then
-    cat $TMPFILE1 | sed "s/^[[:space:]]*ADMINUID[[:space:]]*=.*/ADMINUID=$SEDVAR/g" > $TMPFILE2
-else
-	grep -E "^[[:space:]]*#.*ADMINUID[[:space:]]*=.*" $TMPFILE1 > /dev/null 2>&1
-	if [ $? -eq 0 ] ; then
-	    cat $TMPFILE1 | sed "s/^[[:space:]]*#.*ADMINUID[[:space:]]*=.*/ADMINUID=$SEDVAR/g" > $TMPFILE2
-	else
-	    cp -f $TMPFILE1 $TMPFILE2
-	    echo "ADMINUID=$SEDVAR" >> $TMPFILE2
-	fi
-fi
-rm -f $TMPFILE1
-printf "."
-#mv $TMPFILE1 $TMPFILE2
-SAFE_SSLKEYPASSPHRASE=`echo "$SSLKEYPASSPHRASE" | sed -f $SEDCMDS`
-grep -E "^[[:space:]]*SSLKEYPASSPHRASE[[:space:]]*=.*" $TMPFILE2 > /dev/null 2>&1
-if [ $? -eq 0 ] ; then
-    cat $TMPFILE2 | sed "s/^[[:space:]]*SSLKEYPASSPHRASE[[:space:]]*=.*/SSLKEYPASSPHRASE=$SAFE_SSLKEYPASSPHRASE/g" > $TMPFILE1
-else
-	grep -E "^[[:space:]]*#.*SSLKEYPASSPHRASE[[:space:]]*=.*" $TMPFILE2 > /dev/null 2>&1
-	if [ $? -eq 0 ] ; then
-	    cat $TMPFILE2 | sed "s/^[[:space:]]*#.*SSLKEYPASSPHRASE[[:space:]]*=.*/SSLKEYPASSPHRASE=$SAFE_SSLKEYPASSPHRASE/g" > $TMPFILE1
-	else
-	    cp -f $TMPFILE2 $TMPFILE1
-	    echo "SSLKEYPASSPHRASE=$SAFE_SSLKEYPASSPHRASE" >> $TMPFILE1
-	fi
-fi
-rm -f $TMPFILE2
 
 printf "."
-SAFE_X509CERTDIR=`echo "$X509CERTDIR" | sed -f $SEDCMDS`
-grep -E "^[[:space:]]*X509CERTDIR[[:space:]]*=.*" $TMPFILE1 > /dev/null 2>&1
-if [ $? -eq 0 ] ; then
-    cat $TMPFILE1 | sed "s/^[[:space:]]*X509CERTDIR[[:space:]]*=.*/X509CERTDIR=$SAFE_X509CERTDIR/g" > $TMPFILE2
-else
-	grep -E "^[[:space:]]*#.*X509CERTDIR[[:space:]]*=.*" $TMPFILE1 > /dev/null 2>&1
-	if [ $? -eq 0 ] ; then
-	    cat $TMPFILE1 | sed "s/^[[:space:]]*#.*X509CERTDIR[[:space:]]*=.*/X509CERTDIR=$SAFE_X509CERTDIR/g" > $TMPFILE2
-	else
-	    cp -f $TMPFILE1 $TMPFILE2
-	    echo "X509CERTDIR=$SAFE_X509CERTDIR" >> $TMPFILE2
-	fi
-fi
-rm -f $TMPFILE1
-
-printf "."
-SAFE_USERCERTDIR=`echo "$USERCERTDIR" | sed -f $SEDCMDS`
-grep -E "^[[:space:]]*USERCERTDIR[[:space:]]*=.*" $TMPFILE2 > /dev/null 2>&1
-if [ $? -eq 0 ] ; then
-    cat $TMPFILE2 | sed "s/^[[:space:]]*USERCERTDIR[[:space:]]*=.*/USERCERTDIR=$SAFE_USERCERTDIR/g" > $TMPFILE1
-else
-	grep -E "^[[:space:]]*#.*USERCERTDIR[[:space:]]*=.*" $TMPFILE2 > /dev/null 2>&1
-	if [ $? -eq 0 ] ; then
-	    cat $TMPFILE2 | sed "s/^[[:space:]]*#.*USERCERTDIR[[:space:]]*=.*/USERCERTDIR=$SAFE_USERCERTDIR/g" > $TMPFILE1
-	else
-	    cp -f $TMPFILE2 $TMPFILE1
-	    echo "USERCERTDIR=$SAFE_USERCERTDIR" >> $TMPFILE1
-	fi
-fi
-rm -f $TMPFILE2
-
-
-printf "."
+<<<<<<< HEAD:src/main/resources/scripts/xwconfigure
 SAFE_SSLKEYPASSWORD=`echo "$SSLKEYSERVERPASSWORD" | sed -f $SEDCMDS`
 grep -E "^[[:space:]]*SSLKEYPASSWORD[[:space:]]*=.*" $TMPFILE1 > /dev/null 2>&1
 if [ $? -eq 0 ] ; then
@@ -1673,6 +1305,9 @@ else
 fi
 rm -f $TMPFILE1
 printf "."
+=======
+: '
+>>>>>>> 5e91c9e31496a6d4495204cfa7a11f10e5740274:src/main/resources/scripts/xwconfigure.old
 cptodir="$INSTALLERSDIR/macosx/xwhep.server/installer/PckRoot/Applications/xwhep.server"
 cp $ROOTDIR/AUTHORS $cptodir              > /dev/null 2>&1 || fatal "Can't copy $ROOTDIR/AUTHORS to $cptodir"
 cp $ROOTDIR/ChangeLog $cptodir            > /dev/null 2>&1 || fatal "Can't copy $ROOTDIR/ChangeLog to $cptodir"
@@ -1713,33 +1348,21 @@ mv -f $TMPFILE1 $OSXSERVERCONFFILE
 echo " Done"
 
 #
-# Preparing xw-ganglia
+# Preparing worker conf file for macosx packages
 #
-printf "Preparing xtremweb.ganglia"
-rm -f $TMPFILE1
-rm -f $TMPFILE2
-SEDVAR=`echo "$DBHOST" | sed -f $SEDCMDS`
-cat $XWGMOND | sed  "s/^[[:space:]]*my \$DBHOST[[:space:]]*=.*/my \$DBHOST=\"$SEDVAR\";/g" >  $TMPFILE1
-printf "."
-SEDVAR=`echo "$DBNAME" | sed -f $SEDCMDS`
-cat $TMPFILE1 | sed "s/^[[:space:]]*my \$database[[:space:]]*=.*/my \$database=\"$SEDVAR\";/g" >  $TMPFILE2
-rm -f $TMPFILE1
-printf "."
-SEDVAR=`echo "$DBUSERLOGIN" | sed -f $SEDCMDS`
-cat $TMPFILE2 | sed "s/^[[:space:]]*my \$DBUSER[[:space:]]*=.*/my \$DBUSER=\"$SEDVAR\";/g" > $TMPFILE1
-rm -f $TMPFILE2
-printf "."
-SEDVAR=`echo "$DBUSERPASSWORD" | sed -f $SEDCMDS`
-cat $TMPFILE1 | sed "s/^[[:space:]]*my \$dbpassword[[:space:]]*=.*/my \$dbpassword=\"$SEDVAR\";/g" > $TMPFILE2
-rm -f $TMPFILE1
-mv -f $TMPFILE2 $XWGMOND
-chmod +x $XWGMOND
-echo "Done"
+#: <<'END'
+OSXWORKERCONFFILE=$INSTALLERSDIR/macosx/xwhep.worker/installer/PckRoot/private/etc/xwhep.worker/conf/$XWWORKERCONFFILENAME
+cp $XWWORKERCONFFILE $OSXWORKERCONFFILE || fatal "Can't cp $XWWORKERCONFFILE $OSXWORKERCONFFILE"
+grep -E "^[[:space:]]*SSLKeyStore[[:space:]]*=.*" $OSXWORKERCONFFILE > /dev/null 2>&1
+if [ $? -eq 0 ] ; then
+    cat $OSXWORKERCONFFILE | sed "s/^[[:space:]]*SSLKeyStore[[:space:]]*=.*/SSLKeyStore=\/private\/etc\/xwhep\.worker\/keystore\/$XWWORKERKEYSTOREFILENAME/g" > $TMPFILE1
+else
+    cp -f $XWWORKERCONFFILE $TMPFILE1
+    echo "SSLKeyStore=/private/etc/xwhep.worker/keystore/$XWWORKERKEYSTOREFILENAME" >> $TMPFILE1
+fi
+mv -f $TMPFILE1 $OSXWORKERCONFFILE
 
-#
-# Preparing script to generate keystores
-#
-
+<<<<<<< HEAD:src/main/resources/scripts/xwconfigure
 CERTNAME="cn=$CERTCN,o=$CERTO,c=$CERTC"
 [ "$CERTOU" != "" ] && CERTNAME="$CERTNAME,ou=$CERTOU"
 [ "$CERTL" != "" ] && CERTNAME="$CERTNAME,l=$CERTL"
@@ -2244,6 +1867,8 @@ else
 fi
 mv -f $TMPFILE1 $OSXWORKERCONFFILE
 
+=======
+>>>>>>> 5e91c9e31496a6d4495204cfa7a11f10e5740274:src/main/resources/scripts/xwconfigure.old
 cptodir="$INSTALLERSDIR/macosx/xwhep.worker/installer/PckRoot/Applications/xwhep.worker/"
 cp $ROOTDIR/AUTHORS $cptodir                  > /dev/null 2>&1 || fatal "Can't copy $ROOTDIR/AUTHORS to $cptodir"
 cp $ROOTDIR/ChangeLog $cptodir                > /dev/null 2>&1 || fatal "Can't copy $ROOTDIR/ChangeLog to $cptodir"
@@ -2374,6 +1999,10 @@ fi
 mv -f $TMPFILE1 $WIN32WORKERCONFFILE
 
 echo "Done"
+<<<<<<< HEAD:src/main/resources/scripts/xwconfigure
+=======
+END
+>>>>>>> 5e91c9e31496a6d4495204cfa7a11f10e5740274:src/main/resources/scripts/xwconfigure.old
 
 #
 # Preparing the client configuration file
@@ -2381,13 +2010,21 @@ echo "Done"
 printf "Preparing client configuration file '$XWCLIENTCONFFILE'"
 rm -f $TMPFILE1
 rm -f $TMPFILE2
-SEDVAR=`echo "$XWUPGRADEURL" | sed -f $SEDCMDS`
-grep -E "^[[:space:]]*LAUNCHERURL[[:space:]]*=.*" $XWCLIENTCONFTEMPLATEFILE > /dev/null 2>&1
+
+echo "Done"
+
+
+: <<'END'
+WIN32CLIENTCONFFILE=$INSTALLERSDIR/win32/xwhep.client/innoSetup/client/conf/$XWCLIENTCONFFILENAME
+cp $XWCLIENTCONFFILE $WIN32CLIENTCONFFILE || fatal "Can't cp $XWCLIENTCONFFILE $WIN32CLIENTCONFFILE" 
+echo "****************************************************************************************"
+grep -E "^[[:space:]]*SSLKeyStore[[:space:]]*=.*"  $WIN32CLIENTCONFFILE > /dev/null 2>&1
 if [ $? -eq 0 ] ; then
-    cat $XWCLIENTCONFTEMPLATEFILE | sed "s/^[[:space:]]*LAUNCHERURL[[:space:]]*=.*/LAUNCHERURL=$SEDVAR/g" >  $TMPFILE1
+    cat $WIN32CLIENTCONFFILE | sed "s/^[[:space:]]*SSLKeyStore[[:space:]]*=.*/SSLKeyStore=..\/keystore\/XWCLIENTKEYSTOREFILENAME/g" > $TMPFILE1
 else
-	grep -E "^[[:space:]]*#.*LAUNCHERURL[[:space:]]*=.*" $XWCLIENTCONFTEMPLATEFILE > /dev/null 2>&1
+	grep -E "^[[:space:]]*#.*SSLKeyStore[[:space:]]*=.*"  $WIN32CLIENTCONFFILE > /dev/null 2>&1
 	if [ $? -eq 0 ] ; then
+<<<<<<< HEAD:src/main/resources/scripts/xwconfigure
 	    cat $XWCLIENTCONFTEMPLATEFILE | sed "s/^[[:space:]]*#.*LAUNCHERURL[[:space:]]*=.*/LAUNCHERURL=$SEDVAR/g" >  $TMPFILE1
 	else
 	    cp -f $XWCLIENTCONFTEMPLATEFILE $TMPFILE1
@@ -2505,6 +2142,8 @@ if [ $? -eq 0 ] ; then
 else
 	grep -E "^[[:space:]]*#.*SSLKeyStore[[:space:]]*=.*"  $WIN32CLIENTCONFFILE > /dev/null 2>&1
 	if [ $? -eq 0 ] ; then
+=======
+>>>>>>> 5e91c9e31496a6d4495204cfa7a11f10e5740274:src/main/resources/scripts/xwconfigure.old
 	    cat $WIN32CLIENTCONFFILE | sed "s/^[[:space:]]*#.*SSLKeyStore[[:space:]]*=.*/SSLKeyStore=..\/keystore\/XWCLIENTKEYSTOREFILENAME/g" > $TMPFILE1
 	else
 	    cp -f $XWCLIENTCONFFILE $TMPFILE1
@@ -2536,6 +2175,7 @@ cp $SOURCE $DEST > /dev/null 2>&1 || fatal "Can't copy $SOURCE to $DEST"
 echo "Done"
 
 
+<<<<<<< HEAD:src/main/resources/scripts/xwconfigure
 #
 # Generating keys
 #
@@ -2658,6 +2298,9 @@ else
     echo "Keystores unmodified"
     echo "*******************"
 fi
+=======
+#: <<'END'
+>>>>>>> 5e91c9e31496a6d4495204cfa7a11f10e5740274:src/main/resources/scripts/xwconfigure.old
 mkdir -p                    $INSTALLERSDIR/macosx/xwhep.server/installer/PckRoot/private/etc/xwhep.server/keystore/
 cp -f $XWSERVERKEYSTOREFILE $INSTALLERSDIR/macosx/xwhep.server/installer/PckRoot/private/etc/xwhep.server/keystore/ || fatal "Can't copy $XWSERVERKEYSTOREFILE"
 mkdir -p                    $INSTALLERSDIR/macosx/xwhep.worker/installer/PckRoot/private/etc/xwhep.worker/keystore/
@@ -2698,7 +2341,6 @@ rm -f  $INSTALLERSDIR/xwhep.client/$VERSION/bin/xtremweb.jra2*    > /dev/null  2
 rm -f  $INSTALLERSDIR/xwhep.client/$VERSION/bin/xtremweb.monitor* > /dev/null  2>&1
 rm -f  $INSTALLERSDIR/xwhep.client/$VERSION/bin/xtremweb.server   > /dev/null  2>&1
 rm -f  $INSTALLERSDIR/xwhep.client/$VERSION/bin/xwconfigure*      > /dev/null  2>&1
-rm -f  $INSTALLERSDIR/xwhep.client/$VERSION/bin/xwhep.bridge*     > /dev/null  2>&1
 rm -f  $INSTALLERSDIR/xwhep.client/$VERSION/bin/xwhep.probe*      > /dev/null  2>&1
 rm -f  $INSTALLERSDIR/xwhep.client/$VERSION/bin/$GENKEYS          > /dev/null  2>&1
 rm -f  $INSTALLERSDIR/xwhep.client/$VERSION/bin/$OPENIDSH         > /dev/null  2>&1
@@ -2859,6 +2501,7 @@ cp -Rf $DOCDIR/* $wkrRpmDir/doc/ > /dev/null 2>&1 || fatal "Can't copy docs to $
 # 18 sept 2013 : end
 #
 #
+<<<<<<< HEAD:src/main/resources/scripts/xwconfigure
 
 cp $LIBDIR/* $wkrRpmDir/lib/                     > /dev/null 2>&1 || fatal "Can't copy jar files to $wkrRpmDir/lib"
 
@@ -3294,18 +2937,20 @@ printf "."
 cp -f $XWBRIDGEKEYSTOREFILE $wkrRpmDir/keystore/ > /dev/null 2>&1 || fatal "Can't copy keystore file to $wkrRpmDir/keystore"
 cp $LIBDIR/* $wkrRpmDir/lib/                     > /dev/null 2>&1 || fatal "Can't copy jar file to $wkrRpmDir/lib"
 cp -Rf $DOCDIR/* $wkrRpmDir/doc/                 > /dev/null 2>&1 || fatal "Can't copy docs to $wkrRpmDir/bin"
+=======
+>>>>>>> 5e91c9e31496a6d4495204cfa7a11f10e5740274:src/main/resources/scripts/xwconfigure.old
 
-chmod +x $wkrRpmDir/bin/* > /dev/null 2>&1 || fatal "Can't chmod +x"
-chmod -x $wkrRpmDir/bin/*.sql* $wkrRpmDir/bin/*.seds $wkrRpmDir/bin/*.bat $wkrRpmDir/bin/*.xml > /dev/null  2>&1
+cp $LIBDIR/* $wkrRpmDir/lib/                     > /dev/null 2>&1 || fatal "Can't copy jar files to $wkrRpmDir/lib"
 
 printf "."
 
-rm -f $INSTALLERSDIR/linux/rpm/xwhep.bridgedgsg/SOURCES/xwhep-bridgedgsg-$VERSION.tar.gz
+rm -f $CURRENTWORKINGDIR/SOURCES/xwhep-server-$VERSION.tar.gz
 [ $? -ne 0 ] && fatal "Can't remove tar file"
 if [ "$PKGS" = "YES" ] ; then
-	(cd $rpmBuildDir && tar cvfz $INSTALLERSDIR/linux/rpm/xwhep.bridgedgsg/SOURCES/xwhep-bridgedgsg-$VERSION.tar.gz .) > /dev/null  2>&2
-	[ $? -ne 0 ] && fatal "Can't create tar file"
+  (cd $rpmBuildDir && tar cvfz $CURRENTWORKINGDIR/SOURCES/xwhep-server-$VERSION.tar.gz .) > /dev/null  2>&2
+  [ $? -ne 0 ] && fatal "Can't create tar file"
 fi
+
 printf "."
 
 echo " Done"
@@ -3316,37 +2961,38 @@ if [ $REDHATOS -eq 1 ] ; then
     rm -f $HOME/.rpmmacros 
     cat > $HOME/.rpmmacros  <<EOF
 %packager Oleg Lodygensky <oleg.lodygensky@lal.in2p3.fr>
-%_topdir $INSTALLERSDIR/linux/rpm/xwhep.bridgedgsg/
+%_topdir $CURRENTWORKINGDIR/
 %_tmppath /tmp
 EOF
 
-    rpmbuild  --buildroot $INSTALLERSDIR/linux/rpm/xwhep.bridgedgsg/BUILD/xwhep-bridgedgsg-$VERSION -bb $INSTALLERSDIR/linux/rpm/xwhep.bridgedgsg/xwhep-bridgedgsg.spec
+    rpmbuild  --buildroot $CURRENTWORKINGDIR/BUILD/xwhep-server-$VERSION -bb $CURRENTWORKINGDIR/xwhep-server.spec
     if [ $? -ne 0 ] ; then
 
-		cp -f $HOME/.rpmmacros  $CONFDIR/rpmmacros-bridgedgsg
+		cp -f $HOME/.rpmmacros  $CONFDIR/rpmmacros-server
 
-		cat <<EOF > $INSTALLERSDIR/linux/rpm/xwhep.bridgedgsg/RPMBUILD.txt
+		cat <<EOF > $CURRENTWORKINGDIR/RPMBUILD.txt
 
 ***********************************************************
                         ATTENTION
 ***********************************************************
-Can't create bridgedgsg RPM
+Can't create server RPM
 You may need root privileges to do so...
 
-You will then need an \$HOME/.rpmmacros file.
-This file has been created for you here : 
-  $CONFDIR/rpmmacros-bridgedgsg
+You need an \$HOME/.rpmmacros file.
+This file has been created for you : 
+  $CONFDIR/rpmmacros-server
 
 You can invoke rpmbuild :
 
-$> cp -f $CONFDIR/rpmmacros-bridgedgsg \$HOME/.rpmmacros
-$> rpmbuild --buildroot $INSTALLERSDIR/linux/rpm/xwhep.bridgedgsg/BUILD/xwhep-bridgedgsg-$VERSION -bb  $INSTALLERSDIR/linux/rpm/xwhep.bridgedgsg/xwhep-bridgedgsg.spec
+$> cp -f $CONFDIR/rpmmacros-server \$HOME/.rpmmacros
+$> rpmbuild --buildroot $CURRENTWORKINGDIR/BUILD/xwhep-server-$VERSION -bb $CURRENTWORKINGDIR/xwhep-server.spec
 
 The RPM is then ready in :
-  $INSTALLERSDIR/linux/rpm/xwhep.bridgedgsg/RPMS/noarch/
+  $CURRENTWORKINGDIR/RPMS/noarch/
 
 EOF
-		cat $INSTALLERSDIR/linux/rpm/xwhep.bridgedgsg/RPMBUILD.txt
+		cat $CURRENTWORKINGDIR/RPMBUILD.txt
+
 		if [ "$FORCEYES" = "NO"  ] ; then
 			printf "(Hit Enter key) "
 			read
@@ -3356,141 +3002,61 @@ EOF
     [ -f $HOME/.rpmmacros_sav ] && mv $HOME/.rpmmacros_sav $HOME/.rpmmacros 
 fi
 
+
+
+
 #
-# Preparing bridgedgsg DEBIAN package
+# Preparing server configuration RPM package
 #
 echo
-echo "Preparing bridgedgsg Debian package"
-mkdir -p $INSTALLERSDIR/linux/dpkg/xwhep.bridgedgsg/DEBIAN > /dev/null  2>&1
-[ ! -d $INSTALLERSDIR/linux/dpkg/xwhep.bridgedgsg/DEBIAN ] && fatal "Can't mkdir -p $INSTALLERSDIR/linux/dpkg/xwhep.bridgedgsg/DEBIAN"
-cp -Rf $rpmDir/* $INSTALLERSDIR/linux/dpkg/xwhep.bridgedgsg/ > /dev/null 2>&1 || fatal "Can't copy $rpmDir/* $INSTALLERSDIR/linux/dpkg/xwhep.bridgedgsg/"
-find $INSTALLERSDIR/linux/dpkg/ -type d | xargs chmod 755
-chmod 755 $INSTALLERSDIR/linux/dpkg/xwhep.bridgedgsg/DEBIAN/pre*
-chmod 755 $INSTALLERSDIR/linux/dpkg/xwhep.bridgedgsg/DEBIAN/post*
-if [ "$PKGS" = "YES" -a $DEBIANOS -eq 1 -o $MACOS -eq 1 ] ; then
-    dpkg-deb --build $INSTALLERSDIR/linux/dpkg/xwhep.bridgedgsg xwhep-bridgedgsg-$VERSION.deb
-    if [ $? -ne 0 ] ; then
+CURRENTWORKINGDIR=$INSTALLERSDIR/linux/rpm/xwhep.server.conf
+printf "Preparing server configuration RPM package to '$CURRENTWORKINGDIR'"
+mkdir -p $CURRENTWORKINGDIR/RPMS/    > /dev/null 2>&1 || fatal "Can't mkdir -p $CURRENTWORKINGDIR/RPMS/"
+mkdir -p $CURRENTWORKINGDIR/SOURCES/ > /dev/null 2>&1 || fatal "Can't mkdir -p $CURRENTWORKINGDIR/SOURCES/"
+mkdir -p $CURRENTWORKINGDIR/SPECS/   > /dev/null 2>&1 || fatal "Can't mkdir -p $CURRENTWORKINGDIR/SPECS/"
+mkdir -p $CURRENTWORKINGDIR/SRPMS/   > /dev/null 2>&1 || fatal "Can't mkdir -p $CURRENTWORKINGDIR/SRPMS/"
 
-		cat <<EOF > $INSTALLERSDIR/linux/dpkg/xwhep-bridgedgsg.build.txt
-
-***********************************************************
-                        ATTENTION
-***********************************************************
-Can't create bridgedgsg Debian package
-You may need root privileges to do so...
-
-You can invoke dpkg-deb :
-
-$> dpkg-deb --build $INSTALLERSDIR/linux/dpkg/xwhep.bridgedgsg xwhep-bridgedgsg-$VERSION.deb
-
-The Debian package is then ready in :
-  $INSTALLERSDIR/linux/dpkg/xwhep-bridgedgsg-$VERSION.deb
-
-EOF
-		cat $INSTALLERSDIR/linux/dpkg/xwhep-bridgedgsg.build.txt
-		if [ "$FORCEYES" = "NO"  ] ; then
-			printf "(Hit Enter key) "
-			read
-		fi
-    fi
-fi
-
-echo "Bridgedgsg Debian package ready"
-
-
-#
-# Preparing SG to DG bridge RPM package
-#
-
-printf "Preparing SG to DG bridge RPM package to '$INSTALLERSDIR/linux/rpm/xwhep.bridgesgdg'"
-mkdir -p $INSTALLERSDIR/linux/rpm/xwhep.bridgesgdg/RPMS/    > /dev/null 2>&1 || fatal "Can't mkdir -p $INSTALLERSDIR/linux/rpm/xwhep.bridgesgdg/RPMS/"
-mkdir -p $INSTALLERSDIR/linux/rpm/xwhep.bridgesgdg/SOURCES/ > /dev/null 2>&1 || fatal "Can't mkdir -p $INSTALLERSDIR/linux/rpm/xwhep.bridgesgdg/SOURCES/"
-mkdir -p $INSTALLERSDIR/linux/rpm/xwhep.bridgesgdg/SPECS/   > /dev/null 2>&1 || fatal "Can't mkdir -p $INSTALLERSDIR/linux/rpm/xwhep.bridgesgdg/SPECS/"
-mkdir -p $INSTALLERSDIR/linux/rpm/xwhep.bridgesgdg/SRPMS/   > /dev/null 2>&1 || fatal "Can't mkdir -p $INSTALLERSDIR/linux/rpm/xwhep.bridgesgdg/SRPMS/"
-
-rpmBuildDir="$INSTALLERSDIR/linux/rpm/xwhep.bridgesgdg/BUILD/"
-rpmDir="$rpmBuildDir/xwhep-bridgesgdg-$VERSION"
+rpmBuildDir="$CURRENTWORKINGDIR/BUILD/"
+rpmDir="$rpmBuildDir/xwhep-server-conf-$VERSION"
 mkdir -p $rpmDir > /dev/null 2>&1 || fatal "Can't mkdir -p $rpmDir"
 
 printf "."
 
-wkrRpmDir="$rpmDir/$INSTALLDIR/xwhep-bridgesgdg-$VERSION"
-mkdir -p $wkrRpmDir/bin      > /dev/null 2>&1 || fatal "Can't mkdir -p $wkrRpmDir/bin"
+wkrRpmDir="$rpmDir/$INSTALLDIR/xwhep-server-$VERSION"
 mkdir -p $wkrRpmDir/conf     > /dev/null 2>&1 || fatal "Can't mkdir -p $wkrRpmDir/conf"
 mkdir -p $wkrRpmDir/keystore > /dev/null 2>&1 || fatal "Can't mkdir -p $wkrRpmDir/keystore"
-mkdir -p $wkrRpmDir/lib      > /dev/null 2>&1 || fatal "Can't mkdir -p $wkrRpmDir/lib"
-mkdir -p $wkrRpmDir/doc      > /dev/null 2>&1 || fatal "Can't mkdir -p $wkrRpmDir/doc"
 
 printf "."
 
-cp $BINDIR/xtremwebconf.sh $wkrRpmDir/bin/ > /dev/null 2>&1 || fatal "Can't copy bin file to $wkrRpmDir/bin"
 
-cp $ROOTDIR/AUTHORS $wkrRpmDir/                  > /dev/null 2>&1 || fatal "Can't copy $ROOTDIR/AUTHORS to $wkrRpmDir/"
-cp $ROOTDIR/ChangeLog $wkrRpmDir/                > /dev/null 2>&1 || fatal "Can't copy $ROOTDIR/ChangeLog to $wkrRpmDir/"
-cp $ROOTDIR/INSTALL $wkrRpmDir/                  > /dev/null 2>&1 || fatal "Can't copy $ROOTDIR/INSTALL to $wkrRpmDir/"
-cp $ROOTDIR/License $wkrRpmDir/                  > /dev/null 2>&1 || fatal "Can't copy $ROOTDIR/License to $wkrRpmDir/"
-cp $ROOTDIR/License.bouncycastle $wkrRpmDir/     > /dev/null 2>&1 || fatal "Can't copy $ROOTDIR/License.bouncycastle to $wkrRpmDir/"
-cp $ROOTDIR/License.smartsockets-1.4 $wkrRpmDir/ > /dev/null 2>&1 || fatal "Can't copy $ROOTDIR/License.smartsockets-1.4 to $wkrRpmDir/"
+RPMSERVERCONFFILE=$wkrRpmDir/conf/$XWSERVERCONFFILENAME
+cp $XWSERVERCONFFILE $RPMSERVERCONFFILE > /dev/null 2>&1 || fatal "Can't copy conf file to $wkrRpmDir/conf/"
 
-
-cp $BINDIR/* $wkrRpmDir/bin/           > /dev/null  2>&1
-rm -f $wkrRpmDir/bin/context.sh        > /dev/null  2>&1
-rm -f $wkrRpmDir/bin/*sql              > /dev/null  2>&1
-rm -f $wkrRpmDir/bin/xwhep.sgbridge.pm > /dev/null  2>&1
-
-
-RPMBRIDGECONFFILE=$wkrRpmDir/conf/$XWBRIDGECONFFILENAME
-cp $XWBRIDGECONFFILE $RPMBRIDGECONFFILE > /dev/null 2>&1 || fatal "Can't copy conf file to rpm/conf/"
-
-printf "."
-
-cp $XWBRIDGECONFFILE $RPMBRIDGECONFFILE
+cp $XWSERVERCONFFILE $RPMSERVERCONFFILE
 SEDVAR=`echo "$INSTALLDIR" | sed -f $SEDCMDS`
-grep -E "^[[:space:]]*SSLKeyStore[[:space:]]*=.*" $RPMBRIDGECONFFILE > /dev/null 2>&1
+grep -E "^[[:space:]]*SSLKeyStore[[:space:]]*=.*/" $RPMSERVERCONFFILE > /dev/null 2>&1
 if [ $? -eq 0 ] ; then
-    cat $RPMBRIDGECONFFILE | sed "s/^[[:space:]]*SSLKeyStore[[:space:]]*=.*/SSLKeyStore=\/$SEDVAR\/xwhep-bridgesgdg-$VERSION\/keystore\/$XWBRIDGEKEYSTOREFILENAME/g" > $TMPFILE1
+    cat $RPMSERVERCONFFILE | sed "s/^[[:space:]]*SSLKeyStore[[:space:]]*=.*/SSLKeyStore=\/$SEDVAR\/xwhep-server-$VERSION\/keystore\/$XWSERVERKEYSTOREFILENAME/g" > $TMPFILE1
 else
-    cp -f $RPMBRIDGECONFFILE $TMPFILE1
-    echo "SSLKeyStore=/$SEDVAR/xwhep-bridgesgdg-$VERSION/keystore/$XWBRIDGEKEYSTOREFILENAME" >> $TMPFILE1
+	grep -E "^[[:space:]]*#.*SSLKeyStore[[:space:]]*=.*/" $RPMSERVERCONFFILE > /dev/null 2>&1
+	if [ $? -eq 0 ] ; then
+	    cat $RPMSERVERCONFFILE | sed "s/^[[:space:]]*#.*SSLKeyStore[[:space:]]*=.*/SSLKeyStore=\/$SEDVAR\/xwhep-server-$VERSION\/keystore\/$XWSERVERKEYSTOREFILENAME/g" > $TMPFILE1
+	else
+	    cp -f $RPMSERVERCONFFILE $TMPFILE1
+	    echo "SSLKeyStore=/$SEDVAR/xwhep-server-$VERSION/keystore/$XWSERVERKEYSTOREFILENAME" >> $TMPFILE1
+	fi
 fi
+mv -f $TMPFILE1 $RPMSERVERCONFFILE
+
+
+cp -f $XWSERVERKEYSTOREFILE $wkrRpmDir/keystore/ > /dev/null 2>&1 || fatal "Can't copy $XWSERVERKEYSTOREFILE to $wkrRpmDir/keystore"
 
 printf "."
 
-grep -E "^[[:space:]]*LOGIN[[:space:]]*=.*" $TMPFILE1 > /dev/null 2>&1
-if [ $? -eq 0 ] ; then
-    cat $TMPFILE1 | sed "s/^[[:space:]]*LOGIN[[:space:]]*=.*/LOGIN=$XWADMINLOGIN/g" > $TMPFILE2
-else
-    cp -f $TMPFILE1 $TMPFILE2
-    echo "LOGIN=$XWADMINPASSWORD" >> $TMPFILE2
-fi
-
-printf "."
-grep -E "^[[:space:]]*password[[:space:]]*=.*" $TMPFILE2 > /dev/null 2>&1
-if [ $? -eq 0 ] ; then
-    cat $TMPFILE2 | sed "s/^[[:space:]]*password[[:space:]]*=.*/password=$XWADMINPASSWORD/g" > $TMPFILE1
-else
-    cp -f $TMPFILE2 $TMPFILE1
-    echo "password=$XWADMINPASSWORD" >> $TMPFILE1
-fi
-
-rm -f $TMPFILE2
-mv -f $TMPFILE1 $RPMBRIDGECONFFILE
-
-printf "."
-
-cp -f $XWBRIDGEKEYSTOREFILE $wkrRpmDir/keystore/ > /dev/null 2>&1 || fatal "Can't copy keystore file to $wkrRpmDir/keystore"
-cp $LIBDIR/* $wkrRpmDir/lib/                     > /dev/null 2>&1 || fatal "Can't copy jar file to $wkrRpmDir/lib"
-cp -Rf $DOCDIR/* $wkrRpmDir/doc/                 > /dev/null 2>&1 || fatal "Can't copy docs to $wkrRpmDir/bin"
-
-chmod +x $wkrRpmDir/bin/* > /dev/null 2>&1 || fatal "Can't chmod +x"
-chmod -x $wkrRpmDir/bin/*.sql* $wkrRpmDir/bin/*.seds $wkrRpmDir/bin/*.bat $wkrRpmDir/bin/*.xml > /dev/null  2>&1
-
-printf "."
-
-rm -f $INSTALLERSDIR/linux/rpm/xwhep.bridgesgdg/SOURCES/xwhep-bridgesgdg-$VERSION.tar.gz
+rm -f $CURRENTWORKINGDIR/SOURCES/xwhep-server-conf-$VERSION.tar.gz
 [ $? -ne 0 ] && fatal "Can't remove tar file"
 if [ "$PKGS" = "YES" ] ; then
-	(cd $rpmBuildDir && tar cvfz $INSTALLERSDIR/linux/rpm/xwhep.bridgesgdg/SOURCES/xwhep-bridgesgdg-$VERSION.tar.gz .) > /dev/null  2>&2
+	(cd $rpmBuildDir && tar cvfz $CURRENTWORKINGDIR/SOURCES/xwhep-server-conf-$VERSION.tar.gz .) > /dev/null  2>&2
 	[ $? -ne 0 ] && fatal "Can't create tar file"
 fi
 printf "."
@@ -3503,37 +3069,38 @@ if [ $REDHATOS -eq 1 ] ; then
     rm -f $HOME/.rpmmacros 
     cat > $HOME/.rpmmacros  <<EOF
 %packager Oleg Lodygensky <oleg.lodygensky@lal.in2p3.fr>
-%_topdir $INSTALLERSDIR/linux/rpm/xwhep.bridgesgdg/
+%_topdir $CURRENTWORKINGDIR/
 %_tmppath /tmp
 EOF
 
-    rpmbuild --buildroot $INSTALLERSDIR/linux/rpm/xwhep.bridgesgdg/BUILD/xwhep-bridgesgdg-$VERSION -bb $INSTALLERSDIR/linux/rpm/xwhep.bridgesgdg/xwhep-bridgesgdg.spec
+    rpmbuild  --buildroot $CURRENTWORKINGDIR/BUILD/xwhep-server-conf-$VERSION -bb $CURRENTWORKINGDIR/xwhep-server-conf.spec
     if [ $? -ne 0 ] ; then
 
-		cp -f $HOME/.rpmmacros  $CONFDIR/rpmmacros-bridgesgdg
+		cp -f $HOME/.rpmmacros  $CONFDIR/rpmmacros-server
 
-		cat <<EOF > $INSTALLERSDIR/linux/rpm/xwhep.bridgesgdg/RPMBUILD.txt
+		cat <<EOF > $CURRENTWORKINGDIR/RPMBUILD.txt
 
 ***********************************************************
                         ATTENTION
 ***********************************************************
-Can't create bridgesgdg RPM
+Can't create server RPM
 You may need root privileges to do so...
 
-You will then need an \$HOME/.rpmmacros file.
-This file has been created for you here : 
-  $CONFDIR/rpmmacros-bridgesgdg
+You need an \$HOME/.rpmmacros file.
+This file has been created for you : 
+  $CONFDIR/rpmmacros-server
 
 You can invoke rpmbuild :
 
-$> cp -f $CONFDIR/rpmmacros-bridgesgdg \$HOME/.rpmmacros
-$> rpmbuild --buildroot $INSTALLERSDIR/linux/rpm/xwhep.bridgesgdg/BUILD/xwhep-bridgesgdg-$VERSION -bb  $INSTALLERSDIR/linux/rpm/xwhep.bridgesgdg/xwhep-bridgesgdg.spec
+$> cp -f $CONFDIR/rpmmacros-server \$HOME/.rpmmacros
+$> rpmbuild --buildroot $CURRENTWORKINGDIR/BUILD/xwhep-server-conf-$VERSION -bb $CURRENTWORKINGDIR/xwhep-server-conf.spec
 
 The RPM is then ready in :
-  $INSTALLERSDIR/linux/rpm/xwhep.bridgesgdg/RPMS/noarch/
+  $CURRENTWORKINGDIR/RPMS/noarch/
 
 EOF
-		cat $INSTALLERSDIR/linux/rpm/xwhep.bridgesgdg/RPMBUILD.txt
+		cat $CURRENTWORKINGDIR/RPMBUILD.txt
+
 		if [ "$FORCEYES" = "NO"  ] ; then
 			printf "(Hit Enter key) "
 			read
@@ -3543,47 +3110,147 @@ EOF
     [ -f $HOME/.rpmmacros_sav ] && mv $HOME/.rpmmacros_sav $HOME/.rpmmacros 
 fi
 
+
+#############################################################################################################################################
 #
-# Preparing bridgesgdg DEBIAN package
+# Preparing server DEBIAN package
 #
 echo
-echo "Preparing bridgesgdg Debian package"
-mkdir -p $INSTALLERSDIR/linux/dpkg/xwhep.bridgesgdg/DEBIAN > /dev/null  2>&1
-[ ! -d $INSTALLERSDIR/linux/dpkg/xwhep.bridgesgdg/DEBIAN ] && fatal "Can't mkdir -p $INSTALLERSDIR/linux/dpkg/xwhep.bridgesgdg/DEBIAN"
-cp -Rf $rpmDir/* $INSTALLERSDIR/linux/dpkg/xwhep.bridgesgdg/ > /dev/null 2>&1 || fatal "Can't copy $rpmDir/* $INSTALLERSDIR/linux/dpkg/xwhep.bridgesgdg/"
+echo "Preparing server Debian package"
+mkdir -p $INSTALLERSDIR/linux/dpkg/xwhep.server/DEBIAN > /dev/null  2>&1
+[ ! -d $INSTALLERSDIR/linux/dpkg/xwhep.server/DEBIAN ] && fatal "Can't mkdir -p $INSTALLERSDIR/linux/dpkg/xwhep.server/DEBIAN"
+
+CURRENTWORKINGDIR=$INSTALLERSDIR/linux/rpm/xwhep.server
+rpmBuildDir="$CURRENTWORKINGDIR/BUILD/"
+rpmDir="$rpmBuildDir/xwhep-server-$VERSION"
+
+cp -Rf $rpmDir/* $INSTALLERSDIR/linux/dpkg/xwhep.server/ > /dev/null 2>&1 || fatal "Can't copy $rpmDir/* $INSTALLERSDIR/linux/dpkg/xwhep.server/"
 find $INSTALLERSDIR/linux/dpkg/ -type d | xargs chmod 755
-chmod 755 $INSTALLERSDIR/linux/dpkg/xwhep.bridgesgdg/DEBIAN/pre*
-chmod 755 $INSTALLERSDIR/linux/dpkg/xwhep.bridgesgdg/DEBIAN/post*
+chmod 755 $INSTALLERSDIR/linux/dpkg/xwhep.server/DEBIAN/pre*
+chmod 755 $INSTALLERSDIR/linux/dpkg/xwhep.server/DEBIAN/post*
 if [ "$PKGS" = "YES" -a $DEBIANOS -eq 1 -o $MACOS -eq 1 ] ; then
-    dpkg-deb --build $INSTALLERSDIR/linux/dpkg/xwhep.bridgesgdg xwhep-bridgesgdg-$VERSION.deb
+    dpkg-deb --build $INSTALLERSDIR/linux/dpkg/xwhep.server xwhep-server-$VERSION.deb
     if [ $? -ne 0 ] ; then
 
-		cat <<EOF > $INSTALLERSDIR/linux/dpkg/xwhep-bridgesgdg.build.txt
+		cat <<EOF > $INSTALLERSDIR/linux/dpkg/xwhep-server.build.txt
 
 ***********************************************************
                         ATTENTION
 ***********************************************************
-Can't create bridgesgdg Debian package
+Can't create server Debian package
 You may need root privileges to do so...
 
 You can invoke dpkg-deb :
 
-$> dpkg-deb --build $INSTALLERSDIR/linux/dpkg/xwhep.bridgesgdg xwhep-bridgesgdg-$VERSION.deb
+$> dpkg-deb --build $INSTALLERSDIR/linux/dpkg/xwhep.server xwhep-server-$VERSION.deb
 
-The Debuan package is then ready in :
-  $INSTALLERSDIR/linux/dpkg/xwhep-bridgesgdg-$VERSION.deb
+The Debian package is then ready in :
+  $INSTALLERSDIR/linux/dpkg/xwhep-server-$VERSION.deb
 
 EOF
-		cat $INSTALLERSDIR/linux/dpkg/xwhep-bridgesgdg.build.txt
+		cat $INSTALLERSDIR/linux/dpkg/xwhep-server.build.txt
 		if [ "$FORCEYES" = "NO"  ] ; then
 			printf "(Hit Enter key) "
 			read
 		fi
     fi
 fi
+[ -f xwhep-server-$VERSION.deb ] && cp xwhep-server-$VERSION.deb $ROOTDIR/docker/server/ 
+echo "Server Debian package ready"
 
-echo "Bridgesgdg Debian package ready"
+#############################################################################################################################################
+#
+# Preparing server configuration DEBIAN package
+#
+echo
+echo "Preparing server configuration Debian package"
+mkdir -p $INSTALLERSDIR/linux/dpkg/xwhep.server.conf/DEBIAN > /dev/null  2>&1
+[ ! -d $INSTALLERSDIR/linux/dpkg/xwhep.server.conf/DEBIAN ] && fatal "Can't mkdir -p $INSTALLERSDIR/linux/dpkg/xwhep.server.conf/DEBIAN"
 
+
+CURRENTWORKINGDIR=$INSTALLERSDIR/linux/rpm/xwhep.server.conf
+rpmBuildDir="$CURRENTWORKINGDIR/BUILD/"
+rpmDir="$rpmBuildDir/xwhep-server-conf-$VERSION"
+
+cp -Rf $rpmDir/* $INSTALLERSDIR/linux/dpkg/xwhep.server.conf/ > /dev/null 2>&1 || fatal "Can't copy $rpmDir/* $INSTALLERSDIR/linux/dpkg/xwhep.server.conf/"
+find $INSTALLERSDIR/linux/dpkg/ -type d | xargs chmod 755
+chmod 755 $INSTALLERSDIR/linux/dpkg/xwhep.server.conf/DEBIAN/pre*
+chmod 755 $INSTALLERSDIR/linux/dpkg/xwhep.server.conf/DEBIAN/post*
+
+if [ "$PKGS" = "YES" -a $DEBIANOS -eq 1 -o $MACOS -eq 1 ] ; then
+    dpkg-deb --build $INSTALLERSDIR/linux/dpkg/xwhep.server.conf xwhep-server-conf-$VERSION.deb
+    if [ $? -ne 0 ] ; then
+
+		cat <<EOF > $INSTALLERSDIR/linux/dpkg/xwhep-server-conf.build.txt
+
+***********************************************************
+                        ATTENTION
+***********************************************************
+Can't create server configuration Debian package
+You may need root privileges to do so...
+
+You can invoke dpkg-deb :
+
+$> dpkg-deb --build $INSTALLERSDIR/linux/dpkg/xwhep.server.conf xwhep-server-conf-$VERSION.deb
+
+The Debian package is then ready in :
+  $INSTALLERSDIR/linux/dpkg/xwhep-server-conf-$VERSION.deb
+
+EOF
+		cat $INSTALLERSDIR/linux/dpkg/xwhep-server-conf.build.txt
+		if [ "$FORCEYES" = "NO"  ] ; then
+			printf "(Hit Enter key) "
+			read
+		fi
+    fi
+fi
+[ -f xwhep-server-conf-$VERSION.deb ] && cp xwhep-server-conf-$VERSION.deb $ROOTDIR/docker/server/ 
+echo "Server Configuration Debian package ready"
+
+#
+# Test Apple PackageMaker
+#
+# next is the default location before Mac OS 10.8
+PACKAGEMAKER="/Applications/PackageMaker.app/Contents/MacOS/PackageMaker"
+
+type sw_vers > /dev/null  2>&1
+if [ $? -eq 0 ] ; then
+  OSMAJOR=`sw_vers -productVersion | cut -d '.' -f 1`
+  OSMINOR=`sw_vers -productVersion | cut -d '.' -f 2`
+  if [ "$OSMAJOR.$OSMINOR" = "10.8" ] ; then
+#
+# This is where I installed all that; it may not work for you
+#
+    PACKAGEMAKER="/Applications/XCodeAuxiliaryTools/PackageMaker.app/Contents/MacOS/PackageMaker"
+  fi
+fi
+
+
+#: <<'END'
+#
+# Preparing server Apple package
+#
+if [ "$PKGS" = "YES" ] ; then
+  echo
+  printf "Preparing server Apple package"
+  if [ -x "$PACKAGEMAKER" ] ; then
+    $PACKAGEMAKER -d $INSTALLERSDIR/macosx/xwhep.server/installer/xwhep-server.pmdoc -o $INSTALLERSDIR/macosx/xwhep.server/installer/xwhep-server-$VERSION.mpkg
+    if [ $? -eq 0 ] ; then
+      echo " Done"
+    else
+      echo " Error"
+    fi
+    echo
+   else
+     echo " Can't find $PACKAGEMAKER"
+     echo " To create Mac OS X installation package:"
+     echo " - install PackageMaker"
+     echo " - use it as follows"
+     echo " $> PackageMaker -d installers/macosx/xwhep.server/installer/xwhep-server.pmdoc -o installers/macosx/xwhep.server/installer/xwhep-server.mpkg"
+     echo
+  fi
+fi
+#END
 
 #
 # Preparing client RPM package
@@ -3939,10 +3606,6 @@ EOF
     [ -f $HOME/.rpmmacros_sav ] && mv $HOME/.rpmmacros_sav $HOME/.rpmmacros 
 fi
 
-
-
-
-
 #
 # Preparing worker DEBIAN package
 #
@@ -3983,8 +3646,6 @@ fi
 [ -f xwhep-worker-$VERSION.deb ] && cp xwhep-worker-$VERSION.deb $ROOTDIR/docker/worker/ 
 
 echo "Worker Debian package ready"
-
-
 
 
 #
@@ -4069,10 +3730,6 @@ EOF
     [ -f $HOME/.rpmmacros_sav ] && mv $HOME/.rpmmacros_sav $HOME/.rpmmacros 
 fi
 
-
-
-
-
 #
 # Preparing vworker DEBIAN package
 #
@@ -4080,10 +3737,10 @@ echo
 echo "Preparing vworker Debian package"
 mkdir -p $INSTALLERSDIR/linux/dpkg/xwhep.vworker/ > /dev/null 2>&1 || fatal "Can't mkdir $INSTALLERSDIR/linux/dpkg/xwhep.vworker"
 cp -Rf $INSTALLERSDIR/linux/dpkg/xwhep.worker/* $INSTALLERSDIR/linux/dpkg/xwhep.vworker/ > /dev/null 2>&1 || fatal "Can't copy $INSTALLERSDIR/linux/dpkg/xwhep.worker to $INSTALLERSDIR/linux/dpkg/xwhep.vworker"
-cp -f  $XWVWORKERCONFFILE $INSTALLERSDIR/linux/dpkg/xwhep.vworker/opt/xwhep-worker-$VERSION/conf/$XWWORKERCONFFILENAME > /dev/null 2>&1 || fatal "Can't copy  $XWVWORKERCONFFILE $INSTALLERSDIR/linux/dpkg/xwhep.vworker/opt/xwhep-worker-$VERSION/conf/$XWWORKERCONFFILENAME"
+cp -f  $XWVWORKERCONFFILE $INSTALLERSDIR/linux/dpkg/xwhep.vworker/opt/xwhep-worker-12.0.1/conf/$XWWORKERCONFFILENAME > /dev/null 2>&1 || fatal "Can't copy  $XWVWORKERCONFFILE $INSTALLERSDIR/linux/dpkg/xwhep.vworker/opt/xwhep-worker-12.0.1/conf/$XWWORKERCONFFILENAME"
 chmod +x  $INSTALLERSDIR/linux/dpkg/xwhep.vworker/DEBIAN/* > /dev/null 2>&1 || fatal "Can't chmod +x  $INSTALLERSDIR/linux/dpkg/xwhep.vworker/DEBIAN/*"
 
-DPKGWORKERCONFFILE=$INSTALLERSDIR/linux/dpkg/xwhep.vworker/opt/xwhep-worker-$VERSION/conf/$XWWORKERCONFFILENAME
+DPKGWORKERCONFFILE=$INSTALLERSDIR/linux/dpkg/xwhep.vworker/opt/xwhep-worker-12.0.1/conf/$XWWORKERCONFFILENAME
 
 SEDVAR=`echo "$INSTALLDIR" | sed -f $SEDCMDS`
 grep -E "^[[:space:]]*SSLKeyStore[[:space:]]*=.*" $DPKGWORKERCONFFILE > /dev/null 2>&1
@@ -4190,14 +3847,6 @@ Available packages :
    - Debian DPKG in $INSTALLERSDIR/linux/dpkg/xwhep.server
    - Apple  PKG  in $INSTALLERSDIR/macosx/xwhep.server
 
-  * Desktop Grid to Service Grid bridge
-   - RedHat RPM  in $INSTALLERSDIR/linux/rpm/xwhep.bridgedgsg
-   - Debian DPKG in $INSTALLERSDIR/linux/dpkg/xwhep.bridgedgsg
-
-  * Service Grid to Desktop Grid bridge
-   - RedHat RPM  in $INSTALLERSDIR/linux/rpm/xwhep.bridgesgdg
-   - Debian DPKG in $INSTALLERSDIR/linux/dpkg/xwhep.bridgesgdg
-
   * client
    - RedHat RPM  in $INSTALLERSDIR/linux/rpm/xwhep.client
    - Debian DPKG in $INSTALLERSDIR/linux/dpkg/xwhep.client
@@ -4214,7 +3863,6 @@ Available packages :
 
   * client
    - Zip file (platform independant)  in $INSTALLERSDIR/xwhep-client-$VERSION.zip
-
 
 You can manually :
   * start the server

@@ -97,7 +97,7 @@ touch $IBISLOG
 # $XWUSER is a new user created by installers
 # Note that uninstaller do not remove that user: it must be done manually
 #
-XWUSER="@SYSTEMUSER@"
+XWUSER=@XWUSER@
 
 if [ "X$ROOTDIR" = "X" ]; then
     echo "`date` [`uname -n` $PROG] ERROR : ROOTDIR is not set"

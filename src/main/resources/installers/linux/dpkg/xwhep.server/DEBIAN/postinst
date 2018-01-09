@@ -30,7 +30,7 @@ VARXWHEP="/var/xwhep/server"
 PROG="xtremweb.server"
 XWGANGLIA="xtremweb.ganglia"
 INITD="/etc/init.d"
-SYSLOGIN="@SYSTEMUSER@"
+SYSLOGIN=@XWUSER@
 
 touch $LOG
 date >> $LOG  2>&1 

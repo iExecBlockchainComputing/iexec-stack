@@ -11,3 +11,7 @@ build/
 /.idea/
 *.iml
 /src/main/java/xtremweb/common/CommonVersion.java
+/src/main/javascript/client/node_modules/
+*.pem
+cacerts
+trustedcerts.txt

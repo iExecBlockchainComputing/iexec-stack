@@ -63,7 +63,11 @@ RUN export DEBIAN_FRONTEND=noninteractive && apt-get install -y openjdk-8-jdk my
 RUN cd /tmp && wget https://services.gradle.org/distributions/gradle-4.4.1-bin.zip && unzip gradle-4.4.1-bin.zip
 RUN wget https://github.com/lodygens/xtremweb-hep/archive/master.zip
 RUN unzip master.zip
+<<<<<<< HEAD
 RUN export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/ && cd /xwhep/xtremweb-hep-master/ && /tmp/gradle-4.4.1/bin/gradle build install
+=======
+RUN export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/ && cd /xwhep/xtremweb-hep-master/ && ./gradlew buildAll
+>>>>>>> 5e91c9e31496a6d4495204cfa7a11f10e5740274
 RUN cp /xwhep/xwconfigure.values /xwhep/xtremweb-hep-master/build/dist/xwhep-$XWVERSION/conf/
 RUN service mysql start && export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/ && cd /xwhep/xtremweb-hep-master/build/dist/xwhep-$XWVERSION/  && ./bin/xwconfigure --yes || ./bin/xwconfigure --yes
 
