@@ -4,4 +4,4 @@ jdk:
 notifications:
   - email: false
 script:
-  - gradle build install
+  - gradle buildAll
