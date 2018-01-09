@@ -43,6 +43,8 @@ project.ext.getCustomProperties = {
     props.setProperty("ADMINGROUPUID", 'uuidgen | tr \"A-Z\" \"a-z\"'.execute().text.trim())
     props.setProperty("PUBLICWORKERSGROUPUID", 'uuidgen | tr \"A-Z\" \"a-z\"'.execute().text.trim())
     props.setProperty("XWVERSION", version)
+    props.setProperty("INSTALLDIR", opt)
+
 
     def path = 'pwd'.execute().text.trim()
     def keystore = path + "/build/dist/" + PROJECT_TAG + "/keystore/"
