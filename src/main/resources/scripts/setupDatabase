@@ -376,9 +376,6 @@ fi
 if [ -z "$DBADMINLOGIN" ] ; then
 	usage "Variable DBADMINLOGIN not set; please correct $XWCONFVALUES file " "STOP" 
 fi
-if [ -z "$DBADMINPASSWORD" ] ; then
-	usage "Variable DBADMINPASSWORD not set; please correct $XWCONFVALUES file " "STOP" 
-fi
 if [ -z "$DBNAME" ] ; then
 	usage "Variable DBNAME not set; please correct $XWCONFVALUES file " "STOP" 
 fi

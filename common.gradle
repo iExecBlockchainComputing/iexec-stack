@@ -37,11 +37,11 @@ project.ext.getCustomProperties = {
     }
 
     // add other custom properties
-    props.setProperty("ADMINUID", 'uuidgen | tr \"A-Z\" \"a-z\"'.execute().text.trim())
-    props.setProperty("WORKERUID", 'uuidgen | tr \"A-Z\" \"a-z\"'.execute().text.trim())
-    props.setProperty("VWORKERUID", 'uuidgen | tr \"A-Z\" \"a-z\"'.execute().text.trim())
-    props.setProperty("ADMINGROUPUID", 'uuidgen | tr \"A-Z\" \"a-z\"'.execute().text.trim())
-    props.setProperty("PUBLICWORKERSGROUPUID", 'uuidgen | tr \"A-Z\" \"a-z\"'.execute().text.trim())
+    props.setProperty("ADMINUID", UUID.randomUUID().toString())
+    props.setProperty("WORKERUID", UUID.randomUUID().toString())
+    props.setProperty("VWORKERUID", UUID.randomUUID().toString())
+    props.setProperty("ADMINGROUPUID", UUID.randomUUID().toString())
+    props.setProperty("PUBLICWORKERSGROUPUID", UUID.randomUUID().toString())
     props.setProperty("XWVERSION", version)
     props.setProperty("INSTALLDIR", opt)
 
