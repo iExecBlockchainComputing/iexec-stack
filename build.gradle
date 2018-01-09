@@ -120,6 +120,7 @@ task copyMiscToDist(type: Copy) {
         include('COPYING')
         include('INSTALL')
         include('License**')
+        include('Dockerfile')
     }
 
     into("/lib") {
