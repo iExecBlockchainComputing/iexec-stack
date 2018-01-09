@@ -14,10 +14,18 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
        apt-get install -y openjdk-8-jre zip unzip wget make curl
 
 RUN echo "#!/bin/sh" > /tmp/xwstart.sh
+
+RUN echo "if [ ! -z \$XWSERVERADDR ] ; then " >> /tmp/xwstart.sh
+RUN echo "	echo \"\$XWSERVERADDR \$XWSERVERNAME\" >> /etc/hosts" >> /tmp/xwstart.sh
+RUN echo "	sed -i "s/^DISPATCHERS=.*/DISPATCHERS=\$XWSERVERNAME/g" /xwhep/conf/xtremweb.worker.conf " >> /tmp/xwstart.sh
+RUN echo "fi" >> /tmp/xwstart.sh
+RUN echo "cat /etc/hosts" >> /tmp/xwstart.sh
 RUN echo "/xwhep/bin/xtremweb.worker console" >> /tmp/xwstart.sh
+
 RUN chmod +x /tmp/xwstart.sh
 
 ENTRYPOINT [ "/tmp/xwstart.sh" ]
+
 
 
 # server
