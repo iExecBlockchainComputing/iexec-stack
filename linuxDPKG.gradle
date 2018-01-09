@@ -67,11 +67,15 @@ task copyLinuxDPKGServer(type: Copy){
     }
 
     into("/bin"){
-        from project.distBin + "/xtremwebconf.sh"
         from project.distBin + "/xtremweb"
         from project.distBin + "/xtremweb.server"
         from project.distBin + "/xtremweb.ganglia"
         from project.distBin + "/xtremweb.gmond.pl"
+    }
+
+    into("/bin"){
+        from project.distBin + "/xtremwebconf.sh"
+        filter(ReplaceTokens, tokens: getCustomProperties())
     }
 
     into("/bin/db-maintenance"){
@@ -97,7 +101,7 @@ task buildLinuxDPKGServer(type: Exec) {
 }
 
 task copyLinuxDPKGServerConf(type: Copy){
-    into project.dist + "/installers/linux/dpkg/xwhep.server.conf/opt/xwhep-server-conf-" + project.version
+    into project.dist + "/installers/linux/dpkg/xwhep.server.conf/opt/xwhep-server-" + project.version
 
     into("/keystore"){
         from project.root + "/build/dist/" + project.PROJECT_TAG + "/keystore/xwhepserver.keys"
@@ -132,13 +136,17 @@ task copyLinuxDPKGWorker(type: Copy){
     }
 
     into("/bin"){
-        from project.distBin + "/xtremwebconf.sh"
         from project.distBin + "/xtremweb"
         from project.distBin + "/xtremweb.monitor"
         from project.distBin + "/xtremweb.monitor.pl"
         from project.distBin + "/xtremweb.worker"
         from project.distBin + "/createvdi"
         from project.distBin + "/createiso"
+    }
+
+    into("/bin"){
+        from project.distBin + "/xtremwebconf.sh"
+        filter(ReplaceTokens, tokens: getCustomProperties())
     }
 
     into("/keystore"){
