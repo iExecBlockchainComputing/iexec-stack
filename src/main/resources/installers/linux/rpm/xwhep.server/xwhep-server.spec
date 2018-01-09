@@ -58,7 +58,7 @@ BuildRoot: %{_builddir}/%{name}-%{version}
 %define VARXWHEP /var/xwhep/server
 %define XWSERVERINITDSCRIPT %{INITD}/%{XWSERVER}
 %define XWGANGLIAINITDSCRIPT %{INITD}/%{XWGANGLIA}
-%define SYSLOGIN @SYSTEMUSER@
+%define SYSLOGIN @XWUSER@
 %define LOG /var/log/xwhep-server.log
 
 

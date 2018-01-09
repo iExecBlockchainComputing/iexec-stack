@@ -54,12 +54,12 @@ ROLE=server
 # ENGINE=mem is not to be used in production...
 #
 
-DBVENDOR= @DBVENDOR@
-DBENGINE= @DBENGINE@ 
-DBHOST= @DBHOST@ 
-DBNAME= @DBNAME@
-DBUSER= @DBUSER@
-DBPASS= @DBPASSWORD@
+DBVENDOR=@DBVENDOR@
+DBENGINE=@DBENGINE@ 
+DBHOST=@DBHOST@ 
+DBNAME=@DBNAME@
+DBUSER=@DBUSERLOGIN@
+DBPASS=@DBUSERPASSWORD@
 
 #
 # XWdbRequestLimit defines the max rows amount a single SQL request may return
@@ -280,16 +280,16 @@ GOOGLEAUTHURI="https://www.googleapis.com/oauth2/v3/userinfo"
 # Next define admin login
 # This is used to insert services at run time
 # This is also used to create hdsldb:mem database, if applicable
-ADMINLOGIN=@DEFAULTUSER@
-ADMINPASSWORD=@DEFAULTPASSWORD@
-ADMINUID=
+ADMINLOGIN=@XWADMINLOGIN@
+ADMINPASSWORD=@XWADMINPASSWORD@
+ADMINUID=@ADMINUID@
 
 #
 # Next define worker login
 # This is used to create hdsldb:mem DB database, if applicable
-WORKERLOGIN=@DEFAULTUSER@
-WORKERPASSWORD=@DEFAULTPASSWORD@
-WORKERUID=
+WORKERLOGIN=@XWWORKERLOGIN@
+WORKERPASSWORD=@XWWORKERPASSWORD@
+WORKERUID=@WORKERUID@
 
 # Next line shows how to set several servers (names must be delimited by space or tabulation
 # This is needed for replication
@@ -392,9 +392,9 @@ HOMEDIR= /var/xwhep/server
 SSLKEYSTORE= ../keystore/xwhepserver.keys
 
 #If you change the following remember to regenerate the keys
-SSLKEYPASSPHRASE= @KEYPASSPHRASE@
+SSLKEYPASSPHRASE=@SSLKEYPASSPHRASE@
 #If you change the following remember to regenerate the keys
-SSLKEYPASSWORD= @KEYSERVERPASSWORD@
+SSLKEYPASSWORD=@SSLKEYSERVERPASSWORD@
 
 # Server        : the directory containing user public keys<br />
 # Property name : USERCERTDIR
@@ -404,7 +404,7 @@ SSLKEYPASSWORD= @KEYSERVERPASSWORD@
 #        they are not correctly interpreted
 # Deprecated    : we don't allow self signed certificates
 #
-#USERCERTDIR=/opt/blabla
+USERCERTDIR=
 
 # Next contains the directory where CA certificates (public keys) key are stored.
 # These CA certificates are used to create certificate paths 
@@ -414,7 +414,7 @@ SSLKEYPASSWORD= @KEYSERVERPASSWORD@
 # You may want to check jLite by Oleg Sukhoroslov : http://code.google.com/p/jlite/
 # Note : please use full path; don't use ~ or any variable (e.g. $HOME)
 #        they are not correctly interpreted
-#X509CERTDIR=/opt/jlite/etc/certs/ca
+X509CERTDIR=@X509CERTDIR@
 
 # Next defines server keystore URI
 # When to use : before your server keys exprire
@@ -578,7 +578,7 @@ SSLKEYPASSWORD= @KEYSERVERPASSWORD@
 # To force server start, comment or remove this variable
 # Default : n/a
 # Since : 8.2.0 
-LAUNCHERURL=@LAUNCHERURL@
+LAUNCHERURL=@XWUPGRADEURL@
 
 
 #
