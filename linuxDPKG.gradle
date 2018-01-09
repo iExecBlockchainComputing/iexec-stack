@@ -101,7 +101,7 @@ task buildLinuxDPKGServer(type: Exec) {
 }
 
 task copyLinuxDPKGServerConf(type: Copy){
-    into project.dist + "/installers/linux/dpkg/xwhep.server.conf/opt/xwhep-server-conf-" + project.version
+    into project.dist + "/installers/linux/dpkg/xwhep.server.conf/opt/xwhep-server-" + project.version
 
     into("/keystore"){
         from project.root + "/build/dist/" + project.PROJECT_TAG + "/keystore/xwhepserver.keys"
