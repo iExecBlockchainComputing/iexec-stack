@@ -10,8 +10,9 @@ ADD keystore /xwhep/keystore
 WORKDIR /xwhep
 
 RUN apt-get update
+
 RUN export DEBIAN_FRONTEND=noninteractive && \
-       apt-get install -y openjdk-8-jre zip unzip wget make curl
+       apt-get install -y openjdk-8-jre zip unzip wget make curl docker.io
 
 RUN echo "#!/bin/sh" > /tmp/xwstart.sh
 
