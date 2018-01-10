@@ -37,7 +37,7 @@ LABEL "author"="Oleg Lodygensky"
 LABEL version="0.4"
 LABEL description="This creates a Docker image for the XWHEP server"
 EXPOSE 4321 4322 4323 443
-ENV XWVERSION "12.2.2"
+ENV XWVERSION "12.2.3"
 
 ADD . /xwhep
 WORKDIR /xwhep
