@@ -578,7 +578,7 @@ X509CERTDIR=@X509CERTDIR@
 # To force server start, comment or remove this variable
 # Default : n/a
 # Since : 8.2.0 
-LAUNCHERURL=@XWUPGRADEURL@
+#LAUNCHERURL=@XWUPGRADEURL@
 
 
 #
