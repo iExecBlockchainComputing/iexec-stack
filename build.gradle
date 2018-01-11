@@ -32,7 +32,6 @@ dependencies {
     compile files('libXtremWeb/smartsockets-1.4.jar')
 }
 
-
 import org.apache.tools.ant.filters.ReplaceTokens
 import java.time.Instant
 
@@ -122,7 +121,6 @@ task copyMiscToDist(type: Copy) {
         include('COPYING')
         include('INSTALL')
         include('License**')
-        include('Dockerfile')
     }
 
     into("/lib") {
@@ -236,3 +234,11 @@ task buildAll {
 }
 
 buildAll.dependsOn getTasksByName('build', true)
+
+task buildWorkerDockerImage(type: Exec) {
+    commandLine("sh", "-c", "docker image build -f " + dist + "/docker/worker/Dockerfile -t xtremweb/worker:" + project.version + " " + dist)
+}
+
+task buildImages(){
+    dependsOn buildWorkerDockerImage
+}
