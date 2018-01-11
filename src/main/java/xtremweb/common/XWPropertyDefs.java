@@ -328,8 +328,7 @@ public enum XWPropertyDefs {
 		}
 
 		/**
-		 * This retrieves a property name as found in config file This is for
-		 * backward compatibility only
+		 * This retrieves a property name as found in config file 
 		 *
 		 * @since 8.2.0
 		 * @return "os.version"
@@ -360,8 +359,7 @@ public enum XWPropertyDefs {
 		}
 
 		/**
-		 * This retrieves a property name as found in config file This is for
-		 * backward compatibility only
+		 * This retrieves a property name as found in config file 
 		 *
 		 * @since 8.2.0
 		 * @return "java.version"
@@ -380,6 +378,9 @@ public enum XWPropertyDefs {
 		public String defaultValue() {
 			return System.getProperty(propertyName());
 		}
+		/**
+		 * @return "java.library.path"
+		 */
 		@Override
 		public String propertyName() {
 			return "java.library.path";
@@ -406,10 +407,6 @@ public enum XWPropertyDefs {
 		}
 
 		/**
-		 * This retrieves a property name as found in config file This is for
-		 * backward compatibility only
-		 *
-		 * @since 8.2.0
 		 * @return "sun.arch.data.model"
 		 */
 		@Override
@@ -423,19 +420,7 @@ public enum XWPropertyDefs {
 	 * Property type : string
 	 * </p>
 	 */
-	CONFIGFILE {
-		/**
-		 * This retrieves a property name as found in configuration file This is
-		 * for backward compatibility only
-		 *
-		 * @since 8.2.0
-		 * @return "xtremweb.config"
-		 */
-		@Override
-		public String propertyName() {
-			return "xtremweb.config";
-		}
-	},
+	CONFIGFILE,
 	/**
 	 * All : log4j config file
 	 * Property type : string
@@ -537,19 +522,7 @@ public enum XWPropertyDefs {
 	 * Default : null
 	 * </p>
 	 */
-	LAUNCHERURL {
-		/**
-		 * This retrieves a property name as found in config file This is for
-		 * backward compatibility only
-		 *
-		 * @since 8.2.0
-		 * @return "launcher.url"
-		 */
-		@Override
-		public String propertyName() {
-			return "launcher.url";
-		}
-	},
+	LAUNCHERURL,
 	/**
 	 * All : this defines this process role
 	 * <p>
@@ -559,19 +532,7 @@ public enum XWPropertyDefs {
 	 * Default : null
 	 * </p>
 	 */
-	ROLE {
-		/**
-		 * This retrieves a property name as found in config file This is for
-		 * backward compatibility only
-		 *
-		 * @since 8.2.0
-		 * @return "xtremweb.role"
-		 */
-		@Override
-		public String propertyName() {
-			return "xtremweb.role";
-		}
-	},
+	ROLE,
 	/**
 	 * Client : this defines a loop delay to get job status. This is in
 	 * milliseconds.
@@ -591,18 +552,6 @@ public enum XWPropertyDefs {
 		@Override
 		public String defaultValue() {
 			return "60000";
-		}
-
-		/**
-		 * This retrieves a property name as found in config file This is for
-		 * backward compatibility only
-		 *
-		 * @since 8.2.0
-		 * @return "client.loopdelay"
-		 */
-		@Override
-		public String propertyName() {
-			return "client.loopdelay";
 		}
 	},
 	/**
@@ -678,18 +627,6 @@ public enum XWPropertyDefs {
 		public String defaultValue() {
 			return Boolean.TRUE.toString();
 		}
-
-		/**
-		 * This retrieves a property name as found in config file This is for
-		 * backward compatibility only
-		 *
-		 * @since 8.2.0
-		 * @return "xtremweb.alone"
-		 */
-		@Override
-		public String propertyName() {
-			return "xtremweb.alone";
-		}
 	},
 	/**
 	 * Server : admin login
@@ -699,130 +636,44 @@ public enum XWPropertyDefs {
 	 * <p>
 	 * Default : null
 	 * </p>
+	 * NB : January 2018, this is still used
 	 */
-	ADMINLOGIN {
-		/**
-		 * This retrieves a property name as found in config file This is for
-		 * backward compatibility only
-		 *
-		 * @since 8.2.0
-		 * @return "admin.login"
-		 */
-		@Override
-		public String propertyName() {
-			return "admin.login";
-		}
-	},
+	ADMINLOGIN,
 	/**
 	 * Server : admin password
-	 * <p>
 	 * Property type : string
-	 * </p>
-	 * <p>
 	 * Default : null
-	 * </p>
+	 * @deprecated since hsqldb usage is not maintained any more
 	 */
-	ADMINPASSWORD {
-		/**
-		 * This retrieves a property name as found in config file This is for
-		 * backward compatibility only
-		 *
-		 * @since 8.2.0
-		 * @return "admin.password"
-		 */
-		@Override
-		public String propertyName() {
-			return "admin.password";
-		}
-	},
+	ADMINPASSWORD,
 	/**
 	 * Server : admin uid
-	 * <p>
 	 * Property type : string
-	 * </p>
-	 * <p>
 	 * Default : null
-	 * </p>
+	 * @deprecated since hsqldb usage is not maintained any more
 	 */
-	ADMINUID {
-		/**
-		 * This retrieves a property name as found in config file This is for
-		 * backward compatibility only
-		 *
-		 * @since 8.2.0
-		 * @return "admin.uid"
-		 */
-		@Override
-		public String propertyName() {
-			return "admin.uid";
-		}
-	},
+	ADMINUID,
 	/**
 	 * Server : worker login
-	 * <p>
 	 * Property type : string
-	 * </p>
-	 * <p>
 	 * Default : null
-	 * </p>
+	 * @deprecated since hsqldb usage is not maintained any more
 	 */
-	WORKERLOGIN {
-		/**
-		 * This retrieves a property name as found in config file This is for
-		 * backward compatibility only
-		 *
-		 * @since 8.2.0
-		 * @return "worker.login"
-		 */
-		@Override
-		public String propertyName() {
-			return "worker.login";
-		}
-	},
+	WORKERLOGIN,
 	/**
 	 * Server : worker password
-	 * <p>
 	 * Property type : string
-	 * </p>
-	 * <p>
 	 * Default : null
-	 * </p>
+	 * @deprecated since hsqldb usage is not maintained any more
 	 */
-	WORKERPASSWORD {
-		/**
-		 * This retrieves a property name as found in config file This is for
-		 * backward compatibility only
-		 *
-		 * @since 8.2.0
-		 * @return "worker.password"
-		 */
-		@Override
-		public String propertyName() {
-			return "worker.password";
-		}
-	},
+	WORKERPASSWORD,
 	/**
 	 * Server : worker uid
-	 * <p>
 	 * Property type : string
-	 * </p>
-	 * <p>
 	 * Default : null
-	 * </p>
+	 * @deprecated since hsqldb usage is not maintained any more
 	 */
-	WORKERUID {
-		/**
-		 * This retrieves a property name as found in config file This is for
-		 * backward compatibility only
-		 *
-		 * @since 8.2.0
-		 * @return "worker.uid"
-		 */
-		@Override
-		public String propertyName() {
-			return "worker.uid";
-		}
-	},
+	WORKERUID,
 	/**
 	 * Worker , Client : login
 	 * Property type : string
@@ -840,132 +691,56 @@ public enum XWPropertyDefs {
 	MANDATINGLOGIN,
 	/**
 	 * Worker , Client : password
-	 * <p>
 	 * Property type : string
-	 * </p>
-	 * <p>
 	 * Default : null
-	 * </p>
 	 */
 	PASSWORD,
 	/**
 	 * Worker , Client : user uid
-	 * <p>
 	 * Property type : string
-	 * </p>
-	 * <p>
 	 * Default : null
-	 * </p>
 	 */
-	USERUID {
-		/**
-		 * This retrieves a property name as found in config file This is for
-		 * backward compatibility only
-		 *
-		 * @since 8.2.0
-		 * @return "user.uid"
-		 */
-		@Override
-		public String propertyName() {
-			return "user.uid";
-		}
-	},
+	USERUID,
 	/**
 	 * Worker : this is the project the worker wants to help In practice, this
 	 * is a user group. If this is set the worker runs jobs for this group only
-	 * <p>
 	 * Property type : string
-	 * </p>
-	 * <p>
 	 * Default : null
-	 * </p>
 	 */
 	PROJECT,
 	/**
 	 * All : temporary directory
-	 * <p>
 	 * Property type : string
-	 * </p>
-	 * <p>
 	 * Default : System.getProperty("java.io.tmp")
-	 * </p>
 	 */
 	TMPDIR {
-		/**
-		 * This retrieves the String representation of the default value
-		 *
-		 * @return System.getProperty(JAVATMPDIR)
-		 * @see #JAVATMPDIR
-		 */
 		@Override
 		public String defaultValue() {
 			return System.getProperty(JAVATMPDIR);
 		}
-		/**
-		 * This retrieves a property name as found in config file This is for
-		 * backward compatibility only
-		 *
-		 * @since 8.2.0
-		 * @return "path.tmpdir"
-		 */
-		@Override
-		public String propertyName() {
-			return "path.tmpdir";
-		}
 	},
 	/**
 	 * Worker : how many worker instance per host
-	 * <p>
 	 * Property type : boolean
-	 * </p>
-	 * <p>
 	 * Default : false
-	 * </p>
 	 *
 	 * @see #ALONE
 	 */
 	INSTANCES {
-		/**
-		 * This retrieves the String representation of the default value
-		 *
-		 * @return "false"
-		 */
 		@Override
 		public String defaultValue() {
 			return Boolean.FALSE.toString();
 		}
-
-		/**
-		 * This retrieves a property name as found in config file This is for
-		 * backward compatibility only
-		 *
-		 * @since 8.2.0
-		 * @return "multipleInstances"
-		 */
-		@Override
-		public String propertyName() {
-			return "multipleInstances";
-		}
 	},
 	/**
 	 * All : socket timeout. This is in milliseconds
-	 * <p>
 	 * Property type : long integer
-	 * </p>
-	 * <p>
 	 * Default : 60000 ms
-	 * </p>
-	 *
 	 *
 	 * @since RPCXW
 	 * @see #OPTIMIZENETWORK
 	 */
 	SOTIMEOUT {
-		/**
-		 * This retrieves the String representation of the default value
-		 *
-		 * @return "60000"
-		 */
 		@Override
 		public String defaultValue() {
 			return "60000";
@@ -973,22 +748,13 @@ public enum XWPropertyDefs {
 	},
 	/**
 	 * Client, worker : how many times we keep trying on socket connection error
-	 * <p>
 	 * Property type : integer
-	 * </p>
-	 * <p>
 	 * Default : 50
-	 * </p>
 	 *
 	 * @since 7.4.0
 	 * @see #OPTIMIZENETWORK
 	 */
 	SORETRIES {
-		/**
-		 * This retrieves the String representation of the default value
-		 *
-		 * @return "50"
-		 */
 		@Override
 		public String defaultValue() {
 			return "50";
@@ -1000,22 +766,11 @@ public enum XWPropertyDefs {
 	 * <li>Client : delay between two result requests</li>
 	 * <li>Server : delay between two database polling</li>
 	 * </ul>
-	 * <p>
 	 * This is in milliseconds
-	 * </p>
-	 * <p>
 	 * Property type : integer
-	 * </p>
-	 * <p>
 	 * Default : 15000
-	 * </p>
 	 */
 	TIMEOUT {
-		/**
-		 * This retrieves the String representation of the default value
-		 *
-		 * @return "15000"
-		 */
 		@Override
 		public String defaultValue() {
 			return "15000";
@@ -1023,23 +778,13 @@ public enum XWPropertyDefs {
 	},
 	/**
 	 * Worker : this tells how long to wait when there is no job to compute
-	 * <p>
 	 * If the worker receive no job within this delay, it shuts down This is
 	 * especially helpful when deploying workers on a cluster; this ensures we
-	 * don't lock CPU for nothing.</>p
-	 * <p>
+	 * don't lock CPU for nothing.
 	 * Property type : integer
-	 * </p>
-	 * <p>
 	 * Default : -1
-	 * </p>
 	 */
 	NOOPTIMEOUT {
-		/**
-		 * This retrieves the String representation of the default value
-		 *
-		 * @return "-1"
-		 */
 		@Override
 		public String defaultValue() {
 			return "-1";
@@ -1047,51 +792,30 @@ public enum XWPropertyDefs {
 	},
 	/**
 	 * All : this tells to optimize file transfer or not
-	 * <p>
 	 * If set to true we don't waste time to zip small single files
-	 * </p>
-	 * <p>
 	 * Property type : boolean
-	 * </p>
-	 * <p>
 	 * Default : true
-	 * </p>
 	 */
 	OPTIMIZEZIP {
-		/**
-		 * This retrieves the String representation of the default value
-		 *
-		 * @return "true"
-		 */
 		@Override
 		public String defaultValue() {
 			return Boolean.TRUE.toString();
 		}
 	},
 	/**
-	 * All : this telss to optimize network or not
-	 * <p>
+	 * All : this tells to optimize network or not
 	 * If true, following are set <code>
 	 * setSoLinger(false, 0); // don't wait on
 	 * close s.setTcpNoDelay(true); // don't wait to send
 	 * s.setTrafficClass(0x08); // maximize throughput
 	 * s.setKeepAlive(false); // don't keep alive
 	 * </code>
-	 * <p>
 	 * Property type : boolean
-	 * </p>
-	 * <p>
 	 * Default : true
-	 * </p>
 	 *
 	 * @see #SOTIMEOUT
 	 */
 	OPTIMIZENETWORK {
-		/**
-		 * This retrieves the String representation of the default value
-		 *
-		 * @return "true"
-		 */
 		@Override
 		public String defaultValue() {
 			return Boolean.TRUE.toString();
@@ -1099,19 +823,10 @@ public enum XWPropertyDefs {
 	},
 	/**
 	 * All : This is not used
-	 * <p>
 	 * Property type : boolean
-	 * </p>
-	 * <p>
 	 * Default : true
-	 * </p>
 	 */
 	OPTIMIZEDISK {
-		/**
-		 * This retrieves the String representation of the default value
-		 *
-		 * @return "true"
-		 */
 		@Override
 		public String defaultValue() {
 			return Boolean.TRUE.toString();
@@ -1120,22 +835,13 @@ public enum XWPropertyDefs {
 	/**
 	 * Dispatcher, worker : this defines the amount of physical memory; this en
 	 * variable is set by xtremwebconf.sh
-	 * <p>
 	 * Property type : long
-	 * </p>
-	 * <p>
 	 * Default: System.getProperty("HWMEM")
-	 * </p>
 	 *
-	 * @see xtremweb.common.XWTools#MAXDISKSIZE
+	 * @see xtremweb.common.XWTools#MAXRAMSIZE
 	 * @since 10.1.0
 	 */
 	HWMEM {
-		/**
-		 * This retrieves the String representation of the default value
-		 *
-		 * @return System.getproperty("HWMEM");
-		 */
 		@Override
 		public String defaultValue() {
 			return System.getProperty("HWMEM");
@@ -1144,36 +850,37 @@ public enum XWPropertyDefs {
 	/**
 	 * Dispatcher, worker : this defines the maximum usable disk space per
 	 * application and work; this is in Mb
-	 * <p>
 	 * Property type : long
-	 * </p>
-	 * <p>
 	 * Default : XWTools.MAXDISKSIZE
-	 * </p>
 	 *
 	 * @see xtremweb.common.XWTools#MAXDISKSIZE
 	 * @since 9.1.0
 	 */
 	MAXDISKSPACE {
-		/**
-		 * This retrieves the String representation of the default value
-		 *
-		 * @return XWTools.MAXDISKSIZE
-		 */
 		@Override
 		public String defaultValue() {
 			return "" + XWTools.MAXDISKSIZE;
 		}
 	},
 	/**
+	 * Dispatcher: upload size limit, in Mb
+	 * Property type : long
+	 * Default : XWTools.MAXFILESIZE
+	 *
+	 * @see xtremweb.common.XWTools#MAXFILESIZE
+	 * @since 12.2.3
+	 */
+	MAXFILESIZE {
+		@Override
+		public String defaultValue() {
+			return "" + XWTools.MAXFILESIZE;
+		}
+	},
+	/**
 	 * Dispatcher, worker : this defines the maximum usable RAM space per
-	 * application and work; this is in Kb
-	 * <p>
+	 * application and work
 	 * Property type : integer
-	 * </p>
-	 * <p>
 	 * Default : XWTools.MAXRAMSIZE
-	 * </p>
 	 *
 	 * @see xtremweb.common.XWTools#MAXRAMSIZE
 	 * @since 9.1.0
@@ -1182,7 +889,7 @@ public enum XWPropertyDefs {
 		/**
 		 * This retrieves the String representation of the default value
 		 *
-		 * @return XWTools.MAXDISKSIZE
+		 * @return XWTools.MAXRAMSIZE
 		 */
 		@Override
 		public String defaultValue() {
@@ -1233,12 +940,8 @@ public enum XWPropertyDefs {
 	},
 	/**
 	 * Dispatcher: mail server address
-	 * <p>
 	 * Property type : String
-	 * </p>
-	 * <p>
 	 * Default : null
-	 * </p>
 	 *
 	 * @since 9.1.0
 	 */
@@ -1255,12 +958,8 @@ public enum XWPropertyDefs {
 	},
 	/**
 	 * Dispatcher: mail server protocol
-	 * <p>
 	 * Property type : String
-	 * </p>
-	 * <p>
 	 * Default : "smtp"
-	 * </p>
 	 *
 	 * @since 9.1.0
 	 */
@@ -1277,12 +976,8 @@ public enum XWPropertyDefs {
 	},
 	/**
 	 * Dispatcher: server mail address
-	 * <p>
 	 * Property type : String
-	 * </p>
-	 * <p>
 	 * Default : null
-	 * </p>
 	 *
 	 * @since 9.1.0
 	 */
@@ -1299,12 +994,8 @@ public enum XWPropertyDefs {
 	},
 	/**
 	 * Server : amount of simultaneous incoming connections
-	 * <p>
 	 * Property type : integer
-	 * </p>
-	 * <p>
 	 * Default : 200
-	 * </p>
 	 */
 	MAXCONNECTIONS {
 		/**
@@ -1319,12 +1010,8 @@ public enum XWPropertyDefs {
 	},
 	/**
 	 * Server : maximum messages per connection
-	 * <p>
 	 * Property type : integer
-	 * </p>
-	 * <p>
 	 * Default : 2000
-	 * </p>
 	 *
 	 * @since 7.4.0
 	 */
@@ -1338,27 +1025,11 @@ public enum XWPropertyDefs {
 		public String defaultValue() {
 			return "2000";
 		}
-
-		/**
-		 * This retrieves a property name as found in config file This is for
-		 * backward compatibility only
-		 *
-		 * @since 8.2.0
-		 * @return "max.messages"
-		 */
-		@Override
-		public String propertyName() {
-			return "max.messages";
-		}
 	},
 	/**
 	 * Server : amount of simultaneous connection to DB
-	 * <p>
 	 * Property type : integer
-	 * </p>
-	 * <p>
 	 * Default : 70
-	 * </p>
 	 *
 	 * @since 7.4.0
 	 */
@@ -1389,27 +1060,11 @@ public enum XWPropertyDefs {
 		public String defaultValue() {
 			return "-1";
 		}
-
-		/**
-		 * This retrieves a property name as found in config file This is for
-		 * backward compatibility only
-		 *
-		 * @since 8.2.0
-		 * @return "computing.jobs"
-		 */
-		@Override
-		public String propertyName() {
-			return "computing.jobs";
-		}
 	},
 	/**
 	 * All : home directory
-	 * <p>
 	 * Property type : string
-	 * </p>
-	 * <p>
 	 * Default: System.getenv("user.home")
-	 * </p>
 	 */
 	HOMEDIR {
 		/**
@@ -1424,9 +1079,7 @@ public enum XWPropertyDefs {
 	},
 	/**
 	 * All : path to xtremweb.jar
-	 * <p>
 	 * Property type : string
-	 * </p>
 	 */
 	XWCP {
 		/**
@@ -1454,26 +1107,10 @@ public enum XWPropertyDefs {
 	/**
 	 * Dispatcher : SQL file to create DB on the fly this is typically used with
 	 * hsqldb
-	 * <p>
 	 * Property type : string
-	 * </p>
-	 * <p>
 	 * Default: null
-	 * </p>
 	 */
-	DBSQLFILE {
-		/**
-		 * This retrieves a property name as found in config file This is for
-		 * backward compatibility only
-		 *
-		 * @since 8.2.0
-		 * @return "XWdbsqlfile"
-		 */
-		@Override
-		public String propertyName() {
-			return "XWdbsqlfile";
-		}
-	},
+	DBSQLFILE,
 	/**
 	 * Dispatcher : database vendor
 	 * <p>
@@ -1492,18 +1129,6 @@ public enum XWPropertyDefs {
 		@Override
 		public String defaultValue() {
 			return XWDBs.DEFAULT.toString();
-		}
-
-		/**
-		 * This retrieves a property name as found in config file This is for
-		 * backward compatibility only
-		 *
-		 * @since 8.2.0
-		 * @return "XWdbVendor"
-		 */
-		@Override
-		public String propertyName() {
-			return "XWdbVendor";
 		}
 	},
 	/**
@@ -1527,18 +1152,6 @@ public enum XWPropertyDefs {
 		public String defaultValue() {
 			return "";
 		}
-
-		/**
-		 * This retrieves a property name as found in config file This is for
-		 * backward compatibility only
-		 *
-		 * @since 8.2.0
-		 * @return "XWdbEngine"
-		 */
-		@Override
-		public String propertyName() {
-			return "XWdbEngine";
-		}
 	},
 	/**
 	 * Dispatcher : database name
@@ -1549,19 +1162,7 @@ public enum XWPropertyDefs {
 	 * Default : null
 	 * </p>
 	 */
-	DBNAME {
-		/**
-		 * This retrieves a property name as found in config file This is for
-		 * backward compatibility only
-		 *
-		 * @since 8.2.0
-		 * @return "XWdbName"
-		 */
-		@Override
-		public String propertyName() {
-			return "XWdbName";
-		}
-	},
+	DBNAME,
 	/**
 	 * Dispatcher : database server
 	 * <p>
@@ -1571,19 +1172,7 @@ public enum XWPropertyDefs {
 	 * Default : null
 	 * </p>
 	 */
-	DBHOST {
-		/**
-		 * This retrieves a property name as found in config file This is for
-		 * backward compatibility only
-		 *
-		 * @since 8.2.0
-		 * @return "XWdbHost"
-		 */
-		@Override
-		public String propertyName() {
-			return "XWdbHost";
-		}
-	},
+	DBHOST,
 	/**
 	 * Dispatcher : database user
 	 * <p>
@@ -1593,19 +1182,7 @@ public enum XWPropertyDefs {
 	 * Default : null
 	 * </p>
 	 */
-	DBUSER {
-		/**
-		 * This retrieves a property name as found in config file This is for
-		 * backward compatibility only
-		 *
-		 * @since 8.2.0
-		 * @return "XWdbUser"
-		 */
-		@Override
-		public String propertyName() {
-			return "XWdbUser";
-		}
-	},
+	DBUSER,
 	/**
 	 * Dispatcher : database password
 	 * <p>
@@ -1615,19 +1192,7 @@ public enum XWPropertyDefs {
 	 * Default: null
 	 * </p>
 	 */
-	DBPASS {
-		/**
-		 * This retrieves a property name as found in config file This is for
-		 * backward compatibility only
-		 *
-		 * @since 8.2.0
-		 * @return "XWdbPass"
-		 */
-		@Override
-		public String propertyName() {
-			return "XWdbPass";
-		}
-	},
+	DBPASS,
 	/**
 	 * Dispatcher : database request limit
 	 * <p>
@@ -1647,18 +1212,6 @@ public enum XWPropertyDefs {
 		public String defaultValue() {
 			return "1000";
 		}
-
-		/**
-		 * This retrieves a property name as found in config file This is for
-		 * backward compatibility only
-		 *
-		 * @since 8.2.0
-		 * @return "XWdbRequestLimit"
-		 */
-		@Override
-		public String propertyName() {
-			return "XWdbRequestLimit";
-		}
 	},
 	/**
 	 * All : class to milestone
@@ -1671,36 +1224,12 @@ public enum XWPropertyDefs {
 	 *
 	 * @see xtremweb.common.MileStone
 	 */
-	MILESTONES {
-		/**
-		 * This retrieves a property name as found in config file This is for
-		 * backward compatibility only
-		 *
-		 * @since 8.2.0
-		 * @return "mileStones"
-		 */
-		@Override
-		public String propertyName() {
-			return "mileStones";
-		}
-	},
+	MILESTONES,
 	/**
 	 * Dispatcher : comma separated list of services to manage Property type :
 	 * string Default : null
 	 */
-	SERVICES {
-		/**
-		 * This retrieves a property name as found in config file This is for
-		 * backward compatibility only
-		 *
-		 * @since 8.2.0
-		 * @return "xtremweb.services"
-		 */
-		@Override
-		public String propertyName() {
-			return "xtremweb.services";
-		}
-	},
+	SERVICES,
 	/**
 	 * Dispatcher : scheduler class
 	 * <p>
@@ -1720,85 +1249,25 @@ public enum XWPropertyDefs {
 		public String defaultValue() {
 			return xtremweb.dispatcher.MatchingScheduler.class.getName();
 		}
-
-		/**
-		 * This retrieves a property name as found in config file This is for
-		 * backward compatibility only
-		 *
-		 * @since 8.2.0
-		 * @return "scheduler.class"
-		 */
-		@Override
-		public String propertyName() {
-			return "scheduler.class";
-		}
 	},
 	/**
 	 * All : comma separated list of known dispatchers (used for replication)
-	 * <p>
 	 * Property type : string
-	 * </p>
-	 * <p>
 	 * Default: null
-	 * </p>
 	 */
-	DISPATCHERS {
-		/**
-		 * This retrieves a property name as found in config file This is for
-		 * backward compatibility only
-		 *
-		 * @since 8.2.0
-		 * @return "dispatcher.servers"
-		 */
-		@Override
-		public String propertyName() {
-			return "dispatcher.servers";
-		}
-	},
+	DISPATCHERS,
 	/**
 	 * All : comma separated list of known data servers (used for replication)
-	 * <p>
 	 * Property type : string
-	 * </p>
-	 * <p>
 	 * Default: null
-	 * </p>
 	 */
-	DATASERVERS {
-		/**
-		 * This retrieves a property name as found in config file This is for
-		 * backward compatibility only
-		 *
-		 * @since 8.2.0
-		 * @return "data.servers"
-		 */
-		@Override
-		public String propertyName() {
-			return "data.servers";
-		}
-	},
+	DATASERVERS,
 	/**
 	 * All : comma separated list of trusted adresses allowed to connect
-	 * <p>
 	 * Property type : string
-	 * </p>
-	 * <p>
 	 * Default: null
-	 * </p>
 	 */
-	TRUSTED {
-		/**
-		 * This retrieves a property name as found in config file This is for
-		 * backward compatibility only
-		 *
-		 * @since 8.2.0
-		 * @return "setTrusted"
-		 */
-		@Override
-		public String propertyName() {
-			return "setTrusted";
-		}
-	},
+	TRUSTED,
 	/**
 	 * Dispatcher : alive period This is automatically forwarded to workers
 	 * <p>
@@ -1817,18 +1286,6 @@ public enum XWPropertyDefs {
 		@Override
 		public String defaultValue() {
 			return "300";
-		}
-
-		/**
-		 * This retrieves a property name as found in config file This is for
-		 * backward compatibility only
-		 *
-		 * @since 8.2.0
-		 * @return "alive.period"
-		 */
-		@Override
-		public String propertyName() {
-			return "alive.period";
 		}
 	},
 	/**
@@ -1849,18 +1306,6 @@ public enum XWPropertyDefs {
 		@Override
 		public String defaultValue() {
 			return "" + (Integer.parseInt(ALIVEPERIOD.defaultValue()) * 3);
-		}
-
-		/**
-		 * This retrieves a property name as found in config file This is for
-		 * backward compatibility only
-		 *
-		 * @since 8.2.0
-		 * @return "alive.timeout"
-		 */
-		@Override
-		public String propertyName() {
-			return "alive.timeout";
 		}
 	},
 	/**
@@ -1884,8 +1329,7 @@ public enum XWPropertyDefs {
 		}
 
 		/**
-		 * This retrieves a property name as found in config file This is for
-		 * backward compatibility only
+		 * This retrieves a property name as found in config file
 		 *
 		 * @since 8.2.0
 		 * @return "javax.net.ssl.trustStore"
@@ -1897,79 +1341,27 @@ public enum XWPropertyDefs {
 	},
 	/**
 	 * All : SSL key directory
-	 * <p>
 	 * Property type : string
-	 * </p>
-	 * <p>
 	 * Default : null
-	 * </p>
 	 */
-	SSLKEYSTORE {
-		/**
-		 * This retrieves a property name as found in config file This is for
-		 * backward compatibility only
-		 *
-		 * @since 8.2.0
-		 * @return "SSLKeyStore"
-		 */
-		@Override
-		public String propertyName() {
-			return "SSLKeyStore";
-		}
-	},
+	SSLKEYSTORE,
 	/**
-	 * Dispatcher : SSL password
-	 * <p>
+	 * All : SSL password
 	 * Property type : string
-	 * </p>
-	 * <p>
 	 * Default: null
-	 * </p>
 	 */
-	SSLKEYPASSWORD {
-		/**
-		 * This retrieves a property name as found in config file This is for
-		 * backward compatibility only
-		 *
-		 * @since 8.2.0
-		 * @return "SSLKeypassword"
-		 */
-		@Override
-		public String propertyName() {
-			return "SSLKeypassword";
-		}
-	},
+	SSLKEYPASSWORD,
 	/**
 	 * All : SSL pass phrase
-	 * <p>
 	 * Property type : string
-	 * </p>
-	 * <p>
 	 * Default : null
-	 * </p>
 	 */
-	SSLKEYPASSPHRASE {
-		/**
-		 * This retrieves a property name as found in config file This is for
-		 * backward compatibility only
-		 *
-		 * @since 8.2.0
-		 * @return "SSLKeypassphrase"
-		 */
-		@Override
-		public String propertyName() {
-			return "SSLKeypassphrase";
-		}
-	},
+	SSLKEYPASSPHRASE,
 	/**
 	 * Worker : this tells if this worker is a pilot job running on an SG
 	 * resource (i.e. EGEE)
-	 * <p>
 	 * Property type : boolean
-	 * </p>
-	 * <p>
 	 * Default : false
-	 * </p>
 	 */
 	PILOTJOB {
 		/**
@@ -1984,12 +1376,8 @@ public enum XWPropertyDefs {
 	},
 	/**
 	 * Worker : this is the pilotjob SG identifier (i.e. EGEE)
-	 * <p>
 	 * Property type : string
-	 * </p>
-	 * <p>
 	 * Default : System.getenv("GLITE_WMS_JOBID")
-	 * </p>
 	 *
 	 * @since 7.0.0
 	 */
@@ -2007,12 +1395,8 @@ public enum XWPropertyDefs {
 	/**
 	 * Worker : this is for SpeQuloS (EDGI/JRA2) If this is set, the worker runs
 	 * this job only
-	 * <p>
-	 * Property type : URI
-	 * </p>
-	 * <p>
+	 * Property type : String
 	 * Default: null
-	 * </p>
 	 *
 	 * @since 7.2.0
 	 */
@@ -2020,12 +1404,8 @@ public enum XWPropertyDefs {
 	/**
 	 * Worker : this is for SpeQuloS (EDGI/JRA2) If this is set, the worker runs
 	 * jobs for this group of jobs only
-	 * <p>
-	 * Property type : URI
-	 * </p>
-	 * <p>
+	 * Property type : String
 	 * Default : null
-	 * </p>
 	 *
 	 * @since 7.2.0
 	 */
@@ -2044,19 +1424,7 @@ public enum XWPropertyDefs {
 	 * Default: null
 	 * </p>
 	 */
-	KEYSTOREURI {
-		/**
-		 * This retrieves a property name as found in config file This is for
-		 * backward compatibility only
-		 *
-		 * @since 8.2.0
-		 * @return "keystore.uri"
-		 */
-		@Override
-		public String propertyName() {
-			return "keystore.uri";
-		}
-	},
+	KEYSTOREURI,
 	/**
 	 * Server : the directory containing user public keys
 	 * <p>
@@ -2126,8 +1494,7 @@ public enum XWPropertyDefs {
 		}
 
 		/**
-		 * This retrieves a property name as found in config file This is for
-		 * backward compatibility only
+		 * This retrieves a property name as found in config file 
 		 *
 		 * @since 8.2.0
 		 * @return "X509_USER_PROXY"
@@ -2158,8 +1525,7 @@ public enum XWPropertyDefs {
 		}
 
 		/**
-		 * This retrieves a property name as found in config file This is for
-		 * backward compatibility only
+		 * This retrieves a property name as found in config file
 		 *
 		 * @since 8.2.0
 		 * @return "X509CERTDIR"
@@ -2187,18 +1553,6 @@ public enum XWPropertyDefs {
 		@Override
 		public String defaultValue() {
 			return System.getProperty(JAVATMPDIR);
-		}
-
-		/**
-		 * This retrieves a property name as found in config file This is for
-		 * backward compatibility only
-		 *
-		 * @since 8.2.0
-		 * @return "xtremweb.cache"
-		 */
-		@Override
-		public String propertyName() {
-			return "xtremweb.cache";
 		}
 	},
 	/**
@@ -2435,6 +1789,7 @@ public enum XWPropertyDefs {
 	 * <p>
 	 * Default : false
 	 * </p>
+	 * @deprecated since long
 	 */
 	TRACES {
 		/**
@@ -2445,18 +1800,6 @@ public enum XWPropertyDefs {
 		@Override
 		public String defaultValue() {
 			return Boolean.FALSE.toString();
-		}
-
-		/**
-		 * This retrieves a property name as found in config file This is for
-		 * backward compatibility only
-		 *
-		 * @since 8.2.0
-		 * @return "tracer.enable"
-		 */
-		@Override
-		public String propertyName() {
-			return "tracer.enable";
 		}
 	},
 	/**
@@ -2477,18 +1820,6 @@ public enum XWPropertyDefs {
 		@Override
 		public String defaultValue() {
 			return xtremweb.worker.AlwaysActive.class.getName();
-		}
-
-		/**
-		 * This retrieves a property name as found in config file This is for
-		 * backward compatibility only
-		 *
-		 * @since 8.2.0
-		 * @return "activator.class"
-		 */
-		@Override
-		public String propertyName() {
-			return "activator.class";
 		}
 	},
 	/**
@@ -2512,18 +1843,6 @@ public enum XWPropertyDefs {
 		public String defaultValue() {
 			return "1";
 		}
-
-		/**
-		 * This retrieves a property name as found in config file This is for
-		 * backward compatibility only
-		 *
-		 * @since 8.2.0
-		 * @return "activator.pool.delay"
-		 */
-		@Override
-		public String propertyName() {
-			return "activator.pool.delay";
-		}
 	},
 	/**
 	 * Worker : activation date
@@ -2536,19 +1855,7 @@ public enum XWPropertyDefs {
 	 *
 	 * @see xtremweb.worker.DateActivator
 	 */
-	ACTIVATIONDATE {
-		/**
-		 * This retrieves a property name as found in config file This is for
-		 * backward compatibility only
-		 *
-		 * @since 8.2.0
-		 * @return "activator.date"
-		 */
-		@Override
-		public String propertyName() {
-			return "activator.date";
-		}
-	},
+	ACTIVATIONDATE,
 	/**
 	 * Worker : I don't know... this is inherited from XtremWeb 1.6 by INRIA
 	 * <p>
@@ -2567,18 +1874,6 @@ public enum XWPropertyDefs {
 		@Override
 		public String defaultValue() {
 			return Boolean.FALSE.toString();
-		}
-
-		/**
-		 * This retrieves a property name as found in config file This is for
-		 * backward compatibility only
-		 *
-		 * @since 8.2.0
-		 * @return "activator.tcp.feedback"
-		 */
-		@Override
-		public String propertyName() {
-			return "activator.tcp.feedback";
 		}
 	},
 	/**
@@ -2600,18 +1895,6 @@ public enum XWPropertyDefs {
 		public String defaultValue() {
 			return Boolean.TRUE.toString();
 		}
-
-		/**
-		 * This retrieves a property name as found in config file This is for
-		 * backward compatibility only
-		 *
-		 * @since 8.2.0
-		 * @return "systemtray"
-		 */
-		@Override
-		public String propertyName() {
-			return "systemtray";
-		}
 	},
 	/**
 	 * Worker : this tell how many simultaneous jobs to compute in parallel
@@ -2631,18 +1914,6 @@ public enum XWPropertyDefs {
 		@Override
 		public String defaultValue() {
 			return "-1";
-		}
-
-		/**
-		 * This retrieves a property name as found in config file This is for
-		 * backward compatibility only
-		 *
-		 * @since 8.2.0
-		 * @return "workpool.size"
-		 */
-		@Override
-		public String propertyName() {
-			return "workpool.size";
 		}
 	},
 	/**
@@ -2686,18 +1957,6 @@ public enum XWPropertyDefs {
 		public String defaultValue() {
 			return System.getenv("USER");
 		}
-
-		/**
-		 * This retrieves a property name as found in config file This is for
-		 * backward compatibility only
-		 *
-		 * @since 8.2.0
-		 * @return "user.name"
-		 */
-		@Override
-		public String propertyName() {
-			return "user.name";
-		}
 	},
 	/**
 	 * All: use nio
@@ -2717,18 +1976,6 @@ public enum XWPropertyDefs {
 		@Override
 		public String defaultValue() {
 			return Boolean.TRUE.toString();
-		}
-
-		/**
-		 * This retrieves a property name as found in config file This is for
-		 * backward compatibility only
-		 *
-		 * @since 8.2.0
-		 * @return "java.nio"
-		 */
-		@Override
-		public String propertyName() {
-			return "java.nio";
 		}
 	},
 	/**
@@ -2750,18 +1997,6 @@ public enum XWPropertyDefs {
 		public String defaultValue() {
 			return Boolean.TRUE.toString();
 		}
-
-		/**
-		 * This retrieves a property name as found in config file This is for
-		 * backward compatibility only
-		 *
-		 * @since 8.2.0
-		 * @return "server.http"
-		 */
-		@Override
-		public String propertyName() {
-			return "server.http";
-		}
 	},
 	/**
 	 * Worker, server : incoming communications ACL
@@ -2781,18 +2016,6 @@ public enum XWPropertyDefs {
 		@Override
 		public String defaultValue() {
 			return "localhost";
-		}
-
-		/**
-		 * This retrieves a property name as found in config file This is for
-		 * backward compatibility only
-		 *
-		 * @since 8.2.0
-		 * @return "server.comm.acl"
-		 */
-		@Override
-		public String propertyName() {
-			return "server.comm.acl";
 		}
 	},
 	/**
@@ -2814,18 +2037,6 @@ public enum XWPropertyDefs {
 		public String defaultValue() {
 			return "localhost";
 		}
-
-		/**
-		 * This retrieves a property name as found in config file This is for
-		 * backward compatibility only
-		 *
-		 * @since 8.2.0
-		 * @return "server.stat.acl"
-		 */
-		@Override
-		public String propertyName() {
-			return "server.stat.acl";
-		}
 	},
 	/**
 	 * Worker proxy server name or IP address
@@ -2835,19 +2046,7 @@ public enum XWPropertyDefs {
 	 *
 	 * @since 7.3.0
 	 */
-	PROXYSERVER {
-		/**
-		 * This retrieves a property name as found in config file This is for
-		 * backward compatibility only
-		 *
-		 * @since 8.2.0
-		 * @return "proxyname"
-		 */
-		@Override
-		public String propertyName() {
-			return "proxyname";
-		}
-	},
+	PROXYSERVER ,
 	/**
 	 * Worker proxy server port
 	 * <p>
@@ -2856,19 +2055,7 @@ public enum XWPropertyDefs {
 	 *
 	 * @since 7.3.0
 	 */
-	PROXYPORT {
-		/**
-		 * This retrieves a property name as found in config file This is for
-		 * backward compatibility only
-		 *
-		 * @since 8.2.0
-		 * @return Connection.PROXYPORT.propertyName()
-		 */
-		@Override
-		public String propertyName() {
-			return Connection.PROXYPORT.propertyName();
-		}
-	},
+	PROXYPORT,
 	/**
 	 * All : this is the TCP port
 	 * <p>
@@ -2884,18 +2071,6 @@ public enum XWPropertyDefs {
 		@Override
 		public String defaultValue() {
 			return "" + Connection.TCPPORT.defaultPortValue();
-		}
-
-		/**
-		 * This retrieves a property name as found in config file This is for
-		 * backward compatibility only
-		 *
-		 * @since 8.2.0
-		 * @return Connection.TCPPORT.propertyName()
-		 */
-		@Override
-		public String propertyName() {
-			return Connection.TCPPORT.propertyName();
 		}
 	},
 	/**
@@ -2914,18 +2089,6 @@ public enum XWPropertyDefs {
 		public String defaultValue() {
 			return "" + Connection.TCPSPORT.defaultPortValue();
 		}
-
-		/**
-		 * This retrieves a property name as found in config file This is for
-		 * backward compatibility only
-		 *
-		 * @since 8.2.0
-		 * @return Connection.TCPSPORT.propertyName()
-		 */
-		@Override
-		public String propertyName() {
-			return Connection.TCPSPORT.propertyName();
-		}
 	},
 	/**
 	 * All : this is the UDP port
@@ -2942,18 +2105,6 @@ public enum XWPropertyDefs {
 		@Override
 		public String defaultValue() {
 			return "" + Connection.UDPPORT.defaultPortValue();
-		}
-
-		/**
-		 * This retrieves a property name as found in config file This is for
-		 * backward compatibility only
-		 *
-		 * @since 8.2.0
-		 * @return Connection.UDPPORT.propertyName()
-		 */
-		@Override
-		public String propertyName() {
-			return Connection.UDPPORT.propertyName();
 		}
 	},
 	/**
@@ -2972,18 +2123,6 @@ public enum XWPropertyDefs {
 		public String defaultValue() {
 			return "" + Connection.HTTPWORKERPORT.defaultPortValue();
 		}
-
-		/**
-		 * This retrieves a property name as found in config file This is for
-		 * backward compatibility only
-		 *
-		 * @since 8.2.0
-		 * @return Connection.HTTPWORKERPORT.propertyName()
-		 */
-		@Override
-		public String propertyName() {
-			return Connection.HTTPWORKERPORT.propertyName();
-		}
 	},
 	/**
 	 * All : this is the secured HTTP port
@@ -3001,18 +2140,6 @@ public enum XWPropertyDefs {
 		public String defaultValue() {
 			return "" + Connection.HTTPPORT.defaultPortValue();
 		}
-
-		/**
-		 * This retrieves a property name as found in config file This is for
-		 * backward compatibility only
-		 *
-		 * @since 8.2.0
-		 * @return Connection.HTTPPORT.propertyName()
-		 */
-		@Override
-		public String propertyName() {
-			return Connection.HTTPPORT.propertyName();
-		}
 	},
 	/**
 	 * All : this is the secured HTTP port
@@ -3029,18 +2156,6 @@ public enum XWPropertyDefs {
 		@Override
 		public String defaultValue() {
 			return "" + Connection.HTTPSPORT.defaultPortValue();
-		}
-
-		/**
-		 * This retrieves a property name as found in config file This is for
-		 * backward compatibility only
-		 *
-		 * @since 8.2.0
-		 * @return Connection.HTTPSPORT.propertyName()
-		 */
-		@Override
-		public String propertyName() {
-			return Connection.HTTPSPORT.propertyName();
 		}
 	},
 	/**
@@ -3065,18 +2180,6 @@ public enum XWPropertyDefs {
 		public String defaultValue() {
 			return "" + Connection.SMARTSOCKETSPORT.defaultPortValue();
 		}
-
-		/**
-		 * This retrieves a property name as found in config file This is for
-		 * backward compatibility only
-		 *
-		 * @since 8.2.0
-		 * @return Connection.SMARTSOCKETSPORT.propertyName()
-		 */
-		@Override
-		public String propertyName() {
-			return Connection.SMARTSOCKETSPORT.propertyName();
-		}
 	},
 	/**
 	 * All : this is the XMLRPC port
@@ -3094,18 +2197,6 @@ public enum XWPropertyDefs {
 		public String defaultValue() {
 			return "" + Connection.XMLRPCPORT.defaultPortValue();
 		}
-
-		/**
-		 * This retrieves a property name as found in config file This is for
-		 * backward compatibility only
-		 *
-		 * @since 8.2.0
-		 * @return Connection.XMLRPCPORT.propertyName()
-		 */
-		@Override
-		public String propertyName() {
-			return Connection.XMLRPCPORT.propertyName();
-		}
 	},
 	/**
 	 * All : this is the Sun RPC port to forward requests
@@ -3122,18 +2213,6 @@ public enum XWPropertyDefs {
 		@Override
 		public String defaultValue() {
 			return "" + Connection.SUNRPCPORT.defaultPortValue();
-		}
-
-		/**
-		 * This retrieves a property name as found in config file This is for
-		 * backward compatibility only
-		 *
-		 * @since 8.2.0
-		 * @return Connection.SUNRPCPORT.propertyName()
-		 */
-		@Override
-		public String propertyName() {
-			return Connection.SUNRPCPORT.propertyName();
 		}
 	};
 

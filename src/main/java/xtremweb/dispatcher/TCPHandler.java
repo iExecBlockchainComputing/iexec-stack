@@ -229,7 +229,7 @@ public class TCPHandler extends xtremweb.dispatcher.CommHandler {
 	public synchronized void writeFile(final File f) throws IOException {
 		try {
 			mileStone("<writeFile file='" + f + "'>");
-			io.writeFile(f);
+			io.writeFile(f, getConfig().getLong(XWPropertyDefs.MAXFILESIZE));
 		} finally {
 			mileStone("</writeFile>");
 		}
@@ -247,12 +247,11 @@ public class TCPHandler extends xtremweb.dispatcher.CommHandler {
 		final Logger logger = getLogger();
 		try {
 			mileStone("<readFile file='" + f + "'>");
-			io.readFile(f);
+			io.readFile(f, getConfig().getLong(XWPropertyDefs.MAXFILESIZE));
 		} catch (final Exception e) {
 			logger.exception(e);
-			final String str = e.getMessage();
 			mileStone("<error method='readFile' msg='" + e.getMessage() + "' />");
-			throw new IOException(str);
+			throw e;
 		} finally {
 			mileStone("</readFile>");
 			notifyAll();

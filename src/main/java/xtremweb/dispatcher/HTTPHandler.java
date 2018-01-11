@@ -330,7 +330,6 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 	private HttpServletRequest request;
 	private HttpServletResponse response;
 	private FileItem dataUpload;
-	private long dataUploadSize;
 	private String dataUploadmd5sum;
 	private final FileItemFactory diskFactory;
 	private final ServletFileUpload servletUpload;
@@ -387,10 +386,9 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 	public HTTPHandler() {
 		super(NAME);
 		dataUpload = null;
-		dataUploadSize = -1;
 		diskFactory = new DiskFileItemFactory();
 		servletUpload = new ServletFileUpload(diskFactory);
-		servletUpload.setSizeMax(XWPostParams.MAXUPLOADSIZE);
+		servletUpload.setSizeMax(getConfig().getLong(XWPropertyDefs.MAXFILESIZE));
 		getLogger().debug("new Thread " + Thread.currentThread().getId());
 	}
 
@@ -407,10 +405,9 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 	public HTTPHandler(final String n, final XWConfigurator c) {
 		super(n, c);
 		dataUpload = null;
-		dataUploadSize = -1;
 		diskFactory = new DiskFileItemFactory();
 		servletUpload = new ServletFileUpload(diskFactory);
-		servletUpload.setSizeMax(XWPostParams.MAXUPLOADSIZE);
+		servletUpload.setSizeMax(getConfig().getLong(XWPropertyDefs.MAXFILESIZE));
 		getLogger().debug("new Thread " + Thread.currentThread().getId());
 	}
 
@@ -835,12 +832,7 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 	public synchronized void writeFile(final File f) throws IOException {
 		try (final StreamIO io = new StreamIO(new DataOutputStream(response.getOutputStream()), null, false)) {
 			mileStone("<writeFile file='" + f + "'>");
-			//
-			// 2 dec 2007 : we force nio to false
-			//
-			// final StreamIO io = new StreamIO(new
-			// DataOutputStream(response.getOutputStream()), null, false);
-			io.writeFileContent(f);
+			io.writeFileContent(f, getConfig().getLong(XWPropertyDefs.MAXFILESIZE));
 		} catch (final Exception e) {
 			getLogger().exception(e);
 			mileStone("<error method='writeFile' msg='" + e.getMessage() + "' />");
@@ -1048,9 +1040,6 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 							case DATAFILE:
 								dataUpload = item;
 								break;
-							case DATASIZE:
-								dataUploadSize = Long.parseLong(item.getString());
-								break;
 							case DATAMD5SUM:
 								dataUploadmd5sum = item.getString();
 								break;
@@ -1076,14 +1065,7 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 			}
 
 			if (dataUpload != null) {
-				String value = request.getParameter(XWPostParams.DATASIZE.toString());
-				if (value != null) {
-					logger.debug("Parsing parameters DATASIZE = " + value + " (" + dataUploadSize + ")");
-					if (dataUploadSize == -1) {
-						dataUploadSize = Long.parseLong(value);
-					}
-				}
-				value = request.getParameter(XWPostParams.DATAMD5SUM.toString());
+				final String value = request.getParameter(XWPostParams.DATAMD5SUM.toString());
 				if (value != null) {
 					logger.debug("Parsing parameters DATAMD5SUM = " + value + " (" + dataUploadmd5sum + ")");
 					if (dataUploadmd5sum == null) {
@@ -1092,7 +1074,7 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 				}
 			}
 
-			logger.debug("Parameters dataUploadSize = " + dataUploadSize + " dataUploadmd5sum = " + dataUploadmd5sum);
+			logger.debug("Parameters upload size = " + dataUpload.getSize() + " dataUploadmd5sum = " + dataUploadmd5sum);
 
 			final Iterator<String> it = paths.iterator();
 			final StringBuilder uriWithoutCmd = new StringBuilder();
@@ -1591,10 +1573,13 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 	public synchronized long uploadData(final XMLRPCCommand command)
 			throws IOException, InvalidKeyException, AccessControlException {
 
-		DataInterface theData = (DataInterface)get(command);
-		UID uid = command.getURI().getUID();
+		final DataInterface theData = (DataInterface)get(command);
+		final UID uid = command.getURI().getUID();
 
 		long ret = 0;
+		if (dataUpload.getSize() > XWTools.MAXFILESIZE) {
+			throw new IOException(theData.getPath() + " upload file too long");
+		}
 
 		mileStone("<uploadData>");
 
@@ -1614,13 +1599,12 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 				notifyAll();
 				throw new IOException("upload is null");
 			}
-
 			dataUpload.write(dFile);
 			final long fsize = dFile.length();
 			final String shasum = XWTools.sha256CheckSum(dFile);
-			if (fsize != dataUploadSize) {
+			if (fsize != dataUpload.getSize()) {
 				dFile.delete();
-				throw new IOException("Upload file size error should be " + dataUploadSize + " but found " + fsize);
+				throw new IOException("Upload file size error should be " + dataUpload.getSize() + " but found " + fsize);
 			}
 			if ((dataUploadmd5sum == null) || (dataUploadmd5sum.compareToIgnoreCase(shasum) != 0)) {
 				dFile.delete();
@@ -1650,7 +1634,6 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 			throw new RemoteException(e.toString());
 		} finally {
 			dataUpload = null;
-			dataUploadSize = -1;
 			dataUploadmd5sum = null;
 			mileStone("</uploadData>");
 			notifyAll();

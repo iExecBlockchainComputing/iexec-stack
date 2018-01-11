@@ -146,21 +146,28 @@ public class XWTools {
 	/**
 	 * This is the 2GB limit above which we NIO is buggy
 	 */
-	public static final long TWOGIGABYTES = 2 * ONEKILOBYTES * ONEMEGABYTES;
+	public static final long ONEGIGABYTES = ONEKILOBYTES * ONEMEGABYTES;
 	/**
-	 * This defines the maximum size of work disk space (30Gb). This is in Mb
-	 * (here 30 kilobytes of megabytes are 30 gigabytes)
+	 * This is the 2GB limit above which we NIO is buggy
+	 */
+	public static final long TWOGIGABYTES = 2 * ONEGIGABYTES;
+	/**
+	 * This defines file size limit : 500Mb
+	 * @since 12.2.3
+	 */
+	public static final long MAXFILESIZE = 500 * ONEMEGABYTES;
+	/**
+	 * This defines the maximum size of work disk space (30Gb)
 	 *
 	 * @since 8.0.0
 	 */
-	public static final long MAXDISKSIZE = 30 * ONEKILOBYTES;
+	public static final long MAXDISKSIZE = 30 * ONEGIGABYTES;
 	/**
-	 * This defines the maximum size of work RAM space (1Gb) This is in Kb (here
-	 * one megabytes of kilobytes are one gigabytes)
+	 * This defines the maximum size of work RAM space (1Gb) 
 	 *
 	 * @since 9.1.0
 	 */
-	public static final long MAXRAMSIZE = ONEMEGABYTES;
+	public static final long MAXRAMSIZE = ONEGIGABYTES;
 	/**
 	 * This helps to format date : the format is "yyyy-MM-dd HH:mm:ss"
 	 */
@@ -195,7 +202,7 @@ public class XWTools {
 	}
 
 	/**
-	 * This retreived a date from String
+	 * This retrieves a date from String
 	 *
 	 * @param d
 	 *            is the string containing the date

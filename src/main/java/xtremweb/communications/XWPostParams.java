@@ -23,6 +23,8 @@
 
 package xtremweb.communications;
 
+import xtremweb.common.XWTools;
+
 /**
  * This enumerates HTTP POST parameter names. This is used by the HTTPClient.
  *
@@ -227,7 +229,7 @@ public enum XWPostParams {
 	XWPASSWD;
 
 	/**
-	 * This is the max upload size : 500Mb
+	 * @see xtreweb.commonn.XWTools#MAXFILESIZE
 	 */
-	public static final long MAXUPLOADSIZE = 1024 * 1024 * 500;
+	public static final long MAXUPLOADSIZE = XWTools.MAXFILESIZE;
 }

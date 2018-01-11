@@ -1696,10 +1696,7 @@ public final class XWConfigurator extends Properties {
 	 */
 	public int getInt(final XWPropertyDefs key) {
 		final String defval = key.defaultValue();
-		String s = getProperty(key);
-		if (s == null) {
-			s = defval;
-		}
+		final String s = getProperty(key) == null ? defval : getProperty(key); 
 		try {
 			return Integer.parseInt(s);
 		} catch (final NumberFormatException e) {
@@ -1720,10 +1717,7 @@ public final class XWConfigurator extends Properties {
 	 */
 	public long getLong(final XWPropertyDefs key) {
 		final String defval = key.defaultValue();
-		String s = getProperty(key);
-		if (s == null) {
-			s = defval;
-		}
+		final String s = getProperty(key) == null ? defval : getProperty(key); 
 		try {
 			return Long.parseLong(s);
 		} catch (final NumberFormatException e) {

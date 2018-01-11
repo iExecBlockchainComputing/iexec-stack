@@ -444,6 +444,24 @@ COMMHANDLERS=attic:xtremweb.communications.HTTPClient
 #OPTIMIZENETWORK=true
 
 #
+# upload size limit
+# Upload cancelled is size is greater
+#
+# Default is 500Mb
+# Since 12.2.3
+#
+#UPLOADSIZELIMIT=
+
+#
+# Download size limit
+# Download cancelled is size is greater
+#
+# Default is 500Mb
+# Since 12.2.3
+#
+#DOWNLOADSIZELIMIT=
+
+#
 # This contains the maximum disk space a job can use
 # This is in megabytes
 # Here 30 kilobytes of megabytes is 30 gigabytes

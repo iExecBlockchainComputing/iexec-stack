@@ -557,6 +557,24 @@ X509CERTDIR=@X509CERTDIR@
 #OPTIMIZENETWORK=false
 
 #
+# upload size limit
+# Upload cancelled is size is greater
+#
+# Default is 500Mb
+# Since 12.2.3
+#
+#UPLOADSIZELIMIT=
+
+#
+# Download size limit
+# Download cancelled is size is greater
+#
+# Default is 500Mb
+# Since 12.2.3
+#
+#DOWNLOADSIZELIMIT=
+
+#
 # This contains class names to get time stamps for
 # Note : this uses substrings
 # (*) "SimpleScheduler" matches "SimpleScheduler" only

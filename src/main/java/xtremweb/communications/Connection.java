@@ -42,17 +42,6 @@ public enum Connection {
 		public String layer() {
 			return xtremweb.communications.TCPClient.class.getName();
 		}
-
-		/**
-		 * This retrieves a property name as found in config file This is for
-		 * backward compatibility only
-		 *
-		 * @since 8.2.0
-		 */
-		@Override
-		public String propertyName() {
-			return "port.tcp";
-		}
 	},
 	/**
 	 * This is used to challenge client (using private/public keys)
@@ -62,17 +51,6 @@ public enum Connection {
 		public String layer() {
 			return xtremweb.communications.TCPClient.class.getName();
 		}
-
-		/**
-		 * This retrieves a property name as found in config file This is for
-		 * backward compatibility only
-		 *
-		 * @since 8.2.0
-		 */
-		@Override
-		public String propertyName() {
-			return "port.ssl.tcp";
-		}
 	},
 	/**
 	 * This is the UDP port (with or without SSL)
@@ -81,17 +59,6 @@ public enum Connection {
 		@Override
 		public String layer() {
 			return xtremweb.communications.UDPClient.class.getName();
-		}
-
-		/**
-		 * This retrieves a property name as found in config file This is for
-		 * backward compatibility only
-		 *
-		 * @since 8.2.0
-		 */
-		@Override
-		public String propertyName() {
-			return "port.udp";
 		}
 	},
 	/**
@@ -105,17 +72,6 @@ public enum Connection {
 		@Override
 		public String layer() {
 			return xtremweb.communications.HTTPClient.class.getName();
-		}
-
-		/**
-		 * This retrieves a property name as found in config file This is for
-		 * backward compatibility only
-		 *
-		 * @since 8.2.0
-		 */
-		@Override
-		public String propertyName() {
-			return "port.worker.http";
 		}
 	},
 	/**
@@ -131,17 +87,6 @@ public enum Connection {
 		public int defaultPortValue() {
 			return HTTPDEFAULTPORT;
 		}
-
-		/**
-		 * This retrieves a property name as found in config file This is for
-		 * backward compatibility only
-		 *
-		 * @since 8.2.0
-		 */
-		@Override
-		public String propertyName() {
-			return "port.http";
-		}
 	},
 	/**
 	 * This is the HTTPS port (if SSLKeystore is set)
@@ -156,17 +101,6 @@ public enum Connection {
 		public int defaultPortValue() {
 			return HTTPSDEFAULTPORT;
 		}
-
-		/**
-		 * This retrieves a property name as found in config file This is for
-		 * backward compatibility only
-		 *
-		 * @since 8.2.0
-		 */
-		@Override
-		public String propertyName() {
-			return "port.https";
-		}
 	},
 	/**
 	 * This is the client shell port
@@ -176,17 +110,6 @@ public enum Connection {
 		public String layer() {
 			return xtremweb.communications.TCPClient.class.getName();
 		}
-
-		/**
-		 * This retrieves a property name as found in config file This is for
-		 * backward compatibility only
-		 *
-		 * @since 8.2.0
-		 */
-		@Override
-		public String propertyName() {
-			return "port.xmlrpc";
-		}
 	},
 	/**
 	 * This is used by xtremweb.rpcd.client.rpcudp
@@ -195,17 +118,6 @@ public enum Connection {
 		@Override
 		public String layer() {
 			return xtremweb.communications.UDPClient.class.getName();
-		}
-
-		/**
-		 * This retrieves a property name as found in config file This is for
-		 * backward compatibility only
-		 *
-		 * @since 8.2.0
-		 */
-		@Override
-		public String propertyName() {
-			return "port.sunrpc";
 		}
 	},
 	/**
@@ -218,17 +130,6 @@ public enum Connection {
 		public String layer() {
 			return xtremweb.communications.TCPClient.class.getName();
 		}
-
-		/**
-		 * This retrieves a property name as found in config file This is for
-		 * backward compatibility only
-		 *
-		 * @since 8.2.0
-		 */
-		@Override
-		public String propertyName() {
-			return HUBPORTPNAME;
-		}
 	},
 	/**
 	 * This is the proxy port used to connect to XW server
@@ -237,17 +138,6 @@ public enum Connection {
 		@Override
 		public String layer() {
 			return xtremweb.communications.TCPClient.class.getName();
-		}
-
-		/**
-		 * This retrieves a property name as found in config file This is for
-		 * backward compatibility only
-		 *
-		 * @since 8.2.0
-		 */
-		@Override
-		public String propertyName() {
-			return "port.proxy";
 		}
 	};
 
@@ -394,11 +284,6 @@ public enum Connection {
 	/** This retrieves the communication layer to use for the given port */
 	public abstract String layer();
 
-	/**
-	 * This retrieves the property name used in the configuration file for the
-	 * given port
-	 */
-	public abstract String propertyName();
 
 	public static Connection fromLayer(final String layer) throws IndexOutOfBoundsException {
 		for (final Connection c : Connection.values()) {

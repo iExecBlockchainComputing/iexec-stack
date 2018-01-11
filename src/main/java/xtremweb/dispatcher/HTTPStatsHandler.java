@@ -265,6 +265,7 @@ public class HTTPStatsHandler extends xtremweb.dispatcher.CommHandler {
 	 */
 	@Override
 	public synchronized void writeFile(final File f) throws IOException {
+		throw new IOException("HTTPHandler#writeFile not implemented");
 	}
 
 	/**
