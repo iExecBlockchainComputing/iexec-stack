@@ -212,7 +212,6 @@ public class UDPHandler extends xtremweb.dispatcher.CommHandler {
 	 */
 	@Override
 	public void writeFile(final File f) throws IOException {
-		getLogger().error("UDP does not implement writeFile");
 		throw new IOException("UDP does not implement writeFile");
 	}
 
@@ -225,7 +224,6 @@ public class UDPHandler extends xtremweb.dispatcher.CommHandler {
 	 */
 	@Override
 	public void readFile(final File f) throws IOException {
-		getLogger().error("UDP does not implement readFile");
 		throw new IOException("UDP does not implement readFile");
 	}
 

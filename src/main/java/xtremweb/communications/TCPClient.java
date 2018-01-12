@@ -503,13 +503,12 @@ public class TCPClient extends CommClient {
 	/**
 	 * This writes a file to socket
 	 *
-	 * @param f
-	 *            is the file to send
+	 * @param f is the file to send
 	 */
 	@Override
 	public void writeFile(final File f) throws IOException {
 		mileStone("<writeFile file='" + f + "'>");
-		io.writeFile(f);
+		io.writeFile(f, getConfig().getLong(XWPropertyDefs.MAXFILESIZE));
 		mileStone("</writeFile>");
 	}
 
@@ -523,7 +522,7 @@ public class TCPClient extends CommClient {
 	@Override
 	public void readFile(final File f) throws IOException {
 		mileStone("<readFile file='" + f + "'>");
-		io.readFile(f);
+		io.readFile(f, getConfig().getLong(XWPropertyDefs.MAXFILESIZE));
 		mileStone("</readFile>");
 	}
 

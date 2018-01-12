@@ -458,27 +458,37 @@ public class StreamIO implements AutoCloseable {
 	}
 
 	/**
+	 * This calls writeFile(file, XWTools.MAXFILESIZE)
+	 * @see XWTools#MAXFILESIZE
+	 * @see #writeFile(File, long)
+	 */
+	public void writeFile(final File file) throws IOException {
+		writeFile(file, XWTools.MAXFILESIZE);
+	}
+	/**
 	 * This writes a file content to output stream. This first writes the file
 	 * size, then the file content itself. If parameter is null a single 0 is
 	 * only sent. The output stream is not closed.
 	 *
-	 * @param file
-	 *            denotes the file to write to output stream
+	 * @param file is the file to write to output stream
+	 * @param maxlength is the file size limit
 	 * @exception IOException
-	 *                is thrown on I/O error or if the provided file does not
-	 *                exist
+	 *                is thrown on I/O error or if file size is greater than maxlength
 	 */
-	public void writeFile(final File file) throws IOException {
+	public void writeFile(final File file, final long maxlength) throws IOException {
 
 		if (file == null) {
-			throw new IOException("file is null");
+			throw new IOException("StreamIO#writeFile() : file is null");
 		}
 
 		if (!file.exists()) {
-			throw new IOException("file not found : " + file);
+			throw new IOException("StreamIO#writeFile() : file not found ; " + file);
 		}
 
 		final long length = file.length();
+		if (length > maxlength) {
+			throw new IOException("StreamIO#writeFile() : file too long ; " + file);
+		}
 
 		logger.finest("writeFile : to be written " + length);
 		writeLong(length);
@@ -488,27 +498,42 @@ public class StreamIO implements AutoCloseable {
 		}
 		writeFileContent(file, thiscomnio);
 	}
-
 	/**
-	 * This calls wrtieFileConten(file, this.nio)
+	 * This calls writeFileConten(file, this.nio, XWTools.MAXFILESIZE)
+	 * @see XWTools#MAXFILESIZE
+	 * @see #writeFileContent(File, boolean, long)
 	 */
 	public void writeFileContent(final File file) throws IOException {
-		writeFileContent(file, nio);
+		writeFileContent(file, nio, XWTools.MAXFILESIZE);
 	}
-
+	/**
+	 * This calls writeFileConten(file, thiscomnio, XWTools.MAXFILESIZE)
+	 * @see XWTools#MAXFILESIZE
+	 * @see #writeFileContent(File, boolean, long)
+	 */
+	public void writeFileContent(final File file, final boolean thiscomnio) throws IOException {
+		writeFileContent(file, thiscomnio, XWTools.MAXFILESIZE);
+	}
+	/**
+	 * This calls writeFileConten(file, this.nio, maxlength)
+	 * @see #writeFileContent(File, boolean, long)
+	 */
+	public void writeFileContent(final File file, final long maxlength) throws IOException {
+		writeFileContent(file, nio, maxlength);
+	}
 	/**
 	 * This writes a file content to output stream. The output stream is not
 	 * closed
 	 *
-	 * @param file
-	 *            denotes the file to write to output stream
-	 * @param thiscomnio
-	 *            is true if NIO expected
+	 * @param file denotes the file to write to output stream
+	 * @param thiscomnio is true if NIO expected
+	 * @param maxlength is the file size limit
 	 * @exception IOException
 	 *                is thrown on I/O error or if the provided file does not
 	 *                exist
 	 */
-	public void writeFileContent(final File file, final boolean thiscomnio) throws IOException {
+	public void writeFileContent(final File file, final boolean thiscomnio, final long maxlength) 
+			throws IOException {
 
 		if (file == null) {
 			throw new IOException("file is null");
@@ -535,6 +560,9 @@ public class StreamIO implements AutoCloseable {
 							output.write(buffer, 0, nfis);
 							written += nfis;
 						}
+						if (written > maxlength) {
+							throw new IOException("StreamIO#writeFile() : file too long");
+						}
 						if (written >= length) {
 							break;
 						}
@@ -554,18 +582,31 @@ public class StreamIO implements AutoCloseable {
 	}
 
 	/**
-	 * This reads a file content from input stream and stores it to file. The
-	 * file size is first read, then the file content itself The input stream is
-	 * not closed
-	 *
-	 * @param file
-	 *            denotes the file to store content from input stream
-	 * @exception IOException
-	 *                is thrown on I/O error
+	 * This calls readFile(file, XWTools.MAXFILESIZE)
+	 * 
+	 * @see #readFile(File, long)	 
+	 * @see XWTools#MAXFILESIZE
 	 */
 	public void readFile(final File file) throws IOException {
+		readFile(file, XWTools.MAXFILESIZE);
+	}
+	/**
+	 * This reads a file content from input stream and stores it to file. The
+	 * file size is first read, then the file content itself. The input stream is
+	 * not closed.
+	 *
+	 * @param file denotes the file to store content from input stream
+	 * @param maxlength is the download length limit 
+	 * 
+	 * @exception IOException is thrown on I/O error or if file size is greater than maxlength
+	 * @since 12.2.3
+	 */
+	public void readFile(final File file, final long maxlength) throws IOException {
 
 		final long length = readLong();
+		if (length > maxlength) {
+			throw new IOException("StreamIO#readFile() : file too long");
+		}
 		logger.finest("readFile : to be read " + length);
 
 		boolean thiscomnio = nio;
@@ -608,12 +649,21 @@ public class StreamIO implements AutoCloseable {
 	}
 
 	/**
-	 * This reads a file content from input stream and stores it to file
-	 *
-	 * @param file
-	 *            denotes the file to store content from input stream
+	 * This calls readFileContent(file, XWTools.MAXFILESIZE)
+	 * @see #readFileContent(File, long)
+	 * @see XWTools#MAXFILESIZE
 	 */
 	public void readFileContent(final File file) throws IOException {
+		readFileContent(file , XWTools.MAXFILESIZE);
+	}
+	/**
+	 * This reads a file content from input stream and stores it to file
+	 * @param file denotes the file to store content from input stream
+	 * @param maxlength is the download length limit 
+	 * @since 12.2.3 
+	 * @exception IOException is thrown on IO error or is file size is greater than maxlength
+	 */
+	public void readFileContent(final File file, final long maxlength) throws IOException {
 
 		final byte[] buffer = new byte[bufferLength];
 
@@ -626,6 +676,9 @@ public class StreamIO implements AutoCloseable {
 					if (n != -1) {
 						fos.write(buffer, 0, n);
 						written += n;
+					}
+					if (written > maxlength) {
+						throw new IOException("StreamIO#readFile() : file too long");
 					}
 				}
 				logger.finest("readFileContent : bytes read = " + written);
@@ -661,7 +714,7 @@ public class StreamIO implements AutoCloseable {
 	 *                is thrown on I/O error
 	 */
 	public void writeObject(final Hashtable o) throws IOException {
-		
+
 		try(ObjectOutputStream oos = new ObjectOutputStream(output)) {
 			oos.writeObject(o);
 			output.flush();
