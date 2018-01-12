@@ -26,6 +26,8 @@ RUN echo "keytool -import -alias localhost -file /xwhep/certificate/xwhepcert.pe
 
 # update the SSLKEYSTORE to point to the container's keystore
 RUN echo "sed -i \"s/^SSLKEYSTORE=.*/SSLKEYSTORE=\/etc\/ssl\/certs\/java\/cacerts/g\" /xwhep/conf/xtremweb.worker.conf " >> /tmp/xwstart.sh
+RUN echo "sed -i \"s/^SSLKEYPASSWORD=.*/SSLKEYPASSWORD=changeit/g\" /xwhep/conf/xtremweb.worker.conf " >> /tmp/xwstart.sh
+
 
 RUN echo "cat /etc/hosts" >> /tmp/xwstart.sh
 RUN echo "/xwhep/bin/xtremweb.worker console" >> /tmp/xwstart.sh
@@ -73,4 +75,3 @@ ENTRYPOINT [ "/tmp/xwstart.sh" ]
 #RUN chmod +x /tmp/xwstart.sh
 
 #ENTRYPOINT [ "/tmp/xwstart.sh" ]
-
