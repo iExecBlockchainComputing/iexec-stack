@@ -1,11 +1,12 @@
 FROM ubuntu:16.04
 EXPOSE 4321 4322 4323 4324 4327 4328 443
-ENV XWVERSION "11.5.0"
 
 ADD conf/xtremweb.worker.conf /xwhep/conf/
-ADD bin /xwhep/bin
+RUN mkdir -p /xwhep/bin
+ADD bin/xtremweb.worker /xwhep/bin
+ADD bin/xtremweb /xwhep/bin
+ADD bin/xtremwebconf.sh /xwhep/bin
 ADD lib /xwhep/lib
-#ADD keystore/xwhepworker.keys /xwhep/keystore/
 
 WORKDIR /xwhep
 
