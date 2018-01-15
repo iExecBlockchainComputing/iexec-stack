@@ -143,6 +143,7 @@ task mkdirKeystore(type: Exec) {
 task copyScripts(type: Copy) {
     from(scripts)
     into(distBin)
+    exclude('*.template')
     rename('xwsetversion.sql.in', 'xwsetversion.sql')
     filter(ReplaceTokens, tokens: getCustomProperties())
 }
