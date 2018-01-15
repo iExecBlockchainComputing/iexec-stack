@@ -174,50 +174,6 @@ ${KEYTOOL} -list  -keystore ${SERVERFILE} -storepass "${SSLKeyServerpassword}"
 ${KEYTOOL} -printcert -file ${CERTFILE}
 [ $? -ne 0 ] && fatal "can't print server certificates"
 
-#
-# Generating worker keystore
-#
-if [ -f  ${WORKERFILE} ] ; then
-  info "Updating worker keystore file ${WORKERFILE}"
-else
-  info "Generating worker keystore file ${WORKERFILE}"
-fi
-
-${KEYTOOL} -genkey -dname "${CERTNAME}" -alias ${WORKERALIAS} -storepass "${SSLKeyWorkerpassword}" -keypass "${SSLKeyWorkerpassword}" -keystore ${WORKERFILE} -v  -keyalg RSA -keysize 2048
-[ $? -ne 0 ] && fatal "can't generate worker keystore"
-info "Importing server public key into worker keystore (${WORKERFILE})"
-${KEYTOOL} -import -alias ${SERVERALIAS} -file ${CERTFILE} -trustcacerts -keystore ${WORKERFILE} -storepass "${SSLKeyWorkerpassword}" -v -noprompt
-[ $? -ne 0 ] && fatal "can't import server public key into worker keystore"
-${KEYTOOL} -list  -keystore ${WORKERFILE} -storepass "${SSLKeyWorkerpassword}"
-[ $? -ne 0 ] && fatal "can't list certificates from worker keystore"
-
-#
-# Generating client keystore
-#
-if [ -f  ${CLIENTFILE} ] ; then
-  info "Updating client keystore file ${CLIENTFILE}"
-else
-  info "Generating client keystore file ${CLIENTFILE}"
-fi
-
-${KEYTOOL} -genkey -dname "${CERTNAME}" -alias ${CLIENTALIAS} -storepass "${SSLKeyClientpassword}" -keypass "${SSLKeyClientpassword}" -keystore ${CLIENTFILE} -v  -keyalg RSA  -keysize 2048
-[ $? -ne 0 ] && fatal "can't generate client keystore"
-info "Importing server public key into client keystore (${WORKERFILE})"
-${KEYTOOL} -import -alias ${SERVERALIAS} -file ${CERTFILE} -trustcacerts -keystore ${CLIENTFILE} -storepass "${SSLKeyClientpassword}" -v -noprompt
-[ $? -ne 0 ] && fatal "can't import server public key into client keystore"
-${KEYTOOL} -list  -keystore ${CLIENTFILE} -storepass "${SSLKeyClientpassword}"
-[ $? -ne 0 ] && fatal "can't list certificates from client keystore"
-
-#
-# Importing CACERTS
-# @since 11.5.0
-#
-info "Importing CACERTS"
-${BINDIR}/import_cacerts_to_keystore.sh ${SERVERFILE} ${SSLKeyServerpassword}
-${BINDIR}/import_cacerts_to_keystore.sh ${WORKERFILE} ${SSLKeyWorkerpassword}
-${BINDIR}/import_cacerts_to_keystore.sh ${CLIENTFILE} ${SSLKeyClientpassword}
-
-
 
 #
 # Signing jar file

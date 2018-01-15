@@ -1,0 +1,44 @@
+#!/bin/bash
+
+for i in "$@"
+do
+case $i in
+    -ip=*|--XWSERVERADDR=*)
+    XWSERVERADDR="${i#*=}"
+    shift # past argument=value
+    ;;
+    -n=*|--XWSERVERNAME=*)
+    XWSERVERNAME="${i#*=}"
+    shift # past argument=value
+    ;;
+    -c=*|--XWCERTIFICATE=*)
+    XWCERTIFICATE="${i#*=}"
+    shift # past argument=value
+    ;;
+    -pwd=*|--CACERTPASSWORD=*)
+    CACERTPASSWORD="${i#*=}"
+    shift # past argument=value
+    ;;
+    --default)
+    shift # past argument with no value
+    ;;
+    *)
+          # unknown option
+    ;;
+esac
+done
+echo "Xtremweb Server IP address = ${XWSERVERADDR}"
+echo "Xtremweb Server name     = ${XWSERVERNAME}"
+echo "Xtremweb Server certificate    = ${XWCERTIFICATE}"
+echo "/etc/ssl/certs/java/cacerts storepass    = ${CACERTPASSWORD}"
+
+if [ ! -z $XWSERVERADDR ] ; then
+echo "$XWSERVERADDR $XWSERVERNAME" >> /etc/hosts
+echo "Added Server IP address and name to /etc/hosts"
+sed -i "s/^DISPATCHERS=.*/DISPATCHERS=$XWSERVERNAME/g" ../conf/xtremweb.worker.conf
+echo "Added Server name to xtremweb.worker.conf"
+fi
+
+# import the server certificate into the container keystore
+keytool -import -alias localhost -file $XWCERTIFICATE -trustcacerts -keystore /etc/ssl/certs/java/cacerts -storepass $CACERTPASSWORD -v -noprompt
+echo "Added Server certificate to /etc/ssl/certs/java/cacerts"
