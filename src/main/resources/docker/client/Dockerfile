@@ -32,5 +32,4 @@ RUN echo "cat /etc/hosts" >> /tmp/xwstart.sh
 RUN chmod +x /tmp/xwstart.sh
 
 WORKDIR /xwhep/bin
-#CMD [ "/tmp/xwstart.sh" ]
 CMD bash -C '/tmp/xwstart.sh';'bash'
