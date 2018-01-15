@@ -38,7 +38,7 @@ LABEL description="This creates a Docker image for the XWHEP client"
 
 EXPOSE 4327
 
-ENV XWVERSION "12.2.3"
+ENV XWVERSION "12.2.4"
 
 
 RUN apt-get update

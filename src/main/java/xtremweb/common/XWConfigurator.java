@@ -649,7 +649,7 @@ public final class XWConfigurator extends Properties {
 			InputStream def = null;
 
 			if ((configFile == null) || (!configFile.exists())) {
-				def = getClass().getResourceAsStream("/data/config.defaults");
+				def = getClass().getResourceAsStream("/misc/config.defaults");
 			} else {
 				def = new FileInputStream(configFile);
 			}
@@ -841,7 +841,7 @@ public final class XWConfigurator extends Properties {
 			try {
 				keyStoreFile = new File("xwhep" + XWRole.getMyRole().toString().toLowerCase() + ".keys");
 				setProperty(XWPropertyDefs.SSLKEYSTORE, keyStoreFile.getAbsolutePath());
-				extractResource("data/xwhep" + XWRole.getMyRole().toString().toLowerCase() + ".keys", keyStoreFile);
+				extractResource("misc/xwhep" + XWRole.getMyRole().toString().toLowerCase() + ".keys", keyStoreFile);
 			} catch (final Exception e) {
 				logger.exception(e);
 				keyStoreFile = null;
@@ -1279,10 +1279,10 @@ public final class XWConfigurator extends Properties {
 
 			final File iconFile = new File("xw.ico");
 			try {
-				extractResource("data/" + iconFile, iconFile);
+				extractResource("misc/" + iconFile, iconFile);
 			} catch (final Exception e) {
 				try {
-					extractResource("data/" + iconFile, iconFile);
+					extractResource("misc/" + iconFile, iconFile);
 				} catch (final Exception e2) {
 					logger.exception("can't extract resource " + iconFile, e2);
 					useNotify = false;
