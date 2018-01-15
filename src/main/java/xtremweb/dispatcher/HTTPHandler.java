@@ -139,7 +139,7 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 	 * This is the resource path in the xtremweb java archive (xtremweb.jar) :
 	 * "data"
 	 */
-	public static final String RESOURCE_PATH = "data";
+	public static final String RESOURCE_PATH = "misc";
 	/**
 	 * This is the Bootstrap dashboard HTML file name : dashboard.html
 	 *

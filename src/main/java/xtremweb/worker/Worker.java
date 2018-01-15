@@ -123,14 +123,14 @@ public class Worker {
 
 			final Properties defaults = new Properties();
 
-			try (final InputStream def = this.getClass().getClassLoader().getResourceAsStream("data/config.defaults")) {
+			try (final InputStream def = this.getClass().getClassLoader().getResourceAsStream("misc/config.defaults")) {
 				if (def != null) {
 					defaults.load(def);
 				}
 				setConfig((XWConfigurator) args.getOption(CommandLineOptions.CONFIG));
 				config.store();
 			} catch (final Exception e) {
-				logger.fatal("can retreive config file");
+				logger.fatal("can retreive config file misc/config.defaults");
 			}
 		}
 

@@ -70,7 +70,7 @@ public class HTTPStatsHandler extends xtremweb.dispatcher.CommHandler {
 	private HttpServletRequest request;
 	private HttpServletResponse response;
 
-	private static String RES_SERVERSTATSHTML = "data/serverstats.html";
+	private static String RES_SERVERSTATSHTML = "misc/serverstats.html";
 
 	private static final Version CURRENTVERSION = CommonVersion.getCurrent();
 	private static final String CURRENTVERSIONSTRING = CURRENTVERSION.toString();
