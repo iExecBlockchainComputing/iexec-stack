@@ -1,16 +1,18 @@
 FROM ubuntu:16.04
 EXPOSE 4321 4322 4323 4324 4327 4328 443
 
-ADD conf/xtremweb.client.conf /xwhep/conf/
-RUN mkdir -p /xwhep/bin
-ADD bin /xwhep/bin
-ADD lib /xwhep/lib
+COPY conf/xtremweb.client.conf /xwhep/conf/
+COPY lib /xwhep/lib
+COPY bin /xwhep/bin/ 
+WORKDIR /xwhep/bin
+# remove non necessary scripts from /xwhep/bin
+# remove all subfolders:
+RUN find . -mindepth 1 -maxdepth 1 -type d -exec rm -rf {} +
+# remove files that don't match xw* or xtr*
+RUN find . -type f ! -name 'xw*' ! -name 'xtr*' -exec rm -rf {} +
 
-WORKDIR /xwhep
-
-RUN apt-get update
-
-RUN export DEBIAN_FRONTEND=noninteractive && \
+RUN apt-get update && \
+       export DEBIAN_FRONTEND=noninteractive && \
        apt-get install -y openjdk-8-jre zip unzip wget make curl
 
 RUN echo "#!/bin/sh" > /tmp/xwstart.sh
@@ -26,7 +28,6 @@ RUN echo "keytool -import -alias localhost -file /xwhep/certificate/xwhepcert.pe
 # update the SSLKEYSTORE to point to the container's keystore
 RUN echo "sed -i \"s/^SSLKEYSTORE=.*/SSLKEYSTORE=\/etc\/ssl\/certs\/java\/cacerts/g\" /xwhep/conf/xtremweb.client.conf " >> /tmp/xwstart.sh
 RUN echo "sed -i \"s/^SSLKEYPASSWORD=.*/SSLKEYPASSWORD=changeit/g\" /xwhep/conf/xtremweb.client.conf " >> /tmp/xwstart.sh
-
 
 RUN echo "cat /etc/hosts" >> /tmp/xwstart.sh
 RUN chmod +x /tmp/xwstart.sh
