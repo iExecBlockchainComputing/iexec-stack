@@ -84,13 +84,17 @@ XWSERVERKEYSTOREFILENAME=xwhepserver.keys
 XWWORKERKEYSTOREFILENAME=xwhepworker.keys
 XWCLIENTKEYSTOREFILENAME=xwhepclient.keys
 XWCERTFILENAME=xwhepcert.pem
+XWTRUSTSTOREFILENAME=cacerts
 
 SERVERFILE=${KEYSDIR}/$XWSERVERKEYSTOREFILENAME
 WORKERFILE=${KEYSDIR}/$XWWORKERKEYSTOREFILENAME
 CLIENTFILE=${KEYSDIR}/$XWCLIENTKEYSTOREFILENAME
 CERTFILE=${KEYSDIR}/$XWCERTFILENAME
+TRUSTSTORE=${KEYSDIR}/$XWTRUSTSTOREFILENAME
+
 
 CERTNAME="@CERTNAME@"
+SSLTRUSTSTOREPASSWORD="@SSLTRUSTSTOREPASSWORD@"
 
 OPENSSL=openssl
 KEYTOOL=keytool
@@ -169,11 +173,15 @@ ${KEYTOOL} -list  -keystore ${SERVERFILE} -storepass "${SSLKeyServerpassword}"
 [ $? -ne 0 ] && fatal "can't list server certificates"
 
 #
-# xwcert.keys: server public key (to be disributed)
+# xwhepcert.pem: server public key (to be disributed)
 #
 ${KEYTOOL} -printcert -file ${CERTFILE}
 [ $? -ne 0 ] && fatal "can't print server certificates"
 
+
+# import the server certificate into the trustore
+${KEYTOOL} -import -alias $SERVERALIAS -file $CERTFILE -trustcacerts -keystore $TRUSTSTORE -storepass $SSLTRUSTSTOREPASSWORD -v -noprompt
+echo "Added Server certificate to $TRUSTSTORE"
 
 #
 # Signing jar file
