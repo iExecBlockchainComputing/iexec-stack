@@ -236,10 +236,14 @@ task buildAll {
 
 buildAll.dependsOn getTasksByName('build', true)
 
+task buildClientDockerImage(type: Exec) {
+    commandLine("sh", "-c", "docker image build -f " + dist + "/docker/client/Dockerfile -t xtremweb/client:" + project.version + " " + dist)
+}
+
 task buildWorkerDockerImage(type: Exec) {
     commandLine("sh", "-c", "docker image build -f " + dist + "/docker/worker/Dockerfile -t xtremweb/worker:" + project.version + " " + dist)
 }
 
 task buildImages(){
-    dependsOn buildWorkerDockerImage
+    dependsOn (buildWorkerDockerImage, buildClientDockerImage)
 }
