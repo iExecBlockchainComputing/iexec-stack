@@ -247,8 +247,8 @@ PASSWORD=@XWADMINPASSWORD@
 # by default it uses the certificate bundled with the software
 # Note : please use full path; don't use ~ or any variable (e.g. $HOME)
 #        they are not correctly interpreted
-SSLKEYSTORE=../keystore/xwhepclient.keys
-####
+SSLKEYSTORE=@SSLTRUSTSTORE@
+SSLKEYPASSWORD=@SSLTRUSTSTOREPASSWORD@
 
 #
 # Client        : user X509 certificate file path
@@ -322,10 +322,6 @@ SSLKEYSTORE=../keystore/xwhepclient.keys
 #  WARN
 #  ERROR
 LOGGERLEVEL=INFO
-
-SSLKEYPASSPHRASE=@SSLKEYCLIENTPASSWORD@
-SSLKEYPASSWORD=@SSLKEYCLIENTPASSWORD@
-SSLKeyStore=@SSLKEYSTORECLIENT@
 
 #####
 ##### End of File
