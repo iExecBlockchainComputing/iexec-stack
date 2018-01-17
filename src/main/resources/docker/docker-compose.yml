@@ -3,7 +3,7 @@ version: '3.4'
 services:
   scheduler:
     image: xtremweb/server:12.2.3-SNAPSHOT
-    container_name: xtrscheduler
+    container_name: xwscheduler
     ports:
       - 4321:4321
       - 4322:4322
@@ -14,10 +14,10 @@ services:
 
   worker:
     image: xtremweb/worker:12.2.3-SNAPSHOT
-    container_name: xwtrworker
+    container_name: xwworker
     environment:
       - XWSERVERADDR=scheduler
-      - XWSERVERNAME=xtrscheduler
+      - XWSERVERNAME=xwscheduler
     ports:
       - 4321
       - 4322
