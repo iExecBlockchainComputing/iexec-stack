@@ -42,7 +42,7 @@ LABEL version="0.4"
 LABEL description="This downloads and compiles XWHEP server"
 EXPOSE 4321 4322 4323 443
 
-ENV XWVERSION "12.2.4"
+ENV XWVERSION "12.2.5"
 
 # next is only to check file is present
 # before getting time to apt-get update etc.
