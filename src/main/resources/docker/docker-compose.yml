@@ -1,0 +1,39 @@
+version: '3.4'
+
+services:
+  scheduler:
+    image: xtremweb/server:12.2.3-SNAPSHOT
+    container_name: xtrscheduler
+    ports:
+      - 4321:4321
+      - 4322:4322
+      - 4323:4323
+      - 443:443
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  worker:
+    image: xtremweb/worker:12.2.3-SNAPSHOT
+    container_name: xwtrworker
+    environment:
+      - XWSERVERADDR=scheduler
+      - XWSERVERNAME=xtrscheduler
+    ports:
+      - 4321
+      - 4322
+      - 4323
+      - 443
+    volumes:
+      - /home/ugo/iexecdev/xtremweb-hep/build/dist/xtremweb-12.2.3-SNAPSHOT/keystore/xwhepcert.pem:/xwhep/certificate/xwhepcert.pem
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  db:
+    image: mysql:5.7
+    container_name: mysql
+    ports:
+      - 3306
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: xtremweb11
+      MYSQL_USER: xwuser
+      MYSQL_PASSWORD: xwuserp
