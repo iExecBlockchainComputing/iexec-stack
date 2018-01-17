@@ -176,7 +176,7 @@ else
 fi
 
 
-IMAGENAME="xwimg_${XWJOBUID}"
+IMAGENAME=""
 CONTAINERNAME="xwcontainer_${XWJOBUID}"
 DOCKERFILENAME="Dockerfile"
 
@@ -193,11 +193,9 @@ while [ $# -gt 0 ]; do
       VERBOSE=1
       set -x
       ;;
-
-    -i | --img | --imgname )
-      shift
-      IMAGENAME="$1"
-      ;;
+  	* )
+  	  ARGS="$ARGS $1"
+  	  ;;
   esac
 
   shift
@@ -206,6 +204,7 @@ done
  
 
 if [ -f ${DOCKERFILENAME} ] ; then
+    IMAGENAME="xwimg_${XWJOBUID}"
     docker build --force-rm --tag ${IMAGENAME} .
 fi
 
