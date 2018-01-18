@@ -180,23 +180,20 @@ task copyDevCacert(type: Copy) {
 
 task copyProdCacert(type: Exec) {
     commandLine("sh", "-c",
-            "wget --no-cookies --no-check-certificate --header \"Cookie: oraclelicense=accept-securebackup-cookie\" \
-                http://download.oracle.com/otn-pub/java/jdk/8u161-b12/2f38c3b165be4555a1fa6e98c45e0808/jre-8u161-linux-x64.tar.gz \
-                -O jre.tar.gz && "+
-            "tar -zxvf jre.tar.gz -C " + dist + "/keystore" + " --wildcards --no-anchored 'cacerts' --strip-components 3 && "+
-            "rm jre.tar.gz"
+            "wget https://launchpad.net/~openjdk-r/+archive/ubuntu/ppa/+files/openjdk-8-jre-headless_8u141-b15-3~14.04_amd64.deb -O jre.deb && " +
+            "dpkg -x jre.deb jre && " +
+            "find jre -name cacerts | xargs cp -t " + dist + "/keystore" + " && " +
+            "rm -r jre*"
     )
 }
 
 task copyCacert() {
     dependsOn(copyKeystoreGenerationScripts, cleanKeystoreDir)
-
     if (project.hasProperty("environment") && project.getProperty("environment").toString().toLowerCase().equals("prod")) {
         dependsOn(copyProdCacert)
     } else {
         dependsOn(copyDevCacert)
     }
-
 }
 
 task generateKeys(type: Exec) {
