@@ -48,8 +48,9 @@ project.ext.getCustomProperties = {
 
     def path = 'pwd'.execute().text.trim()
     def keystore = path + "/build/dist/" + PROJECT_TAG + "/keystore/"
+    
+    props.setProperty("CERTIFICATE", keystore + "xwhepcert.pem")
     props.setProperty("SSLTRUSTSTORE", keystore + "cacerts")
-
 
     def certname = "cn=" + props.CERTCN + ",o=" + props.CERTO + ",c=" + props.CERTC
     if (props.CERTOU != "") {

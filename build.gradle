@@ -99,6 +99,8 @@ task copyMiscToDist(type: Copy) {
 
     into("/docker") {
         from docker
+        rename('.env.template', '.env')
+        filter(ReplaceTokens, tokens: getCustomProperties())
     }
 
     into("/resources") {
@@ -263,6 +265,10 @@ task buildAll {
 
 buildAll.dependsOn getTasksByName('build', true)
 
+task buildServerDockerImage(type: Exec) {
+    commandLine("sh", "-c", "docker image build -f " + dist + "/docker/server/Dockerfile -t xtremweb/server:" + project.version + " " + dist)
+}
+
 task buildClientDockerImage(type: Exec) {
     commandLine("sh", "-c", "docker image build -f " + dist + "/docker/client/Dockerfile -t xtremweb/client:" + project.version + " " + dist)
 }
@@ -271,6 +277,6 @@ task buildWorkerDockerImage(type: Exec) {
     commandLine("sh", "-c", "docker image build -f " + dist + "/docker/worker/Dockerfile -t xtremweb/worker:" + project.version + " " + dist)
 }
 
-task buildImages(){
-    dependsOn (buildWorkerDockerImage, buildClientDockerImage)
+task docker(){
+    dependsOn (buildWorkerDockerImage, buildClientDockerImage, buildServerDockerImage)
 }

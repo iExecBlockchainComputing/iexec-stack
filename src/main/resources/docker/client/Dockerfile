@@ -13,7 +13,7 @@ RUN find . -type f ! -name 'xw*' ! -name 'xtr*' -exec rm -rf {} +
 
 RUN apt-get update && \
        export DEBIAN_FRONTEND=noninteractive && \
-       apt-get install -y openjdk-8-jre zip unzip wget make curl
+       apt-get install -y openjdk-8-jre zip unzip wget make curl iputils-ping
 
 RUN echo "#!/bin/sh" > /tmp/xwstart.sh
 
