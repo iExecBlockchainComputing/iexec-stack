@@ -1,7 +1,7 @@
 XWUSER='myuseraccount2'
 DBVENDOR='mysql'
 DBENGINE='InnoDB'
-DBHOST='db'
+DBHOST='localhost'
 DBADMINLOGIN='root'
 DBADMINPASSWORD='root'
 DBNAME='xtremweb11'
