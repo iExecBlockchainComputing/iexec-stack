@@ -1,9 +1,18 @@
 version: '3.4'
 
+networks:
+  xtremweb-net:
+    driver: bridge
+
+volumes:
+  mysql-data:
+    name: xtremweb-data
+
 services:
   scheduler:
-    image: xtremweb/server:12.2.3-SNAPSHOT
+    image: xtremweb/server:${XTREMWEB_SERVER_VERSION}
     container_name: xwscheduler
+    hostname: xwscheduler
     ports:
       - 4321:4321
       - 4322:4322
@@ -11,9 +20,11 @@ services:
       - 443:443
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - xtremweb-net
 
   worker:
-    image: xtremweb/worker:12.2.3-SNAPSHOT
+    image: xtremweb/worker:${XTREMWEB_WORKER_VERSION}
     container_name: xwworker
     environment:
       - XWSERVERADDR=scheduler
@@ -24,8 +35,10 @@ services:
       - 4323
       - 443
     volumes:
-      - /home/ugo/iexecdev/xtremweb-hep/build/dist/xtremweb-12.2.3-SNAPSHOT/keystore/xwhepcert.pem:/xwhep/certificate/xwhepcert.pem
+      - ${SERVER_CERTIFICATE_LOCATION}:/xwhep/certificate/xwhepcert.pem
       - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - xtremweb-net
 
   db:
     image: mysql:5.7
@@ -37,3 +50,15 @@ services:
       MYSQL_DATABASE: xtremweb11
       MYSQL_USER: xwuser
       MYSQL_PASSWORD: xwuserp
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - xtremweb-net
+
+  db-viewer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+    networks:
+      - xtremweb-net

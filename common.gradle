@@ -52,6 +52,7 @@ project.ext.getCustomProperties = {
     props.setProperty("SSLKEYSTOREWORKER", keystorePrefix + "xwhepworker\\.keys")
     props.setProperty("SSLKEYSTOREVWORKER", keystorePrefix + "xwhepworker\\.keys")
     props.setProperty("SSLKEYSTORECLIENT", keystorePrefix + "xwhepclient\\.keys")
+    props.setProperty("CERTIFICATE", keystore + "xwhepcert.pem")
 
     def certname = "cn=" + props.CERTCN + ",o=" + props.CERTO + ",c=" + props.CERTC
     if (props.CERTOU != "") {

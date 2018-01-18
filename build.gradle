@@ -99,6 +99,8 @@ task copyMiscToDist(type: Copy) {
 
     into("/docker") {
         from docker
+        rename('.env.template', '.env')
+        filter(ReplaceTokens, tokens: getCustomProperties())
     }
 
     into("/resources") {

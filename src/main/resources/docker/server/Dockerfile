@@ -11,10 +11,6 @@ RUN apt-get update
 RUN export DEBIAN_FRONTEND=noninteractive && \
        apt-get install -y openjdk-8-jre zip unzip wget make iputils-ping
 
-#RUN dpkg -i xwhep-server-$XWVERSION.deb
-#RUN dpkg -i xwhep-server-conf-$XWVERSION.deb
-#RUN service mysql start && mysql -u root < /opt/xwhep-server-$XWVERSION/bin/db-maintenance/xwhep-core-tables-create-tables.sql
-
 #
 # -1- don't renice in container
 # -2- we must remove LAUNCHERURL since Apache is not installed
