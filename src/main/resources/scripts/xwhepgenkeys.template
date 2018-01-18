@@ -76,7 +76,7 @@ OID_MAINCLASS="xtremweb.dispatcher.HTTPOpenIdHandler"
 
 DATE=`date "+%Y%m%d%H%M%S"`
 
-SERVERALIAS="@XWSERVER@"
+SERVERALIAS="xwscheduler"
 WORKERALIAS="xtremweb-hep.worker.$DATE"
 CLIENTALIAS="xtremweb-hep.client.$DATE"
 

@@ -169,17 +169,32 @@ task cleanKeystoreDir(type: Delete) {
     delete fileTree(dir: dist + "/keystore")
 }
 
-
-task copyCacert(type: Copy) {
-    dependsOn(copyKeystoreGenerationScripts, cleanKeystoreDir)
-
+task copyDevCacert(type: Copy) {
     into dist
 
     into("/keystore") {
-        from templates + "/cacerts"
+        from templates + "/cacerts.dev"
+        rename { fileName -> fileName.replace('.dev', '') }
     }
 }
 
+task copyProdCacert(type: Exec) {
+    commandLine("sh", "-c",
+            "wget https://launchpad.net/~openjdk-r/+archive/ubuntu/ppa/+files/openjdk-8-jre-headless_8u141-b15-3~14.04_amd64.deb -O jre.deb && " +
+            "dpkg -x jre.deb jre && " +
+            "find jre -name cacerts | xargs cp -t " + dist + "/keystore" + " && " +
+            "rm -r jre*"
+    )
+}
+
+task copyCacert() {
+    dependsOn(copyKeystoreGenerationScripts, cleanKeystoreDir)
+    if (project.hasProperty("environment") && project.getProperty("environment").toString().toLowerCase().equals("prod")) {
+        dependsOn(copyProdCacert)
+    } else {
+        dependsOn(copyDevCacert)
+    }
+}
 
 task generateKeys(type: Exec) {
     dependsOn(copyCacert)
@@ -243,7 +258,7 @@ task copyLinuxInstallers(type: Copy) {
 
 
 task buildAll {
-    dependsOn(chmodBin, copyWindowsInstaller, copyMacInstaller, copyLinuxInstallers, copySQLCreateTables, copyConfFiles)
+    dependsOn(chmodBin, copyWindowsInstaller, copyMacInstaller, copyLinuxInstallers, copySQLCreateTables, copyConfFiles, generateKeys)
 }
 
 buildAll.dependsOn getTasksByName('build', true)
