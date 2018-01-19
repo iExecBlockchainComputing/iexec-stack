@@ -46,10 +46,10 @@ services:
     ports:
       - 3306
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: xtremweb11
-      MYSQL_USER: xwuser
-      MYSQL_PASSWORD: xwuserp
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ADMIN_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DB_NAME}
+      MYSQL_USER: ${MYSQL_USER_LOGIN}
+      MYSQL_PASSWORD: ${MYSQL_USER_PASSWORD}
     volumes:
       - mysql-data:/var/lib/mysql
     networks:
