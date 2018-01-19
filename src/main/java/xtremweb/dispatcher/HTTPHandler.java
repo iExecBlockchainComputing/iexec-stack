@@ -1310,6 +1310,8 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 			HTTPOpenIdHandler.getInstance().verifyNonce(authNonce);
 			ret = DBInterface.getInstance().user(UserInterface.Columns.EMAIL.toString() + "= '" + authEmail + "'");
 			if (ret == null) {
+				ret = newUser(authId, authEmail);
+				/*
 				if (Dispatcher.getConfig().getBoolean(XWPropertyDefs.DELEGATEDREGISTRATION) == false) {
 					throw new IOException("delegated registration is not allowed");
 				}
@@ -1332,6 +1334,7 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 				client.setEMail(authEmail);
 				DBInterface.getInstance().addUser(admin, client);
 				ret = client;
+				*/
 			}
 			session.setAttribute(XWPostParams.AUTH_NONCE.toString(), authNonce);
 			session.setAttribute(XWPostParams.AUTH_EMAIL.toString(), authEmail);
