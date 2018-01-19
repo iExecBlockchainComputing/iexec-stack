@@ -592,12 +592,8 @@ ACTIVATIONDATE=* 20-7
 #### worker keystore
 # SSL requires a file to store the certificate provided by the XtremWeb Server
 # by default it uses the certificate bundled with the software
-SSLKEYSTORE=../keystore/xwhepworker.keys
-####
-#If you change the following remember to regenerate the keys
-#SSLKEYpassphrase: @KEYPASSPHRASE@
-#If you change the following remember to regenerate the keys
-#SSLKEYpassword: @KEYWORKERPASSWORD@
+SSLKEYSTORE=@SSLTRUSTSTORE@
+SSLKEYPASSWORD=@SSLTRUSTSTOREPASSWORD@
 
 
 #
@@ -672,9 +668,6 @@ SYSTEMTRAY=true
 #  ERROR
 LOGGERLEVEL=INFO
 
-SSLKEYPASSPHRASE=@SSLKEYWORKERPASSWORD@
-SSLKEYPASSWORD=@SSLKEYWORKERPASSWORD@
-SSLKeyStore=@SSLKEYSTOREWORKER@
 
 #####
 ##### End of File

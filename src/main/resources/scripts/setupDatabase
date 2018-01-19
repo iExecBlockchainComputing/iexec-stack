@@ -51,10 +51,6 @@ cd $currentDir
 
 BINDIR=$ROOTDIR/bin
 CONFDIR=$ROOTDIR/conf
-DOCDIR=$ROOTDIR/doc
-INSTALLERSDIR=$ROOTDIR/installers
-KEYSTOREDIR=$ROOTDIR/keystore
-LIBDIR=$ROOTDIR/lib
 XWCONFVALUES=$CONFDIR/xwconfigure.values
 #INITD="/etc/init.d"
 
@@ -82,10 +78,7 @@ XWSETVERSIONSQL=$SQL_SCRIPTS_DIR/xwsetversion.sql
 DBVENDOR="mysql"
 DBENGINE="InnoDB"
 
-GENKEYS=$BINDIR/xwhepgenkeys
-OPENIDSH=$BINDIR/xwhepupdateopenidcerts
 
-XWGMOND=$BINDIR/xtremweb.gmond.pl
 
 XWSERVERCONFFILENAME=xtremweb.server.conf
 XWCLIENTCONFFILENAME=xtremweb.client.conf
@@ -101,27 +94,7 @@ XWCLIENTCONFTEMPLATEFILE=$CONFDIR/$XWCLIENTCONFTEMPLATEFILENAME
 XWWORKERCONFFILE=$CONFDIR/$XWWORKERCONFFILENAME
 XWVWORKERCONFFILE=$CONFDIR/$XWVWORKERCONFFILENAME
 
-SEDCMDS=$BINDIR/xwconfigure.seds
 
-XWELECTRONICKEYS=""
-XWSERVERKEYSTOREFILENAME=xwhepserver.keys
-XWWORKERKEYSTOREFILENAME=xwhepworker.keys
-XWCLIENTKEYSTOREFILENAME=xwhepclient.keys
-XWBRIDGEKEYSTOREFILENAME=$XWCLIENTKEYSTOREFILENAME
-XWCERTFILENAME=xwhepcert.pem
-
-XWSERVERKEYSTOREFILE=$KEYSTOREDIR/$XWSERVERKEYSTOREFILENAME
-XWWORKERKEYSTOREFILE=$KEYSTOREDIR/$XWWORKERKEYSTOREFILENAME
-XWCLIENTKEYSTOREFILE=$KEYSTOREDIR/$XWCLIENTKEYSTOREFILENAME
-XWBRIDGEKEYSTOREFILE=$XWCLIENTKEYSTOREFILE
-XWCERTFILE=$KEYSTOREDIR/$XWCERTFILENAME
-
-
-JETTY=$LIBDIR/jetty-server-9.3.8.v20160314.jar
-JETTYUTIL=$LIBDIR/jetty-util-9.3.8.v20160314.jar
-JETTYHTTP=$LIBDIR/jetty-http-9.3.8.v20160314.jar
-JETTYIO=$LIBDIR/jetty-io-9.3.8.v20160314.jar
-JETTYSERVLETAPI=$LIBDIR/servlet-api-3.1.jar
 
 DEBIANVERSION="/etc/debian_version"
 DEBIANOS=0
@@ -313,10 +286,6 @@ done
 chmod -R 755 "$BINDIR"
 chmod -x "$BINDIR"/*.seds "$BINDIR"/*.bat "$BINDIR"/*.xml
 [ ! -d "$CONFDIR" ]       && usage "File not found : $CONFDIR ;  please reinstall the package" "STOP"
-[ ! -d "$DOCDIR" ]        && usage "File not found : $DOCDIR ;  please reinstall the package" "STOP"
-[ ! -d "$INSTALLERSDIR" ] && usage "File not found : $INSTALLERSDIR ;  please reinstall the package" "STOP"
-[ ! -d "$KEYSTOREDIR" ]   && usage "File not found : $KEYSTOREDIR ;  please reinstall the package" "STOP"
-[ ! -d "$LIBDIR" ]        && usage "File not found : $LIBDIR ;  please reinstall the package" "STOP"
 [ ! -r $XWCONFVALUES]     && usage "File not found : $XWCONFVALUES ;  please reinstall the package" "STOP"
 
 
@@ -325,31 +294,6 @@ type mysql > /dev/null  2>&1
 if [ $? -ne 0 ] ; then
 	fatal "Mysql is not found in \$PATH"
 fi
-
-# Test Java
-[ -f /etc/java.conf ] && . /etc/java.conf 
-[ "$JAVA_HOME" != "" ] && export PATH=$PATH:$JAVA_HOME/bin
-type java > /dev/null  2>&1 || usage "Java is not installed; please install it and/or correct your \$PATH env variable" "STOP"
-
-# Test keytool
-type keytool > /dev/null 2>&1 || usage "Keytool is not installed; please install it and/or correct your \$PATH env variable" "STOP"
-
-# Test uuidgen
-type uuidgen > /dev/null 2>&1 || usage "UUIDGEN is not installed; please install it and/or correct your \$PATH env variable. This can be found in package uuid-runtime (Debian)." "STOP"
-
-# Test wget
-WGET="wget --timeout=5 --tries=1 -o /dev/null -O /dev/null"
-type wget > /dev/null  2>&1
-if [ $? -ne 0 ] ; then
-	usage "wget is not installed; please install it and/or correct your \$PATH env variable." "STOP"
-fi
-
-# Test zip
-type zip > /dev/null  2>&1
-if [ $? -ne 0 ] ; then
-    usage "zip is not installed; please install it and/or correct your \$PATH env variable." "STOP"
-fi
-
 
 test -f $XWSETUPDBSQL > /dev/null  2>&1
 if [ $? -eq 0 ] ; then

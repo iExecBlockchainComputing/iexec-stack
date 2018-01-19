@@ -42,8 +42,6 @@ public class Version extends XMLable {
 	private String build;
 	private String branch;
 
-	private int[] intVersion;
-
 	public Version() {
 		setXMLTag("Version");
 	}
@@ -58,13 +56,6 @@ public class Version extends XMLable {
 			build = sk.nextToken();
 		} catch (final Exception e) {
 		}
-
-		sk = new StringTokenizer(version, ".");
-		intVersion = new int[sk.countTokens()];
-		for (int x = 0; sk.hasMoreTokens(); x++) {
-			intVersion[x] = Integer.parseInt(sk.nextToken());
-		}
-
 	}
 
 	/**
@@ -109,13 +100,6 @@ public class Version extends XMLable {
 		version = ver;
 		branch = br;
 		build = bu;
-
-		final StringTokenizer sk = new StringTokenizer(version, ".");
-		intVersion = new int[sk.countTokens()];
-		for (int x = 0; sk.hasMoreTokens(); x++) {
-			intVersion[x] = Integer.parseInt(sk.nextToken());
-		}
-
 	}
 
 	public String full() {
@@ -132,36 +116,6 @@ public class Version extends XMLable {
 
 	public String build() {
 		return build;
-	}
-
-	public int[] intVersion() {
-		return intVersion;
-	}
-
-	public boolean lesserThan(final Version v) {
-		final int iv[] = v.intVersion();
-		for (int i = 0; i < intVersion.length; i++) {
-			if (intVersion[i] < iv[i]) {
-				return true;
-			}
-			if (intVersion[i] > iv[i]) {
-				return false;
-			}
-		}
-		return false;
-	}
-
-	public boolean greaterThan(final Version v) {
-		final int iv[] = v.intVersion();
-		for (int i = 0; i < intVersion.length; i++) {
-			if (intVersion[i] < iv[i]) {
-				return false;
-			}
-			if (intVersion[i] > iv[i]) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 	/**

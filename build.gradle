@@ -32,7 +32,6 @@ dependencies {
     compile files('libXtremWeb/smartsockets-1.4.jar')
 }
 
-
 import org.apache.tools.ant.filters.ReplaceTokens
 import java.time.Instant
 
@@ -100,6 +99,8 @@ task copyMiscToDist(type: Copy) {
 
     into("/docker") {
         from docker
+        rename('.env.template', '.env')
+        filter(ReplaceTokens, tokens: getCustomProperties())
     }
 
     into("/resources") {
@@ -122,7 +123,6 @@ task copyMiscToDist(type: Copy) {
         include('COPYING')
         include('INSTALL')
         include('License**')
-        include('Dockerfile')
     }
 
     into("/lib") {
@@ -145,6 +145,7 @@ task mkdirKeystore(type: Exec) {
 task copyScripts(type: Copy) {
     from(scripts)
     into(distBin)
+    exclude('*.template')
     rename('xwsetversion.sql.in', 'xwsetversion.sql')
     filter(ReplaceTokens, tokens: getCustomProperties())
 }
@@ -170,8 +171,35 @@ task cleanKeystoreDir(type: Delete) {
     delete fileTree(dir: dist + "/keystore")
 }
 
-task generateKeys(type: Exec) {
+task copyDevCacert(type: Copy) {
+    into dist
+
+    into("/keystore") {
+        from templates + "/cacerts.dev"
+        rename { fileName -> fileName.replace('.dev', '') }
+    }
+}
+
+task copyProdCacert(type: Exec) {
+    commandLine("sh", "-c",
+            "wget https://launchpad.net/~openjdk-r/+archive/ubuntu/ppa/+files/openjdk-8-jre-headless_8u141-b15-3~14.04_amd64.deb -O jre.deb && " +
+            "dpkg -x jre.deb jre && " +
+            "find jre -name cacerts | xargs cp -t " + dist + "/keystore" + " && " +
+            "rm -r jre*"
+    )
+}
+
+task copyCacert() {
     dependsOn(copyKeystoreGenerationScripts, cleanKeystoreDir)
+    if (project.hasProperty("environment") && project.getProperty("environment").toString().toLowerCase().equals("prod")) {
+        dependsOn(copyProdCacert)
+    } else {
+        dependsOn(copyDevCacert)
+    }
+}
+
+task generateKeys(type: Exec) {
+    dependsOn(copyCacert)
     commandLine("sh", "-c",
             distBin + '/xwhepgenkeys' + " && " +
                     "if [ \$? -eq 0 ] ; then echo \"Keystores generated\" ; else echo \"ERROR: keystores generation error\"; exit 1 ; fi" + " && " +
@@ -232,7 +260,23 @@ task copyLinuxInstallers(type: Copy) {
 
 
 task buildAll {
-    dependsOn(chmodBin, copyWindowsInstaller, copyMacInstaller, copyLinuxInstallers, copySQLCreateTables, copyConfFiles)
+    dependsOn(chmodBin, copyWindowsInstaller, copyMacInstaller, copyLinuxInstallers, copySQLCreateTables, copyConfFiles, generateKeys)
 }
 
 buildAll.dependsOn getTasksByName('build', true)
+
+task buildServerDockerImage(type: Exec) {
+    commandLine("sh", "-c", "docker image build -f " + dist + "/docker/server/Dockerfile -t xtremweb/server:" + project.version + " " + dist)
+}
+
+task buildClientDockerImage(type: Exec) {
+    commandLine("sh", "-c", "docker image build -f " + dist + "/docker/client/Dockerfile -t xtremweb/client:" + project.version + " " + dist)
+}
+
+task buildWorkerDockerImage(type: Exec) {
+    commandLine("sh", "-c", "docker image build -f " + dist + "/docker/worker/Dockerfile -t xtremweb/worker:" + project.version + " " + dist)
+}
+
+task docker(){
+    dependsOn (buildWorkerDockerImage, buildClientDockerImage, buildServerDockerImage)
+}
