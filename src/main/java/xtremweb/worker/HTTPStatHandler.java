@@ -448,7 +448,7 @@ public class HTTPStatHandler extends Thread implements Handler {
 		response.setContentType("text/html");
 		response.setStatus(HttpServletResponse.SC_OK);
 
-		final String resname = "data/worker.html";
+		final String resname = "misc/worker.html";
 		final InputStream ls = getClass().getClassLoader().getResourceAsStream(resname);
 		if ((ls != null) && (ls.available() > 0)) {
 			String content = new String();

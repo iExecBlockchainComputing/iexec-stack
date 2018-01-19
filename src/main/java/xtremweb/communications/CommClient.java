@@ -1379,7 +1379,17 @@ public abstract class CommClient implements ClientAPI {
 		final XMLRPCCommandUploadData cmd = new XMLRPCCommandUploadData(uri);
 		uploadData(cmd, content);
 	}
-
+	/**
+	 * This uploads a data to server from a file which name is the data UID
+	 *
+	 * @param command
+	 *            is the XMLRPC command
+	 * @since 9.0.0
+	 */
+	public void uploadData(final XMLRPCCommandUploadData command)
+			throws InvalidKeyException, AccessControlException, IOException {
+		uploadData(command, new File(command.getURI().getUID().toString()));
+	}
 	/**
 	 * This uploads a data content to server
 	 *
@@ -1393,8 +1403,14 @@ public abstract class CommClient implements ClientAPI {
 	public void uploadData(final XMLRPCCommandUploadData command, final File content)
 			throws InvalidKeyException, AccessControlException, IOException {
 
-		if (!content.exists()) {
-			throw new IOException(content.getAbsolutePath() + " not found");
+		if (content == null) {
+			throw new IOException("content is null");
+		}
+		if (!content.exists() || content.isDirectory()) {
+			throw new IOException(content.getAbsolutePath() + " not found or is a directory");
+		}
+		if (content.length() > XWTools.MAXFILESIZE) {
+			throw new IOException(content.getAbsolutePath() + " file too long");
 		}
 
 		try {
@@ -1409,19 +1425,6 @@ public abstract class CommClient implements ClientAPI {
 			}
 		}
 	}
-
-	/**
-	 * This uploads a data to server from a file which name is the data UID
-	 *
-	 * @param command
-	 *            is the XMLRPC command
-	 * @since 9.0.0
-	 */
-	public void uploadData(final XMLRPCCommandUploadData command)
-			throws InvalidKeyException, AccessControlException, IOException {
-		uploadData(command, new File(command.getURI().getUID().toString()));
-	}
-
 	/**
 	 * This downloads a data from server
 	 *
@@ -1452,7 +1455,17 @@ public abstract class CommClient implements ClientAPI {
 		final XMLRPCCommandDownloadData cmd = new XMLRPCCommandDownloadData(uri);
 		downloadData(cmd, content);
 	}
-
+	/**
+	 * This downloads a data from server to file which name is the data UID
+	 *
+	 * @param command
+	 *            is the XMLRPC command
+	 * @since 9.0.0
+	 */
+	public void downloadData(final XMLRPCCommandDownloadData command)
+			throws InvalidKeyException, AccessControlException, IOException {
+		downloadData(command, new File(command.getURI().getUID().toString()));
+	}
 	/**
 	 * This downloads a data from server
 	 *
@@ -1474,19 +1487,6 @@ public abstract class CommClient implements ClientAPI {
 			close();
 		}
 	}
-
-	/**
-	 * This downloads a data from server to file which name is the data UID
-	 *
-	 * @param command
-	 *            is the XMLRPC command
-	 * @since 9.0.0
-	 */
-	public void downloadData(final XMLRPCCommandDownloadData command)
-			throws InvalidKeyException, AccessControlException, IOException {
-		downloadData(command, new File(command.getURI().getUID().toString()));
-	}
-
 	/**
 	 * This retrieves all groups UID from server
 	 *

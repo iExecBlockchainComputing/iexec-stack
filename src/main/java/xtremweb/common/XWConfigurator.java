@@ -649,7 +649,7 @@ public final class XWConfigurator extends Properties {
 			InputStream def = null;
 
 			if ((configFile == null) || (!configFile.exists())) {
-				def = getClass().getResourceAsStream("/data/config.defaults");
+				def = getClass().getResourceAsStream("/misc/config.defaults");
 			} else {
 				def = new FileInputStream(configFile);
 			}
@@ -841,7 +841,7 @@ public final class XWConfigurator extends Properties {
 			try {
 				keyStoreFile = new File("xwhep" + XWRole.getMyRole().toString().toLowerCase() + ".keys");
 				setProperty(XWPropertyDefs.SSLKEYSTORE, keyStoreFile.getAbsolutePath());
-				extractResource("data/xwhep" + XWRole.getMyRole().toString().toLowerCase() + ".keys", keyStoreFile);
+				extractResource("misc/xwhep" + XWRole.getMyRole().toString().toLowerCase() + ".keys", keyStoreFile);
 			} catch (final Exception e) {
 				logger.exception(e);
 				keyStoreFile = null;
@@ -1279,10 +1279,10 @@ public final class XWConfigurator extends Properties {
 
 			final File iconFile = new File("xw.ico");
 			try {
-				extractResource("data/" + iconFile, iconFile);
+				extractResource("misc/" + iconFile, iconFile);
 			} catch (final Exception e) {
 				try {
-					extractResource("data/" + iconFile, iconFile);
+					extractResource("misc/" + iconFile, iconFile);
 				} catch (final Exception e2) {
 					logger.exception("can't extract resource " + iconFile, e2);
 					useNotify = false;
@@ -1696,10 +1696,7 @@ public final class XWConfigurator extends Properties {
 	 */
 	public int getInt(final XWPropertyDefs key) {
 		final String defval = key.defaultValue();
-		String s = getProperty(key);
-		if (s == null) {
-			s = defval;
-		}
+		final String s = getProperty(key) == null ? defval : getProperty(key); 
 		try {
 			return Integer.parseInt(s);
 		} catch (final NumberFormatException e) {
@@ -1720,10 +1717,7 @@ public final class XWConfigurator extends Properties {
 	 */
 	public long getLong(final XWPropertyDefs key) {
 		final String defval = key.defaultValue();
-		String s = getProperty(key);
-		if (s == null) {
-			s = defval;
-		}
+		final String s = getProperty(key) == null ? defval : getProperty(key); 
 		try {
 			return Long.parseLong(s);
 		} catch (final NumberFormatException e) {

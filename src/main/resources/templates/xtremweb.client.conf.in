@@ -239,6 +239,23 @@ PASSWORD=@XWADMINPASSWORD@
 #
 #OPTIMIZENETWORK=true
 
+#
+# upload size limit
+# Upload cancelled is size is greater
+#
+# Default is 500Mb
+# Since 12.2.3
+#
+#UPLOADSIZELIMIT=
+
+#
+# Download size limit
+# Download cancelled is size is greater
+#
+# Default is 500Mb
+# Since 12.2.3
+#
+#DOWNLOADSIZELIMIT=
 
 
 

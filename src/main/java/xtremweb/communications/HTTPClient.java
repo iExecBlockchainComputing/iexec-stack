@@ -563,21 +563,13 @@ public class HTTPClient extends CommClient {
 	 */
 	@Override
 	public void readFile(final File f) throws IOException {
-		StreamIO io = null;
-		DataInputStream inputStream = null;
 
-		try {
+		try (final DataInputStream inputStream = new DataInputStream(post.getResponseBodyAsStream());
+				final StreamIO io = new StreamIO(null, inputStream, nio);) {
 			mileStone("<readFile>");
-			inputStream = new DataInputStream(post.getResponseBodyAsStream());
-			io = new StreamIO(null, inputStream, nio);
-
-			io.readFile(f);
+			io.readFile(f, getConfig().getLong(XWPropertyDefs.MAXFILESIZE));
 		} catch (final Exception e) {
-			if (io != null) {
-				io.close();
-			}
 			getLogger().exception(e);
-			inputStream = null;
 			mileStone("<error method='readFile' msg='" + e.getMessage() + "' />");
 			throw new IOException(e.toString());
 		} finally {

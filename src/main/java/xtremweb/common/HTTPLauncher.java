@@ -38,7 +38,7 @@ import xtremweb.communications.CommClient;
 import xtremweb.exec.Executor;
 
 /**
- * This launches XtremWeb from its JAR file. This first retreive URL from config
+ * This launches XtremWeb from its JAR file. This first retrieve URL from config
  * file, if any. If the config file contains no URL, this contructs a new URL
  * with the server found in the config file.
  *
@@ -51,7 +51,7 @@ public final class HTTPLauncher {
 	private XWConfigurator config;
 
 	/**
-	 * This retreives the default comm client and initializes it
+	 * This retrieves the default communication client and initializes it
 	 *
 	 * @return the default comm client
 	 */
@@ -152,11 +152,10 @@ public final class HTTPLauncher {
 
 			if ((upgrade) && (url != null)) {
 				logger.info("Downloading xwhep JAR file");
-				try (StreamIO io = new StreamIO(null, new DataInputStream(url.openStream()), false)) {
+				try (final StreamIO io = new StreamIO(null, new DataInputStream(url.openStream()), false)) {
 					logger.debug("" + jarFile + ".exists() = " + jarFile.exists());
 
 					io.readFileContent(jarFile);
-					io.close();
 				} catch (final FileNotFoundException e) {
 					logger.fatal("Can't download " + XWTools.JARFILENAME + " : " + e);
 				} catch (final Exception e) {

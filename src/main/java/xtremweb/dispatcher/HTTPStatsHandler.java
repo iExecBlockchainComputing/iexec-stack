@@ -70,7 +70,7 @@ public class HTTPStatsHandler extends xtremweb.dispatcher.CommHandler {
 	private HttpServletRequest request;
 	private HttpServletResponse response;
 
-	private static String RES_SERVERSTATSHTML = "data/serverstats.html";
+	private static String RES_SERVERSTATSHTML = "misc/serverstats.html";
 
 	private static final Version CURRENTVERSION = CommonVersion.getCurrent();
 	private static final String CURRENTVERSIONSTRING = CURRENTVERSION.toString();
@@ -265,6 +265,7 @@ public class HTTPStatsHandler extends xtremweb.dispatcher.CommHandler {
 	 */
 	@Override
 	public synchronized void writeFile(final File f) throws IOException {
+		throw new IOException("HTTPHandler#writeFile not implemented");
 	}
 
 	/**
