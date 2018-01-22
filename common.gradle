@@ -26,6 +26,12 @@ project.ext{
     privateEtc = '/private/etc'
 }
 
+def adminuid=UUID.randomUUID().toString()
+def workeruid=UUID.randomUUID().toString()
+def vworkeruid=UUID.randomUUID().toString()
+def admingroupuid=UUID.randomUUID().toString()
+def publicworkersgroup=UUID.randomUUID().toString()
+
 // Define custom properties that can be used everywhere
 project.ext.getCustomProperties = {
 
@@ -37,11 +43,11 @@ project.ext.getCustomProperties = {
     }
 
     // add other custom properties
-    props.setProperty("ADMINUID", UUID.randomUUID().toString())
-    props.setProperty("WORKERUID", UUID.randomUUID().toString())
-    props.setProperty("VWORKERUID", UUID.randomUUID().toString())
-    props.setProperty("ADMINGROUPUID", UUID.randomUUID().toString())
-    props.setProperty("PUBLICWORKERSGROUPUID", UUID.randomUUID().toString())
+    props.setProperty("ADMINUID", adminuid)
+    props.setProperty("WORKERUID", workeruid)
+    props.setProperty("VWORKERUID", vworkeruid)
+    props.setProperty("ADMINGROUPUID", admingroupuid)
+    props.setProperty("PUBLICWORKERSGROUPUID", publicworkersgroup)
     props.setProperty("XWVERSION", version)
     props.setProperty("INSTALLDIR", opt)
 
