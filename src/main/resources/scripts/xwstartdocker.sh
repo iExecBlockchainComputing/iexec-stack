@@ -212,7 +212,9 @@ docker run -v $(pwd):/host --rm --name ${CONTAINERNAME} ${IMAGENAME} ${ARGS}
 
 # clean everything
 if [ "$TESTINGONLY" != "TRUE" ] ; then
-  docker stop ${CONTAINERNAME} &&docker rm ${CONTAINERNAME} && docker rmi ${IMAGENAME}
+  docker stop ${CONTAINERNAME} > /dev/null  2>&1
+  docker rm ${CONTAINERNAME} > /dev/null  2>&1
+  docker rmi ${IMAGENAME} > /dev/null  2>&1
 fi
 
 
