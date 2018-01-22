@@ -163,18 +163,18 @@ task copyLinuxDPKGWorker(type: Copy){
 
     into("/lib"){
         from project.distLib + "/bcprov-jdk16-140.jar"
-        from project.distLib + "/jetty-io-9.3.8.v20160314.jar"
-        from project.distLib + "/log4j-1.2-api-2.10.0.jar"
-        from project.distLib + "/slf4j-log4j12-1.7.2.jar"
+        from project.distLib + "/commons-httpclient-3.0.1.jar"
         from project.distLib + "/ibis-util-2.1.jar"
-        from project.distLib + "/jetty-server-9.3.8.v20160314.jar"
-        from project.distLib + "/servlet-api-3.1.jar"
-        from project.distLib + "/smartsockets-1.4.jar"
         from project.distLib + "/jetty-http-9.3.8.v20160314.jar"
+        from project.distLib + "/jetty-io-9.3.8.v20160314.jar"
+        from project.distLib + "/jetty-server-9.3.8.v20160314.jar"
         from project.distLib + "/jetty-util-9.3.8.v20160314.jar"
+        from project.distLib + "/log4j-1.2-api-2.10.0.jar"
+        from project.distLib + "/servlet-api-3.1.jar"
         from project.distLib + "/slf4j-api-1.7.2.jar"
+        from project.distLib + "/slf4j-log4j12-1.7.2.jar"
+        from project.distLib + "/smartsockets-1.4.jar"
         from project.distLib + "/xtremweb.jar"
-
     }
 
     into("/doc"){
