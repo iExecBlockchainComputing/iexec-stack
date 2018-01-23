@@ -1067,14 +1067,13 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 			if (dataUpload != null) {
 				final String value = request.getParameter(XWPostParams.DATAMD5SUM.toString());
 				if (value != null) {
-					logger.debug("Parsing parameters DATAMD5SUM = " + value + " (" + dataUploadmd5sum + ")");
 					if (dataUploadmd5sum == null) {
 						dataUploadmd5sum = value;
 					}
 				}
+				logger.debug("Parameters upload size = " + dataUpload.getSize() + " dataUploadmd5sum = " + dataUploadmd5sum);
 			}
 
-			logger.debug("Parameters upload size = " + dataUpload.getSize() + " dataUploadmd5sum = " + dataUploadmd5sum);
 
 			final Iterator<String> it = paths.iterator();
 			final StringBuilder uriWithoutCmd = new StringBuilder();
