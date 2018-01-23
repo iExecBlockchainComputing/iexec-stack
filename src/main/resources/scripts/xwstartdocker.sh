@@ -214,7 +214,7 @@ if [ -f ${DOCKERFILENAME} ] ; then
     docker build --force-rm --tag ${IMAGENAME} .
 fi
 
-docker run -v $(pwd):/host --rm --name ${CONTAINERNAME} ${IMAGENAME} ${ARGS}
+docker run -v $(pwd):/host -w /host --rm --name ${CONTAINERNAME} ${IMAGENAME} ${ARGS}
 
 # clean everything
 if [ "$TESTINGONLY" != "TRUE" ] ; then
