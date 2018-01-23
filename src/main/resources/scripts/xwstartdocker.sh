@@ -128,6 +128,7 @@ cat << END_OF_USAGE
   - XWJOBUID : this must contain the job UID on worker side
   - XWSCRATCHPATH : this must contains the directory where drive are stored
   - XWRAMSIZE : this may contain expected RAM size
+  - XWDOCKERIMAGE : this may contain docker image name
   - XWDISKSPACE : this may contain expected storage capacity
   - XWPORTS  : this may contain a comma separated ports list
                ssh  port forwarding localhost:$XWPORTS[0] to guest:22
@@ -205,14 +206,15 @@ while [ $# -gt 0 ]; do
   shift
 
 done
- 
+
+[ ! -z ${XWDOCKERIMAGE} ] && IMAGENAME="${XWDOCKERIMAGE}" 
 
 if [ -f ${DOCKERFILENAME} ] ; then
     IMAGENAME="xwimg_${XWJOBUID}"
     docker build --force-rm --tag ${IMAGENAME} .
 fi
 
-docker run -v $(pwd):/host --rm --name ${CONTAINERNAME} ${IMAGENAME} ${ARGS}
+docker run -v $(pwd):/host -w /host --rm --name ${CONTAINERNAME} ${IMAGENAME} ${ARGS}
 
 # clean everything
 if [ "$TESTINGONLY" != "TRUE" ] ; then
