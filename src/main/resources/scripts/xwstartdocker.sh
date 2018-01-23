@@ -193,6 +193,10 @@ while [ $# -gt 0 ]; do
       VERBOSE=1
       set -x
       ;;
+    --xwimage )
+	  shift
+	  IMAGENAME=$1
+      ;;
   	* )
   	  ARGS="$ARGS $1"
   	  ;;
