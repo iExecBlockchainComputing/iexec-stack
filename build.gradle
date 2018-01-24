@@ -265,16 +265,25 @@ task buildAll {
 
 buildAll.dependsOn getTasksByName('build', true)
 
+project.ext.getDockerImageVersion = {
+
+    if(project.version.contains("SNAPSHOT")){
+        return project.version + "-" + 'git rev-parse --short HEAD'.execute().text.trim()
+    } else {
+        return project.version
+    }
+}
+
 task buildServerDockerImage(type: Exec) {
-    commandLine("sh", "-c", "docker image build -f " + dist + "/docker/server/Dockerfile -t xtremweb/server:" + project.version + " " + dist)
+    commandLine("sh", "-c", "docker image build -f " + dist + "/docker/server/Dockerfile -t iexechub/xwserver:" + getDockerImageVersion() + " " + dist)
 }
 
 task buildClientDockerImage(type: Exec) {
-    commandLine("sh", "-c", "docker image build -f " + dist + "/docker/client/Dockerfile -t xtremweb/client:" + project.version + " " + dist)
+    commandLine("sh", "-c", "docker image build -f " + dist + "/docker/client/Dockerfile -t iexechub/xwclient:" + getDockerImageVersion() + " " + dist)
 }
 
 task buildWorkerDockerImage(type: Exec) {
-    commandLine("sh", "-c", "docker image build -f " + dist + "/docker/worker/Dockerfile -t xtremweb/worker:" + project.version + " " + dist)
+    commandLine("sh", "-c", "docker image build -f " + dist + "/docker/worker/Dockerfile -t iexechub/xwworker:" + getDockerImageVersion() + " " + dist)
 }
 
 task docker(){
