@@ -19,14 +19,14 @@ task copyLinuxDPKGClient(type: Copy){
     }
 
     into("/keystore"){
-        from project.root + "/build/dist/" + project.PROJECT_TAG + "/keystore/xwhepclient.keys"
+        from project.root + "/build/dist/" + project.PROJECT_TAG + "/keystore/cacerts"
     }
 
     into("/conf"){
         from project.templates + "/xtremweb.client.conf.in"
         rename { fileName -> fileName.replace('.in', '') }
-        def customProperties = getCustomProperties();
-        customProperties.setProperty("SSLKEYSTORECLIENT", "/opt/xwhep-client-" + project.version + "/keystore/xwhepclient.keys")
+        def customProperties = getCustomProperties()
+        customProperties.setProperty("SSLTRUSTSTORE", "/opt/xwhep-client-" + project.version + "/keystore/cacerts")
         filter(ReplaceTokens, tokens: customProperties)
     }
 
@@ -150,14 +150,14 @@ task copyLinuxDPKGWorker(type: Copy){
     }
 
     into("/keystore"){
-        from project.root + "/build/dist/" + project.PROJECT_TAG + "/keystore/xwhepworker.keys"
+        from project.root + "/build/dist/" + project.PROJECT_TAG + "/keystore/cacerts"
     }
 
     into("/conf"){
         from project.templates + "/xtremweb.worker.conf.in"
         rename { fileName -> fileName.replace('.in', '') }
         def customProperties = getCustomProperties();
-        customProperties.setProperty("SSLKEYSTOREWORKER", "/opt/xwhep-worker-" + project.version + "/keystore/xwhepworker.keys")
+        customProperties.setProperty("SSLTRUSTSTORE", "/opt/xwhep-worker-" + project.version + "/keystore/cacerts")
         filter(ReplaceTokens, tokens: customProperties)
     }
 
@@ -214,14 +214,14 @@ task copyLinuxDPKGVWorker(type: Copy){
     }
 
     into("/keystore"){
-        from project.root + "/build/dist/" + project.PROJECT_TAG + "/keystore/xwhepworker.keys"
+        from project.root + "/build/dist/" + project.PROJECT_TAG + "/keystore/cacerts"
     }
 
     into("/conf"){
         from project.templates + "/xtremweb.vworker.conf.in"
         rename { fileName -> fileName.replace('vworker.conf.in', 'worker.conf') }
-        def customProperties = getCustomProperties();
-        customProperties.setProperty("SSLKEYSTOREWORKER", "/opt/xwhep-worker-" + project.version + "/keystore/xwhepworker.keys")
+        def customProperties = getCustomProperties()
+        customProperties.setProperty("SSLTRUSTSTORE", "/opt/xwhep-worker-" + project.version + "/keystore/cacerts")
         filter(ReplaceTokens, tokens: customProperties)
     }
 
