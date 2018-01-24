@@ -567,7 +567,7 @@ fatal ()
 #  Main
 #
 #=============================================================================
-trap  fatal  SIGINT  SIGTERM
+trap  fatal  INT  TERM
 
 echo
 info_message  Begin

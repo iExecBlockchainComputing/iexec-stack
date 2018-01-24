@@ -88,7 +88,7 @@ extract_xw_attribute_value ()
 #  Main
 #=============================================================================
 
-trap fatal SIGINT SIGTERM
+trap fatal INT TERM
 
 
 while [ $# -gt 0 ]

@@ -118,7 +118,7 @@ clean ()
 #  Main
 #
 #=============================================================================
-trap  fatal  SIGINT  SIGTERM
+trap  fatal  INT  TERM
 
 
 

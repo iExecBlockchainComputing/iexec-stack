@@ -148,7 +148,7 @@ END_OF_USAGE
 #  Main
 #
 #=============================================================================
-trap  fatal  SIGINT  SIGTERM
+trap  fatal  INT  TERM
 
 
 
