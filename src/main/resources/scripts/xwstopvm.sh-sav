@@ -127,7 +127,7 @@ fatal() {
 # main
 ##################################################
 
-trap fatal SIGINT SIGTERM
+trap fatal INT TERM
 
 echo ""
 echo "[`date`] ($0) : start"

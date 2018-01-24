@@ -1063,7 +1063,7 @@ END_OF_INSTALL_VARS
 #  Main
 #
 #=============================================================================
-trap  fatal  SIGINT  SIGTERM
+trap  fatal  INT  TERM
 
 [ $# -gt 0 ] || usage
 
