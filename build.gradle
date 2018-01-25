@@ -265,27 +265,66 @@ task buildAll {
 
 buildAll.dependsOn getTasksByName('build', true)
 
+def gitShortCommit = 'git rev-parse --short HEAD'.execute().text.trim()
+def gitBranch = 'git rev-parse --abbrev-ref HEAD'.execute().text.trim()
+def isMasterBranch =  gitBranch == "master"
+def isSnapshotVersion = project.version.contains("SNAPSHOT")
+
 project.ext.getDockerImageVersion = {
 
-    if(project.version.contains("SNAPSHOT")){
-        return project.version + "-" + 'git rev-parse --short HEAD'.execute().text.trim()
+    if(isSnapshotVersion){
+        return project.version + "-" + gitShortCommit
     } else {
         return project.version
     }
 }
 
-task buildServerDockerImage(type: Exec) {
-    commandLine("sh", "-c", "docker image build -f " + dist + "/docker/server/Dockerfile -t iexechub/xwserver:" + getDockerImageVersion() + " " + dist)
+project.ext.getServerDockerImageName = {
+    return "iexechub/xwserver:" + getDockerImageVersion()
 }
+
+project.ext.getWorkerDockerImageName = {
+    return "iexechub/xwworker:" + getDockerImageVersion()
+}
+
+project.ext.getClientDockerImageName = {
+    return "iexechub/xwclient:" + getDockerImageVersion()
+}
+
+task buildServerDockerImage(type: Exec) {
+    description 'Build a docker image for the server'
+    commandLine("sh", "-c", "docker image build -f " + dist + "/docker/server/Dockerfile -t " + getServerDockerImageName() + " " + dist)
+}
+buildServerDockerImage.enabled = isMasterBranch
 
 task buildClientDockerImage(type: Exec) {
-    commandLine("sh", "-c", "docker image build -f " + dist + "/docker/client/Dockerfile -t iexechub/xwclient:" + getDockerImageVersion() + " " + dist)
+    description 'Build a docker image for the client'
+    commandLine("sh", "-c", "docker image build -f " + dist + "/docker/client/Dockerfile -t " + getClientDockerImageName() + " " + dist)
 }
+buildClientDockerImage.enabled = isMasterBranch
 
 task buildWorkerDockerImage(type: Exec) {
-    commandLine("sh", "-c", "docker image build -f " + dist + "/docker/worker/Dockerfile -t iexechub/xwworker:" + getDockerImageVersion() + " " + dist)
+    description 'Build a docker image for the worker'
+    commandLine("sh", "-c", "docker image build -f " + dist + "/docker/worker/Dockerfile -t " + getWorkerDockerImageName() + " " + dist)
 }
+buildWorkerDockerImage.enabled = isMasterBranch
 
-task docker(){
+task buildImages(){
     dependsOn (buildWorkerDockerImage, buildClientDockerImage, buildServerDockerImage)
 }
+buildImages.enabled = isMasterBranch
+
+task pushImages(type: Exec){
+    dependsOn (buildImages)
+
+    if(project.hasProperty("dockerHubUser") && project.hasProperty("dockerHubPassword")){
+        commandLine("sh", "-c", "docker login -u " + project.dockerHubUser + " -p " + project.dockerHubPassword + " && " +
+                "docker push " + getServerDockerImageName() + " && " +
+                "docker push " + getClientDockerImageName() + " && " +
+                "docker push " + getWorkerDockerImageName() + " && " +
+                "docker logout")
+    } else {
+        println "Credentials for DockerHub are missing, the images cannot be pushed"
+    }
+}
+pushImages.enabled = isMasterBranch
