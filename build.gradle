@@ -270,6 +270,10 @@ def gitBranch = 'git rev-parse --abbrev-ref HEAD'.execute().text.trim()
 def isMasterBranch =  gitBranch == "master"
 def isSnapshotVersion = project.version.contains("SNAPSHOT")
 
+task ugo(){
+    println "The branch is " + gitBranch
+}
+
 project.ext.getDockerImageVersion = {
 
     if(isSnapshotVersion){
