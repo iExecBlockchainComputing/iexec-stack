@@ -265,27 +265,48 @@ task buildAll {
 
 buildAll.dependsOn getTasksByName('build', true)
 
+def gitShortCommit = 'git rev-parse --short HEAD'.execute().text.trim()
+
 project.ext.getDockerImageVersion = {
 
     if(project.version.contains("SNAPSHOT")){
-        return project.version + "-" + 'git rev-parse --short HEAD'.execute().text.trim()
+        return project.version + "-" + gitShortCommit
     } else {
         return project.version
     }
 }
 
+project.ext.getServerDockerImageName = {
+    return "iexechub/xwserver:" + getDockerImageVersion()
+}
+
+project.ext.getWorkerDockerImageName = {
+    return "iexechub/xwworker:" + getDockerImageVersion()
+}
+
+project.ext.getClientDockerImageName = {
+    return "iexechub/xwclient:" + getDockerImageVersion()
+}
+
 task buildServerDockerImage(type: Exec) {
-    commandLine("sh", "-c", "docker image build -f " + dist + "/docker/server/Dockerfile -t iexechub/xwserver:" + getDockerImageVersion() + " " + dist)
+    commandLine("sh", "-c", "docker image build -f " + dist + "/docker/server/Dockerfile -t " + getServerDockerImageName() + " " + dist)
 }
 
 task buildClientDockerImage(type: Exec) {
-    commandLine("sh", "-c", "docker image build -f " + dist + "/docker/client/Dockerfile -t iexechub/xwclient:" + getDockerImageVersion() + " " + dist)
+    commandLine("sh", "-c", "docker image build -f " + dist + "/docker/client/Dockerfile -t " + getWorkerDockerImageName() + " " + dist)
 }
 
 task buildWorkerDockerImage(type: Exec) {
-    commandLine("sh", "-c", "docker image build -f " + dist + "/docker/worker/Dockerfile -t iexechub/xwworker:" + getDockerImageVersion() + " " + dist)
+    commandLine("sh", "-c", "docker image build -f " + dist + "/docker/worker/Dockerfile -t " + getClientDockerImageName() + " " + dist)
 }
 
-task docker(){
-    dependsOn (buildWorkerDockerImage, buildClientDockerImage, buildServerDockerImage)
+task buildImages(){
+    // dependsOn (buildWorkerDockerImage, buildClientDockerImage, buildServerDockerImage)
+    dependsOn (buildClientDockerImage)
+}
+
+task pushImages(){
+    dependsOn (buildImages)
+
+
 }
