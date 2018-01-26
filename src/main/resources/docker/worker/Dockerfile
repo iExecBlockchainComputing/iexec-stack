@@ -29,6 +29,8 @@ RUN echo "keytool -import -alias localhost -file /xwhep/certificate/xwhepcert.pe
 RUN echo "sed -i \"s/^SSLKEYSTORE=.*/SSLKEYSTORE=\/etc\/ssl\/certs\/java\/cacerts/g\" /xwhep/conf/xtremweb.worker.conf " >> /tmp/xwstart.sh
 RUN echo "sed -i \"s/^SSLKEYPASSWORD=.*/SSLKEYPASSWORD=changeit/g\" /xwhep/conf/xtremweb.worker.conf " >> /tmp/xwstart.sh
 
+# update the SHAREDAPPS variable to docker  
+RUN echo "sed -i \"s/^#SHAREDAPPS=.*/SHAREDAPPS=docker/g\" /xwhep/conf/xtremweb.worker.conf " >> /tmp/xwstart.sh
 
 RUN echo "cat /etc/hosts" >> /tmp/xwstart.sh
 RUN echo "/xwhep/bin/xtremweb.worker console" >> /tmp/xwstart.sh
