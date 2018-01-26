@@ -280,15 +280,15 @@ project.ext.getDockerImageVersion = {
 }
 
 project.ext.getServerDockerImageName = {
-    return "iexechub/xwserver:" + getDockerImageVersion()
+    return "iexechub/server:" + getDockerImageVersion()
 }
 
 project.ext.getWorkerDockerImageName = {
-    return "iexechub/xwworker:" + getDockerImageVersion()
+    return "iexechub/worker:" + getDockerImageVersion()
 }
 
 project.ext.getClientDockerImageName = {
-    return "iexechub/xwclient:" + getDockerImageVersion()
+    return "iexechub/client:" + getDockerImageVersion()
 }
 
 task buildServerDockerImage(type: Exec) {
