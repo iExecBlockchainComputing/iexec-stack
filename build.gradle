@@ -53,7 +53,7 @@ task createVersion(type: Copy) {
     // replace tokens in the template file
     filter(ReplaceTokens, tokens: [BUILD_TIME: Instant.now().toString(),
                                    XWVERSION : "${version}".toString(),
-                                   VBRANCH   : 'git rev-parse --abbrev-ref HEAD'.execute().text.trim()
+                                   VBRANCH   : "master"
     ])
 }
 
