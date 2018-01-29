@@ -10,36 +10,36 @@ ADD lib /xwhep/lib
 
 WORKDIR /xwhep
 
-RUN apt-get update
-
-RUN export DEBIAN_FRONTEND=noninteractive && \
+RUN apt-get update && \ 
+       export DEBIAN_FRONTEND=noninteractive && \
        apt-get install -y openjdk-8-jre zip unzip wget make curl docker.io iputils-ping
 
-RUN echo "#!/bin/sh" > /tmp/xwstart.sh
-
-RUN echo "if [ ! -z \$XWSERVERADDR ] ; then " >> /tmp/xwstart.sh
-RUN echo "	echo \"\$XWSERVERADDR \$XWSERVERNAME\" >> /etc/hosts" >> /tmp/xwstart.sh
-RUN echo "	sed -i "s/^DISPATCHERS=.*/DISPATCHERS=\$XWSERVERNAME/g" /xwhep/conf/xtremweb.worker.conf " >> /tmp/xwstart.sh
-RUN echo "fi" >> /tmp/xwstart.sh
+RUN echo "#!/bin/sh" > /tmp/xwstart.sh && \
+    echo "if [ ! -z \$XWSERVERADDR ] ; then " >> /tmp/xwstart.sh && \
+    echo "	echo \"\$XWSERVERADDR \$XWSERVERNAME\" >> /etc/hosts" >> /tmp/xwstart.sh && \
+    echo "	sed -i "s/^DISPATCHERS=.*/DISPATCHERS=\$XWSERVERNAME/g" /xwhep/conf/xtremweb.worker.conf " >> /tmp/xwstart.sh && \
+    echo "fi" >> /tmp/xwstart.sh
 
 # import the server certificate into the container keystore
 RUN echo "keytool -import -alias localhost -file /xwhep/certificate/xwhepcert.pem -trustcacerts -keystore /etc/ssl/certs/java/cacerts -storepass changeit -v -noprompt " >> /tmp/xwstart.sh
 
 # update the SSLKEYSTORE to point to the container's keystore
-RUN echo "sed -i \"s/^SSLKEYSTORE=.*/SSLKEYSTORE=\/etc\/ssl\/certs\/java\/cacerts/g\" /xwhep/conf/xtremweb.worker.conf " >> /tmp/xwstart.sh
-RUN echo "sed -i \"s/^SSLKEYPASSWORD=.*/SSLKEYPASSWORD=changeit/g\" /xwhep/conf/xtremweb.worker.conf " >> /tmp/xwstart.sh
+RUN echo "sed -i \"s/^SSLKEYSTORE=.*/SSLKEYSTORE=\/etc\/ssl\/certs\/java\/cacerts/g\" /xwhep/conf/xtremweb.worker.conf " >> /tmp/xwstart.sh  && \
+    echo "sed -i \"s/^SSLKEYPASSWORD=.*/SSLKEYPASSWORD=changeit/g\" /xwhep/conf/xtremweb.worker.conf " >> /tmp/xwstart.sh
 
 # update the SHAREDAPPS variable to docker  
 RUN echo "sed -i \"s/^#SHAREDAPPS=.*/SHAREDAPPS=docker/g\" /xwhep/conf/xtremweb.worker.conf " >> /tmp/xwstart.sh
 
 # choose the login/password to run worker or vworker:
-RUN echo "if [ ! -z \$LOGIN ] ; then " >> /tmp/xwstart.sh
-RUN echo "	sed -i \"s/^PASSWORD=.*/PASSWORD=\$PASSWORD/g\" /xwhep/conf/xtremweb.worker.conf " >> /tmp/xwstart.sh
-RUN echo "	sed -i \"s/^LOGIN=.*/LOGIN=\$LOGIN/g\" /xwhep/conf/xtremweb.worker.conf " >> /tmp/xwstart.sh
-RUN echo "fi" >> /tmp/xwstart.sh
-
-RUN echo "cat /etc/hosts" >> /tmp/xwstart.sh
-RUN echo "/xwhep/bin/xtremweb.worker console" >> /tmp/xwstart.sh
+RUN echo "if [ ! -z \$LOGIN ] ; then " >> /tmp/xwstart.sh  && \
+    echo "	sed -i \"s/^PASSWORD=.*/PASSWORD=\$PASSWORD/g\" /xwhep/conf/xtremweb.worker.conf " >> /tmp/xwstart.sh  && \
+    echo "	sed -i \"s/^LOGIN=.*/LOGIN=\$LOGIN/g\" /xwhep/conf/xtremweb.worker.conf " >> /tmp/xwstart.sh  && \
+    echo "fi" >> /tmp/xwstart.sh && \
+	echo "if [ ! -z \$LOGGERLEVEL ] ; then " >> /tmp/xwstart.sh  && \
+    echo "	sed -i \"s/^LOGGERLEVEL=.*/LOGGERLEVEL=\$LOGGERLEVEL/g\" /xwhep/conf/xtremweb.worker.conf " >> /tmp/xwstart.sh  && \
+    echo "fi" >> /tmp/xwstart.sh && \
+    echo "cat /etc/hosts" >> /tmp/xwstart.sh  && \
+    echo "/xwhep/bin/xtremweb.worker console" >> /tmp/xwstart.sh
 
 RUN chmod +x /tmp/xwstart.sh
 
