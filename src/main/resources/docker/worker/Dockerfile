@@ -34,8 +34,8 @@ RUN echo "sed -i \"s/^#SHAREDAPPS=.*/SHAREDAPPS=docker/g\" /xwhep/conf/xtremweb.
 
 # choose the login/password to run worker or vworker:
 RUN echo "if [ ! -z \$LOGIN ] ; then " >> /tmp/xwstart.sh
-RUN echo "	sed -i \"s/^LOGIN=.*/LOGIN=\$LOGIN/g\" /xwhep/conf/xtremweb.worker.conf " >> /tmp/xwstart.sh
 RUN echo "	sed -i \"s/^PASSWORD=.*/PASSWORD=\$PASSWORD/g\" /xwhep/conf/xtremweb.worker.conf " >> /tmp/xwstart.sh
+RUN echo "	sed -i \"s/^LOGIN=.*/LOGIN=\$LOGIN/g\" /xwhep/conf/xtremweb.worker.conf " >> /tmp/xwstart.sh
 RUN echo "fi" >> /tmp/xwstart.sh
 
 RUN echo "cat /etc/hosts" >> /tmp/xwstart.sh
