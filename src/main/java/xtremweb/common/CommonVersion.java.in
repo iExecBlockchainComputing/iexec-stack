@@ -32,7 +32,7 @@ import java.util.jar.Attributes;
 
 public class CommonVersion {
 
-    private static Version current = new Version("@XWVERSION@", "@VBRANCH@", "@BUILD_TIME@");
+    private static Version current = new Version("@XWVERSION@", "@BUILD_TIME@");
 
     public static Version getCurrent() {
         return current;
@@ -42,7 +42,6 @@ public class CommonVersion {
         Attributes mf = jf.getManifest().getMainAttributes();
         jf.close();
         return new Version( mf.getValue("XW-rev"),
-                            mf.getValue("XW-branch"),
                             mf.getValue("XW-build"));
     }
 }
