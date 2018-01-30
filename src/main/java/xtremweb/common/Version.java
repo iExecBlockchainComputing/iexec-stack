@@ -98,7 +98,7 @@ public class Version extends XMLable {
 	}
 
 	public String full() {
-		return version + "-" + build;
+		return version;
 	}
 
 	public String rev() {

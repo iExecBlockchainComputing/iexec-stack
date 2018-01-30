@@ -10,7 +10,7 @@ volumes:
 
 services:
   scheduler:
-    image: xtremweb/server:${XTREMWEB_SERVER_VERSION}
+    image: iexechub/server:${XTREMWEB_SERVER_VERSION}
     container_name: xwscheduler
     hostname: xwscheduler
     ports:
@@ -24,7 +24,7 @@ services:
       - xtremweb-net
 
   worker:
-    image: xtremweb/worker:${XTREMWEB_WORKER_VERSION}
+    image: iexechub/worker:${XTREMWEB_WORKER_VERSION}
     container_name: xwworker
     environment:
       - XWSERVERADDR=scheduler
