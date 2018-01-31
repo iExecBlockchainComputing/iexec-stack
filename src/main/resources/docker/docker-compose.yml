@@ -10,7 +10,7 @@ volumes:
 
 services:
   scheduler:
-    image: xtremweb/server:${XTREMWEB_SERVER_VERSION}
+    image: iexechub/server:${XTREMWEB_SERVER_VERSION}
     container_name: xwscheduler
     hostname: xwscheduler
     ports:
@@ -24,7 +24,7 @@ services:
       - xtremweb-net
 
   worker:
-    image: xtremweb/worker:${XTREMWEB_WORKER_VERSION}
+    image: iexechub/worker:${XTREMWEB_WORKER_VERSION}
     container_name: xwworker
     environment:
       - XWSERVERADDR=scheduler
@@ -44,7 +44,7 @@ services:
     image: mysql:5.7
     container_name: mysql
     ports:
-      - 3306
+      - 3307:3306
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ADMIN_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DB_NAME}

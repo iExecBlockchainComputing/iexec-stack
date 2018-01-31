@@ -40,7 +40,6 @@ import org.xml.sax.SAXException;
 public class Version extends XMLable {
 	private String version;
 	private String build;
-	private String branch;
 
 	public Version() {
 		setXMLTag("Version");
@@ -51,7 +50,6 @@ public class Version extends XMLable {
 
 		StringTokenizer sk = new StringTokenizer(v, "-");
 		version = sk.nextToken();
-		branch = sk.nextToken();
 		try {
 			build = sk.nextToken();
 		} catch (final Exception e) {
@@ -61,9 +59,9 @@ public class Version extends XMLable {
 	/**
 	 * This calls this() and fromStrings(ver,br,bu)
 	 */
-	public Version(final String ver, final String br, final String bu) {
+	public Version(final String ver, final String bu) {
 		this();
-		fromStrings(ver, br, bu);
+		fromStrings(ver, bu);
 	}
 
 	/**
@@ -91,27 +89,20 @@ public class Version extends XMLable {
 	 *
 	 * @param ver
 	 *            is the version
-	 * @param br
-	 *            is the branch
 	 * @param bu
 	 *            is the build
 	 */
-	public void fromStrings(final String ver, final String br, final String bu) {
+	public void fromStrings(final String ver, final String bu) {
 		version = ver;
-		branch = br;
 		build = bu;
 	}
 
 	public String full() {
-		return version + "-" + branch;
+		return version + "-master";
 	}
 
 	public String rev() {
 		return version;
-	}
-
-	public String branch() {
-		return branch;
 	}
 
 	public String build() {
@@ -173,7 +164,6 @@ public class Version extends XMLable {
 	public String toXml() {
 
 		String ret = ("<" + getXMLTag() + " ");
-		ret += " branch=\"" + branch + "\"";
 		ret += " build=\"" + build + "\"";
 		ret += " version=\"" + version + "\"";
 		ret += " />";
@@ -196,10 +186,9 @@ public class Version extends XMLable {
 			return;
 		}
 
-		final String branch = attrs.getValue(0);
 		final String build = attrs.getValue(1);
 		final String version = attrs.getValue(2);
-		fromStrings(version, branch, build);
+		fromStrings(version, build);
 	}
 
 	/**
