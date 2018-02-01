@@ -52,7 +52,6 @@ cd $currentDir
 BINDIR=$ROOTDIR/bin
 CONFDIR=$ROOTDIR/conf
 XWCONFVALUES=$CONFDIR/xwconfigure.values
-#INITD="/etc/init.d"
 
 SQL_SCRIPTS_DIR=$BINDIR/db-maintenance
 XWRMDBSQL=$SQL_SCRIPTS_DIR/xwhep-core-tables-drop-triggers-and-tables.sql
@@ -265,6 +264,10 @@ while [ $# -gt 0 ]; do
 			NEWALIAS=1
 			echo "--rmkeystore : $KEEPKEYSTORE"
 			;;
+		"--dbhost" )
+			DEFINED_DBHOST=$2
+			echo $DEFINED_DBHOST
+			;;
 	esac
 	shift
 done
@@ -294,6 +297,9 @@ usage
 
 . $XWCONFVALUES
 
+if [ ! -z "$DEFINED_DBHOST" ] ; then
+	DBHOST=$DEFINED_DBHOST 
+fi
 
 if [ -z "$DBVENDOR" ] ; then
 	usage "Variable DBVENDOR not set; please correct $XWCONFVALUES file " "STOP" 

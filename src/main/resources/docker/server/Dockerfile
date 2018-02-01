@@ -2,6 +2,7 @@ FROM ubuntu:16.04
 EXPOSE 4321 4322 4323 443
 
 COPY conf/xtremweb.server.conf /xwhep/conf/
+COPY conf/xwconfigure.values /xwhep/conf/
 COPY lib /xwhep/lib
 COPY bin /xwhep/bin/
 COPY keystore/xwhepserver.keys /xwhep/keystore/xwhepserver.keys
@@ -21,9 +22,16 @@ RUN sed -i "s/LAUNCHER.*//g" /xwhep/conf/xtremweb.server.conf
 #
 # Entry point script
 # 
-RUN echo "#!/bin/sh" > /tmp/xwstart.sh
-RUN echo "/xwhep/bin/xtremweb.server console" >> /tmp/xwstart.sh
-RUN chmod +x /tmp/xwstart.sh
+RUN echo "#!/bin/sh" > /xwhep/xwstart.sh && \
+	echo "/xwhep/bin/xtremweb.server console" >> /xwhep/xwstart.sh
 
-ENTRYPOINT [ "/tmp/xwstart.sh" ]
+# change DBHOST value in the config if defined
+RUN echo "if [ ! -z \$DBHOST ] ; then " >> /xwhep/xwstart.sh  && \
+    echo "	sed -i \"s/^DBHOST=.*/DBHOST=\$DBHOST/g\" /xwhep/conf/xtremweb.server.conf " >> /xwhep/xwstart.sh  && \
+    echo "fi" >> /xwhep/xwstart.sh
+
+RUN chmod +x /xwhep/xwstart.sh
+
+ENTRYPOINT [ "/xwhep/xwstart.sh" ]
+
 
