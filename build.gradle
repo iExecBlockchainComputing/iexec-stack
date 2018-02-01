@@ -170,6 +170,16 @@ task cleanKeystoreDir(type: Delete) {
     delete fileTree(dir: dist + "/keystore")
 }
 
+task copyExistingKeyPair(type: Copy) {
+    into dist
+
+    into("/keystore") {
+        from root + "/keystore"
+        include("*.pem")
+        include("*.key")
+    }
+}
+
 task copyDevCacert(type: Copy) {
     into dist
 
@@ -189,7 +199,7 @@ task copyProdCacert(type: Exec) {
 }
 
 task copyCacert() {
-    dependsOn(copyKeystoreGenerationScripts, cleanKeystoreDir)
+    dependsOn(copyKeystoreGenerationScripts)
     if (project.hasProperty("environment") && project.getProperty("environment").toString().toLowerCase().equals("prod")) {
         dependsOn(copyProdCacert)
     } else {
@@ -197,15 +207,16 @@ task copyCacert() {
     }
 }
 
+
 task generateKeys(type: Exec) {
-    dependsOn(copyCacert)
+    dependsOn(copyCacert, copyExistingKeyPair)
     commandLine("sh", "-c",
             distBin + '/xwhepgenkeys' + " && " +
-                    "if [ \$? -eq 0 ] ; then echo \"Keystores generated\" ; else echo \"ERROR: keystores generation error\"; exit 1 ; fi" + " && " +
-                    distBin + '/xwhepupdateopenidcerts' + " && " +
-                    "if [ \$? -eq 0 ] ; then echo \"OpenID server certificates inserted in XWHEP server keystore\" ; else echo \"ERROR: can't insert OpenID server certificates into XWHEP server keystore\" ; fi"
+                    "if [ \$? -eq 0 ] ; then echo \"Keystores generated\" ; else echo \"ERROR: keystores generation error\"; exit 1 ; fi"
     )
 }
+
+
 
 task chmodBin(type: Exec) {
     dependsOn(copyMiscToDist, copyScripts,copyKeystoreGenerationScripts, mkdirKeystore)
