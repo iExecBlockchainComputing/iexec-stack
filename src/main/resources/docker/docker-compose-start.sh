@@ -6,7 +6,7 @@ docker-compose up -d scheduler
 # copy scripts, conf and certificate from scheduler
 docker cp xwscheduler:/xwhep/bin dbbin
 docker cp xwscheduler:/xwhep/conf dbconf
-docker cp xwscheduler:/xwhep/keystore/xwhepcert.pem .
+docker cp xwscheduler:/xwhep/keystore/xwscheduler.pem .
 
 # kill the dummy scheduler
 docker-compose down -v

@@ -6,7 +6,7 @@ COPY conf/xwconfigure.values /xwhep/conf/
 COPY lib /xwhep/lib
 COPY bin /xwhep/bin/
 COPY keystore/xwhepserver.keys /xwhep/keystore/xwhepserver.keys
-COPY keystore/xwhepcert.pem /xwhep/keystore/xwhepcert.pem
+COPY keystore/xwscheduler.pem /xwhep/keystore/xwscheduler.pem
 WORKDIR /xwhep
 
 RUN apt-get update

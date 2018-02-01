@@ -56,7 +56,7 @@ project.ext.getCustomProperties = {
     def keystore = path + "/build/dist/" + PROJECT_TAG + "/keystore/"
     def docker = path + "/build/dist/" + PROJECT_TAG + "/docker/"
 
-    props.setProperty("CERTIFICATE", docker + "xwhepcert.pem")
+    props.setProperty("CERTIFICATE", docker + "xwscheduler.pem")
     props.setProperty("SSLTRUSTSTORE", keystore + "cacerts")
 
     def certname = "cn=" + props.CERTCN + ",o=" + props.CERTO + ",c=" + props.CERTC
