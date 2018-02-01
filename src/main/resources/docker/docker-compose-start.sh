@@ -3,9 +3,10 @@
 # run dummy scheduler to get scripts for db
 docker-compose up -d scheduler
 
-# copy scripts and conf from scheduler
+# copy scripts, conf and certificate from scheduler
 docker cp xwscheduler:/xwhep/bin dbbin
 docker cp xwscheduler:/xwhep/conf dbconf
+docker cp xwscheduler:/xwhep/keystore/xwscheduler.pem .
 
 # kill the dummy scheduler
 docker-compose down -v
@@ -19,11 +20,12 @@ docker exec -i mysql mkdir scripts
 docker cp dbbin mysql:/scripts/bin
 docker cp dbconf mysql:/scripts/conf
 
+
 # trigger the database creation in the mysql container
 docker exec -i mysql /scripts/bin/setupDatabase --yes --rmdb --dbhost db
 sleep 10
 
-# remove temp folders
+# remove temporary files and folders
 rm -rf dbbin/
 rm -rf dbconf/
 
