@@ -1038,7 +1038,7 @@ public final class XWConfigurator extends Properties {
 		setProperty(XWPropertyDefs.ALIVEPERIOD, "" + alive);
 		setProperty(XWPropertyDefs.ALIVETIMEOUT, "" + (alive * 3));
 
-		final Version version = new Version();
+		final Version version = Version.currentVersion;
 
 		long timeout = getInt(XWPropertyDefs.TIMEOUT);
 		if (timeout < MINTIMEOUT) {
@@ -2229,7 +2229,7 @@ public final class XWConfigurator extends Properties {
 	 * @see #store(String)
 	 */
 	public void store() {
-		store("# XWHEP configuration file\n" + "# XWHEP version : " + new Version().toString() + "\n"
+		store("# XWHEP configuration file\n" + "# XWHEP version : " + Version.currentVersion + "\n"
 				+ "# Saved on " + new Date());
 	}
 
@@ -2303,7 +2303,7 @@ public final class XWConfigurator extends Properties {
 			out.println(header + " " + new java.util.Date().toString());
 		}
 		out.println("Name             : " + XWTools.getLocalHostName());
-		out.println("Version          : " + new Version().toString());
+		out.println("Version          : " + Version.currentVersion);
 		out.println("Identity         : " + _user.getLogin());
 		out.println("XWRole           : " + XWRole.getMyRole().toString());
 		out.println("Started on       : " + upTime());

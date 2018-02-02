@@ -139,7 +139,7 @@ public class ArchDepFactory {
 	 */
 	protected static String mapLibraryName(final String lib) {
 
-		final Version v = new Version();
+		final Version v = Version.currentVersion;
 		final OSEnum os = OSEnum.getOs();
 		final CPUEnum cpu = CPUEnum.getCpu();
 

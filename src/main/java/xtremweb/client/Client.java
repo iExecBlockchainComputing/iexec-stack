@@ -485,9 +485,9 @@ public final class Client {
 
 		if ((idrpc == null) || (idrpc == IdRpc.NULL)) {
 			CommandLineParser.usage("This is the XWHEP client to use and manage the platform ("
-					+ new Version().full() + ")");
+					+ Version.currentVersion.full() + ")");
 		} else {
-			println("+--------- XWHEP client " + new Version().full()
+			println("+--------- XWHEP client " + Version.currentVersion.full()
 					+ "  ------------------------------------------+");
 			if (msg != null) {
 				println("  Error :  " + msg);
@@ -2442,7 +2442,7 @@ public final class Client {
 		if (msg != null) {
 			println("# " + msg);
 		}
-		println("# " + new Version().full());
+		println("# " + Version.currentVersion.full());
 		println("# Role");
 		println(XWPropertyDefs.ROLE + "=" + XWRole.CLIENT);
 		println("# XWHEP server");
@@ -3269,12 +3269,12 @@ public final class Client {
 
 			switch (args.command()) {
 			case VERSION:
-				println("Current version : " + new Version().toString());
+				println("Current version : " + Version.currentVersion.toString());
 				try {
 					final Version serverVersion = commClient().version();
 					logger.debug("serverVersion = " + serverVersion);
 					if ((serverVersion != null)
-							&& !serverVersion.toString().equals(new Version().toString())) {
+							&& !serverVersion.toString().equals(Version.currentVersion.toString())) {
 						println("Server  version : " + serverVersion);
 						println("**********  **********  **********");
 						println("You should upgrade your client");

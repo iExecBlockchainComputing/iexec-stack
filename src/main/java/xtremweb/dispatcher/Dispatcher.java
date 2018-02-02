@@ -251,7 +251,7 @@ public class Dispatcher {
 			}
 		}
 
-		logger.info("XWHEP Dispatcher(" + new Version().full() + ") started [" + new Date() + "]");
+		logger.info("XWHEP Dispatcher(" + Version.currentVersion + ") started [" + new Date() + "]");
 		logger.info("DB vendor  = " + config.getProperty(XWPropertyDefs.DBVENDOR));
 		logger.info("mileStone  = " + config.getProperty(XWPropertyDefs.MILESTONES));
 		logger.info("Time out   = " + config.getProperty(XWPropertyDefs.TIMEOUT));

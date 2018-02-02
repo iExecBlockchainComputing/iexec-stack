@@ -188,7 +188,7 @@ public enum OSEnum {
 	 * @since 6.0.0
 	 */
 	public static final String[] classpathes = { null, // NONE
-			"/opt/xwhep-worker-" + new Version().toString() + "/lib", // LINUX
+			"/opt/xwhep-worker-" + Version.currentVersion.toString() + "/lib", // LINUX
 			"c:\\Program Files\\CNRS\\XWHEP\\worker\\lib", // WIN32
 			"/private/etc/xwhep.worker", // MACOSX
 			null, // SOLARIS

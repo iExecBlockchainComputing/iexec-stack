@@ -58,15 +58,54 @@ public abstract class XMLable {
 	 * @since 5.8.0
 	 */
 	private static final String VERSIONATTRIBUTE = "version";
+	/**
+	 * This contains the version attribute value. This is set to null by default
+	 * But this contains version as received in a message and this may contain
+	 * another version : the sender one.
+	 *
+	 * @since 5.8.0
+	 */
+	private Version currentVersion = null;
+
+	/**
+	 * This sets version to current one.
+	 *
+	 * @since 5.8.0
+	 * @see Version#currentVersion
+	 * @see #currentVersion
+	 */
+	public final void setCurrentVersion() {
+        currentVersion = Version.currentVersion;
+	}
+
+	/**
+	 * This sets version to null
+	 *
+	 * @since 5.8.0
+	 * @see #currentVersion
+	 */
+	public void resetCurrentVersion() {
+        currentVersion = null;
+	}
+
+	/**
+	 * This sets version to the provided one
+	 *
+	 * @since 5.8.0
+	 * @see #currentVersion
+	 */
+	public void setCurrentVersion(final Version v) {
+		currentVersion = v;
+	}
 
 	/**
 	 * This retrieves this object version
 	 *
 	 * @since 5.8.0
-	 * @see xtremweb.common.Version
+	 * @see #currentVersion
 	 */
 	public Version getCurrentVersion() {
-		return Version.currentVersion;
+		return currentVersion;
 	}
 
 	/**
@@ -164,12 +203,14 @@ public abstract class XMLable {
 	 * @param open
 	 *            contains true to open the xml tag, false to close it
 	 * @return a String containing the XML tag
-	 * @see xtremweb.common.Version
 	 * @since 5.8.0
 	 */
 	public final String xmlRootElement(final boolean open) {
+		if (currentVersion == null) {
+			return emptyString;
+		}
 		if (open) {
-			return "<" + ROOTTAG + " " + VERSIONATTRIBUTE + "=\"" + new Version().toString() + "\">";
+			return "<" + ROOTTAG + " " + VERSIONATTRIBUTE + "=\"" + Version.currentVersion.toString() + "\">";
 		}
 		return "</" + ROOTTAG + ">";
 	}
@@ -266,6 +307,7 @@ public abstract class XMLable {
 	 *                is thrown if i &lt; 0 or i &gt; LAST_ATTRIBUTE
 	 * @see #columns
 	 * @see #xmlRootElement(boolean)
+	 * @see #currentVersion
 	 * @return the column label or null if column does not exist in current
 	 *         object version
 	 */
@@ -396,6 +438,7 @@ public abstract class XMLable {
 		values = null;
 		XMLTAG = null;
 		rootTagFound = true;
+		setCurrentVersion();
 		lastAttribute = 0;
 		maxAttribute = lastAttribute + 1;
 	}
@@ -575,6 +618,7 @@ public abstract class XMLable {
 
 				if (attribute.compareToIgnoreCase(VERSIONATTRIBUTE) == 0) {
 					getLogger().finest("XMLable#xmlElementStart() set current version " + value);
+					currentVersion = new Version(value);
 				}
 			}
 		} else {

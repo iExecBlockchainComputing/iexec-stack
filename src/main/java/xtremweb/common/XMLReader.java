@@ -66,6 +66,7 @@ public class XMLReader implements AutoCloseable {
 		}
 		logger = new Logger(logLevel);
 		xmlObject = o;
+		xmlObject.resetCurrentVersion();
 	}
 
 	/**

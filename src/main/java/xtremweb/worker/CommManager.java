@@ -240,13 +240,13 @@ public final class CommManager extends Thread {
 	private void message(final boolean lost, final String trailer) {
 		if (!lost) {
 			if (!connected) {
-				logger.error("XWHEP Worker (" + new Version().full() + ") connected to \""
+				logger.error("XWHEP Worker (" + Version.currentVersion.full() + ") connected to \""
 						+ Worker.getConfig().getCurrentDispatcher() + (trailer == null ? "\"" : "\" : " + trailer));
 			}
 			connected = true;
 		} else {
 			if (connected) {
-				logger.error("XWHEP Worker (" + new Version().full() + ") " + " connection lost from \""
+				logger.error("XWHEP Worker (" + Version.currentVersion.full() + ") " + " connection lost from \""
 						+ Worker.getConfig().getCurrentDispatcher() + (trailer == null ? "\"" : "\" : " + trailer));
 			}
 			connected = false;
@@ -1044,7 +1044,7 @@ public final class CommManager extends Thread {
 						logger.debug("delai = " + delai);
 
 						if (delai > noopTimeout) {
-							System.out.println("XWHEP Worker (" + new Version().full() + ") [" + new Date()
+							System.out.println("XWHEP Worker (" + Version.currentVersion.full() + ") [" + new Date()
 									+ "] ended : not waiting any longer (" + delai + " > " + noopTimeout + ")");
 							System.exit(0);
 						}
@@ -1082,7 +1082,7 @@ public final class CommManager extends Thread {
 				Worker.getConfig().incNbJobs();
 				if (Worker.getConfig().stopComputing()) {
 					if (commQueue.size() < 1) {
-						System.out.println("XWHEP Worker (" + new Version().full() + ") [" + new Date()
+						System.out.println("XWHEP Worker (" + Version.currentVersion.full() + ") [" + new Date()
 								+ "] ended : enough computings (" + Worker.getConfig().getNbJobs() + " > "
 								+ Worker.getConfig().getInt(XWPropertyDefs.COMPUTINGJOBS) + ")");
 						System.exit(0);
@@ -1246,7 +1246,7 @@ public final class CommManager extends Thread {
 		getPoolWork().saveWork(theWork);
 
 		if (Worker.getConfig().stopComputing()) {
-			System.err.println("XWHEP Worker (" + new Version().full() + ") [" + new Date()
+			System.err.println("XWHEP Worker (" + Version.currentVersion.full() + ") [" + new Date()
 					+ "] ended : enough computings (" + Worker.getConfig().getNbJobs() + " > "
 					+ Worker.getConfig().getInt(XWPropertyDefs.COMPUTINGJOBS) + ")");
 

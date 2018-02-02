@@ -46,15 +46,20 @@ public class Version extends XMLable {
 	private String version;
 	private String build;
 	private static final String RESNAME = "META-INF/MANIFEST.MF";
-	private static final String ATTRVERSION = "Implementation-Version";
     public static Version currentVersion = new Version();
 	public Version() {
         setXMLTag("Version");
+/*
+        System.out.println("this package = " + this.getClass().getPackage());
         displayCustomPackage();
+		System.out.println("this package version = " + getPackageVersion());
+*/
 
+		fromString(getPackageVersion());
     }
-    private void displayPackageDetails(final Package pkg)
-    {
+ /*
+    private void displayPackageDetails(final Package pkg) {
+
         final String name = pkg.getName();
         System.out.println(name);
         System.out.println("\tSpec Title/Version: " + pkg.getSpecificationTitle() + " " + pkg.getSpecificationVersion());
@@ -63,23 +68,34 @@ public class Version extends XMLable {
         System.out.println("\tImplementation Vendor: " + pkg.getImplementationVendor());
     }
 
-    /**
-     * Display all packages associated with the class loader that do not start
-     * with "sun", "com", "java", or "org".
-     */
-    private void displayCustomPackage()
-    {
-        final Package[] packages = Package.getPackages();
-        for (final Package pkg : packages)
-        {
-            final String name = pkg.getName();
-            if (   !name.startsWith("sun") && !name.startsWith("java")
-                    && !name.startsWith("com") && !name.startsWith("org") )
-            {
-                displayPackageDetails(pkg);
-            }
-        }
-    }
+	private void displayCustomPackage() {
+		final Package[] packages = Package.getPackages();
+		for (final Package pkg : packages)
+		{
+			final String name = pkg.getName();
+			if (   !name.startsWith("sun") && !name.startsWith("java")
+					&& !name.startsWith("com") && !name.startsWith("org") )
+			{
+				displayPackageDetails(pkg);
+			}
+		}
+	}
+*/
+	private String getPackageVersion() {
+		final Package[] packages = Package.getPackages();
+		final String thisPkgName = this.getClass().getPackage().getName();
+		if(thisPkgName == null) {
+			return null;
+		}
+		for (final Package pkg : packages) {
+			final String pkgName = pkg.getName();
+			if(pkgName.compareTo(thisPkgName) != 0) {
+				continue;
+			}
+			return pkg.getSpecificationVersion();
+		}
+		return null;
+	}
 
 
     public Version(final String v) {
@@ -110,7 +126,6 @@ public class Version extends XMLable {
 		try {
 			reader.read(input);
 		} catch (final InvalidKeyException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -119,6 +134,10 @@ public class Version extends XMLable {
 	 *
 	 */
 	public void fromString(final String str) {
+        if(str == null) {
+            getLogger().debug("Version#fromString str is null");
+            return;
+        }
 		StringTokenizer sk = new StringTokenizer(str, "-");
 		version = sk.nextToken();
 		try {
@@ -135,6 +154,7 @@ public class Version extends XMLable {
 	 *            is the build
 	 */
 	public void fromStrings(final String ver, final String bu) {
+        System.out.println("Version#fromStrings " + ver + " " + bu);
 		version = ver;
 		build = bu;
 	}
@@ -213,13 +233,10 @@ public class Version extends XMLable {
 	}
 
 	/**
-	 * This reterives attributes from XML representation<br />
+	 * This retrieves attributes from XML representation
 	 *
 	 * @param attrs
 	 *            contains attributes XML representation
-	 * @throws IOException
-	 *             on XML error
-	 * @see #toXml()
 	 */
 	@Override
 	public void fromXml(final Attributes attrs) {
@@ -228,9 +245,11 @@ public class Version extends XMLable {
 			return;
 		}
 
-		final String build = attrs.getValue(1);
-		final String version = attrs.getValue(2);
-		fromStrings(version, build);
+        build = attrs.getValue(1);
+    	version = attrs.getValue(2);
+        fromStrings(version, build);
+        setCurrentVersion(new Version(version, build));
+        System.out.println("Version#fromXml this.toXml() = " + this.toXml());
 	}
 
 	/**
@@ -239,6 +258,6 @@ public class Version extends XMLable {
 	 * @since 8.0.1
 	 */
 	public static void main(final String argv[]) {
-		System.out.println(Version.currentVersion);
+		System.out.println("Current version : " + Version.currentVersion);
 	}
 }

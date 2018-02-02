@@ -121,7 +121,7 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 	private int tracesSendResultDelay = 60;
 
 	private static final XMLVector NOANSWER = new XMLVector(new Vector());
-	private static final Version CURRENTVERSION = new Version();
+	private static final Version CURRENTVERSION = Version.currentVersion;
 	private static final String CURRENTVERSIONSTRING = CURRENTVERSION.toString();
 
 	/**
@@ -561,6 +561,13 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 			String resultxml = result.toXml();
 			resultxml = resultxml.substring(0, Math.min(resultxml.length(), 150));
 			try {
+				if (command.getCurrentVersion() == null) {
+					result.resetCurrentVersion();
+				} else {
+					if (result.getCurrentVersion() == null) {
+						result.setCurrentVersion();
+					}
+				}
 				debug(command, "answer (" + idRpc.toString() + ") " + resultxml);
 				write(result);
 			} catch (final Exception e) {

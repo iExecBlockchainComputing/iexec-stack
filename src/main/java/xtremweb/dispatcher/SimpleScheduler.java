@@ -71,7 +71,7 @@ public class SimpleScheduler extends Scheduler {
 		return DBInterface.getInstance().works(StatusEnum.WAITING);
 	}
 
-	private static final Version CURRENTVERSION = new Version();
+	private static final Version CURRENTVERSION = Version.currentVersion;
 	private static final String CURRENTVERSIONSTRING = CURRENTVERSION.toString();
 
 	/**

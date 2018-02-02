@@ -114,7 +114,7 @@ public final class HTTPLauncher {
 			binDir = config.getTmpDir();
 		}
 
-		final Version version = new Version();
+		final Version version = Version.currentVersion;
 		while (true) {
 			logger.debug("launcherURL = " + url);
 			logger.debug("Current version : " + version.toString());

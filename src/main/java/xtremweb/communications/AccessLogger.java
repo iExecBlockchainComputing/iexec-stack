@@ -85,7 +85,7 @@ public class AccessLogger {
 	/**
 	 * This stores XWHEP version as string
 	 */
-	private final String version = new Version().rev();
+	private final String version = Version.currentVersion.toString();
 	/**
 	 * This is the directory name where access logs are stored
 	 */

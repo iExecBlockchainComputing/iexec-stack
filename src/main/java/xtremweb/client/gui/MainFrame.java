@@ -801,18 +801,18 @@ public final class MainFrame extends JFrame implements ActionListener {
 			logger.exception(e);
 		}
 
-		System.out.println("currentVersion " + new Version().toString());
+		System.out.println("currentVersion " + Version.currentVersion.toString());
 		System.out.println(" serverVersion " + serverVersion.toString());
 		String versionWarn = "unknown";
 		if (serverVersion != null) {
 			versionWarn = serverVersion.toString();
 		}
-		if (versionWarn.compareTo(new Version().toString()) != 0) {
+		if (versionWarn.compareTo(Version.currentVersion.toString()) != 0) {
 			versionWarn += "\n\n* * * * * * \nYou should upgrade your client\n* * * * * * \n\n";
 		}
 
 		JOptionPane.showMessageDialog(this,
-				"Current version : " + new Version() + "\nServer  version : " + versionWarn
+				"Current version : " + Version.currentVersion + "\nServer  version : " + versionWarn
 				+ "\nWritten by Oleg Lodygensky\n" + "LAL IN2P3 CNRS France - " + url
 				+ "\n\nBased on XtremWeb 1.8.0 by LRI INRIA France\n\n" + "This software is under GPL license\n"
 				+ "THIS SOFTWARE IS PROVIDED \"AS IS\" AND ANY EXPRESSED OR IMPLIED WARRANTIES,\n"

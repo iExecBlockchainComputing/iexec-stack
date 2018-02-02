@@ -294,9 +294,9 @@ public class ThreadAlive extends Thread {
 		}
 
 		final String serverVersion = (String) rmiResults.get(XWPostParams.CURRENTVERSION.toString());
-		if ((serverVersion != null) && !serverVersion.equals(new Version().toString())) {
+		if ((serverVersion != null) && !serverVersion.equals(Version.currentVersion.toString())) {
 			logger.info("**********  **********  **********");
-			logger.info("\nCurrent version : " + new Version().toString());
+			logger.info("\nCurrent version : " + Version.currentVersion.toString());
 			logger.info("Server  version : " + serverVersion);
 			logger.info("We must upgrade");
 			logger.info("Restarting now");

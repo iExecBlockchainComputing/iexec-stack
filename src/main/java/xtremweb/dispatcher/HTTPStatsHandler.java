@@ -71,7 +71,7 @@ public class HTTPStatsHandler extends xtremweb.dispatcher.CommHandler {
 
 	private static String RES_SERVERSTATSHTML = "misc/serverstats.html";
 
-	private static final Version CURRENTVERSION = new Version();
+	private static final Version CURRENTVERSION = Version.currentVersion;
 	private static final String CURRENTVERSIONSTRING = CURRENTVERSION.toString();
 
 	/** this tag is replaced by the current version in misc/server.html */
