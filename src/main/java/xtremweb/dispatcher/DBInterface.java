@@ -373,8 +373,6 @@ public final class DBInterface {
 	 *            is the user modifying/deleting an object
 	 * @param row
 	 *            is the modified/deleted row
-	 * @param header
-	 *            is the email subject
 	 * @param msg
 	 *            is the email message
 	 */
@@ -575,14 +573,11 @@ public final class DBInterface {
 	/**
 	 * This deletes a row in DB;
 	 *
-	 * @param theCient
+	 * @param theClient
 	 *            is the requesting client
-	 * @param urights
-	 *            is the expected rights to delete (DELETEJOB, DELETEDATA etc)
 	 * @param row
 	 *            is the row to delete
 	 * @since 5.8.0
-	 * @see xtremweb.common#UserRights
 	 * @exception IOException
 	 *                is thrown on DB access or I/O error
 	 * @exception AccessControlException
@@ -618,14 +613,11 @@ public final class DBInterface {
 	 * This checks access rights and eventually deletes a row in DB by calling
 	 * row.delete()
 	 *
-	 * @param theCient
+	 * @param theClient
 	 *            is the requesting client
-	 * @param urights
-	 *            is the expected rights to delete (DELETEJOB, DELETEDATA etc)
 	 * @param row
 	 *            is the row to delete
 	 * @since 5.8.0
-	 * @see xtremweb.common#UserRights
 	 * @exception IOException
 	 *                is thrown on DB access or I/O error
 	 * @exception AccessControlException
@@ -706,14 +698,14 @@ public final class DBInterface {
 	/**
 	 * This updates a row in DB;
 	 *
-	 * @param theCient
+	 * @param theClient
 	 *            is the requesting client
 	 * @param urights
 	 *            is the expected rights to update (INSERTJOB, INSERTDATA etc)
 	 * @param row
 	 *            is the row to update
 	 * @since 5.8.0
-	 * @see xtremweb.common#UserRights
+	 * @see xtremweb.common#UserRightEnum
 	 * @exception IOException
 	 *                is thrown on DB access or I/O error
 	 * @exception AccessControlException
@@ -828,10 +820,7 @@ public final class DBInterface {
 	/**
 	 * This retrieves an application from cache or from DB
 	 *
-	 * @param u
-	 *            is the requesting user
-	 * @param uid
-	 *            is the UID of the application to retrieve
+	 * @param command is the command to execute
 	 * @since 5.8.0
 	 * @return the application which uid is provided; null if uid is null
 	 * @throws InvalidKeyException 
@@ -970,10 +959,7 @@ public final class DBInterface {
 	 * This retrieves a data for the requesting user. It first look in cache,
 	 * then in DB. Data access rights are checked.
 	 *
-	 * @param u
-	 *            is the requesting user
-	 * @param uid
-	 *            is the UID of the data to retrieve
+	 * @param command is the command to execute
 	 * @throws InvalidKeyException 
 	 * @since 5.8.0
 	 */
@@ -2587,9 +2573,8 @@ public final class DBInterface {
 	 * An user can be mandated: it can act in name of someone else.
 	 * Mandate is an XMLRPCCommand attribute (MANDATINGLOGIN).
 	 * This checks if this command client has MANDATED_USER user right
-	 * 
-	 * @param command is the XMLRPCCommand to execute
-	 * @param actionLevel is the expected user rights to execute the XMLRPCCommand
+	 *
+	 * @param command is the command to execute
 	 * @return the mandated client
 	 * @throws IOException
 	 * @throws InvalidKeyException
@@ -2785,8 +2770,7 @@ public final class DBInterface {
 	 * This removes an object from cache and DB Objects are parsed in the most
 	 * probable order, to improve performances.
 	 *
-	 * @param uid
-	 *            is the UID of the object to remove
+	 * @param command is the command to execute
 	 * @return true on success, false otherwise
 	 * @exception IOException
 	 *                is thrown on DB access or I/O error
@@ -2852,8 +2836,6 @@ public final class DBInterface {
 
 	/**
 	 * This calls chmod(client, uri.getUID(), chmodstr);
-	 *
-	 * @see #chmod(UserInterface, UID, String)
 	 */
 	public boolean chmod(final XMLRPCCommand command)
 			throws IOException, InvalidKeyException, AccessControlException, ParseException {
@@ -2985,10 +2967,7 @@ public final class DBInterface {
 	 * bypassed. This allows worker to store a result for users on job
 	 * completion. owner may be != theClient in case of updating.
 	 *
-	 * @param client
-	 *            identifies the client
-	 * @param data
-	 *            is the data definition
+	 * @param command is the command to execute
 	 * @exception IOException
 	 *                is thrown on DB access or I/O error
 	 * @exception InvalidKeyException
@@ -3068,8 +3047,7 @@ public final class DBInterface {
 	 * This retrieves data UIDs for the specified client. Since 7.0.0 non
 	 * privileged users get their own data only
 	 *
-	 * @param client
-	 *            describes the client
+	 * @param command is the command to execute
 	 * @return null on error; a Collection of UID otherwise
 	 * @exception IOException
 	 *                is thrown on DB access or I/O error
@@ -3095,10 +3073,7 @@ public final class DBInterface {
 	 * caller. This checks client rights is not lower than GETDATA and returns
 	 * data(theClient, name)
 	 *
-	 * @param client
-	 *            is the requesting client
-	 * @param uid
-	 *            is the uid of the data to retrieve
+	 * @param command is the command to execute
 	 * @return the found data or null
 	 * @exception IOException
 	 *                is thrown on DB access or I/O error
@@ -3128,8 +3103,7 @@ public final class DBInterface {
 	/**
 	 * This retrieves users
 	 *
-	 * @param client
-	 *            is the requesting client
+	 * @param command is the command to execute
 	 * @return a Collection of users UID, null on error
 	 * @exception IOException
 	 *                is thrown on DB access or I/O error
@@ -3152,8 +3126,7 @@ public final class DBInterface {
 	 * caller. This checks client rights is not lower than GETUserInterface and
 	 * returns user(theClient, name)
 	 *
-	 * @param client
-	 *            is the requesting client
+	 * @param command is the command to execute
 	 * @param login
 	 *            is the login of the UserInterface to retrieve
 	 * @return the found user or null
@@ -3177,10 +3150,7 @@ public final class DBInterface {
 	 * This checks client rights is not lower than GETUserInterface and
 	 * returns user(theClient, name)
 	 *
-	 * @param client
-	 *            is the requesting client
-	 * @param uid
-	 *            is the uid of the UserInterface to retrieve
+	 * @param command is the command to execute
 	 * @return the found user or null
 	 * @exception IOException
 	 *                is thrown on DB access or I/O error
@@ -3228,10 +3198,7 @@ public final class DBInterface {
 	 * definition. If the user already exists in DB, it is updated. If inserted
 	 * in a group, new user access rights are its group one.
 	 *
-	 * @param client
-	 *            is the <code>UserInterface</code> that identifies the client
-	 * @param useritf
-	 *            is a UserInterface object containing new user informations
+	 * @param command is the command to execute
 	 * @return true on success, false otherwise
 	 * @exception IOException
 	 *                is thrown on DB access or I/O error
@@ -3258,8 +3225,7 @@ public final class DBInterface {
 	 * definition. If the user already exists in DB, it is updated. If inserted
 	 * in a group, new user access rights are its group one.
 	 *
-	 * @param client
-	 *            is the <code>UserInterface</code> that identifies the client
+	 * @param command is the command to execute
 	 * @param useritf
 	 *            is a UserInterface object containing new user informations
 	 * @return true on success, false otherwise
@@ -3349,8 +3315,7 @@ public final class DBInterface {
 	/**
 	 * This retrieves user groups from SQL table usergroups. <br>
 	 *
-	 * @param client
-	 *            is the <code>UserInterface</code> that identifies the client
+	 * @param command is the command to execute
 	 * @return a Collection of usergroups UID, null on error
 	 * @exception IOException
 	 *                is thrown on DB access or I/O error
@@ -3372,10 +3337,7 @@ public final class DBInterface {
 	 * caller. This checks client rights is not lower than GETUSERGROUP and
 	 * returns usergroup(theClient, uid)
 	 *
-	 * @param client
-	 *            is the requesting client
-	 * @param uid
-	 *            is the UID of the group to retrieve
+	 * @param command is the command to execute
 	 * @return the found usergroup or null
 	 * @exception IOException
 	 *                is thrown on DB access or I/O error
@@ -3398,11 +3360,7 @@ public final class DBInterface {
 	 * This updates or adds a new user group. UserRights.SUPER_USER privilege is
 	 * needed to do so.
 	 *
-	 * @param client
-	 *            is the <code>UserInterface</code> that identifies the client
-	 * @param groupitf
-	 *            is an UserGroupInterface object containing new UserInterface
-	 *            group informations.
+	 * @param command is the command to execute
 	 * @return true on success, false otherwise
 	 * @exception IOException
 	 *                is thrown on DB access or I/O error
@@ -3494,10 +3452,7 @@ public final class DBInterface {
 	 * e.g. : an user tries to insert its own private application which name is
 	 * already used.
 	 *
-	 * @param client
-	 *            identifies the client
-	 * @param appitf
-	 *            is an ApplicationInterface object
+	 * @param command is the command to execute
 	 * @exception IOException
 	 *                is thrown on DB access or I/O error
 	 * @exception InvalidKeyException
@@ -3525,8 +3480,7 @@ public final class DBInterface {
 	 * e.g. : an user tries to insert its own private application which name is
 	 * already used.
 	 *
-	 * @param client
-	 *            identifies the client
+	 * @param command is the command to execute
 	 * @param appitf
 	 *            is an ApplicationInterface object
 	 * @exception IOException
@@ -3724,8 +3678,7 @@ public final class DBInterface {
 	/**
 	 * retrieve applications from SQL table apps accordingly to conditions.
 	 *
-	 * @param client
-	 *            is the <code>UserInterface</code> that identifies the client
+	 * @param command is the command to execute
 	 * @return a Collection UID objects
 	 * @exception IOException
 	 *                is thrown on DB access or I/O error
@@ -3760,8 +3713,7 @@ public final class DBInterface {
 	/**
 	 * This retrieves an object
 	 * AccessControlException is catched on each case since there may be a mandat
-	 * @param uid
-	 *            is the UID of the object to retrieve
+	 * @param command is the command to execute
 	 * @return the object or null if not found
 	 * @exception IOException
 	 *                is thrown on DB access or I/O error
@@ -3849,11 +3801,7 @@ public final class DBInterface {
 	 * This retrieves a task for the specified client. This specifically permits
 	 * to retrieve job instantiation informations (e.g. start date, worker...)
 	 *
-	 * @see #getJob(UserInterface, UID)
-	 * @param client
-	 *            is the ClientInterface, describing the client
-	 * @param uid
-	 *            is the UID of the task to retrieve
+	 * @param command is the command to execute
 	 * @return null on error; a TaskInterface otherwise
 	 * @exception IOException
 	 *                is thrown general error
@@ -3891,11 +3839,7 @@ public final class DBInterface {
 	 * This retrieves a task for the specified client. This specifically permits
 	 * to retrieve job instantiation informations (e.g. start date, worker...)
 	 *
-	 * @see #getJob(UserInterface, UID)
-	 * @param client
-	 *            is the ClientInterface, describing the client
-	 * @param uid
-	 *            is the UID of the task to retrieve
+	 * @param command is the command to execute
 	 * @return null on error; a TaskInterface otherwise
 	 * @exception IOException
 	 *                is thrown general error
@@ -3928,10 +3872,7 @@ public final class DBInterface {
 	}
 
 	/**
-	 * @param client
-	 *            is the requesting client
-	 * @param uid
-	 *            is the UID of the application to retrieve
+	 * @param command is the command to execute
 	 * @return the found application or null
 	 * @exception IOException
 	 *                is thrown on DB access or I/O error
@@ -3952,8 +3893,6 @@ public final class DBInterface {
 	/**
 	 * This removes an application from DB
 	 *
-	 * @param uid
-	 *            is the UID of the application to remove
 	 * @return true on success, false otherwise
 	 * @exception IOException
 	 *                is thrown on DB access or I/O error
@@ -4039,10 +3978,7 @@ public final class DBInterface {
 	/**
 	 * This deletes a group from DB and all its associated jobs
 	 *
-	 * @param client
-	 *            describes the requesting client
-	 * @param groupUID
-	 *            is the uid of the group to delete
+	 * @param command is the command to execute
 	 * @return true on success; false otherwise
 	 * @exception IOException
 	 *                is thrown on DB access or I/O error
@@ -4077,10 +4013,7 @@ public final class DBInterface {
 	/**
 	 * This deletes a session from DB and all its associated jobs
 	 *
-	 * @param client
-	 *            describes the requesting client
-	 * @param sessionUID
-	 *            is the UID of the session to delete
+	 * @param command is the command to execute
 	 * @return true on success; false otherwise
 	 * @exception IOException
 	 *                is thrown on DB access or I/O error
@@ -4148,10 +4081,7 @@ public final class DBInterface {
 	/**
 	 * This deletes a session from DB and all its associated jobs
 	 *
-	 * @param client
-	 *            describes the requesting client
-	 * @param taskUID
-	 *            is the UID of the session to delete
+	 * @param command is the command to execute
 	 * @return true on success; false otherwise
 	 * @exception IOException
 	 *                is thrown on DB access or I/O error
@@ -4184,8 +4114,7 @@ public final class DBInterface {
 	 * privileges, or provided UID is the client one. <br>
 	 * This also removes users's jobs (sessions, groups, tasks and works).
 	 *
-	 * @param client
-	 *            identifies the client
+	 * @param theClient is the user
 	 * @param userUID
 	 *            is the user UID
 	 * @return true on success, false otherwise
@@ -4234,9 +4163,9 @@ public final class DBInterface {
 	/**
 	 * This removes an user group and all its members
 	 *
-	 * @param client
+	 * @param theClient
 	 *            is the requesting user
-	 * @param uid
+	 * @param groupUID
 	 *            is the user group UID to remove.
 	 * @return true on success, false otherwise
 	 * @exception IOException
@@ -4316,8 +4245,7 @@ public final class DBInterface {
 	/**
 	 * This retrieves sessions. <br>
 	 *
-	 * @param client
-	 *            is the <code>ClientInterface</code> that identifies the client
+	 * @param command is the command to execute
 	 * @return a Collection of UID
 	 * @exception IOException
 	 *                is thrown on DB access or I/O error
@@ -4382,8 +4310,7 @@ public final class DBInterface {
 	 * checkClient() !<br>
 	 * Typically deleteGroup(), deleteSession(), disconnect() etc.
 	 *
-	 * @param client
-	 *            is the client uid
+	 * @param command is the command to execute
 	 * @return a Vector of UID
 	 * @throws AccessControlException
 	 * @throws InvalidKeyException
@@ -4411,12 +4338,9 @@ public final class DBInterface {
 	 * This checks group access rights and eventually then call
 	 * getGroupJobs(client, udi)
 	 *
-	 * @param client
-	 *            describes the requesting client
-	 * @param uid
-	 *            is the group UID to retrieve jobs for
+	 * @param command is the command to execute
 	 * @return a Collection of UID
-	 * @see #getGroupJobs(UserInterface, UID)
+	 * @see #getGroupJobs(XMLRPCCommand)
 	 * @exception IOException
 	 *                is thrown on DB access or I/O error
 	 * @exception InvalidKeyException
@@ -4447,10 +4371,7 @@ public final class DBInterface {
 	/**
 	 * This retrieves jobs for a given session
 	 *
-	 * @param client
-	 *            describes the requesting client
-	 * @param uid
-	 *            is the session UID to retrieve jobs for
+	 * @param command is the command to execute
 	 * @return a Vector of UID
 	 * @see #worksUID(UserInterface, String)
 	 * @exception IOException
@@ -4475,7 +4396,7 @@ public final class DBInterface {
 	 *
 	 * @param client
 	 *            describes the requesting client
-	 * @param uid
+	 * @param sessionUid
 	 *            is the session UID to retrieve jobs for
 	 * @return a Vector of UID
 	 * @see #worksUID(UserInterface, String)
@@ -4538,10 +4459,7 @@ public final class DBInterface {
 	/**
 	 * This adds/updates a group in DB
 	 *
-	 * @param client
-	 *            describes the requesting client
-	 * @param groupitf
-	 *            describes the group to insert in DB
+	 * @param command is the command to execute
 	 * @return true on success; false on DB error or group already exists
 	 * @exception IOException
 	 *                is thrown on DB access or I/O error
@@ -4578,7 +4496,7 @@ public final class DBInterface {
 	/**
 	 * This delete a job (a work and its associated task)
 	 *
-	 * @see #deleteJobs(UserInterface, Vector)
+	 * @see #deleteJobs(UserInterface, Collection)
 	 * @exception IOException
 	 *                is thrown on DB access or I/O error
 	 * @exception InvalidKeyException
@@ -4596,7 +4514,7 @@ public final class DBInterface {
 	/**
 	 * This delete a job (a work and its associated task)
 	 *
-	 * @see #deleteJobs(UserInterface, Vector)
+	 * @see #deleteJobs(UserInterface, Collection)
 	 * @exception IOException
 	 *                is thrown on DB access or I/O error
 	 * @exception InvalidKeyException
@@ -4714,7 +4632,7 @@ public final class DBInterface {
 	 * deleJob(UserInterface, UID)
 	 *
 	 * @see #removeWork(UserInterface, UID)
-	 * @param client
+	 * @param theClient
 	 *            describes the requesting client
 	 * @param jobs
 	 *            is a Collection containing work UIDs
@@ -4758,7 +4676,8 @@ public final class DBInterface {
 	 * application binaries This uses the "expectedHost" job attribute e.g. : if
 	 * we don't have win32 binary, we don't broadcast to win32 workers
 	 *
-	 * @see #addWork(UserInterface, HostInterface, WorkInterface)
+	 * @param command is the command to execute
+	 * @see #addWork(XMLRPCCommand)
 	 * @return a Collection of new jobs UID
 	 * @exception IOException
 	 *                is thrown general error
@@ -4820,11 +4739,7 @@ public final class DBInterface {
 	 * value e.g. : if application access rights are 0x700, job ones must be
 	 * 0x700 or lower (0x600, 0x500...)
 	 *
-	 *
-	 * @param client
-	 *            describes the requesting client; authentication must be done by the caller
-	 * @param job
-	 *            is a MobileWork describing the work to insert
+	 * @param command is the command to execute
 	 * @return the provided job uid don activation; a new jobUID if a new job
 	 *         has been created; null on error
 	 * @exception IOException
@@ -5155,10 +5070,7 @@ public final class DBInterface {
 	/**
 	 * This retrieves a job status
 	 *
-	 * @param client
-	 *            describes the requesting client
-	 * @param uid
-	 *            is the UID of the job to retrieve status for
+	 * @param command is the command to execute
 	 * @return -1 on error, job status otherwise
 	 * @exception IOException
 	 *                is thrown general error
@@ -5186,10 +5098,7 @@ public final class DBInterface {
 	 * This retrieves works UIDs for the specified client. Since 7.0.0 non
 	 * privileged users get their own jobs only
 	 *
-	 * @param client
-	 *            is the ClientInterface, describing the client
-	 * @param s
-	 *            is the status of the expected works
+	 * @param command is the command to execute
 	 * @return null on error; a Collection of UID otherwise
 	 * @exception IOException
 	 *                is thrown general error
@@ -5213,7 +5122,7 @@ public final class DBInterface {
 	/**
 	 * This checks client rights and returns getJob(UserInterface, UID)
 	 *
-	 * @see #getJob(UserInterface, UID)
+	 * @see #getJob(XMLRPCCommand)
 	 */
 	protected WorkInterface getJob(final XMLRPCCommand command)
 			throws IOException, InvalidKeyException, AccessControlException {
@@ -5224,7 +5133,7 @@ public final class DBInterface {
 	/**
 	 * This checks client integrity and returns getHost(UserInterface, UID)
 	 *
-	 * @see #getHost(UserInterface, UID)
+	 * @see #getHost(XMLRPCCommand)
 	 */
 	protected HostInterface getHost(final XMLRPCCommand command)
 			throws IOException, InvalidKeyException, AccessControlException {
@@ -5327,7 +5236,6 @@ public final class DBInterface {
 			} else {
 				try {
 					logger.info(hostName + " not in DB; inserting " + _host.getUID().toString());
-					_host.setCurrentVersion();
 					insert(_host);
 					return _host;
 				} catch (final Exception e) {
@@ -5415,10 +5323,7 @@ public final class DBInterface {
 	/**
 	 * Set active attibute for a given worker
 	 *
-	 * @param uid
-	 *            is the host UID
-	 * @param flag
-	 *            is the active attribute value
+	 * @param command is the command to execute
 	 * @return true on success; false otherwise.
 	 * @exception IOException
 	 *                is thrown general error

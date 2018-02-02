@@ -41,20 +41,17 @@ import java.util.Vector;
 
 import org.xml.sax.SAXException;
 
-import xtremweb.common.CommonVersion;
 import xtremweb.common.DataInterface;
 import xtremweb.common.Logger;
 import xtremweb.common.StreamIO;
 import xtremweb.common.UID;
+import xtremweb.common.Version;
 import xtremweb.common.XMLValue;
 import xtremweb.common.XWConfigurator;
 import xtremweb.common.XWPropertyDefs;
 import xtremweb.common.XWReturnCode;
 import xtremweb.common.XWTools;
-import xtremweb.communications.CommClient;
-import xtremweb.communications.Connection;
-import xtremweb.communications.URI;
-import xtremweb.communications.XWPostParams;
+import xtremweb.communications.*;
 
 /**
  *
@@ -248,7 +245,7 @@ public class ThreadAlive extends Thread {
 	 * @throws InvalidKeyException
 	 * @throws NoSuchAlgorithmException 
 	 *
-	 * @see xtremweb.dispatcher.CommHandler#workAlive(IdServers, Hashtable)
+	 * @see xtremweb.dispatcher.CommHandler#workAlive(XMLRPCCommand, Hashtable)
 	 */
 	private void synchronize() throws IOException, URISyntaxException, InvalidKeyException, AccessControlException,
 			ClassNotFoundException, SAXException, NoSuchAlgorithmException {
@@ -297,9 +294,9 @@ public class ThreadAlive extends Thread {
 		}
 
 		final String serverVersion = (String) rmiResults.get(XWPostParams.CURRENTVERSION.toString());
-		if ((serverVersion != null) && !serverVersion.equals(CommonVersion.getCurrent().toString())) {
+		if ((serverVersion != null) && !serverVersion.equals(Version.currentVersion.toString())) {
 			logger.info("**********  **********  **********");
-			logger.info("\nCurrent version : " + CommonVersion.getCurrent().toString());
+			logger.info("\nCurrent version : " + Version.currentVersion.toString());
 			logger.info("Server  version : " + serverVersion);
 			logger.info("We must upgrade");
 			logger.info("Restarting now");

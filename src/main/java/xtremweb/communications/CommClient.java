@@ -33,10 +33,7 @@ package xtremweb.communications;
  * @since RPCXW
  */
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.NoRouteToHostException;
 import java.net.SocketTimeoutException;
 import java.net.URISyntaxException;
@@ -736,10 +733,7 @@ public abstract class CommClient implements ClientAPI {
 			throws InvalidKeyException, AccessControlException, IOException, SAXException {
 		try {
 			mileStone("<newXMLVector>");
-			final XMLVector ret = new XMLVector();
-			final XMLReader reader = new XMLReader(ret);
-			reader.read(input);
-			return ret;
+    		return new XMLVector(new DataInputStream(input));
 		} finally {
 			mileStone("</newXMLVector>");
 		}
@@ -752,10 +746,7 @@ public abstract class CommClient implements ClientAPI {
 			throws InvalidKeyException, AccessControlException, IOException, SAXException {
 		try {
 			mileStone("<newXMLVersion>");
-			final Version ret = new Version();
-			final XMLReader reader = new XMLReader(ret);
-			reader.read(input);
-			return ret;
+			return new Version(new DataInputStream(input));
 		} finally {
 			mileStone("</newXMLVersion>");
 		}
@@ -768,13 +759,10 @@ public abstract class CommClient implements ClientAPI {
 			throws InvalidKeyException, AccessControlException, IOException, SAXException {
 		try {
 			mileStone("<newXMLHashtable>");
-			final XMLHashtable ret = new XMLHashtable();
-			final XMLReader reader = new XMLReader(ret);
-			reader.read(input);
-			return ret;
-		} finally {
-			mileStone("</newXMLHashtable>");
-		}
+			return new XMLHashtable(new DataInputStream(input));
+        } finally {
+            mileStone("</newXMLHashtable>");
+        }
 	}
 
 	/**
@@ -880,14 +868,14 @@ public abstract class CommClient implements ClientAPI {
 	public Version version(final XMLRPCCommandVersion command)
 			throws InvalidKeyException, AccessControlException, IOException, SAXException {
 
-		Version version = null;
 		try {
 			sendCommand(command);
-			version = newXMLVersion();
+            Version version = newXMLVersion();
+			System.out.println("CommCleint#version = " + version);
+            return version;
 		} finally {
 			close();
 		}
-		return version;
 	}
 
 	/**

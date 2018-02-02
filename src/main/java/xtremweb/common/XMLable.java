@@ -71,11 +71,11 @@ public abstract class XMLable {
 	 * This sets version to current one.
 	 *
 	 * @since 5.8.0
-	 * @see CommonVersion#getCurrent()
+	 * @see Version#currentVersion
 	 * @see #currentVersion
 	 */
 	public final void setCurrentVersion() {
-		currentVersion = CommonVersion.getCurrent();
+        currentVersion = Version.currentVersion;
 	}
 
 	/**
@@ -85,14 +85,13 @@ public abstract class XMLable {
 	 * @see #currentVersion
 	 */
 	public void resetCurrentVersion() {
-		currentVersion = null;
+        currentVersion = null;
 	}
 
 	/**
 	 * This sets version to the provided one
 	 *
 	 * @since 5.8.0
-	 * @see CommonVersion#getCurrent()
 	 * @see #currentVersion
 	 */
 	public void setCurrentVersion(final Version v) {
@@ -103,7 +102,6 @@ public abstract class XMLable {
 	 * This retrieves this object version
 	 *
 	 * @since 5.8.0
-	 * @see CommonVersion#getCurrent()
 	 * @see #currentVersion
 	 */
 	public Version getCurrentVersion() {
@@ -205,7 +203,6 @@ public abstract class XMLable {
 	 * @param open
 	 *            contains true to open the xml tag, false to close it
 	 * @return a String containing the XML tag
-	 * @see CommonVersion#getCurrent()
 	 * @since 5.8.0
 	 */
 	public final String xmlRootElement(final boolean open) {
@@ -213,7 +210,7 @@ public abstract class XMLable {
 			return emptyString;
 		}
 		if (open) {
-			return "<" + ROOTTAG + " " + VERSIONATTRIBUTE + "=\"" + CommonVersion.getCurrent().toString() + "\">";
+			return "<" + ROOTTAG + " " + VERSIONATTRIBUTE + "=\"" + Version.currentVersion.toString() + "\">";
 		}
 		return "</" + ROOTTAG + ">";
 	}

@@ -34,7 +34,6 @@ import java.util.Hashtable;
 import java.util.Map;
 
 import xtremweb.common.CPUEnum;
-import xtremweb.common.CommonVersion;
 import xtremweb.common.Logger;
 import xtremweb.common.OSEnum;
 import xtremweb.common.Version;
@@ -140,7 +139,7 @@ public class ArchDepFactory {
 	 */
 	protected static String mapLibraryName(final String lib) {
 
-		final Version v = CommonVersion.getCurrent();
+		final Version v = Version.currentVersion;
 		final OSEnum os = OSEnum.getOs();
 		final CPUEnum cpu = CPUEnum.getCpu();
 

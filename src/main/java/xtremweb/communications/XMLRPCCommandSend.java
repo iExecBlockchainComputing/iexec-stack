@@ -164,7 +164,6 @@ public abstract class XMLRPCCommandSend extends XMLRPCCommand {
 			final Table param = (Table) getParameter();
 			if (param == null) {
 				final Table itf = Table.newInterface(uri, thetag, qname, attrs);
-				itf.setCurrentVersion(getCurrentVersion());
 				setParameter(itf);
 			} else {
 				param.xmlElementStart(uri, thetag, qname, attrs);

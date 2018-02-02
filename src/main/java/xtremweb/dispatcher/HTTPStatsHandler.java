@@ -44,7 +44,6 @@ import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
 
 import xtremweb.common.BytePacket;
-import xtremweb.common.CommonVersion;
 import xtremweb.common.DataInterface;
 import xtremweb.common.Logger;
 import xtremweb.common.Table;
@@ -72,7 +71,7 @@ public class HTTPStatsHandler extends xtremweb.dispatcher.CommHandler {
 
 	private static String RES_SERVERSTATSHTML = "misc/serverstats.html";
 
-	private static final Version CURRENTVERSION = CommonVersion.getCurrent();
+	private static final Version CURRENTVERSION = Version.currentVersion;
 	private static final String CURRENTVERSIONSTRING = CURRENTVERSION.toString();
 
 	/** this tag is replaced by the current version in misc/server.html */

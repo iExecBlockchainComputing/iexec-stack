@@ -174,7 +174,6 @@ public class XMLRPCCommandWorkAlive extends XMLRPCCommand {
 							"XMLRPCCommandWorkAlive : not a " + getXMLTag() + " command (" + qname + ")");
 				}
 				setParameter(new XMLHashtable(attrs));
-				getParameter().setCurrentVersion(getCurrentVersion());
 			} else {
 				param.xmlElementStart(uri, tag, qname, attrs);
 			}
