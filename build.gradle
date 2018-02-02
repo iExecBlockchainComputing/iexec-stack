@@ -69,10 +69,8 @@ jar {
                 'Name': 'xtremweb-hep',
                 'Specification-Title': 'XtremWeb-HEP',
                 'Specification-Version': version,
-                'Specification-Vendor': 'CNRS-IN2P3-LAL',
                 'Implementation-Title': 'xtremweb-hep',
                 'Implementation-Version': version,
-                'Implementation-Vendor': 'CNRS-IN2P3-LAL',
                 'Main-Class': 'xtremweb.dispatcher.Dispatcher xtremweb.common.HTTPLauncher xtremweb.client.Client'
         )
         manifest
