@@ -49,16 +49,11 @@ import xtremweb.common.XWPropertyDefs;
 import xtremweb.common.XWTools;
 
 /**
- * XMLRPCCommand.java
- *
+ * XMLRPCCommand.java defines XMLRPC command
  * Created: March 22nd, 2006
  *
  * @author <a href="mailto:lodygens /a|t\ lal.in2p3.fr>Oleg Lodygensky</a>
  * @since 1.9.0
- */
-
-/**
- * This class defines XMLRPC command
  */
 public abstract class XMLRPCCommand extends XMLable {
 
@@ -99,7 +94,6 @@ public abstract class XMLRPCCommand extends XMLable {
 
 	/**
 	 * This sets this command mandating login
-	 * @param dl is this command mandating login
 	 * @since 11.4.0
 	 */
 	public final boolean isMandated() {
@@ -315,7 +309,6 @@ public abstract class XMLRPCCommand extends XMLable {
 	protected XMLRPCCommand(final URI uri, final String cmdName, final int l) throws IOException {
 		super(IdRpc.valueOf(cmdName).toString().toLowerCase(), -1);
 
-		setCurrentVersion();
 		idrpc = IdRpc.valueOf(cmdName);
 		user = null;
 		host = null;
@@ -603,7 +596,6 @@ public abstract class XMLRPCCommand extends XMLable {
 			if (user == null) {
 				currentTag = XMLTAGS.USER;
 				user = new UserInterface(attrs);
-				user.setCurrentVersion(getCurrentVersion());
 				getLogger().finest("XMLRPCCommand#xmlElementStartCheckUser " + user.toXml());
 			} else {
 				throw new SAXException(
@@ -647,7 +639,6 @@ public abstract class XMLRPCCommand extends XMLable {
 			if (host == null) {
 				currentTag = XMLTAGS.HOST;
 				host = new HostInterface(attrs);
-				host.setCurrentVersion(getCurrentVersion());
 
 				getLogger().finest("XMLRPCCommand#xmlElementStartCheckUserAndHost " + host.toXml());
 			} else {

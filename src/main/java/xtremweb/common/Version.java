@@ -31,8 +31,13 @@ package xtremweb.common;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.security.InvalidKeyException;
+import java.util.Enumeration;
+import java.util.Map;
 import java.util.StringTokenizer;
+import java.util.jar.Manifest;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -40,27 +45,53 @@ import org.xml.sax.SAXException;
 public class Version extends XMLable {
 	private String version;
 	private String build;
-
+	private static final String RESNAME = "META-INF/MANIFEST.MF";
+	private static final String ATTRVERSION = "Implementation-Version";
+    public static Version currentVersion = new Version();
 	public Version() {
-		setXMLTag("Version");
-	}
+        setXMLTag("Version");
+        displayCustomPackage();
 
-	public Version(final String v) {
-		this();
+    }
+    private void displayPackageDetails(final Package pkg)
+    {
+        final String name = pkg.getName();
+        System.out.println(name);
+        System.out.println("\tSpec Title/Version: " + pkg.getSpecificationTitle() + " " + pkg.getSpecificationVersion());
+        System.out.println("\tSpec Vendor: " +  pkg.getSpecificationVendor());
+        System.out.println("\tImplementation: " + pkg.getImplementationTitle() + " " + pkg.getImplementationVersion());
+        System.out.println("\tImplementation Vendor: " + pkg.getImplementationVendor());
+    }
 
-		StringTokenizer sk = new StringTokenizer(v, "-");
-		version = sk.nextToken();
-		try {
-			build = sk.nextToken();
-		} catch (final Exception e) {
-		}
+    /**
+     * Display all packages associated with the class loader that do not start
+     * with "sun", "com", "java", or "org".
+     */
+    private void displayCustomPackage()
+    {
+        final Package[] packages = Package.getPackages();
+        for (final Package pkg : packages)
+        {
+            final String name = pkg.getName();
+            if (   !name.startsWith("sun") && !name.startsWith("java")
+                    && !name.startsWith("com") && !name.startsWith("org") )
+            {
+                displayPackageDetails(pkg);
+            }
+        }
+    }
+
+
+    public Version(final String v) {
+        setXMLTag("Version");
+		fromString(v);
 	}
 
 	/**
 	 * This calls this() and fromStrings(ver,br,bu)
 	 */
 	public Version(final String ver, final String bu) {
-		this();
+        setXMLTag("Version");
 		fromStrings(ver, bu);
 	}
 
@@ -74,7 +105,7 @@ public class Version extends XMLable {
 	 *             on XML error
 	 */
 	public Version(final DataInputStream input) throws IOException, SAXException {
-		this();
+        setXMLTag("Version");
 		final XMLReader reader = new XMLReader(this);
 		try {
 			reader.read(input);
@@ -85,7 +116,18 @@ public class Version extends XMLable {
 	}
 
 	/**
-	 * This retreives version, branch and build from parameters
+	 *
+	 */
+	public void fromString(final String str) {
+		StringTokenizer sk = new StringTokenizer(str, "-");
+		version = sk.nextToken();
+		try {
+			build = sk.nextToken();
+		} catch (final Exception e) {
+		}
+	}
+	/**
+	 * This retrieves version, branch and build from parameters
 	 *
 	 * @param ver
 	 *            is the version
@@ -98,7 +140,7 @@ public class Version extends XMLable {
 	}
 
 	public String full() {
-		return version + "-master";
+		return version;
 	}
 
 	public String rev() {
@@ -197,7 +239,6 @@ public class Version extends XMLable {
 	 * @since 8.0.1
 	 */
 	public static void main(final String argv[]) {
-		new CommonVersion();
-		System.out.println(CommonVersion.getCurrent().full());
+		System.out.println(Version.currentVersion);
 	}
 }

@@ -88,9 +88,6 @@ public final class XMLRPCResult extends XMLable {
 
 	/**
 	 * This sets this command URI
-	 *
-	 * @param uri
-	 *            is this command URI
 	 */
 	private void setTimeStamp(final long t) {
 		setValueAt(TIMESTAMP, new Long(t));
@@ -105,9 +102,6 @@ public final class XMLRPCResult extends XMLable {
 
 	/**
 	 * This sets this command URI
-	 *
-	 * @param uri
-	 *            is this command URI
 	 */
 	private void setReturnCode(final XWReturnCode r) {
 		setValueAt(RETURNCODE, r);
@@ -123,7 +117,6 @@ public final class XMLRPCResult extends XMLable {
 
 		super(THISTAG, -1);
 
-		setCurrentVersion();
 		setAttributeLength(TIMESTAMP);
 		setColumns();
 		setColumnAt(MESSAGE, "MESSAGE");

@@ -32,8 +32,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
-import xtremweb.common.CommonVersion;
 import xtremweb.common.Logger;
+import xtremweb.common.Version;
 import xtremweb.common.XWTools;
 
 /**
@@ -85,7 +85,7 @@ public class AccessLogger {
 	/**
 	 * This stores XWHEP version as string
 	 */
-	private final String version = CommonVersion.getCurrent().rev();
+	private final String version = new Version().rev();
 	/**
 	 * This is the directory name where access logs are stored
 	 */

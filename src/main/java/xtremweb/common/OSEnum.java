@@ -77,7 +77,7 @@ public enum OSEnum {
 	 *
 	 * @param osName
 	 *            the OS name
-	 * @exception ClassNotFound
+	 * @exception ClassNotFoundException
 	 *                exception is thrown if osName is not supported by XtremWeb
 	 */
 	public static String getOsName(final String osName) throws IllegalArgumentException {
@@ -121,7 +121,7 @@ public enum OSEnum {
 	 *
 	 * @param osName
 	 *            the OS name
-	 * @exception ClassNotFound
+	 * @exception ClassNotFoundException
 	 *                exception is thrown if osName is not supported by XtremWeb
 	 */
 	public static OSEnum getOs(final String osName) throws IllegalArgumentException {
@@ -188,7 +188,7 @@ public enum OSEnum {
 	 * @since 6.0.0
 	 */
 	public static final String[] classpathes = { null, // NONE
-			"/opt/xwhep-worker-" + CommonVersion.getCurrent().rev() + "/lib", // LINUX
+			"/opt/xwhep-worker-" + new Version().toString() + "/lib", // LINUX
 			"c:\\Program Files\\CNRS\\XWHEP\\worker\\lib", // WIN32
 			"/private/etc/xwhep.worker", // MACOSX
 			null, // SOLARIS

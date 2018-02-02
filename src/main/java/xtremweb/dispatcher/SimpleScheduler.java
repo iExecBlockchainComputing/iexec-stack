@@ -28,7 +28,6 @@ import java.security.AccessControlException;
 import java.security.InvalidKeyException;
 import java.util.Collection;
 
-import xtremweb.common.CommonVersion;
 import xtremweb.common.HostInterface;
 import xtremweb.common.MileStone;
 import xtremweb.common.StatusEnum;
@@ -72,16 +71,13 @@ public class SimpleScheduler extends Scheduler {
 		return DBInterface.getInstance().works(StatusEnum.WAITING);
 	}
 
-	private static final Version CURRENTVERSION = CommonVersion.getCurrent();
+	private static final Version CURRENTVERSION = new Version();
 	private static final String CURRENTVERSIONSTRING = CURRENTVERSION.toString();
 
 	/**
 	 * Get the first task that is pending
 	 *
-	 * @param host
-	 *            is the worker definition
-	 * @param user
-	 *            is not used here (see MatchingScheduler)
+	 * @param command is the received command
 	 * @return a Work matching host; null if no work matches this host -or no
 	 *         pending work- found
 	 * @exception IOException

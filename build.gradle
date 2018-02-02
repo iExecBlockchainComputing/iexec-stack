@@ -63,6 +63,11 @@ compileJava.dependsOn createVersion
 
 jar {
     exclude("doc/**")
+    manifest {
+        attributes 'Implementation-Title': 'Gradle Jar File Example',
+                'Implementation-Version': version,
+                'Main-Class': 'xtremweb.dispatcher.Dispatcher xtremweb.common.HTTPLauncher xtremweb.client.Client'
+    }
 }
 
 // task that creates a big jar that includes all dependencies

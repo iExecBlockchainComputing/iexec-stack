@@ -82,7 +82,7 @@ public class AboutWindow {
 		topPanel.add(HORIZONTAL_SEPARATOR);
 		topPanel.add(HORIZONTAL_SEPARATOR);
 		topPanel.add(HORIZONTAL_SEPARATOR);
-		final String version = CommonVersion.getCurrent().full();
+		final String version = new Version().full();
 		final String labelStart = new String("XWHEP");
 		final String labelEnd = new String("Copyright (c) CNRS - http://www.cnrs.fr");
 		final String labelAddress = new String("http://www.cnrs.fr");

@@ -43,7 +43,6 @@ import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
 
 import xtremweb.common.AppInterface;
-import xtremweb.common.CommonVersion;
 import xtremweb.common.DataInterface;
 import xtremweb.common.GroupInterface;
 import xtremweb.common.HostInterface;
@@ -122,7 +121,7 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 	private int tracesSendResultDelay = 60;
 
 	private static final XMLVector NOANSWER = new XMLVector(new Vector());
-	private static final Version CURRENTVERSION = CommonVersion.getCurrent();
+	private static final Version CURRENTVERSION = new Version();
 	private static final String CURRENTVERSIONSTRING = CURRENTVERSION.toString();
 
 	/**
@@ -562,17 +561,7 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 			String resultxml = result.toXml();
 			resultxml = resultxml.substring(0, Math.min(resultxml.length(), 150));
 			try {
-				if (command.getCurrentVersion() == null) {
-					result.resetCurrentVersion();
-				} else {
-					if (result.getCurrentVersion() == null) {
-						result.setCurrentVersion();
-					}
-				}
-
-				// if (idRpc != IdRpc.SEND) {
 				debug(command, "answer (" + idRpc.toString() + ") " + resultxml);
-				// }
 				write(result);
 			} catch (final Exception e) {
 				logger.exception("Can't write result", e);
@@ -694,8 +683,7 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 	 * worker which tells whether to stop computing this jobs TRUE to continue
 	 * and FALSE to stop
 	 *
-	 * @param jobUID
-	 *            is the UID od the computing job on worker side
+	 * @param command is the received command
 	 * @return a hashtable containing this job status so that worker continue or
 	 *         stop computing it
 	 */
@@ -779,10 +767,7 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 	 * <li>this server current version
 	 * </ul>
 	 *
-	 * @param _user
-	 *            defines the calling client
-	 * @param _host
-	 *            defines the calling host
+	 * @param command is the work alivec command
 	 * @param rmiParams
 	 *            is a Hashtable containing the worker local results, if any
 	 * @return a hashtable containing new worker parameters.
@@ -942,8 +927,7 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 	/**
 	 * This disconnects a client from server
 	 *
-	 * @param client
-	 *            defines this client attributes, such as user ID, password etc.
+	 * @param cmd is the disconnection command
 	 */
 	protected void disconnect(final XMLRPCCommand cmd) throws IOException, InvalidKeyException, AccessControlException {
 
@@ -1004,12 +988,7 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 	 * This changes access rights of the given object with the given access
 	 * rights modifier
 	 *
-	 * @param client
-	 *            is the requesting client
-	 * @param uri
-	 *            is the URI of the object to change the access rights for
-	 * @param modifier
-	 *            is the access rights modifier
+	 * @param command is the received command
 	 * @see xtremweb.security.XWAccessRights#chmod(String)
 	 * @since 5.8.0
 	 */
@@ -1021,9 +1000,7 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 
 	/**
 	 * This retrieves the known SmartSockets hub address
-	 *
-	 * @param _user
-	 *            is the caller credentials
+	 * @param command is the received command
 	 * @return a hashtable containing the SmartSockets hub address
 	 * @since 8.0.0
 	 */
@@ -1043,10 +1020,7 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 	/**
 	 * This removes an application from server
 	 *
-	 * @param client
-	 *            defines the client
-	 * @param uid
-	 *            is the UID of the object to remove
+	 * @param command is the received command
 	 */
 	protected void remove(final XMLRPCCommand command)
 			throws IOException, InvalidKeyException, AccessControlException {
@@ -1069,11 +1043,7 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 	 * Data must be defined on server side (i.e. sendData() must be called
 	 * first)
 	 *
-	 * @param client
-	 *            is the caller attributes
-	 * @param uid
-	 *            is the UID of the data to upload
-	 * @see #sendData(UserInterface, DataInterface)
+	 * @param command is the received command
 	 * @return the size of the uploaded data
 	 */
 	public long uploadData(final XMLRPCCommand command)
@@ -1134,11 +1104,7 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 
 	/**
 	 * This downloads a data from server
-	 *
-	 * @param client
-	 *            is the caller attributes
-	 * @param uid
-	 *            is the UID of the data to download
+	 * @param command is the command to execute
 	 */
 	public long downloadData(final XMLRPCCommand command)
 			throws IOException, InvalidKeyException, AccessControlException {
@@ -1202,9 +1168,7 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 
 	/**
 	 * This retrieves this client groups
-	 *
-	 * @param client
-	 *            defines this client attributes, such as user ID, password etc.
+	 * @param command is the command to execute
 	 */
 	protected XMLable getGroups(final XMLRPCCommand command)
 			throws IOException, InvalidKeyException, AccessControlException {
@@ -1216,10 +1180,7 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 	/**
 	 * This retrieves all works for the given group
 	 *
-	 * @param client
-	 *            defines this client attributes, such as user ID, password etc.
-	 * @param group
-	 *            is the group UID to retrieve works for
+	 * @param command is the received command
 	 */
 	protected XMLable getGroupWorks(final XMLRPCCommand command)
 			throws IOException, InvalidKeyException, AccessControlException {
@@ -1243,10 +1204,7 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 	/**
 	 * This retrieves all works for the given session
 	 *
-	 * @param client
-	 *            defines this client attributes, such as user ID, password etc.
-	 * @param session
-	 *            is the session UID to retrieve works for
+	 * @param command is the received command
 	 */
 	public XMLVector getSessionWorks(final XMLRPCCommand command)
 			throws IOException, InvalidKeyException, AccessControlException {
@@ -1269,8 +1227,6 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 	/**
 	 * @deprecated since 1.9.0 this is deprecated ; sendWork() should be used
 	 *             instead stdin and dirin must be sent using sendData
-	 * @see #sendWork(UserInterface, HostInterface, WorkInterface)
-	 * @see #sendData(UserInterface, DataInterface)
 	 */
 	@Deprecated
 	public void submit(final UserInterface client, final WorkInterface job)
@@ -1306,10 +1262,7 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 	/**
 	 * This broadcasts a new work to all workers
 	 *
-	 * @param client
-	 *            defines this client attributes, such as user ID, password etc.
-	 * @param work
-	 *            defines the work to broadcast
+	 * @param command is the received command
 	 * @return a Vector of String containing submitted work UIDs
 	 */
 	public XMLable broadcast(final XMLRPCCommand command)
@@ -1323,7 +1276,6 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 	 * This always throws an exception
 	 *
 	 * @deprecated since 1.9.0
-	 * @see #sendData(UserInterface, DataInterface)
 	 */
 	@Deprecated
 	public DataInterface getResult(final UserInterface client, final UID uid)
@@ -1335,7 +1287,6 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 	 * This always throws an exception
 	 *
 	 * @deprecated since 1.9.0
-	 * @see #sendData(UserInterface, DataInterface)
 	 */
 	@Deprecated
 	public void sendResult(final UserInterface client, final DataInterface result)
@@ -1367,12 +1318,7 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 	/**
 	 * Set worker active flag.
 	 *
-	 * @param client
-	 *            contains client parameters
-	 * @param uid
-	 *            is the worker uid
-	 * @param flag
-	 *            is the active flag
+	 * @param command is the received command
 	 */
 	protected void activateWorker(final XMLRPCCommand command)
 			throws IOException, InvalidKeyException, AccessControlException {

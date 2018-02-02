@@ -65,7 +65,6 @@ import xtremweb.common.AppTypeEnum;
 import xtremweb.common.CPUEnum;
 import xtremweb.common.CommandLineOptions;
 import xtremweb.common.CommandLineParser;
-import xtremweb.common.CommonVersion;
 import xtremweb.common.DataInterface;
 import xtremweb.common.DataTypeEnum;
 import xtremweb.common.GroupInterface;
@@ -486,9 +485,9 @@ public final class Client {
 
 		if ((idrpc == null) || (idrpc == IdRpc.NULL)) {
 			CommandLineParser.usage("This is the XWHEP client to use and manage the platform ("
-					+ CommonVersion.getCurrent().full() + ")");
+					+ new Version().full() + ")");
 		} else {
-			println("+--------- XWHEP client " + CommonVersion.getCurrent().full()
+			println("+--------- XWHEP client " + new Version().full()
 					+ "  ------------------------------------------+");
 			if (msg != null) {
 				println("  Error :  " + msg);
@@ -505,7 +504,6 @@ public final class Client {
 	/**
 	 * This summarizes action details to stdout
 	 *
-	 * @see xtremweb.common.CommandLineOptions#verbose()
 	 */
 	private void verbose() {
 		println(args.isVerbose(), "server = " + config.getCurrentDispatcher());
@@ -562,8 +560,6 @@ public final class Client {
 	/**
 	 * This prints out a string if allowed(--verbose option)
 	 *
-	 * @param str
-	 *            is the string to eventually print out
 	 */
 	private void println(final URI uri) {
 		println(true, uri.toString());
@@ -611,8 +607,6 @@ public final class Client {
 	 * This is called on communication error This may occur if requested object
 	 * if not found This terminates this application.
 	 *
-	 * @param uri
-	 *            is the not found object URI
 	 * @since 5.8.0
 	 */
 	private void objectNotFound() {
@@ -657,8 +651,6 @@ public final class Client {
 	 * This inserts an HTML header This displays nothing on any other output
 	 * format. Header is only inserted if there is no macro or if force is true
 	 *
-	 * @param force
-	 *            forces output if true
 	 */
 	private void header(final IdRpc cmd) {
 
@@ -683,8 +675,6 @@ public final class Client {
 	 * on any other output format. Trailer is only inserted if there is no macro
 	 * or if force is true
 	 *
-	 * @param force
-	 *            forces output if true
 	 */
 	private void trailer(final IdRpc cmd) {
 
@@ -863,7 +853,6 @@ public final class Client {
 	 * @throws InvalidKeyException
 	 * @throws IllegalAccessException
 	 * @throws InstantiationException
-	 * @see #get(Vector)
 	 */
 	private void get() throws IOException, ClassNotFoundException, SAXException, URISyntaxException,
 	InvalidKeyException, AccessControlException, InstantiationException, IllegalAccessException {
@@ -2222,7 +2211,6 @@ public final class Client {
 	 * @throws AccessControlException
 	 * @throws InvalidKeyException
 	 * @throws InstantiationException
-	 * @see #getUser(UID, boolean)
 	 */
 	private void getUser() throws IOException, ClassNotFoundException, SAXException, URISyntaxException,
 	InvalidKeyException, AccessControlException, InstantiationException {
@@ -2278,8 +2266,7 @@ public final class Client {
 	 * This retrieves user from XtremWeb server This may write description to
 	 * stdout, accordingly to dislay parameter
 	 *
-	 * @param login
-	 *            is the use login
+	 * @param extId is the external id
 	 * @param display
 	 *            tells to write descriptio to stdout, or not
 	 * @return an UserInterface
@@ -2323,7 +2310,6 @@ public final class Client {
 	 * @throws AccessControlException
 	 * @throws InvalidKeyException
 	 * @throws InstantiationException
-	 * @see #get(Vector, boolean)
 	 */
 	private Collection<XMLValue> getUsers(final boolean display) throws IOException, ClassNotFoundException,
 	SAXException, URISyntaxException, InvalidKeyException, AccessControlException, InstantiationException {
@@ -2456,7 +2442,7 @@ public final class Client {
 		if (msg != null) {
 			println("# " + msg);
 		}
-		println("# " + CommonVersion.getCurrent().full());
+		println("# " + new Version().full());
 		println("# Role");
 		println(XWPropertyDefs.ROLE + "=" + XWRole.CLIENT);
 		println("# XWHEP server");
@@ -2936,8 +2922,6 @@ public final class Client {
 	 * @throws IOException
 	 * @throws AccessControlException
 	 * @throws InvalidKeyException
-	 *
-	 * @see #synchronize()
 	 */
 	private void ping() throws InvalidKeyException, AccessControlException, IOException {
 
@@ -3277,9 +3261,6 @@ public final class Client {
 	 * This is finally where everything takes place. This is called at least
 	 * once, or once per line found in "macro" file, if any.
 	 *
-	 * @param in
-	 *            is the input stream representing the standard input for the
-	 *            job
 	 */
 	private void doItNow() {
 
@@ -3288,12 +3269,12 @@ public final class Client {
 
 			switch (args.command()) {
 			case VERSION:
-				println("Current version : " + CommonVersion.getCurrent());
+				println("Current version : " + new Version().toString());
 				try {
 					final Version serverVersion = commClient().version();
 					logger.debug("serverVersion = " + serverVersion);
 					if ((serverVersion != null)
-							&& !serverVersion.toString().equals(CommonVersion.getCurrent().toString())) {
+							&& !serverVersion.toString().equals(new Version().toString())) {
 						println("Server  version : " + serverVersion);
 						println("**********  **********  **********");
 						println("You should upgrade your client");

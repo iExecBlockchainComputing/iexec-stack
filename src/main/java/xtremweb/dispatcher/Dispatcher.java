@@ -32,8 +32,8 @@ import org.eclipse.jetty.server.session.SessionHandler;
 
 import xtremweb.common.CommandLineOptions;
 import xtremweb.common.CommandLineParser;
-import xtremweb.common.CommonVersion;
 import xtremweb.common.Logger;
+import xtremweb.common.Version;
 import xtremweb.common.XWConfigurator;
 import xtremweb.common.XWPropertyDefs;
 import xtremweb.common.XWReturnCode;
@@ -251,7 +251,7 @@ public class Dispatcher {
 			}
 		}
 
-		logger.info("XWHEP Dispatcher(" + CommonVersion.getCurrent().full() + ") started [" + new Date() + "]");
+		logger.info("XWHEP Dispatcher(" + new Version().full() + ") started [" + new Date() + "]");
 		logger.info("DB vendor  = " + config.getProperty(XWPropertyDefs.DBVENDOR));
 		logger.info("mileStone  = " + config.getProperty(XWPropertyDefs.MILESTONES));
 		logger.info("Time out   = " + config.getProperty(XWPropertyDefs.TIMEOUT));
