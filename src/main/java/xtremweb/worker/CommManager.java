@@ -53,23 +53,7 @@ import java.util.Iterator;
 
 import org.xml.sax.SAXException;
 
-import xtremweb.common.AppInterface;
-import xtremweb.common.AppTypeEnum;
-import xtremweb.common.CPUEnum;
-import xtremweb.common.CommonVersion;
-import xtremweb.common.DataInterface;
-import xtremweb.common.DataTypeEnum;
-import xtremweb.common.HostInterface;
-import xtremweb.common.Logger;
-import xtremweb.common.MileStone;
-import xtremweb.common.OSEnum;
-import xtremweb.common.StatusEnum;
-import xtremweb.common.StreamIO;
-import xtremweb.common.UID;
-import xtremweb.common.WorkInterface;
-import xtremweb.common.WorkerParameters;
-import xtremweb.common.XWPropertyDefs;
-import xtremweb.common.XWTools;
+import xtremweb.common.*;
 import xtremweb.communications.CommClient;
 import xtremweb.communications.Connection;
 import xtremweb.communications.URI;
@@ -85,7 +69,7 @@ public final class CommManager extends Thread {
 	 * - firstWorkRequest > xtremweb.common.XWConfigurator#noopTimeout) then
 	 * exit
 	 *
-	 * @see xtremweb.common.XWConfigurator#noopTimeout
+	 * @see XWConfigurator#getMaxTimeout()
 	 * @since RPCXW v3
 	 */
 	private long firstWorkRequest;
@@ -256,13 +240,13 @@ public final class CommManager extends Thread {
 	private void message(final boolean lost, final String trailer) {
 		if (!lost) {
 			if (!connected) {
-				logger.error("XWHEP Worker (" + CommonVersion.getCurrent().full() + ") connected to \""
+				logger.error("XWHEP Worker (" + Version.currentVersion.full() + ") connected to \""
 						+ Worker.getConfig().getCurrentDispatcher() + (trailer == null ? "\"" : "\" : " + trailer));
 			}
 			connected = true;
 		} else {
 			if (connected) {
-				logger.error("XWHEP Worker (" + CommonVersion.getCurrent().full() + ") " + " connection lost from \""
+				logger.error("XWHEP Worker (" + Version.currentVersion.full() + ") " + " connection lost from \""
 						+ Worker.getConfig().getCurrentDispatcher() + (trailer == null ? "\"" : "\" : " + trailer));
 			}
 			connected = false;
@@ -537,8 +521,7 @@ public final class CommManager extends Thread {
 	/**
 	 * This all data associated to the current work
 	 *
-	 * @param uid
-	 *            is the work uid
+	 * @param w is the work
 	 *
 	 */
 	private void downloadWork(final Work w) throws IOException {
@@ -1061,7 +1044,7 @@ public final class CommManager extends Thread {
 						logger.debug("delai = " + delai);
 
 						if (delai > noopTimeout) {
-							System.out.println("XWHEP Worker (" + CommonVersion.getCurrent().full() + ") [" + new Date()
+							System.out.println("XWHEP Worker (" + Version.currentVersion.full() + ") [" + new Date()
 									+ "] ended : not waiting any longer (" + delai + " > " + noopTimeout + ")");
 							System.exit(0);
 						}
@@ -1099,7 +1082,7 @@ public final class CommManager extends Thread {
 				Worker.getConfig().incNbJobs();
 				if (Worker.getConfig().stopComputing()) {
 					if (commQueue.size() < 1) {
-						System.out.println("XWHEP Worker (" + CommonVersion.getCurrent().full() + ") [" + new Date()
+						System.out.println("XWHEP Worker (" + Version.currentVersion.full() + ") [" + new Date()
 								+ "] ended : enough computings (" + Worker.getConfig().getNbJobs() + " > "
 								+ Worker.getConfig().getInt(XWPropertyDefs.COMPUTINGJOBS) + ")");
 						System.exit(0);
@@ -1263,7 +1246,7 @@ public final class CommManager extends Thread {
 		getPoolWork().saveWork(theWork);
 
 		if (Worker.getConfig().stopComputing()) {
-			System.err.println("XWHEP Worker (" + CommonVersion.getCurrent().full() + ") [" + new Date()
+			System.err.println("XWHEP Worker (" + Version.currentVersion.full() + ") [" + new Date()
 					+ "] ended : enough computings (" + Worker.getConfig().getNbJobs() + " > "
 					+ Worker.getConfig().getInt(XWPropertyDefs.COMPUTINGJOBS) + ")");
 

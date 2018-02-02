@@ -63,6 +63,18 @@ compileJava.dependsOn createVersion
 
 jar {
     exclude("doc/**")
+    manifest {
+
+        def manifest = attributes(
+                'Name': 'xtremweb-hep',
+                'Specification-Title': 'XtremWeb-HEP',
+                'Specification-Version': version,
+                'Implementation-Title': 'xtremweb-hep',
+                'Implementation-Version': version,
+                'Main-Class': 'xtremweb.dispatcher.Dispatcher xtremweb.common.HTTPLauncher xtremweb.client.Client'
+        )
+        manifest
+    }
 }
 
 // task that creates a big jar that includes all dependencies

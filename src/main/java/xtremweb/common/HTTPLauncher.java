@@ -69,7 +69,7 @@ public final class HTTPLauncher {
 	/**
 	 * Creates a new <code>HTTPLauncher</code> instance.
 	 *
-	 * @param argv
+	 * @param a
 	 *            a <code>String[]</code> value : command line arguments which
 	 *            specificies the config file name
 	 * @throws IOException 
@@ -114,9 +114,10 @@ public final class HTTPLauncher {
 			binDir = config.getTmpDir();
 		}
 
+		final Version version = Version.currentVersion;
 		while (true) {
 			logger.debug("launcherURL = " + url);
-			logger.debug("Current version : " + CommonVersion.getCurrent());
+			logger.debug("Current version : " + version.toString());
 
 			boolean upgrade = false;
 
@@ -129,7 +130,7 @@ public final class HTTPLauncher {
 					final File newJarFile = new File(libDir, XWTools.JARFILENAME + "-" + serverVersion);
 
 					if (!newJarFile.exists()
-							&& !serverVersion.toString().equals(CommonVersion.getCurrent().toString())) {
+							&& !serverVersion.toString().equals(version.toString())) {
 						logger.info("Server  version : " + serverVersion);
 						logger.info("**********  **********  **********");
 						logger.info("We must upgrade");
