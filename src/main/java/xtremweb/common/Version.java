@@ -245,8 +245,8 @@ public class Version extends XMLable {
 			return;
 		}
 
-        build = attrs.getValue(1);
-    	version = attrs.getValue(2);
+        build = attrs.getValue(0);
+    	version = attrs.getValue(1);
         fromStrings(version, build);
         setCurrentVersion(new Version(version, build));
         System.out.println("Version#fromXml this.toXml() = " + this.toXml());
