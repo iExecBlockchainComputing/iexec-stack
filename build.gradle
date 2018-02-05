@@ -91,7 +91,6 @@ task fatJar(type: Jar) {
 
 build.dependsOn fatJar
 
-
 apply from: 'common.gradle'
 apply from: 'mac.gradle'
 apply from: 'windows.gradle'
