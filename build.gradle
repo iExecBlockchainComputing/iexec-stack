@@ -172,7 +172,6 @@ task copyKeystoreGenerationScripts(type: Copy) {
 
         filter(ReplaceTokens, tokens: getCustomProperties())
     }
-
 }
 
 task cleanKeystoreDir(type: Delete) {
