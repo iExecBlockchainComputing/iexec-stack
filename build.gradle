@@ -215,7 +215,6 @@ task copyCacert() {
     }
 }
 
-
 task generateKeys(type: Exec) {
     dependsOn(copyCacert, copyExistingKeyPair)
     commandLine("sh", "-c",
