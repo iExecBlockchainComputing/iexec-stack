@@ -273,7 +273,6 @@ task copyLinuxInstallers(type: Copy) {
     filter(ReplaceTokens, tokens: getCustomProperties())
 }
 
-
 task buildAll {
     dependsOn(chmodBin, copyWindowsInstaller, copyMacInstaller, copyLinuxInstallers, copySQLCreateTables, copyConfFiles, generateKeys)
 }
