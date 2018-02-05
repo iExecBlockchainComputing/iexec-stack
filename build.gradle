@@ -327,7 +327,6 @@ task buildImages(){
     dependsOn (buildWorkerDockerImage, buildClientDockerImage, buildServerDockerImage)
 }
 
-
 buildImages.enabled = isMasterBranch
 
 task pushImages(type: Exec){
