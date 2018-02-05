@@ -223,8 +223,6 @@ task generateKeys(type: Exec) {
     )
 }
 
-
-
 task chmodBin(type: Exec) {
     dependsOn(copyMiscToDist, copyScripts,copyKeystoreGenerationScripts, mkdirKeystore)
     commandLine("sh", "-c",
