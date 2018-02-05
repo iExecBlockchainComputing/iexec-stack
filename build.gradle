@@ -5,7 +5,6 @@ repositories {
 }
 
 dependencies {
-
     compile "org.bouncycastle:bcprov-jdk15on:1.51"
     compile "org.bouncycastle:bcpkix-jdk15on:1.51"
     compile "org.eclipse.jetty:jetty-maven-plugin:9.3.8.v20160314"
