@@ -302,7 +302,7 @@ public class DBConnPoolThread extends Thread {
 		try (final Statement stmt = dbConn.createStatement()) {
 			Vector<T> ret = null;
 
-			logger.finest(query);
+			logger.debug(query);
 
 			if (stmt.execute(query)) {
 				rs = stmt.getResultSet();

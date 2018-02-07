@@ -137,7 +137,7 @@ public class SQLRequestWorkRequest extends SQLRequest {
 			+ "      users.uid=maintable.owneruid" + // are this job AND this
 														// worker owned by the
 														// same user ?
-			"      OR (" + "              users.rights='" + UserRightEnum.WORKER_USER + "'" + // can
+			"      OR (" + "              users.userrightid>'" + UserRightEnum.WORKER_USER.ordinal() + "'" + // can
 																								// this
 																								// worker
 																								// run
