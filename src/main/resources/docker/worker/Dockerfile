@@ -12,7 +12,15 @@ WORKDIR /xwhep
 
 RUN apt-get update && \ 
        export DEBIAN_FRONTEND=noninteractive && \
-       apt-get install -y openjdk-8-jre zip unzip wget make curl docker.io iputils-ping
+       apt-get install -y openjdk-8-jre zip unzip wget make gcc curl docker.io iputils-ping
+
+# install openSSL to be able to download certificates 
+RUN wget http://www.openssl.org/source/openssl-1.0.2g.tar.gz && \
+		tar -xvzf openssl-1.0.2g.tar.gz && \
+		cd openssl-1.0.2g && \
+		./config --prefix=/usr/ && \
+		make && \
+		make install
 
 RUN echo "#!/bin/sh" > /xwhep/xwstart.sh && \
     echo "if [ ! -z \$XWSERVERADDR ] ; then " >> /xwhep/xwstart.sh && \
