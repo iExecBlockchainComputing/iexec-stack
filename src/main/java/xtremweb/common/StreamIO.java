@@ -456,15 +456,6 @@ public class StreamIO implements AutoCloseable {
 		input.readFully(ret, 0, length);
 		return ret;
 	}
-
-	/**
-	 * This calls writeFile(file, XWTools.MAXFILESIZE)
-	 * @see XWTools#MAXFILESIZE
-	 * @see #writeFile(File, long)
-	 */
-	public void writeFile(final File file) throws IOException {
-		writeFile(file, XWTools.MAXFILESIZE);
-	}
 	/**
 	 * This writes a file content to output stream. This first writes the file
 	 * size, then the file content itself. If parameter is null a single 0 is
@@ -579,16 +570,6 @@ public class StreamIO implements AutoCloseable {
 		} finally {
 			output.flush();
 		}
-	}
-
-	/**
-	 * This calls readFile(file, XWTools.MAXFILESIZE)
-	 * 
-	 * @see #readFile(File, long)	 
-	 * @see XWTools#MAXFILESIZE
-	 */
-	public void readFile(final File file) throws IOException {
-		readFile(file, XWTools.MAXFILESIZE);
 	}
 	/**
 	 * This reads a file content from input stream and stores it to file. The
@@ -861,7 +842,7 @@ public class StreamIO implements AutoCloseable {
 				final StreamIO io = new StreamIO(output, null);) {
 
 			final long t0 = System.currentTimeMillis();
-			io.writeFile(fin);
+            io.writeFile(fin, XWTools.MAXFILESIZE);
 			final long t1 = System.currentTimeMillis();
 
 			final long d0 = t1 - t0;
@@ -878,7 +859,7 @@ public class StreamIO implements AutoCloseable {
 			StreamIO.nio = !StreamIO.nio;
 
 			final long t0 = System.currentTimeMillis();
-			io.writeFile(fin);
+			io.writeFile(fin, XWTools.MAXFILESIZE);
 			final long t1 = System.currentTimeMillis();
 			final long d0 = t1 - t0;
 			System.out.println((StreamIO.nio ? "with" : "w/o ") + " NIO; Size =  " + fin.length() + " ; dT = " + d0);

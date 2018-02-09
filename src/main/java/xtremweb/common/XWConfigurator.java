@@ -73,6 +73,12 @@ import java.util.Vector;
 import javax.net.ssl.KeyManagerFactory;
 import javax.swing.JMenuItem;
 
+import org.web3j.crypto.CipherException;
+import org.web3j.crypto.Credentials;
+import org.web3j.crypto.WalletUtils;
+import org.web3j.protocol.Web3j;
+import org.web3j.protocol.core.methods.response.Web3ClientVersion;
+import org.web3j.protocol.http.HttpService;
 import xtremweb.archdep.ArchDepFactory;
 import xtremweb.communications.CommClient;
 import xtremweb.communications.Connection;
@@ -318,6 +324,32 @@ public final class XWConfigurator extends Properties {
 
 	/** This is the max amout of binaries stored on worker side */
 	public static final int MAX_BIN = 5;
+
+	/**
+	 * This is the file that contain the ethereum wallet
+	 * @since 12.2.7
+	 */
+	private File ethWalletFile;
+	private String ethWalletPassword;
+
+	public File getEthWalletFile() {
+		return ethWalletFile;
+	}
+
+	public void setEthWalletFile(final File wallet) {
+		this.ethWalletFile = wallet;
+	}
+
+	/**
+	 * This is the Web3j entry point
+	 * @since 12.2.7
+	 */
+	private Web3j web3;
+	/**
+	 * This is the Web3j walletCredentials
+	 * @since 12.2.7
+	 */
+	private Credentials walletCredentials;
 
 	/**
 	 * This is the file that contain the keystore
@@ -873,6 +905,28 @@ public final class XWConfigurator extends Properties {
 			setProperty(XWPropertyDefs.SSLKEYSTORE, "");
 		}
 
+		ethWalletFile = getFile(XWPropertyDefs.ETHWALLETPATH);
+		if ((ethWalletFile == null) || !ethWalletFile.exists()) {
+			logger.info("No Ethereum wallet file or file not found");
+		} else {
+			web3 = Web3j.build(new HttpService());  // defaults to http://localhost:8545/
+			try {
+				Web3ClientVersion web3ClientVersion = web3.web3ClientVersion().send();
+				final String clientVersion = web3ClientVersion.getWeb3ClientVersion();
+				logger.info("Web3j client version " + clientVersion);
+			} catch (IOException e) {
+				logger.exception("Web3j error; cancelling wallet access", e);
+				ethWalletFile = null;
+			}
+
+			ethWalletPassword = getProperty(XWPropertyDefs.ETHWALLETPASSWORD);
+			try {
+				walletCredentials = WalletUtils.loadCredentials(ethWalletPassword, ethWalletFile);
+				logger.info("Credentials " + walletCredentials.getAddress());
+			} catch (IOException | CipherException e) {
+				logger.fatal("Web3j error; can't read walletCredentials : " + e);
+			}
+		}
 		// worker don't use certificates
 		if (!XWRole.isClient()) {
 			setProperty(XWPropertyDefs.X509USERPROXY, "");
