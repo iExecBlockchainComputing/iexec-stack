@@ -5,7 +5,6 @@ repositories {
 }
 
 dependencies {
-
     compile "org.bouncycastle:bcprov-jdk15on:1.51"
     compile "org.bouncycastle:bcpkix-jdk15on:1.51"
     compile "org.eclipse.jetty:jetty-maven-plugin:9.3.8.v20160314"
@@ -18,8 +17,7 @@ dependencies {
     compile "bouncycastle:bcprov-jdk16:140"
     compile "antlr:antlr:2.7.2"// ? https://mvnrepository.com/artifact/antlr/antlr
     compile "org.json:json:20160810" // ? https://mvnrepository.com/artifact/org.json/json
-
-    compile ('org.web3j:core:3.2.0')
+    compile "org.web3j:core:3.2.0"
 
     api 'org.apache.commons:commons-math3:3.6.1'
 
@@ -92,7 +90,6 @@ task fatJar(type: Jar) {
 }
 
 build.dependsOn fatJar
-
 
 apply from: 'common.gradle'
 apply from: 'mac.gradle'
@@ -175,11 +172,20 @@ task copyKeystoreGenerationScripts(type: Copy) {
 
         filter(ReplaceTokens, tokens: getCustomProperties())
     }
-
 }
 
 task cleanKeystoreDir(type: Delete) {
     delete fileTree(dir: dist + "/keystore")
+}
+
+task copyExistingKeyPair(type: Copy) {
+    into dist
+
+    into("/keystore") {
+        from root + "/keystore"
+        include("*.pem")
+        include("*.key")
+    }
 }
 
 task copyDevCacert(type: Copy) {
@@ -201,7 +207,7 @@ task copyProdCacert(type: Exec) {
 }
 
 task copyCacert() {
-    dependsOn(copyKeystoreGenerationScripts, cleanKeystoreDir)
+    dependsOn(copyKeystoreGenerationScripts)
     if (project.hasProperty("environment") && project.getProperty("environment").toString().toLowerCase().equals("prod")) {
         dependsOn(copyProdCacert)
     } else {
@@ -210,12 +216,10 @@ task copyCacert() {
 }
 
 task generateKeys(type: Exec) {
-    dependsOn(copyCacert)
+    dependsOn(copyCacert, copyExistingKeyPair)
     commandLine("sh", "-c",
             distBin + '/xwhepgenkeys' + " && " +
-                    "if [ \$? -eq 0 ] ; then echo \"Keystores generated\" ; else echo \"ERROR: keystores generation error\"; exit 1 ; fi" + " && " +
-                    distBin + '/xwhepupdateopenidcerts' + " && " +
-                    "if [ \$? -eq 0 ] ; then echo \"OpenID server certificates inserted in XWHEP server keystore\" ; else echo \"ERROR: can't insert OpenID server certificates into XWHEP server keystore\" ; fi"
+                    "if [ \$? -eq 0 ] ; then echo \"Keystores generated\" ; else echo \"ERROR: keystores generation error\"; exit 1 ; fi"
     )
 }
 
@@ -268,7 +272,6 @@ task copyLinuxInstallers(type: Copy) {
     into dist + '/installers/linux'
     filter(ReplaceTokens, tokens: getCustomProperties())
 }
-
 
 task buildAll {
     dependsOn(chmodBin, copyWindowsInstaller, copyMacInstaller, copyLinuxInstallers, copySQLCreateTables, copyConfFiles, generateKeys)
@@ -323,6 +326,8 @@ buildWorkerDockerImage.enabled = isMasterBranch
 task buildImages(){
     dependsOn (buildWorkerDockerImage, buildClientDockerImage, buildServerDockerImage)
 }
+
+
 buildImages.enabled = isMasterBranch
 
 task pushImages(type: Exec){

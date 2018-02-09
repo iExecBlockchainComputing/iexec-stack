@@ -23,7 +23,7 @@ RUN echo "if [ ! -z \$XWSERVERADDR ] ; then " >> /tmp/xwstart.sh && \
 	echo "fi" >> /tmp/xwstart.sh
 
 # import the server certificate into the container keystore
-RUN echo "keytool -import -alias localhost -file /xwhep/certificate/xwhepcert.pem -trustcacerts -keystore /etc/ssl/certs/java/cacerts -storepass changeit -v -noprompt " >> /tmp/xwstart.sh
+RUN echo "keytool -import -alias localhost -file /xwhep/certificate/xwscheduler.pem -trustcacerts -keystore /etc/ssl/certs/java/cacerts -storepass changeit -v -noprompt " >> /tmp/xwstart.sh
 
 # update the SSLKEYSTORE to point to the container's keystore
 RUN echo "sed -i \"s/^SSLKEYSTORE=.*/SSLKEYSTORE=\/etc\/ssl\/certs\/java\/cacerts/g\" /xwhep/conf/xtremweb.client.conf " >> /tmp/xwstart.sh

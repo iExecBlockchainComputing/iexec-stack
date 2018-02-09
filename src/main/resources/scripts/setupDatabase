@@ -52,7 +52,6 @@ cd $currentDir
 BINDIR=$ROOTDIR/bin
 CONFDIR=$ROOTDIR/conf
 XWCONFVALUES=$CONFDIR/xwconfigure.values
-#INITD="/etc/init.d"
 
 SQL_SCRIPTS_DIR=$BINDIR/db-maintenance
 XWRMDBSQL=$SQL_SCRIPTS_DIR/xwhep-core-tables-drop-triggers-and-tables.sql
@@ -78,23 +77,10 @@ XWSETVERSIONSQL=$SQL_SCRIPTS_DIR/xwsetversion.sql
 DBVENDOR="mysql"
 DBENGINE="InnoDB"
 
-
-
-XWSERVERCONFFILENAME=xtremweb.server.conf
-XWCLIENTCONFFILENAME=xtremweb.client.conf
-XWBRIDGECONFFILENAME=$XWCLIENTCONFFILENAME
-XWCLIENTCONFTEMPLATEFILENAME=xtremweb.client.conf.template
-XWWORKERCONFFILENAME=xtremweb.worker.conf
-XWVWORKERCONFFILENAME=xtremweb.vworker.conf
-
-XWSERVERCONFFILE=$CONFDIR/$XWSERVERCONFFILENAME
-XWCLIENTCONFFILE=$CONFDIR/$XWCLIENTCONFFILENAME
-XWBRIDGECONFFILE=$XWCLIENTCONFFILE
-XWCLIENTCONFTEMPLATEFILE=$CONFDIR/$XWCLIENTCONFTEMPLATEFILENAME
-XWWORKERCONFFILE=$CONFDIR/$XWWORKERCONFFILENAME
-XWVWORKERCONFFILE=$CONFDIR/$XWVWORKERCONFFILENAME
-
-
+XWSERVERCONFFILE=$CONFDIR/xtremweb.server.conf
+XWCLIENTCONFFILE=$CONFDIR/xtremweb.client.conf
+XWWORKERCONFFILE=$CONFDIR/xtremweb.worker.conf
+XWVWORKERCONFFILE=$CONFDIR/xtremweb.vworker.conf
 
 DEBIANVERSION="/etc/debian_version"
 DEBIANOS=0
@@ -278,6 +264,10 @@ while [ $# -gt 0 ]; do
 			NEWALIAS=1
 			echo "--rmkeystore : $KEEPKEYSTORE"
 			;;
+		"--dbhost" )
+			DEFINED_DBHOST=$2
+			echo $DEFINED_DBHOST
+			;;
 	esac
 	shift
 done
@@ -307,6 +297,9 @@ usage
 
 . $XWCONFVALUES
 
+if [ ! -z "$DEFINED_DBHOST" ] ; then
+	DBHOST=$DEFINED_DBHOST 
+fi
 
 if [ -z "$DBVENDOR" ] ; then
 	usage "Variable DBVENDOR not set; please correct $XWCONFVALUES file " "STOP" 
@@ -382,7 +375,6 @@ echo "     XWSERVER             = '$XWSERVER'"
 echo "     XWUPGRADEURL         = '$XWUPGRADEURL'"
 echo "**** CA certificates path : "
 echo "     X509CERTDIR          = '$X509CERTDIR'"
-#echo "     USERCERTDIR          = '$USERCERTDIR'"
 echo "**** Certificate configuration : "
 echo "     Keys found           = '$XWELECTRONICKEYS'"
 echo "     SSLKEYPASSPHRASE     = '$SSLKEYPASSPHRASE'"
@@ -585,15 +577,6 @@ You can manually :
    - $BINDIR/xwusers
    - $BINDIR/xwapps
    - etc.
-
-As soon as everything is ok you should :
-  * prepare installation packages using:
-    - xwconfigure-02-rpm
-    - xwconfigure-02-dpkg
-    - xwconfigure-02-win32
-    - xwconfigure-02-macosx
-    - xwconfigure-02-client
-
 
 That's all for database
 

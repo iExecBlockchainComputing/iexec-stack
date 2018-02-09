@@ -22,6 +22,8 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
       - xtremweb-net
+    env_file:
+      - containerEnvironment
 
   worker:
     image: iexechub/worker:${XTREMWEB_WORKER_VERSION}
@@ -35,7 +37,7 @@ services:
       - 4323
       - 443
     volumes:
-      - ${SERVER_CERTIFICATE_LOCATION}:/xwhep/certificate/xwhepcert.pem
+      - ${SERVER_CERTIFICATE_LOCATION}:/xwhep/certificate/xwscheduler.pem
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
       - xtremweb-net

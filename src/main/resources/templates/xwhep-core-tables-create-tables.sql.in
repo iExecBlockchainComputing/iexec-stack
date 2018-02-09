@@ -928,10 +928,6 @@ show warnings;
 -- 
 -- ===========================================================================
 
--- insert into usergroups (uid,label,project) values("@ADMINGROUPUID@","admin", "false");
-
--- insert into usergroups (uid,label,project) values("@PUBLICWORKERSGROUPUID@","publicworkers", "false");
-
 -- ---------------------------------------------------------------------------
 -- Insert a priviliged user to be able to manage your platform
 -- accessrights = 1792 = 0x700
@@ -963,10 +959,6 @@ insert into users (uid,login,password,fname,lname,email,rights,owneruid,accessri
 grant all privileges on * to @DBUSERLOGIN@@localhost             identified by '@DBUSERPASSWORD@' with grant option;
 
 grant all privileges on * to @DBUSERLOGIN@@localhost.localdomain identified by '@DBUSERPASSWORD@' with grant option;
-
--- grant all privileges on * to @DBUSERLOGIN@@'@XWHOST@'            identified by '@DBUSERPASSWORD@' with grant option;
-
--- set password for @DBUSERLOGIN@@localhost = old_password ('@DBUSERPASSWORD@');
 
 
 -- ===========================================================================
