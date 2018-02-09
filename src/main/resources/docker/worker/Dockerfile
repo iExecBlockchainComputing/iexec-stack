@@ -3,6 +3,7 @@ EXPOSE 4321 4322 4323 4324 4327 4328 443
 
 ADD conf/xtremweb.worker.conf /xwhep/conf/
 RUN mkdir -p /xwhep/bin
+RUN mkdir -p /xwhep/certificate
 ADD bin/xtremweb.worker /xwhep/bin
 ADD bin/xtremweb /xwhep/bin
 ADD bin/xtremwebconf.sh /xwhep/bin
@@ -22,11 +23,23 @@ RUN wget http://www.openssl.org/source/openssl-1.0.2g.tar.gz && \
 		make && \
 		make install
 
+# check that the server name has been defined
 RUN echo "#!/bin/sh" > /xwhep/xwstart.sh && \
-    echo "if [ ! -z \$XWSERVERADDR ] ; then " >> /xwhep/xwstart.sh && \
+	echo "if [ -z \$XWSERVERNAME ] ; then " >> /xwhep/xwstart.sh && \
+	echo "	echo \" The domain name of the scheduler is missing \"; exit 1" >> /xwhep/xwstart.sh && \
+	echo "fi" >> /xwhep/xwstart.sh
+
+# Modify etc hosts if an ip is given in parameters
+RUN echo "if [ ! -z \$XWSERVERADDR ] ; then " >> /xwhep/xwstart.sh && \
     echo "	echo \"\$XWSERVERADDR \$XWSERVERNAME\" >> /etc/hosts" >> /xwhep/xwstart.sh && \
-    echo "	sed -i "s/^DISPATCHERS=.*/DISPATCHERS=\$XWSERVERNAME/g" /xwhep/conf/xtremweb.worker.conf " >> /xwhep/xwstart.sh && \
-    echo "fi" >> /xwhep/xwstart.sh
+	echo "fi" >> /xwhep/xwstart.sh
+
+# download the certificate from the server
+RUN echo "  echo \"Downloading certificate from scheduler...\" " >> /xwhep/xwstart.sh && \
+	echo "  echo -n | openssl s_client -connect \$XWSERVERNAME:443 | sed -ne \"/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p\" > /xwhep/certificate/xwscheduler.crt " >> /xwhep/xwstart.sh && \
+	echo "  echo \"Converting downloaded certificate to x509 DER...\" " >> /xwhep/xwstart.sh && \
+	echo "  openssl x509 -outform der -in /xwhep/certificate/xwscheduler.crt -out /xwhep/certificate/xwscheduler.pem " >> /xwhep/xwstart.sh && \
+    echo "	sed -i "s/^DISPATCHERS=.*/DISPATCHERS=\$XWSERVERNAME/g" /xwhep/conf/xtremweb.worker.conf " >> /xwhep/xwstart.sh
 
 # import the server certificate into the container keystore
 RUN echo "keytool -import -alias localhost -file /xwhep/certificate/xwscheduler.pem -trustcacerts -keystore /etc/ssl/certs/java/cacerts -storepass changeit -v -noprompt " >> /xwhep/xwstart.sh
