@@ -273,25 +273,26 @@ task copyLinuxInstallers(type: Copy) {
     filter(ReplaceTokens, tokens: getCustomProperties())
 }
 
+
+def gitBranch = 'git name-rev --name-only HEAD'.execute().text.trim()
+def isMasterBranch = gitBranch == "remotes/origin/master"
+
+task copyWorkerLaunchScript(type: Copy) {
+    into dist
+
+    into("/docker") {
+        from templates
+        rename('.sh.template', '.sh')
+        filter(ReplaceTokens, tokens: getCustomProperties())
+    }
+}
+
 task buildAll {
-    dependsOn(chmodBin, copyWindowsInstaller, copyMacInstaller, copyLinuxInstallers, copySQLCreateTables, copyConfFiles, generateKeys)
+    dependsOn(chmodBin, copyWindowsInstaller, copyMacInstaller, copyLinuxInstallers, copySQLCreateTables, copyConfFiles,
+            generateKeys, copyWorkerLaunchScript)
 }
 
 buildAll.dependsOn getTasksByName('build', true)
-
-def gitShortCommit = 'git rev-parse --short HEAD'.execute().text.trim()
-def gitBranch = 'git name-rev --name-only HEAD'.execute().text.trim()
-def isMasterBranch =  gitBranch == "remotes/origin/master"
-def isSnapshotVersion = project.version.contains("SNAPSHOT")
-
-project.ext.getDockerImageVersion = {
-
-    if(isSnapshotVersion){
-        return project.version + "-" + gitShortCommit
-    } else {
-        return project.version
-    }
-}
 
 project.ext.getServerDockerImageName = {
     return "iexechub/server:" + getDockerImageVersion()

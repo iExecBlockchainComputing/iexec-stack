@@ -3,6 +3,7 @@ EXPOSE 4321 4322 4323 4324 4327 4328 443
 
 ADD conf/xtremweb.worker.conf /xwhep/conf/
 RUN mkdir -p /xwhep/bin
+RUN mkdir -p /xwhep/certificate
 ADD bin/xtremweb.worker /xwhep/bin
 ADD bin/xtremweb /xwhep/bin
 ADD bin/xtremwebconf.sh /xwhep/bin
@@ -12,13 +13,33 @@ WORKDIR /xwhep
 
 RUN apt-get update && \ 
        export DEBIAN_FRONTEND=noninteractive && \
-       apt-get install -y openjdk-8-jre zip unzip wget make curl docker.io iputils-ping
+       apt-get install -y openjdk-8-jre zip unzip wget make gcc curl docker.io iputils-ping
 
+# install openSSL to be able to download certificates 
+RUN wget http://www.openssl.org/source/openssl-1.0.2g.tar.gz && \
+		tar -xvzf openssl-1.0.2g.tar.gz && \
+		cd openssl-1.0.2g && \
+		./config --prefix=/usr/ && \
+		make && \
+		make install
+
+# check that the server name has been defined
 RUN echo "#!/bin/sh" > /xwhep/xwstart.sh && \
-    echo "if [ ! -z \$XWSERVERADDR ] ; then " >> /xwhep/xwstart.sh && \
-    echo "	echo \"\$XWSERVERADDR \$XWSERVERNAME\" >> /etc/hosts" >> /xwhep/xwstart.sh && \
-    echo "	sed -i "s/^DISPATCHERS=.*/DISPATCHERS=\$XWSERVERNAME/g" /xwhep/conf/xtremweb.worker.conf " >> /xwhep/xwstart.sh && \
-    echo "fi" >> /xwhep/xwstart.sh
+	echo "if [ -z \$SCHEDULER_DOMAIN ] ; then " >> /xwhep/xwstart.sh && \
+	echo "	echo \" The domain name of the scheduler is missing \"; exit 1" >> /xwhep/xwstart.sh && \
+	echo "fi" >> /xwhep/xwstart.sh
+
+# Modify etc hosts if an ip is given in parameters
+RUN echo "if [ ! -z \$SCHEDULER_IP ] ; then " >> /xwhep/xwstart.sh && \
+    echo "	echo \"\$SCHEDULER_IP \$SCHEDULER_DOMAIN\" >> /etc/hosts" >> /xwhep/xwstart.sh && \
+	echo "fi" >> /xwhep/xwstart.sh
+
+# download the certificate from the server
+RUN echo "  echo \"Downloading certificate from scheduler...\" " >> /xwhep/xwstart.sh && \
+	echo "  echo -n | openssl s_client -connect \$SCHEDULER_DOMAIN:443 | sed -ne \"/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p\" > /xwhep/certificate/xwscheduler.crt " >> /xwhep/xwstart.sh && \
+	echo "  echo \"Converting downloaded certificate to x509 DER...\" " >> /xwhep/xwstart.sh && \
+	echo "  openssl x509 -outform der -in /xwhep/certificate/xwscheduler.crt -out /xwhep/certificate/xwscheduler.pem " >> /xwhep/xwstart.sh && \
+    echo "	sed -i "s/^DISPATCHERS=.*/DISPATCHERS=\$SCHEDULER_DOMAIN/g" /xwhep/conf/xtremweb.worker.conf " >> /xwhep/xwstart.sh
 
 # import the server certificate into the container keystore
 RUN echo "keytool -import -alias localhost -file /xwhep/certificate/xwscheduler.pem -trustcacerts -keystore /etc/ssl/certs/java/cacerts -storepass changeit -v -noprompt " >> /xwhep/xwstart.sh

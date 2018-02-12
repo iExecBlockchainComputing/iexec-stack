@@ -31,6 +31,17 @@ def workeruid=UUID.randomUUID().toString()
 def vworkeruid=UUID.randomUUID().toString()
 def admingroupuid=UUID.randomUUID().toString()
 def publicworkersgroup=UUID.randomUUID().toString()
+def gitShortCommit = 'git rev-parse --short HEAD'.execute().text.trim()
+def isSnapshotVersion = project.version.contains("SNAPSHOT")
+
+project.ext.getDockerImageVersion = {
+
+    if(isSnapshotVersion){
+        return project.version + "-" + gitShortCommit
+    } else {
+        return project.version
+    }
+}
 
 // Define custom properties that can be used everywhere
 project.ext.getCustomProperties = {
@@ -49,6 +60,7 @@ project.ext.getCustomProperties = {
     props.setProperty("ADMINGROUPUID", admingroupuid)
     props.setProperty("PUBLICWORKERSGROUPUID", publicworkersgroup)
     props.setProperty("XWVERSION", version)
+    props.setProperty("DOCKER_IMAGE_VERSION", getDockerImageVersion())
     props.setProperty("INSTALLDIR", opt)
 
 
