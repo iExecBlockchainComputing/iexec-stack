@@ -24,23 +24,24 @@ services:
       - xtremweb-net
     env_file:
       - containerEnvironment
+    restart: unless-stopped
 
   worker:
     image: iexechub/worker:${XTREMWEB_WORKER_VERSION}
     container_name: xwworker
     environment:
-      - XWSERVERADDR=scheduler
-      - XWSERVERNAME=xwscheduler
+      - SCHEDULER_IP=scheduler
+      - SCHEDULER_DOMAIN=xwscheduler
     ports:
       - 4321
       - 4322
       - 4323
       - 443
     volumes:
-      - ${SERVER_CERTIFICATE_LOCATION}:/xwhep/certificate/xwscheduler.pem
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
       - xtremweb-net
+    restart: unless-stopped
 
   db:
     image: mysql:5.7
