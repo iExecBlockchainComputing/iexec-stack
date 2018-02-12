@@ -84,12 +84,7 @@ fatal ()
   
   [ "$FORCE" = "TRUE" ]  &&  clean
   
-  ( [ "$VERBOSE" ]  &&  set -x
-    "$VBMGT"  controlvm  "$VMNAME"  poweroff  > /dev/null 2>&1 )
-  #
-  # Inside 'fatal', the VM state is unknown and possibly inconsistent.
-  # So, the above 'poweroff' request does NOT make much sense.
-  
+
   exit 1
 }
 
@@ -101,17 +96,11 @@ fatal ()
 clean ()
 {
   echo
-  info_message  "clean '$VMNAME'"
+  info_message  "clean '${CONTAINERNAME}'"
   
   [ "$VERBOSE" ]  &&  echo  > /dev/stderr
-  debug_message  "clean :  VMNAME='$VMNAME'"
-  [ "$VMNAME" ]  ||  return
-  
-  LOCKFILE="$LOCKPATH"_"$VMNAME"
-  
-  wait_for_other_virtualbox_management_to_finish  clean
-  info_message  "clean:  Retrieve VirtualBox info"
-}
+  [ "${CONTAINERNAME}" ]  ||  return
+  }
 
 #=============================================================================
 #
@@ -134,9 +123,9 @@ cat << END_OF_USAGE
                ssh  port forwarding localhost:$XWPORTS[0] to guest:22
                http port forwarding localhost:$XWPORTS[1] to guest:80
   
-  If Dockerfile is present, the image is built like this:
-  $ docker build --force-rm --tag $XWJOBUID .
-  
+  This script does not permit the Dockerfile usage to build Docker image.
+  If Dockerfile is found, this script fails.
+
 END_OF_USAGE
 
   exit 0
@@ -210,8 +199,9 @@ done
 [ ! -z ${XWDOCKERIMAGE} ] && IMAGENAME="${XWDOCKERIMAGE}" 
 
 if [ -f ${DOCKERFILENAME} ] ; then
-    IMAGENAME="xwimg_${XWJOBUID}"
-    docker build --force-rm --tag ${IMAGENAME} .
+#    IMAGENAME="xwimg_${XWJOBUID}"
+#    docker build --force-rm --tag ${IMAGENAME} .
+    fatal "Dockerfile is not supported"
 fi
 
 docker run -v $(pwd):/host -w /host --rm --name ${CONTAINERNAME} ${IMAGENAME} ${ARGS}
