@@ -42,5 +42,5 @@ docker-compose -f $dockerComposeFile up -d scheduler
 sleep 10
 docker-compose -f $dockerComposeFile up -d
 
-cd currentFolder
+cd $currentFolder
 docker-compose -f $dockerComposeFile logs -f
