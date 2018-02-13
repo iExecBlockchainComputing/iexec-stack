@@ -6,4 +6,4 @@ docker run -d --restart always  --env SCHEDULER_IP=@SCHEDULER_IP@ \
                                 --env PASSWORD=@XWVWORKERPASSWORD@ \
                                 -v /tmp:/tmp \
                                 -v /var/run/docker.sock:/var/run/docker.sock \
-                                iexechub/worker:@XWVERSION@
+                                iexechub/worker:@DOCKER_IMAGE_VERSION@
