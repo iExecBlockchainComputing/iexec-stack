@@ -49,6 +49,11 @@ RUN echo "sed -i \"s/^SSLKEYSTORE=.*/SSLKEYSTORE=\/etc\/ssl\/certs\/java\/cacert
 # update the SHAREDAPPS variable to docker  
 RUN echo "sed -i \"s/^#SHAREDAPPS=.*/SHAREDAPPS=docker/g\" /xwhep/conf/xtremweb.worker.conf " >> /xwhep/xwstart.sh
 
+# Add SHAREDPACKAGES only if it is given in parameters
+RUN echo "if [ ! -z \$SHAREDPACKAGES ] ; then " >> /xwhep/xwstart.sh && \
+    echo "	sed -i \"s/^#SHAREDPACKAGES=.*/SHAREDPACKAGES=\$SHAREDPACKAGES/g\" /xwhep/conf/xtremweb.worker.conf " >> /xwhep/xwstart.sh && \
+	echo "fi" >> /xwhep/xwstart.sh
+
 # choose the login/password to run worker or vworker:
 RUN echo "if [ ! -z \$LOGIN ] ; then " >> /xwhep/xwstart.sh  && \
     echo "	sed -i \"s/^PASSWORD=.*/PASSWORD=\$PASSWORD/g\" /xwhep/conf/xtremweb.worker.conf " >> /xwhep/xwstart.sh  && \
