@@ -13,15 +13,13 @@ WORKDIR /xwhep
 
 RUN apt-get update && \ 
        export DEBIAN_FRONTEND=noninteractive && \
-       apt-get install -y openjdk-8-jre zip unzip wget make gcc curl docker.io iputils-ping openssl
+       apt-get install -y openjdk-8-jre zip unzip wget make gcc curl iputils-ping openssl apt-transport-https ca-certificates software-properties-common 
 
-# install openSSL to be able to download certificates 
-#RUN wget http://www.openssl.org/source/openssl-1.0.2g.tar.gz && \
-#		tar -xvzf openssl-1.0.2g.tar.gz && \
-#		cd openssl-1.0.2g && \
-#		./config --prefix=/usr/ && \
-#		make && \
-#		make install
+# install docker
+RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
+RUN add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+RUN apt-get update
+RUN apt-get install -y docker-ce
 
 # check that the server name has been defined
 RUN echo "#!/bin/sh" > /xwhep/xwstart.sh && \
