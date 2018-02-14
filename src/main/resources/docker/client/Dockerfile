@@ -1,7 +1,7 @@
 FROM ubuntu:16.04
 EXPOSE 4321 4322 4323 4324 4327 4328 443
 
-COPY conf/xtremweb.client.conf /xwhep/conf/
+COPY docker/xtremweb.client.conf /xwhep/conf/
 COPY lib /xwhep/lib
 COPY bin /xwhep/bin/ 
 WORKDIR /xwhep/bin
@@ -27,6 +27,18 @@ RUN echo "if [ -z \$SCHEDULER_DOMAIN ] ; then " >> /tmp/xwstart.sh && \
 RUN echo "if [ ! -z \$SCHEDULER_IP ] ; then " >> /tmp/xwstart.sh && \
     echo "	echo \"\$SCHEDULER_IP \$SCHEDULER_DOMAIN\" >> /etc/hosts" >> /tmp/xwstart.sh && \
 	echo "fi" >> /tmp/xwstart.sh
+
+# Populate the correct Login and Password for the client
+RUN echo "if [ -z \$LOGIN ] ; then " >> /tmp/xwstart.sh && \
+	echo "	echo \" The login for the client is needed to be able to connect \"; exit 1" >> /tmp/xwstart.sh && \
+    echo "else sed -i \"s/^LOGIN=.*/LOGIN=\$LOGIN/g\" /xwhep/conf/xtremweb.client.conf " >> /tmp/xwstart.sh && \
+	echo "fi" >> /tmp/xwstart.sh
+
+RUN echo "if [ -z \$PASSWORD ] ; then " >> /tmp/xwstart.sh && \
+	echo "	echo \" The password for the client is needed to be able to connect \"; exit 1" >> /tmp/xwstart.sh && \
+    echo "else sed -i \"s/^PASSWORD=.*/PASSWORD=\$PASSWORD/g\" /xwhep/conf/xtremweb.client.conf " >> /tmp/xwstart.sh && \
+	echo "fi" >> /tmp/xwstart.sh
+
 
 # download the certificate from the server
 RUN echo "  echo \"Downloading certificate from scheduler...\" " >> /tmp/xwstart.sh && \

@@ -281,7 +281,7 @@ task copyWorkerLaunchScript(type: Copy) {
     into dist
 
     into("/docker") {
-        from templates
+        from templates + "/startWorkerInDocker.sh.template"
         rename('.sh.template', '.sh')
         filter(ReplaceTokens, tokens: getCustomProperties())
     }
@@ -312,7 +312,22 @@ task buildServerDockerImage(type: Exec) {
 }
 buildServerDockerImage.enabled = isMasterBranch
 
+task copyConfigDockerClient(type: Copy) {
+    into dist
+
+    into("/docker") {
+        from templates + "/xtremweb.client.conf.in"
+        rename('.conf.in', '.conf')
+
+        def anonymousProps = getCustomProperties()
+        anonymousProps.remove("XWADMINLOGIN")
+        anonymousProps.remove("XWADMINPASSWORD")
+        filter(ReplaceTokens, tokens: anonymousProps)
+    }
+}
+
 task buildClientDockerImage(type: Exec) {
+    dependsOn copyConfigDockerClient
     description 'Build a docker image for the client'
     commandLine("sh", "-c", "docker image build -f " + dist + "/docker/client/Dockerfile -t " + getClientDockerImageName() + " " + dist)
 }
