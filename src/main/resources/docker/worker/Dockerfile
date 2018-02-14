@@ -46,8 +46,16 @@ RUN echo "keytool -import -alias localhost -file /xwhep/certificate/xwscheduler.
 RUN echo "sed -i \"s/^SSLKEYSTORE=.*/SSLKEYSTORE=\/etc\/ssl\/certs\/java\/cacerts/g\" /xwhep/conf/xtremweb.worker.conf " >> /xwhep/xwstart.sh  && \
     echo "sed -i \"s/^SSLKEYPASSWORD=.*/SSLKEYPASSWORD=changeit/g\" /xwhep/conf/xtremweb.worker.conf " >> /xwhep/xwstart.sh
 
-# update the SHAREDAPPS variable to docker  
-RUN echo "sed -i \"s/^#SHAREDAPPS=.*/SHAREDAPPS=docker/g\" /xwhep/conf/xtremweb.worker.conf " >> /xwhep/xwstart.sh
+# ADD defined SHAREDAPPS variable if defined, otherwise use a default value  
+RUN echo "if [ ! -z \$SHAREDAPPS ] ; then " >> /xwhep/xwstart.sh && \
+    echo "	sed -i \"s/^#SHAREDAPPS=.*/SHAREDAPPS=\$SHAREDAPPS/g\" /xwhep/conf/xtremweb.worker.conf " >> /xwhep/xwstart.sh && \
+	echo "else sed -i \"s/^#SHAREDAPPS=.*/SHAREDAPPS=docker/g\" /xwhep/conf/xtremweb.worker.conf " >> /xwhep/xwstart.sh && \
+	echo "fi" >> /xwhep/xwstart.sh
+
+# Add SHAREDPACKAGES only if it is given in parameters
+RUN echo "if [ ! -z \$SHAREDPACKAGES ] ; then " >> /xwhep/xwstart.sh && \
+    echo "	sed -i \"s/^#SHAREDPACKAGES=.*/SHAREDPACKAGES=\$SHAREDPACKAGES/g\" /xwhep/conf/xtremweb.worker.conf " >> /xwhep/xwstart.sh && \
+	echo "fi" >> /xwhep/xwstart.sh
 
 # choose the login/password to run worker or vworker:
 RUN echo "if [ ! -z \$LOGIN ] ; then " >> /xwhep/xwstart.sh  && \
