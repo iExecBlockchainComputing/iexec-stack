@@ -13,7 +13,7 @@ WORKDIR /xwhep
 
 RUN apt-get update && \ 
        export DEBIAN_FRONTEND=noninteractive && \
-       apt-get install -y openjdk-8-jre zip unzip wget make gcc curl iputils-ping openssl apt-transport-https ca-certificates software-properties-common 
+       apt-get install -y openjdk-8-jre zip unzip wget curl openssl apt-transport-https ca-certificates software-properties-common 
 
 # install docker
 RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
