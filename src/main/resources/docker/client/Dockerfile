@@ -14,15 +14,7 @@ RUN find . -type f ! -name 'xw*' ! -name 'xtr*' -exec rm -rf {} +
 
 RUN apt-get update && \
        export DEBIAN_FRONTEND=noninteractive && \
-       apt-get install -y openjdk-8-jre zip unzip wget make gcc curl iputils-ping
-
-# install openSSL to be able to download certificates 
-RUN wget http://www.openssl.org/source/openssl-1.0.2g.tar.gz && \
-		tar -xvzf openssl-1.0.2g.tar.gz && \
-		cd openssl-1.0.2g && \
-		./config --prefix=/usr/ && \
-		make && \
-		make install
+       apt-get install -y openjdk-8-jre zip unzip wget openssl curl iputils-ping
 
 RUN echo "#!/bin/sh" > /tmp/xwstart.sh
 
