@@ -133,6 +133,21 @@ PASSWORD=@XWADMINPASSWORD@
 #SMARTSOCKETSHUBADDR=
 
 #
+# All : ethereum wallet path
+# Property type : string
+# Since 12.2.7
+#
+#ETHWALLETPATH=
+#
+#All : ethereum wallet password
+#
+# Property type : string
+#
+# Since 12.2.7
+#
+#ETHWALLETPASSWORD=
+
+#
 # This contains class names to get time stamps for
 # Note : substrings are allowed
 # (*) "SimpleScheduler" matches "SimpleScheduler" only
@@ -240,22 +255,13 @@ PASSWORD=@XWADMINPASSWORD@
 #OPTIMIZENETWORK=true
 
 #
-# upload size limit
+# This limits size in upload, download and file length
 # Upload cancelled is size is greater
 #
 # Default is 500Mb
 # Since 12.2.3
 #
-#UPLOADSIZELIMIT=
-
-#
-# Download size limit
-# Download cancelled is size is greater
-#
-# Default is 500Mb
-# Since 12.2.3
-#
-#DOWNLOADSIZELIMIT=
+#MAXFILESIZE=
 
 
 

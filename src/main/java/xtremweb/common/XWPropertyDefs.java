@@ -83,6 +83,24 @@ public enum XWPropertyDefs {
 	 */
 	JWTETHSECRET,
 	/**
+	 * All : ethereum wallet path
+	 * <p>
+	 * Property type : string
+	 * </p>
+	 *
+	 * @since 12.2.7
+	 */
+	ETHWALLETPATH,
+	/**
+	 * All : ethereum wallet password
+	 * <p>
+	 * Property type : string
+	 * </p>
+	 *
+	 * @since 12.2.7
+	 */
+	ETHWALLETPASSWORD,
+	/**
 	 * Server : the facebook application ID for OAuth
 	 * <p>
 	 * Property type : string
