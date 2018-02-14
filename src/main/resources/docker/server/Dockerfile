@@ -29,6 +29,7 @@ RUN echo "#!/bin/sh" > /xwhep/xwstart.sh && \
 # change DBHOST value in the config if defined
 RUN echo "if [ ! -z \$DBHOST ] ; then " >> /xwhep/xwstart.sh  && \
     echo "	sed -i \"s/^DBHOST=.*/DBHOST=\$DBHOST/g\" /xwhep/conf/xtremweb.server.conf " >> /xwhep/xwstart.sh  && \
+	echo "	sed -i \"s/^DBHOST=.*/DBHOST=\$DBHOST/g\" /xwhep/conf/xwconfigure.values " >> /xwhep/xwstart.sh  && \
     echo "fi" >> /xwhep/xwstart.sh
 
 RUN chmod +x /xwhep/xwstart.sh
