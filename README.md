@@ -9,10 +9,18 @@ web3j solidity generate abi/IexecHub.bin abi/IexecHub.abi -o java -p com.iexec.s
 
 ### Run
 
-```git clone https://github.com/iExecBlockchainComputing/PoCo/
-./node_modules/.bin/truffle test test/4_taskRequestCreation.js```
+```
+git clone https://github.com/iExecBlockchainComputing/PoCo/
+./node_modules/.bin/truffle test test/4_taskRequestCreation.js
+```
 
-Get the ```aIexecHubInstance.address, aAppInstance.address, iExecCloudUser``` in the logs and put them in Application.java
+Get 
+```
+aIexecHubInstance.address
+aAppInstance.address
+iExecCloudUser
+```
+in the logs and put them in Application.java
 
 Send eth to scheduler and worker
 ```
