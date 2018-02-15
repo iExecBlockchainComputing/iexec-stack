@@ -1,0 +1,3 @@
+[submodule "PoCo"]
+	path = PoCo
+	url = https://github.com/iExecBlockchainComputing/PoCo.git
