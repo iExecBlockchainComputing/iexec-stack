@@ -23,25 +23,20 @@ dependencies {
 }
 
 
-task downloadContracts(type: Exec) {
-    if (project.hasProperty("u") && project.hasProperty("p")) {
-        String user = project.property("u");
-        String password = project.property("p");
-        commandLine("sh", "-c",
-                "cd ./src/main/resources/solidity/poco\n" +
-                        "rm -f -R contracts\n" +
-                        "wget https://" + user + ":" + password + "@github.com/iExecBlockchainComputing/PoCo/archive/v1.0.3.tar.gz --no-check-certificate --auth-no-challenge -O poco.tar.gz\n" +
-                        "tar -xvf poco.tar.gz --strip-component 2 --wildcards --no-anchored contracts\n" +
-                        "rm poco.tar.gz\n" +
-                        "cd contracts\n" +
-                        "git clone https://" + user + ":" + password + "@github.com/iExecBlockchainComputing/rlc-token.git\n" +
-                        "cd ..")
-    } else {
-        print("Please provide your git credentials : gradle downloadContracts -Pu=gituser -Pp=changeit")
+task copyContracts(type: Copy) {
+    into "./src/main/resources/solidity/poco"
+
+    into(".") {
+        from "./PoCo/contracts"
+    }
+
+    into("./rlc-token") {
+        from "./rlc-token"
     }
 }
 
 task buildContracts(type: Exec) {
+    //dependsOn(copyContracts)
     commandLine("sh", "-c",
             "cd ./scripts\n" +
             "./buildContracts.sh")

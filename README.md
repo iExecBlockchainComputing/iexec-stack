@@ -6,10 +6,10 @@
 git clone --recurse-submodules https://github.com/iExecBlockchainComputing/iexec-scheduler.git
 ```
 
-### Smart contracts to .java
+### Build Smart contracts to .java
 ```
-solc IexecHub.sol --bin --abi --optimize -o .
-web3j solidity generate abi/IexecHub.bin abi/IexecHub.abi -o java -p com.iexec.scheduler
+gradle copyContracts
+gradle buildContracts
 ```
 
 ### Run

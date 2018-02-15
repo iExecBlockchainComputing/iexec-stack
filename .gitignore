@@ -20,7 +20,7 @@ hs_err_pid*
 */out/
 
 src/main/resources/solidity/poco/*
-!src/main/resources/solidity/poco/build
+!src/main/resources/solidity/poco/build/.gitignore
 
 
 
