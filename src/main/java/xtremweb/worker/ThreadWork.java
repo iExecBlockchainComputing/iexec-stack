@@ -654,7 +654,6 @@ public class ThreadWork extends Thread {
 	 *
 	 * @see #executeJavaJob(ArrayList)
 	 * @see #executeNativeJob(ArrayList)
-	 * @see #sendResult()
 	 * @return mobile work status : - XWStatus.LONGFILE or - XWStatus.COMPLETED
 	 *         Mar 16th, 2005 : when computing is done, we mark the job as
 	 *         LONGFILE since zipping may be long stopProcess() followed by
@@ -1096,6 +1095,8 @@ public class ThreadWork extends Thread {
 		DataInterface theData = null;
 		boolean islocked = false;
 
+		logger.debug("installFile = " + fData);
+
 		try {
 			CommManager.getInstance().commClient().lock(uri);
 			islocked = true;
@@ -1111,14 +1112,14 @@ public class ThreadWork extends Thread {
 			return null;
 		}
 
-		logger.debug("installFile = " + fData);
-
 		zipper.setFileName(fData.getAbsolutePath());
 		try {
 			zipper.unzip(home.getAbsolutePath());
 			return home;
 		} catch (final Exception e) {
 			logger.exception(e);
+		} finally {
+			CommManager.getInstance().commClient().unlock(uri);
 		}
 
 		// this is not a zip file
@@ -1444,12 +1445,12 @@ public class ThreadWork extends Thread {
 	}
 
 	/**
-	 * This executes an embedded services
+	 * This is not implemented
 	 *
 	 * @param cmdLine
 	 *            command line for execution
-	 * @exception WorkException
-	 *                is thrown on execution error
+	 * @exception IOException
+	 *                is always thrown
 	 */
 	protected StatusEnum executeService(final Collection<String> cmdLine) throws IOException {
 
