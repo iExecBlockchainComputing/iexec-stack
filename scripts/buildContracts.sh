@@ -6,8 +6,11 @@ set -o pipefail
 baseDir="../src/main/resources/solidity"
 
 targets="
-greeter/Greeter
+poco/WorkerPool
+poco/IexecHub
 "
+
+echo $(pwd)
 
 for target in ${targets}; do
     dirName=$(dirname "${target}")
@@ -25,7 +28,7 @@ for target in ${targets}; do
     web3j solidity generate \
         ${dirName}/build/${fileName}.bin \
         ${dirName}/build/${fileName}.abi \
-        -p com.iexec.sample.contracts.generated \
+        -p com.iexec.scheduler.contracts.generated \
         -o ../../java/ > /dev/null
     echo "Complete"
 

@@ -16,8 +16,11 @@ hs_err_pid*
 .gradle
 /build
 /out
+!src/main/resources/solidity/poco/build/somefile
 */build/
 */out/
+
+
 
 gradle.properties
 
