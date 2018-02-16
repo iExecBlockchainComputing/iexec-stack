@@ -19,7 +19,7 @@ The following should be already install on the machine:
 3. *Java JDK* (The variable *JAVA_HOME* should also be set.)
 
 ### Build
-[Gradle](http://gradle.org). is used to build the project. You can use either the native gradle command if gradle is available on your system:
+[Gradle](http://gradle.org) is used to build the project. You can use either the native gradle command if gradle is available on your system:
 ```
 gradle buildAll
 ```
@@ -40,4 +40,8 @@ For the worker:
 ```
 ./xtremweb.worker console
 ```
-The client's commands can be called natively in the */bin* folder.
+The client's commands can be called natively in the */bin* folder:
+1. xwapps
+2. xwusers
+3. xwworkers
+4. ...
