@@ -7,6 +7,7 @@
 
 # Package Files #
 *.jar
+!/extlib/web3j-3.2.0/lib/*.jar
 *.war
 *.ear
 
@@ -21,10 +22,6 @@ hs_err_pid*
 
 src/main/resources/solidity/poco/*
 !src/main/resources/solidity/poco/build/.gitignore
-
-
-
-gradle.properties
 
 # Ignore Gradle GUI config
 gradle-app.setting
