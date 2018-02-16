@@ -13,7 +13,7 @@ Please see [Docker deployment](docker/master).
 ## Manual Build
 ### Pre-requisites
 
-The following should be already install on the machine:
+The following should be already installed on the machine:
 1. *make*
 2. *ant*
 3. *Java JDK* (The variable *JAVA_HOME* should also be set.)
