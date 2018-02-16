@@ -97,7 +97,7 @@ public class Application {
                                     workerPoolContractAddress, web3j, schedulerCredentials, ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT);
 
                             log.info("WORKER1 subscribing to workerPool");
-                            iexecHubForWorker.subscribeToPool(createWorkerPoolEvent.workerPool);
+                            iexecHubForWorker.subscribeToPool();
 
                             Subscription workerPoolSubscriptionEventSubscription = iexecHubForWorker.workerPoolSubscriptionEventObservable(DefaultBlockParameterName.EARLIEST, DefaultBlockParameterName.LATEST)
                                     .subscribe(workerPoolSubscriptionEvent ->{

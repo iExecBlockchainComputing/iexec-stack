@@ -10,6 +10,7 @@ poco/WorkerPool
 poco/IexecHub
 "
 
+currentdir=`pwd`
 echo $(pwd)
 
 for target in ${targets}; do
@@ -25,7 +26,7 @@ for target in ${targets}; do
     echo "Complete"
 
     echo "Generating contract bindings"
-    web3j solidity generate \
+    $currentdir/../extlib/web3j-3.2.0/bin/web3j solidity generate \
         ${dirName}/build/${fileName}.bin \
         ${dirName}/build/${fileName}.abi \
         -p com.iexec.scheduler.contracts.generated \

@@ -1,5 +1,5 @@
-group 'org.web3j'
-version '0.0.1'
+// group 'org.web3j'
+// version '0.0.1'
 
 apply plugin: 'java'
 
@@ -30,17 +30,28 @@ task copyContracts(type: Copy) {
         from "./PoCo/contracts"
     }
 
+    eachFile { copyDetails ->
+        if (copyDetails.path == './IexecHub.sol') {
+            filter { line ->
+                line.replace("import \"rlc-token/contracts/RLC.sol\";", "import \"./rlc-token/contracts/RLC.sol\";")
+            }
+        }
+    }
+
     into("./rlc-token") {
         from "./rlc-token"
     }
 }
 
 task buildContracts(type: Exec) {
-    //dependsOn(copyContracts)
+    dependsOn copyContracts
+
     commandLine("sh", "-c",
             "cd ./scripts\n" +
             "./buildContracts.sh")
 }
 
+// Force the rebuild of contracts before java build
+compileJava.dependsOn buildContracts
 
 

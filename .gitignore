@@ -23,10 +23,6 @@ hs_err_pid*
 src/main/resources/solidity/poco/*
 !src/main/resources/solidity/poco/build/.gitignore
 
-
-
-gradle.properties
-
 # Ignore Gradle GUI config
 gradle-app.setting
 
