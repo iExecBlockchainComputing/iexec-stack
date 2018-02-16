@@ -16,18 +16,17 @@ Please see [Docker deployment](docker/master).
 The following should be already install on the machine:
 1. *make*
 2. *ant*
-3. *Java JDK*
-The variable *JAVA_HOME* should also be set.
+3. *Java JDK* (The variable *JAVA_HOME* should also be set.)
 
 ### Build
-Gradle is used to build the project. You can use either the native gradle command if gradle is available on your system:
+[Gradle](http://gradle.org). is used to build the project. You can use either the native gradle command if gradle is available on your system:
 ```
 gradle buildAll
 ```
- or if gradle is not installed, you can use it's wrapped version, simply type:
- ```
- ./gradlew buildAll
- ```
+or if gradle is not installed, you can use it's wrapped version, simply type:
+```
+./gradlew buildAll
+```
 
 ### Run
 After the build, in the folder *build/dist/xtremweb-X.Y.Y-SNAPSHOT/bin*, you can call the server, worker:
