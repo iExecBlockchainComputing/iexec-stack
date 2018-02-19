@@ -39,3 +39,8 @@ eth.sendTransaction({from:eth.accounts[0], to:'0x70a1bebd73aef241154ea353d6c8c52
 ```
 
 Run Application.java
+
+To start the server, the following command can be used:
+```
+gradle build bootRun
+```
