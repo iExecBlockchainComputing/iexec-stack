@@ -38,10 +38,7 @@ import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.net.ConnectException;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.UnknownHostException;
+import java.net.*;
 import java.security.AccessControlException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -960,18 +957,20 @@ public final class CommManager extends Thread {
 			StreamIO io = null;
 			try {
 				final URL url = new URL(uri.toString().replaceAll("&amp;", "&"));
+				final HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+				conn.connect();  // conn.setFollowRedirects(true); true is the default
 				mileStone.println("<readfile file='" + fdata + "'>");
-				io = new StreamIO(null, new DataInputStream(url.openStream()), false);
-
+//				io = new StreamIO(null, new DataInputStream(url.openStream()), false);
+				io = new StreamIO(null, new DataInputStream(conn.getInputStream()), false);
 				io.readFileContent(fdata);
-				io.close();
 				mileStone.println("</readfile>");
 			} catch (final Exception e) {
+				logger.exception(e);
+				throw new IOException(e.getMessage());
+			} finally  {
 				if (io != null) {
 					io.close();
 				}
-				logger.exception(e);
-				throw new IOException(e.getMessage());
 			}
 
 			final long fsize = fdata.length();
