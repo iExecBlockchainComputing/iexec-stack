@@ -6,11 +6,17 @@
 git clone --recurse-submodules https://github.com/iExecBlockchainComputing/iexec-scheduler.git
 ```
 
-### Build Smart contracts to .java
+### Build project
+The simple gradle command:
 ```
-gradle copyContracts
-gradle buildContracts
+gradle build
 ```
+will copy the contracts, generate the associated java files from the contracts and compile the java code.
+If you wish to skip the java generation of the contracts, just use the following command:
+```
+gradle build -PskipContracts
+```
+This can be handy when contracts don't change much to shorten the compile time.
 
 ### Run
 
@@ -18,7 +24,7 @@ gradle buildContracts
 ./node_modules/.bin/truffle test PoCo/test/4_taskRequestCreation.js
 ```
 
-Get 
+Get
 ```
 aIexecHubInstance.address
 aAppInstance.address

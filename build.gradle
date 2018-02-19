@@ -59,10 +59,9 @@ task copyContracts(type: Copy) {
 task buildContracts(type: Exec) {
     dependsOn copyContracts
 
-    commandLine("sh", "-c",
-            "cd ./scripts\n" +
-            "./buildContracts.sh")
+    commandLine("sh", "-c", "cd ./scripts && ./buildContracts.sh")
 }
+buildContracts.enabled = !project.hasProperty("skipContracts")
 
 // Force the rebuild of contracts before java build
 compileJava.dependsOn buildContracts
