@@ -1885,13 +1885,31 @@ public enum XWPropertyDefs {
 	 */
 	TCPACTIVATORFEEDBACK {
 		/**
-		 * This retrieves the String representation of the default value
+		 * This returns "false"
 		 *
 		 * @return "false"
 		 */
 		@Override
 		public String defaultValue() {
 			return Boolean.FALSE.toString();
+		}
+	},
+	/**
+	 * Worker : this contains the OS user account to user to start jobs on worker host
+	 * Is is assumed that one to NBCPU-1 accounts exist
+	 * Property type : String
+	 * Default : ""
+	 * @since 12.2.8
+	 */
+	OSACCOUNT {
+		/**
+		 * This return ""
+		 *
+		 * @return ""
+		 */
+		@Override
+		public String defaultValue() {
+			return "";
 		}
 	},
 	/**

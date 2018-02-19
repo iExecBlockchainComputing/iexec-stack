@@ -1004,6 +1004,10 @@ public class ThreadWork extends Thread {
 		final String path = appBinPath.getAbsolutePath();
 		ret.append(" " + path);
 		addEnvVar(XWBINPATHNAME, path);
+		final String osAccount = ThreadLaunch.getInstance().getNextOSAccount();
+		if((osAccount != null) && (osAccount.length() > 1)) {
+			ret.insert(0, "sudo su " + osAccount + " ");
+		}
 
 		return ret.toString();
 	}

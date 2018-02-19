@@ -23,10 +23,10 @@
 
 LOGDATE=`date "+%Y%m%d%H%M%S"`
 WHAT="prerm"
-LOG="/var/log/xwhep-worker.log"
+LOG="/var/log/xwhep-vworker.log"
 XW_INSTALLDIR="/opt/xwhep-worker-@XWVERSION@"
 BINDIR="$INSTALLDIR/bin"
-PROG="xtremweb.worker"
+PROG="xtremweb.vworker"
 
 touch $LOG
 date >> $LOG  2>&1 

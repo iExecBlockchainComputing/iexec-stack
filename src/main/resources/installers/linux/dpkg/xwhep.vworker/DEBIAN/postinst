@@ -23,12 +23,12 @@
 
 LOGDATE=`date "+%Y%m%d%H%M%S"`
 WHAT="postinst"
-LOG="/var/log/xwhep-worker.log"
+LOG="/var/log/xwhep-vworker.log"
 INSTALLDIR="/opt/xwhep-worker-@XWVERSION@"
 BINDIR="$INSTALLDIR/bin"
 CONFDIR="$INSTALLDIR/conf"
 CONFILE=$CONFDIR/xtremweb.worker.conf
-PROG="xtremweb.worker"
+PROG="xtremweb.vworker"
 INITD="/etc/init.d"
 SYSLOGIN=@XWUSER@
 
@@ -43,6 +43,8 @@ SUDOERSENTRY2="$SYSLOGIN ALL=NOPASSWD: $USRLOCALBINCREATEVDI"
 
 VBAPPNAME="virtualbox"
 VBHL="/usr/bin/vboxheadless"
+DOCKERAPPNAME="docker"
+DOCKERPATH="/usr/local/bin/docker"
 
 touch $LOG
 date >> $LOG  2>&1 
@@ -71,12 +73,26 @@ else
     echo "SYSLOGIN variable is not set; this package will run as root ; this is not a good idea" >> $LOG  2>&1 
 fi
 
+SHAREDAPPS=""
 #
 # share VirtualBox, if available
 #
 if [ -x $VBHL ] ; then 
-	echo "sharedapps=$VBAPPNAME" >> $CONFILE
+	SHAREDAPPS=$VBAPPNAME
 fi
+#
+# share Docker, if available
+#
+if [ -x $DOCKERPATH ] ; then
+	if [ -z $SHAREDAPPS ] ; then
+	    SHAREDAPPS=$DOCKERAPPNAME
+	else
+	    SHAREDAPPS="$SHAREDAPPS,$DOCKERAPPNAME"
+	fi
+fi
+
+[ -z $SHAREDAPPS ] || echo "sharedapps=$SHAREDAPPS" >> $CONFILE
+
 
 # don't forget the ending dot
 update-rc.d $PROG stop 99 3 4 5 .  >> $LOG  2>&1

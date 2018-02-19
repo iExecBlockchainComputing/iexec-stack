@@ -50,6 +50,14 @@ ROLE=worker
 # Default : n/a
 LAUNCHERURL=@XWUPGRADEURL@
 
+# Worker : this contains the OS user account to user to start jobs on worker host
+# It is assumed the installer has created one to NBCPU-1 accounts
+# e.g. "xwhep0", "xwhep1" etc.
+# Property type : String
+# Default : ""
+# Since 12.2.8
+#OSACCOUNT=@XWUSER@
+
 ####### XtremWeb dispatcher
 # There put the location of the root XtremWeb server
 DISPATCHERS=@XWSERVER@
