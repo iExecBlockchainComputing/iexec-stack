@@ -1,0 +1,10 @@
+# There are the default property values so can be omitted if being used
+web3j:
+  client-address: http://localhost:8545
+  admin-client: false
+
+ethereum:
+  address:
+    iexecHub: 1212121212121212
+    appAdress: 34343434343434343434
+    iExecCloudUser: 565656565656565656
