@@ -30,17 +30,17 @@ PROG="xtremweb.worker"
 SYSLOGIN=@XWUSER@
 GROUPE=${SYSLOGIN}
 
-touch $LOG
-date >> $LOG  2>&1 
-echo "XtemWeb-HEP $PROG $WHAT @XWVERSION@" >> $LOG  2>&1 
+touch ${LOG}
+date >> ${LOG}  2>&1
+echo "XtemWeb-HEP ${PROG} ${WHAT} @XWVERSION@" >> ${LOG} 2>&1
 
 
-if [ "X$SYSLOGIN" != "X" ] ; then 
-    echo "Creating system login to run the middleware $SYSLOGIN" >> $LOG  2>&1
-    echo "(so that xwhep does not run with privileged account)" >> $LOG  2>&1 
-    mkdir -p /home/$SYSLOGIN >> $LOG  2>&1
-    /usr/sbin/groupadd $SYSLOGIN >> $LOG  2>&1
-    /usr/sbin/useradd $SYSLOGIN -d /home/$SYSLOGIN -s /bin/bash -g $GROUPE -m >> $LOG  2>&1
+if [ "X${SYSLOGIN}" != "X" ] ; then
+    echo "Creating system login to run the middleware ${SYSLOGIN}" >> ${LOG} 2>&1
+    echo "(so that xwhep does not run with privileged account)" >> ${LOG} 2>&1
+    mkdir -p /home/${SYSLOGIN} >> ${LOG} 2>&1
+    /usr/sbin/groupadd ${SYSLOGIN} >> ${LOG} 2>&1
+    /usr/sbin/useradd ${SYSLOGIN} -d /home/${SYSLOGIN} -s /bin/bash -g $GROUPE -m >> ${LOG} 2>&1
 
 # since 12.2.8, we create as many users as available CPU in a single group
 # see xtremweb.common.XWPropertyDefs#OSACCOUNT
@@ -49,17 +49,17 @@ if [ "X$SYSLOGIN" != "X" ] ; then
 
     nbCpu=$(cat /proc/cpuinfo | grep processor | wc -l)
     nbCpu=$(( nbCpu - 1 ))
-    [ $nbCpu -lt 1 ]] && nbCpu=1
+    [ ${nbCpu} -lt 1 ]] && nbCpu=1
     i=0
-    while [ $i -lt $nbCpu ] ; do
+    while [ ${i} -lt ${nbCpu} ] ; do
         USERLOGIN=${SYSLOGIN}${i}
-        mkdir -p /home/$USERLOGIN >> $LOG  2>&1
-        /usr/sbin/groupadd $USERLOGIN >> $LOG  2>&1
-        /usr/sbin/useradd $USERLOGIN d /home/$USERLOGIN -s /bin/bash -g $GROUPE -m >> $LOG  2>&1
+        mkdir -p /home/${USERLOGIN} >> ${LOG} 2>&1
+        /usr/sbin/groupadd ${USERLOGIN} >> ${LOG} 2>&1
+        /usr/sbin/useradd ${USERLOGIN} d /home/${USERLOGIN} -s /bin/bash -g ${GROUPE} -m >> ${LOG} 2>&1
     done
 
 else
-    echo "SYSLOGIN variable is not set; this package will run as root; this is not agood idea" >> $LOG  2>&1 
+    echo "SYSLOGIN variable is not set; this package will run as root; this is not agood idea" >> ${LOG} 2>&1
 fi
 
 rm -Rf /tmp/xtremweb.worker*
@@ -69,9 +69,9 @@ rm -f /tmp/XwTracer.jni*
 rm -f /tmp/XWUtil.jni*
 rm -Rf /tmp/XW.WORKER*
 
-rm -Rf $XW_INSTALLDIR  >> $LOG  2>&1
-mkdir -p $XW_INSTALLDIR  >> $LOG  2>&1
-cd $XW_INSTALLDIR  >> $LOG  2>&1
+rm -Rf ${XW_INSTALLDIR}  >> ${LOG} 2>&1
+mkdir -p ${XW_INSTALLDIR}  >> ${LOG} 2>&1
+cd ${XW_INSTALLDIR} >> ${LOG} 2>&1
 
 
-echo "XtemWeb-HEP $PROG $WHAT done" >> $LOG  2>&1 
+echo "XtemWeb-HEP ${PROG} ${WHAT} done" >> ${LOG} 2>&1

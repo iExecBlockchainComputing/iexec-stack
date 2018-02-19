@@ -1,4 +1,4 @@
-Package: xwhep-vworker
+Package: xwhep-worker
 Version: @XWVERSION@-1
 Section: desktopgrid
 Priority: optional

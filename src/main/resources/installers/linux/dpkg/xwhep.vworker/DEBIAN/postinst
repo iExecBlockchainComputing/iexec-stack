@@ -23,12 +23,12 @@
 
 LOGDATE=`date "+%Y%m%d%H%M%S"`
 WHAT="postinst"
-LOG="/var/log/xwhep-vworker.log"
+LOG="/var/log/xwhep-worker.log"
 INSTALLDIR="/opt/xwhep-worker-@XWVERSION@"
-BINDIR="$INSTALLDIR/bin"
-CONFDIR="$INSTALLDIR/conf"
+BINDIR="${INSTALLDIR}/bin"
+CONFDIR="${INSTALLDIR}/conf"
 CONFILE=$CONFDIR/xtremweb.worker.conf
-PROG="xtremweb.vworker"
+PROG="xtremweb.worker"
 INITD="/etc/init.d"
 SYSLOGIN=@XWUSER@
 
@@ -36,70 +36,87 @@ USRBIN=/usr/bin
 USRLOCALBIN=/usr/local/bin
 USRBINXWCREATEVDI=$USRBIN/xwcreatevdi
 USRLOCALBINCREATEVDI=$USRLOCALBIN/createvdi
-CREATEVDI=$BINDIR/createvdi
+CREATEVDI=${BINDIR}/createvdi
+
 SUDOERS=/etc/sudoers
-SUDOERSENTRY="$SYSLOGIN ALL=NOPASSWD: $USRBINXWCREATEVDI"
-SUDOERSENTRY2="$SYSLOGIN ALL=NOPASSWD: $USRLOCALBINCREATEVDI"
+SUDOERSD="${SUDOERS}.d"
+XWHEPSUDOERS="${SUDOERSD}/99-xwhep"
+SUDOERSFILE=${SUDOERS}
+
+SUDOERSENTRY="${SYSLOGIN} ALL=NOPASSWD: ${USRBINXWCREATEVDI}"
+SUDOERSENTRY2="${SYSLOGIN} ALL=NOPASSWD: ${USRLOCALBINCREATEVDI}"
+SUDOERSENTRY3="${SYSLOGIN} ALL=NOPASSWD: /bin/su"
 
 VBAPPNAME="virtualbox"
 VBHL="/usr/bin/vboxheadless"
 DOCKERAPPNAME="docker"
-DOCKERPATH="/usr/local/bin/docker"
+DOCKERPATH="/usr/bin/docker"
 
-touch $LOG
-date >> $LOG  2>&1 
-echo "XtemWeb-HEP $PROG $WHAT @XWVERSION@" >> $LOG  2>&1 
-#date >> $LOG  2>&1
-#ln -s $BINDIR/$PROG /etc/init.d/$PROG >> $LOG  2>&1
-#/etc/init.d/$PROG start >> $LOG  2>&1
+if [ -d ${SUDOERSD} ] ; then
+    SUDOERSFILE=${XWHEPSUDOERS}
+    touch ${SUDOERSFILE}
+fi
 
-rm -f $INITD/$PROG >> $LOG  2>&1
-ln -s $BINDIR/$PROG $INITD/$PROG >> $LOG  2>&1
+touch ${LOG}
+date >> ${LOG}  2>&1 
+echo "XtemWeb-HEP ${PROG} ${WHAT} @XWVERSION@" >> ${LOG}  2>&1
 
-rm -f $USRBINXWCREATEVDI >> $LOG  2>&1 
-ln -s $CREATEVDI $USRBINXWCREATEVDI >> $LOG  2>&1 
-ln -s $CREATEVDI $USRLOCALBINCREATEVDI >> $LOG  2>&1 
+rm -f ${INITD}/${PROG} >> ${LOG}  2>&1
+ln -s ${BINDIR}/${PROG} ${INITD}/${PROG} >> ${LOG}  2>&1
 
-if [ "X$SYSLOGIN" != "X" ] ; then 
-    chown -R $SYSLOGIN.$SYSLOGIN $INSTALLDIR >> $LOG  2>&1
-    chown -R $SYSLOGIN.$SYSLOGIN $USRBINXWCREATEVDI >> $LOG  2>&1
-	if [ -f $SUDOERS ] ; then
-		cp -f $SUDOERS /etc/sudoers-without-xwhep
-		echo $SUDOERSENTRY >> $SUDOERS
-		echo $SUDOERSENTRY2 >> $SUDOERS
-		chmod 440 $SUDOERS
+rm -f ${USRBINXWCREATEVDI} >> ${LOG}  2>&1 
+ln -s ${CREATEVDI} ${USRBINXWCREATEVDI} >> ${LOG}  2>&1 
+ln -s ${CREATEVDI} $USRLOCALBINCREATEVDI >> ${LOG}  2>&1 
+
+if [ "X${SYSLOGIN}" != "X" ] ; then 
+    chown -R ${SYSLOGIN}.${SYSLOGIN} ${INSTALLDIR} >> ${LOG}  2>&1
+    chown -R ${SYSLOGIN}.${SYSLOGIN} ${USRBINXWCREATEVDI} >> ${LOG}  2>&1
+	if [ -f ${SUDOERSFILE} ] ; then
+		cp -f ${SUDOERSFILE} /etc/sudoers-without-xwhep
+#		echo ${SUDOERSENTRY} >> ${SUDOERSFILE}
+#		echo ${SUDOERSENTRY2} >> ${SUDOERSFILE}
+		echo << SUDOERSEOF >> ${SUDOERSFILE}
+# Created by xwhep on `date`
+
+# User rules for ubuntu
+${SUDOERSENTRY}
+${SUDOERSENTRY2}
+${SUDOERSENTRY3}
+SUDOERSEOF
+
+		chmod 440 ${SUDOERSFILE}
 	fi
 else
-    echo "SYSLOGIN variable is not set; this package will run as root ; this is not a good idea" >> $LOG  2>&1 
+    echo "SYSLOGIN variable is not set; this package will run as root ; this is not a good idea" >> ${LOG}  2>&1 
 fi
 
 SHAREDAPPS=""
 #
 # share VirtualBox, if available
 #
-if [ -x $VBHL ] ; then 
-	SHAREDAPPS=$VBAPPNAME
+if [ -x ${VBHL} ] ; then
+	SHAREDAPPS=${VBAPPNAME}
 fi
 #
 # share Docker, if available
 #
-if [ -x $DOCKERPATH ] ; then
-	if [ -z $SHAREDAPPS ] ; then
-	    SHAREDAPPS=$DOCKERAPPNAME
+if [ -x ${DOCKERPATH} ] ; then
+	if [ -z ${SHAREDAPPS} ] ; then
+	    SHAREDAPPS=${DOCKERAPPNAME}
 	else
-	    SHAREDAPPS="$SHAREDAPPS,$DOCKERAPPNAME"
+	    SHAREDAPPS="${SHAREDAPPS},${DOCKERAPPNAME}"
 	fi
 fi
 
-[ -z $SHAREDAPPS ] || echo "sharedapps=$SHAREDAPPS" >> $CONFILE
+[ -z ${SHAREDAPPS} ] || echo "sharedapps=${SHAREDAPPS}" >> $CONFILE
 
 
 # don't forget the ending dot
-update-rc.d $PROG stop 99 3 4 5 .  >> $LOG  2>&1
-update-rc.d -f $PROG remove  >> $LOG  2>&1
-update-rc.d $PROG defaults 99  >> $LOG  2>&1
+update-rc.d ${PROG} stop 99 3 4 5 .  >> ${LOG}  2>&1
+update-rc.d -f ${PROG} remove  >> ${LOG}  2>&1
+update-rc.d ${PROG} defaults 99  >> ${LOG}  2>&1
 
-$INITD/$PROG start >> $LOG  2>&1
+${INITD}/${PROG} start >> ${LOG}  2>&1
 
 
-echo "XtemWeb-HEP $PROG $WHAT done" >> $LOG  2>&1 
+echo "XtemWeb-HEP ${PROG} ${WHAT} done" >> ${LOG}  2>&1 

@@ -45,20 +45,21 @@ SUDOERSFILE=${SUDOERS}
 
 SUDOERSENTRY="${SYSLOGIN} ALL=NOPASSWD: ${USRBINXWCREATEVDI}"
 SUDOERSENTRY2="${SYSLOGIN} ALL=NOPASSWD: ${USRLOCALBINCREATEVDI}"
+SUDOERSENTRY3="${SYSLOGIN} ALL=NOPASSWD: /bin/su"
 
 VBAPPNAME="virtualbox"
 VBHL="/usr/bin/vboxheadless"
 DOCKERAPPNAME="docker"
-DOCKERPATH="/usr/local/bin/docker"
+DOCKERPATH="/usr/bin/docker"
 
-[ -d ${SUDOERSD} ] && SUDOERSFILE=${XWHEPSUDOERS}
+if [ -d ${SUDOERSD} ] ; then
+    SUDOERSFILE=${XWHEPSUDOERS}
+    touch ${SUDOERSFILE}
+fi
 
 touch ${LOG}
 date >> ${LOG}  2>&1 
 echo "XtemWeb-HEP ${PROG} ${WHAT} @XWVERSION@" >> ${LOG}  2>&1
-#date >> ${LOG}  2>&1
-#ln -s ${BINDIR}/${PROG} /etc/init.d/${PROG} >> ${LOG}  2>&1
-#/etc/init.d/${PROG} start >> ${LOG}  2>&1
 
 rm -f ${INITD}/${PROG} >> ${LOG}  2>&1
 ln -s ${BINDIR}/${PROG} ${INITD}/${PROG} >> ${LOG}  2>&1
@@ -80,10 +81,10 @@ if [ "X${SYSLOGIN}" != "X" ] ; then
 # User rules for ubuntu
 ${SUDOERSENTRY}
 ${SUDOERSENTRY2}
-xwhep ALL=(ALL) NOPASSWD: /bin/su
+${SUDOERSENTRY3}
 SUDOERSEOF
 
-		chmod 440 $SUDOERSFILE
+		chmod 440 ${SUDOERSFILE}
 	fi
 else
     echo "SYSLOGIN variable is not set; this package will run as root ; this is not a good idea" >> ${LOG}  2>&1 
