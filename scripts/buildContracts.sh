@@ -19,6 +19,7 @@ for target in ${targets}; do
 
     cd $baseDir
     echo "Compiling Solidity file ${target}.sol"
+    mkdir -p $dirName/build
 
     solc --bin --abi --optimize --overwrite \
             --allow-paths "$(pwd)" \
