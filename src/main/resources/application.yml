@@ -1,10 +1,11 @@
 # There are the default property values so can be omitted if being used
 web3j:
   client-address: http://localhost:8545
+  network-id: 4224
   admin-client: false
 
 ethereum:
   address:
-    iexecHub: 1212121212121212
-    appAdress: 34343434343434343434
-    iExecCloudUser: 565656565656565656
+    iexecHub: "0x5de3fc362e1e290c03302d06cacfcc6d499b8410"
+    appAdress: "0x9a57089a5571089aa01fcc6556ad3c147d35915d"
+    iExecCloudUser: "0x30b38eff56fc5e8722918ebfa138b2e8c3784861"

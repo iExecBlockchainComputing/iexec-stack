@@ -7,16 +7,17 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class DummyController {
 
-    private Web3jService web3jService;
+    private Web3jServiceExperiment web3jService;
 
     @Autowired
-    public DummyController(Web3jService web3jService) {
+    public DummyController(Web3jServiceExperiment web3jService) {
         this.web3jService = web3jService;
     }
 
     @RequestMapping("/")
     public String dummy() throws Exception {
-        web3jService.printAdresses();
+        // web3jService.printAdresses();
+        // web3jService.run();
         return "Hello World!";
     }
 }
