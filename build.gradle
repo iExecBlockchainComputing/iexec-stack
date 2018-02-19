@@ -3,7 +3,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.5.10.RELEASE")
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.5.9.RELEASE")
     }
 }
 
@@ -18,15 +18,16 @@ repositories {
 
 ext {
     web3jVersion = '3.2.0'
+    web3jSpringBootVersion = '1.5.0'
     logbackVersion = '1.2.3'
     junitVersion = '4.12'
-    springBootVersion = '1.5.10.RELEASE'
+    springBootVersion = '1.5.9.RELEASE'
 }
 
 dependencies {
     // web3j dependencies
-    // compile "org.web3j:core:$web3jVersion"
-    compile 'org.web3j:web3j-spring-boot-starter:1.0.0'
+    compile "org.web3j:core:$web3jVersion"
+    compile "org.web3j:web3j-spring-boot-starter:$web3jSpringBootVersion"
 
     // spring boot dependencies
     compile "org.springframework.boot:spring-boot-starter-web:$springBootVersion"
@@ -64,6 +65,6 @@ task buildContracts(type: Exec) {
 }
 
 // Force the rebuild of contracts before java build
-// compileJava.dependsOn buildContracts
+compileJava.dependsOn buildContracts
 
 
