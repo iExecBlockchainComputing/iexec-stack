@@ -1,7 +1,14 @@
-// group 'org.web3j'
-// version '0.0.1'
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.5.9.RELEASE")
+    }
+}
 
 apply plugin: 'java'
+apply plugin: 'org.springframework.boot'
 
 sourceCompatibility = 1.8
 
@@ -11,17 +18,23 @@ repositories {
 
 ext {
     web3jVersion = '3.2.0'
+    web3jSpringBootVersion = '1.5.0'
     logbackVersion = '1.2.3'
     junitVersion = '4.12'
+    springBootVersion = '1.5.9.RELEASE'
 }
 
 dependencies {
-    compile "org.web3j:core:$web3jVersion",
-            "ch.qos.logback:logback-core:$logbackVersion",
-            "ch.qos.logback:logback-classic:$logbackVersion"
+    // web3j dependencies
+    compile "org.web3j:core:$web3jVersion"
+    compile "org.web3j:web3j-spring-boot-starter:$web3jSpringBootVersion"
+
+    // spring boot dependencies
+    compile "org.springframework.boot:spring-boot-starter-web:$springBootVersion"
+    compile "org.springframework.boot:spring-boot-configuration-processor:$springBootVersion"
+
     testCompile "junit:junit:$junitVersion"
 }
-
 
 task copyContracts(type: Copy) {
     into "./src/main/resources/solidity/poco"
@@ -46,10 +59,9 @@ task copyContracts(type: Copy) {
 task buildContracts(type: Exec) {
     dependsOn copyContracts
 
-    commandLine("sh", "-c",
-            "cd ./scripts\n" +
-            "./buildContracts.sh")
+    commandLine("sh", "-c", "cd ./scripts && ./buildContracts.sh")
 }
+buildContracts.enabled = !project.hasProperty("skipContracts")
 
 // Force the rebuild of contracts before java build
 compileJava.dependsOn buildContracts
