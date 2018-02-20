@@ -1013,7 +1013,35 @@ public class ThreadWork extends Thread {
 	}
 
 	/**
-	 * This retrieves the current process command line
+	 * This test if work command line complies to app
+	 * @see xtremweb.common.AppTypeEnum#checkParams(String)
+	 * @since 12.2.8
+	 */
+	private void checkAppParams(final String params)
+			throws AccessControlException,
+			IOException,
+			ClassNotFoundException,
+			SAXException,
+			InvalidKeyException,
+			URISyntaxException {
+
+		final UID workApp = currentWork.getApplication();
+
+		if (workApp == null) {
+			throw new IOException(WARNNOAPPLI);
+		}
+
+		final AppInterface app = (AppInterface) CommManager.getInstance().commClient().get(workApp, false);
+
+		if (app == null) {
+			throw new IOException("can find application " + workApp);
+		}
+
+		app.checkParams(params);
+	}
+
+	/**
+	 * This retrieves the current work command line
 	 *
 	 * @throws AccessControlException
 	 * @throws InvalidKeyException
@@ -1028,6 +1056,9 @@ public class ThreadWork extends Thread {
 		ret = XWTools.split(binPath);
 
 		final String wcmdline = currentWork.getCmdLine();
+
+		checkAppParams(wcmdline);
+
 		if (wcmdline != null) {
 			final Collection<String> wcmdvector = XWTools.split(wcmdline);
 			if (ret == null) {

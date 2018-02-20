@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.security.AccessControlException;
 import java.security.InvalidKeyException;
 import java.sql.ResultSet;
 import java.text.ParseException;
@@ -2410,7 +2411,14 @@ public final class AppInterface extends Table {
 		setType(AppTypeEnum.NONE);
 		return AppTypeEnum.NONE;
 	}
-
+	/**
+	 * This test if command line complies to app
+	 * @see xtremweb.common.AppTypeEnum#checkParams(String)
+	 * @since 12.2.8
+ 	*/
+	public void checkParams(final String params) throws AccessControlException {
+		getType().checkParams(params);
+	}
 	/**
 	 * This sets parameter value; this is called from
 	 * TableInterface#fromXml(Attributes)
