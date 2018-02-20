@@ -4,7 +4,7 @@
 # Authors        : Oleg Lodygensky, Etienne Urbah
 # Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by INRIA : http://www.xtremweb.net/
 # Web            : http://www.xtremweb-hep.org
-# 
+#
 #      This file is part of XtremWeb-HEP.
 #
 #    XtremWeb-HEP is free software: you can redistribute it and/or modify
@@ -27,11 +27,11 @@
 #
 # Requirements: xwconfigure-00-conffiles must have been correctly executed
 #
-# Purpose :   xwconfigure became too complex; it has been split 
+# Purpose :   xwconfigure became too complex; it has been split
 #             into several scripts
-#             this scripts installs DB only only using parameters 
+#             this scripts installs DB only only using parameters
 #             read from xwconfigure.values
-#             
+#
 # 2017-12-11  Oleg Lodygensky :
 #             -  1st version
 #
@@ -55,7 +55,6 @@ XWCONFVALUES=$CONFDIR/xwconfigure.values
 
 SQL_SCRIPTS_DIR=$BINDIR/db-maintenance
 XWRMDBSQL=$SQL_SCRIPTS_DIR/xwhep-core-tables-drop-triggers-and-tables.sql
-XWSETUPDBSQLIN=$SQL_SCRIPTS_DIR/xwhep-core-tables-create-tables.sql.in
 XWSETUPDBSQL=$SQL_SCRIPTS_DIR/xwhep-core-tables-create-tables.sql
 XWSETUPDBSQL_FK=$SQL_SCRIPTS_DIR/xwhep-core-tables-foreign-keys-live.sql
 XWSETUPDBSQL_TRIGGERS_LIST="$SQL_SCRIPTS_DIR/xwhep-core-tables-create-triggers-for-data-coming-from-8.sql  \
@@ -111,7 +110,7 @@ fatal() {
 [`date`] `basename $0` - FATAL : $*
 - * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! * -
 EOF
-	
+
 	exit 1
 }
 
@@ -148,7 +147,7 @@ EOF
 usage() {
 	msg=$1
 	stopit=0
-	
+
 	if [ "$msg" = "STOP" ] ; then
 		msg=""
 		stopit=1
@@ -158,7 +157,7 @@ usage() {
 		msg=""
 		help="HELP"
 	fi
-	
+
 	if [ -n "$msg" ] ; then
 		cat <<EOF
 
@@ -167,18 +166,18 @@ Error : $msg
 - * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! * -
 EOF
 	fi
-	
+
 	cat <<EOF
 
 --------------------------------------------------
-         XtremWeb-HEP $VERSION 
+         XtremWeb-HEP $VERSION
          XWConfigurator
 
-This script helps to configure an XtremWeb-HEP deployment 
+This script helps to configure an XtremWeb-HEP deployment
 --------------------------------------------------
 
 This script aims to :
- - install a new database: 
+ - install a new database:
    Since 9.1. MySQL (http://www.mysql.com/) only is supported
 
 All informations are read from $XWCONFVALUES
@@ -186,7 +185,7 @@ All informations are read from $XWCONFVALUES
 -----------------------------
 
 EOF
-	
+
 	if [ -n "$help" ] ; then
 		cat <<EOF
 
@@ -197,11 +196,11 @@ Usage : $0 [-h|--help|--h|-?] [-clean] [[--yes] [--keepdb] [--rmdb]]
       Next are only used with "--yes"
       --keepdb : to keep db as is, if already exists
                  This is the default option
-      --rmdb   : to remove db 
+      --rmdb   : to remove db
                  Be aware that this removes everything from the platform
 EOF
 	fi
-	
+
 	if [ -n "$msg" ] ; then
 		cat <<EOF
 
@@ -211,7 +210,7 @@ Error : $msg
 EOF
 		shift
 	fi
-	
+
 	[ $stopit -eq 1 ] && exit 1
 	[ "$1" = "STOP" ] && exit 1
 }
@@ -222,9 +221,9 @@ EOF
 #=============================================================================
 clean() {
 	printf "Cleaning DB "
-	
+
 	rm -f $XWSETUPDBSQL
-	
+
 	echo ": Done"
 	exit 0
 }
@@ -298,57 +297,57 @@ usage
 . $XWCONFVALUES
 
 if [ ! -z "$DEFINED_DBHOST" ] ; then
-	DBHOST=$DEFINED_DBHOST 
+	DBHOST=$DEFINED_DBHOST
 fi
 
 if [ -z "$DBVENDOR" ] ; then
-	usage "Variable DBVENDOR not set; please correct $XWCONFVALUES file " "STOP" 
+	usage "Variable DBVENDOR not set; please correct $XWCONFVALUES file " "STOP"
 fi
 if [ -z "$DBENGINE" ] ; then
-	usage "Variable DBENGINE not set; please correct $XWCONFVALUES file " "STOP" 
+	usage "Variable DBENGINE not set; please correct $XWCONFVALUES file " "STOP"
 fi
 if [ -z "$DBHOST" ] ; then
-	usage "Variable DBHOST not set; please correct $XWCONFVALUES file " "STOP" 
+	usage "Variable DBHOST not set; please correct $XWCONFVALUES file " "STOP"
 fi
 if [ -z "$DBADMINLOGIN" ] ; then
-	usage "Variable DBADMINLOGIN not set; please correct $XWCONFVALUES file " "STOP" 
+	usage "Variable DBADMINLOGIN not set; please correct $XWCONFVALUES file " "STOP"
 fi
 if [ -z "$DBNAME" ] ; then
-	usage "Variable DBNAME not set; please correct $XWCONFVALUES file " "STOP" 
+	usage "Variable DBNAME not set; please correct $XWCONFVALUES file " "STOP"
 fi
 if [ -z "$DBUSERLOGIN" ] ; then
-	usage "Variable DBUSERLOGIN not set; please correct $XWCONFVALUES file " "STOP" 
+	usage "Variable DBUSERLOGIN not set; please correct $XWCONFVALUES file " "STOP"
 fi
 if [ -z "$DBUSERPASSWORD" ] ; then
-	usage "Variable DBUSERPASSWORD not set; please correct $XWCONFVALUES file " "STOP" 
+	usage "Variable DBUSERPASSWORD not set; please correct $XWCONFVALUES file " "STOP"
 fi
 if [ -z "$XWADMINLOGIN" ] ; then
-	usage "Variable XWADMINLOGIN not set; please correct $XWCONFVALUES file " "STOP" 
+	usage "Variable XWADMINLOGIN not set; please correct $XWCONFVALUES file " "STOP"
 fi
 if [ -z "$XWADMINPASSWORD" ] ; then
-	usage "Variable XWADMINPASSWORD not set; please correct $XWCONFVALUES file " "STOP" 
+	usage "Variable XWADMINPASSWORD not set; please correct $XWCONFVALUES file " "STOP"
 fi
 if [ -z "$XWWORKERLOGIN" ] ; then
-	usage "Variable XWWORKERLOGIN not set; please correct $XWCONFVALUES file " "STOP" 
+	usage "Variable XWWORKERLOGIN not set; please correct $XWCONFVALUES file " "STOP"
 fi
 if [ -z "$XWWORKERPASSWORD" ] ; then
-	usage "Variable XWWORKERPASSWORD not set; please correct $XWCONFVALUES file " "STOP" 
+	usage "Variable XWWORKERPASSWORD not set; please correct $XWCONFVALUES file " "STOP"
 fi
 if [ -z "$XWSERVER" ] ; then
-	usage "Variable XWSERVER not set; please correct $XWCONFVALUES file " "STOP" 
+	usage "Variable XWSERVER not set; please correct $XWCONFVALUES file " "STOP"
 fi
 if [ -z "$XWUPGRADEURL" ] ; then
-	usage "Variable XWUPGRADEURL not set; please correct $XWCONFVALUES file " "STOP" 
+	usage "Variable XWUPGRADEURL not set; please correct $XWCONFVALUES file " "STOP"
 fi
 
 echo "DB vendor forced to 'mysql'"
 DBVENDOR='mysql'
 
-echo "DB engine forced to 'InnoDB'" 
+echo "DB engine forced to 'InnoDB'"
 DBENGINE='InnoDB'
 
 
-echo 
+echo
 echo "Your config :"
 echo "**** Account to run the middleware : "
 echo "     USER                 = '$XWUSER'"
@@ -391,7 +390,7 @@ if [ "$FORCEYES" = "NO" ] ; then
 	YESNO="N"
 	printf "Do you accept it [y/N] ? "
 	read YESNO
-	
+
 	if [ "$YESNO" != "y" -a "$YESNO" != "Y" ] ; then
 		fatal "Cancel by user"
 	fi
@@ -401,7 +400,7 @@ fi
 # MySQL
 #
 MYSQLOPTS=""
-if [ -n "$DBADMINLOGIN" ] ; then 
+if [ -n "$DBADMINLOGIN" ] ; then
 	MYSQLOPTS="-u $DBADMINLOGIN"
 	[ "$DBHOST"          != "" ] && MYSQLOPTS="$MYSQLOPTS -h $DBHOST"
 	[ "$DBADMINPASSWORD" != "" ] && MYSQLOPTS="$MYSQLOPTS --password=$DBADMINPASSWORD"
@@ -415,13 +414,13 @@ fi
 # Check MySQL configuration
 #
 if [ "$DBVENDOR" = "mysql" ] ; then
-	
-	echo 
+
+	echo
 	mysql $MYSQLOPTS -e ''
 	if [ $? -ne 0 ] ; then
 		fatal "\"mysql $MYSQLOPTS -e ''\" failed.  Please verify if MySQL is correctly installed."
 	fi
-	
+
 	#
 	# Database exists, but do the schema and the tables exist?
 	#
@@ -443,7 +442,7 @@ if [ "$DBVENDOR" = "mysql" ] ; then
 				YESNO="Y"
 			fi
 		fi
-		
+
 		if [ "$YESNO" = "y" -o "$YESNO" = "Y" ] ; then
 			echo "Resetting database schema '$DBNAME'"
 			mysql $MYSQLOPTS "$DBNAME" < $XWRMDBSQL
@@ -458,7 +457,7 @@ if [ "$DBVENDOR" = "mysql" ] ; then
 fi
 
 if [ "$DBVENDOR" = "mysql" ] ; then
-	
+
 	if [ $NEWDB -eq 1 ] ; then
 
 		echo "Preparing database schema '$DBNAME'"
@@ -467,7 +466,7 @@ if [ "$DBVENDOR" = "mysql" ] ; then
 		if [ $? -ne 0 ] ; then
 			fatal "\"mysql $MYSQLOPTS < $XWSETUPDBSQL\" failed"
 		fi
-		
+
 		# Create DB foreign keys for live tables
 		if [ "$DBENGINE" = "InnoDB" ] && [ -r "$XWSETUPDBSQL_FK" ]; then
 			echo "DB engine for '$DBNAME' is InnoDB :  Creating foreign keys for live tables ..."
@@ -476,7 +475,7 @@ if [ "$DBVENDOR" = "mysql" ] ; then
 				fatal "\"mysql $MYSQLOPTS < $XWSETUPDBSQL_FK\" failed"
 			fi
 		fi
-		
+
 		# Create DB triggers for data and history coming from version 8.x
 		for XWSETUPDBSQL_TRIGGERS in $XWSETUPDBSQL_TRIGGERS_LIST
 		do
@@ -488,7 +487,7 @@ if [ "$DBVENDOR" = "mysql" ] ; then
 				fi
 			fi
 		done
-		
+
 		# Create the SQL script for the creation of DB views in the current schema
 		if [ -r "$XWSETUPDBSQL_QUERY_FOR_TABLE_VIEWS" ]; then
 			echo "Create the SQL script for the creation of DB views in the current schema ..."
@@ -498,7 +497,7 @@ if [ "$DBVENDOR" = "mysql" ] ; then
 				fatal "\"mysql $MYSQLOPTS < $XWSETUPDBSQL_QUERY_FOR_TABLE_VIEWS\" failed"
 			fi
 		fi
-		
+
 		# Create the SQL script for the creation of DB views in the current schema
 		if [ -r "$XWSETUPDBSQL_QUERY_FOR_USERS_VIEWS" ]; then
 			echo "Create the SQL script for the creation of DB users views in the current schema ..."
@@ -508,7 +507,7 @@ if [ "$DBVENDOR" = "mysql" ] ; then
 				fatal "\"mysql $MYSQLOPTS < $XWSETUPDBSQL_QUERY_FOR_USERS_VIEWS\" failed"
 			fi
 		fi
-		
+
 		# Create DB views
 		for XWSETUPDBSQL_VIEWS in $XWSETUPDBSQL_VIEWS_LIST
 		do
@@ -520,24 +519,24 @@ if [ "$DBVENDOR" = "mysql" ] ; then
 				fi
 			fi
 		done
-		
+
 	fi
-	
+
 	echo "Granting access to DB schema '$DBNAME' ..."
 	mysql $MYSQLOPTS -e "GRANT ALL PRIVILEGES ON $DBNAME.* TO $DBUSERLOGIN@localhost IDENTIFIED BY '$DBUSERPASSWORD' WITH GRANT OPTION"
 	mysql $MYSQLOPTS -e "GRANT ALL PRIVILEGES ON $DBNAME.* TO $DBUSERLOGIN@localhost.localdomain IDENTIFIED BY '$DBUSERPASSWORD' WITH GRANT OPTION"
 	mysql $MYSQLOPTS -e "GRANT ALL PRIVILEGES ON $DBNAME.* TO $DBUSERLOGIN@'$XWHOST' IDENTIFIED BY '$DBUSERPASSWORD' WITH GRANT OPTION"
 	mysql $MYSQLOPTS -e "set password for $DBUSERLOGIN@localhost = old_password('$DBUSERPASSWORD')"
-	
+
 	#
 	# next line ensures xwupdatedb-8.3.1 works correctly even if "version" table does not exist
 	#
 	mysql $MYSQLOPTS "$DBNAME" -e "CREATE TABLE IF NOT EXISTS version (version char(20),installation datetime)"
-	
+
 	for CHECKFILE in `ls $SQL_SCRIPTS_DIR/$XWCHECKDBSQLNAME*.sql` ; do
-		
+
 		VFILE=$(basename $CHECKFILE | cut -d '-' -f 2 | sed "s/\.sql//g")
-		
+
 		echo "Database schema '$DBNAME' : checking compliance to '$VFILE'"
 		mysql $MYSQLOPTS "$DBNAME" < $CHECKFILE > /dev/null  2>&1
 		if [ $? -ne 0 ] ; then
@@ -552,7 +551,7 @@ if [ "$DBVENDOR" = "mysql" ] ; then
 			echo "Database schema '$DBNAME' : is compliant to $VFILE"
 		fi
 	done
-	
+
 	echo "Seting current version with xwsetversion.sql"
 	mysql $MYSQLOPTS "$DBNAME" < $XWSETVERSIONSQL
 	if [ $? -ne 0 ] ; then
