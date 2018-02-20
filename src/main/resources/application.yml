@@ -1,7 +1,6 @@
 # There are the default property values so can be omitted if being used
 web3j:
   client-address: http://localhost:8545
-  network-id: 4224
   admin-client: false
 
 ethereum:
