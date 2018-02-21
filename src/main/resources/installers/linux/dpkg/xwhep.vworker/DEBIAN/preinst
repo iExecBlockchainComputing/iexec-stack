@@ -54,8 +54,9 @@ if [ "X${SYSLOGIN}" != "X" ] ; then
     while [ ${i} -lt ${nbCpu} ] ; do
         USERLOGIN=${SYSLOGIN}${i}
         mkdir -p /home/${USERLOGIN} >> ${LOG} 2>&1
-        /usr/sbin/groupadd ${USERLOGIN} >> ${LOG} 2>&1
-        /usr/sbin/useradd ${USERLOGIN} d /home/${USERLOGIN} -s /bin/bash -g ${GROUPE} -m >> ${LOG} 2>&1
+#        /usr/sbin/groupadd ${USERLOGIN} >> ${LOG} 2>&1
+        /usr/sbin/useradd ${USERLOGIN} -d /home/${USERLOGIN} -s /bin/bash -g ${GROUPE} -m >> ${LOG} 2>&1
+        i=$(( i + 1 ))
     done
 
 else

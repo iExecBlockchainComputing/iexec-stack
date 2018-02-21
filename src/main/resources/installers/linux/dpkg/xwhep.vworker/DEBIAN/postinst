@@ -54,8 +54,8 @@ DOCKERPATH="/usr/bin/docker"
 
 if [ -d ${SUDOERSD} ] ; then
     SUDOERSFILE=${XWHEPSUDOERS}
-    touch ${SUDOERSFILE}
 fi
+touch ${SUDOERSFILE}
 
 touch ${LOG}
 date >> ${LOG}  2>&1 
@@ -73,8 +73,6 @@ if [ "X${SYSLOGIN}" != "X" ] ; then
     chown -R ${SYSLOGIN}.${SYSLOGIN} ${USRBINXWCREATEVDI} >> ${LOG}  2>&1
 	if [ -f ${SUDOERSFILE} ] ; then
 		cp -f ${SUDOERSFILE} /etc/sudoers-without-xwhep
-#		echo ${SUDOERSENTRY} >> ${SUDOERSFILE}
-#		echo ${SUDOERSENTRY2} >> ${SUDOERSFILE}
 		echo << SUDOERSEOF >> ${SUDOERSFILE}
 # Created by xwhep on `date`
 
@@ -85,6 +83,12 @@ ${SUDOERSENTRY3}
 SUDOERSEOF
 
 		chmod 440 ${SUDOERSFILE}
+
+    	cat ${SUDOERS} | grep -v "/etc/sudoers.d" > /tmp/xwsudoers
+	    mv -f /tmp/xwsudoers ${SUDOERS}
+		echo "includedir /etc/sudoers.d" >> ${SUDOERS}
+    	chmod 440 ${SUDOERS}
+
 	fi
 else
     echo "SYSLOGIN variable is not set; this package will run as root ; this is not a good idea" >> ${LOG}  2>&1 

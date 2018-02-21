@@ -25,21 +25,26 @@ LOGDATE=`date "+%Y%m%d%H%M%S"`
 WHAT="postrm"
 LOG="/var/log/xwhep-worker.log"
 INSTALLDIR="/opt/xwhep-worker-@XWVERSION@"
-BINDIR="$INSTALLDIR/bin"
+BINDIR="${INSTALLDIR}/bin"
 PROG="xtremweb.worker"
 SYSLOGIN=@XWUSER@
 GROUPE=${SYSLOGIN}
 
 USRBIN=/usr/bin
-USRBINXWCREATEVDI=$USRBIN/xwcreatevdi
-USRLOCALBINCREATEVDI=$USRLOCALBIN/createvdi
+USRLOCALBIN=/usr/local/bin
+USRBINXWCREATEVDI=${USRBIN}/xwcreatevdi
+USRLOCALBINCREATEVDI=${USRLOCALBIN}/createvdi
+
 SUDOERS=/etc/sudoers
+SUDOERSD="${SUDOERS}.d"
+XWHEPSUDOERS="${SUDOERSD}/99-xwhep"
 
-touch $LOG
-date >> $LOG  2>&1 
-echo "XtemWeb-HEP $PROG $WHAT @XWVERSION@" >> $LOG  2>&1 
 
-rm -f /etc/init.d/$PROG >> $LOG  2>&1
+touch ${LOG}
+date >> ${LOG}  2>&1 
+echo "XtemWeb-HEP ${PROG} ${WHAT} @XWVERSION@" >> ${LOG}  2>&1 
+
+rm -f /etc/init.d/${PROG} >> ${LOG}  2>&1
 
 rm -Rf /tmp/xtremweb.worker*
 rm -Rf /tmp/xtremweb.monitor*
@@ -47,19 +52,20 @@ rm -Rf /tmp/PortMapper.jni*
 rm -f /tmp/XwTracer.jni*
 rm -f /tmp/XWUtil.jni*
 rm -Rf /tmp/XW.WORKER*
-rm -Rf $INSTALLDIR >> $LOG 2>&1
+rm -Rf $INSTALLDIR >> ${LOG} 2>&1
 
-rm -f $USRBINXWCREATEVDI >> $LOG  2>&1
-rm -f $USRLOCALBINCREATEVDI >> $LOG  2>&1
-grep $SYSLOGIN $SUDOERS >> $LOG  2>&1
+rm -f ${USRBINXWCREATEVDI} >> ${LOG}  2>&1
+rm -f ${USRLOCALBINCREATEVDI} >> ${LOG}  2>&1
+grep ${SYSLOGIN} ${SUDOERS} >> ${LOG}  2>&1
 if [ $? -eq 0 ] ; then
-	cat $SUDOERS | grep -v $SYSLOGIN > /tmp/xwsudoers
-	mv -f /tmp/xwsudoers $SUDOERS
-	chmod 440 $SUDOERS
+	cat ${SUDOERS} | grep -v ${SYSLOGIN} > /tmp/xwsudoers
+	mv -f /tmp/xwsudoers ${SUDOERS}
+	chmod 440 ${SUDOERS}
+	rm -f ${XWHEPSUDOERS} >> ${LOG}  2>&1
 fi
 
-if [ "X$SYSLOGIN" != "X" ] ; then
-    echo "Removing system login to run the middleware $SYSLOGIN" >> $LOG  2>&1
+if [ "X${SYSLOGIN}" != "X" ] ; then
+    echo "Removing system login to run the middleware ${SYSLOGIN}" >> ${LOG}  2>&1
 
 # since 12.2.8, we create as many users as available CPU in a single group
 # see xtremweb.common.XWPropertyDefs#OSACCOUNT
@@ -72,18 +78,19 @@ if [ "X$SYSLOGIN" != "X" ] ; then
     i=0
     while [ $i -lt $nbCpu ] ; do
         USERLOGIN=${SYSLOGIN}${i}
-        /usr/sbin/userdel -f $USERLOGIN >> $LOG  2>&1
-        rm -Rf /home/$USERLOGIN >> $LOG  2>&1
+        /usr/sbin/userdel -f ${USERLOGIN} >> ${LOG}  2>&1
+        rm -Rf /home/${USERLOGIN} >> ${LOG}  2>&1
+        i=$(( i + 1 ))
     done
 
-    /usr/sbin/userdel -f $SYSLOGIN >> $LOG  2>&1
-    /usr/sbin/groupdel $SYSLOGIN >> $LOG  2>&1
-    rm -Rf /home/$SYSLOGIN >> $LOG  2>&1
+    /usr/sbin/userdel -f ${SYSLOGIN} >> ${LOG}  2>&1
+    /usr/sbin/groupdel ${SYSLOGIN} >> ${LOG}  2>&1
+    rm -Rf /home/${SYSLOGIN} >> ${LOG}  2>&1
 
 else
-    echo "SYSLOGIN variable is not set; this package has run as root; this is not a good idea" >> $LOG  2>&1
+    echo "SYSLOGIN variable is not set; this package has run as root; this is not a good idea" >> ${LOG}  2>&1
 fi
 
-update-rc.d -f $PROG remove  >> $LOG  2>&1
+update-rc.d -f ${PROG} remove  >> ${LOG}  2>&1
 
-echo "XtemWeb-HEP $PROG $WHAT done" >> $LOG  2>&1 
+echo "XtemWeb-HEP ${PROG} ${WHAT} done" >> ${LOG}  2>&1 
