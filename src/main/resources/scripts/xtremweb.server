@@ -47,9 +47,9 @@
 #
 
 # chkconfig: 345 99 99
-# processname: /opt/XWHEP-1.0.25/bin/xtremweb.server
-# config: /opt/XWHEP-1.0.25/conf/xtremweb.server.conf
-# description: XWHEP DesktopGrid server 
+# processname: /opt/xwhep-worker-@XWVERSION@/bin/xtremweb.server
+# config: /opt/xwhep-worker-@XWVERSION@/conf/xtremweb.server.conf
+# description: XWHEP Volunteer Cloud scheduler
 
 #
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
