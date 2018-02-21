@@ -80,6 +80,7 @@ if [ "X${SYSLOGIN}" != "X" ] ; then
         USERLOGIN=${SYSLOGIN}${i}
         /usr/sbin/userdel -f ${USERLOGIN} >> ${LOG}  2>&1
         rm -Rf /home/${USERLOGIN} >> ${LOG}  2>&1
+        i=$(( i + 1 ))
     done
 
     /usr/sbin/userdel -f ${SYSLOGIN} >> ${LOG}  2>&1
