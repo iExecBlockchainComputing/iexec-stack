@@ -776,7 +776,7 @@ public class ThreadWork extends Thread {
 		final AppInterface app = (AppInterface) CommManager.getInstance().commClient().get(workApp, false);
 
 		if (app == null) {
-			throw new IOException("can find application " + workApp);
+			throw new IOException("can't find application " + workApp);
 		}
 
 		// retrieve work env vars, if any
@@ -881,7 +881,7 @@ public class ThreadWork extends Thread {
 		final AppInterface app = (AppInterface) CommManager.getInstance().commClient().get(workApp, false);
 
 		if (app == null) {
-			throw new IOException("can find application " + workApp);
+			throw new IOException("can't find application " + workApp);
 		}
 
 		final URI scriptUri = app.getUnloadScript(Worker.getConfig().getHost().getOs());
@@ -928,7 +928,7 @@ public class ThreadWork extends Thread {
 		final AppInterface app = (AppInterface) CommManager.getInstance().commClient().get(workApp, false);
 
 		if (app == null) {
-			throw new IOException("can find application " + workApp);
+			throw new IOException("can't find application " + workApp);
 		}
 
 		final AppTypeEnum at = app.getType();
@@ -952,7 +952,7 @@ public class ThreadWork extends Thread {
 			final URI binUri = app.getBinary(Worker.getConfig().getHost().getCpu(),
 					Worker.getConfig().getHost().getOs());
 			if (binUri == null) {
-				throw new IOException("can find application " + workApp);
+				throw new IOException("can't find application " + workApp);
 			}
 
 			final DataInterface bin = (DataInterface) CommManager.getInstance().commClient().get(binUri);
@@ -1013,7 +1013,7 @@ public class ThreadWork extends Thread {
 	}
 
 	/**
-	 * This test if work command line complies to app
+	 * This tests if work command line complies to app
 	 * @see xtremweb.common.AppTypeEnum#checkParams(String)
 	 * @since 12.2.8
 	 */
@@ -1034,7 +1034,7 @@ public class ThreadWork extends Thread {
 		final AppInterface app = (AppInterface) CommManager.getInstance().commClient().get(workApp, false);
 
 		if (app == null) {
-			throw new IOException("can find application " + workApp);
+			throw new IOException("application not found " + workApp);
 		}
 
 		app.checkParams(params);

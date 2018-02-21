@@ -102,17 +102,15 @@ public enum AppTypeEnum {
 			return  " --mount type=bind,src=" + pwd.getAbsolutePath() + ",dst=" + pwd.getAbsolutePath();
 		}
 		/**
+         * This calls checkParams(params, dockerForbiddenParamsSet)
          * @see AppTypeEnum#checkParams(String)
+         * @see #checkParams(String, Set)
          * @see #dockerForbiddenParamsSet
 		 * @since 12.2.8
 		 */
 		@Override
 		public void checkParams (final String params) throws AccessControlException {
-			for(final String param : dockerForbiddenParamsSet){
-                if(params.indexOf(param) > 0) {
-                    throw new AccessControlException("Docker parameter forbidden : " + param);
-                }
-			}
+            checkParams(params, dockerForbiddenParamsSet);
 		}
 	},
 	/**
@@ -147,17 +145,15 @@ public enum AppTypeEnum {
 			throw new FileNotFoundException(NOBINPATH + this);
 		}
         /**
+         * This calls checkParams(params, vboxForbiddenParamsSet)
          * @see AppTypeEnum#checkParams(String)
+         * @see #checkParams(String, Set)
          * @see #vboxForbiddenParamsSet
          * @since 12.2.8
          */
         @Override
         public void checkParams (final String params) throws AccessControlException {
-            for(final String param : vboxForbiddenParamsSet){
-                if(params.indexOf(param) > 0) {
-                    throw new AccessControlException("Docker parameter forbidden : " + param);
-                }
-            }
+            checkParams(params, vboxForbiddenParamsSet);
         }
 	};
 
@@ -308,7 +304,7 @@ public enum AppTypeEnum {
 
 	/**
      * This checks command line parameters to avoid forbidden parameters.
-	 * This does nor throws nothing; should be overridden
+	 * This does nor throws nothing; this should be overridden
 	 * @param params
 	 *            is a String containing command line parameters
      * @throws AccessControlException if params contains at least one forbidden parameter
@@ -316,6 +312,22 @@ public enum AppTypeEnum {
 	 */
 	public void checkParams (final String params) throws AccessControlException {
 	}
+    /**
+     * This checks command line parameters to avoid forbidden parameters.
+     * This does nor throws nothing; should be overridden
+     * @param params
+     *            is a String containing command line parameters
+     * @param paramSet is the set of forbidden params
+     * @throws AccessControlException if params contains at least one forbidden parameter
+     * @since 12.2.8
+     */
+    final protected void checkParams (final String params, final Set<String> paramSet) throws AccessControlException {
+        for(final String p : paramSet){
+            if(params.indexOf(p) >= 0) {
+                throw new AccessControlException("parameter forbidden : " + p);
+            }
+        }
+    }
 
 	/**
 	 * This retrieves application default pathname
