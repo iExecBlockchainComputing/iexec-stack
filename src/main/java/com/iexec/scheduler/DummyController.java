@@ -18,7 +18,7 @@ public class DummyController {
     public String dummy() throws Exception {
         // web3jService can be called here, no issue.
         // web3jService.printAdresses();
-        // web3jService.run();
+        web3jService.run();
         return "Hello World!";
     }
 }

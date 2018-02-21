@@ -8,6 +8,7 @@ baseDir="../src/main/resources/solidity"
 targets="
 poco/WorkerPool
 poco/IexecHub
+poco/AuthorizedList
 "
 
 currentdir=`pwd`
