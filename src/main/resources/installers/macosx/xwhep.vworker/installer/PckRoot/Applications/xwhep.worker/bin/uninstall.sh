@@ -40,21 +40,14 @@ LOGFILENAME=$PROG-$HOST.log
 LOGFILE=/var/log/$LOGFILENAME
 touch $LOGFILE
 
+SUDOERS=/etc/sudoers
+SUDOERSD="${SUDOERS}.d"
+XWHEPSUDOERS="${SUDOERSD}/99-xwhep"
+
+
 echo "*****************************" >> $LOGFILE 2>&1
 echo "* [`date`] [$PROG] INFO : uninstalling $PROG"  >> $LOGFILE 2>&1
 
-
-# next are  needed because previous versions used different directory
-if [ -d /Library/StartupItems/$PROG ] ; then
-    PKG=$PROG
-fi
-
-sudo /private/etc/$PKG/bin/rmuser.sh xtremweb >> $LOGFILE 2>&1
-sudo /private/etc/$PKG/bin/rmuser.sh xtremwebwrk >> $LOGFILE 2>&1
-sudo /private/etc/$PKG/bin/rmuser.sh xtremwebsrv >> $LOGFILE 2>&1
-
-
-# current version
 
 # Mac OS prior to 10.4
 if [ -d /Library/StartupItems/$PKG ] ; then
@@ -79,6 +72,12 @@ while [ ${i} -lt ${nbCpu} ] ; do
     USERLOGIN=${SYSLOGIN}${i}
     sudo ${BINDIR}/rmuser.sh ${USERLOGIN} >> ${LOGFILE} 2>&1
 done
+
+cat ${SUDOERS} | grep -v ${SYSLOGIN} > /tmp/xwsudoers
+mv -f /tmp/xwsudoers ${SUDOERS}
+chmod 440 ${SUDOERS}
+
+rm -f ${XWHEPSUDOERS} >> ${LOG}  2>&1
 
 sudo /private/etc/$PKG/bin/rmuser.sh $SYSLOGIN >> $LOGFILE 2>&1
 

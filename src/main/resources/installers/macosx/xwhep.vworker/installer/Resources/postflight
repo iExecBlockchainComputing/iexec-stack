@@ -61,11 +61,6 @@ SUDOERSD="${SUDOERS}.d"
 XWHEPSUDOERS="${SUDOERSD}/99-xwhep"
 SUDOERSFILE=${SUDOERS}
 
-if [ -d ${SUDOERSD} ] ; then
-    SUDOERSFILE=${XWHEPSUDOERS}
-    touch ${SUDOERSFILE}
-fi
-
 SUDOERSENTRY="${SYSLOGIN} ALL=NOPASSWD: ${XWCREATEVDI}"
 SUDOERSENTRY2="${SYSLOGIN} ALL=NOPASSWD: ${CREATEVDI}"
 SUDOERSENTRY3="${SYSLOGIN} ALL=NOPASSWD: /bin/su"
@@ -76,21 +71,11 @@ DOCKERAPPNAME="docker"
 DOCKERPATH="/usr/local/bin/docker"
 
 
-#clean old version
-[ -d /private/etc/$PROG ] && rm -Rf /private/etc/$PROG
-[ -d /Library/StartupItems/$PROG ] && rm -Rf /Library/StartupItems/$PROG
-dscl . list /users/xtremweb
-if [ $? -eq 0 ]; then
-    ${BINDIR}/rmuser.sh xtremweb >> ${LOGFILE} 2>&1
+if [ -d ${SUDOERSD} ] ; then
+    SUDOERSFILE=${XWHEPSUDOERS}
 fi
-dscl . list /users/xtremwebwrk
-if [ $? -eq 0 ]; then
-    ${BINDIR}/rmuser.sh xtremwebwrk >> ${LOGFILE} 2>&1
-fi
-dscl . list /users/xtremwebsrv
-if [ $? -eq 0 ]; then
-    ${BINDIR}/rmuser.sh xtremwebsrv >> ${LOGFILE} 2>&1
-fi
+
+touch ${SUDOERSFILE}
 
 
 chmod +x ${BINDIR}/*.sh
@@ -164,12 +149,13 @@ SUDOERSEOF
 
         nbCpu=$(system_profiler SPHardwareDataType | grep 'Cores:' | cut -d ':' -f 2)
         nbCpu=$(( nbCpu - 1 ))
-        [ ${nbCpu} -lt 1 ]] && nbCpu=1
+        [ ${nbCpu} -lt 1 ] && nbCpu=1
         i=0
         while [ ${i} -lt ${nbCpu} ] ; do
     		newid=$((newid+1))
             USERLOGIN=${SYSLOGIN}${i}
     		sudo ${BINDIR}/adduser.sh ${USERLOGIN} ${USERLOGIN} $newid staff >> ${LOGFILE} 2>&1
+    		i=$((i+1))
         done
     fi
 else
@@ -178,19 +164,40 @@ else
     exit ${ERRUSER}
 fi
 
+
+SHAREDAPPS=""
+
 #
 # share VirtualBox, if available
 #
-echo "Checking $VBAPPNAME ($VBHL)" >> ${LOGFILE} 2>&1
+echo "Checking ${VBAPPNAME} (${VBHL})" >> ${LOGFILE} 2>&1
 
-if [ -f $VBHL ] ; then
-	echo "$VBAPPNAME found in $VBHL" >> ${LOGFILE} 2>&1
-	echo "sharedapps=$VBAPPNAME,$VBHL" >> ${CONFFILE}
+if [ -f ${VBHL} ] ; then
+	echo "${VBAPPNAME} found in ${VBHL}" >> ${LOGFILE} 2>&1
+	SHAREDAPPS="${VBAPPNAME}"
 else
-	echo "$VBAPPNAME not found in $VBHL" >> ${LOGFILE} 2>&1
+	echo "${VBAPPNAME} not found in ${VBHL}" >> ${LOGFILE} 2>&1
 fi
 
-echo "Checking $VBAPPNAME done" >> ${LOGFILE} 2>&1
+#
+# share Docker, if available
+#
+echo "Checking ${DOCKERAPPNAME} (${DOCKERPATH})" >> ${LOGFILE} 2>&1
+
+if [ -f ${DOCKERAPPNAME} ] ; then
+	echo "${DOCKERAPPNAME} found in ${DOCKERPATH}" >> ${LOGFILE} 2>&1
+	if [ -z ${SHAREDAPPS} ] ; then
+	    SHAREDAPPS=${DOCKERAPPNAME}
+	else
+	    SHAREDAPPS="${SHAREDAPPS},${DOCKERAPPNAME}"
+	fi
+else
+	echo "${DOCKERAPPNAME} not found in ${DOCKERPATH}" >> ${LOGFILE} 2>&1
+fi
+echo "SHAREDAPPS=${SHAREDAPPS}" >> ${LOGFILE} 2>&1
+
+[ -z ${SHAREDAPPS} ] || echo "SHAREDAPPS=${SHAREDAPPS}" >> $CONFILE
+
 
 chmod +x /usr/local/bin/$PROG >> ${LOGFILE} 2>&1
 

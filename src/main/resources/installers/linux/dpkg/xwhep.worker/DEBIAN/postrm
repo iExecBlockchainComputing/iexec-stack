@@ -56,13 +56,13 @@ rm -Rf $INSTALLDIR >> ${LOG} 2>&1
 
 rm -f ${USRBINXWCREATEVDI} >> ${LOG}  2>&1
 rm -f ${USRLOCALBINCREATEVDI} >> ${LOG}  2>&1
-grep ${SYSLOGIN} ${SUDOERS} >> ${LOG}  2>&1
-if [ $? -eq 0 ] ; then
-	cat ${SUDOERS} | grep -v ${SYSLOGIN} > /tmp/xwsudoers
-	mv -f /tmp/xwsudoers ${SUDOERS}
-	chmod 440 ${SUDOERS}
-	rm -f ${XWHEPSUDOERS} >> ${LOG}  2>&1
-fi
+
+cat ${SUDOERS} | grep -v ${SYSLOGIN} > /tmp/xwsudoers
+mv -f /tmp/xwsudoers ${SUDOERS}
+chmod 440 ${SUDOERS}
+
+rm -f ${XWHEPSUDOERS} >> ${LOG}  2>&1
+
 
 if [ "X${SYSLOGIN}" != "X" ] ; then
     echo "Removing system login to run the middleware ${SYSLOGIN}" >> ${LOG}  2>&1
@@ -74,9 +74,9 @@ if [ "X${SYSLOGIN}" != "X" ] ; then
 
     nbCpu=$(cat /proc/cpuinfo | grep processor | wc -l)
     nbCpu=$(( nbCpu - 1 ))
-    [ $nbCpu -lt 1 ]] && nbCpu=1
+    [ ${nbCpu} -lt 1 ]] && nbCpu=1
     i=0
-    while [ $i -lt $nbCpu ] ; do
+    while [ ${i} -lt ${nbCpu} ] ; do
         USERLOGIN=${SYSLOGIN}${i}
         /usr/sbin/userdel -f ${USERLOGIN} >> ${LOG}  2>&1
         rm -Rf /home/${USERLOGIN} >> ${LOG}  2>&1
