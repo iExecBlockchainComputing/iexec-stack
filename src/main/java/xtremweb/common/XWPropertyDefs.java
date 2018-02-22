@@ -1895,24 +1895,6 @@ public enum XWPropertyDefs {
 		}
 	},
 	/**
-	 * Worker : this contains the OS user account to user to start jobs on worker host
-	 * Is is assumed that one to NBCPU-1 accounts exist
-	 * Property type : String
-	 * Default : ""
-	 * @since 12.2.8
-	 */
-	OSACCOUNT {
-		/**
-		 * This return ""
-		 *
-		 * @return ""
-		 */
-		@Override
-		public String defaultValue() {
-			return "";
-		}
-	},
-	/**
 	 * Worker : this tells to use system tray icon
 	 * <p>
 	 * Property type : boolean

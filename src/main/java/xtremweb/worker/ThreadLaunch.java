@@ -89,20 +89,6 @@ public final class ThreadLaunch extends Thread {
 	private final Vector<ThreadWork> threadWorkPool;
 
 	/**
-	 * This contains the OS account to use to execute jobs
-	 * @since 12.2.8
-	 * @see #maxOsAccounts
-	 */
-	private String osAccount;
-	/**
-	 * This contains the OS account amount
-	 * It is assumed the installer has created one to NBCPU-1 accounts
-	 * e.g. "xwhep0", "xwhep1" etc.
-	 * @since 12.2.8
-	 */
-	private int maxOsAccounts;
-
-	/**
 	 * This is the default constructor
 	 */
 	public ThreadLaunch() throws InterruptedException, InstantiationException {
@@ -121,12 +107,6 @@ public final class ThreadLaunch extends Thread {
 		if (getInstance() == null) {
 			setInstance(this);
 		}
-
-		osAccount = Worker.getConfig().getProperty(XWPropertyDefs.OSACCOUNT);
-		if(osAccount == null) {
-		    osAccount = "";
-        }
-		maxOsAccounts = Worker.getConfig().getInt(XWPropertyDefs.WORKPOOLSIZE);
 	}
 
 	private boolean canRun = true;
@@ -328,20 +308,6 @@ public final class ThreadLaunch extends Thread {
 	 */
 	private void setupActivator() throws InstantiationException {
 		setupActivator(Worker.getConfig().getProperty(XWPropertyDefs.ACTIVATORCLASS));
-	}
-
-	private int osAccountIndex = 0;
-	/**
-	 * This retrieves the next OS account to use
-	 * @see #osAccount
-	 * @since XWHEP 12.2.8
-	 */
-	protected synchronized String getNextOSAccount()  {
-		if(osAccount.length() < 1) {
-			return "";
-		}
-		osAccountIndex = (osAccountIndex++) % maxOsAccounts;
-		return osAccount + osAccountIndex;
 	}
 
 	/**

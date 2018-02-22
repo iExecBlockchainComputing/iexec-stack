@@ -652,8 +652,7 @@ public class ThreadWork extends Thread {
 	/**
 	 * This dispatches native(i.e. binary) and Java jobs
 	 *
-	 * @see #executeJavaJob(ArrayList)
-	 * @see #executeNativeJob(ArrayList)
+	 * @see #executeNativeJob(Collection)
 	 * @return mobile work status : - XWStatus.LONGFILE or - XWStatus.COMPLETED
 	 *         Mar 16th, 2005 : when computing is done, we mark the job as
 	 *         LONGFILE since zipping may be long stopProcess() followed by
@@ -1006,10 +1005,6 @@ public class ThreadWork extends Thread {
 		final String path = appBinPath.getAbsolutePath();
 		ret.append(" " + path);
 		addEnvVar(XWBINPATHNAME, path);
-		final String osAccount = ThreadLaunch.getInstance().getNextOSAccount();
-		if((osAccount != null) && (osAccount.length() > 1)) {
-			ret.insert(0, "sudo su " + osAccount + " ");
-		}
 
 		return ret.toString();
 	}
