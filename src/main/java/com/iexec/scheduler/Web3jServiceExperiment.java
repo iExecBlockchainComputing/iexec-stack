@@ -76,10 +76,8 @@ public class Web3jServiceExperiment {
 
     @PostConstruct
     public void run() throws Exception {
-
-
+        
         init();
-
         createWorkerPool();
         watchCreateWorkerPoolAndSubscribe();
         watchSubscriptionAndCreateWorkOrder();
@@ -87,9 +85,9 @@ public class Web3jServiceExperiment {
         watchWorkOrderAcceptedAndCallForContribution();
         watchCallForContributionAndContribute();
         watchContributeAndRevealConsensus();
+        watchRevealConsensusAndReveal();
+        watchRevealAndFinalizeWork();
 
-        //watchRevealConsensus();
-        //watchReveal();
     }
 
     private void init() throws IOException, CipherException {
@@ -97,7 +95,7 @@ public class Web3jServiceExperiment {
 
         log.info("Loading credentials");
         schedulerCredentials = WalletUtils.loadCredentials(WALLET_PASSWORD, SCHEDULER_WALLET);
-        workerCredentials = WalletUtils.loadCredentials("whatever", WORKER_WALLET);
+        workerCredentials = WalletUtils.loadCredentials(WALLET_PASSWORD, WORKER_WALLET);
 
         log.info("Loading smart contracts");
         iexecHubForScheduler = IexecHub.load(
@@ -107,12 +105,14 @@ public class Web3jServiceExperiment {
     }
 
     private void createWorkerPool() throws Exception {
+        log.info("createWorkerPool");
         String workerPoolName = "myWorkerPool-" + System.currentTimeMillis();
         log.info("SCHEDLR creating workerPool: " + workerPoolName);
         iexecHubForScheduler.createWorkerPool(workerPoolName, BigInteger.ZERO,BigInteger.ZERO,BigInteger.ZERO).send();
     }
 
     private void watchCreateWorkerPoolAndSubscribe() {
+        log.info("watchCreateWorkerPoolAndSubscribe");
         iexecHubForScheduler.createWorkerPoolEventObservable(START, END)
                 .subscribe(createWorkerPoolEvent ->{
                             //if (createWorkerPoolEvent.name.equals(workerPoolName)){
@@ -140,13 +140,14 @@ public class Web3jServiceExperiment {
     }
 
     private void watchPolicyChangeAndSubscribe(AuthorizedList authorizedList) {
+        log.info("watchPolicyChangeAndSubscribe");
         authorizedList.policyChangeEventObservable(START, END)
                 .subscribe(policyChangeEvent ->{
                     log.info("SCHEDLR received policyChangeEvent on workerpool from "+ policyChangeEvent.oldPolicy + " to " + policyChangeEvent.newPolicy);
 
                     try {
                         log.info("WORKER1 subscribing to workerPool");
-                        log.info(workerPoolForScheduler.subscribeToPool().send().getGasUsed().toString());
+                        log.info(workerPoolForWorker.subscribeToPool().send().getGasUsed().toString());
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -155,13 +156,14 @@ public class Web3jServiceExperiment {
     }
 
     private void watchSubscriptionAndCreateWorkOrder() {
+        log.info("watchSubscriptionAndCreateWorkOrder");
         iexecHubForWorker.workerPoolSubscriptionEventObservable(START, END)
                 .subscribe(workerPoolSubscriptionEvent ->{
                     //if (workerPoolSubscriptionEvent.workerPool.equals(workerPoolAddress)){
                     log.warn("WORKER1 received workerPoolSubscriptionEvent " + workerPoolSubscriptionEvent.worker);
                     log.info("CLDUSER creating workOrder");
                     try {
-                        iexecHubForScheduler.createWorkOrder(workerPoolAddress, appAddress, "0x0000000000000000000000000000000000000000", "noTaskParam", BigInteger.ZERO, BigInteger.ONE, false, iExecCloudUser).send();
+                        iexecHubForScheduler.createWorkOrder(workerPoolAddress, appAddress, "0", "noTaskParam", BigInteger.ZERO, BigInteger.ONE, false, iExecCloudUser).send();
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -170,6 +172,7 @@ public class Web3jServiceExperiment {
     }
 
     private void watchWorkOrderAndAcceptWorkOrder() {
+        log.info("watchWorkOrderAndAcceptWorkOrder");
         iexecHubForScheduler.workOrderEventObservable(START, END)
                 .subscribe(workOrderEvent ->{
                     //if (taskReceivedEvent.taskID.equals(taskRequestEvent.taskID)){
@@ -187,6 +190,8 @@ public class Web3jServiceExperiment {
     }
 
     private void watchWorkOrderAcceptedAndCallForContribution() {
+        log.info("watchWorkOrderAcceptedAndCallForContribution" +workerPoolForScheduler);
+
         workerPoolForScheduler.workOrderAcceptedEventObservable(START, END)
                 .subscribe(workOrderAcceptedEvent ->{
                     //if (taskAcceptedEvent.taskID.equals(taskRequestEvent.taskID)){
@@ -194,9 +199,7 @@ public class Web3jServiceExperiment {
                     log.warn("SCHEDLR choosing a random worker");
                     log.warn("SCHEDLR calling pool for contribution of worker1 " + WORKER_ADDRESS);
                     try {
-                        log.info(workOrderAcceptedEvent.woid);
-                        log.info(WORKER_ADDRESS);
-                        log.info(workerPoolForScheduler.callForContribution(workOrderAcceptedEvent.woid, WORKER_ADDRESS, "0x0000000000000000000000000000000000000000").send().getGasUsed().toString());
+                        log.info(workerPoolForScheduler.callForContribution(workOrderAcceptedEvent.woid, WORKER_ADDRESS, "0").send().getGasUsed().toString());
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -205,6 +208,7 @@ public class Web3jServiceExperiment {
     }
 
     private void watchCallForContributionAndContribute() {
+        log.info("watchCallForContributionAndContribute");
         workerPoolForWorker.callForContributionEventObservable(START, END)
                 .subscribe(callForContributionEvent ->{
                     log.warn("WORKER1 received callForContributionEvent for worker "+ callForContributionEvent.worker);
@@ -212,16 +216,18 @@ public class Web3jServiceExperiment {
                     log.warn("WORKER1 executing work");
                     log.warn("WORKER1 contributing");
 
-                    log.info("WORKER1 found hashByteResult " + Hash.sha3String(Hash.sha3(WORKER_RESULT)));
-                    log.info("WORKER1 found signByteResult " + signByteResult(Hash.sha3String(WORKER_RESULT), WORKER_ADDRESS));
+                    String hashResult = hashResult(WORKER_RESULT);
+                    String signResult = signByteResult(WORKER_RESULT, WORKER_ADDRESS);
 
-                    byte[] hashResult = Numeric.hexStringToByteArray(Hash.sha3String(Hash.sha3(WORKER_RESULT)));
-                    byte[] hashAdress = Numeric.hexStringToByteArray(signByteResult(Hash.sha3String(WORKER_RESULT), WORKER_ADDRESS));
+                    log.info("WORKER1 found hashResult " + hashResult);
+                    log.info("WORKER1 found signResult " + signResult);
+
+                    byte[] hashResultBytes = Numeric.hexStringToByteArray(hashResult);
+                    byte[] hashSignBytes = Numeric.hexStringToByteArray(signResult);
                     byte[] r = Numeric.hexStringToByteArray(asciiToHex("0"));
-                    //byte[] s = Numeric.hexStringToByteArray(asciiToHex());
 
                     try {
-                        workerPoolForWorker.contribute(callForContributionEvent.woid, hashResult , hashAdress, BigInteger.ZERO, r, r).send();
+                        workerPoolForWorker.contribute(callForContributionEvent.woid, hashResultBytes , hashSignBytes, BigInteger.ZERO, r, r).send();
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -230,55 +236,64 @@ public class Web3jServiceExperiment {
     }
 
     private void watchContributeAndRevealConsensus() {
+        log.info("watchContributeAndRevealConsensus");
         workerPoolForScheduler.contributeEventObservable(START, END)
                 .subscribe(contributeEvent ->{
                     log.warn("SCHEDLR received contributeEvent " + contributeEvent.woid);
                     log.warn("SCHEDLR checking if consensus reached?");
                     log.warn("SCHEDLR found consensus reached");
                     log.warn("SCHEDLR reavealing consensus");
+                    byte[] consensus = Numeric.hexStringToByteArray(hashResult(WORKER_RESULT));
                     try {
-                        workerPoolForScheduler.revealConsensus(contributeEvent.woid,  "consensus".getBytes()).send();
+                        workerPoolForScheduler.revealConsensus(contributeEvent.woid,  consensus).send();
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                 });
     }
 
-    private void watchReveal() {
+    private void watchRevealConsensusAndReveal() {
+        log.info("watchRevealConsensusAndReveal");
+        workerPoolForWorker.revealConsensusEventObservable(START, END)
+                .subscribe(revealConsensusEvent ->{
+                    log.warn("WORKER1 received revealConsensusEvent "+ revealConsensusEvent.woid);
+                    log.warn("WORKER1 reavealing WORKER_RESULT");
+                    byte[] result = Numeric.hexStringToByteArray(Hash.sha3String(WORKER_RESULT));
+                    workerPoolForWorker.reveal(revealConsensusEvent.woid,  result);
+                });
+    }
+
+    private void watchRevealAndFinalizeWork() {
+        log.info("watchRevealAndFinalizeWork");
         workerPoolForScheduler.revealEventObservable(START, END)
                 .subscribe(revealEvent ->{
                     log.warn("SCHEDLR received revealEvent ");
                     log.warn("SCHEDLR checking if reveal timeout reached?");
                     log.warn("SCHEDLR found reveal timeout reached");
                     log.warn("SCHEDLR finalazing task");
-                    workerPoolForWorker.finalizedWork(revealEvent.woid,  "stdout", "stderr","http://uri");
-                });
-    }
-
-    private void watchRevealConsensus() {
-        workerPoolForWorker.revealConsensusEventObservable(START, END)
-                .subscribe(revealConsensusEvent ->{
-                    log.warn("WORKER1 received revealConsensusEvent"+ revealConsensusEvent.woid);
-                    log.warn("WORKER1 reavealing WORKER_RESULT");
-                    workerPoolForWorker.reveal(revealConsensusEvent.woid,  "WORKER_RESULT".getBytes());
+                    workerPoolForScheduler.finalizedWork(revealEvent.woid,  "aStdout", "aStderr","anUri");
                 });
     }
 
 
-    private String signByteResult(String resultHash, String address) {
+
+
+    private String signByteResult(String result, String address) {
+        String resultHash = Hash.sha3String(result);
         String addressHash = Hash.sha3(address);
         String xor = "0x";
-        log.info(resultHash);
-        log.info(addressHash);
         for (int i = 2; i <66 ; i++) {
             Integer temp = Integer.parseInt(String.valueOf(resultHash.charAt(i)), 16) ^ Integer.parseInt(String.valueOf(addressHash.charAt(i)), 16);
             xor+= Integer.toHexString(temp);
         }
-        String sign = Hash.sha3(xor.toString());
+        String sign = Hash.sha3(xor);
         log.info("xor "+xor);
         log.info("sign "+sign);
-
         return sign;
+    }
+
+    private String hashResult(String result) {
+        return Hash.sha3(Hash.sha3String(result));
     }
 
     private String web3Sha3(String preimage) throws IOException {
