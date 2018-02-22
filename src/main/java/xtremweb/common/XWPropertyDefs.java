@@ -1885,7 +1885,7 @@ public enum XWPropertyDefs {
 	 */
 	TCPACTIVATORFEEDBACK {
 		/**
-		 * This retrieves the String representation of the default value
+		 * This returns "false"
 		 *
 		 * @return "false"
 		 */

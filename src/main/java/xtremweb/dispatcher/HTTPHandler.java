@@ -901,6 +901,7 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 
 		request = _request;
 		response = _response;
+		response.setHeader("Access-Control-Allow-Origin", "*");
 
 		String reqUri = baseRequest.getRequestURI();
 

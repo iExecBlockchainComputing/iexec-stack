@@ -25,6 +25,10 @@ package xtremweb.common;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.security.AccessControlException;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * This defines XtremWeb application type.
@@ -54,6 +58,7 @@ public enum AppTypeEnum {
 	 * @since 11.0.0
 	 */
 	DOCKER {
+
 		@Override
 		public String getPathName() {
 			return dockerpaths[OSEnum.getOs().ordinal()];
@@ -80,23 +85,6 @@ public enum AppTypeEnum {
 			throw new FileNotFoundException(NOBINPATH + this);
 		}
 		/**
-		 * This retrieves application command line arguments
-		 * @param defaultcmdline is the docker command line found from config file; 
-		 * "setxwpwd" are automatically replaced by the value of the parameter pwd
-		 * @param pwd is the current working directory to to set in place of setxwpwd, if any
-		 * @return an empty string
-		 * @since 12.1.0
-		 */
-		//		@Override
-		//		public String getCommandLineArgs(final String defaultcmdline, final String pwd)  {
-		//			final String setxwpwd = "setxwpwd";
-		//			final Logger logger = new Logger(this);
-		//			logger.setLoggerLevel(LoggerLevel.valueOf(System.getProperty(XWPropertyDefs.LOGGERLEVEL.toString())));
-		//			logger.debug("getCommandLineArgs(" + defaultcmdline + "," + pwd + ") = defaultcmdline.replaceAll(" + setxwpwd + "," + pwd + ")" + defaultcmdline.replaceAll(setxwpwd, pwd));
-		//			return defaultcmdline.replaceAll(setxwpwd, pwd);
-		//		}
-		//	},
-		/**
 		 * This retrieves application default command line arguments
 		 * @return "run"
 		 * @since 12.1.0
@@ -106,13 +94,35 @@ public enum AppTypeEnum {
 			return " run --rm ";
 		}
 		/**
-		 * This retrieves command line arguments to mount PWD volume
-		 * @param pwd represents the path of the present working directory
+		 * This retrieves command line arguments to mount a volume
+		 * @param pwd represents the path to be mounted as volume
+         * @return " -v " + pwd.getAbsolutePath() + ":" + pwd.getAbsolutePath()
 		 * @since 12.1.0
 		 */
 		@Override
 		public String getMountVolumeCommandLine(final File pwd)  {
-			return  " --mount type=bind,src=" + pwd.getAbsolutePath() + ",dst=" + pwd.getAbsolutePath();
+			return  " -v " + pwd.getAbsolutePath() + ":" + pwd.getAbsolutePath();
+		}
+        /**
+         * This retrieves command line arguments to use PWD
+         * @param pwd represents the path of the present working directory
+         * @return " -w " + pwd.getAbsolutePath()
+         * @since 12.2.8
+         */
+        @Override
+        public String getDefaultWorkingDirectoryCommandLine(final File pwd) {
+            return  " -w " + pwd.getAbsolutePath();
+        }
+		/**
+         * This calls checkParams(params, dockerForbiddenParamsSet)
+         * @see AppTypeEnum#checkParams(String)
+         * @see #checkParams(String, Set)
+         * @see #dockerForbiddenParamsSet
+		 * @since 12.2.8
+		 */
+		@Override
+		public void checkParams (final String params) throws AccessControlException {
+            checkParams(params, dockerForbiddenParamsSet);
 		}
 	},
 	/**
@@ -146,19 +156,30 @@ public enum AppTypeEnum {
 			}
 			throw new FileNotFoundException(NOBINPATH + this);
 		}
+        /**
+         * This calls checkParams(params, vboxForbiddenParamsSet)
+         * @see AppTypeEnum#checkParams(String)
+         * @see #checkParams(String, Set)
+         * @see #vboxForbiddenParamsSet
+         * @since 12.2.8
+         */
+        @Override
+        public void checkParams (final String params) throws AccessControlException {
+            checkParams(params, vboxForbiddenParamsSet);
+        }
 	};
 
 	public static final AppTypeEnum LAST = VIRTUALBOX;
 	public static final int SIZE = LAST.ordinal() + 1;
 
 	/**
-	 * This array stores default docker pathnames (one entry per OS). Each
-	 * entry is a semicolon separated paths list
+	 * This contains default docker pathnames (one entry per OS).
+	 * Each entry is a semicolon separated paths list
 	 * paths
 	 *
 	 * @since 11.0.0
 	 */
-	private static String[] dockerpaths = { null, // NONE
+	private static final String[] dockerpaths = { null, // NONE
 			"/usr/bin/docker", // LINUX
 			"c:\\Program Files\\Docker\\Docker\\resources\\bin\\docker.exe", // WIN32
 			"/usr/local/bin/docker", // MACOSX
@@ -166,13 +187,84 @@ public enum AppTypeEnum {
 			null // JAVA
 	};
 	/**
+	 * This contains forbidden Docker command line parameters
+	 *
+	 * @since 12.2.8
+	 */
+	private static final String[] dockerForbiddenParams = {
+			"--add-host",
+			"--cap-add",
+			"--cgroup-parent",
+			"--cidfile",
+			"--cpu-count",
+			"--cpu-percent",
+			"--cpu-shares",
+			"-c",
+			"--cpus",
+			"-v",
+			"--volume",
+			"--volume-driver",
+			"--volumes-from",
+			"--privileged",
+			"--entrypoint",
+			"--device",
+			"-i",
+			"-ti",
+			"-t",
+			"--tty"
+	};
+    /**
+     * This contains forbidden Docker command line parameters set
+     *
+     * @since 12.2.8
+     */
+    public static final Set<String> dockerForbiddenParamsSet = new HashSet<String>(Arrays.asList(dockerForbiddenParams));
+    /**
+     * This contains forbidden VirtualBox command line parameters
+     *
+     * @since 12.2.8
+     */
+    private static final String[] vboxForbiddenParams = {
+            "-s",
+            "-startvm",
+            "--startvm",
+            "-v",
+            "-vrde",
+            "--vrde",
+            "-e",
+            "-vrdeproperty",
+            "--vrdeproperty",
+            "--settingspw",
+            "--settingspwfile",
+            "-start-paused",
+            "--start-paused",
+            "-c",
+            "-capture",
+            "--capture",
+            "-w",
+            "--width",
+            "-h",
+            "--height",
+            "-r",
+            "--bitrate",
+            "-f",
+            "--filename"
+};
+    /**
+     * This contains forbidden VirtualBox command line parameters set
+     *
+     * @since 12.2.8
+     */
+    public static final Set<String> vboxForbiddenParamsSet = new HashSet<String>(Arrays.asList(vboxForbiddenParams));
+
+	/**
 	 * This array stores default VirtualBox pathnames (one entry per OS). Each
 	 * entry is a semicolon separated paths list Defaults are Oracle VirtualBox
 	 * paths
 	 *
 	 * @since 8.0.0 (FG)
 	 */
-	private static String[] virtualboxpaths = { null, // NONE
+	private static final String[] virtualboxpaths = { null, // NONE
 			"/usr/bin/VBoxHeadless", // LINUX
 			"c:\\Program Files\\Oracle\\VirtualBox\\VBoxHeadless.exe;c:\\Program Files\\VirtualBox\\VBoxHeadless.exe;c:\\Program Files (x86)\\Oracle\\VirtualBox\\VBoxHeadless.exe;c:\\Program Files (x86)\\VirtualBox\\VBoxHeadless.exe", // WIN32
 			"/Applications/VirtualBox.app/Contents/MacOS/VBoxHeadless", // MACOSX
@@ -212,9 +304,6 @@ public enum AppTypeEnum {
 
 	/**
 	 * This retrieves application default pathname
-	 *
-	 * @param t
-	 *            is the application type to retrieve path for
 	 * @return application binary path if available
 	 * @throws FileNotFoundException
 	 *             if no binary path available for the provided application type
@@ -226,8 +315,35 @@ public enum AppTypeEnum {
 	}
 
 	/**
+     * This checks command line parameters to avoid forbidden parameters.
+	 * This does nor throws nothing; this should be overridden
+	 * @param params
+	 *            is a String containing command line parameters
+     * @throws AccessControlException if params contains at least one forbidden parameter
+	 * @since 12.2.8
+	 */
+	public void checkParams (final String params) throws AccessControlException {
+	}
+    /**
+     * This checks command line parameters to avoid forbidden parameters.
+     * This does nor throws nothing; should be overridden
+     * @param params
+     *            is a String containing command line parameters
+     * @param paramSet is the set of forbidden params
+     * @throws AccessControlException if params contains at least one forbidden parameter
+     * @since 12.2.8
+     */
+    final protected void checkParams (final String params, final Set<String> paramSet) throws AccessControlException {
+        for(final String p : paramSet){
+            if(params.indexOf(p) >= 0) {
+                throw new AccessControlException("parameter forbidden : " + p);
+            }
+        }
+    }
+
+	/**
 	 * This retrieves application default pathname
-	 *
+     * If not overridden, this always throws a FileNotFoundException
 	 * @return application binary path for the current OS
 	 * @throws FileNotFoundException
 	 *             if no application binary path found for the current OS
@@ -245,15 +361,24 @@ public enum AppTypeEnum {
 	public String getStartCommandLineArgs() {
 		return "";
 	}
-	/**
-	 * This retrieves command line arguments to mount PWD volume
-	 * @param pwd represents the path of the present working directory
-	 * @return an empty string
-	 * @since 12.1.0
-	 */
-	public String getMountVolumeCommandLine(final File pwd) {
-		return "";
-	}
+    /**
+     * This retrieves command line arguments to mount a volume
+     * @param pwd represents the path to mount; this should be overridden
+     * @return an empty string
+     * @since 12.1.0
+     */
+    public String getMountVolumeCommandLine(final File pwd) {
+        return "";
+    }
+    /**
+     * This retrieves command line arguments to use PWD; this should be overridden
+     * @param pwd represents the path of the present working directory
+     * @return an empty string
+     * @since 12.2.8
+     */
+    public String getDefaultWorkingDirectoryCommandLine(final File pwd) {
+        return "";
+    }
 	/**
 	 * This dumps path
 	 *

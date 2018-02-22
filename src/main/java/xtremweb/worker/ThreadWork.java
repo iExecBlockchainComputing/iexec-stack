@@ -652,8 +652,7 @@ public class ThreadWork extends Thread {
 	/**
 	 * This dispatches native(i.e. binary) and Java jobs
 	 *
-	 * @see #executeJavaJob(ArrayList)
-	 * @see #executeNativeJob(ArrayList)
+	 * @see #executeNativeJob(Collection)
 	 * @return mobile work status : - XWStatus.LONGFILE or - XWStatus.COMPLETED
 	 *         Mar 16th, 2005 : when computing is done, we mark the job as
 	 *         LONGFILE since zipping may be long stopProcess() followed by
@@ -776,7 +775,7 @@ public class ThreadWork extends Thread {
 		final AppInterface app = (AppInterface) CommManager.getInstance().commClient().get(workApp, false);
 
 		if (app == null) {
-			throw new IOException("can find application " + workApp);
+			throw new IOException("can't find application " + workApp);
 		}
 
 		// retrieve work env vars, if any
@@ -881,7 +880,7 @@ public class ThreadWork extends Thread {
 		final AppInterface app = (AppInterface) CommManager.getInstance().commClient().get(workApp, false);
 
 		if (app == null) {
-			throw new IOException("can find application " + workApp);
+			throw new IOException("can't find application " + workApp);
 		}
 
 		final URI scriptUri = app.getUnloadScript(Worker.getConfig().getHost().getOs());
@@ -928,7 +927,7 @@ public class ThreadWork extends Thread {
 		final AppInterface app = (AppInterface) CommManager.getInstance().commClient().get(workApp, false);
 
 		if (app == null) {
-			throw new IOException("can find application " + workApp);
+			throw new IOException("can't find application " + workApp);
 		}
 
 		final AppTypeEnum at = app.getType();
@@ -952,7 +951,7 @@ public class ThreadWork extends Thread {
 			final URI binUri = app.getBinary(Worker.getConfig().getHost().getCpu(),
 					Worker.getConfig().getHost().getOs());
 			if (binUri == null) {
-				throw new IOException("can find application " + workApp);
+				throw new IOException("can't find application " + workApp);
 			}
 
 			final DataInterface bin = (DataInterface) CommManager.getInstance().commClient().get(binUri);
@@ -978,10 +977,12 @@ public class ThreadWork extends Thread {
 						final AppTypeEnum appTypeEnum = AppTypeEnum.valueOf(sandboxAttr);
 						sbArgs.append(appTypeEnum.getStartCommandLineArgs());
 						sbArgs.append(appTypeEnum.getMountVolumeCommandLine(currentWork.getScratchDir()));
-						sbArgs.append(appTypeEnum.getMountVolumeCommandLine(appBinPath));
-						sbArgs.append(" " + Worker.getConfig().getProperty(XWPropertyDefs.SANDBOXSTARTARGS));
+                        sbArgs.append(appTypeEnum.getMountVolumeCommandLine(appBinPath));
+                        sbArgs.append(appTypeEnum.getDefaultWorkingDirectoryCommandLine(currentWork.getScratchDir()));
 					} catch(final Exception e) {
+					    logger.exception(e);
 					}
+                    sbArgs.append(" " + Worker.getConfig().getProperty(XWPropertyDefs.SANDBOXSTARTARGS));
 				}
 			}
 		}
@@ -1009,7 +1010,35 @@ public class ThreadWork extends Thread {
 	}
 
 	/**
-	 * This retrieves the current process command line
+	 * This tests if work command line complies to app
+	 * @see xtremweb.common.AppTypeEnum#checkParams(String)
+	 * @since 12.2.8
+	 */
+	private void checkAppParams(final String params)
+			throws AccessControlException,
+			IOException,
+			ClassNotFoundException,
+			SAXException,
+			InvalidKeyException,
+			URISyntaxException {
+
+		final UID workApp = currentWork.getApplication();
+
+		if (workApp == null) {
+			throw new IOException(WARNNOAPPLI);
+		}
+
+		final AppInterface app = (AppInterface) CommManager.getInstance().commClient().get(workApp, false);
+
+		if (app == null) {
+			throw new IOException("application not found " + workApp);
+		}
+
+		app.checkParams(params);
+	}
+
+	/**
+	 * This retrieves the current work command line
 	 *
 	 * @throws AccessControlException
 	 * @throws InvalidKeyException
@@ -1024,6 +1053,9 @@ public class ThreadWork extends Thread {
 		ret = XWTools.split(binPath);
 
 		final String wcmdline = currentWork.getCmdLine();
+
+		checkAppParams(wcmdline);
+
 		if (wcmdline != null) {
 			final Collection<String> wcmdvector = XWTools.split(wcmdline);
 			if (ret == null) {

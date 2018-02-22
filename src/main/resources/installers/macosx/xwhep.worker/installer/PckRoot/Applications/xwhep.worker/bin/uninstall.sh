@@ -40,21 +40,14 @@ LOGFILENAME=$PROG-$HOST.log
 LOGFILE=/var/log/$LOGFILENAME
 touch $LOGFILE
 
+SUDOERS=/etc/sudoers
+SUDOERSD="${SUDOERS}.d"
+XWHEPSUDOERS="${SUDOERSD}/99-xwhep"
+
+
 echo "*****************************" >> $LOGFILE 2>&1
 echo "* [`date`] [$PROG] INFO : uninstalling $PROG"  >> $LOGFILE 2>&1
 
-
-# next are  needed because previous versions used different directory
-if [ -d /Library/StartupItems/$PROG ] ; then
-    PKG=$PROG
-fi
-
-sudo /private/etc/$PKG/bin/rmuser.sh xtremweb >> $LOGFILE 2>&1
-sudo /private/etc/$PKG/bin/rmuser.sh xtremwebwrk >> $LOGFILE 2>&1
-sudo /private/etc/$PKG/bin/rmuser.sh xtremwebsrv >> $LOGFILE 2>&1
-
-
-# current version
 
 # Mac OS prior to 10.4
 if [ -d /Library/StartupItems/$PKG ] ; then
@@ -66,6 +59,25 @@ if [ -f /Library/LaunchDaemons/$LAUNCHNAME.plist >> $LOGFILE 2>&1 ] ; then
     launchctl unload /Library/LaunchDaemons/$LAUNCHNAME.plist >> $LOGFILE 2>&1
 fi
 
+# since 12.2.8, we create as many users as available CPU in a single group
+# see xtremweb.common.XWPropertyDefs#OSACCOUNT
+# see xtremweb.Woker.ThreadLaunch#getNextOsAccount()
+# see xtremweb.Woker.ThreaWork#getBinPath()
+
+nbCpu=$(system_profiler SPHardwareDataType | grep 'Cores:' | cut -d ':' -f 2)
+nbCpu=$(( nbCpu - 1 ))
+[ ${nbCpu} -lt 1 ] && nbCpu=1
+i=0
+while [ ${i} -lt ${nbCpu} ] ; do
+    USERLOGIN=${SYSLOGIN}${i}
+    sudo ${BINDIR}/rmuser.sh ${USERLOGIN} >> ${LOGFILE} 2>&1
+done
+
+cat ${SUDOERS} | grep -v ${SYSLOGIN} > /tmp/xwsudoers
+mv -f /tmp/xwsudoers ${SUDOERS}
+chmod 440 ${SUDOERS}
+
+rm -f ${XWHEPSUDOERS} >> ${LOG}  2>&1
 
 sudo /private/etc/$PKG/bin/rmuser.sh $SYSLOGIN >> $LOGFILE 2>&1
 

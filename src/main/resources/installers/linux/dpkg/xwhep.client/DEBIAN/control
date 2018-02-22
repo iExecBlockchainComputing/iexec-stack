@@ -3,8 +3,8 @@ Version: @XWVERSION@-1
 Section: desktopgrid
 Priority: optional
 Architecture: all
-Depends:
-Suggests:
+Depends: openjdk-8-jre-headless
+Suggests: docker-ce
 Conflicts:
 Replaces:
 Installed-Size:

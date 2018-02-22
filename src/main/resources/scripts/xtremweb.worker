@@ -47,9 +47,9 @@
 #
 
 # chkconfig: 345 99 99
-# processname: /opt/XWHEP-1.0.25/bin/xtremweb.worker
-# config: /opt/XWHEP-1.0.25/conf/xtremweb.worker.conf
-# description: XWHEP DesktopGrid computing element
+# processname: /opt/xwhep-worker-@XWVERSION@/bin/xtremweb.worker
+# config: /opt/xwhep-worker-@XWVERSION@/conf/xtremweb.worker.conf
+# description: XWHEP Volunteer Cloud resource manager
 
 #
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>

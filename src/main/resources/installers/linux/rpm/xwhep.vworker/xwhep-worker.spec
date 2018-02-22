@@ -66,14 +66,21 @@ BuildRoot: %{_builddir}/%{name}-%{version}
 %define LOG /var/log/xwhep-worker.log
 %define VBHL /usr/bin/vboxheadless
 %define VBAPPNAME virtualbox
+%define DOCKERAPPNAME docker
+%define DOCKERPATH /usr/local/bin/docker
 %define USRBIN /usr/bin
 %define USRLOCALBIN /usr/local/bin
 %define USRBINXWCREATEVDI %{USRBIN}/xwcreatevdi
 %define USRLOCALBINCREATEVDI %{USRLOCALBIN}/createvdi
 %define CREATEVDI %{XW_BINDIR}/createvdi
 %define SUDOERS /etc/sudoers
+%define SUDOERSD %{SUDOERS}.d
+%define XWHEPSUDOERS %{SUDOERSD}/99-xwhep
+%define SUDOERSFILE %{SUDOERS}
+
 %define SUDOERSENTRY "%{SYSLOGIN} ALL=NOPASSWD: %{USRBINXWCREATEVDI}"
 %define SUDOERSENTRY2 "%{SYSLOGIN} ALL=NOPASSWD: %{USRLOCALBINCREATEVDI}"
+%define SUDOERSENTRY3 "%{SYSLOGIN} ALL=NOPASSWD: /bin/su"
 
 %description
 XWHEP is a Distributed Computing Plateform. It allows to set up
@@ -130,10 +137,17 @@ ln -s %{CREATEVDI} %{USRBINXWCREATEVDI} >> %{LOG}  2>&1
 rm -f %{USRLOCALBINCREATEVDI} >> %{LOG}  2>&1 
 ln -s %{CREATEVDI} %{USRLOCALBINCREATEVDI} >> %{LOG}  2>&1 
 
-if [ -f %{SUDOERS} ] ; then
+if [ -d %{SUDOERSD} ] ; then
+    SUDOERSFILE=%{XWHEPSUDOERS}
+    touch %{SUDOERSFILE}
+fi
+
+if [ -f %{SUDOERSFILE} ] ; then
 	cp -f %{SUDOERS} /etc/sudoers-without-xwhep
-	echo %{SUDOERSENTRY} >> %{SUDOERS}
-	chmod 440 %{SUDOERS}
+	echo %{SUDOERSENTRY} >> %{SUDOERSFILE}
+	echo %{SUDOERSENTRY2} >> %{SUDOERSFILE}
+	echo %{SUDOERSENTRY3} >> %{SUDOERSFILE}
+	chmod 440 %{SUDOERSFILE}
 fi
 
 rm -Rf /tmp/xtremweb.worker* >> %{LOG}  2>&1 
@@ -144,11 +158,30 @@ rm -f /tmp/XWUtil.jni* >> %{LOG}  2>&1
 rm -Rf /tmp/XW.WORKER* >> %{LOG}  2>&1 
 
 if [ "X%{SYSLOGIN}" != "X" ] ; then 
-    /usr/sbin/groupadd %{SYSLOGIN} >> %{LOG}  2>&1 
+    echo "Creating system login to run the middleware $SYSLOGIN" >> $LOG  2>&1
+    echo "(so that xwhep does not run with privileged account)" >> $LOG  2>&1
+
+    /usr/sbin/groupadd %{SYSLOGIN} >> %{LOG}  2>&1
     /usr/sbin/useradd %{SYSLOGIN} -d /home/%{SYSLOGIN} -s /bin/bash -g %{SYSLOGIN} -m >> %{LOG}  2>&1 
     chown -R %{SYSLOGIN}.%{SYSLOGIN} %{XW_INSTALLDIR} >> %{LOG}  2>&1 
     chown -R %{SYSLOGIN}.%{SYSLOGIN} %{USRBINXWCREATEVDI} >> %{LOG}  2>&1 
-    chown -R %{SYSLOGIN}.%{SYSLOGIN} %{USRLOCALBINCREATEVDI} >> %{LOG}  2>&1 
+    chown -R %{SYSLOGIN}.%{SYSLOGIN} %{USRLOCALBINCREATEVDI} >> %{LOG}  2>&1
+
+    # since 12.2.8, we create as many users as available CPU in a single group
+    # see xtremweb.common.XWPropertyDefs#OSACCOUNT
+    # see xtremweb.Woker.ThreadLaunch#getNextOsAccount()
+    # see xtremweb.Woker.ThreaWork#getBinPath()
+    nbCpu=$(cat /proc/cpuinfo | grep processor | wc -l)
+    nbCpu=$(( nbCpu - 1 ))
+    [ $nbCpu -lt 1 ]] && nbCpu=1
+    i=0
+    while [ $i -lt $nbCpu ] ; do
+        USERLOGIN=%{SYSLOGIN}%{i}
+        mkdir -p /home/%{USERLOGIN} >> %{LOG}  2>&1
+        /usr/sbin/groupadd %{USERLOGIN} >> %{LOG}  2>&1
+        /usr/sbin/useradd %{USERLOGIN} d /home/$USERLOGIN -s /bin/bash -g $GROUPE -m >> %{LOG}  2>&1
+    done
+
 else
     echo "[`date`] [%{name}] SYSLOGIN variable is not set; this package will run as root; this is not a good idea" >> %{LOG} 2>&1
 fi
@@ -228,6 +261,33 @@ if [ $1 = 0 ] ; then
 	rm -f /tmp/XwTracer.jni* >> %{LOG}  2>&1 
 	rm -f /tmp/XWUtil.jni* >> %{LOG}  2>&1 
 	rm -Rf /tmp/XW.WORKER* >> %{LOG}  2>&1 
+
+    if [ "X%{SYSLOGIN}" != "X" ] ; then
+        echo "Removing system login to run the middleware %{SYSLOGIN}" >> %{LOG} 2>&1
+
+    # since 12.2.8, we create as many users as available CPU in a single group
+    # see xtremweb.common.XWPropertyDefs#OSACCOUNT
+    # see xtremweb.Woker.ThreadLaunch#getNextOsAccount()
+    # see xtremweb.Woker.ThreaWork#getBinPath()
+
+        nbCpu=$(cat /proc/cpuinfo | grep processor | wc -l)
+        nbCpu=$(( nbCpu - 1 ))
+        [ %{nbCpu} -lt 1 ]] && nbCpu=1
+        i=0
+        while [ %{i} -lt %{nbCpu} ] ; do
+            USERLOGIN=%{SYSLOGIN}%{i}
+            /usr/sbin/userdel -f %{USERLOGIN} >> %{LOG} 2>&1
+            rm -Rf /home/%{USERLOGIN} >> %{LOG} 2>&1
+        done
+
+        /usr/sbin/userdel -f %{SYSLOGIN} >> %{LOG} 2>&1
+        /usr/sbin/groupdel %{SYSLOGIN} >> %{LOG} 2>&1
+        rm -Rf /home/%{SYSLOGIN} >> %{LOG} 2>&1
+
+    else
+        echo "SYSLOGIN variable is not set; this package has run as root; this is not a good idea" >> $LOG  2>&1
+    fi
+
 else
 	echo "[`date`] [%{name}] RPM preun does nothing" >> %{LOG} 2>&1
 fi
