@@ -58,6 +58,7 @@ public enum AppTypeEnum {
 	 * @since 11.0.0
 	 */
 	DOCKER {
+
 		@Override
 		public String getPathName() {
 			return dockerpaths[OSEnum.getOs().ordinal()];
@@ -93,14 +94,25 @@ public enum AppTypeEnum {
 			return " run --rm ";
 		}
 		/**
-		 * This retrieves command line arguments to mount PWD volume
-		 * @param pwd represents the path of the present working directory
+		 * This retrieves command line arguments to mount a volume
+		 * @param pwd represents the path to be mounted as volume
+         * @return " -v " + pwd.getAbsolutePath() + ":" + pwd.getAbsolutePath()
 		 * @since 12.1.0
 		 */
 		@Override
 		public String getMountVolumeCommandLine(final File pwd)  {
-			return  " --mount type=bind,src=" + pwd.getAbsolutePath() + ",dst=" + pwd.getAbsolutePath();
+			return  " -v " + pwd.getAbsolutePath() + ":" + pwd.getAbsolutePath();
 		}
+        /**
+         * This retrieves command line arguments to use PWD
+         * @param pwd represents the path of the present working directory
+         * @return " -w " + pwd.getAbsolutePath()
+         * @since 12.2.8
+         */
+        @Override
+        public String getDefaultWorkingDirectoryCommandLine(final File pwd) {
+            return  " -w " + pwd.getAbsolutePath();
+        }
 		/**
          * This calls checkParams(params, dockerForbiddenParamsSet)
          * @see AppTypeEnum#checkParams(String)
@@ -349,15 +361,24 @@ public enum AppTypeEnum {
 	public String getStartCommandLineArgs() {
 		return "";
 	}
-	/**
-	 * This retrieves command line arguments to mount PWD volume
-	 * @param pwd represents the path of the present working directory
-	 * @return an empty string
-	 * @since 12.1.0
-	 */
-	public String getMountVolumeCommandLine(final File pwd) {
-		return "";
-	}
+    /**
+     * This retrieves command line arguments to mount a volume
+     * @param pwd represents the path to mount; this should be overridden
+     * @return an empty string
+     * @since 12.1.0
+     */
+    public String getMountVolumeCommandLine(final File pwd) {
+        return "";
+    }
+    /**
+     * This retrieves command line arguments to use PWD; this should be overridden
+     * @param pwd represents the path of the present working directory
+     * @return an empty string
+     * @since 12.2.8
+     */
+    public String getDefaultWorkingDirectoryCommandLine(final File pwd) {
+        return "";
+    }
 	/**
 	 * This dumps path
 	 *

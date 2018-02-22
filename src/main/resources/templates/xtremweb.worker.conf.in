@@ -580,18 +580,22 @@ ACTIVATIONDATE=* 20-7
 
 #### Configuration of the Sandbox tools.
 # The Sandbox is a security program that permits a better security
-# level of XtremWeb. It permits your computer to be protected from the
-# application ran on your host.
+# level of the computing resource by being protected from the application
 # If you wish to use a sand box tool set sandbox.enable to "true" else set
 # it to "false" or comment it.
 # If true, you must set sandbox.path and sandbox.start.args below
-# Example with docker:
-# docker run -t -i --mount type=bind,src=`pwd`,dst=/tmp/xwhep -w /tmp/xwhep ubuntu /bin/bash
-#  SANDBOXENABLED=true
-#  SANDBOXPATH=docker
-#  SANDBOXSTARTARGS=-t -i --mount type=bind,src=`pwd`,dst=/tmp/xwhep -w /tmp/xwhep ubuntu /tmp/xwhep/
+
 # Default is false
 # SANDBOXENABLED=true
+#  SANDBOXPATH=
+#  SANDBOXSTARTARGS=
+
+
+# Since 12.1.0 Docker can be used as sandbox.
+# You must configure as follow:
+#  SANDBOXENABLED=true
+#  SANDBOXPATH=docker
+#  SANDBOXSTARTARGS=ubuntu
 
 # give here the full path and name of the sandbox system and the
 # command line arguments without quotes

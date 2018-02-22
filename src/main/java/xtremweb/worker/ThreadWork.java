@@ -978,10 +978,12 @@ public class ThreadWork extends Thread {
 						final AppTypeEnum appTypeEnum = AppTypeEnum.valueOf(sandboxAttr);
 						sbArgs.append(appTypeEnum.getStartCommandLineArgs());
 						sbArgs.append(appTypeEnum.getMountVolumeCommandLine(currentWork.getScratchDir()));
-						sbArgs.append(appTypeEnum.getMountVolumeCommandLine(appBinPath));
-						sbArgs.append(" " + Worker.getConfig().getProperty(XWPropertyDefs.SANDBOXSTARTARGS));
+                        sbArgs.append(appTypeEnum.getMountVolumeCommandLine(appBinPath));
+                        sbArgs.append(appTypeEnum.getDefaultWorkingDirectoryCommandLine(currentWork.getScratchDir()));
 					} catch(final Exception e) {
+					    logger.exception(e);
 					}
+                    sbArgs.append(" " + Worker.getConfig().getProperty(XWPropertyDefs.SANDBOXSTARTARGS));
 				}
 			}
 		}
