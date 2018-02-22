@@ -28,16 +28,16 @@ public class Web3jServiceExperiment {
 
     private static final Logger log = LoggerFactory.getLogger(Web3jServiceExperiment.class);
 
-    private static final DefaultBlockParameterName START    = DefaultBlockParameterName.EARLIEST;
-    private static final DefaultBlockParameterName END      = DefaultBlockParameterName.LATEST;
-    private static final BigInteger BLACKLIST       = BigInteger.ONE;
-    private static final String WALLET_PATH         = "./src/main/resources/wallet";
-    private static final String SCHEDULER_ADDRESS   = "0x8bd535d49b095ef648cd85ea827867d358872809";
-    private static final String WORKER_ADDRESS      = "0x70a1bebd73aef241154ea353d6c8c52d420d4f5b";
-    private static final String SCHEDULER_WALLET    = WALLET_PATH + "/UTC--2018-02-14T08-32-12.500000000Z--8bd535d49b095ef648cd85ea827867d358872809.json";
-    private static final String WORKER_WALLET       = WALLET_PATH + "/UTC--2018-02-14T11-15-48.411000000Z--70a1bebd73aef241154ea353d6c8c52d420d4f5b.json";
-    private static final String WORKER_RESULT       = "iExec the wanderer";
-    private static final String WALLET_PASSWORD     = "whatever";
+    private static final DefaultBlockParameterName START = DefaultBlockParameterName.EARLIEST;
+    private static final DefaultBlockParameterName END = DefaultBlockParameterName.LATEST;
+    private static final BigInteger BLACKLIST = BigInteger.ONE;
+    private static final String WALLET_PATH = "./src/main/resources/wallet";
+    private static final String SCHEDULER_ADDRESS = "0x8bd535d49b095ef648cd85ea827867d358872809";
+    private static final String WORKER_ADDRESS = "0x70a1bebd73aef241154ea353d6c8c52d420d4f5b";
+    private static final String SCHEDULER_WALLET = WALLET_PATH + "/UTC--2018-02-14T08-32-12.500000000Z--8bd535d49b095ef648cd85ea827867d358872809.json";
+    private static final String WORKER_WALLET = WALLET_PATH + "/UTC--2018-02-14T11-15-48.411000000Z--70a1bebd73aef241154ea353d6c8c52d420d4f5b.json";
+    private static final String WORKER_RESULT = "iExec the wanderer";
+    private static final String WALLET_PASSWORD = "whatever";
 
     private Web3j web3j;
     private Credentials schedulerCredentials;
@@ -47,36 +47,31 @@ public class Web3jServiceExperiment {
     private String workerPoolAddress;
     private WorkerPool workerPoolForScheduler;
     private WorkerPool workerPoolForWorker;
+    @Value("${ethereum.address.iexecHub}")
+    private String iexecHubAddress;
+    @Value("${ethereum.address.appAdress}")
+    private String appAddress;
+    @Value("${ethereum.address.iExecCloudUser}")
+    private String iExecCloudUser;
 
     @Autowired
     public Web3jServiceExperiment(Web3j web3j) {
         this.web3j = web3j;
     }
 
-    @Value("${ethereum.address.iexecHub}")
-    private String iexecHubAddress;
-
-    @Value("${ethereum.address.appAdress}")
-    private String appAddress;
-
-    @Value("${ethereum.address.iExecCloudUser}")
-    private String iExecCloudUser;
-
-    public static String asciiToHex(String asciiValue)
-    {
+    public static String asciiToHex(String asciiValue) {
         char[] chars = asciiValue.toCharArray();
         StringBuffer hex = new StringBuffer();
-        for (int i = 0; i < chars.length; i++)
-        {
+        for (int i = 0; i < chars.length; i++) {
             hex.append(Integer.toHexString((int) chars[i]));
         }
 
-        return hex.toString() + "".join("", Collections.nCopies(32 - (hex.length()/2), "00"));
+        return hex.toString() + "".join("", Collections.nCopies(32 - (hex.length() / 2), "00"));
     }
 
     @PostConstruct
     public void run() throws Exception {
-        
+
         init();
         createWorkerPool();
         watchCreateWorkerPoolAndSubscribe();
@@ -108,42 +103,42 @@ public class Web3jServiceExperiment {
         log.info("createWorkerPool");
         String workerPoolName = "myWorkerPool-" + System.currentTimeMillis();
         log.info("SCHEDLR creating workerPool: " + workerPoolName);
-        iexecHubForScheduler.createWorkerPool(workerPoolName, BigInteger.ZERO,BigInteger.ZERO,BigInteger.ZERO).send();
+        iexecHubForScheduler.createWorkerPool(workerPoolName, BigInteger.ZERO, BigInteger.ZERO, BigInteger.ZERO).send();
     }
 
     private void watchCreateWorkerPoolAndSubscribe() {
         log.info("watchCreateWorkerPoolAndSubscribe");
         iexecHubForScheduler.createWorkerPoolEventObservable(START, END)
-                .subscribe(createWorkerPoolEvent ->{
-                            //if (createWorkerPoolEvent.name.equals(workerPoolName)){
+                .subscribe(createWorkerPoolEvent -> {
+                    //if (createWorkerPoolEvent.name.equals(workerPoolName)){
                     workerPoolAddress = createWorkerPoolEvent.workerPool;
                     log.warn("SCHEDLR received createWorkerPoolEvent " + createWorkerPoolEvent.workerPoolName + ":" + workerPoolAddress);
-                            workerPoolForScheduler = WorkerPool.load(
-                                    workerPoolAddress, web3j, schedulerCredentials, ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT);
-                            workerPoolForWorker = WorkerPool.load(
-                                    workerPoolAddress, web3j, workerCredentials, ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT);
+                    workerPoolForScheduler = WorkerPool.load(
+                            workerPoolAddress, web3j, schedulerCredentials, ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT);
+                    workerPoolForWorker = WorkerPool.load(
+                            workerPoolAddress, web3j, workerCredentials, ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT);
 
-                            try {
-                                String m_workersAuthorizedListAddress = workerPoolForScheduler.m_workersAuthorizedListAddress().send();
+                    try {
+                        String m_workersAuthorizedListAddress = workerPoolForScheduler.m_workersAuthorizedListAddress().send();
 
-                                AuthorizedList authorizedList = AuthorizedList.load(
-                                            m_workersAuthorizedListAddress, web3j, schedulerCredentials, ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT);
+                        AuthorizedList authorizedList = AuthorizedList.load(
+                                m_workersAuthorizedListAddress, web3j, schedulerCredentials, ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT);
 
-                                authorizedList.changeListPolicy(BLACKLIST).send();
-                                watchPolicyChangeAndSubscribe(authorizedList);
+                        authorizedList.changeListPolicy(BLACKLIST).send();
+                        watchPolicyChangeAndSubscribe(authorizedList);
 
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                            //}
-                        });
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    //}
+                });
     }
 
     private void watchPolicyChangeAndSubscribe(AuthorizedList authorizedList) {
         log.info("watchPolicyChangeAndSubscribe");
         authorizedList.policyChangeEventObservable(START, END)
-                .subscribe(policyChangeEvent ->{
-                    log.info("SCHEDLR received policyChangeEvent on workerpool from "+ policyChangeEvent.oldPolicy + " to " + policyChangeEvent.newPolicy);
+                .subscribe(policyChangeEvent -> {
+                    log.info("SCHEDLR received policyChangeEvent on workerpool from " + policyChangeEvent.oldPolicy + " to " + policyChangeEvent.newPolicy);
 
                     try {
                         log.info("WORKER1 subscribing to workerPool");
@@ -158,7 +153,7 @@ public class Web3jServiceExperiment {
     private void watchSubscriptionAndCreateWorkOrder() {
         log.info("watchSubscriptionAndCreateWorkOrder");
         iexecHubForWorker.workerPoolSubscriptionEventObservable(START, END)
-                .subscribe(workerPoolSubscriptionEvent ->{
+                .subscribe(workerPoolSubscriptionEvent -> {
                     //if (workerPoolSubscriptionEvent.workerPool.equals(workerPoolAddress)){
                     log.warn("WORKER1 received workerPoolSubscriptionEvent " + workerPoolSubscriptionEvent.worker);
                     log.info("CLDUSER creating workOrder");
@@ -174,7 +169,7 @@ public class Web3jServiceExperiment {
     private void watchWorkOrderAndAcceptWorkOrder() {
         log.info("watchWorkOrderAndAcceptWorkOrder");
         iexecHubForScheduler.workOrderEventObservable(START, END)
-                .subscribe(workOrderEvent ->{
+                .subscribe(workOrderEvent -> {
                     //if (taskReceivedEvent.taskID.equals(taskRequestEvent.taskID)){
                     log.warn("SCHEDLR received workOrder " + workOrderEvent.woid);
                     log.warn("SCHEDLR analysing asked workOrder");
@@ -190,12 +185,12 @@ public class Web3jServiceExperiment {
     }
 
     private void watchWorkOrderAcceptedAndCallForContribution() {
-        log.info("watchWorkOrderAcceptedAndCallForContribution" +workerPoolForScheduler);
+        log.info("watchWorkOrderAcceptedAndCallForContribution" + workerPoolForScheduler);
 
         workerPoolForScheduler.workOrderAcceptedEventObservable(START, END)
-                .subscribe(workOrderAcceptedEvent ->{
+                .subscribe(workOrderAcceptedEvent -> {
                     //if (taskAcceptedEvent.taskID.equals(taskRequestEvent.taskID)){
-                    log.warn("SCHEDLR received workOrderAcceptedEvent"  + workOrderAcceptedEvent.woid);
+                    log.warn("SCHEDLR received workOrderAcceptedEvent" + workOrderAcceptedEvent.woid);
                     log.warn("SCHEDLR choosing a random worker");
                     log.warn("SCHEDLR calling pool for contribution of worker1 " + WORKER_ADDRESS);
                     try {
@@ -210,8 +205,8 @@ public class Web3jServiceExperiment {
     private void watchCallForContributionAndContribute() {
         log.info("watchCallForContributionAndContribute");
         workerPoolForWorker.callForContributionEventObservable(START, END)
-                .subscribe(callForContributionEvent ->{
-                    log.warn("WORKER1 received callForContributionEvent for worker "+ callForContributionEvent.worker);
+                .subscribe(callForContributionEvent -> {
+                    log.warn("WORKER1 received callForContributionEvent for worker " + callForContributionEvent.worker);
                     //if (callForContributionEvent.worker.equals(WORKER_ADDRESS)){
                     log.warn("WORKER1 executing work");
                     log.warn("WORKER1 contributing");
@@ -227,7 +222,7 @@ public class Web3jServiceExperiment {
                     byte[] r = Numeric.hexStringToByteArray(asciiToHex("0"));
 
                     try {
-                        workerPoolForWorker.contribute(callForContributionEvent.woid, hashResultBytes , hashSignBytes, BigInteger.ZERO, r, r).send();
+                        workerPoolForWorker.contribute(callForContributionEvent.woid, hashResultBytes, hashSignBytes, BigInteger.ZERO, r, r).send();
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -238,14 +233,14 @@ public class Web3jServiceExperiment {
     private void watchContributeAndRevealConsensus() {
         log.info("watchContributeAndRevealConsensus");
         workerPoolForScheduler.contributeEventObservable(START, END)
-                .subscribe(contributeEvent ->{
+                .subscribe(contributeEvent -> {
                     log.warn("SCHEDLR received contributeEvent " + contributeEvent.woid);
                     log.warn("SCHEDLR checking if consensus reached?");
                     log.warn("SCHEDLR found consensus reached");
                     log.warn("SCHEDLR reavealing consensus");
                     byte[] consensus = Numeric.hexStringToByteArray(hashResult(WORKER_RESULT));
                     try {
-                        workerPoolForScheduler.revealConsensus(contributeEvent.woid,  consensus).send();
+                        workerPoolForScheduler.revealConsensus(contributeEvent.woid, consensus).send();
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -255,40 +250,37 @@ public class Web3jServiceExperiment {
     private void watchRevealConsensusAndReveal() {
         log.info("watchRevealConsensusAndReveal");
         workerPoolForWorker.revealConsensusEventObservable(START, END)
-                .subscribe(revealConsensusEvent ->{
-                    log.warn("WORKER1 received revealConsensusEvent "+ revealConsensusEvent.woid);
+                .subscribe(revealConsensusEvent -> {
+                    log.warn("WORKER1 received revealConsensusEvent " + revealConsensusEvent.woid);
                     log.warn("WORKER1 reavealing WORKER_RESULT");
                     byte[] result = Numeric.hexStringToByteArray(Hash.sha3String(WORKER_RESULT));
-                    workerPoolForWorker.reveal(revealConsensusEvent.woid,  result);
+                    workerPoolForWorker.reveal(revealConsensusEvent.woid, result);
                 });
     }
 
     private void watchRevealAndFinalizeWork() {
         log.info("watchRevealAndFinalizeWork");
         workerPoolForScheduler.revealEventObservable(START, END)
-                .subscribe(revealEvent ->{
+                .subscribe(revealEvent -> {
                     log.warn("SCHEDLR received revealEvent ");
                     log.warn("SCHEDLR checking if reveal timeout reached?");
                     log.warn("SCHEDLR found reveal timeout reached");
                     log.warn("SCHEDLR finalazing task");
-                    workerPoolForScheduler.finalizedWork(revealEvent.woid,  "aStdout", "aStderr","anUri");
+                    workerPoolForScheduler.finalizedWork(revealEvent.woid, "aStdout", "aStderr", "anUri");
                 });
     }
-
-
-
 
     private String signByteResult(String result, String address) {
         String resultHash = Hash.sha3String(result);
         String addressHash = Hash.sha3(address);
         String xor = "0x";
-        for (int i = 2; i <66 ; i++) {
+        for (int i = 2; i < 66; i++) {
             Integer temp = Integer.parseInt(String.valueOf(resultHash.charAt(i)), 16) ^ Integer.parseInt(String.valueOf(addressHash.charAt(i)), 16);
-            xor+= Integer.toHexString(temp);
+            xor += Integer.toHexString(temp);
         }
         String sign = Hash.sha3(xor);
-        log.info("xor "+xor);
-        log.info("sign "+sign);
+        log.info("xor " + xor);
+        log.info("sign " + sign);
         return sign;
     }
 
@@ -297,7 +289,7 @@ public class Web3jServiceExperiment {
     }
 
     private String web3Sha3(String preimage) throws IOException {
-        return  web3j.web3Sha3(preimage).send().getResult();
+        return web3j.web3Sha3(preimage).send().getResult();
     }
 
 }
