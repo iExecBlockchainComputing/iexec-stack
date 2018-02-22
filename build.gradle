@@ -276,12 +276,14 @@ task copyLinuxInstallers(type: Copy) {
 
 def gitBranch = 'git name-rev --name-only HEAD'.execute().text.trim()
 def isMasterBranch = gitBranch == "remotes/origin/master"
+def canBuildDockerImages = isMasterBranch || project.getProperty("environment").toString().toLowerCase().equals("docker")
+def canPushDockerImages = isMasterBranch
 
 task copyWorkerLaunchScript(type: Copy) {
     into dist
 
     into("/docker") {
-        from templates
+        from templates + "/startWorkerInDocker.sh.template"
         rename('.sh.template', '.sh')
         filter(ReplaceTokens, tokens: getCustomProperties())
     }
@@ -310,26 +312,40 @@ task buildServerDockerImage(type: Exec) {
     description 'Build a docker image for the server'
     commandLine("sh", "-c", "docker image build -f " + dist + "/docker/server/Dockerfile -t " + getServerDockerImageName() + " " + dist)
 }
-buildServerDockerImage.enabled = isMasterBranch
+buildServerDockerImage.enabled = canBuildDockerImages
+
+task copyConfigDockerClient(type: Copy) {
+    into dist
+
+    into("/docker") {
+        from templates + "/xtremweb.client.conf.in"
+        rename('.conf.in', '.conf')
+
+        def anonymousProps = getCustomProperties()
+        anonymousProps.remove("XWADMINLOGIN")
+        anonymousProps.remove("XWADMINPASSWORD")
+        filter(ReplaceTokens, tokens: anonymousProps)
+    }
+}
 
 task buildClientDockerImage(type: Exec) {
+    dependsOn copyConfigDockerClient
     description 'Build a docker image for the client'
     commandLine("sh", "-c", "docker image build -f " + dist + "/docker/client/Dockerfile -t " + getClientDockerImageName() + " " + dist)
 }
-buildClientDockerImage.enabled = isMasterBranch
+buildClientDockerImage.enabled = canBuildDockerImages
 
 task buildWorkerDockerImage(type: Exec) {
     description 'Build a docker image for the worker'
     commandLine("sh", "-c", "docker image build -f " + dist + "/docker/worker/Dockerfile -t " + getWorkerDockerImageName() + " " + dist)
 }
-buildWorkerDockerImage.enabled = isMasterBranch
+buildWorkerDockerImage.enabled = canBuildDockerImages
 
 task buildImages(){
     dependsOn (buildWorkerDockerImage, buildClientDockerImage, buildServerDockerImage)
 }
 
-
-buildImages.enabled = isMasterBranch
+buildImages.enabled = canBuildDockerImages
 
 task pushImages(type: Exec){
     dependsOn (buildImages)
@@ -344,4 +360,4 @@ task pushImages(type: Exec){
         println "Credentials for DockerHub are missing, the images cannot be pushed"
     }
 }
-pushImages.enabled = isMasterBranch
+pushImages.enabled = canPushDockerImages
