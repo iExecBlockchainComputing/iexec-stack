@@ -217,6 +217,8 @@ if [ -f ${DOCKERFILENAME} ] ; then
     fatal "Dockerfile is not supported"
 fi
 
+echo "run docker from docker"
+echo "docker run -v $(pwd):/host -w /host --rm --name ${CONTAINERNAME} ${IMAGENAME} ${ARGS}"
 docker run -v $(pwd):/host -w /host --rm --name ${CONTAINERNAME} ${IMAGENAME} ${ARGS}
 
 # clean everything

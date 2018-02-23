@@ -28,6 +28,10 @@ or if gradle is not installed, you can use it's wrapped version, simply type:
 ./gradlew buildAll
 ```
 
+To build Docker images locally
+```
+gradle buildAll buildImages -Penvironment=docker
+```
 ### Run
 After the build, in the folder *build/dist/xtremweb-X.Y.Y-SNAPSHOT/bin*, you can call the server, worker:
 
