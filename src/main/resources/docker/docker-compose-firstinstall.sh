@@ -2,6 +2,7 @@
 
 currentFolder=`pwd`
 scriptPath=`readlink -f $0`
+[ $? -ne 0 ] && scriptPath=$(basename $0)
 folderPath=`dirname $scriptPath`
 dockerComposeFile=$folderPath"/docker-compose.yml"
 
