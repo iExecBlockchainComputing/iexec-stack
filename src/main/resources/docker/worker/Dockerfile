@@ -46,7 +46,12 @@ RUN echo "keytool -import -alias localhost -file /xwhep/certificate/xwscheduler.
 RUN echo "sed -i \"s/^SSLKEYSTORE=.*/SSLKEYSTORE=\/etc\/ssl\/certs\/java\/cacerts/g\" /xwhep/conf/xtremweb.worker.conf " >> /xwhep/xwstart.sh  && \
     echo "sed -i \"s/^SSLKEYPASSWORD=.*/SSLKEYPASSWORD=changeit/g\" /xwhep/conf/xtremweb.worker.conf " >> /xwhep/xwstart.sh
 
-# ADD defined SHAREDAPPS variable if defined, otherwise use a default value  
+# add the TMPDIR variable if defined
+RUN echo "if [ ! -z \$TMPDIR ] ; then " >> /xwhep/xwstart.sh && \
+    echo "	sed -i \"s/^#TMPDIR=.*/TMPDIR=\$TMPDIR/g\" /xwhep/conf/xtremweb.worker.conf " >> /xwhep/xwstart.sh && \
+	echo "fi" >> /xwhep/xwstart.sh
+
+# Add defined SHAREDAPPS variable if defined, otherwise use a default value  
 RUN echo "if [ ! -z \$SHAREDAPPS ] ; then " >> /xwhep/xwstart.sh && \
     echo "	sed -i \"s/^#SHAREDAPPS=.*/SHAREDAPPS=\$SHAREDAPPS/g\" /xwhep/conf/xtremweb.worker.conf " >> /xwhep/xwstart.sh && \
 	echo "else sed -i \"s/^#SHAREDAPPS=.*/SHAREDAPPS=docker/g\" /xwhep/conf/xtremweb.worker.conf " >> /xwhep/xwstart.sh && \
