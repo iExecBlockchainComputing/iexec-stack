@@ -1,9 +1,33 @@
 #!/bin/bash
 
+
+#### find an availabe name of folder for the worker ####
+FOLDER_NAME="/tmp/worker"
+RESULTS_FOLDER=""
+CAN_CREATE_NEW_FOLDER=false
+NUMBER_MAX_TRY=100
+
+for i in  $(eval echo "{1..$NUMBER_MAX_TRY}")
+do
+  if [ ! -d "$FOLDER_NAME$i" ]; then
+    RESULTS_FOLDER="$FOLDER_NAME$i"
+    CAN_CREATE_NEW_FOLDER=true
+    break
+  fi
+done
+
+if [ "$CAN_CREATE_NEW_FOLDER" == false ]; then
+  echo "There are more than $NUMBER_MAX_TRY folders /tmp/worker# on the machine, please delete them if they are unused."
+fi
+
+########################################################
+
+
 docker run -d --restart always  --env SCHEDULER_IP=@SCHEDULER_IP@ \
                                 --env SCHEDULER_DOMAIN=@SCHEDULER_DOMAIN@ \
                                 --env LOGIN=@XWVWORKERLOGIN@ \
                                 --env PASSWORD=@XWVWORKERPASSWORD@ \
-                                -v /tmp:/tmp \
+                                --env TMPDIR=$RESULTS_FOLDER \
+                                -v $RESULTS_FOLDER:$RESULTS_FOLDER \
                                 -v /var/run/docker.sock:/var/run/docker.sock \
                                 iexechub/worker:@DOCKER_IMAGE_VERSION@
