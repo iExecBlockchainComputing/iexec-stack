@@ -63,7 +63,6 @@ SUDOERSFILE=${SUDOERS}
 
 SUDOERSENTRY="${SYSLOGIN} ALL=NOPASSWD: ${XWCREATEVDI}"
 SUDOERSENTRY2="${SYSLOGIN} ALL=NOPASSWD: ${CREATEVDI}"
-SUDOERSENTRY3="${SYSLOGIN} ALL=NOPASSWD: /bin/su"
 
 VBAPPNAME="virtualbox"
 VBHL="/Applications/VirtualBox.app/Contents/MacOS/VBoxHeadless"
@@ -139,24 +138,8 @@ if [ "X${SYSLOGIN}" != "X" ] ; then
 # User rules for ubuntu
 ${SUDOERSENTRY}
 ${SUDOERSENTRY2}
-${SUDOERSENTRY3}
 SUDOERSEOF
 
-        # since 12.2.8, we create as many users as available CPU in a single group
-        # see xtremweb.common.XWPropertyDefs#OSACCOUNT
-        # see xtremweb.Woker.ThreadLaunch#getNextOsAccount()
-        # see xtremweb.Woker.ThreaWork#getBinPath()
-
-        nbCpu=$(system_profiler SPHardwareDataType | grep 'Cores:' | cut -d ':' -f 2)
-        nbCpu=$(( nbCpu - 1 ))
-        [ ${nbCpu} -lt 1 ] && nbCpu=1
-        i=0
-        while [ ${i} -lt ${nbCpu} ] ; do
-    		newid=$((newid+1))
-            USERLOGIN=${SYSLOGIN}${i}
-    		sudo ${BINDIR}/adduser.sh ${USERLOGIN} ${USERLOGIN} $newid staff >> ${LOGFILE} 2>&1
-    		i=$((i+1))
-        done
     fi
 else
     echo "* [`date`] [$PROG] ERROR : SYSLOGIN variable is not set" >> ${LOGFILE} 2>&1
