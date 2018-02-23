@@ -173,13 +173,7 @@ public class MockWatcherService {
                     if (workerPoolSubscriptionEvent.workerPool.equals(workerPoolAddress)) {
                         log.warn("WORKER1 received workerPoolSubscriptionEvent " + workerPoolSubscriptionEvent.worker);
                         workerSubscribed = true;
-
-                        //log.info("CLDUSER creating workOrder");
-                        try {
-                            //iexecHubForScheduler.createWorkOrder(workerPoolAddress, appAddress, "0", "noTaskParam", BigInteger.ZERO, BigInteger.ONE, false, iExecCloudUser).send();
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
+                        //createWorkOrder
                     }
                 });
     }
@@ -188,7 +182,6 @@ public class MockWatcherService {
         log.info("watchWorkOrderAndAcceptWorkOrder");
         iexecHubForScheduler.workOrderEventObservable(START, END)
                 .subscribe(workOrderEvent -> {
-                    //if (taskReceivedEvent.taskID.equals(taskRequestEvent.taskID)){
                     log.warn("SCHEDLR received workOrder " + workOrderEvent.woid);
                     log.warn("SCHEDLR analysing asked workOrder");
                     log.warn("SCHEDLR accepting workOrder");
@@ -198,9 +191,6 @@ public class MockWatcherService {
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-
-                    //}
-
                 }, Throwable::printStackTrace);
     }
 
@@ -209,7 +199,6 @@ public class MockWatcherService {
 
         workerPoolForScheduler.workOrderAcceptedEventObservable(START, END)
                 .subscribe(workOrderAcceptedEvent -> {
-                    //if (taskAcceptedEvent.taskID.equals(taskRequestEvent.taskID)){
                     log.warn("SCHEDLR received workOrderAcceptedEvent" + workOrderAcceptedEvent.woid);
                     log.warn("SCHEDLR choosing a random worker");
                     log.warn("SCHEDLR calling pool for contribution of worker1 " + worker);
@@ -218,7 +207,6 @@ public class MockWatcherService {
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-                    //}
                 });
     }
 
@@ -227,7 +215,6 @@ public class MockWatcherService {
         workerPoolForWorker.callForContributionEventObservable(START, END)
                 .subscribe(callForContributionEvent -> {
                     log.warn("WORKER1 received callForContributionEvent for worker " + callForContributionEvent.worker);
-                    //if (callForContributionEvent.worker.equals(worker)){
                     log.warn("WORKER1 executing work");
                     log.warn("WORKER1 contributing");
 
@@ -246,7 +233,6 @@ public class MockWatcherService {
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-                    //}
                 });
     }
 
