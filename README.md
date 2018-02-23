@@ -43,4 +43,25 @@ Run Application.java
 To start the server, the following command can be used:
 ```
 gradle build bootRun
+
+
+or
+
+java -jar iexec-scheduler.jar --iexecHub=0x0000IEXECHUB --wallet.folder=.
 ```
+
+
+Mock endpoints
+```
+Server up?
+GET http://localhost:8080/isalive
+
+Get WorkerPool address
+GET http://localhost:8080/workerpool
+
+Create WorkOrder (on existing pool) (Synchronous call, takes ~10sec)
+GET http://localhost:8080/createworkorder?app=0x000APP&clouduser=0x000CLOUDUSER
+```
+
+
+

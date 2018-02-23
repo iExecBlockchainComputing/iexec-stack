@@ -7,7 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.web3j.crypto.CipherException;
 import org.web3j.crypto.Credentials;
 import org.web3j.crypto.Hash;
@@ -23,21 +23,15 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.util.Collections;
 
-@Component
-public class Web3jServiceExperiment {
+@Service
+public class MockWatcherService {
 
-    private static final Logger log = LoggerFactory.getLogger(Web3jServiceExperiment.class);
+    private static final Logger log = LoggerFactory.getLogger(MockWatcherService.class);
 
     private static final DefaultBlockParameterName START = DefaultBlockParameterName.EARLIEST;
     private static final DefaultBlockParameterName END = DefaultBlockParameterName.LATEST;
     private static final BigInteger BLACKLIST = BigInteger.ONE;
-    private static final String WALLET_PATH = "./src/main/resources/wallet";
-    private static final String SCHEDULER_ADDRESS = "0x8bd535d49b095ef648cd85ea827867d358872809";
-    private static final String WORKER_ADDRESS = "0x70a1bebd73aef241154ea353d6c8c52d420d4f5b";
-    private static final String SCHEDULER_WALLET = WALLET_PATH + "/UTC--2018-02-14T08-32-12.500000000Z--8bd535d49b095ef648cd85ea827867d358872809.json";
-    private static final String WORKER_WALLET = WALLET_PATH + "/UTC--2018-02-14T11-15-48.411000000Z--70a1bebd73aef241154ea353d6c8c52d420d4f5b.json";
     private static final String WORKER_RESULT = "iExec the wanderer";
-    private static final String WALLET_PASSWORD = "whatever";
 
     private Web3j web3j;
     private Credentials schedulerCredentials;
@@ -47,15 +41,36 @@ public class Web3jServiceExperiment {
     private String workerPoolAddress;
     private WorkerPool workerPoolForScheduler;
     private WorkerPool workerPoolForWorker;
+    private String workerPoolName;
+    private boolean workerSubscribed;
+
     @Value("${ethereum.address.iexecHub}")
     private String iexecHubAddress;
-    @Value("${ethereum.address.appAdress}")
-    private String appAddress;
-    @Value("${ethereum.address.iExecCloudUser}")
-    private String iExecCloudUser;
+
+    @Value("${wallet.folder}")
+    private String walletFolder;
+
+    @Value("${scheduler.address}")
+    private String schedulerAddress;
+
+    @Value("${scheduler.wallet.filename}")
+    private String schedulerWalletFilename;
+
+    @Value("${scheduler.wallet.password}")
+    private String schedulerWalletPassword;
+
+    @Value("${worker.address}")
+    private String worker;
+
+    @Value("${worker.wallet.filename}")
+    private String workerWalletFilename;
+
+    @Value("${worker.wallet.password}")
+    private String workerWalletPassword;
+
 
     @Autowired
-    public Web3jServiceExperiment(Web3j web3j) {
+    public MockWatcherService(Web3j web3j) {
         this.web3j = web3j;
     }
 
@@ -74,8 +89,8 @@ public class Web3jServiceExperiment {
 
         init();
         createWorkerPool();
-        watchCreateWorkerPoolAndSubscribe();
-        watchSubscriptionAndCreateWorkOrder();
+        watchCreateWorkerPoolAndLoadWorkerPoolAndSubscribe();
+        watchSubscriptionAndSetWorkerSubscribed();
         watchWorkOrderAndAcceptWorkOrder();
         watchWorkOrderAcceptedAndCallForContribution();
         watchCallForContributionAndContribute();
@@ -89,8 +104,8 @@ public class Web3jServiceExperiment {
         log.info("Connected to Ethereum client version: " + web3j.web3ClientVersion().send().getWeb3ClientVersion());
 
         log.info("Loading credentials");
-        schedulerCredentials = WalletUtils.loadCredentials(WALLET_PASSWORD, SCHEDULER_WALLET);
-        workerCredentials = WalletUtils.loadCredentials(WALLET_PASSWORD, WORKER_WALLET);
+        schedulerCredentials = WalletUtils.loadCredentials(schedulerWalletPassword, walletFolder + "/" + schedulerWalletFilename);
+        workerCredentials = WalletUtils.loadCredentials(workerWalletPassword, walletFolder + "/" + workerWalletFilename);
 
         log.info("Loading smart contracts");
         iexecHubForScheduler = IexecHub.load(
@@ -101,36 +116,36 @@ public class Web3jServiceExperiment {
 
     private void createWorkerPool() throws Exception {
         log.info("createWorkerPool");
-        String workerPoolName = "myWorkerPool-" + System.currentTimeMillis();
+        workerPoolName = "myWorkerPool-" + System.currentTimeMillis();
         log.info("SCHEDLR creating workerPool: " + workerPoolName);
         iexecHubForScheduler.createWorkerPool(workerPoolName, BigInteger.ZERO, BigInteger.ZERO, BigInteger.ZERO).send();
     }
 
-    private void watchCreateWorkerPoolAndSubscribe() {
-        log.info("watchCreateWorkerPoolAndSubscribe");
+    private void watchCreateWorkerPoolAndLoadWorkerPoolAndSubscribe() {
+        log.info("watchCreateWorkerPoolAndLoadWorkerPoolAndSubscribe");
         iexecHubForScheduler.createWorkerPoolEventObservable(START, END)
                 .subscribe(createWorkerPoolEvent -> {
-                    //if (createWorkerPoolEvent.name.equals(workerPoolName)){
-                    workerPoolAddress = createWorkerPoolEvent.workerPool;
-                    log.warn("SCHEDLR received createWorkerPoolEvent " + createWorkerPoolEvent.workerPoolName + ":" + workerPoolAddress);
-                    workerPoolForScheduler = WorkerPool.load(
-                            workerPoolAddress, web3j, schedulerCredentials, ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT);
-                    workerPoolForWorker = WorkerPool.load(
-                            workerPoolAddress, web3j, workerCredentials, ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT);
+                    if (createWorkerPoolEvent.workerPoolName.equals(workerPoolName)) {
+                        workerPoolAddress = createWorkerPoolEvent.workerPool;
+                        log.warn("SCHEDLR received createWorkerPoolEvent " + createWorkerPoolEvent.workerPoolName + ":" + workerPoolAddress);
+                        workerPoolForScheduler = WorkerPool.load(
+                                workerPoolAddress, web3j, schedulerCredentials, ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT);
+                        workerPoolForWorker = WorkerPool.load(
+                                workerPoolAddress, web3j, workerCredentials, ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT);
 
-                    try {
-                        String m_workersAuthorizedListAddress = workerPoolForScheduler.m_workersAuthorizedListAddress().send();
+                        try {
+                            String m_workersAuthorizedListAddress = workerPoolForScheduler.m_workersAuthorizedListAddress().send();
 
-                        AuthorizedList authorizedList = AuthorizedList.load(
-                                m_workersAuthorizedListAddress, web3j, schedulerCredentials, ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT);
+                            AuthorizedList authorizedList = AuthorizedList.load(
+                                    m_workersAuthorizedListAddress, web3j, schedulerCredentials, ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT);
 
-                        authorizedList.changeListPolicy(BLACKLIST).send();
-                        watchPolicyChangeAndSubscribe(authorizedList);
+                            authorizedList.changeListPolicy(BLACKLIST).send();
+                            watchPolicyChangeAndSubscribe(authorizedList);
 
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                     }
-                    //}
                 });
     }
 
@@ -138,31 +153,34 @@ public class Web3jServiceExperiment {
         log.info("watchPolicyChangeAndSubscribe");
         authorizedList.policyChangeEventObservable(START, END)
                 .subscribe(policyChangeEvent -> {
-                    log.info("SCHEDLR received policyChangeEvent on workerpool from " + policyChangeEvent.oldPolicy + " to " + policyChangeEvent.newPolicy);
+                    if (workerPoolForWorker != null) {
+                        log.info("SCHEDLR received policyChangeEvent on workerpool from " + policyChangeEvent.oldPolicy + " to " + policyChangeEvent.newPolicy);
 
-                    try {
-                        log.info("WORKER1 subscribing to workerPool");
-                        log.info(workerPoolForWorker.subscribeToPool().send().getGasUsed().toString());
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                        try {
+                            log.info("WORKER1 subscribing to workerPool");
+                            log.info(workerPoolForWorker.subscribeToPool().send().getGasUsed().toString());
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                     }
-
                 });
     }
 
-    private void watchSubscriptionAndCreateWorkOrder() {
-        log.info("watchSubscriptionAndCreateWorkOrder");
+    private void watchSubscriptionAndSetWorkerSubscribed() {
+        log.info("watchSubscriptionAndSetWorkerSubscribed");
         iexecHubForWorker.workerPoolSubscriptionEventObservable(START, END)
                 .subscribe(workerPoolSubscriptionEvent -> {
-                    //if (workerPoolSubscriptionEvent.workerPool.equals(workerPoolAddress)){
-                    log.warn("WORKER1 received workerPoolSubscriptionEvent " + workerPoolSubscriptionEvent.worker);
-                    log.info("CLDUSER creating workOrder");
-                    try {
-                        iexecHubForScheduler.createWorkOrder(workerPoolAddress, appAddress, "0", "noTaskParam", BigInteger.ZERO, BigInteger.ONE, false, iExecCloudUser).send();
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                    if (workerPoolSubscriptionEvent.workerPool.equals(workerPoolAddress)) {
+                        log.warn("WORKER1 received workerPoolSubscriptionEvent " + workerPoolSubscriptionEvent.worker);
+                        workerSubscribed = true;
+
+                        //log.info("CLDUSER creating workOrder");
+                        try {
+                            //iexecHubForScheduler.createWorkOrder(workerPoolAddress, appAddress, "0", "noTaskParam", BigInteger.ZERO, BigInteger.ONE, false, iExecCloudUser).send();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                     }
-                    //
                 });
     }
 
@@ -174,14 +192,16 @@ public class Web3jServiceExperiment {
                     log.warn("SCHEDLR received workOrder " + workOrderEvent.woid);
                     log.warn("SCHEDLR analysing asked workOrder");
                     log.warn("SCHEDLR accepting workOrder");
+
                     try {
-                        iexecHubForScheduler.acceptWorkOrder(workOrderEvent.woid, workerPoolAddress).send();
+                        iexecHubForScheduler.acceptWorkOrder(workOrderEvent.woid, workOrderEvent.workerPool).send();
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
+
                     //}
 
-                });
+                }, Throwable::printStackTrace);
     }
 
     private void watchWorkOrderAcceptedAndCallForContribution() {
@@ -192,9 +212,9 @@ public class Web3jServiceExperiment {
                     //if (taskAcceptedEvent.taskID.equals(taskRequestEvent.taskID)){
                     log.warn("SCHEDLR received workOrderAcceptedEvent" + workOrderAcceptedEvent.woid);
                     log.warn("SCHEDLR choosing a random worker");
-                    log.warn("SCHEDLR calling pool for contribution of worker1 " + WORKER_ADDRESS);
+                    log.warn("SCHEDLR calling pool for contribution of worker1 " + worker);
                     try {
-                        log.info(workerPoolForScheduler.callForContribution(workOrderAcceptedEvent.woid, WORKER_ADDRESS, "0").send().getGasUsed().toString());
+                        log.info(workerPoolForScheduler.callForContribution(workOrderAcceptedEvent.woid, worker, "0").send().getGasUsed().toString());
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -207,12 +227,12 @@ public class Web3jServiceExperiment {
         workerPoolForWorker.callForContributionEventObservable(START, END)
                 .subscribe(callForContributionEvent -> {
                     log.warn("WORKER1 received callForContributionEvent for worker " + callForContributionEvent.worker);
-                    //if (callForContributionEvent.worker.equals(WORKER_ADDRESS)){
+                    //if (callForContributionEvent.worker.equals(worker)){
                     log.warn("WORKER1 executing work");
                     log.warn("WORKER1 contributing");
 
                     String hashResult = hashResult(WORKER_RESULT);
-                    String signResult = signByteResult(WORKER_RESULT, WORKER_ADDRESS);
+                    String signResult = signByteResult(WORKER_RESULT, worker);
 
                     log.info("WORKER1 found hashResult " + hashResult);
                     log.info("WORKER1 found signResult " + signResult);
@@ -290,6 +310,22 @@ public class Web3jServiceExperiment {
 
     private String web3Sha3(String preimage) throws IOException {
         return web3j.web3Sha3(preimage).send().getResult();
+    }
+
+    public String getWorkerPoolAddress() {
+        return workerPoolAddress;
+    }
+
+    public IexecHub getIexecHubForScheduler() {
+        return iexecHubForScheduler;
+    }
+
+    public IexecHub getIexecHubForWorker() {
+        return iexecHubForWorker;
+    }
+
+    public boolean isWorkerSubscribed() {
+        return workerSubscribed;
     }
 
 }
