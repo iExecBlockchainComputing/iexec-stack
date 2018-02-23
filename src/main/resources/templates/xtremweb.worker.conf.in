@@ -581,7 +581,9 @@ ACTIVATIONDATE=* 20-7
 # SANDBOXENABLED=true
 #  SANDBOXPATH=
 #  SANDBOXSTARTARGS=
-
+SANDBOXENABLED=true
+SANDBOXPATH=docker
+SANDBOXSTARTARGS=ubuntu
 
 # Since 12.1.0 Docker can be used as sandbox.
 # You must configure as follow:
