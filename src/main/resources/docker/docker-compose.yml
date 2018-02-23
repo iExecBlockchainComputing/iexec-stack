@@ -32,6 +32,7 @@ services:
     environment:
       - SCHEDULER_IP=scheduler
       - SCHEDULER_DOMAIN=xwscheduler
+      - TMPDIR=/tmp/worker1
     ports:
       - 4321
       - 4322
@@ -39,7 +40,7 @@ services:
       - 443
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - /tmp:/tmp
+      - /tmp/worker1:/tmp/worker1
     networks:
       - xtremweb-net
     restart: unless-stopped

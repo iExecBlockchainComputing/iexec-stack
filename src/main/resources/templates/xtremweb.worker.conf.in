@@ -559,7 +559,7 @@ ACTIVATIONDATE=* 20-7
 # Note : please use full path; don't use ~ or any variable (e.g. $HOME)
 #        they are not correctly interpreted
 #
-# TMPDIR=/tmp
+#TMPDIR=/tmp
 ####
 
 
