@@ -69,15 +69,13 @@ import xtremweb.dispatcher.HTTPOAuthHandler.Operator;
 
 /**
  * This handles HTTP request to /jwt/ This accepts and verifies
- * {@link http://jwt.io/ Json Web Tokens}.
+ * http://jwt.io/ Json Web Tokens.
  *
  * @author Oleg Lodygensky
  * @since XWHEP 11.0.0
  */
 
-public abstract class HTTPJWTHandler extends Thread implements org.eclipse.jetty.server.Handler {
-
-	protected Logger logger;
+public abstract class HTTPJWTHandler extends HTTPHandler {
 
 	protected HttpServletRequest request;
 	protected HttpServletResponse response;
@@ -85,25 +83,13 @@ public abstract class HTTPJWTHandler extends Thread implements org.eclipse.jetty
 
 	/**
 	 * This contains the gap while a login is valid
-	 * 
+	 *
 	 * @see xtremweb.common.XWPropertyDefs#LOGINTIMEOUT
 	 */
 	long loginTimeout = 0;
 
 	public static final String handlerPath = "/jwt";
 
-	/**
-	 * This is the client host name; for debug purposes only
-	 */
-	protected String remoteName;
-	/**
-	 * This is the client IP addr; for debug purposes only
-	 */
-	protected String remoteIP;
-	/**
-	 * This is the client port; for debug purposes only
-	 */
-	protected int remotePort;
 
 	/** this contains this server URL */
 	protected URL localRootUrl;
@@ -124,24 +110,23 @@ public abstract class HTTPJWTHandler extends Thread implements org.eclipse.jetty
 
 	/**
 	 * This is the default constructor which only calls super("HTTPStatHandler")
-	 * @throws UnsupportedEncodingException 
-	 * @throws IllegalArgumentException 
+	 * @throws UnsupportedEncodingException
+	 * @throws IllegalArgumentException
 	 */
 	public HTTPJWTHandler() throws IllegalArgumentException, UnsupportedEncodingException {
 		this("HTTPJWTHandler");
 	}
 	/**
 	 * This is the default constructor which only calls super("HTTPStatHandler")
-	 * @throws UnsupportedEncodingException 
-	 * @throws IllegalArgumentException 
+	 * @throws UnsupportedEncodingException
+	 * @throws IllegalArgumentException
 	 */
 	protected HTTPJWTHandler(final String name) throws IllegalArgumentException, UnsupportedEncodingException {
-		super(name);
+		super();
 		if (instance != null) {
 			return;
 		}
 		loginTimeout = Dispatcher.getConfig().getInt(XWPropertyDefs.LOGINTIMEOUT) * 1000;
-		logger = new Logger(this);
 		try {
 			localRootUrl = new URL(Connection.HTTPSSLSCHEME + "://" + XWTools.getLocalHostName() + ":"
 					+ Dispatcher.getConfig().getPort(Connection.HTTPSPORT));
@@ -149,8 +134,8 @@ public abstract class HTTPJWTHandler extends Thread implements org.eclipse.jetty
 			XWTools.fatal(e.getMessage());
 		}
 
-		logger.debug("JWT secret = " + jwtethsecret);
-		logger.debug("JWT issuer = " + jwtethissuer);
+		getLogger().debug("JWT secret = " + jwtethsecret);
+		getLogger().debug("JWT issuer = " + jwtethissuer);
 		algorithm = Algorithm.HMAC256(jwtethsecret);
 		verifier = JWT.require(algorithm)
 				.withIssuer(jwtethissuer)
@@ -163,12 +148,12 @@ public abstract class HTTPJWTHandler extends Thread implements org.eclipse.jetty
 	 *
 	 * @param l
 	 *            is the logger level
-	 * @throws UnsupportedEncodingException 
-	 * @throws IllegalArgumentException 
+	 * @throws UnsupportedEncodingException
+	 * @throws IllegalArgumentException
 	 */
 	public HTTPJWTHandler(LoggerLevel l) throws IllegalArgumentException, UnsupportedEncodingException {
 		this();
-		logger.setLoggerLevel(l);
+		getLogger().setLoggerLevel(l);
 	}
 
 	/**
@@ -276,7 +261,7 @@ public abstract class HTTPJWTHandler extends Thread implements org.eclipse.jetty
 	 * This cleans and closes communications
 	 */
 	public void close() {
-		logger.debug("close");
+		getLogger().debug("close");
 	}
 
 	/**
@@ -289,31 +274,27 @@ public abstract class HTTPJWTHandler extends Thread implements org.eclipse.jetty
 	public void handle(String target, Request baseRequest, HttpServletRequest _request, HttpServletResponse _response)
 			throws IOException, ServletException {
 
-		logger.debug("new connection");
+		getLogger().debug("new connection");
 		request = _request;
 		response = _response;
 		session = baseRequest.getSession(true);
 
 		final String path = request.getPathInfo();
 		try {
-			logger.debug("Handling path info      = " + path);
-			logger.debug("Handling target         = " + target);
-			logger.debug("Handling request        = " + request.getContentLength() + " " + request.getContentType());
-			logger.debug("Handling parameter size = " + request.getParameterMap().size());
-			logger.debug("Handling query string   = " + request.getQueryString());
-			logger.debug("Handling method         = " + request.getMethod());
-
-			remoteName = request.getRemoteHost();
-			remoteIP = request.getRemoteAddr();
-			remotePort = request.getRemotePort();
+			getLogger().debug("Handling path info      = " + path);
+			getLogger().debug("Handling target         = " + target);
+			getLogger().debug("Handling request        = " + request.getContentLength() + " " + request.getContentType());
+			getLogger().debug("Handling parameter size = " + request.getParameterMap().size());
+			getLogger().debug("Handling query string   = " + request.getQueryString());
+			getLogger().debug("Handling method         = " + request.getMethod());
 
 			for (final Enumeration<String> e = request.getParameterNames(); e.hasMoreElements();) {
 				final String pname = e.nextElement();
-				logger.debug("parameter name " + pname);
-				logger.debug("parameter value " + request.getParameter(pname));
+				getLogger().debug("parameter name " + pname);
+				getLogger().debug("parameter value " + request.getParameter(pname));
 			}
 			for (final Enumeration<String> e = request.getHeaderNames(); e.hasMoreElements();) {
-				logger.debug("header " + e.nextElement());
+				getLogger().debug("header " + e.nextElement());
 			}
 			jwtRequest(baseRequest);
 
@@ -324,7 +305,7 @@ public abstract class HTTPJWTHandler extends Thread implements org.eclipse.jetty
 					"<html><head><title>OpenId delegation error</title></head><body><h1>OpenId delegation error</h1><p>Error message: "
 							+ e.getMessage()
 							+ "</p><p>Please contact the administrator of this XtremWeb-HEP server</p></body></html>");
-			logger.exception(e);
+			getLogger().exception(e);
 		}
 
 		response.getWriter().flush();
@@ -339,7 +320,7 @@ public abstract class HTTPJWTHandler extends Thread implements org.eclipse.jetty
 	protected abstract void jwtRequest(Request baseRequest) throws IOException;
 	/**
 	 * This retrieves authentication from openid server response
-	 * 
+	 *
 	 * @param baseRequest
 	 *            is the HTTP request
 	 * @return the authentication if found; null otherwise
@@ -371,8 +352,8 @@ public abstract class HTTPJWTHandler extends Thread implements org.eclipse.jetty
 
 	/**
 	 * This retrieves the JWT
-	 * @throws UnsupportedEncodingException 
-	 * @throws IllegalArgumentException 
+	 * @throws UnsupportedEncodingException
+	 * @throws IllegalArgumentException
 	 * @param cookie contains the string representation of the JWT
 	 */
 	final protected DecodedJWT getToken(final Cookie cookie)
@@ -392,23 +373,42 @@ public abstract class HTTPJWTHandler extends Thread implements org.eclipse.jetty
 	}
 	/**
 	 * This retrieves the expected cookie
-	 * @see #COOKIE_NAME
 	 * @return the found cookie or null
 	 */
 	final protected Cookie getCookie(final String cookieName) throws IllegalArgumentException {
 
 		final Cookie[] cookies = request.getCookies();
+        getLogger().debug("getCookie : " + (cookies == null ? "null" : "" + cookies.length));
 		if ((cookies == null) || (cookies.length < 1)){
-			throw new IllegalArgumentException("no cookie");
+//			throw new IllegalArgumentException("no cookie");
+			return getCookieFromQueryString(cookieName);
 		}
 
-		logger.debug("cookies.length = " + cookies.length);
+		getLogger().debug("cookies.length = " + cookies.length);
 		for (int cookieN = 0; cookieN < cookies.length; cookieN++) {
 			if (cookies[cookieN].getName().compareTo(cookieName) == 0) {
 				return cookies[cookieN];
 			}
 		}
 		throw new IllegalArgumentException("cookie not found : " + cookieName);
+	}
+	/**
+	 * This retrieves the expected cookie from query string
+	 * @return the found cookie or null
+	 * @since 12.2.8
+	 */
+	final protected Cookie getCookieFromQueryString(final String cookieName) throws IllegalArgumentException {
+
+		final String queryString = request.getQueryString();
+		getLogger().debug("getCookieFromQueryString : " + queryString);
+		try {
+			final int separator = queryString.indexOf('=');
+			final String cookieValue = queryString.substring(separator + 1);
+			getLogger().debug("getCookieFromQueryString ; cookie value : " + cookieValue);
+			return new Cookie(cookieName, cookieValue);
+		} catch (final Exception e) {
+			throw new IllegalArgumentException("getCookieFromQueryString : " + e);
+		}
 	}
 	/**
 	 * This simulates a database that store all states:

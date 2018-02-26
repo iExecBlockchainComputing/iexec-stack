@@ -59,20 +59,6 @@ if [ -f /Library/LaunchDaemons/$LAUNCHNAME.plist >> $LOGFILE 2>&1 ] ; then
     launchctl unload /Library/LaunchDaemons/$LAUNCHNAME.plist >> $LOGFILE 2>&1
 fi
 
-# since 12.2.8, we create as many users as available CPU in a single group
-# see xtremweb.common.XWPropertyDefs#OSACCOUNT
-# see xtremweb.Woker.ThreadLaunch#getNextOsAccount()
-# see xtremweb.Woker.ThreaWork#getBinPath()
-
-nbCpu=$(system_profiler SPHardwareDataType | grep 'Cores:' | cut -d ':' -f 2)
-nbCpu=$(( nbCpu - 1 ))
-[ ${nbCpu} -lt 1 ] && nbCpu=1
-i=0
-while [ ${i} -lt ${nbCpu} ] ; do
-    USERLOGIN=${SYSLOGIN}${i}
-    sudo ${BINDIR}/rmuser.sh ${USERLOGIN} >> ${LOGFILE} 2>&1
-done
-
 cat ${SUDOERS} | grep -v ${SYSLOGIN} > /tmp/xwsudoers
 mv -f /tmp/xwsudoers ${SUDOERS}
 chmod 440 ${SUDOERS}

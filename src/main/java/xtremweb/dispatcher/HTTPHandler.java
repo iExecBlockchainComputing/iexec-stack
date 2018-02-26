@@ -389,7 +389,7 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 		diskFactory = new DiskFileItemFactory();
 		servletUpload = new ServletFileUpload(diskFactory);
 		servletUpload.setSizeMax(getConfig().getLong(XWPropertyDefs.MAXFILESIZE));
-		getLogger().debug("new Thread " + Thread.currentThread().getId());
+		getLogger().debug("new Thread " + Thread.currentThread().getName());
 	}
 
 	/**
@@ -408,7 +408,7 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 		diskFactory = new DiskFileItemFactory();
 		servletUpload = new ServletFileUpload(diskFactory);
 		servletUpload.setSizeMax(getConfig().getLong(XWPropertyDefs.MAXFILESIZE));
-		getLogger().debug("new Thread " + Thread.currentThread().getId());
+		getLogger().debug("new Thread " + Thread.currentThread().getName());
 	}
 
 	/**
