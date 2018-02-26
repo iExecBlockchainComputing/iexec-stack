@@ -42,23 +42,6 @@ if [ "X${SYSLOGIN}" != "X" ] ; then
     /usr/sbin/groupadd ${SYSLOGIN} >> ${LOG} 2>&1
     /usr/sbin/useradd ${SYSLOGIN} -d /home/${SYSLOGIN} -s /bin/bash -g $GROUPE -m >> ${LOG} 2>&1
 
-# since 12.2.8, we create as many users as available CPU in a single group
-# see xtremweb.common.XWPropertyDefs#OSACCOUNT
-# see xtremweb.Woker.ThreadLaunch#getNextOsAccount()
-# see xtremweb.Woker.ThreaWork#getBinPath()
-
-    nbCpu=$(cat /proc/cpuinfo | grep processor | wc -l)
-    nbCpu=$(( nbCpu - 1 ))
-    [ ${nbCpu} -lt 1 ]] && nbCpu=1
-    i=0
-    while [ ${i} -lt ${nbCpu} ] ; do
-        USERLOGIN=${SYSLOGIN}${i}
-        mkdir -p /home/${USERLOGIN} >> ${LOG} 2>&1
-#        /usr/sbin/groupadd ${USERLOGIN} >> ${LOG} 2>&1
-        /usr/sbin/useradd ${USERLOGIN} -d /home/${USERLOGIN} -s /bin/bash -g ${GROUPE} -m >> ${LOG} 2>&1
-        i=$(( i + 1 ))
-    done
-
 else
     echo "SYSLOGIN variable is not set; this package will run as root; this is not agood idea" >> ${LOG} 2>&1
 fi

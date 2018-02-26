@@ -86,7 +86,7 @@ public class HTTPJWTEthereumAuthHandler extends HTTPJWTHandler {
 	 */
 	public HTTPJWTEthereumAuthHandler(LoggerLevel l) throws IllegalArgumentException, UnsupportedEncodingException {
 		this();
-		logger.setLoggerLevel(l);
+		getLogger().setLoggerLevel(l);
 	}
 
 	/**
@@ -101,7 +101,7 @@ public class HTTPJWTEthereumAuthHandler extends HTTPJWTHandler {
 			throws IllegalArgumentException, JWTVerificationException, IOException {
 
 		final HttpSession session = request.getSession(true);
-		logger.debug("session = " + session.getId());
+		getLogger().debug("session = " + session.getId());
 		final Cookie ethauthCookie = getCookie(COOKIENAME_ETHAUTHTOKEN);
 		String strState = (String) session.getAttribute(XWPostParams.AUTH_STATE.toString());
 		if (strState == null) {
@@ -115,21 +115,21 @@ public class HTTPJWTEthereumAuthHandler extends HTTPJWTHandler {
 		}
 		final DecodedJWT token = ethauthCookie != null ? getToken(ethauthCookie) : getToken(getState(strState));
 
-		logger.debug("cookie = " + ethauthCookie);
-		logger.debug("getToken(cookie) = " + getToken(ethauthCookie));
-		logger.debug("strState = " + strState);
+		getLogger().debug("cookie = " + ethauthCookie);
+		getLogger().debug("getToken(cookie) = " + getToken(ethauthCookie));
+		getLogger().debug("strState = " + strState);
 		if(strState != null) {
-			logger.debug("getState(strState) = " + getState(strState));
+			getLogger().debug("getState(strState) = " + getState(strState));
 		}
 		if(ethauthCookie != null) {
-			logger.debug("cookie = " + ethauthCookie.getName() + ":" + ethauthCookie.getValue());
+			getLogger().debug("cookie = " + ethauthCookie.getName() + ":" + ethauthCookie.getValue());
 		}
 
 		if (token == null) {
 			baseRequest.setHandled(false);
 			throw new JWTVerificationException("JWT not found");
 		}
-		logger.debug("ADDR = " + getEthereumAddress(token));
+		getLogger().debug("ADDR = " + getEthereumAddress(token));
 
 		if (ethauthCookie != null) {
 			String newState;
@@ -138,18 +138,18 @@ public class HTTPJWTEthereumAuthHandler extends HTTPJWTHandler {
 			} catch (NoSuchAlgorithmException e) {
 				throw new IOException(e);
 			}
-			logger.debug("newState = " + newState);
+			getLogger().debug("newState = " + newState);
 			session.setAttribute(XWPostParams.AUTH_STATE.toString(), newState);
 			final Cookie cookieUser = new Cookie(XWPostParams.AUTH_STATE.toString(), newState);
 			response.addCookie(cookieUser);
-			logger.debug("setCookie " + XWPostParams.AUTH_STATE.toString() + " = " + newState);
+			getLogger().debug("setCookie " + XWPostParams.AUTH_STATE.toString() + " = " + newState);
 			storeState(newState, ethauthCookie);
 			strState = newState;
 		}
 
 		final String url = localRootUrl + "?" + XWPostParams.AUTH_STATE + "=" + strState;
-		logger.debug("sendRedirectUrm = " + url);
-		logger.debug(USERAGENTNAME + " = "  + request.getHeader(USERAGENTNAME));
+		getLogger().debug("sendRedirectUrm = " + url);
+		getLogger().debug(USERAGENTNAME + " = "  + request.getHeader(USERAGENTNAME));
 		response.sendRedirect(url);
 
 		baseRequest.setHandled(true);
