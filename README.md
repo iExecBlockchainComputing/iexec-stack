@@ -60,7 +60,11 @@ Get WorkerPool address
 GET http://localhost:8080/workerpool
 
 Create WorkOrder (on existing pool) (Synchronous call, takes ~10sec)
-GET http://localhost:8080/createworkorder?app=0x000APP&clouduser=0x000CLOUDUSER
+GET http://localhost:8080/createworkorder?app=0x000APP&beneficiary=0x000CLOUDUSER (app & beneficiary required)
+(GET http://localhost:8080/createworkorder?app=0x000APP&dataset=0&workOrderParam=noTaskParam&workReward=0&askedTrust=false&dappCallback=false&beneficiary=0x000CLOUDUSER)
+                                   
+
+
 ```
 
 

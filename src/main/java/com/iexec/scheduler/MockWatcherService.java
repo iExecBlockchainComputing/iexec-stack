@@ -14,6 +14,7 @@ import org.web3j.crypto.Hash;
 import org.web3j.crypto.WalletUtils;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.core.DefaultBlockParameterName;
+import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.tx.Contract;
 import org.web3j.tx.ManagedTransaction;
 import org.web3j.utils.Numeric;
@@ -21,7 +22,10 @@ import org.web3j.utils.Numeric;
 import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.math.BigInteger;
-import java.util.Collections;
+
+import static com.iexec.scheduler.Utils.asciiToHex;
+import static com.iexec.scheduler.Utils.hashResult;
+import static com.iexec.scheduler.Utils.signByteResult;
 
 @Service
 public class MockWatcherService {
@@ -74,22 +78,12 @@ public class MockWatcherService {
         this.web3j = web3j;
     }
 
-    public static String asciiToHex(String asciiValue) {
-        char[] chars = asciiValue.toCharArray();
-        StringBuffer hex = new StringBuffer();
-        for (int i = 0; i < chars.length; i++) {
-            hex.append(Integer.toHexString((int) chars[i]));
-        }
-
-        return hex.toString() + "".join("", Collections.nCopies(32 - (hex.length() / 2), "00"));
-    }
-
     @PostConstruct
     public void run() throws Exception {
 
         init();
         createWorkerPool();
-        watchCreateWorkerPoolAndLoadWorkerPoolAndSubscribe();
+        changeWorkerPoolPolicy();
         watchSubscriptionAndSetWorkerSubscribed();
         watchWorkOrderAndAcceptWorkOrder();
         watchWorkOrderAcceptedAndCallForContribution();
@@ -121,8 +115,8 @@ public class MockWatcherService {
         iexecHubForScheduler.createWorkerPool(workerPoolName, BigInteger.ZERO, BigInteger.ZERO, BigInteger.ZERO).send();
     }
 
-    private void watchCreateWorkerPoolAndLoadWorkerPoolAndSubscribe() {
-        log.info("watchCreateWorkerPoolAndLoadWorkerPoolAndSubscribe");
+    private void changeWorkerPoolPolicy() {
+        log.info("changeWorkerPoolPolicy");
         iexecHubForScheduler.createWorkerPoolEventObservable(START, END)
                 .subscribe(createWorkerPoolEvent -> {
                     if (createWorkerPoolEvent.workerPoolName.equals(workerPoolName)) {
@@ -140,7 +134,7 @@ public class MockWatcherService {
                                     m_workersAuthorizedListAddress, web3j, schedulerCredentials, ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT);
 
                             authorizedList.changeListPolicy(BLACKLIST).send();
-                            watchPolicyChangeAndSubscribe(authorizedList);
+                            subscribeToWorkerPool(authorizedList);
 
                         } catch (Exception e) {
                             e.printStackTrace();
@@ -149,8 +143,8 @@ public class MockWatcherService {
                 });
     }
 
-    private void watchPolicyChangeAndSubscribe(AuthorizedList authorizedList) {
-        log.info("watchPolicyChangeAndSubscribe");
+    private void subscribeToWorkerPool(AuthorizedList authorizedList) {
+        log.info("subscribeToWorkerPool");
         authorizedList.policyChangeEventObservable(START, END)
                 .subscribe(policyChangeEvent -> {
                     if (workerPoolForWorker != null) {
@@ -276,27 +270,16 @@ public class MockWatcherService {
                 });
     }
 
-    private String signByteResult(String result, String address) {
-        String resultHash = Hash.sha3String(result);
-        String addressHash = Hash.sha3(address);
-        String xor = "0x";
-        for (int i = 2; i < 66; i++) {
-            Integer temp = Integer.parseInt(String.valueOf(resultHash.charAt(i)), 16) ^ Integer.parseInt(String.valueOf(addressHash.charAt(i)), 16);
-            xor += Integer.toHexString(temp);
+    public boolean createWorkOrder(String workerPool, String app, String dataset, String workOrderParam, BigInteger workReward, BigInteger askedTrust, Boolean dappCallback, String beneficiary) throws Exception {
+        boolean gasOk = false;
+
+        if (isWorkerSubscribed()){
+            TransactionReceipt tr = getIexecHubForScheduler().createWorkOrder(workerPool, app, dataset, workOrderParam, workReward, askedTrust, dappCallback, beneficiary).send();
+            gasOk = !tr.getGasUsed().equals(Contract.GAS_LIMIT);
         }
-        String sign = Hash.sha3(xor);
-        log.info("xor " + xor);
-        log.info("sign " + sign);
-        return sign;
+        return gasOk;
     }
 
-    private String hashResult(String result) {
-        return Hash.sha3(Hash.sha3String(result));
-    }
-
-    private String web3Sha3(String preimage) throws IOException {
-        return web3j.web3Sha3(preimage).send().getResult();
-    }
 
     public String getWorkerPoolAddress() {
         return workerPoolAddress;
