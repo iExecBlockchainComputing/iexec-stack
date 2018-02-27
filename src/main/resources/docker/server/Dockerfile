@@ -7,33 +7,18 @@ COPY lib /xwhep/lib
 COPY bin /xwhep/bin/
 COPY keystore/xwhepserver.keys /xwhep/keystore/xwhepserver.keys
 COPY keystore/xwscheduler.pem /xwhep/keystore/xwscheduler.pem
+
+# Add the script that will set up the configuration in the container
+ADD docker/server/start_server.sh /xwhep/start_server.sh
+
 WORKDIR /xwhep
 
 RUN apt-get update
 RUN export DEBIAN_FRONTEND=noninteractive && \
        apt-get install -y openjdk-8-jre zip unzip wget make iputils-ping
 
-#
-# -1- don't renice in container
-# -2- we must remove LAUNCHERURL since Apache is not installed
-# 
-RUN sed -i "s/^V_NICE=.*//g" /xwhep/bin/xtremwebconf.sh
-RUN sed -i "s/LAUNCHER.*//g" /xwhep/conf/xtremweb.server.conf
+RUN chmod +x /xwhep/start_server.sh
 
-#
-# Entry point script
-# 
-RUN echo "#!/bin/sh" > /xwhep/xwstart.sh && \
-	echo "/xwhep/bin/xtremweb.server console" >> /xwhep/xwstart.sh
-
-# change DBHOST value in the config if defined
-RUN echo "if [ ! -z \$DBHOST ] ; then " >> /xwhep/xwstart.sh  && \
-    echo "	sed -i \"s/^DBHOST=.*/DBHOST=\$DBHOST/g\" /xwhep/conf/xtremweb.server.conf " >> /xwhep/xwstart.sh  && \
-	echo "	sed -i \"s/^DBHOST=.*/DBHOST=\$DBHOST/g\" /xwhep/conf/xwconfigure.values " >> /xwhep/xwstart.sh  && \
-    echo "fi" >> /xwhep/xwstart.sh
-
-RUN chmod +x /xwhep/xwstart.sh
-
-ENTRYPOINT [ "/xwhep/xwstart.sh" ]
+ENTRYPOINT [ "/xwhep/start_server.sh" ]
 
 
