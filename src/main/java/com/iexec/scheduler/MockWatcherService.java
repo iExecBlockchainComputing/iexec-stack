@@ -13,6 +13,7 @@ import org.web3j.crypto.Credentials;
 import org.web3j.crypto.Hash;
 import org.web3j.crypto.WalletUtils;
 import org.web3j.protocol.Web3j;
+import org.web3j.protocol.core.DefaultBlockParameter;
 import org.web3j.protocol.core.DefaultBlockParameterName;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.tx.Contract;
@@ -32,7 +33,7 @@ public class MockWatcherService {
 
     private static final Logger log = LoggerFactory.getLogger(MockWatcherService.class);
 
-    private static final DefaultBlockParameterName START = DefaultBlockParameterName.EARLIEST;
+    //private static final DefaultBlockParameterName START = DefaultBlockParameterName.EARLIEST;
     private static final DefaultBlockParameterName END = DefaultBlockParameterName.LATEST;
     private static final BigInteger BLACKLIST = BigInteger.ONE;
     private static final String WORKER_RESULT = "iExec the wanderer";
@@ -47,6 +48,9 @@ public class MockWatcherService {
     private WorkerPool workerPoolForWorker;
     private String workerPoolName;
     private boolean workerSubscribed;
+
+    @Value("${ethereum.start-block}")
+    private BigInteger startBlock;
 
     @Value("${ethereum.address.iexecHub}")
     private String iexecHubAddress;
@@ -117,7 +121,7 @@ public class MockWatcherService {
 
     private void changeWorkerPoolPolicy() {
         log.info("changeWorkerPoolPolicy");
-        iexecHubForScheduler.createWorkerPoolEventObservable(START, END)
+        iexecHubForScheduler.createWorkerPoolEventObservable(getStartBlock(), END)
                 .subscribe(createWorkerPoolEvent -> {
                     if (createWorkerPoolEvent.workerPoolName.equals(workerPoolName)) {
                         workerPoolAddress = createWorkerPoolEvent.workerPool;
@@ -145,7 +149,7 @@ public class MockWatcherService {
 
     private void subscribeToWorkerPool(AuthorizedList authorizedList) {
         log.info("subscribeToWorkerPool");
-        authorizedList.policyChangeEventObservable(START, END)
+        authorizedList.policyChangeEventObservable(getStartBlock(), END)
                 .subscribe(policyChangeEvent -> {
                     if (workerPoolForWorker != null) {
                         log.info("SCHEDLR received policyChangeEvent on workerpool from " + policyChangeEvent.oldPolicy + " to " + policyChangeEvent.newPolicy);
@@ -162,7 +166,7 @@ public class MockWatcherService {
 
     private void watchSubscriptionAndSetWorkerSubscribed() {
         log.info("watchSubscriptionAndSetWorkerSubscribed");
-        iexecHubForWorker.workerPoolSubscriptionEventObservable(START, END)
+        iexecHubForWorker.workerPoolSubscriptionEventObservable(getStartBlock(), END)
                 .subscribe(workerPoolSubscriptionEvent -> {
                     if (workerPoolSubscriptionEvent.workerPool.equals(workerPoolAddress)) {
                         log.warn("WORKER1 received workerPoolSubscriptionEvent " + workerPoolSubscriptionEvent.worker);
@@ -174,7 +178,7 @@ public class MockWatcherService {
 
     private void watchWorkOrderAndAcceptWorkOrder() {
         log.info("watchWorkOrderAndAcceptWorkOrder");
-        iexecHubForScheduler.workOrderEventObservable(START, END)
+        iexecHubForScheduler.workOrderEventObservable(getStartBlock(), END)
                 .subscribe(workOrderEvent -> {
                     log.warn("SCHEDLR received workOrder " + workOrderEvent.woid);
                     log.warn("SCHEDLR analysing asked workOrder");
@@ -189,9 +193,9 @@ public class MockWatcherService {
     }
 
     private void watchWorkOrderAcceptedAndCallForContribution() {
-        log.info("watchWorkOrderAcceptedAndCallForContribution" + workerPoolForScheduler);
+        log.info("watchWorkOrderAcceptedAndCallForContribution");
 
-        workerPoolForScheduler.workOrderAcceptedEventObservable(START, END)
+        workerPoolForScheduler.workOrderAcceptedEventObservable(getStartBlock(), END)
                 .subscribe(workOrderAcceptedEvent -> {
                     log.warn("SCHEDLR received workOrderAcceptedEvent" + workOrderAcceptedEvent.woid);
                     log.warn("SCHEDLR choosing a random worker");
@@ -206,7 +210,7 @@ public class MockWatcherService {
 
     private void watchCallForContributionAndContribute() {
         log.info("watchCallForContributionAndContribute");
-        workerPoolForWorker.callForContributionEventObservable(START, END)
+        workerPoolForWorker.callForContributionEventObservable(getStartBlock(), END)
                 .subscribe(callForContributionEvent -> {
                     log.warn("WORKER1 received callForContributionEvent for worker " + callForContributionEvent.worker);
                     log.warn("WORKER1 executing work");
@@ -232,7 +236,7 @@ public class MockWatcherService {
 
     private void watchContributeAndRevealConsensus() {
         log.info("watchContributeAndRevealConsensus");
-        workerPoolForScheduler.contributeEventObservable(START, END)
+        workerPoolForScheduler.contributeEventObservable(getStartBlock(), END)
                 .subscribe(contributeEvent -> {
                     log.warn("SCHEDLR received contributeEvent " + contributeEvent.woid);
                     log.warn("SCHEDLR checking if consensus reached?");
@@ -249,7 +253,7 @@ public class MockWatcherService {
 
     private void watchRevealConsensusAndReveal() {
         log.info("watchRevealConsensusAndReveal");
-        workerPoolForWorker.revealConsensusEventObservable(START, END)
+        workerPoolForWorker.revealConsensusEventObservable(getStartBlock(), END)
                 .subscribe(revealConsensusEvent -> {
                     log.warn("WORKER1 received revealConsensusEvent " + revealConsensusEvent.woid);
                     log.warn("WORKER1 reavealing WORKER_RESULT");
@@ -260,7 +264,7 @@ public class MockWatcherService {
 
     private void watchRevealAndFinalizeWork() {
         log.info("watchRevealAndFinalizeWork");
-        workerPoolForScheduler.revealEventObservable(START, END)
+        workerPoolForScheduler.revealEventObservable(getStartBlock(), END)
                 .subscribe(revealEvent -> {
                     log.warn("SCHEDLR received revealEvent ");
                     log.warn("SCHEDLR checking if reveal timeout reached?");
@@ -297,4 +301,8 @@ public class MockWatcherService {
         return workerSubscribed;
     }
 
+
+    private DefaultBlockParameter getStartBlock() {
+        return DefaultBlockParameter.valueOf(startBlock);
+    }
 }
