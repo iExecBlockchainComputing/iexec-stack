@@ -1,0 +1,20 @@
+# There are the default property values so can be omitted if being used
+web3j:
+  client-address: ${ethNode:http://localhost:8545}
+  admin-client: false
+
+
+ethereum:
+  start-block: 0
+  address:
+    workerpool: ${workerpool:0xe10c6f27fd7b36e2b626a259008d08ac2d745607}
+
+wallet:
+    folder: "./src/main/resources/wallet"
+
+worker:
+  address: "0x70a1bebd73aef241154ea353d6c8c52d420d4f5b"
+  wallet:
+    filename: "UTC--2018-02-14T11-15-48.411000000Z--70a1bebd73aef241154ea353d6c8c52d420d4f5b.json"
+    password: "whatever"
+

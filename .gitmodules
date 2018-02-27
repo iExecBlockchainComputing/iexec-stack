@@ -1,0 +1,6 @@
+[submodule "PoCo"]
+	path = PoCo
+	url = https://github.com/iExecBlockchainComputing/PoCo.git
+[submodule "rlc-token"]
+	path = rlc-token
+	url = https://github.com/iExecBlockchainComputing/rlc-token.git
