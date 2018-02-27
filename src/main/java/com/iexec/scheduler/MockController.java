@@ -16,11 +16,6 @@ import java.math.BigInteger;
 @RestController
 public class MockController {
 
-    private static final Logger log = LoggerFactory.getLogger(MockController.class);
-
-    @Value("${ethereum.address.iexecHub}")
-    private String iexecHubAddress;
-
     private MockWatcherService mockService;
 
     @Autowired
@@ -40,14 +35,15 @@ public class MockController {
 
     @RequestMapping("/createworkorder")
     public boolean createWorkOrder(@RequestParam String app,
-                                   @RequestParam String clouduser) throws Exception {
-        boolean gasOk = false;
-
-        if (mockService.isWorkerSubscribed()){
-            TransactionReceipt tr = mockService.getIexecHubForScheduler().createWorkOrder(mockService.getWorkerPoolAddress(), app, "0", "noTaskParam", BigInteger.ZERO, BigInteger.ONE, false, clouduser).send();
-            gasOk = !tr.getGasUsed().equals(Contract.GAS_LIMIT);
-        }
-
-        return gasOk;
+                                   @RequestParam(defaultValue = "0") String dataset,
+                                   @RequestParam(defaultValue = "noTaskParam") String workOrderParam,
+                                   @RequestParam(defaultValue = "0") BigInteger workReward,
+                                   @RequestParam(defaultValue = "1") BigInteger askedTrust,
+                                   @RequestParam(defaultValue = "false") Boolean dappCallback,
+                                   @RequestParam String beneficiary) throws Exception {
+        //return mockService.createWorkOrder(mockService.getWorkerPoolAddress(), app, "0", "noTaskParam", BigInteger.ZERO, BigInteger.ONE, false, clouduser);
+        return mockService.createWorkOrder(mockService.getWorkerPoolAddress(), app, dataset, workOrderParam, workReward, askedTrust, dappCallback, beneficiary);
     }
+
+
 }
