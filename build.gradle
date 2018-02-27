@@ -66,4 +66,8 @@ buildContracts.enabled = !project.hasProperty("skipContracts")
 // Force the rebuild of contracts before java build
 compileJava.dependsOn buildContracts
 
+bootRun {
+    systemProperties = System.properties
+}
+
 

@@ -21,7 +21,7 @@ This can be handy when contracts don't change much to shorten the compile time.
 ### Run
 
 ```
-./node_modules/.bin/truffle test PoCo/test/4_taskRequestCreation.js
+./node_modules/.bin/truffle test test/4_workOrderCreation.js
 ```
 
 Get
@@ -30,7 +30,11 @@ aIexecHubInstance.address
 aAppInstance.address
 iExecCloudUser
 ```
-in the logs and put them in Application.java
+from logs and replace in application.yml the line
+```
+iexecHub: ${iexecHub:0x0b21fa4fcc190380d09dec2099578d76197e7c1f}
+```
+
 
 Send eth to scheduler and worker
 ```

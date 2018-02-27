@@ -3,9 +3,11 @@ web3j:
   client-address: ${ethNode:http://localhost:8545}
   admin-client: false
 
+
 ethereum:
+  start-block: 0
   address:
-    iexecHub: ${iexecHub:0x3e71ff457419639ee4f2f4ccd2688be33dc2d727}
+    iexecHub: ${iexecHub:0xe10c6f27fd7b36e2b626a259008d08ac2d745607}
 
 wallet:
     folder: "./src/main/resources/wallet"
