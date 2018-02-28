@@ -1,18 +1,18 @@
 FROM ubuntu:16.04
 EXPOSE 4321 4322 4323 4324 4327 4328 443
 
-ADD conf/xtremweb.worker.conf /xwhep/conf/
-RUN mkdir -p /xwhep/bin
-RUN mkdir -p /xwhep/certificate
-ADD bin/xtremweb.worker /xwhep/bin
-ADD bin/xtremweb /xwhep/bin
-ADD bin/xtremwebconf.sh /xwhep/bin
-ADD lib /xwhep/lib
+ADD conf/xtremweb.worker.conf /iexec/conf/
+RUN mkdir -p /iexec/bin
+RUN mkdir -p /iexec/certificate
+ADD bin/xtremweb.worker /iexec/bin
+ADD bin/xtremweb /iexec/bin
+ADD bin/xtremwebconf.sh /iexec/bin
+ADD lib /iexec/lib
 
 # Add the script that will set up the configuration in the container
-ADD docker/worker/start_worker.sh /xwhep/start_worker.sh
+ADD docker/worker/start_worker.sh /iexec/start_worker.sh
 
-WORKDIR /xwhep
+WORKDIR /iexec
 
 RUN apt-get update && \ 
        export DEBIAN_FRONTEND=noninteractive && \
@@ -24,6 +24,6 @@ RUN add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubunt
 RUN apt-get update
 RUN apt-get install -y docker-ce
 
-RUN chmod +x /xwhep/start_worker.sh
+RUN chmod +x /iexec/start_worker.sh
 
-ENTRYPOINT [ "/xwhep/start_worker.sh" ]
+ENTRYPOINT [ "/iexec/start_worker.sh" ]

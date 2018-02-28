@@ -37,9 +37,9 @@ cd $folderPath
 docker-compose -f $dockerComposeFile up -d scheduler
 
 # copy scripts, conf and certificate from scheduler
-docker cp xwscheduler:/xwhep/bin dbbin
-docker cp xwscheduler:/xwhep/conf dbconf
-docker cp xwscheduler:/xwhep/keystore/xwscheduler.pem .
+docker cp iexecscheduler:/iexec/bin dbbin
+docker cp iexecscheduler:/iexec/conf dbconf
+docker cp iexecscheduler:/iexec/keystore/xwscheduler.pem .
 
 # kill the dummy scheduler
 docker-compose -f $dockerComposeFile down -v
