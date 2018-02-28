@@ -1,13 +1,20 @@
-# There are the default property values so can be omitted if being used
-web3j:
-  client-address: ${ethNode:http://localhost:8545}
-  admin-client: false
+server:
+  contextPath: /
+  port: 8081
 
+web3j:
+  client-address: ${ethNode:http://localhost:8545} #default
+  admin-client: false #default
 
 ethereum:
   start-block: 0
-  address:
-    workerpool: ${workerpool:0xe10c6f27fd7b36e2b626a259008d08ac2d745607}
+
+scheduler:
+  protocol: "http"
+  domain: "localhost"
+  port: 8080
+  base-path: "" #/v1
+  api-url: "${scheduler.protocol}://${scheduler.domain}:${scheduler.port}${scheduler.base-path}"
 
 wallet:
     folder: "./src/main/resources/wallet"
@@ -18,3 +25,12 @@ worker:
     filename: "UTC--2018-02-14T11-15-48.411000000Z--70a1bebd73aef241154ea353d6c8c52d420d4f5b.json"
     password: "whatever"
 
+
+# Mock values
+mock:
+  worker-result:
+    "iExec the wanderer" #hash 0x2fa3c6dc29e10dfc01cea7e9443ffe431e6564e74f5dcf4de4b04f2e5d343d70
+  contribute:
+    v: 0
+    r: "O" #ascii string
+    s: "O"

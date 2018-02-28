@@ -22,12 +22,8 @@ This can be handy when contracts don't change much to shorten the compile time.
 
 Run scheduler
 
-Get the WorkerPool address deployed by the Scheduler and put it in application.yml 
-```
-GET http://localhost:8080/workerpool
+Change conf and mock in application.yml 
 
-workerpool: ${workerpool:0x00000WORKERPOOLADDRESS}
-```
 
 Send eth to worker
 ```

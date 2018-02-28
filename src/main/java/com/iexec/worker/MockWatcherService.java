@@ -30,33 +30,37 @@ public class MockWatcherService {
 
     private static final Logger log = LoggerFactory.getLogger(MockWatcherService.class);
     private static final DefaultBlockParameterName END = DefaultBlockParameterName.LATEST;
-    private static final String WORKER_RESULT = "iExec the wanderer";
     private Web3j web3j;
+    private SchedulerApiService schedulerApiService;
     private Credentials workerCredentials;
     private WorkerPool workerPool;
 
     @Value("${ethereum.start-block}")
     private BigInteger startBlock;
-
     @Value("${wallet.folder}")
     private String walletFolder;
-
     @Value("${worker.address}")
     private String workerAdress;
-
     @Value("${worker.wallet.filename}")
     private String workerWalletFilename;
-
     @Value("${worker.wallet.password}")
     private String workerWalletPassword;
 
-    @Value("${ethereum.address.workerpool}")
-    private String workerPoolAddress;
+    //Mock values
+    @Value("${mock.worker-result}")
+    private String workerResult;
+    @Value("${mock.contribute.v}")
+    private BigInteger contributeV;
+    @Value("${mock.contribute.r}")
+    private String contributeR;
+    @Value("${mock.contribute.s}")
+    private String contributeS;
 
 
     @Autowired
-    public MockWatcherService(Web3j web3j) {
+    public MockWatcherService(Web3j web3j, SchedulerApiService schedulerApiService) {
         this.web3j = web3j;
+        this.schedulerApiService = schedulerApiService;
     }
 
     @PostConstruct
@@ -69,11 +73,14 @@ public class MockWatcherService {
 
     private void init() throws IOException, CipherException {
         log.info("WORKER1 connected to Ethereum client version: " + web3j.web3ClientVersion().send().getWeb3ClientVersion());
-
-        log.info("WORKER1 loading credentials and contracts");
         workerCredentials = WalletUtils.loadCredentials(workerWalletPassword, walletFolder + "/" + workerWalletFilename);
-        workerPool = WorkerPool.load(
-                workerPoolAddress, web3j, workerCredentials, ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT);
+        String workerPoolAddress = schedulerApiService.getWorkerPool();
+        log.info("WORKER1 loading WorkerPool contract on " + workerPoolAddress);
+
+        if (workerPoolAddress != null) {
+            workerPool = WorkerPool.load(
+                    workerPoolAddress, web3j, workerCredentials, ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT);
+        }
     }
 
     private void subscribeToWorkerPool() {
@@ -93,18 +100,19 @@ public class MockWatcherService {
                     log.warn("WORKER1 executing work");
                     log.warn("WORKER1 contributing");
 
-                    String hashResult = hashResult(WORKER_RESULT);
-                    String signResult = signByteResult(WORKER_RESULT, workerAdress);
+                    String hashResult = hashResult(workerResult);
+                    String signResult = signByteResult(workerResult, workerAdress);
 
                     log.info("WORKER1 found hashResult " + hashResult);
                     log.info("WORKER1 found signResult " + signResult);
 
                     byte[] hashResultBytes = Numeric.hexStringToByteArray(hashResult);
                     byte[] hashSignBytes = Numeric.hexStringToByteArray(signResult);
-                    byte[] r = Numeric.hexStringToByteArray(asciiToHex("0"));
+                    byte[] r = Numeric.hexStringToByteArray(asciiToHex(contributeR));
+                    byte[] s = Numeric.hexStringToByteArray(asciiToHex(contributeS));
 
                     try {
-                        workerPool.contribute(callForContributionEvent.woid, hashResultBytes, hashSignBytes, BigInteger.ZERO, r, r).send();
+                        workerPool.contribute(callForContributionEvent.woid, hashResultBytes, hashSignBytes, contributeV, r, s).send();
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -117,7 +125,7 @@ public class MockWatcherService {
                 .subscribe(revealConsensusEvent -> {
                     log.warn("WORKER1 received revealConsensusEvent " + revealConsensusEvent.woid);
                     log.warn("WORKER1 reavealing WORKER_RESULT");
-                    byte[] result = Numeric.hexStringToByteArray(Hash.sha3String(WORKER_RESULT));
+                    byte[] result = Numeric.hexStringToByteArray(Hash.sha3String(workerResult));
                     workerPool.reveal(revealConsensusEvent.woid, result);
                 });
     }
