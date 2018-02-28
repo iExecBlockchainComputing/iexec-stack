@@ -30,36 +30,49 @@ public class MockWatcherService {
 
     private static final Logger log = LoggerFactory.getLogger(MockWatcherService.class);
     private static final DefaultBlockParameterName END = DefaultBlockParameterName.LATEST;
-    private static final BigInteger BLACKLIST = BigInteger.ONE;
-    private static final String WORKER_RESULT = "iExec the wanderer";
     private Web3j web3j;
     private Credentials schedulerCredentials;
     private IexecHub iexecHub;
     private String workerPoolAddress;
     private WorkerPool workerPoolForScheduler;
-    private String workerPoolName;
     private boolean workerSubscribed;
 
     @Value("${ethereum.start-block}")
     private BigInteger startBlock;
-
     @Value("${ethereum.address.iexecHub}")
     private String iexecHubAddress;
-
     @Value("${wallet.folder}")
     private String walletFolder;
-
     @Value("${scheduler.address}")
     private String schedulerAddress;
-
     @Value("${scheduler.wallet.filename}")
     private String schedulerWalletFilename;
-
     @Value("${scheduler.wallet.password}")
     private String schedulerWalletPassword;
 
-    @Value("${worker.address}")
-    private String workerAddress;
+    //Mock values
+    @Value("${mock.createWorkerPool.name}")
+    private String workerPoolName;
+    @Value("${mock.createWorkerPool.subscriptionLockStakePolicy}")
+    private BigInteger subscriptionLockStakePolicy;
+    @Value("${mock.createWorkerPool.subscriptionLockStakePolicy}")
+    private BigInteger subscriptionMinimumStakePolicy;
+    @Value("${mock.createWorkerPool.subscriptionLockStakePolicy}")
+    private BigInteger subscriptionMinimumScorePolicy;
+    @Value("${mock.changeListPolicy.policyEnum}")
+    private BigInteger policyEnum;
+    @Value("${mock.callForContribution.worker}")
+    private String callForContributionWorker;
+    @Value("${mock.callForContribution.enclaveChallenge}")
+    private String callForContributionEnclaveChallenge;
+    @Value("${mock.worker-result}")
+    private String workerResult;
+    @Value("${mock.finalizeWork.stdout}")
+    private String finalizeWorkStdout;
+    @Value("${mock.finalizeWork.stderr}")
+    private String finalizeWorkStderr;
+    @Value("${mock.finalizeWork.uri}")
+    private String finalizeWorkUri;
 
     @Autowired
     public MockWatcherService(Web3j web3j) {
@@ -80,7 +93,6 @@ public class MockWatcherService {
 
     private void init() throws IOException, CipherException {
         log.info("SCHEDLR connected to Ethereum client version: " + web3j.web3ClientVersion().send().getWeb3ClientVersion());
-
         log.info("SCHEDLR loading credentials and contracts");
         schedulerCredentials = WalletUtils.loadCredentials(schedulerWalletPassword, walletFolder + "/" + schedulerWalletFilename);
         iexecHub = IexecHub.load(
@@ -88,9 +100,8 @@ public class MockWatcherService {
     }
 
     private void createWorkerPool() throws Exception {
-        workerPoolName = "myWorkerPool-" + System.currentTimeMillis();
         log.info("SCHEDLR creating WorkerPool: " + workerPoolName);
-        iexecHub.createWorkerPool(workerPoolName, BigInteger.ZERO, BigInteger.ZERO, BigInteger.ZERO).send();
+        iexecHub.createWorkerPool(workerPoolName, subscriptionLockStakePolicy, subscriptionMinimumStakePolicy, subscriptionMinimumScorePolicy).send();
     }
 
     private void changeWorkerPoolPolicy() {
@@ -108,16 +119,14 @@ public class MockWatcherService {
                             AuthorizedList authorizedList = AuthorizedList.load(
                                     m_workersAuthorizedListAddress, web3j, schedulerCredentials, ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT);
                             log.info("SCHEDLR updating Policy");
-                            authorizedList.changeListPolicy(BLACKLIST).send();
+                            authorizedList.changeListPolicy(policyEnum).send();
                             watchPolicyChange(authorizedList);
-
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
                     }
                 });
     }
-
 
     private void watchPolicyChange(AuthorizedList authorizedList) {
         log.info("SCHEDLR watching PolicyChangeEvent");
@@ -127,7 +136,6 @@ public class MockWatcherService {
                 });
     }
 
-
     private void watchSubscriptionAndSetWorkerSubscribed() {
         log.info("SCHEDLR watching WorkerPoolSubscriptionEvent");
         iexecHub.workerPoolSubscriptionEventObservable(getStartBlock(), END)
@@ -135,7 +143,7 @@ public class MockWatcherService {
                     if (workerPoolSubscriptionEvent.workerPool.equals(workerPoolAddress)) {
                         log.warn("SCHEDLR received WorkerPoolSubscriptionEvent for worker " + workerPoolSubscriptionEvent.worker);
                         workerSubscribed = true;
-                        //createWorkOrder
+                        //now clouduser able to createWorkOrder
                     }
                 });
     }
@@ -157,15 +165,14 @@ public class MockWatcherService {
     }
 
     private void watchWorkOrderAcceptedAndCallForContribution() {
-        log.info("SCHEDLR watching WorkOrderAcceptedEvent (auto callForContribution");
-
+        log.info("SCHEDLR watching WorkOrderAcceptedEvent (auto callForContribution)");
         workerPoolForScheduler.workOrderAcceptedEventObservable(getStartBlock(), END)
                 .subscribe(workOrderAcceptedEvent -> {
                     log.warn("SCHEDLR received WorkOrderAcceptedEvent" + workOrderAcceptedEvent.woid);
                     log.warn("SCHEDLR choosing a random worker");
-                    log.warn("SCHEDLR calling pool for contribution of worker1 " + workerAddress);
+                    log.warn("SCHEDLR calling pool for contribution of worker1 " + callForContributionWorker);
                     try {
-                        log.info(workerPoolForScheduler.callForContribution(workOrderAcceptedEvent.woid, workerAddress, "0").send().getGasUsed().toString());
+                        log.info(workerPoolForScheduler.callForContribution(workOrderAcceptedEvent.woid, callForContributionWorker, callForContributionEnclaveChallenge).send().getGasUsed().toString());
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -179,8 +186,8 @@ public class MockWatcherService {
                     log.warn("SCHEDLR received ContributeEvent " + contributeEvent.woid);
                     log.warn("SCHEDLR checking if consensus reached?");
                     log.warn("SCHEDLR found consensus reached");
-                    log.warn("SCHEDLR reavealing consensus");
-                    byte[] consensus = Numeric.hexStringToByteArray(hashResult(WORKER_RESULT));
+                    log.warn("SCHEDLR reavealing consensus " + hashResult(workerResult));
+                    byte[] consensus = Numeric.hexStringToByteArray(hashResult(workerResult));
                     try {
                         workerPoolForScheduler.revealConsensus(contributeEvent.woid, consensus).send();
                     } catch (Exception e) {
@@ -197,7 +204,7 @@ public class MockWatcherService {
                     log.warn("SCHEDLR checking if reveal timeout reached?");
                     log.warn("SCHEDLR found reveal timeout reached");
                     log.warn("SCHEDLR finalazing task");
-                    workerPoolForScheduler.finalizedWork(revealEvent.woid, "aStdout", "aStderr", "anUri");
+                    workerPoolForScheduler.finalizedWork(revealEvent.woid, finalizeWorkStdout, finalizeWorkStderr, finalizeWorkUri);//"aStdout", "aStderr", "anUri"
                 });
     }
 
@@ -211,7 +218,6 @@ public class MockWatcherService {
         return gasOk;
     }
 
-
     public String getWorkerPoolAddress() {
         return workerPoolAddress;
     }
@@ -223,7 +229,6 @@ public class MockWatcherService {
     public boolean isWorkerSubscribed() {
         return workerSubscribed;
     }
-
 
     private DefaultBlockParameter getStartBlock() {
         return DefaultBlockParameter.valueOf(startBlock);
