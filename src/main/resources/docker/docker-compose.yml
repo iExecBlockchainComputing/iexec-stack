@@ -20,7 +20,7 @@ services:
       - 443:443
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - ${CERTIFICATE_AND_PRIVATE_KEYS_REPO}:/xwhep/keystore
+      - ${CERTIFICATE_AND_PRIVATE_KEYS_REPO}:/iexec/keystore
     networks:
       - iexec-net
     env_file:
