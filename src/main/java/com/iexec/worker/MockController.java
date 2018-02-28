@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigInteger;
 
-@RestController
+//@RestController
 public class MockController {
 
     private MockWatcherService mockService;

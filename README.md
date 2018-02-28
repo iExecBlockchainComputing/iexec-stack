@@ -1,4 +1,4 @@
-# iExec worker
+# iExec Worker
 
 ### Clone project with it submodules (PoCo & rlc-token)
 
@@ -22,10 +22,8 @@ This can be handy when contracts don't change much to shorten the compile time.
 
 Run scheduler
 
-Get the WorkerPool address deployed by the Scheduler and put it in application.yml 
-```
-workerpool: ${workerpool:0x00000WORKERPOOLADDRESS}
-```
+Change conf and mock in application.yml 
+
 
 Send eth to worker
 ```
@@ -48,7 +46,7 @@ java -jar iexec-worker.jar --workerpool=0x00000WORKERPOOLADDRESS --wallet.folder
 Mock endpoints
 ```
 Worker up?
-GET http://localhost:8080/isalive
+GET http://localhost:8081/isalive
 
 ```
 
