@@ -1,13 +1,15 @@
-# There are the default property values so can be omitted if being used
-web3j:
-  client-address: ${ethNode:http://localhost:8545}
-  admin-client: false
+server:
+  port: 8080 #8080 is default
+  contextPath: /
 
+web3j:
+  client-address: ${ethNode:http://localhost:8545} #default
+  admin-client: false #default
 
 ethereum:
   start-block: 0
   address:
-    iexecHub: ${iexecHub:0xe10c6f27fd7b36e2b626a259008d08ac2d745607}
+    iexecHub: ${iexecHub:0xa2ff6c8636b6cc893ba651e6b1ee97118398178b}
 
 wallet:
     folder: "./src/main/resources/wallet"
@@ -18,9 +20,26 @@ scheduler:
     filename: "UTC--2018-02-14T08-32-12.500000000Z--8bd535d49b095ef648cd85ea827867d358872809.json"
     password: "whatever"
 
-worker:
-  address: "0x70a1bebd73aef241154ea353d6c8c52d420d4f5b"
-  wallet:
-    filename: "UTC--2018-02-14T11-15-48.411000000Z--70a1bebd73aef241154ea353d6c8c52d420d4f5b.json"
-    password: "whatever"
+#Mock values
+mock:
+  worker-result:
+    "iExec the wanderer" #hash 0x2fa3c6dc29e10dfc01cea7e9443ffe431e6564e74f5dcf4de4b04f2e5d343d70
+  createWorkerPool:
+    name: "myWorkerPool"
+    subscriptionLockStakePolicy: 0
+    subscriptionMinimumStakePolicy: 0
+    subscriptionMinimumScorePolicy: 0
+  changeListPolicy:
+    policyEnum: 1 #BLACKLIST
+  callForContribution:
+    worker: "0x70a1bebd73aef241154ea353d6c8c52d420d4f5b"
+    enclaveChallenge: "0"
+  finalizeWork:
+    stdout: "aStdout"
+    stderr: "aStderr"
+    uri: "anUri"
+
+
+
+
 
