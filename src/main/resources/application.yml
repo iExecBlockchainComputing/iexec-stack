@@ -1,5 +1,4 @@
-# There are the default property values so can be omitted if being used
-web3j:
+web3j: # There are the default property values so can be omitted if being used
   client-address: ${ethNode:http://localhost:8545}
   admin-client: false
 
@@ -7,10 +6,15 @@ web3j:
 ethereum:
   start-block: 0
   address:
-    iexecHub: ${iexecHub:0xe10c6f27fd7b36e2b626a259008d08ac2d745607}
+    iexecHub: ${iexecHub:0xdf3f02bae2618eb76dc2e54c064e28bde5bf74d6}
 
 wallet:
     folder: "./src/main/resources/wallet"
+
+server:
+  port: 8080 #8080 is default
+  contextPath: /
+
 
 scheduler:
   address: "0x8bd535d49b095ef648cd85ea827867d358872809"
@@ -20,7 +24,4 @@ scheduler:
 
 worker:
   address: "0x70a1bebd73aef241154ea353d6c8c52d420d4f5b"
-  wallet:
-    filename: "UTC--2018-02-14T11-15-48.411000000Z--70a1bebd73aef241154ea353d6c8c52d420d4f5b.json"
-    password: "whatever"
 
