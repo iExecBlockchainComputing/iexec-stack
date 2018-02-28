@@ -1,4 +1,4 @@
-# iExec worker
+# iExec Worker
 
 ### Clone project with it submodules (PoCo & rlc-token)
 
@@ -24,6 +24,8 @@ Run scheduler
 
 Get the WorkerPool address deployed by the Scheduler and put it in application.yml 
 ```
+GET http://localhost:8080/workerpool
+
 workerpool: ${workerpool:0x00000WORKERPOOLADDRESS}
 ```
 
@@ -48,7 +50,7 @@ java -jar iexec-worker.jar --workerpool=0x00000WORKERPOOLADDRESS --wallet.folder
 Mock endpoints
 ```
 Worker up?
-GET http://localhost:8080/isalive
+GET http://localhost:8081/isalive
 
 ```
 

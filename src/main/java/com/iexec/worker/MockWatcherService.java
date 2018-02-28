@@ -29,19 +29,14 @@ import static com.iexec.worker.Utils.signByteResult;
 public class MockWatcherService {
 
     private static final Logger log = LoggerFactory.getLogger(MockWatcherService.class);
-
     private static final DefaultBlockParameterName END = DefaultBlockParameterName.LATEST;
     private static final String WORKER_RESULT = "iExec the wanderer";
-
     private Web3j web3j;
     private Credentials workerCredentials;
-    private String workerPoolAddress;
     private WorkerPool workerPool;
-
 
     @Value("${ethereum.start-block}")
     private BigInteger startBlock;
-
 
     @Value("${wallet.folder}")
     private String walletFolder;
@@ -55,6 +50,9 @@ public class MockWatcherService {
     @Value("${worker.wallet.password}")
     private String workerWalletPassword;
 
+    @Value("${ethereum.address.workerpool}")
+    private String workerPoolAddress;
+
 
     @Autowired
     public MockWatcherService(Web3j web3j) {
@@ -63,27 +61,22 @@ public class MockWatcherService {
 
     @PostConstruct
     public void run() throws Exception {
-
         init();
         subscribeToWorkerPool();
         watchCallForContributionAndContribute();
         watchRevealConsensusAndReveal();
-
     }
 
     private void init() throws IOException, CipherException {
-        log.info("Connected to Ethereum client version: " + web3j.web3ClientVersion().send().getWeb3ClientVersion());
+        log.info("WORKER1 connected to Ethereum client version: " + web3j.web3ClientVersion().send().getWeb3ClientVersion());
 
-        log.info("Loading credentials");
+        log.info("WORKER1 loading credentials and contracts");
         workerCredentials = WalletUtils.loadCredentials(workerWalletPassword, walletFolder + "/" + workerWalletFilename);
-
-        log.info("Loading smart contracts");
         workerPool = WorkerPool.load(
                 workerPoolAddress, web3j, workerCredentials, ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT);
     }
 
     private void subscribeToWorkerPool() {
-        log.info("subscribeToWorkerPool");
         try {
             log.info("WORKER1 subscribing to workerPool");
             log.info(workerPool.subscribeToPool().send().getGasUsed().toString());
@@ -93,7 +86,7 @@ public class MockWatcherService {
     }
 
     private void watchCallForContributionAndContribute() {
-        log.info("watchCallForContributionAndContribute");
+        log.info("WORKER1 watching CallForContributionEvent (auto contribute)");
         workerPool.callForContributionEventObservable(getStartBlock(), END)
                 .subscribe(callForContributionEvent -> {
                     log.warn("WORKER1 received callForContributionEvent for worker " + callForContributionEvent.worker);
@@ -118,9 +111,8 @@ public class MockWatcherService {
                 });
     }
 
-
     private void watchRevealConsensusAndReveal() {
-        log.info("watchRevealConsensusAndReveal");
+        log.info("WORKER1 watching RevealConsensusEvent (auto reveal)");
         workerPool.revealConsensusEventObservable(getStartBlock(), END)
                 .subscribe(revealConsensusEvent -> {
                     log.warn("WORKER1 received revealConsensusEvent " + revealConsensusEvent.woid);
@@ -129,13 +121,6 @@ public class MockWatcherService {
                     workerPool.reveal(revealConsensusEvent.woid, result);
                 });
     }
-
-
-
-    public String getWorkerPoolAddress() {
-        return workerPoolAddress;
-    }
-
 
     private DefaultBlockParameter getStartBlock() {
         return DefaultBlockParameter.valueOf(startBlock);
