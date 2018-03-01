@@ -19,11 +19,11 @@ services:
       - 4323:4323
       - 443:443
     environment:
-      - TMPDIR=${TMP_SCHEDULER_FOLDER}
+      - TMPDIR=${SCHEDULER_TEMP_FOLDER}
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ${CERTIFICATE_AND_PRIVATE_KEYS_REPO}:/iexec/keystore
-      - ${TMP_SCHEDULER_FOLDER}:${TMP_SCHEDULER_FOLDER}
+      - ${SCHEDULER_TEMP_FOLDER}:${SCHEDULER_TEMP_FOLDER}
       - ${SCHEDULER_PERSISTING_FOLDER}:/var/xwhep
     networks:
       - iexec-net
