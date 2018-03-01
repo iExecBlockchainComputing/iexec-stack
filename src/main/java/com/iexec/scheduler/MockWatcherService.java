@@ -50,6 +50,11 @@ public class MockWatcherService {
     @Value("${scheduler.wallet.password}")
     private String schedulerWalletPassword;
 
+
+    //TODO
+    //@Autowired
+    //private MockProperties mockProperties;
+
     //Mock values
     @Value("${mock.createWorkerPool.name}")
     private String workerPoolName;
@@ -59,8 +64,6 @@ public class MockWatcherService {
     private BigInteger subscriptionMinimumStakePolicy;
     @Value("${mock.createWorkerPool.subscriptionLockStakePolicy}")
     private BigInteger subscriptionMinimumScorePolicy;
-    @Value("${mock.changeListPolicy.policyEnum}")
-    private BigInteger policyEnum;
     @Value("${mock.callForContribution.worker}")
     private String callForContributionWorker;
     @Value("${mock.callForContribution.enclaveChallenge}")
@@ -78,6 +81,9 @@ public class MockWatcherService {
     public MockWatcherService(Web3j web3j) {
         this.web3j = web3j;
     }
+
+    @Autowired
+    private WorkerPoolPolicyConfig workerPoolPolicyConfig;
 
     @PostConstruct
     public void run() throws Exception {
@@ -116,11 +122,13 @@ public class MockWatcherService {
                         try {
                             String m_workersAuthorizedListAddress = workerPoolForScheduler.m_workersAuthorizedListAddress().send();
 
-                            AuthorizedList authorizedList = AuthorizedList.load(
+                            AuthorizedList workerAuthorizedList = AuthorizedList.load(
                                     m_workersAuthorizedListAddress, web3j, schedulerCredentials, ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT);
-                            log.info("SCHEDLR updating Policy");
-                            authorizedList.changeListPolicy(policyEnum).send();
-                            watchPolicyChange(authorizedList);
+                            log.info("SCHEDLR updating Policy " + workerPoolPolicyConfig.getMode() + " " + workerPoolPolicyConfig.getList().toString());
+                            workerAuthorizedList.changeListPolicy(workerPoolPolicyConfig.getMode()).send();
+                            workerAuthorizedList.updateBlacklist(workerPoolPolicyConfig.getList(), true).send();
+                            watchPolicyChange(workerAuthorizedList);
+                            watchBlacklistChange(workerAuthorizedList);
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -133,6 +141,14 @@ public class MockWatcherService {
         authorizedList.policyChangeEventObservable(getStartBlock(), END)
                 .subscribe(policyChangeEvent -> {
                     log.info("SCHEDLR received policyChangeEvent on workerpool from " + policyChangeEvent.oldPolicy + " to " + policyChangeEvent.newPolicy);
+                });
+    }
+
+    private void watchBlacklistChange(AuthorizedList authorizedList) {
+        log.info("SCHEDLR watching BlacklistChangeEvent");
+        authorizedList.blacklistChangeEventObservable(getStartBlock(), END)
+                .subscribe(blacklistChangeEvent -> {
+                    log.info("SCHEDLR received BlacklistChangeEvent: " + blacklistChangeEvent.actor + " listed " + blacklistChangeEvent.isBlacklisted);
                 });
     }
 
