@@ -7,9 +7,9 @@ web3j:
   admin-client: false #default
 
 ethereum:
-  start-block: 740
+  startBlock: 0
   address:
-    iexecHub: ${iexecHub:0x9b69ef69a739c926558c81a402e5cdd6e5efbcfa}
+    iexecHub: ${iexecHub:0x4ba1b84752a177b357a9022e38273fc29a2155c6}
 
 wallet:
     folder: "./src/main/resources/wallet"
@@ -20,23 +20,23 @@ scheduler:
     filename: "UTC--2018-02-14T08-32-12.500000000Z--8bd535d49b095ef648cd85ea827867d358872809.json"
     password: "whatever"
 
+workerpool:
+  name: "myWorkerPool"              #unchangeable after creation
+  subscriptionLockStakePolicy: 0    #unchangeable after creation
+  subscriptionMinimumStakePolicy: 0
+  subscriptionMinimumScorePolicy: 0
+  stakeRatioPolicy: 30
+  schedulerRewardRatioPolicy: 1
+  resultRetentionPolicy: 7
+  mode: 1                           #blacklist
+  list:
+    - "0x000000000000000000000000000000000000bad1"
+    - "0x000000000000000000000000000000000000bad2"
 
 #Mock values
 mock:
-  worker-result:
+  workerResult:
     "iExec the wanderer" #hash 0x2fa3c6dc29e10dfc01cea7e9443ffe431e6564e74f5dcf4de4b04f2e5d343d70
-  createWorkerPool:
-    name: "myWorkerPool"
-    subscriptionLockStakePolicy: 0
-    subscriptionMinimumStakePolicy: 0
-    subscriptionMinimumScorePolicy: 0
-  changeWorkerPoolPolicy:
-    _newStakeRatioPolicy:
-    _newSchedulerRewardRatioPolicy:
-    _newResultRetentionPolicy:
-    _newSubscriptionMinimumStakePolicy:
-    _newSubscriptionMinimumScorePolicy:
-
   callForContribution:
     worker: "0x70a1bebd73aef241154ea353d6c8c52d420d4f5b"
     enclaveChallenge: "0"
@@ -45,11 +45,7 @@ mock:
     stderr: "aStderr"
     uri: "anUri"
 
-workerpool-policy:
-  mode: 1 #BLACKLIST
-  list:
-    - "0x000000000000000000000000000000000000bad1"
-    - "0x000000000000000000000000000000000000bad2"
+
 
 
 

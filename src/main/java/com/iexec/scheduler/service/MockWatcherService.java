@@ -1,8 +1,10 @@
-package com.iexec.scheduler;
+package com.iexec.scheduler.service;
 
 import com.iexec.scheduler.contracts.generated.AuthorizedList;
 import com.iexec.scheduler.contracts.generated.IexecHub;
 import com.iexec.scheduler.contracts.generated.WorkerPool;
+import com.iexec.scheduler.helper.MockConfig;
+import com.iexec.scheduler.helper.WorkerPoolConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +25,7 @@ import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.math.BigInteger;
 
-import static com.iexec.scheduler.Utils.hashResult;
+import static com.iexec.scheduler.helper.Utils.hashResult;
 
 @Service
 public class MockWatcherService {
@@ -37,7 +39,7 @@ public class MockWatcherService {
     private WorkerPool workerPoolForScheduler;
     private boolean workerSubscribed;
 
-    @Value("${ethereum.start-block}")
+    @Value("${ethereum.startBlock}")
     private BigInteger startBlock;
     @Value("${ethereum.address.iexecHub}")
     private String iexecHubAddress;
@@ -49,47 +51,24 @@ public class MockWatcherService {
     private String schedulerWalletFilename;
     @Value("${scheduler.wallet.password}")
     private String schedulerWalletPassword;
-
-
-    //TODO
-    //@Autowired
-    //private MockProperties mockProperties;
-
-    //Mock values
-    @Value("${mock.createWorkerPool.name}")
-    private String workerPoolName;
-    @Value("${mock.createWorkerPool.subscriptionLockStakePolicy}")
-    private BigInteger subscriptionLockStakePolicy;
-    @Value("${mock.createWorkerPool.subscriptionLockStakePolicy}")
-    private BigInteger subscriptionMinimumStakePolicy;
-    @Value("${mock.createWorkerPool.subscriptionLockStakePolicy}")
-    private BigInteger subscriptionMinimumScorePolicy;
-    @Value("${mock.callForContribution.worker}")
-    private String callForContributionWorker;
-    @Value("${mock.callForContribution.enclaveChallenge}")
-    private String callForContributionEnclaveChallenge;
-    @Value("${mock.worker-result}")
-    private String workerResult;
-    @Value("${mock.finalizeWork.stdout}")
-    private String finalizeWorkStdout;
-    @Value("${mock.finalizeWork.stderr}")
-    private String finalizeWorkStderr;
-    @Value("${mock.finalizeWork.uri}")
-    private String finalizeWorkUri;
+    @Autowired
+    private WorkerPoolConfig poolConfig;
+    @Autowired
+    private MockConfig mockConfig;
 
     @Autowired
     public MockWatcherService(Web3j web3j) {
         this.web3j = web3j;
     }
 
-    @Autowired
-    private WorkerPoolPolicyConfig workerPoolPolicyConfig;
-
     @PostConstruct
     public void run() throws Exception {
         init();
         createWorkerPool();
-        changeWorkerPoolPolicy();
+        loadAndSetupWorkerPool();
+    }
+
+    private void onWorkerPoolSetupCompleted() {
         watchSubscriptionAndSetWorkerSubscribed();
         watchWorkOrderAndAcceptWorkOrder();
         watchWorkOrderAcceptedAndCallForContribution();
@@ -106,51 +85,92 @@ public class MockWatcherService {
     }
 
     private void createWorkerPool() throws Exception {
-        log.info("SCHEDLR creating WorkerPool: " + workerPoolName);
-        iexecHub.createWorkerPool(workerPoolName, subscriptionLockStakePolicy, subscriptionMinimumStakePolicy, subscriptionMinimumScorePolicy).send();
+        log.info("SCHEDLR creating WorkerPool: " + poolConfig.getName());
+        log.info(
+                iexecHub.createWorkerPool(poolConfig.getName(),
+                        poolConfig.getSubscriptionLockStakePolicy(),
+                        poolConfig.getSubscriptionMinimumStakePolicy(),
+                        poolConfig.getSubscriptionMinimumScorePolicy()).send().getGasUsed().toString()
+        );
     }
 
-    private void changeWorkerPoolPolicy() {
+    private void loadAndSetupWorkerPool() {
         log.info("SCHEDLR watching CreateWorkerPoolEvent");
         iexecHub.createWorkerPoolEventObservable(getStartBlock(), END)
                 .subscribe(createWorkerPoolEvent -> {
-                    if (createWorkerPoolEvent.workerPoolName.equals(workerPoolName)) {
+                    log.info(createWorkerPoolEvent.workerPoolName);
+                    if (createWorkerPoolEvent.workerPoolName.equals(poolConfig.getName())) {
                         workerPoolAddress = createWorkerPoolEvent.workerPool;
                         log.warn("SCHEDLR received CreateWorkerPoolEvent " + createWorkerPoolEvent.workerPoolName + ":" + workerPoolAddress);
                         workerPoolForScheduler = WorkerPool.load(
                                 workerPoolAddress, web3j, schedulerCredentials, ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT);
-                        try {
-                            String m_workersAuthorizedListAddress = workerPoolForScheduler.m_workersAuthorizedListAddress().send();
-
-                            AuthorizedList workerAuthorizedList = AuthorizedList.load(
-                                    m_workersAuthorizedListAddress, web3j, schedulerCredentials, ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT);
-                            log.info("SCHEDLR updating Policy " + workerPoolPolicyConfig.getMode() + " " + workerPoolPolicyConfig.getList().toString());
-                            workerAuthorizedList.changeListPolicy(workerPoolPolicyConfig.getMode()).send();
-                            workerAuthorizedList.updateBlacklist(workerPoolPolicyConfig.getList(), true).send();
-                            watchPolicyChange(workerAuthorizedList);
-                            watchBlacklistChange(workerAuthorizedList);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
+                        setupWorkerPool();
                     }
                 });
     }
 
+    private void setupWorkerPool() {
+        try {
+            String workersAuthorizedListAddress = workerPoolForScheduler.m_workersAuthorizedListAddress().send();
+            AuthorizedList workerAuthorizedList = AuthorizedList.load(
+                    workersAuthorizedListAddress, web3j, schedulerCredentials, ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT);
+
+            watchWorkerPoolPolicy();
+            watchPolicyChange(workerAuthorizedList);
+            watchBlacklistChange(workerAuthorizedList);
+
+            updateWorkerPoolPolicy();
+            workerAuthorizedList.changeListPolicy(poolConfig.getMode()).send();
+            workerAuthorizedList.updateBlacklist(poolConfig.getList(), true).send();
+
+            onWorkerPoolSetupCompleted();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void updateWorkerPoolPolicy() throws Exception {
+        log.info("SCHEDLR pool policy needs changes?");
+        if (!poolConfig.getStakeRatioPolicy().equals(workerPoolForScheduler.m_stakeRatioPolicy().send()) ||
+                !poolConfig.getSchedulerRewardRatioPolicy().equals(workerPoolForScheduler.m_schedulerRewardRatioPolicy().send()) ||
+                !poolConfig.getSubscriptionMinimumStakePolicy().equals(workerPoolForScheduler.m_subscriptionMinimumStakePolicy().send()) ||
+                !poolConfig.getSubscriptionMinimumScorePolicy().equals(workerPoolForScheduler.m_subscriptionMinimumScorePolicy().send())) {
+
+            workerPoolForScheduler.changeWorkerPoolPolicy(poolConfig.getStakeRatioPolicy(),
+                    poolConfig.getSchedulerRewardRatioPolicy(),
+                    poolConfig.getResultRetentionPolicy(),
+                    poolConfig.getSubscriptionMinimumStakePolicy(),
+                    poolConfig.getSubscriptionMinimumScorePolicy()).send();
+            log.info("SCHEDLR yes");
+        } else {
+            log.info("SCHEDLR no");
+        }
+    }
+
+    private void watchWorkerPoolPolicy() {
+        log.info("SCHEDLR watching WorkerPoolPolicyUpdateEvent");
+        workerPoolForScheduler.workerPoolPolicyUpdateEventObservable(getStartBlock(), END)
+                .subscribe(workerPoolPolicyUpdateEvent -> {
+                    log.info("SCHEDLR received WorkerPoolPolicyUpdateEvent (newSchedulerRewardRatioPolicy,..)");
+                });
+    }
+
     private void watchPolicyChange(AuthorizedList authorizedList) {
-        log.info("SCHEDLR watching PolicyChangeEvent");
+        log.info("SCHEDLR watching PolicyChangeEvent (black/whitelist)");
         authorizedList.policyChangeEventObservable(getStartBlock(), END)
                 .subscribe(policyChangeEvent -> {
-                    log.info("SCHEDLR received policyChangeEvent on workerpool from " + policyChangeEvent.oldPolicy + " to " + policyChangeEvent.newPolicy);
+                    log.info("SCHEDLR received policyChangeEvent (black/whitelist) on workerpool from " + policyChangeEvent.oldPolicy + " to " + policyChangeEvent.newPolicy);
                 });
     }
 
     private void watchBlacklistChange(AuthorizedList authorizedList) {
-        log.info("SCHEDLR watching BlacklistChangeEvent");
+        log.info("SCHEDLR watching BlacklistChangeEvent (0xbadworker,..)");
         authorizedList.blacklistChangeEventObservable(getStartBlock(), END)
                 .subscribe(blacklistChangeEvent -> {
                     log.info("SCHEDLR received BlacklistChangeEvent: " + blacklistChangeEvent.actor + " listed " + blacklistChangeEvent.isBlacklisted);
                 });
     }
+
 
     private void watchSubscriptionAndSetWorkerSubscribed() {
         log.info("SCHEDLR watching WorkerPoolSubscriptionEvent");
@@ -186,9 +206,11 @@ public class MockWatcherService {
                 .subscribe(workOrderAcceptedEvent -> {
                     log.warn("SCHEDLR received WorkOrderAcceptedEvent" + workOrderAcceptedEvent.woid);
                     log.warn("SCHEDLR choosing a random worker");
-                    log.warn("SCHEDLR calling pool for contribution of worker1 " + callForContributionWorker);
+                    log.warn("SCHEDLR calling pool for contribution of worker1 " + mockConfig.getCallForContribution().getWorker());
                     try {
-                        log.info(workerPoolForScheduler.callForContribution(workOrderAcceptedEvent.woid, callForContributionWorker, callForContributionEnclaveChallenge).send().getGasUsed().toString());
+                        log.info(workerPoolForScheduler.callForContribution(workOrderAcceptedEvent.woid,
+                                mockConfig.getCallForContribution().getWorker(),
+                                mockConfig.getCallForContribution().getEnclaveChallenge()).send().getGasUsed().toString());
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -202,8 +224,8 @@ public class MockWatcherService {
                     log.warn("SCHEDLR received ContributeEvent " + contributeEvent.woid);
                     log.warn("SCHEDLR checking if consensus reached?");
                     log.warn("SCHEDLR found consensus reached");
-                    log.warn("SCHEDLR reavealing consensus " + hashResult(workerResult));
-                    byte[] consensus = Numeric.hexStringToByteArray(hashResult(workerResult));
+                    log.warn("SCHEDLR reavealing consensus " + hashResult(mockConfig.getWorkerResult()));
+                    byte[] consensus = Numeric.hexStringToByteArray(hashResult(mockConfig.getWorkerResult()));
                     try {
                         workerPoolForScheduler.revealConsensus(contributeEvent.woid, consensus).send();
                     } catch (Exception e) {
@@ -220,7 +242,10 @@ public class MockWatcherService {
                     log.warn("SCHEDLR checking if reveal timeout reached?");
                     log.warn("SCHEDLR found reveal timeout reached");
                     log.warn("SCHEDLR finalazing task");
-                    workerPoolForScheduler.finalizedWork(revealEvent.woid, finalizeWorkStdout, finalizeWorkStderr, finalizeWorkUri);//"aStdout", "aStderr", "anUri"
+                    workerPoolForScheduler.finalizedWork(revealEvent.woid,
+                            mockConfig.getFinalizeWork().getStdout(),
+                            mockConfig.getFinalizeWork().getStderr(),
+                            mockConfig.getFinalizeWork().getUri());//"aStdout", "aStderr", "anUri"
                 });
     }
 

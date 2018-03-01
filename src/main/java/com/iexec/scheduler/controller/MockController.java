@@ -1,15 +1,10 @@
-package com.iexec.scheduler;
+package com.iexec.scheduler.controller;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.iexec.scheduler.service.MockWatcherService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.web3j.protocol.core.methods.response.TransactionReceipt;
-import org.web3j.tx.Contract;
 
 import java.math.BigInteger;
 
@@ -41,7 +36,6 @@ public class MockController {
                                    @RequestParam(defaultValue = "1") BigInteger askedTrust,
                                    @RequestParam(defaultValue = "false") Boolean dappCallback,
                                    @RequestParam String beneficiary) throws Exception {
-        //return mockService.createWorkOrder(mockService.getWorkerPoolAddress(), app, "0", "noTaskParam", BigInteger.ZERO, BigInteger.ONE, false, clouduser);
         return mockService.createWorkOrder(mockService.getWorkerPoolAddress(), app, dataset, workOrderParam, workReward, askedTrust, dappCallback, beneficiary);
     }
 

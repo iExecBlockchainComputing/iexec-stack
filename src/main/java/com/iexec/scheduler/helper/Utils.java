@@ -1,4 +1,4 @@
-package com.iexec.scheduler;
+package com.iexec.scheduler.helper;
 
 import org.web3j.crypto.Hash;
 import org.web3j.protocol.Web3j;
@@ -20,7 +20,7 @@ public class Utils {
         return sign;
     }
 
-    static String hashResult(String result) {
+    public static String hashResult(String result) {
         return Hash.sha3(Hash.sha3String(result));
     }
 
