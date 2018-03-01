@@ -327,8 +327,8 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 		return idRpc;
 	}
 
-	private HttpServletRequest request;
-	private HttpServletResponse response;
+	protected HttpServletRequest request;
+	protected  HttpServletResponse response;
 	private FileItem dataUpload;
 	private String dataUploadmd5sum;
 	private final FileItemFactory diskFactory;
@@ -881,6 +881,25 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 		return null;
 		} catch (NoSuchAlgorithmException e) {
 			throw new IOException(e.getMessage());
+		}
+	}
+
+    /**
+     * This retrieves noredirect from query string
+     * @return true by default; the value of noredirect from the current request query string
+     * @since 12.2.9
+     * @see XWPostParams#NOREDIRECT
+     */
+    protected boolean redirect() {
+ 		try {
+ 		    final String value =  request.getParameter(XWPostParams.NOREDIRECT.toString().toLowerCase()) != null ?
+                    request.getParameter(XWPostParams.NOREDIRECT.toString().toLowerCase()):
+                    request.getParameter(XWPostParams.NOREDIRECT.toString());
+
+			return ! Boolean.parseBoolean(value);
+		} catch (final Exception e) {
+		    getLogger().exception(e);
+            return true;
 		}
 	}
 

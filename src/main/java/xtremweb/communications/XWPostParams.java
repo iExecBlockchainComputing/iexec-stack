@@ -78,6 +78,10 @@ public enum XWPostParams {
 		}
 	},
 	/**
+	 * @since 12.2.9
+	 */
+	NOREDIRECT,
+	/**
 	 * This is the name of the parameter containing the random string generated
 	 * when invoking the external authentication operator
 	 *
