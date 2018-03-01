@@ -77,9 +77,6 @@ import xtremweb.dispatcher.HTTPOAuthHandler.Operator;
 
 public abstract class HTTPJWTHandler extends HTTPHandler {
 
-	protected HttpServletRequest request;
-	protected HttpServletResponse response;
-	protected HttpSession session;
 
 	/**
 	 * This contains the gap while a login is valid
@@ -277,7 +274,7 @@ public abstract class HTTPJWTHandler extends HTTPHandler {
 		getLogger().debug("new connection");
 		request = _request;
 		response = _response;
-		session = baseRequest.getSession(true);
+        final HttpSession session = request.getSession(true);
 
 		final String path = request.getPathInfo();
 		try {
@@ -311,8 +308,8 @@ public abstract class HTTPJWTHandler extends HTTPHandler {
 		response.getWriter().flush();
 		request = null;
 		response = null;
-		session = null;
-	}
+        baseRequest.setHandled(true);
+    }
 
 	/**
 	 * This handles XMLHTTPRequest
@@ -380,7 +377,6 @@ public abstract class HTTPJWTHandler extends HTTPHandler {
 		final Cookie[] cookies = request.getCookies();
         getLogger().debug("getCookie : " + (cookies == null ? "null" : "" + cookies.length));
 		if ((cookies == null) || (cookies.length < 1)){
-//			throw new IllegalArgumentException("no cookie");
 			return getCookieFromQueryString(cookieName);
 		}
 
@@ -399,11 +395,8 @@ public abstract class HTTPJWTHandler extends HTTPHandler {
 	 */
 	final protected Cookie getCookieFromQueryString(final String cookieName) throws IllegalArgumentException {
 
-		final String queryString = request.getQueryString();
-		getLogger().debug("getCookieFromQueryString : " + queryString);
 		try {
-			final int separator = queryString.indexOf('=');
-			final String cookieValue = queryString.substring(separator + 1);
+            final String cookieValue = request.getParameter(cookieName);
 			getLogger().debug("getCookieFromQueryString ; cookie value : " + cookieValue);
 			return new Cookie(cookieName, cookieValue);
 		} catch (final Exception e) {

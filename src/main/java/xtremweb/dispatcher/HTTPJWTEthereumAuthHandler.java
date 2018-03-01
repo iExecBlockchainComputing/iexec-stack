@@ -1,4 +1,4 @@
-/*
+/**
  * Copyrights     : CNRS
  * Author         : Oleg Lodygensky
  * Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
@@ -65,10 +65,10 @@ public class HTTPJWTEthereumAuthHandler extends HTTPJWTHandler {
 	 * This is the name of the header variable User-Agent"
 	 */
 	private static final String USERAGENTNAME = "User-Agent";
-	
+
 	/**
 	 * This is the default constructor which only calls super("HTTPStatHandler")
-	 * 
+	 *
 	 * @throws UnsupportedEncodingException
 	 * @throws IllegalArgumentException
 	 */
@@ -91,7 +91,7 @@ public class HTTPJWTEthereumAuthHandler extends HTTPJWTHandler {
 
 	/**
 	 * This handles XMLHTTPRequest
-	 * 
+	 *
 	 * @throws JWTVerificationException
 	 * @throws IllegalArgumentException
 	 * @throws IOException
@@ -141,17 +141,22 @@ public class HTTPJWTEthereumAuthHandler extends HTTPJWTHandler {
 			getLogger().debug("newState = " + newState);
 			session.setAttribute(XWPostParams.AUTH_STATE.toString(), newState);
 			final Cookie cookieUser = new Cookie(XWPostParams.AUTH_STATE.toString(), newState);
-			response.addCookie(cookieUser);
+			if(redirect()) {
+				response.addCookie(cookieUser);
+			} else {
+				response.getWriter().write(newState);
+			}
 			getLogger().debug("setCookie " + XWPostParams.AUTH_STATE.toString() + " = " + newState);
 			storeState(newState, ethauthCookie);
 			strState = newState;
 		}
 
-		final String url = localRootUrl + "?" + XWPostParams.AUTH_STATE + "=" + strState;
-		getLogger().debug("sendRedirectUrm = " + url);
-		getLogger().debug(USERAGENTNAME + " = "  + request.getHeader(USERAGENTNAME));
-		response.sendRedirect(url);
-
+		if(redirect()) {
+			final String url = localRootUrl + "?" + XWPostParams.AUTH_STATE + "=" + strState;
+			getLogger().debug("sendRedirectUrm = " + url);
+			getLogger().debug(USERAGENTNAME + " = " + request.getHeader(USERAGENTNAME));
+			response.sendRedirect(url);
+		}
 		baseRequest.setHandled(true);
 	}
 
