@@ -1,18 +1,18 @@
 version: '3.4'
 
 networks:
-  xtremweb-net:
+  iexec-net:
     driver: bridge
 
 volumes:
   mysql-data:
-    name: xtremweb-data
+    name: iexec-data
 
 services:
   scheduler:
     image: iexechub/server:${SCHEDULER_DOCKER_IMAGE_VERSION}
-    container_name: xwscheduler
-    hostname: xwscheduler
+    container_name: iexecscheduler
+    hostname: iexecscheduler
     ports:
       - 4321:4321
       - 4322:4322
@@ -20,18 +20,20 @@ services:
       - 443:443
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+      - ${CERTIFICATE_AND_PRIVATE_KEYS_REPO}:/iexec/keystore
+      - ${SCHEDULER_PERSISTING_FOLDER}:/var/xwhep
     networks:
-      - xtremweb-net
+      - iexec-net
     env_file:
       - containerEnvironment
     restart: unless-stopped
 
   worker:
     image: iexechub/worker:${WORKER_DOCKER_IMAGE_VERSION}
-    container_name: xwworker
+    container_name: iexecworker
     environment:
       - SCHEDULER_IP=scheduler
-      - SCHEDULER_DOMAIN=xwscheduler
+      - SCHEDULER_DOMAIN=iexecscheduler
       - TMPDIR=${RESULTS_FOLDER}
     ports:
       - 4321
@@ -42,7 +44,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - ${RESULTS_FOLDER}:${RESULTS_FOLDER}
     networks:
-      - xtremweb-net
+      - iexec-net
     restart: unless-stopped
 
   db:
@@ -58,7 +60,7 @@ services:
     volumes:
       - mysql-data:/var/lib/mysql
     networks:
-      - xtremweb-net
+      - iexec-net
 
   db-viewer:
     image: adminer
@@ -66,4 +68,4 @@ services:
     ports:
       - 8080:8080
     networks:
-      - xtremweb-net
+      - iexec-net

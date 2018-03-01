@@ -166,10 +166,7 @@ task copyKeystoreGenerationScripts(type: Copy) {
         from(scripts)
         include('xwhepgenkeys.template')
         rename { fileName -> fileName.replace('.template', '') }
-
-        include('xwhepupdateopenidcerts.template')
-        rename { fileName -> fileName.replace('.template', '') }
-
+        
         filter(ReplaceTokens, tokens: getCustomProperties())
     }
 }
@@ -188,7 +185,7 @@ task copyExistingKeyPair(type: Copy) {
     }
 }
 
-task copyDevCacert(type: Copy) {
+task copyCacert(type: Copy) {
     into dist
 
     into("/keystore") {
@@ -197,26 +194,8 @@ task copyDevCacert(type: Copy) {
     }
 }
 
-task copyProdCacert(type: Exec) {
-    commandLine("sh", "-c",
-            "wget https://launchpad.net/~openjdk-r/+archive/ubuntu/ppa/+files/openjdk-8-jre-headless_8u141-b15-3~14.04_amd64.deb -O jre.deb && " +
-            "dpkg -x jre.deb jre && " +
-            "find jre -name cacerts | xargs cp -t " + dist + "/keystore" + " && " +
-            "rm -r jre*"
-    )
-}
-
-task copyCacert() {
-    dependsOn(copyKeystoreGenerationScripts)
-    if (project.hasProperty("environment") && project.getProperty("environment").toString().toLowerCase().equals("prod")) {
-        dependsOn(copyProdCacert)
-    } else {
-        dependsOn(copyDevCacert)
-    }
-}
-
 task generateKeys(type: Exec) {
-    dependsOn(copyCacert, copyExistingKeyPair)
+    dependsOn(copyKeystoreGenerationScripts, copyCacert, copyExistingKeyPair)
     commandLine("sh", "-c",
             distBin + '/xwhepgenkeys' + " && " +
                     "if [ \$? -eq 0 ] ; then echo \"Keystores generated\" ; else echo \"ERROR: keystores generation error\"; exit 1 ; fi"
