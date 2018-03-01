@@ -13,6 +13,11 @@ if [ ! -z $DBHOST ] ; then
 	sed -i "s/^DBHOST=.*/DBHOST=$DBHOST/g" /iexec/conf/xwconfigure.values
 fi
 
+# add the TMPDIR variable if defined
+if [ ! -z $TMPDIR ] ; then
+	sed -i "s/^#TMPDIR=.*/TMPDIR=$TMPDIR/g" /iexec/conf/xtremweb.server.conf
+fi
+
 # keystore is generated from the script xwhepgenkeys directly in the container
 rm /iexec/keystore/cacerts
 rm /iexec/keystore/*.keys
