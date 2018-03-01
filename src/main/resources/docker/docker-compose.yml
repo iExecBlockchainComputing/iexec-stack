@@ -21,6 +21,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ${CERTIFICATE_AND_PRIVATE_KEYS_REPO}:/iexec/keystore
+      - ${SCHEDULER_PERSISTING_FOLDER}:/var/xwhep
     networks:
       - iexec-net
     env_file:
