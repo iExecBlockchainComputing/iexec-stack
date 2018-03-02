@@ -1,5 +1,6 @@
 package com.iexec.scheduler.service;
 
+import com.iexec.scheduler.PolicyEnum;
 import com.iexec.scheduler.contracts.generated.AuthorizedList;
 import com.iexec.scheduler.contracts.generated.IexecHub;
 import com.iexec.scheduler.contracts.generated.WorkerPool;
@@ -118,10 +119,15 @@ public class MockWatcherService {
             watchWorkerPoolPolicy();
             watchPolicyChange(workerAuthorizedList);
             watchBlacklistChange(workerAuthorizedList);
+            watchWhitelistChange(workerAuthorizedList);
 
             updateWorkerPoolPolicy();
             workerAuthorizedList.changeListPolicy(poolConfig.getMode()).send();
-            workerAuthorizedList.updateBlacklist(poolConfig.getList(), true).send();
+            if (poolConfig.getMode().equals(PolicyEnum.WHITELIST)){
+                workerAuthorizedList.updateWhitelist(poolConfig.getList(), true).send();
+            } else if (poolConfig.getMode().equals(PolicyEnum.BLACKLIST)){
+                workerAuthorizedList.updateBlacklist(poolConfig.getList(), true).send();
+            }
 
             onWorkerPoolSetupCompleted();
         } catch (Exception e) {
@@ -168,6 +174,14 @@ public class MockWatcherService {
         authorizedList.blacklistChangeEventObservable(getStartBlock(), END)
                 .subscribe(blacklistChangeEvent -> {
                     log.info("SCHEDLR received BlacklistChangeEvent: " + blacklistChangeEvent.actor + " listed " + blacklistChangeEvent.isBlacklisted);
+                });
+    }
+
+    private void watchWhitelistChange(AuthorizedList authorizedList) {
+        log.info("SCHEDLR watching WhitelistChangeEvent (0xgoodworker,..)");
+        authorizedList.whitelistChangeEventObservable(getStartBlock(), END)
+                .subscribe(whitelistChangeEvent -> {
+                    log.info("SCHEDLR received WhitelistChangeEvent: " + whitelistChangeEvent.actor + " listed " + whitelistChangeEvent.isWhitelisted);
                 });
     }
 

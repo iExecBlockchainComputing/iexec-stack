@@ -9,7 +9,7 @@ web3j:
 ethereum:
   startBlock: 0
   address:
-    iexecHub: ${iexecHub:0x4ba1b84752a177b357a9022e38273fc29a2155c6}
+    iexecHub: ${iexecHub:0x7d4f818724f283396dd01275a19ee2a211e7ff38}
 
 wallet:
     folder: "./src/main/resources/wallet"
@@ -28,10 +28,11 @@ workerpool:
   stakeRatioPolicy: 30
   schedulerRewardRatioPolicy: 1
   resultRetentionPolicy: 7
-  mode: 1                           #blacklist
+  mode: 1
   list:
     - "0x000000000000000000000000000000000000bad1"
     - "0x000000000000000000000000000000000000bad2"
+    - "0x55b541c70252aa3eb1581b8e74ce1ec17126b33a"
 
 #Mock values
 mock:
