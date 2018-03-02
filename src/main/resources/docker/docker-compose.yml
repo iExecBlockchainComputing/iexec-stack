@@ -48,18 +48,24 @@ services:
     restart: unless-stopped
 
   gmond:
-    image: gmond
+    image: iexechub/ganglia-gmond
     container_name: iexecgmond
+    environment:
+      DBUSER: ${MYSQL_ADMIN_USER}
+      DBPASSWORD: ${MYSQL_ADMIN_PASSWORD}
+      DATABASE: ${MYSQL_DB_NAME}
+    env_file:
+      - containerEnvironment
     ports:
       - 8694:8694
     networks:
       - iexec-net
 
   gmetad:
-    image: gmetad-gangliaweb
-    volumes:
-      - /etc/ganglia/gmetad.conf:/etc/ganglia/gmetad.conf
-      - /var/lib/ganglia:/var/lib/ganglia
+    image: iexechub/ganglia-gmetad
+    container_name: iexecgmetad
+    environment:
+      GMOND_CONTAINER_NAME: iexecgmond
     ports:
       - 80:80
     networks:
