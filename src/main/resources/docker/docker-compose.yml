@@ -47,6 +47,24 @@ services:
       - iexec-net
     restart: unless-stopped
 
+  gmond:
+    image: gmond
+    container_name: iexecgmond
+    ports:
+      - 8694:8694
+    networks:
+      - iexec-net
+
+  gmetad:
+    image: gmetad-gangliaweb
+    volumes:
+      - /etc/ganglia/gmetad.conf:/etc/ganglia/gmetad.conf
+      - /var/lib/ganglia:/var/lib/ganglia
+    ports:
+      - 80:80
+    networks:
+      - iexec-net
+  
   db:
     image: mysql:5.7
     container_name: mysql
@@ -69,3 +87,4 @@ services:
       - 8080:8080
     networks:
       - iexec-net
+
