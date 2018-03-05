@@ -75,6 +75,7 @@ public class MockWatcherService {
                 .subscribe(workOrderEvent -> {
                     log.info("SCHEDLR received WorkOrderEvent " + workOrderEvent.woid);
                     log.info("SCHEDLR analysing asked workOrder");
+                    //TODO - Count alive workers before accepting WorkOrder (change isWorkerSubscribed)
                     log.info("SCHEDLR accepting workOrder");
 
                     try {
@@ -170,7 +171,6 @@ public class MockWatcherService {
 
     public TransactionReceipt createWorkOrder(String workerPool, String app, String dataset, String workOrderParam, BigInteger workReward, BigInteger askedTrust, Boolean dappCallback, String beneficiary) throws Exception {
         TransactionReceipt tr = null;
-
         if (isWorkerSubscribed()) {
             tr = iexecHubService.getIexecHub().createWorkOrder(workerPool, app, dataset, workOrderParam, workReward, askedTrust, dappCallback, beneficiary).send();
         }

@@ -22,6 +22,7 @@ import java.util.List;
 public final class Utils {
 
     private Utils() {
+        throw new IllegalAccessError("Utility class");
     }
 
     public static String signByteResult(String result, String address) {

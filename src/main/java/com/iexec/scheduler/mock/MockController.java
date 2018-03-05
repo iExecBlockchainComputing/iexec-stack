@@ -29,11 +29,12 @@ public class MockController {
     }
 
 
-    @PostMapping("/workerpool")
+    @RequestMapping("/workerpool")
     public String getWorkerpool() throws Exception {
         return workerPoolService.getWorkerPoolAddress();
     }
 
+    //TODO - Change to @PostMapping
     @RequestMapping("/createworkorder")
     public TransactionReceipt createWorkOrder(@RequestParam String app,
                                               @RequestParam(defaultValue = "0") String dataset,
