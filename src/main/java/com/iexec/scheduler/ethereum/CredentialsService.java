@@ -1,4 +1,4 @@
-package com.iexec.scheduler.service;
+package com.iexec.scheduler.ethereum;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

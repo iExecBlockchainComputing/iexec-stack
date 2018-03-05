@@ -1,8 +1,10 @@
-package com.iexec.scheduler.service;
+package com.iexec.scheduler.iexechub;
 
 import com.iexec.scheduler.contracts.generated.IexecHub;
-import com.iexec.scheduler.helper.EthConfig;
-import com.iexec.scheduler.helper.WorkerPoolConfig;
+import com.iexec.scheduler.ethereum.CredentialsService;
+import com.iexec.scheduler.ethereum.EthConfig;
+import com.iexec.scheduler.workerpool.WorkerPoolConfig;
+import com.iexec.scheduler.workerpool.WorkerPoolService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

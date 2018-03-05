@@ -1,8 +1,9 @@
-package com.iexec.scheduler.service;
+package com.iexec.scheduler.mock;
 
 import com.iexec.scheduler.contracts.generated.WorkerPool;
-import com.iexec.scheduler.helper.EthConfig;
-import com.iexec.scheduler.helper.MockConfig;
+import com.iexec.scheduler.ethereum.EthConfig;
+import com.iexec.scheduler.iexechub.IexecHubService;
+import com.iexec.scheduler.workerpool.WorkerPoolService;
 import org.bouncycastle.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +19,7 @@ import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.iexec.scheduler.helper.Utils.hashResult;
+import static com.iexec.scheduler.ethereum.Utils.hashResult;
 
 @Service
 public class MockWatcherService {

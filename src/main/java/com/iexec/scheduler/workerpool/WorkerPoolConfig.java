@@ -1,4 +1,4 @@
-package com.iexec.scheduler.helper;
+package com.iexec.scheduler.workerpool;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;

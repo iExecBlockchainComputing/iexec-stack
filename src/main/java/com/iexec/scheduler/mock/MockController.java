@@ -1,7 +1,6 @@
-package com.iexec.scheduler.controller;
+package com.iexec.scheduler.mock;
 
-import com.iexec.scheduler.service.MockWatcherService;
-import com.iexec.scheduler.service.WorkerPoolService;
+import com.iexec.scheduler.workerpool.WorkerPoolService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

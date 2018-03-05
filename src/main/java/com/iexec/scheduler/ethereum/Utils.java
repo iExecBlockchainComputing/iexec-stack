@@ -1,4 +1,4 @@
-package com.iexec.scheduler.helper;
+package com.iexec.scheduler.ethereum;
 
 import org.web3j.crypto.Hash;
 import org.web3j.protocol.Web3j;

@@ -1,4 +1,4 @@
-package com.iexec.scheduler.helper;
+package com.iexec.scheduler.workerpool;
 
 import java.math.BigInteger;
 
