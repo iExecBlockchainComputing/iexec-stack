@@ -1,6 +1,7 @@
 package com.iexec.scheduler.controller;
 
 import com.iexec.scheduler.service.MockWatcherService;
+import com.iexec.scheduler.service.WorkerPoolService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -12,10 +13,13 @@ import java.math.BigInteger;
 public class MockController {
 
     private MockWatcherService mockService;
+    private WorkerPoolService workerPoolService;
+
 
     @Autowired
-    public MockController(MockWatcherService mockService) {
+    public MockController(MockWatcherService mockService, WorkerPoolService workerPoolService) {
         this.mockService = mockService;
+        this.workerPoolService = workerPoolService;
     }
 
     @RequestMapping("/isalive")
@@ -23,9 +27,10 @@ public class MockController {
         return true;
     }
 
+
     @RequestMapping("/workerpool")
     public String getWorkerpool() throws Exception {
-        return mockService.getWorkerPoolAddress();
+        return workerPoolService.getWorkerPoolAddress();
     }
 
     @RequestMapping("/createworkorder")
@@ -36,8 +41,8 @@ public class MockController {
                                    @RequestParam(defaultValue = "1") BigInteger askedTrust,
                                    @RequestParam(defaultValue = "false") Boolean dappCallback,
                                    @RequestParam String beneficiary) throws Exception {
-        return mockService.createWorkOrder(mockService.getWorkerPoolAddress(), app, dataset, workOrderParam, workReward, askedTrust, dappCallback, beneficiary);
+        return mockService.createWorkOrder(workerPoolService.getWorkerPoolAddress(), app, dataset, workOrderParam, workReward, askedTrust, dappCallback, beneficiary);
+
+
     }
-
-
 }

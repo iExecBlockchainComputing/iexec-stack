@@ -12,6 +12,7 @@ import java.util.List;
 public class WorkerPoolConfig {
 
     private List<String> list;
+    private String address;
     private BigInteger mode;
     private String name;
     private BigInteger subscriptionLockStakePolicy;
@@ -23,6 +24,14 @@ public class WorkerPoolConfig {
 
     WorkerPoolConfig() {
         this.list = new ArrayList<>();
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     public List<String> getList() {
