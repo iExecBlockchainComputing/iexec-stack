@@ -1,6 +1,7 @@
 server:
   contextPath: /
   port: 8081
+  #port: 8082
 
 web3j:
   client-address: ${ethNode:http://localhost:8545} #default
@@ -21,8 +22,10 @@ wallet:
 
 worker:
   address: "0x70a1bebd73aef241154ea353d6c8c52d420d4f5b"
+  #address: "0x55b541c70252aa3eb1581b8e74ce1ec17126b33a"
   wallet:
     filename: "UTC--2018-02-14T11-15-48.411000000Z--70a1bebd73aef241154ea353d6c8c52d420d4f5b.json"
+    #filename: "UTC--2018-03-02T08-49-16.972000000Z--55b541c70252aa3eb1581b8e74ce1ec17126b33a.json"
     password: "whatever"
 
 
