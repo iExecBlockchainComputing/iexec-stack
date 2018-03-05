@@ -1,14 +1,31 @@
-package com.iexec.scheduler;
+package com.iexec.scheduler.ethereum;
 
 import org.web3j.crypto.Hash;
 import org.web3j.protocol.Web3j;
+import org.web3j.protocol.core.DefaultBlockParameter;
+import org.web3j.protocol.core.DefaultBlockParameterName;
+import org.web3j.protocol.core.methods.response.EthGetTransactionCount;
+import org.web3j.protocol.core.methods.response.TransactionReceipt;
+import org.web3j.rlp.RlpEncoder;
+import org.web3j.rlp.RlpList;
+import org.web3j.rlp.RlpString;
+import org.web3j.rlp.RlpType;
+import org.web3j.utils.Numeric;
 
 import java.io.IOException;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
-public class Utils {
+public final class Utils {
 
-    static String signByteResult(String result, String address) {
+    private Utils() {
+        throw new IllegalAccessError("Utility class");
+    }
+
+    public static String signByteResult(String result, String address) {
         String resultHash = Hash.sha3String(result);
         String addressHash = Hash.sha3(address);
         String xor = "0x";
@@ -20,15 +37,15 @@ public class Utils {
         return sign;
     }
 
-    static String hashResult(String result) {
+    public static String hashResult(String result) {
         return Hash.sha3(Hash.sha3String(result));
     }
 
-    static String web3Sha3(Web3j web3j, String preimage) throws IOException {
+    public static String web3Sha3(Web3j web3j, String preimage) throws IOException {
         return web3j.web3Sha3(preimage).send().getResult();
     }
 
-    static String asciiToHex(String asciiValue) {
+    public static String asciiToHex(String asciiValue) {
         char[] chars = asciiValue.toCharArray();
         StringBuffer hex = new StringBuffer();
         for (int i = 0; i < chars.length; i++) {
@@ -37,7 +54,5 @@ public class Utils {
 
         return hex.toString() + "".join("", Collections.nCopies(32 - (hex.length() / 2), "00"));
     }
-
-
 
 }
