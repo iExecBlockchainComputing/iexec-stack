@@ -100,19 +100,15 @@ public class WorkerPoolService {
 
         //TODO - Make possible to unblacklist an ex-blacklisted worker (and do the same for whitelisting feature)
         log.info("SCHEDLR authorizedList needs changes?");
-        for (String worker: poolConfig.getList()){
-            if (poolConfig.getMode().equals(PolicyEnum.WHITELIST)) {
-                if (!workerAuthorizedList.isWhitelisted(worker).send()){//update hole list if one worker is not whitelisted
-                    workerAuthorizedList.updateWhitelist(poolConfig.getList(), true).send();
-                    log.info("SCHEDLR yes");
-                    return;
-                }
-            } else if (poolConfig.getMode().equals(PolicyEnum.BLACKLIST)) {
-                if (!workerAuthorizedList.isblacklisted(worker).send()){
-                    workerAuthorizedList.updateBlacklist(poolConfig.getList(), true).send();
-                    log.info("SCHEDLR yes");
-                    return;
-                }
+        for (String worker: poolConfig.getList()){//update hole list if one worker is not whitelisted
+            if (poolConfig.getMode().equals(PolicyEnum.WHITELIST) && !workerAuthorizedList.isWhitelisted(worker).send()) {
+                workerAuthorizedList.updateWhitelist(poolConfig.getList(), true).send();
+                log.info("SCHEDLR yes");
+                return;
+            } else if (poolConfig.getMode().equals(PolicyEnum.BLACKLIST) && !workerAuthorizedList.isblacklisted(worker).send()) {
+                workerAuthorizedList.updateBlacklist(poolConfig.getList(), true).send();
+                log.info("SCHEDLR yes");
+                return;
             }
         }
         log.info("SCHEDLR no");

@@ -40,8 +40,8 @@ public class IexecHubService {
         createWorkerPool();
     }
 
-    public void createWorkerPool() throws Exception {
-        if (poolConfig.getAddress().isEmpty()){
+    private void createWorkerPool() throws Exception {
+        if (poolConfig.getAddress().isEmpty()) {
             log.info("SCHEDLR CreateWorkerPool");
             iexecHub.createWorkerPool(poolConfig.getName(),
                     poolConfig.getSubscriptionLockStakePolicy(),

@@ -3,9 +3,11 @@ package com.iexec.scheduler.controller;
 import com.iexec.scheduler.service.MockWatcherService;
 import com.iexec.scheduler.service.WorkerPoolService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.web3j.protocol.core.methods.response.TransactionReceipt;
 
 import java.math.BigInteger;
 
@@ -28,21 +30,19 @@ public class MockController {
     }
 
 
-    @RequestMapping("/workerpool")
+    @PostMapping("/workerpool")
     public String getWorkerpool() throws Exception {
         return workerPoolService.getWorkerPoolAddress();
     }
 
     @RequestMapping("/createworkorder")
-    public boolean createWorkOrder(@RequestParam String app,
-                                   @RequestParam(defaultValue = "0") String dataset,
-                                   @RequestParam(defaultValue = "noTaskParam") String workOrderParam,
-                                   @RequestParam(defaultValue = "0") BigInteger workReward,
-                                   @RequestParam(defaultValue = "1") BigInteger askedTrust,
-                                   @RequestParam(defaultValue = "false") Boolean dappCallback,
-                                   @RequestParam String beneficiary) throws Exception {
+    public TransactionReceipt createWorkOrder(@RequestParam String app,
+                                              @RequestParam(defaultValue = "0") String dataset,
+                                              @RequestParam(defaultValue = "noTaskParam") String workOrderParam,
+                                              @RequestParam(defaultValue = "0") BigInteger workReward,
+                                              @RequestParam(defaultValue = "1") BigInteger askedTrust,
+                                              @RequestParam(defaultValue = "false") Boolean dappCallback,
+                                              @RequestParam String beneficiary) throws Exception {
         return mockService.createWorkOrder(workerPoolService.getWorkerPoolAddress(), app, dataset, workOrderParam, workReward, askedTrust, dappCallback, beneficiary);
-
-
     }
 }

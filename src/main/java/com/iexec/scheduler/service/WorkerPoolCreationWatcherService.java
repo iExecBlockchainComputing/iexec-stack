@@ -30,21 +30,12 @@ public class WorkerPoolCreationWatcherService {
 
     @PostConstruct
     public void run() throws Exception {
-        if (poolConfig.getAddress().isEmpty()){
+        if (poolConfig.getAddress().isEmpty()) {
             log.info("SCHEDLR watching CreateWorkerPoolEvent ");
-            Observable<IexecHub.CreateWorkerPoolEventResponse> o = iexecHubService.getIexecHub().createWorkerPoolEventObservable(ethConfig.getStartBlockParameter(), DefaultBlockParameterName.LATEST);
-            IexecHub.CreateWorkerPoolEventResponse createWorkerPoolEvent = o.toBlocking().first();
+            Observable<IexecHub.CreateWorkerPoolEventResponse> createWorkerPoolEventResponseObservable = iexecHubService.getIexecHub().createWorkerPoolEventObservable(ethConfig.getStartBlockParameter(), DefaultBlockParameterName.LATEST);
+            IexecHub.CreateWorkerPoolEventResponse createWorkerPoolEvent = createWorkerPoolEventResponseObservable.toBlocking().first();
             this.workerPoolAddress = createWorkerPoolEvent.workerPool;
-            log.warn("SCHEDLR received CreateWorkerPoolEvent " + createWorkerPoolEvent.workerPoolName + ":" + createWorkerPoolEvent.workerPool);
-            /*Subscription s = o
-                .subscribe(createWorkerPoolEvent -> {
-                    //if (createWorkerPoolEvent.workerPoolName.equals(poolConfig.getName())) {
-                    log.warn("SCHEDLR received CreateWorkerPoolEvent " + createWorkerPoolEvent.workerPoolName + ":" + createWorkerPoolEvent.workerPool);
-                    workerPoolAddress = createWorkerPoolEvent.workerPool;
-                    //WorkerPool workerPool = loadWorkerPool(createWorkerPoolEvent.workerPool);
-                    //setupWorkerPool(workerPool);
-                    //}
-                });*/
+            log.info("SCHEDLR received CreateWorkerPoolEvent " + createWorkerPoolEvent.workerPoolName + ":" + createWorkerPoolEvent.workerPool);
         }
     }
 

@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import org.web3j.protocol.core.DefaultBlockParameterName;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.tuples.generated.Tuple2;
-import org.web3j.tx.Contract;
 import org.web3j.utils.Numeric;
 
 import javax.annotation.PostConstruct;
@@ -62,7 +61,7 @@ public class MockWatcherService {
         iexecHubService.getIexecHub().workerPoolSubscriptionEventObservable(ethConfig.getStartBlockParameter(), END)
                 .subscribe(workerPoolSubscriptionEvent -> {
                     if (workerPoolSubscriptionEvent.workerPool.equals(workerPoolService.getWorkerPoolAddress())) {
-                        log.warn("SCHEDLR received WorkerPoolSubscriptionEvent for worker " + workerPoolSubscriptionEvent.worker);
+                        log.info("SCHEDLR received WorkerPoolSubscriptionEvent for worker " + workerPoolSubscriptionEvent.worker);
                         workerSubscribed = true;
                         //now clouduser able to createWorkOrder
                     }
@@ -73,9 +72,9 @@ public class MockWatcherService {
         log.info("SCHEDLR watching WorkOrderEvent (auto accept)");
         iexecHubService.getIexecHub().workOrderEventObservable(ethConfig.getStartBlockParameter(), END)
                 .subscribe(workOrderEvent -> {
-                    log.warn("SCHEDLR received WorkOrderEvent " + workOrderEvent.woid);
-                    log.warn("SCHEDLR analysing asked workOrder");
-                    log.warn("SCHEDLR accepting workOrder");
+                    log.info("SCHEDLR received WorkOrderEvent " + workOrderEvent.woid);
+                    log.info("SCHEDLR analysing asked workOrder");
+                    log.info("SCHEDLR accepting workOrder");
 
                     try {
                         iexecHubService.getIexecHub().acceptWorkOrder(workOrderEvent.woid, workOrderEvent.workerPool).send();
@@ -89,8 +88,8 @@ public class MockWatcherService {
         log.info("SCHEDLR watching WorkOrderAcceptedEvent (auto callForContribution)");
         workerPoolService.getWorkerPool().workOrderAcceptedEventObservable(ethConfig.getStartBlockParameter(), END)
                 .subscribe(workOrderAcceptedEvent -> {
-                    log.warn("SCHEDLR received WorkOrderAcceptedEvent" + workOrderAcceptedEvent.woid);
-                    log.warn("SCHEDLR calling pool for contribution of workers: " + mockConfig.getCallForContribution().getWorkers().toString());
+                    log.info("SCHEDLR received WorkOrderAcceptedEvent" + workOrderAcceptedEvent.woid);
+                    log.info("SCHEDLR calling pool for contribution of workers: " + mockConfig.getCallForContribution().getWorkers().toString());
 
                     setupForFutureContributions(workOrderAcceptedEvent);
                     try {
@@ -114,13 +113,13 @@ public class MockWatcherService {
         log.info("SCHEDLR watching ContributeEvent (auto revealConsensus)");
         workerPoolService.getWorkerPool().contributeEventObservable(ethConfig.getStartBlockParameter(), END)
                 .subscribe(contributeEvent -> {
-                    log.warn("SCHEDLR received ContributeEvent " + contributeEvent.woid + " of worker " + contributeEvent.worker);
+                    log.info("SCHEDLR received ContributeEvent " + contributeEvent.woid + " of worker " + contributeEvent.worker);
 
                     addContributionToMap(contributeEvent);
                     if (!isConsensusReached(contributeEvent)) {
                         return;
                     }
-                    log.warn("SCHEDLR reavealing consensus " + hashResult(mockConfig.getWorkerResult()));
+                    log.info("SCHEDLR reavealing consensus " + hashResult(mockConfig.getWorkerResult()));
                     byte[] consensus = Numeric.hexStringToByteArray(hashResult(mockConfig.getWorkerResult()));
                     try {
                         workerPoolService.getWorkerPool().revealConsensus(contributeEvent.woid, consensus).send();
@@ -138,14 +137,14 @@ public class MockWatcherService {
     }
 
     private boolean isConsensusReached(WorkerPool.ContributeEventResponse contributeEvent) {
-        log.warn("SCHEDLR checking if consensus reached?");
+        log.info("SCHEDLR checking if consensus reached?");
         for (String worker : mockConfig.getCallForContribution().getWorkers()) {
             Tuple2<String, String> orderWorkerTuple = new Tuple2<>(contributeEvent.woid, worker);
             if (Arrays.areEqual(contributionMap.get(orderWorkerTuple), EMPTY_BYTE)) {
                 return false;
             }
         }
-        log.warn("SCHEDLR found consensus reached");
+        log.info("SCHEDLR found consensus reached");
         return true;
     }
 
@@ -153,10 +152,10 @@ public class MockWatcherService {
         log.info("SCHEDLR watching RevealEvent (auto finalizeWork)");
         workerPoolService.getWorkerPool().revealEventObservable(ethConfig.getStartBlockParameter(), END)
                 .subscribe(revealEvent -> {
-                    log.warn("SCHEDLR received RevealEvent: " + Numeric.toHexString(revealEvent.result));
-                    log.warn("SCHEDLR checking if reveal timeout reached?");
-                    log.warn("SCHEDLR found reveal timeout reached");
-                    log.warn("SCHEDLR finalazing task");
+                    log.info("SCHEDLR received RevealEvent: " + Numeric.toHexString(revealEvent.result));
+                    log.info("SCHEDLR checking if reveal timeout reached?");
+                    log.info("SCHEDLR found reveal timeout reached");
+                    log.info("SCHEDLR finalazing task");
                     try {
                         workerPoolService.getWorkerPool().finalizedWork(revealEvent.woid,
                                 mockConfig.getFinalizeWork().getStdout(),
@@ -168,14 +167,13 @@ public class MockWatcherService {
                 });
     }
 
-    public boolean createWorkOrder(String workerPool, String app, String dataset, String workOrderParam, BigInteger workReward, BigInteger askedTrust, Boolean dappCallback, String beneficiary) throws Exception {
-        boolean gasOk = false;
+    public TransactionReceipt createWorkOrder(String workerPool, String app, String dataset, String workOrderParam, BigInteger workReward, BigInteger askedTrust, Boolean dappCallback, String beneficiary) throws Exception {
+        TransactionReceipt tr = null;
 
         if (isWorkerSubscribed()) {
-            TransactionReceipt tr = iexecHubService.getIexecHub().createWorkOrder(workerPool, app, dataset, workOrderParam, workReward, askedTrust, dappCallback, beneficiary).send();
-            gasOk = !tr.getGasUsed().equals(Contract.GAS_LIMIT);
+            tr = iexecHubService.getIexecHub().createWorkOrder(workerPool, app, dataset, workOrderParam, workReward, askedTrust, dappCallback, beneficiary).send();
         }
-        return gasOk;
+        return tr;
     }
 
     public boolean isWorkerSubscribed() {
