@@ -1,44 +1,20 @@
 package com.iexec.scheduler.service;
 
-import com.iexec.scheduler.contracts.generated.IexecHub;
-import com.iexec.scheduler.contracts.generated.WorkerPool;
+import com.iexec.scheduler.helper.EthConfig;
 import com.iexec.scheduler.helper.MockConfig;
-import com.iexec.scheduler.helper.WorkerPoolConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.web3j.abi.EventValues;
-import org.web3j.abi.TypeReference;
-import org.web3j.abi.datatypes.Address;
-import org.web3j.abi.datatypes.Event;
-import org.web3j.abi.datatypes.Utf8String;
-import org.web3j.crypto.Hash;
-import org.web3j.crypto.TransactionEncoder;
-import org.web3j.protocol.Web3j;
-import org.web3j.protocol.core.DefaultBlockParameter;
 import org.web3j.protocol.core.DefaultBlockParameterName;
-import org.web3j.protocol.core.methods.response.EthGetTransactionCount;
-import org.web3j.protocol.core.methods.response.EthGetTransactionReceipt;
-import org.web3j.protocol.core.methods.response.Log;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
-import org.web3j.rlp.RlpEncoder;
-import org.web3j.rlp.RlpList;
-import org.web3j.rlp.RlpString;
-import org.web3j.rlp.RlpType;
 import org.web3j.tx.Contract;
 import org.web3j.utils.Numeric;
 
 import javax.annotation.PostConstruct;
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 import static com.iexec.scheduler.helper.Utils.hashResult;
-import static org.web3j.rlp.RlpDecoder.OFFSET_SHORT_LIST;
-import static org.web3j.tx.Contract.staticExtractEventParameters;
 
 @Service
 public class MockWatcherService {
@@ -47,28 +23,17 @@ public class MockWatcherService {
     private static final DefaultBlockParameterName END = DefaultBlockParameterName.LATEST;
     private final IexecHubService iexecHubService;
     private final WorkerPoolService workerPoolService;
-    private final Web3j web3j;
-
-    private String workerPoolAddress;
-
+    private final MockConfig mockConfig;
+    private final EthConfig ethConfig;
     private boolean workerSubscribed;
 
-
-    @Value("${ethereum.startBlock}")
-    private BigInteger startBlock;
-
     @Autowired
-    private MockConfig mockConfig;
-
-    @Autowired
-    private WorkerPoolConfig poolConfig;
-
-
-    @Autowired
-    public MockWatcherService(Web3j web3j, IexecHubService iexecHubService, WorkerPoolService workerPoolService) {
-        this.web3j = web3j;
+    public MockWatcherService(IexecHubService iexecHubService, WorkerPoolService workerPoolService,
+                              MockConfig mockConfig, EthConfig ethConfig) {
         this.iexecHubService = iexecHubService;
         this.workerPoolService = workerPoolService;
+        this.mockConfig = mockConfig;
+        this.ethConfig = ethConfig;
     }
 
     @PostConstruct
@@ -86,7 +51,7 @@ public class MockWatcherService {
 
     private void watchSubscriptionAndSetWorkerSubscribed() {
         log.info("SCHEDLR watching WorkerPoolSubscriptionEvent");
-        iexecHubService.getIexecHub().workerPoolSubscriptionEventObservable(getStartBlock(), END)
+        iexecHubService.getIexecHub().workerPoolSubscriptionEventObservable(ethConfig.getStartBlockParameter(), END)
                 .subscribe(workerPoolSubscriptionEvent -> {
                     if (workerPoolSubscriptionEvent.workerPool.equals(workerPoolService.getWorkerPoolAddress())) {
                         log.warn("SCHEDLR received WorkerPoolSubscriptionEvent for worker " + workerPoolSubscriptionEvent.worker);
@@ -98,7 +63,7 @@ public class MockWatcherService {
 
     private void watchWorkOrderAndAcceptWorkOrder() {
         log.info("SCHEDLR watching WorkOrderEvent (auto accept)");
-        iexecHubService.getIexecHub().workOrderEventObservable(getStartBlock(), END)
+        iexecHubService.getIexecHub().workOrderEventObservable(ethConfig.getStartBlockParameter(), END)
                 .subscribe(workOrderEvent -> {
                     log.warn("SCHEDLR received WorkOrderEvent " + workOrderEvent.woid);
                     log.warn("SCHEDLR analysing asked workOrder");
@@ -114,7 +79,7 @@ public class MockWatcherService {
 
     private void watchWorkOrderAcceptedAndCallForContribution() {
         log.info("SCHEDLR watching WorkOrderAcceptedEvent (auto callForContribution)");
-        workerPoolService.getWorkerPool().workOrderAcceptedEventObservable(getStartBlock(), END)
+        workerPoolService.getWorkerPool().workOrderAcceptedEventObservable(ethConfig.getStartBlockParameter(), END)
                 .subscribe(workOrderAcceptedEvent -> {
                     log.warn("SCHEDLR received WorkOrderAcceptedEvent" + workOrderAcceptedEvent.woid);
                     log.warn("SCHEDLR choosing a random worker");
@@ -131,7 +96,7 @@ public class MockWatcherService {
 
     private void watchContributeAndRevealConsensus() {
         log.info("SCHEDLR watching ContributeEvent (auto revealConsensus)");
-        workerPoolService.getWorkerPool().contributeEventObservable(getStartBlock(), END)
+        workerPoolService.getWorkerPool().contributeEventObservable(ethConfig.getStartBlockParameter(), END)
                 .subscribe(contributeEvent -> {
                     log.warn("SCHEDLR received ContributeEvent " + contributeEvent.woid);
                     log.warn("SCHEDLR checking if consensus reached?");
@@ -148,7 +113,7 @@ public class MockWatcherService {
 
     private void watchRevealAndFinalizeWork() {
         log.info("SCHEDLR watching RevealEvent (auto finalizeWork)");
-        workerPoolService.getWorkerPool().revealEventObservable(getStartBlock(), END)
+        workerPoolService.getWorkerPool().revealEventObservable(ethConfig.getStartBlockParameter(), END)
                 .subscribe(revealEvent -> {
                     log.warn("SCHEDLR received RevealEvent ");
                     log.warn("SCHEDLR checking if reveal timeout reached?");
@@ -157,7 +122,7 @@ public class MockWatcherService {
                     workerPoolService.getWorkerPool().finalizedWork(revealEvent.woid,
                             mockConfig.getFinalizeWork().getStdout(),
                             mockConfig.getFinalizeWork().getStderr(),
-                            mockConfig.getFinalizeWork().getUri());//"aStdout", "aStderr", "anUri"
+                            mockConfig.getFinalizeWork().getUri());
                 });
     }
 
@@ -171,14 +136,8 @@ public class MockWatcherService {
         return gasOk;
     }
 
-
     public boolean isWorkerSubscribed() {
         return workerSubscribed;
     }
-
-    private DefaultBlockParameter getStartBlock() {
-        return DefaultBlockParameter.valueOf(startBlock);
-    }
-
 
 }

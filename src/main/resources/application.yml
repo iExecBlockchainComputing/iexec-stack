@@ -8,8 +8,7 @@ web3j:
 
 ethereum:
   startBlock: 0
-  address:
-    iexecHub: ${iexecHub:0xd3b49408fc55f239116e0c9b19077ec0f308f280}
+  iexecHubAddress: ${iexecHub:0x55dd31ff3645d747663ef3f533d010a7c6159b73}
 
 wallet:
     folder: "./src/main/resources/wallet"
@@ -21,7 +20,7 @@ scheduler:
     password: "whatever"
 
 workerpool:
-  address:                          #leave blank to create a new workerpool (else plug scheduler to existing one)
+  address:                          #leave blank will create a new workerpool (else plug scheduler to existing one)
   name: "myWorkerPool"              #unchangeable after creation
   subscriptionLockStakePolicy: 0    #unchangeable after creation
   subscriptionMinimumStakePolicy: 0

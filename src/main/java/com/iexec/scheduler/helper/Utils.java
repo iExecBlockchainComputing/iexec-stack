@@ -2,6 +2,7 @@ package com.iexec.scheduler.helper;
 
 import org.web3j.crypto.Hash;
 import org.web3j.protocol.Web3j;
+import org.web3j.protocol.core.DefaultBlockParameter;
 import org.web3j.protocol.core.DefaultBlockParameterName;
 import org.web3j.protocol.core.methods.response.EthGetTransactionCount;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
@@ -50,8 +51,7 @@ public class Utils {
         return hex.toString() + "".join("", Collections.nCopies(32 - (hex.length() / 2), "00"));
     }
 
-
-    private void worpooladdress(Web3j web3j) throws Exception {
+    private void predicNextAddress(Web3j web3j) throws Exception {
         //address = sha3(rlp_encode(creator_account, creator_account_nonce))[12:]
         //web3.eth.getTransactionCount(accountAddress)
 
@@ -76,7 +76,7 @@ public class Utils {
 
         System.out.println(Numeric.toHexString(sha3));
 
-        //Basically, the last 20 bytes of the sha3 of the list composed by the adderess and the nonce RLP encoded.
+        //Basically, the last 20 bytes of the sha3 of the list composed by the adderess and the nonce RLP encoded
         sha3 = Arrays.copyOfRange(sha3, 0, 20);
 
 
