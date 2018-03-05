@@ -8,7 +8,7 @@ web3j:
 
 ethereum:
   startBlock: 0
-  iexecHubAddress: ${iexecHub:0x55dd31ff3645d747663ef3f533d010a7c6159b73}
+  iexecHubAddress: ${iexecHub:0xa2e7d4fd8e65a1d5e893b271956f7db23f8ac454}
 
 wallet:
     folder: "./src/main/resources/wallet"
@@ -32,14 +32,15 @@ workerpool:
   list:
     - "0x000000000000000000000000000000000000bad1"
     - "0x000000000000000000000000000000000000bad2"
-    - "0x55b541c70252aa3eb1581b8e74ce1ec17126b33a"
 
 #Mock values
 mock:
   workerResult:
     "iExec the wanderer" #hash 0x2fa3c6dc29e10dfc01cea7e9443ffe431e6564e74f5dcf4de4b04f2e5d343d70
   callForContribution:
-    worker: "0x70a1bebd73aef241154ea353d6c8c52d420d4f5b"
+    workers:
+      - "0x70a1bebd73aef241154ea353d6c8c52d420d4f5b"
+      - "0x55b541c70252aa3eb1581b8e74ce1ec17126b33a"
     enclaveChallenge: "0"
   finalizeWork:
     stdout: "aStdout"

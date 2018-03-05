@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 @Validated
 @Configuration
@@ -48,15 +49,15 @@ public class MockConfig {
 
     public static class CallForContribution {
 
-        private String worker;
+        private List<String> workers;
         private String enclaveChallenge;
 
-        public String getWorker() {
-            return worker;
+        public List<String> getWorkers() {
+            return workers;
         }
 
-        public void setWorker(String worker) {
-            this.worker = worker;
+        public void setWorkers(List<String> workers) {
+            this.workers = workers;
         }
 
         public String getEnclaveChallenge() {

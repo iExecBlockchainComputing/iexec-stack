@@ -44,7 +44,7 @@ eth.sendTransaction({from:eth.accounts[0], to:'0x70a1bebd73aef241154ea353d6c8c52
 eth.sendTransaction({from:eth.accounts[0], to:'0x55b541c70252aa3eb1581b8e74ce1ec17126b33a', value: web3.toWei(5, 'ether')})//worker2
 ```
 
-Run apprr
+Run app
 
 To start the server, the following command can be used:
 ```
