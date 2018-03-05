@@ -96,25 +96,27 @@ public class MockWatcherService {
         log.info("WORKER1 watching CallForContributionEvent (auto contribute)");
         workerPool.callForContributionEventObservable(getStartBlock(), END)
                 .subscribe(callForContributionEvent -> {
-                    log.warn("WORKER1 received callForContributionEvent for worker " + callForContributionEvent.worker);
-                    log.warn("WORKER1 executing work");
-                    log.warn("WORKER1 contributing");
+                    if (callForContributionEvent.worker.equals(workerAdress)){
+                        log.info("WORKER1 received callForContributionEvent for worker " + callForContributionEvent.worker);
+                        log.info("WORKER1 executing work");
+                        log.info("WORKER1 contributing");
 
-                    String hashResult = hashResult(workerResult);
-                    String signResult = signByteResult(workerResult, workerAdress);
+                        String hashResult = hashResult(workerResult);
+                        String signResult = signByteResult(workerResult, workerAdress);
 
-                    log.info("WORKER1 found hashResult " + hashResult);
-                    log.info("WORKER1 found signResult " + signResult);
+                        log.info("WORKER1 found hashResult " + hashResult);
+                        log.info("WORKER1 found signResult " + signResult);
 
-                    byte[] hashResultBytes = Numeric.hexStringToByteArray(hashResult);
-                    byte[] hashSignBytes = Numeric.hexStringToByteArray(signResult);
-                    byte[] r = Numeric.hexStringToByteArray(asciiToHex(contributeR));
-                    byte[] s = Numeric.hexStringToByteArray(asciiToHex(contributeS));
+                        byte[] hashResultBytes = Numeric.hexStringToByteArray(hashResult);
+                        byte[] hashSignBytes = Numeric.hexStringToByteArray(signResult);
+                        byte[] r = Numeric.hexStringToByteArray(asciiToHex(contributeR));
+                        byte[] s = Numeric.hexStringToByteArray(asciiToHex(contributeS));
 
-                    try {
-                        workerPool.contribute(callForContributionEvent.woid, hashResultBytes, hashSignBytes, contributeV, r, s).send();
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                        try {
+                            workerPool.contribute(callForContributionEvent.woid, hashResultBytes, hashSignBytes, contributeV, r, s).send();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                     }
                 });
     }
@@ -123,10 +125,14 @@ public class MockWatcherService {
         log.info("WORKER1 watching RevealConsensusEvent (auto reveal)");
         workerPool.revealConsensusEventObservable(getStartBlock(), END)
                 .subscribe(revealConsensusEvent -> {
-                    log.warn("WORKER1 received revealConsensusEvent " + revealConsensusEvent.woid);
-                    log.warn("WORKER1 reavealing WORKER_RESULT");
+                    log.info("WORKER1 received revealConsensusEvent " + revealConsensusEvent.woid);
                     byte[] result = Numeric.hexStringToByteArray(Hash.sha3String(workerResult));
-                    workerPool.reveal(revealConsensusEvent.woid, result);
+                    log.info("WORKER1 reavealing result: " + Hash.sha3String(workerResult));
+                    try {
+                        workerPool.reveal(revealConsensusEvent.woid, result).send();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 });
     }
 
