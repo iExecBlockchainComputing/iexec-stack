@@ -97,9 +97,9 @@ public class MockWatcherService {
         workerPool.callForContributionEventObservable(getStartBlock(), END)
                 .subscribe(callForContributionEvent -> {
                     if (callForContributionEvent.worker.equals(workerAdress)){
-                        log.warn("WORKER1 received callForContributionEvent for worker " + callForContributionEvent.worker);
-                        log.warn("WORKER1 executing work");
-                        log.warn("WORKER1 contributing");
+                        log.info("WORKER1 received callForContributionEvent for worker " + callForContributionEvent.worker);
+                        log.info("WORKER1 executing work");
+                        log.info("WORKER1 contributing");
 
                         String hashResult = hashResult(workerResult);
                         String signResult = signByteResult(workerResult, workerAdress);
@@ -125,9 +125,9 @@ public class MockWatcherService {
         log.info("WORKER1 watching RevealConsensusEvent (auto reveal)");
         workerPool.revealConsensusEventObservable(getStartBlock(), END)
                 .subscribe(revealConsensusEvent -> {
-                    log.warn("WORKER1 received revealConsensusEvent " + revealConsensusEvent.woid);
+                    log.info("WORKER1 received revealConsensusEvent " + revealConsensusEvent.woid);
                     byte[] result = Numeric.hexStringToByteArray(Hash.sha3String(workerResult));
-                    log.warn("WORKER1 reavealing result: " + Hash.sha3String(workerResult));
+                    log.info("WORKER1 reavealing result: " + Hash.sha3String(workerResult));
                     try {
                         workerPool.reveal(revealConsensusEvent.woid, result).send();
                     } catch (Exception e) {
