@@ -49,3 +49,13 @@ The client's commands can be called natively in the */bin* folder:
 2. xwusers
 3. xwworkers
 4. ...
+
+### Run in docker
+It is also possible to run the scheduler and one worker using docker out of the box. For that, you simply need to call the script 
+```
+docker-compose-firstinstall.sh
+```
+in xtremweb-hep/build/dist/xtremweb-X.Y.Z/docker/docker-compose-firstinstall.sh, the first time. After that, if you want to restart the docker containers, you can call the script:
+```
+docker-compose-simple-run.sh
+```
