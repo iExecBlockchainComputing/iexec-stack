@@ -62,11 +62,11 @@ public class IexecHubService {
                     return cutLeadingZeros(receiptLog.getTopics().get(2)); //0: , 1: tx.origin, 2: workerPoolAddress, data: workerPoolName
                 }
             }
+            throw new Exception("Unable to get WorkerPool address");
         } else {
             log.info("SCHEDLR fetch WorkerPool address from conf");
             return poolConfig.getAddress();
         }
-        throw new IllegalStateException("Unable to get WorkerPool address");
     }
 
     public IexecHub getIexecHub() {
