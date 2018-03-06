@@ -55,4 +55,9 @@ public final class Utils {
         return hex.toString() + "".join("", Collections.nCopies(32 - (hex.length() / 2), "00"));
     }
 
+    public static String cutLeadingZeros(String address64) {
+        int ethAddresslength = 40;
+        return "0x" + address64.substring(address64.length() - ethAddresslength, address64.length());
+    }
+
 }
