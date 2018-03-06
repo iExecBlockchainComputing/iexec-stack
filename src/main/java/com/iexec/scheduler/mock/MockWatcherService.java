@@ -33,7 +33,6 @@ public class MockWatcherService {
     private final byte[] EMPTY_BYTE = new byte[0];
     private boolean workerSubscribed;
     private Map<Tuple2<String, String>, byte[]> contributionMap = new HashMap<>();
-    ;
 
     @Autowired
     public MockWatcherService(IexecHubService iexecHubService, WorkerPoolService workerPoolService,

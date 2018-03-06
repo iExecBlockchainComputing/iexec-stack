@@ -1,9 +1,11 @@
 package com.iexec.scheduler.workerpool;
 
+import com.iexec.scheduler.contracts.generated.IexecHub;
 import com.iexec.scheduler.ethereum.EthConfig;
 import com.iexec.scheduler.contracts.generated.AuthorizedList;
 import com.iexec.scheduler.contracts.generated.WorkerPool;
 import com.iexec.scheduler.ethereum.CredentialsService;
+import com.iexec.scheduler.iexechub.IexecHubService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,18 +23,18 @@ public class WorkerPoolService {
     private static final Logger log = LoggerFactory.getLogger(WorkerPoolService.class);
     private final Web3j web3j;
     private final CredentialsService credentialsService;
-    private final WorkerPoolCreationWatcherService createWorkerPoolWatcherService;
+    private final IexecHubService iexecHubService;
     private final WorkerPoolConfig poolConfig;
     private final EthConfig ethConfig;
     private WorkerPool workerPool;
 
     @Autowired
     public WorkerPoolService(Web3j web3j, CredentialsService credentialsService,
-                             WorkerPoolCreationWatcherService createWorkerPoolWatcherService,
+                             IexecHubService iexecHubService,
                              WorkerPoolConfig poolConfig, EthConfig ethConfig) {
         this.web3j = web3j;
         this.credentialsService = credentialsService;
-        this.createWorkerPoolWatcherService = createWorkerPoolWatcherService;
+        this.iexecHubService = iexecHubService;
         this.poolConfig = poolConfig;
         this.ethConfig = ethConfig;
     }
@@ -44,13 +46,9 @@ public class WorkerPoolService {
     }
 
     private void loadWorkerPool() {
-        String workerPoolAddress = poolConfig.getAddress();
-        if (workerPoolAddress.isEmpty()){
-            workerPoolAddress = createWorkerPoolWatcherService.getWorkerPoolAddress();
-        }
-        log.info("SCHEDLR loading workerPool");
+        log.info("SCHEDLR loading workerPool " + iexecHubService.getWorkerPoolAddress());
         this.workerPool = WorkerPool.load(
-                workerPoolAddress, web3j, credentialsService.getCredentials(), ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT);
+                iexecHubService.getWorkerPoolAddress(), web3j, credentialsService.getCredentials(), ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT);
     }
 
     private void setupWorkerPool(WorkerPool workerPool) {

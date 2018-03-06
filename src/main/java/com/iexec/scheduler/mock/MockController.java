@@ -2,7 +2,6 @@ package com.iexec.scheduler.mock;
 
 import com.iexec.scheduler.workerpool.WorkerPoolService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -13,9 +12,8 @@ import java.math.BigInteger;
 @RestController
 public class MockController {
 
-    private MockWatcherService mockService;
-    private WorkerPoolService workerPoolService;
-
+    private final MockWatcherService mockService;
+    private final WorkerPoolService workerPoolService;
 
     @Autowired
     public MockController(MockWatcherService mockService, WorkerPoolService workerPoolService) {
@@ -27,7 +25,6 @@ public class MockController {
     public boolean isAlive() throws Exception {
         return true;
     }
-
 
     @RequestMapping("/workerpool")
     public String getWorkerpool() throws Exception {

@@ -8,13 +8,13 @@ web3j:
 
 ethereum:
   startBlock: 0
-  iexecHubAddress: ${iexecHub:0xa2e7d4fd8e65a1d5e893b271956f7db23f8ac454}
+  iexecHubAddress: ${iexecHub:0x74f59204481b3ebd8a414666cb48c0f194e9b836}
 
 wallet:
     folder: "./src/main/resources/wallet"
 
 scheduler:
-  address: "0x14795143103df501bae0141ae20054d6785cd7b1"
+  address: "0x8bd535d49b095ef648cd85ea827867d358872809"
   wallet:
     filename: "UTC--2018-02-14T08-32-12.500000000Z--8bd535d49b095ef648cd85ea827867d358872809.json"
     password: "whatever"
