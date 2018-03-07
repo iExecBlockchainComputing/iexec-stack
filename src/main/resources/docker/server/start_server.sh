@@ -10,7 +10,6 @@ sed -i "s/LAUNCHER.*//g" /iexec/conf/xtremweb.server.conf
 # change DBHOST value in the config if defined
 if [ ! -z $DBHOST ] ; then
   sed -i "s/^DBHOST=.*/DBHOST=$DBHOST/g" /iexec/conf/xtremweb.server.conf
-	sed -i "s/^DBHOST=.*/DBHOST=$DBHOST/g" /iexec/conf/xwconfigure.values
 fi
 
 # add the TMPDIR variable if defined
