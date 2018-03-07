@@ -22,10 +22,23 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - ${CERTIFICATE_AND_PRIVATE_KEYS_REPO}:/iexec/keystore
       - ${SCHEDULER_PERSISTING_FOLDER}:/var/xwhep
+    environment:
+      - DBHOST=${DBHOST}
+      - DBNAME=${MYSQL_DB_NAME}
+      - DBUSER=${MYSQL_USER_LOGIN}
+      - DBPASS=${MYSQL_USER_PASSWORD}
+      - ADMINLOGIN=${ADMINLOGIN}
+      - ADMINPASSWORD=${ADMINPASSWORD}
+      - WORKERLOGIN=${WORKERLOGIN}
+      - WORKERPASSWORD=${WORKERPASSWORD}
+      - LOGGERLEVEL=${LOGGERLEVEL}
+      - JWTETHISSUER=${JWTETHISSUER}
+      - JWTETHSECRET=${JWTETHSECRET}
+      - WALLCLOCKTIMEVALUE=${WALLCLOCKTIMEVALUE}
+      - DELEGATEDREGISTRATION=${DELEGATEDREGISTRATION}
+      - MAXFILESIZE=${MAXFILESIZE}
     networks:
       - iexec-net
-    env_file:
-      - containerEnvironment
     restart: unless-stopped
 
   worker:
@@ -54,8 +67,7 @@ services:
       DBUSER: ${MYSQL_ADMIN_USER}
       DBPASSWORD: ${MYSQL_ADMIN_PASSWORD}
       DATABASE: ${MYSQL_DB_NAME}
-    env_file:
-      - containerEnvironment
+      DBHOST: ${DBHOST}
     ports:
       - 8694:8694
     networks:
