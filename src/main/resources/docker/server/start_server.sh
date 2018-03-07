@@ -26,4 +26,9 @@ rm /iexec/keystore/*.p12
 if [ $? -eq 0 ] ; then echo "Keystores generated" ; else echo "ERROR: keystores generation error"; exit 1 ;
 fi
 
+# change all the values defined here
+
+
+
+
 /iexec/bin/xtremweb.server console

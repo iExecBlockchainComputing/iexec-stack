@@ -22,10 +22,10 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - ${CERTIFICATE_AND_PRIVATE_KEYS_REPO}:/iexec/keystore
       - ${SCHEDULER_PERSISTING_FOLDER}:/var/xwhep
+    environment:
+      - DBHOST=db
     networks:
       - iexec-net
-    env_file:
-      - containerEnvironment
     restart: unless-stopped
 
   worker:
@@ -54,8 +54,7 @@ services:
       DBUSER: ${MYSQL_ADMIN_USER}
       DBPASSWORD: ${MYSQL_ADMIN_PASSWORD}
       DATABASE: ${MYSQL_DB_NAME}
-    env_file:
-      - containerEnvironment
+      DBHOST: db
     ports:
       - 8694:8694
     networks:
