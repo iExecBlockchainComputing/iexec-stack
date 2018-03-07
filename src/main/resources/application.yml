@@ -8,7 +8,7 @@ web3j:
 
 ethereum:
   startBlock: 0
-  iexecHubAddress: ${iexecHub:0x74f59204481b3ebd8a414666cb48c0f194e9b836}
+  iexecHubAddress: ${iexecHub:0x0044316dd3e2ac1fbfeacfa8c31100d10cc329c3}
 
 wallet:
     folder: "./src/main/resources/wallet"
@@ -20,7 +20,7 @@ scheduler:
     password: "whatever"
 
 workerpool:
-  address:                          #leave blank will create a new workerpool (else plug scheduler to existing one)
+  address: "0x077832a8b55fcb8544738ff485e43f0af349960d"                    #leave blank will create a new workerpool (else plug scheduler to existing one)
   name: "myWorkerPool"              #unchangeable after creation
   subscriptionLockStakePolicy: 0    #unchangeable after creation
   subscriptionMinimumStakePolicy: 0
@@ -37,6 +37,14 @@ workerpool:
 mock:
   workerResult:
     "iExec the wanderer" #hash 0x2fa3c6dc29e10dfc01cea7e9443ffe431e6564e74f5dcf4de4b04f2e5d343d70
+  answerEmitWorkOrder:
+    marketorderIdx: 0
+    app:
+    dataset:
+    params:
+    callback:
+    beneficiary:
+
   callForContribution:
     workers:
       - "0x70a1bebd73aef241154ea353d6c8c52d420d4f5b"

@@ -1,5 +1,8 @@
 package com.iexec.scheduler.mock;
 
+import com.iexec.scheduler.contracts.generated.IexecHub;
+import com.iexec.scheduler.marketplace.MarketOrderDirectionEnum;
+import com.iexec.scheduler.marketplace.MarketplaceService;
 import com.iexec.scheduler.contracts.generated.WorkerPool;
 import com.iexec.scheduler.ethereum.EthConfig;
 import com.iexec.scheduler.iexechub.IexecHubService;
@@ -12,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.web3j.protocol.core.DefaultBlockParameterName;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.tuples.generated.Tuple2;
+import org.web3j.tuples.generated.Tuple7;
 import org.web3j.utils.Numeric;
 
 import javax.annotation.PostConstruct;
@@ -28,6 +32,7 @@ public class MockWatcherService {
     private static final DefaultBlockParameterName END = DefaultBlockParameterName.LATEST;
     private final IexecHubService iexecHubService;
     private final WorkerPoolService workerPoolService;
+    private final MarketplaceService marketplaceService;
     private final MockConfig mockConfig;
     private final EthConfig ethConfig;
     private final byte[] EMPTY_BYTE = new byte[0];
@@ -36,25 +41,24 @@ public class MockWatcherService {
 
     @Autowired
     public MockWatcherService(IexecHubService iexecHubService, WorkerPoolService workerPoolService,
-                              MockConfig mockConfig, EthConfig ethConfig) {
+                              MarketplaceService marketplaceService, MockConfig mockConfig, EthConfig ethConfig) {
         this.iexecHubService = iexecHubService;
         this.workerPoolService = workerPoolService;
+        this.marketplaceService = marketplaceService;
         this.mockConfig = mockConfig;
         this.ethConfig = ethConfig;
     }
 
     @PostConstruct
     public void run() throws Exception {
-        onWorkerPoolSetupCompleted();
-    }
-
-    private void onWorkerPoolSetupCompleted() {
         watchSubscriptionAndSetWorkerSubscribed();
-        watchWorkOrderAndAcceptWorkOrder();
-        watchWorkOrderAcceptedAndCallForContribution();
+        watchAskMarketOrderEmittedAndAnswerEmitWorkOrder();
+        watchWorkOrderActivatedAndCallForContribution();
         watchContributeAndRevealConsensus();
         watchRevealAndFinalizeWork();
+
     }
+
 
     private void watchSubscriptionAndSetWorkerSubscribed() {
         log.info("SCHEDLR watching WorkerPoolSubscriptionEvent");
@@ -63,38 +67,54 @@ public class MockWatcherService {
                     if (workerPoolSubscriptionEvent.workerPool.equals(workerPoolService.getWorkerPoolAddress())) {
                         log.info("SCHEDLR received WorkerPoolSubscriptionEvent for worker " + workerPoolSubscriptionEvent.worker);
                         workerSubscribed = true;
-                        //now clouduser able to createWorkOrder
+                        //TODO - emitMarketOrder if n workers are alive (not subscribed, means nothing)
+                        try {
+                            //TODO- values from yaml
+                            marketplaceService.getMarketplace().emitMarketOrder(MarketOrderDirectionEnum.ASK,//TODO - dynamic values
+                                    BigInteger.ONE,
+                                    BigInteger.ZERO,
+                                    BigInteger.valueOf(100),
+                                    workerPoolService.getWorkerPoolAddress(),
+                                    BigInteger.ONE).send();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                     }
                 });
     }
 
-    private void watchWorkOrderAndAcceptWorkOrder() {
-        log.info("SCHEDLR watching WorkOrderEvent (auto accept)");
-        iexecHubService.getIexecHub().workOrderEventObservable(ethConfig.getStartBlockParameter(), END)
-                .subscribe(workOrderEvent -> {
-                    log.info("SCHEDLR received WorkOrderEvent " + workOrderEvent.woid);
-                    log.info("SCHEDLR analysing asked workOrder");
-                    //TODO - Count alive workers before accepting WorkOrder (change isWorkerSubscribed)
-                    log.info("SCHEDLR accepting workOrder");
-
+    private void watchAskMarketOrderEmittedAndAnswerEmitWorkOrder() {
+        log.info("CLDUSER watching marketOrderEmittedEvent (auto answerEmitWorkOrder)");
+        marketplaceService.getMarketplace().marketOrderEmittedEventObservable(ethConfig.getStartBlockParameter(), END)
+                .subscribe(marketOrderEmittedEvent -> {
+                    log.info("SCHEDLR received marketOrderEmittedEvent " + marketOrderEmittedEvent.marketorderIdx);
+                    //populate map and expose
                     try {
-                        iexecHubService.getIexecHub().acceptWorkOrder(workOrderEvent.woid, workOrderEvent.workerPool).send();
+                        Tuple7 orderBook = marketplaceService.getMarketplace().m_orderBook(marketOrderEmittedEvent.marketorderIdx).send();
+                        if (orderBook.getValue1().equals(MarketOrderDirectionEnum.ASK) &&
+                                orderBook.getValue7().equals(workerPoolService.getWorkerPoolAddress())){
+                            //TODO- values from yaml
+                            iexecHubService.getIexecHub().answerEmitWorkOrder(marketOrderEmittedEvent,
+                                    workerPoolService.getWorkerPoolAddress(),
+                                    ).send();
+                        }
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }, Throwable::printStackTrace);
     }
 
-    private void watchWorkOrderAcceptedAndCallForContribution() {
-        log.info("SCHEDLR watching WorkOrderAcceptedEvent (auto callForContribution)");
-        workerPoolService.getWorkerPool().workOrderAcceptedEventObservable(ethConfig.getStartBlockParameter(), END)
-                .subscribe(workOrderAcceptedEvent -> {
-                    log.info("SCHEDLR received WorkOrderAcceptedEvent" + workOrderAcceptedEvent.woid);
+
+    private void watchWorkOrderActivatedAndCallForContribution() {
+        log.info("SCHEDLR watching workOrderActivatedEvent (auto callForContribution)");
+        iexecHubService.getIexecHub().workOrderActivatedEventObservable(ethConfig.getStartBlockParameter(), END)
+                .subscribe(workOrderActivatedEvent -> {
+                    log.info("SCHEDLR received workOrderActivatedEvent" + workOrderActivatedEvent.woid);
                     log.info("SCHEDLR calling pool for contribution of workers: " + mockConfig.getCallForContribution().getWorkers().toString());
 
-                    setupForFutureContributions(workOrderAcceptedEvent);
+                    setupForFutureContributions(workOrderActivatedEvent);
                     try {
-                        log.info(workerPoolService.getWorkerPool().callForContributions(workOrderAcceptedEvent.woid,
+                        log.info(workerPoolService.getWorkerPool().callForContributions(workOrderActivatedEvent.woid,
                                 mockConfig.getCallForContribution().getWorkers(),
                                 mockConfig.getCallForContribution().getEnclaveChallenge()).send().getGasUsed().toString());
                     } catch (Exception e) {
@@ -103,9 +123,9 @@ public class MockWatcherService {
                 });
     }
 
-    private void setupForFutureContributions(WorkerPool.WorkOrderAcceptedEventResponse workOrderAcceptedEvent) {
+    private void setupForFutureContributions(IexecHub.WorkOrderActivatedEventResponse workOrderActivatedEvent) {
         for (String worker : mockConfig.getCallForContribution().getWorkers()) {
-            Tuple2<String, String> orderWorkerTuple = new Tuple2<>(workOrderAcceptedEvent.woid, worker);
+            Tuple2<String, String> orderWorkerTuple = new Tuple2<>(workOrderActivatedEvent.woid, worker);
             contributionMap.put(orderWorkerTuple, EMPTY_BYTE);
         }
     }

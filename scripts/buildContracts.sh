@@ -6,10 +6,14 @@ set -o pipefail
 baseDir="../src/main/resources/solidity"
 
 targets="
-poco/WorkerPool
 poco/IexecHub
+poco/WorkerPool
 poco/AuthorizedList
+poco/Marketplace
 "
+# TODO - try to generate enums from here
+# Compiling Solidity file poco/IexecLib.sol Complete
+# Generating contract bindings              Unable to parse input ABI file
 
 currentdir=`pwd`
 echo $(pwd)
