@@ -48,6 +48,7 @@ services:
       - SCHEDULER_IP=scheduler
       - SCHEDULER_DOMAIN=iexecscheduler
       - TMPDIR=${RESULTS_FOLDER}
+      - SANDBOXENABLED=${WORKER_SANDBOX_ENABLED}
     ports:
       - 4321
       - 4322
