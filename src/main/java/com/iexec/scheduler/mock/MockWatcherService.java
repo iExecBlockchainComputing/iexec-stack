@@ -69,13 +69,14 @@ public class MockWatcherService {
                         workerSubscribed = true;
                         //TODO - emitMarketOrder if n workers are alive (not subscribed, means nothing)
                         try {
-                            //TODO- values from yaml
-                            marketplaceService.getMarketplace().emitMarketOrder(MarketOrderDirectionEnum.ASK,//TODO - dynamic values
-                                    BigInteger.ONE,
-                                    BigInteger.ZERO,
-                                    BigInteger.valueOf(100),
+                            marketplaceService.getMarketplace().emitMarketOrder(
+                                    mockConfig.getEmitMarketOrder().getDirection(),//TODO - dynamic values
+                                    mockConfig.getEmitMarketOrder().getCategory(),
+                                    mockConfig.getEmitMarketOrder().getTrust(),
+                                    mockConfig.getEmitMarketOrder().getValue(),
                                     workerPoolService.getWorkerPoolAddress(),
-                                    BigInteger.ONE).send();
+                                    mockConfig.getEmitMarketOrder().getVolume()
+                                    ).send();
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -93,9 +94,13 @@ public class MockWatcherService {
                         Tuple7 orderBook = marketplaceService.getMarketplace().m_orderBook(marketOrderEmittedEvent.marketorderIdx).send();
                         if (orderBook.getValue1().equals(MarketOrderDirectionEnum.ASK) &&
                                 orderBook.getValue7().equals(workerPoolService.getWorkerPoolAddress())){
-                            //TODO- values from yaml
-                            iexecHubService.getIexecHub().answerEmitWorkOrder(marketOrderEmittedEvent,
+                            iexecHubService.getIexecHub().answerEmitWorkOrder(marketOrderEmittedEvent.marketorderIdx,
                                     workerPoolService.getWorkerPoolAddress(),
+                                    mockConfig.getAnswerEmitWorkOrder().getApp(),
+                                    mockConfig.getAnswerEmitWorkOrder().getDataset(),
+                                    mockConfig.getAnswerEmitWorkOrder().getParams(),
+                                    mockConfig.getAnswerEmitWorkOrder().getCallback(),
+                                    mockConfig.getAnswerEmitWorkOrder().getBeneficiary()
                                     ).send();
                         }
                     } catch (Exception e) {
@@ -188,13 +193,14 @@ public class MockWatcherService {
                 });
     }
 
+    /*
     public TransactionReceipt createWorkOrder(String workerPool, String app, String dataset, String workOrderParam, BigInteger workReward, BigInteger askedTrust, Boolean dappCallback, String beneficiary) throws Exception {
         TransactionReceipt tr = null;
         if (isWorkerSubscribed()) {
             tr = iexecHubService.getIexecHub().createWorkOrder(workerPool, app, dataset, workOrderParam, workReward, askedTrust, dappCallback, beneficiary).send();
         }
         return tr;
-    }
+    }*/
 
     public boolean isWorkerSubscribed() {
         return workerSubscribed;

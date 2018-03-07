@@ -37,6 +37,13 @@ workerpool:
 mock:
   workerResult:
     "iExec the wanderer" #hash 0x2fa3c6dc29e10dfc01cea7e9443ffe431e6564e74f5dcf4de4b04f2e5d343d70
+  emitMarketOrder:
+    direction:
+    category:
+    trust:
+    value:
+    volume:
+
   answerEmitWorkOrder:
     marketorderIdx: 0
     app:
@@ -44,7 +51,6 @@ mock:
     params:
     callback:
     beneficiary:
-
   callForContribution:
     workers:
       - "0x70a1bebd73aef241154ea353d6c8c52d420d4f5b"
