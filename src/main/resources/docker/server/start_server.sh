@@ -24,8 +24,10 @@ replace_predefined_var_in_conf DBUSER
 replace_predefined_var_in_conf DBPASS
 replace_predefined_var_in_conf ADMINLOGIN
 replace_predefined_var_in_conf ADMINPASSWORD
+replace_predefined_var_in_conf ADMINUID
 replace_predefined_var_in_conf WORKERLOGIN
 replace_predefined_var_in_conf WORKERPASSWORD
+replace_predefined_var_in_conf WORKERUID
 replace_predefined_var_in_conf LOGGERLEVEL
 
 replace_commented_var_in_conf () {
