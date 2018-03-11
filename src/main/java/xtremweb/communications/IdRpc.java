@@ -594,6 +594,27 @@ public enum IdRpc {
 		}
 	},
 	/**
+	 * This retrieves an application by its name
+	 * @since 12.2.9
+	 */
+	GETAPPBYNAME {
+		@Override
+		public XMLRPCCommandGetAppByName newCommand(final URI uri, final UserInterface client, final Table obj)
+				throws IOException {
+			return new XMLRPCCommandGetAppByName(uri, client);
+		}
+
+		@Override
+		public String helpClient() {
+			return this.toString() + " appName [appName...] : retrieves applications by name";
+		}
+
+		@Override
+		public String helpRestApi() {
+			return this.toString() + "/aLogin";
+		}
+	},
+	/**
 	 * This retrieves all users UID from server
 	 */
 	GETUSERS {

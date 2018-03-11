@@ -823,6 +823,18 @@ public abstract class XMLRPCCommand extends XMLable {
 		try {
 			input.reset();
 			input.mark(XWTools.BUFFEREND);
+			return new XMLRPCCommandGetAppByName(input);
+		} catch (final SAXException e) {
+			if (e instanceof XMLEndParseException) {
+				return ret;
+			}
+		} catch (final InvalidKeyException e) {
+			logger.exception(e);
+		}
+		logger.finest("not a XMLRPCCommandGetAppByName");
+		try {
+			input.reset();
+			input.mark(XWTools.BUFFEREND);
 			return new XMLRPCCommandGetTask(input);
 		} catch (final SAXException e) {
 			if (e instanceof XMLEndParseException) {

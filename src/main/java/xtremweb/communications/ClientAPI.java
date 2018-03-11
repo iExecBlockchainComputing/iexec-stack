@@ -442,7 +442,7 @@ interface ClientAPI {
 	 * @return a WorkInterface
 	 * @since 11.1.0
 	 */
-	public Table getWorkByExternalId(final String login, final boolean bypass)
+	public Table getWorkByExternalId(final String extId, final boolean bypass)
 			throws InvalidKeyException, AccessControlException, IOException, SAXException, URISyntaxException;
 
 	/**
@@ -453,8 +453,7 @@ interface ClientAPI {
 	public Table getWorkByExternalId(final XMLRPCCommandGetWorkByExternalId command)
 			throws InvalidKeyException, AccessControlException, IOException, SAXException;
 	/**
-	 * This retrieves an user from server
-	 *
+	 * This retrieves a work from its external ID (external scheduler, blockchain transaction)
 	 * @param command
 	 *            is the command to send to server to retreive user
 	 * @param bypass
@@ -463,6 +462,28 @@ interface ClientAPI {
 	 *            cache
 	 */
 	public Table getWorkByExternalId(final XMLRPCCommandGetWorkByExternalId command, final boolean bypass)
+			throws InvalidKeyException, AccessControlException, IOException, SAXException;
+	/**
+	 * This retrieves an application from its name
+	 * @return a AppkInterface
+	 * @since 12.2.9
+	 */
+	public Table getAppByName(final String name, final boolean bypass)
+			throws InvalidKeyException, AccessControlException, IOException, SAXException, URISyntaxException;
+
+	/**
+	 * This retrieves an application from its name
+	 * @return a AppkInterface
+	 * @since 12.2.9
+	 */
+	public Table getAppByName(final XMLRPCCommandGetAppByName command)
+			throws InvalidKeyException, AccessControlException, IOException, SAXException;
+	/**
+	 * This retrieves an application from its name
+	 * @return a AppkInterface
+	 * @since 12.2.9
+	 */
+	public Table getAppByName(final XMLRPCCommandGetAppByName command, final boolean bypass)
 			throws InvalidKeyException, AccessControlException, IOException, SAXException;
 
 	/**

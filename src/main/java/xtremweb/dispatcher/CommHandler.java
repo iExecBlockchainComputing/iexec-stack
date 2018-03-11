@@ -66,18 +66,7 @@ import xtremweb.common.XMLable;
 import xtremweb.common.XWConfigurator;
 import xtremweb.common.XWPropertyDefs;
 import xtremweb.common.XWReturnCode;
-import xtremweb.communications.AccessLogger;
-import xtremweb.communications.CommServer;
-import xtremweb.communications.Connection;
-import xtremweb.communications.IdRpc;
-import xtremweb.communications.URI;
-import xtremweb.communications.XMLRPCCommand;
-import xtremweb.communications.XMLRPCCommandGet;
-import xtremweb.communications.XMLRPCCommandGetWorkByExternalId;
-import xtremweb.communications.XMLRPCCommandWorkAliveByUID;
-import xtremweb.communications.XMLRPCCommandWorkRequest;
-import xtremweb.communications.XMLRPCResult;
-import xtremweb.communications.XWPostParams;
+import xtremweb.communications.*;
 
 /**
  * CommHandler.java This Class launches several communication handler over
@@ -418,6 +407,9 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 				break;
 			case GETWORKBYEXTERNALID:
 				result = get((XMLRPCCommandGetWorkByExternalId)command);
+				break;
+			case GETAPPBYNAME:
+				result = get((XMLRPCCommandGetAppByName)command);
 				break;
 			case GETTASK: {
 				result = getTask(command);
@@ -950,7 +942,6 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 		final DBCommandGet dbc = new DBCommandGet(DBInterface.getInstance()); 
 		return dbc.exec(command);
 	}
-
 	/**
 	 * This retrieves an object from server
 	 */
@@ -958,17 +949,25 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 			throws IOException, InvalidKeyException, AccessControlException {
 		return get((XMLRPCCommand)command);
 	}
-
 	/**
-	 * This retrieves an object from server
+	 * This retrieves a work given its external id
+     * @since 11.1.0
 	 */
 	protected XMLable get(final XMLRPCCommandGetWorkByExternalId command)
 			throws IOException, InvalidKeyException, AccessControlException {
 		final DBCommandGetWorkByExternalId dbc = new DBCommandGetWorkByExternalId(DBInterface.getInstance()); 
 		return dbc.exec(command);
 	}
-
-	/**
+    /**
+     * This retrieves an application given its name
+     * @since 12.2.9
+     */
+    protected XMLable get(final XMLRPCCommandGetAppByName command)
+            throws IOException, InvalidKeyException, AccessControlException {
+        final DBCommandGetAppByName dbc = new DBCommandGetAppByName(DBInterface.getInstance());
+        return dbc.exec(command);
+    }
+    /**
 	 * This retrieves a task from server On Apr, 2012, we introduce GETTASK
 	 * message to ease client usage and help to retrieve task from work uid This
 	 * aims to retrieve task from either its UID **or** its WORKUID

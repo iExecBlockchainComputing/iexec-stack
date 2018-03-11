@@ -705,7 +705,7 @@ public final class DBInterface {
 	 * @param row
 	 *            is the row to update
 	 * @since 5.8.0
-	 * @see xtremweb.common#UserRightEnum
+	 * @see xtremweb.common.UserRightEnum
 	 * @exception IOException
 	 *                is thrown on DB access or I/O error
 	 * @exception AccessControlException
@@ -2216,7 +2216,7 @@ public final class DBInterface {
 	/**
 	 * This calls readableWorkUID(u, null)
 	 *
-	 * @see #readableWorkUID(UserInterface, String)
+	 * @see #readableWorkUID(UserInterface, StatusEnum)
 	 * @since 5.8.0
 	 */
 	private WorkInterface readableWorkUID(final UserInterface u) throws IOException {
@@ -2309,93 +2309,6 @@ public final class DBInterface {
 		return select(readableRow);
 	}
 
-//	/**
-//	 * This retrieves readable works for the given user
-//	 *
-//	 * @param command
-//	 * @return a vector of works
-//	 * @since 11.4.0
-//	 */
-//	protected WorkInterface workRequest(final XMLRPCCommand command) throws InvalidKeyException, IOException, AccessControlException {
-//
-//		final HostInterface _host = command.getHost();
-//
-//		mileStone.println("<workRequest host=" + command.remoteAddresse() + ">");
-//		try {
-//			final UID uid = command.getURI().getUID();
-//			if (uid == null) {
-//				return null;
-//			}
-//
-//			final UserInterface user = checkClient(command, UserRightEnum.GETJOB);
-//
-//			_host.setIPAddr(command.getRemoteIP());
-//			final HostInterface host = DBInterface.getInstance().hostRegister(user, _host);
-//
-//			if (host == null) {
-//				throw new IOException("can't register host");
-//			}
-//			if (!host.isActive()) {
-//				throw new IOException("inactive host:" + host.getUID() + " - " + host.fromTableNames() + " - " + host.getIPAddr());
-//			}
-//
-//			final WorkInterface readableWork = new WorkInterface(new SQLRequestWorkRequest(host, user));
-//			final WorkInterface theWork = db.select(readableWork);
-//
-//			if (theWork == null) {
-//				mileStone.println("</select>");
-//				logger.info("SimpleScheduler#select() can't find any work");
-//				return null;
-//			}
-//
-//			// insert associated task
-//			final TaskInterface theTask = new TaskInterface(theWork);
-//			theWork.setRunning();
-//			theTask.setRunningBy(host.getUID());
-//			update(theWork);
-//			update(theTask);
-//
-//			return theWork;
-//		} finally {
-//			mileStone.println("</workRequest>");
-//			notifyAll();
-//		}
-//
-// */
-// 		final WorkInterface row = new WorkInterface();
-//		try {
-//			final UserInterface mandatingClient = checkClient(command, UserRightEnum.GETJOB);
-//			final WorkInterface ret = getFromCache(mandatingClient, uid, row);
-//			if (ret != null) {
-//				return ret;
-//			}
-/////*
-//// * 	private WorkInterface readableWork(final UserInterface u, final UID uid) throws IOException {
-////		if (uid == null) {
-////			return null;
-////		}
-////		final SQLRequestReadable r = new SQLRequestReadable(WorkInterface.TABLENAME, u, ColumnSelection.selectAll, uid);
-////		return new WorkInterface(r);
-////	}
-////
-//// */
-//			final WorkInterface readableRow = readableWork(mandatingClient, uid);
-//			final WorkInterface work = select(readableRow);
-//			if(command.isMandated() && (work == null)) {
-//				throw new AccessControlException("maybe mandated?");
-//			}
-//			return work;
-//		}
-//		catch(final IOException | AccessControlException e) {
-//			final UserInterface mandatedClient = checkMandatedClient(command);
-//			final WorkInterface ret = getFromCache(mandatedClient, uid, row);
-//			if (ret != null) {
-//				return ret;
-//			}
-//			final WorkInterface readableRow = readableWork(mandatedClient, uid);
-//			return select(readableRow);
-//		}
-//	}
 	/**
 	 * This retrieves readable works for the given user
 	 *
@@ -3082,7 +2995,7 @@ public final class DBInterface {
 	 *                password...)
 	 * @exception AccessControlException
 	 *                is thrown if client does not have enough rights
-	 * @see #data(UserInterface, UID)
+	 * @see #data(UID)
 	 */
 	public DataInterface getData(final XMLRPCCommand command)
 			throws IOException, InvalidKeyException, AccessControlException {
@@ -3137,7 +3050,7 @@ public final class DBInterface {
 	 *                password...)
 	 * @exception AccessControlException
 	 *                is thrown if client does not have enough rights
-	 * @see #data(UserInterface, UID)
+	 * @see #user(UserInterface, String)
 	 */
 	public UserInterface getUserByLogin(final XMLRPCCommand command, final String login)
 			throws IOException, InvalidKeyException, AccessControlException {
@@ -3159,7 +3072,6 @@ public final class DBInterface {
 	 *                password...)
 	 * @exception AccessControlException
 	 *                is thrown if client does not have enough rights
-	 * @see #data(UserInterface, UID)
 	 */
 	protected UserInterface getUser(final XMLRPCCommand command)
 			throws IOException, InvalidKeyException, AccessControlException {
@@ -3225,7 +3137,7 @@ public final class DBInterface {
 	 * definition. If the user already exists in DB, it is updated. If inserted
 	 * in a group, new user access rights are its group one.
 	 *
-	 * @param command is the command to execute
+	 * @param theClient is the requesting client
 	 * @param useritf
 	 *            is a UserInterface object containing new user informations
 	 * @return true on success, false otherwise
@@ -3480,7 +3392,7 @@ public final class DBInterface {
 	 * e.g. : an user tries to insert its own private application which name is
 	 * already used.
 	 *
-	 * @param command is the command to execute
+	 * @param theClient is the requesting client
 	 * @param appitf
 	 *            is an ApplicationInterface object
 	 * @exception IOException
@@ -3836,8 +3748,7 @@ public final class DBInterface {
 	}
 
 	/**
-	 * This retrieves a task for the specified client. This specifically permits
-	 * to retrieve job instantiation informations (e.g. start date, worker...)
+	 * This retrieves a work given its external id
 	 *
 	 * @param command is the command to execute
 	 * @return null on error; a TaskInterface otherwise
@@ -3847,6 +3758,7 @@ public final class DBInterface {
 	 *                is thrown on credential error
 	 * @exception AccessControlException
 	 *                is thrown on access rights violation
+	 * @since 11.1.0
 	 */
 	public WorkInterface getWorkByExternalId(final XMLRPCCommand command)
 			throws IOException, InvalidKeyException, AccessControlException {
@@ -3869,6 +3781,41 @@ public final class DBInterface {
 			throw new AccessControlException(theClient.getLogin() + " can't read " + extId);
 		}
 		return theWorkById;
+	}
+
+	/**
+	 * This retrieves an application given its name
+	 *
+	 * @param command is the command to execute
+	 * @return null on error; a TaskInterface otherwise
+	 * @exception IOException
+	 *                is thrown general error
+	 * @exception InvalidKeyException
+	 *                is thrown on credential error
+	 * @exception AccessControlException
+	 *                is thrown on access rights violation
+	 */
+	public AppInterface getAppByName(final XMLRPCCommand command)
+			throws IOException, InvalidKeyException, AccessControlException {
+
+		final UserInterface theClient = checkClient(command, UserRightEnum.GETJOB);
+		final URI uri = command.getURI();
+		final String appName = uri.getPath().substring(1, uri.getPath().length());
+
+		final AppInterface theApp = app(theClient,
+				AppInterface.Columns.NAME.toString() + "='" + appName + "'");
+
+		if (theApp == null) {
+			return null;
+		}
+
+		final UserInterface owner = user(theApp.getOwner());
+		final UID ownerGroup = (owner == null ? null : owner.getGroup());
+		if (!theApp.canRead(theClient, ownerGroup)
+				&& theClient.getRights().lowerThan(UserRightEnum.SUPER_USER)) {
+			throw new AccessControlException(theClient.getLogin() + " can't read " + appName);
+		}
+		return theApp;
 	}
 
 	/**
@@ -4419,10 +4366,7 @@ public final class DBInterface {
 	/**
 	 * This adds/updates a session
 	 *
-	 * @param client
-	 *            describes the requesting client
-	 * @param sessionitf
-	 *            describes the session to insert in DB
+	 * @param command is the command to execute
 	 * @return true on success; false on DB error or if session already exists
 	 *         in DB
 	 * @exception IOException

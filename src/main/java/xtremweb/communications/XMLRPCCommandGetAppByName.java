@@ -23,32 +23,35 @@
 
 package xtremweb.communications;
 
-import org.xml.sax.SAXException;
-import xtremweb.common.*;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.AccessControlException;
 import java.security.InvalidKeyException;
 
+import org.xml.sax.SAXException;
+
+import xtremweb.common.UID;
+import xtremweb.common.UserInterface;
+import xtremweb.common.XMLReader;
+import xtremweb.common.XMLable;
+import xtremweb.common.XWConfigurator;
+
 /**
- * XMLRPCCommandGetUserByLogin.java
- *
- * Created: Nov 16th, 2006
+ * Created: Mar 12, 2018
  *
  * @author <a href="mailto:lodygens /a|t\ lal.in2p3.fr>Oleg Lodygensky</a>
- * @since 1.9.0
+ * @since 12.2.9
  */
 
 /**
- * This class defines the XMLRPCCommand to send user definition
+ * This class defines the XMLRPCCommand to retrieve application by name
  */
-public class XMLRPCCommandGetUserByLogin extends XMLRPCCommand {
+public class XMLRPCCommandGetAppByName extends XMLRPCCommand {
 
 	/**
 	 * This is the RPC id
 	 */
-	public static final IdRpc IDRPC = IdRpc.GETUSERBYLOGIN;
+	public static final IdRpc IDRPC = IdRpc.GETAPPBYNAME;
 	/**
 	 * This is the XML tag
 	 */
@@ -57,7 +60,7 @@ public class XMLRPCCommandGetUserByLogin extends XMLRPCCommand {
 	/**
 	 * This constructs a new command
 	 */
-	protected XMLRPCCommandGetUserByLogin() throws IOException {
+	protected XMLRPCCommandGetAppByName() throws IOException {
 		super(null, IDRPC);
 	}
 
@@ -68,7 +71,7 @@ public class XMLRPCCommandGetUserByLogin extends XMLRPCCommand {
 	 *            contains the URI to connect to; its path must contains the
 	 *            login of the user to retrieve
 	 */
-	protected XMLRPCCommandGetUserByLogin(final URI uri) throws IOException {
+	protected XMLRPCCommandGetAppByName(final URI uri) throws IOException {
 		super(uri, IDRPC);
 	}
 
@@ -81,7 +84,7 @@ public class XMLRPCCommandGetUserByLogin extends XMLRPCCommand {
 	 * @param u
 	 *            defines the user who executes this command
 	 */
-	public XMLRPCCommandGetUserByLogin(final URI uri, final UserInterface u) throws IOException {
+	public XMLRPCCommandGetAppByName(final URI uri, final UserInterface u) throws IOException {
 		this(uri);
 		setUser(u);
 	}
@@ -97,7 +100,7 @@ public class XMLRPCCommandGetUserByLogin extends XMLRPCCommand {
 	 * @throws InvalidKeyException
 	 * @see xtremweb.common.XMLReader#read(InputStream)
 	 */
-	public XMLRPCCommandGetUserByLogin(final InputStream input) throws IOException, SAXException, InvalidKeyException {
+	public XMLRPCCommandGetAppByName(final InputStream input) throws IOException, SAXException, InvalidKeyException {
 		this();
 		final XMLReader reader = new XMLReader(this);
 		reader.read(input);
@@ -115,7 +118,7 @@ public class XMLRPCCommandGetUserByLogin extends XMLRPCCommand {
 	@Override
 	public XMLable exec(final CommClient comm)
 			throws IOException, SAXException, InvalidKeyException, AccessControlException {
-		return comm.getUser(this);
+		return comm.get(this);
 	}
 
 	/**
@@ -123,13 +126,9 @@ public class XMLRPCCommandGetUserByLogin extends XMLRPCCommand {
 	 *
 	 * @return the login of the user
 	 */
-	public String getLogin() {
+	public String getName() {
 		try {
 			final URI uri = getURI();
-			// prior to 5.0.0, there was no URI...
-			if (uri == null) {
-				return getUser().getLogin();
-			}
 			return uri.getPath().substring(1, uri.getPath().length());
 		} catch (final Exception e) {
 			getLogger().exception(e);
