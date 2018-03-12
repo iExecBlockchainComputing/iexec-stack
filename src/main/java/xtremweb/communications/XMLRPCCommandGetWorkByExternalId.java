@@ -37,16 +37,14 @@ import xtremweb.common.XMLable;
 import xtremweb.common.XWConfigurator;
 
 /**
- * XMLRPCCommandGetUserByLogin.java
- *
- * Created: Nov 16th, 2006
+ * Created: Nov 16th, 2017
  *
  * @author <a href="mailto:lodygens /a|t\ lal.in2p3.fr>Oleg Lodygensky</a>
- * @since 1.9.0
+ * @since 11.1.0
  */
 
 /**
- * This class defines the XMLRPCCommand to send user definition
+ * This class defines the XMLRPCCommand to retrieve a work given its external id
  */
 public class XMLRPCCommandGetWorkByExternalId extends XMLRPCCommand {
 

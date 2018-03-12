@@ -22,25 +22,20 @@
 
 package xtremweb.dispatcher;
 
+import xtremweb.common.CommCallback;
+import xtremweb.common.XMLable;
+import xtremweb.communications.XMLRPCCommand;
+
 import java.io.IOException;
 import java.security.AccessControlException;
 import java.security.InvalidKeyException;
-import java.util.Vector;
-
-import xtremweb.common.CommCallback;
-import xtremweb.common.UID;
-import xtremweb.common.UserInterface;
-import xtremweb.common.XMLVector;
-import xtremweb.common.XMLable;
-import xtremweb.communications.XMLRPCCommand;
-import xtremweb.communications.XMLRPCCommandGetUserByLogin;
 
 /**
  * @author Oleg Lodygensky
- * @since 11.0.0
+ * @since 12.2.9
  */
 
-public final class DBCommandGetUser extends DBCommand implements CommCallback {
+public final class DBCommandGetAppByName extends DBCommand implements CommCallback {
 
 	private DBInterface dbInterface;
 	/**
@@ -51,7 +46,7 @@ public final class DBCommandGetUser extends DBCommand implements CommCallback {
 	 * @see xtremweb.database.SQLRequest#setDbName(String)
 	 * @see xtremweb.database.SQLRequest#setHsqldb(boolean)
 	 */
-	public DBCommandGetUser(final DBInterface dbi) throws IOException {
+	public DBCommandGetAppByName(final DBInterface dbi) throws IOException {
 		super();
 		dbInterface = dbi;
 	}
@@ -70,11 +65,9 @@ public final class DBCommandGetUser extends DBCommand implements CommCallback {
 	public XMLable exec(final XMLRPCCommand command)
 			throws IOException, InvalidKeyException, AccessControlException {
 
-		try {
-			mileStone.println("<getuser>");
-			return dbInterface.getUser(command);
-		} finally {
-			mileStone.println("</getuser>");
-		}
+		mileStone.println("<exec>");
+		final XMLable ret = dbInterface.getAppByName(command);
+		mileStone.println("</exec>");
+		return ret;
 	}
 }

@@ -57,8 +57,6 @@ public final class DBCommandGetWorkByExternalId extends DBCommand implements Com
 	 * This is called by client to disconnect from server This deletes the
 	 * client sessions
 	 *
-	 * @param client
-	 *            defines the client
 	 * @exception IOException
 	 *                is thrown general error
 	 * @exception InvalidKeyException
@@ -69,9 +67,9 @@ public final class DBCommandGetWorkByExternalId extends DBCommand implements Com
 	public XMLable exec(final XMLRPCCommand command)
 			throws IOException, InvalidKeyException, AccessControlException {
 
-		mileStone.println("<get>");
+		mileStone.println("<exec>");
 		final XMLable ret = dbInterface.getWorkByExternalId(command);		
-		mileStone.println("</get>");
+		mileStone.println("</exec>");
 		return ret;
 	}
 }
