@@ -2417,7 +2417,7 @@ public final class AppInterface extends Table {
 	 * @since 12.2.8
  	*/
 	public void checkParams(final String params) throws AccessControlException {
-		getType().checkParams(params);
+//		getType().checkParams(params);
 	}
 	/**
 	 * This sets parameter value; this is called from
