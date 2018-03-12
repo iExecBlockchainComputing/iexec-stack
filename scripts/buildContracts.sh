@@ -10,6 +10,7 @@ poco/IexecHub
 poco/WorkerPool
 poco/AuthorizedList
 poco/Marketplace
+poco/rlc-token/contracts/RLC
 "
 # TODO - try to generate enums from here
 # Compiling Solidity file poco/IexecLib.sol Complete

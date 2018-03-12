@@ -1,11 +1,11 @@
 package com.iexec.scheduler.mock;
 
 import com.iexec.scheduler.contracts.generated.IexecHub;
-import com.iexec.scheduler.marketplace.MarketOrderDirectionEnum;
-import com.iexec.scheduler.marketplace.MarketplaceService;
 import com.iexec.scheduler.contracts.generated.WorkerPool;
 import com.iexec.scheduler.ethereum.EthConfig;
 import com.iexec.scheduler.iexechub.IexecHubService;
+import com.iexec.scheduler.marketplace.MarketOrderDirectionEnum;
+import com.iexec.scheduler.marketplace.MarketplaceService;
 import com.iexec.scheduler.workerpool.WorkerPoolService;
 import org.bouncycastle.util.Arrays;
 import org.slf4j.Logger;
@@ -19,10 +19,10 @@ import org.web3j.tuples.generated.Tuple7;
 import org.web3j.utils.Numeric;
 
 import javax.annotation.PostConstruct;
-import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.iexec.scheduler.ethereum.Utils.getStatus;
 import static com.iexec.scheduler.ethereum.Utils.hashResult;
 
 @Service
@@ -56,7 +56,6 @@ public class MockWatcherService {
         watchWorkOrderActivatedAndCallForContribution();
         watchContributeAndRevealConsensus();
         watchRevealAndFinalizeWork();
-
     }
 
 
@@ -69,7 +68,7 @@ public class MockWatcherService {
                         workerSubscribed = true;
                         //TODO - emitMarketOrder if n workers are alive (not subscribed, means nothing)
                         try {
-                            marketplaceService.getMarketplace().emitMarketOrder(
+                            TransactionReceipt emitMarketOrderReceipt = marketplaceService.getMarketplace().emitMarketOrder(
                                     mockConfig.getEmitMarketOrder().getDirection(),//TODO - dynamic values
                                     mockConfig.getEmitMarketOrder().getCategory(),
                                     mockConfig.getEmitMarketOrder().getTrust(),
@@ -77,6 +76,7 @@ public class MockWatcherService {
                                     workerPoolService.getWorkerPoolAddress(),
                                     mockConfig.getEmitMarketOrder().getVolume()
                                     ).send();
+                            log.info("SCHEDLR emitMarketOrder " + getStatus(emitMarketOrderReceipt));
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -94,7 +94,7 @@ public class MockWatcherService {
                         Tuple7 orderBook = marketplaceService.getMarketplace().m_orderBook(marketOrderEmittedEvent.marketorderIdx).send();
                         if (orderBook.getValue1().equals(MarketOrderDirectionEnum.ASK) &&
                                 orderBook.getValue7().equals(workerPoolService.getWorkerPoolAddress())){
-                            iexecHubService.getIexecHub().answerEmitWorkOrder(marketOrderEmittedEvent.marketorderIdx,
+                            TransactionReceipt answerEmitWorkOrderReceipt = iexecHubService.getIexecHub().answerEmitWorkOrder(marketOrderEmittedEvent.marketorderIdx,
                                     workerPoolService.getWorkerPoolAddress(),
                                     mockConfig.getAnswerEmitWorkOrder().getApp(),
                                     mockConfig.getAnswerEmitWorkOrder().getDataset(),
@@ -102,6 +102,7 @@ public class MockWatcherService {
                                     mockConfig.getAnswerEmitWorkOrder().getCallback(),
                                     mockConfig.getAnswerEmitWorkOrder().getBeneficiary()
                                     ).send();
+                            log.info("SCHEDLR answerEmitWorkOrder " + getStatus(answerEmitWorkOrderReceipt));
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -114,14 +115,16 @@ public class MockWatcherService {
         log.info("SCHEDLR watching workOrderActivatedEvent (auto callForContribution)");
         iexecHubService.getIexecHub().workOrderActivatedEventObservable(ethConfig.getStartBlockParameter(), END)
                 .subscribe(workOrderActivatedEvent -> {
-                    log.info("SCHEDLR received workOrderActivatedEvent" + workOrderActivatedEvent.woid);
+                    log.info("SCHEDLR received workOrderActivatedEvent " + workOrderActivatedEvent.woid);
                     log.info("SCHEDLR calling pool for contribution of workers: " + mockConfig.getCallForContribution().getWorkers().toString());
 
                     setupForFutureContributions(workOrderActivatedEvent);
                     try {
-                        log.info(workerPoolService.getWorkerPool().callForContributions(workOrderActivatedEvent.woid,
-                                mockConfig.getCallForContribution().getWorkers(),
-                                mockConfig.getCallForContribution().getEnclaveChallenge()).send().getGasUsed().toString());
+                        TransactionReceipt callForContributionsReceipt = workerPoolService.getWorkerPool()
+                                .callForContributions(workOrderActivatedEvent.woid,
+                                        mockConfig.getCallForContribution().getWorkers(),
+                                        mockConfig.getCallForContribution().getEnclaveChallenge()).send();
+                        log.info("SCHEDLR callForContributions " + getStatus(callForContributionsReceipt));
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

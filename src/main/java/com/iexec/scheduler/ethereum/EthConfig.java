@@ -1,5 +1,6 @@
 package com.iexec.scheduler.ethereum;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.validation.annotation.Validated;
@@ -17,6 +18,8 @@ public class EthConfig {
     private BigInteger startBlock;
     @NotNull
     private String iexecHubAddress;
+    @NotNull
+    private String rlcAddress;
 
     EthConfig() {
     }
@@ -41,4 +44,11 @@ public class EthConfig {
         this.iexecHubAddress = iexecHubAddress;
     }
 
+    public String getRlcAddress() {
+        return rlcAddress;
+    }
+
+    public void setRlcAddress(String rlcAddress) {
+        this.rlcAddress = rlcAddress;
+    }
 }

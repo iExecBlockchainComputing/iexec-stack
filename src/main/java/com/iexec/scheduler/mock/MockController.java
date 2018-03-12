@@ -1,5 +1,8 @@
 package com.iexec.scheduler.mock;
 
+import com.iexec.scheduler.contracts.generated.IexecHub;
+import com.iexec.scheduler.ethereum.EthConfig;
+import com.iexec.scheduler.iexechub.IexecHubService;
 import com.iexec.scheduler.workerpool.WorkerPoolService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,11 +17,16 @@ public class MockController {
 
     private final MockWatcherService mockService;
     private final WorkerPoolService workerPoolService;
+    private final IexecHubService iexecHubService;
+    private final EthConfig ethConfig;
 
     @Autowired
-    public MockController(MockWatcherService mockService, WorkerPoolService workerPoolService) {
+    public MockController(MockWatcherService mockService, WorkerPoolService workerPoolService,
+                          IexecHubService iexecHubService, EthConfig ethConfig) {
         this.mockService = mockService;
         this.workerPoolService = workerPoolService;
+        this.iexecHubService = iexecHubService;
+        this.ethConfig = ethConfig;
     }
 
     @RequestMapping("/isalive")
@@ -31,6 +39,17 @@ public class MockController {
         return workerPoolService.getWorkerPoolAddress();
     }
 
+    @RequestMapping("/iexechub")
+    public String getIexecHub() throws Exception {
+        return iexecHubService.getIexecHub().getContractAddress();
+    }
+
+    @RequestMapping("/rlc")
+    public String getRlc() throws Exception {
+        return ethConfig.getRlcAddress();
+    }
+
+    /*
     //TODO - Change to @PostMapping
     @RequestMapping("/createworkorder")
     public TransactionReceipt createWorkOrder(@RequestParam String app,
@@ -42,4 +61,5 @@ public class MockController {
                                               @RequestParam String beneficiary) throws Exception {
         return mockService.createWorkOrder(workerPoolService.getWorkerPoolAddress(), app, dataset, workOrderParam, workReward, askedTrust, dappCallback, beneficiary);
     }
+    */
 }
