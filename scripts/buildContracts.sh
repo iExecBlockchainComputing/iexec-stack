@@ -9,6 +9,7 @@ targets="
 poco/WorkerPool
 poco/IexecHub
 poco/AuthorizedList
+poco/rlc-token/contracts/RLC
 "
 
 currentdir=`pwd`
