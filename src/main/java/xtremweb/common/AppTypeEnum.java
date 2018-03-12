@@ -334,11 +334,13 @@ public enum AppTypeEnum {
      * @since 12.2.8
      */
     final protected void checkParams (final String params, final Set<String> paramSet) throws AccessControlException {
+/*
         for(final String p : paramSet){
             if(params.indexOf(p) >= 0) {
                 throw new AccessControlException("parameter forbidden : " + p);
             }
         }
+*/
     }
 
 	/**
