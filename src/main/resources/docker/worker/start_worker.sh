@@ -57,6 +57,11 @@ if [ ! -z $LOGGERLEVEL ] ; then
 	sed -i "s/^LOGGERLEVEL=.*/LOGGERLEVEL=$LOGGERLEVEL/g" /iexec/conf/xtremweb.worker.conf
 fi
 
+# Set the flag for sandboxing
+if [ ! -z $SANDBOXENABLED ] ; then
+	sed -i "s/^SANDBOXENABLED=.*/SANDBOXENABLED=$SANDBOXENABLED/g" /iexec/conf/xtremweb.worker.conf
+fi
+
 cat /etc/hosts
 
 # Start the worker

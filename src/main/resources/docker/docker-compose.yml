@@ -22,10 +22,25 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - ${CERTIFICATE_AND_PRIVATE_KEYS_REPO}:/iexec/keystore
       - ${SCHEDULER_PERSISTING_FOLDER}:/var/xwhep
+    environment:
+      - DBHOST=${DBHOST}
+      - DBNAME=${MYSQL_DB_NAME}
+      - DBUSER=${MYSQL_USER_LOGIN}
+      - DBPASS=${MYSQL_USER_PASSWORD}
+      - ADMINLOGIN=${ADMINLOGIN}
+      - ADMINPASSWORD=${ADMINPASSWORD}
+      - ADMINUID=${ADMINUID}
+      - WORKERLOGIN=${WORKERLOGIN}
+      - WORKERPASSWORD=${WORKERPASSWORD}
+      - WORKERUID=${WORKERUID}
+      - LOGGERLEVEL=${LOGGERLEVEL}
+      - JWTETHISSUER=${JWTETHISSUER}
+      - JWTETHSECRET=${JWTETHSECRET}
+      - WALLCLOCKTIMEVALUE=${WALLCLOCKTIMEVALUE}
+      - DELEGATEDREGISTRATION=${DELEGATEDREGISTRATION}
+      - MAXFILESIZE=${MAXFILESIZE}
     networks:
       - iexec-net
-    env_file:
-      - containerEnvironment
     restart: unless-stopped
 
   worker:
@@ -35,6 +50,7 @@ services:
       - SCHEDULER_IP=scheduler
       - SCHEDULER_DOMAIN=iexecscheduler
       - TMPDIR=${RESULTS_FOLDER}
+      - SANDBOXENABLED=${WORKER_SANDBOX_ENABLED}
     ports:
       - 4321
       - 4322
@@ -47,6 +63,29 @@ services:
       - iexec-net
     restart: unless-stopped
 
+  gmond:
+    image: iexechub/ganglia-gmond
+    container_name: iexecgmond
+    environment:
+      DBUSER: ${MYSQL_ADMIN_USER}
+      DBPASSWORD: ${MYSQL_ADMIN_PASSWORD}
+      DATABASE: ${MYSQL_DB_NAME}
+      DBHOST: ${DBHOST}
+    ports:
+      - 8694:8694
+    networks:
+      - iexec-net
+
+  gmetad:
+    image: iexechub/ganglia-gmetad
+    container_name: iexecgmetad
+    environment:
+      GMOND_CONTAINER_NAME: iexecgmond
+    ports:
+      - 80:80
+    networks:
+      - iexec-net
+  
   db:
     image: mysql:5.7
     container_name: mysql
@@ -69,3 +108,4 @@ services:
       - 8080:8080
     networks:
       - iexec-net
+
