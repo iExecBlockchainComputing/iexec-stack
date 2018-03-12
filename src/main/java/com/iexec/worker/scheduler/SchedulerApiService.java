@@ -1,12 +1,12 @@
-package com.iexec.worker;
+package com.iexec.worker.scheduler;
 
+import com.iexec.worker.sandbox.Signature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import org.web3j.protocol.Web3j;
 
 import javax.annotation.PostConstruct;
 
@@ -25,6 +25,26 @@ public class SchedulerApiService {
     public String getWorkerPool() {
         final String workerpoolUri = schedulerApiUrl + "/workerpool";
         return new RestTemplate().getForObject(workerpoolUri, String.class);
+    }
+
+    public String getIexecHub() {
+        final String uri = schedulerApiUrl + "/iexechub";
+        return new RestTemplate().getForObject(uri, String.class);
+    }
+
+    public String getRlc() {
+        final String uri = schedulerApiUrl + "/rlc";
+        return new RestTemplate().getForObject(uri, String.class);
+    }
+
+    public String getChallenge() {
+        final String challengeUri = schedulerApiUrl + "/challenge";
+        return new RestTemplate().getForObject(challengeUri, String.class);
+    }
+
+    public String postSignedChallenge(Signature signature) {
+        final String signChallengeUri = schedulerApiUrl + "/signchallenge";
+        return new RestTemplate().postForObject(signChallengeUri, signature, String.class);
     }
 
     @PostConstruct

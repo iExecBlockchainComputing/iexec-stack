@@ -1,17 +1,26 @@
-package com.iexec.worker;
+package com.iexec.worker.ethereum;
 
 import org.web3j.crypto.Hash;
 import org.web3j.protocol.Web3j;
+import org.web3j.protocol.core.methods.response.TransactionReceipt;
+import org.web3j.tx.Contract;
 
 import java.io.IOException;
+import java.math.BigInteger;
 import java.util.Collections;
 
-public class Utils {
+public final class Utils {
 
-    static String signByteResult(String result, String address) {
+    private static final String HEX_PREFIX = "0x";
+
+    private Utils() {
+        throw new IllegalAccessError("Utility class");
+    }
+
+    public static String signByteResult(String result, String address) {
         String resultHash = Hash.sha3String(result);
         String addressHash = Hash.sha3(address);
-        String xor = "0x";
+        String xor = HEX_PREFIX;
         for (int i = 2; i < 66; i++) {
             Integer temp = Integer.parseInt(String.valueOf(resultHash.charAt(i)), 16) ^ Integer.parseInt(String.valueOf(addressHash.charAt(i)), 16);
             xor += Integer.toHexString(temp);
@@ -20,15 +29,15 @@ public class Utils {
         return sign;
     }
 
-    static String hashResult(String result) {
+    public static String hashResult(String result) {
         return Hash.sha3(Hash.sha3String(result));
     }
 
-    static String web3Sha3(Web3j web3j, String preimage) throws IOException {
+    public static String web3Sha3(Web3j web3j, String preimage) throws IOException {
         return web3j.web3Sha3(preimage).send().getResult();
     }
 
-    static String asciiToHex(String asciiValue) {
+    public static String asciiToHex(String asciiValue) {
         char[] chars = asciiValue.toCharArray();
         StringBuffer hex = new StringBuffer();
         for (int i = 0; i < chars.length; i++) {
@@ -38,6 +47,11 @@ public class Utils {
         return hex.toString() + "".join("", Collections.nCopies(32 - (hex.length() / 2), "00"));
     }
 
-
-
+    public static String getStatus(TransactionReceipt transactionReceipt){
+        if (transactionReceipt.getGasUsed().compareTo(Contract.GAS_LIMIT) < 0){
+            return "Succeed";
+        }
+        return "Failed";
+    }
+    
 }
