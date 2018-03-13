@@ -60,37 +60,7 @@ import javax.net.ssl.SSLHandshakeException;
 
 import org.xml.sax.SAXException;
 
-import xtremweb.common.AppInterface;
-import xtremweb.common.AppTypeEnum;
-import xtremweb.common.CPUEnum;
-import xtremweb.common.CommandLineOptions;
-import xtremweb.common.CommandLineParser;
-import xtremweb.common.DataInterface;
-import xtremweb.common.DataTypeEnum;
-import xtremweb.common.GroupInterface;
-import xtremweb.common.Logger;
-import xtremweb.common.LoggerLevel;
-import xtremweb.common.MileStone;
-import xtremweb.common.OSEnum;
-import xtremweb.common.SessionInterface;
-import xtremweb.common.StatusEnum;
-import xtremweb.common.StreamIO;
-import xtremweb.common.Table;
-import xtremweb.common.UID;
-import xtremweb.common.UserGroupInterface;
-import xtremweb.common.UserInterface;
-import xtremweb.common.UserRightEnum;
-import xtremweb.common.Version;
-import xtremweb.common.WorkInterface;
-import xtremweb.common.XMLValue;
-import xtremweb.common.XMLVector;
-import xtremweb.common.XMLable;
-import xtremweb.common.XWConfigurator;
-import xtremweb.common.XWPropertyDefs;
-import xtremweb.common.XWReturnCode;
-import xtremweb.common.XWRole;
-import xtremweb.common.XWTools;
-import xtremweb.common.Zipper;
+import xtremweb.common.*;
 import xtremweb.communications.CommClient;
 import xtremweb.communications.Connection;
 import xtremweb.communications.IdRpc;
@@ -1217,7 +1187,7 @@ public final class Client {
 					app = (AppInterface) get((UID) appParams.get(0), false, true);
 				} catch (final ClassCastException e) {
 					// maybe it is a string...
-					app = commClient().getApp((String) appParams.get(0), true);
+                    app = commClient().getApp((String) appParams.get(0), true);
 				}
 			}
 			if (app == null) {
