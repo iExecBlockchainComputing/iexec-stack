@@ -1230,23 +1230,20 @@ public abstract class CommClient implements ClientAPI {
 	}
 
 	/**
-	 * This retrieves an application definition from server, given its name.
-	 * Application is always downloaded from server, even if on already in cache
-	 *
+	 * This calls getApp(name, false)
 	 * @param name
 	 *            is the name of the application
 	 * @return an application definition
 	 * @since 2.0.0
+     * @see #getApp(String, boolean)
 	 */
 	public AppInterface getApp(final String name) throws InvalidKeyException, AccessControlException, IOException,
 			ClassNotFoundException, SAXException, URISyntaxException {
-		return getApp(name, true);
+		return getApp(name, false);
 	}
 
 	/**
-	 * This retrieves an application definition from server, given its name. If
-	 * application is already in cache, it is not downloaded
-	 *
+     * This calls getAppByName(namen bypass)
 	 * @param name
 	 *            is the name of the application
 	 * @param bypass
@@ -1254,10 +1251,10 @@ public abstract class CommClient implements ClientAPI {
 	 *            if false, app is only downloaded if not already in cache
 	 * @return an application definition
 	 * @since 2.0.0
+     * @see #getAppByName(String, boolean)
 	 */
 	public AppInterface getApp(final String name, final boolean bypass) throws InvalidKeyException,
 			AccessControlException, IOException, ClassNotFoundException, SAXException, URISyntaxException {
-
 		if (!bypass) {
 			final AppInterface app = cache.appByName(name);
 			if (app != null) {
@@ -1265,15 +1262,27 @@ public abstract class CommClient implements ClientAPI {
 			}
 		}
 
-		final URI uri = new URI(newURI().toString() + "/" + name);
-		final XMLRPCCommandGetAppByName cmd = new XMLRPCCommandGetAppByName(uri);
-
+		final Vector<XMLValue> apps = (Vector<XMLValue>) getApps().getXmlValues();
 		try {
-			sendCommand(cmd);
-			return newAppInterface();
+			logger.finest("commClient#getApp(" + name + ") vector.size = " + apps.size() + " " + apps.toString());
+
+			for (int i = 0; i < apps.size(); i++) {
+
+				final UID uid = (UID) ((XMLValue) apps.get(i)).getValue();
+				if (uid == null) {
+					continue;
+				}
+
+				final AppInterface theApp = (AppInterface) get(uid);
+
+				if ((theApp != null) && (theApp.getName().compareToIgnoreCase(name) == 0)) {
+					return theApp;
+				}
+			}
 		} finally {
-			close();
+			apps.clear();
 		}
+		return null;
 	}
 
 	/**
@@ -1902,7 +1911,7 @@ public abstract class CommClient implements ClientAPI {
         return getWorkByExternalId(command, true);
     }
     /**
-     * This retrieves an user from server
+     * This retrieves a work from server given its external id
      *
      * @param command
      *            is the command to send to server to retrieve user
@@ -1910,7 +1919,7 @@ public abstract class CommClient implements ClientAPI {
      *            if true work is downloaded from server even if already in
      *            cache if false, work is only downloaded if not already in
      *            cache
-     * @since 12.2.9
+     * @since 11.1.0
      */
     public Table getWorkByExternalId(final XMLRPCCommandGetWorkByExternalId command, final boolean bypass)
             throws InvalidKeyException, AccessControlException, IOException, SAXException {
@@ -1934,17 +1943,19 @@ public abstract class CommClient implements ClientAPI {
         }
     }
 	/**
-	 * This calls getWorkByExternalId(extId, true)
+	 * This calls getAppByName(name, false)
 	 * @since 12.2.9
+     * @see #getAppByName(String, boolean)
 	 */
 	public Table getAppByName(final String name)
 			throws InvalidKeyException, AccessControlException, IOException, SAXException, URISyntaxException {
-		return getAppByName(name, true);
+		return getAppByName(name, false);
 	}
 
 	/**
-	 * This calls getWorkByExternalId(new XMLRPCCommandGetWorkByExternalId(extId), bypass)
-	 * @since 11.1.0
+	 * This calls getAppByName(new XMLRPCCommandGetAppByName(name), bypass)
+     * @since 12.2.9
+     * @see #getAppByName(XMLRPCCommandGetAppByName, boolean)
 	 */
 	@Override
 	public Table getAppByName(final String extId, final boolean bypass)
@@ -1957,7 +1968,8 @@ public abstract class CommClient implements ClientAPI {
 
 	/**
 	 * This calls XMLRPCCommandGetWorkByExternalId(command, true)
-	 * @since 11.1.0
+     * @since 12.2.9
+     * @see #getAppByName(XMLRPCCommandGetAppByName, boolean)
 	 */
 	@Override
 public Table getAppByName(final XMLRPCCommandGetAppByName command)
@@ -1966,7 +1978,7 @@ public Table getAppByName(final XMLRPCCommandGetAppByName command)
 	}
 
 	/**
-	 * This retrieves an user from server
+	 * This retrieves an application
 	 *
 	 * @param command
 	 *            is the command to send to server to retrieve user
@@ -1974,7 +1986,7 @@ public Table getAppByName(final XMLRPCCommandGetAppByName command)
 	 *            if true work is downloaded from server even if already in
 	 *            cache if false, work is only downloaded if not already in
 	 *            cache
-	 * @since 11.1.0
+     * @since 12.2.9
 	 */
 	public Table getAppByName(final XMLRPCCommandGetAppByName command, final boolean bypass)
 			throws InvalidKeyException, AccessControlException, IOException, SAXException {
@@ -1987,12 +1999,12 @@ public Table getAppByName(final XMLRPCCommandGetAppByName command)
 		}
 
 		try {
-			sendCommand(command);
-			final Table object = newAppInterface();
-			if (object != null) {
-				cache.add(object, command.getURI());
-			}
-			return object;
+            sendCommand(command);
+            final Table object = newAppInterface();
+            if (object != null) {
+                cache.add(object, command.getURI());
+            }
+            return object;
 		} finally {
 			close();
 		}
