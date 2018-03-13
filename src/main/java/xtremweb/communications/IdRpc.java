@@ -611,7 +611,7 @@ public enum IdRpc {
 
 		@Override
 		public String helpRestApi() {
-			return this.toString() + "/aLogin";
+			return this.toString() + "/appName";
 		}
 	},
 	/**
