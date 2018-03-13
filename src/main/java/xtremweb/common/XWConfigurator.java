@@ -1287,10 +1287,7 @@ public final class XWConfigurator extends Properties {
 			}
 		}
 		if ((sandboxBinFile != null) && !sandboxBinFile.exists()) {
-			logger.warn("Not Using Sandboxing \"" + getProperty(XWPropertyDefs.SANDBOXPATH) + "\" : file not found. "
-					+ "Please check config file variable \"" + XWPropertyDefs.SANDBOXPATH + "\". Default is : "
-					+ getProperty(XWPropertyDefs.SANDBOXPATH));
-			remove(XWPropertyDefs.SANDBOXPATH.toString());
+			logger.fatal("Sandboxing not found : \"" + getProperty(XWPropertyDefs.SANDBOXPATH) + "\"");
 		}
 
 		_host.setTracing(getBoolean(XWPropertyDefs.TRACES));
