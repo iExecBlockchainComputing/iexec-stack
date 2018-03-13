@@ -1,6 +1,6 @@
 package com.iexec.worker.iexechub;
 
-import com.iexec.scheduler.contracts.generated.IexecHub;
+import com.iexec.worker.contracts.generated.IexecHub;
 import com.iexec.worker.ethereum.CredentialsService;
 import com.iexec.worker.ethereum.EthConfig;
 import com.iexec.worker.scheduler.SchedulerApiService;
@@ -34,7 +34,7 @@ public class IexecHubService {
 
     @PostConstruct
     public void run() throws Exception {
-        log.info("SCHEDLR loading iexecHub");
+        log.info("WORKER1 loading iexecHub");
         this.iexecHub = IexecHub.load(
                 schedulerApiService.getIexecHub(), web3j, credentialsService.getCredentials(), ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT);
     }

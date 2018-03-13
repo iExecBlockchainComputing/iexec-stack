@@ -62,12 +62,14 @@ public class MockWatcherService {
 
     private void allowRlc() {
         try {
+            TransactionReceipt approveReceipt = rlcService.getRlc().approve(iexecHubService.getIexecHub().getContractAddress(), BigInteger.valueOf(100)).send();
+            log.info("WORKER1 approve IEXCHUB " + getStatus(approveReceipt));
+            TransactionReceipt depositReceipt = iexecHubService.getIexecHub().deposit(BigInteger.valueOf(10)).send();
+            log.info("WORKER1 deposit RLC (to IEXCHUB) " + getStatus(depositReceipt));
             BigInteger balance = rlcService.getRlc().balanceOf(credentialsService.getCredentials().getAddress()).send();
             log.info("WORKER1 RLC balance: " + balance);
-            TransactionReceipt approveReceipt = rlcService.getRlc().approve(iexecHubService.getIexecHub().getContractAddress(), BigInteger.valueOf(100)).send();
-            log.info("WORKER1 approve IexecHub to deposit for him: " + getStatus(approveReceipt));
-            TransactionReceipt depositReceipt = iexecHubService.getIexecHub().deposit(BigInteger.valueOf(10)).send();
-            log.info("WORKER1 deposit RLC (from IexecHub): " + getStatus(depositReceipt));
+            BigInteger balance2 = rlcService.getRlc().balanceOf(iexecHubService.getIexecHub().getContractAddress()).send();
+            log.info("IEXCHUB RLC balance: " + balance2);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -76,7 +78,7 @@ public class MockWatcherService {
     private void subscribeToWorkerPool() {
         try {
             TransactionReceipt subscribeToPoolReceipt = workerPoolService.getWorkerPool().subscribeToPool().send();
-            log.info("WORKER1 subscribing to workerPool " + getStatus(subscribeToPoolReceipt));
+            log.info("WORKER1 subscribeToPool " + getStatus(subscribeToPoolReceipt));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -89,8 +91,6 @@ public class MockWatcherService {
                     if (callForContributionEvent.worker.equals(credentialsService.getCredentials().getAddress())) {
                         log.info("WORKER1 received callForContributionEvent for worker " + callForContributionEvent.worker);
                         log.info("WORKER1 executing work");
-                        log.info("WORKER1 contributing");
-
                         String hashResult = hashResult(workerResult);
                         String signResult = signByteResult(workerResult, credentialsService.getCredentials().getAddress());
 
@@ -103,7 +103,9 @@ public class MockWatcherService {
                         byte[] s = Numeric.hexStringToByteArray(asciiToHex(contributeS));
 
                         try {
-                            workerPoolService.getWorkerPool().contribute(callForContributionEvent.woid, hashResultBytes, hashSignBytes, contributeV, r, s).send();
+                            TransactionReceipt contributeReceipt = workerPoolService.getWorkerPool().contribute(callForContributionEvent.woid, hashResultBytes, hashSignBytes, contributeV, r, s).send();
+                            log.info("WORKER1 contribute " + getStatus(contributeReceipt));
+                            log.info(contributeReceipt.getTransactionHash());
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -117,9 +119,9 @@ public class MockWatcherService {
                 .subscribe(revealConsensusEvent -> {
                     log.info("WORKER1 received revealConsensusEvent " + revealConsensusEvent.woid);
                     byte[] result = Numeric.hexStringToByteArray(Hash.sha3String(workerResult));
-                    log.info("WORKER1 reavealing result: " + Hash.sha3String(workerResult));
                     try {
-                        workerPoolService.getWorkerPool().reveal(revealConsensusEvent.woid, result).send();
+                        TransactionReceipt revealReceipt = workerPoolService.getWorkerPool().reveal(revealConsensusEvent.woid, result).send();
+                        log.info("WORKER1 reveal " + Hash.sha3String(workerResult) + " " + getStatus(revealReceipt));
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

@@ -1,6 +1,6 @@
 package com.iexec.worker.ethereum;
 
-import com.iexec.scheduler.contracts.generated.RLC;
+import com.iexec.worker.contracts.generated.RLC;
 import com.iexec.worker.scheduler.SchedulerApiService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +32,7 @@ public class RlcService {
 
     @PostConstruct
     public void run() throws Exception {
-        log.info("SCHEDLR loading Rlc contract");
+        log.info("WORKER1 loading Rlc contract");
         rlc = RLC.load(
                 schedulerApiService.getRlc(), web3j, credentialsService.getCredentials(), ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT);
     }

@@ -32,7 +32,7 @@ for target in ${targets}; do
     $currentdir/../extlib/web3j-3.2.0/bin/web3j solidity generate \
         ${dirName}/build/${fileName}.bin \
         ${dirName}/build/${fileName}.abi \
-        -p com.iexec.scheduler.contracts.generated \
+        -p com.iexec.worker.contracts.generated \
         -o ../../java/ > /dev/null
     echo "Complete"
 
