@@ -75,7 +75,7 @@ public class MockWatcherService {
                                     mockConfig.getEmitMarketOrder().getValue(),
                                     workerPoolService.getWorkerPoolAddress(),
                                     mockConfig.getEmitMarketOrder().getVolume()
-                                    ).send();
+                            ).send();
                             log.info("SCHEDLR emitMarketOrder " + getStatus(emitMarketOrderReceipt));
                         } catch (Exception e) {
                             e.printStackTrace();
@@ -93,7 +93,7 @@ public class MockWatcherService {
                     try {
                         Tuple7 orderBook = marketplaceService.getMarketplace().m_orderBook(marketOrderEmittedEvent.marketorderIdx).send();
                         if (orderBook.getValue1().equals(MarketOrderDirectionEnum.ASK) &&
-                                orderBook.getValue7().equals(workerPoolService.getWorkerPoolAddress())){
+                                orderBook.getValue7().equals(workerPoolService.getWorkerPoolAddress())) {
                             TransactionReceipt answerEmitWorkOrderReceipt = iexecHubService.getIexecHub().answerEmitWorkOrder(marketOrderEmittedEvent.marketorderIdx,
                                     workerPoolService.getWorkerPoolAddress(),
                                     mockConfig.getAnswerEmitWorkOrder().getApp(),
@@ -101,7 +101,7 @@ public class MockWatcherService {
                                     mockConfig.getAnswerEmitWorkOrder().getParams(),
                                     mockConfig.getAnswerEmitWorkOrder().getCallback(),
                                     mockConfig.getAnswerEmitWorkOrder().getBeneficiary()
-                                    ).send();
+                            ).send();
                             log.info("SCHEDLR answerEmitWorkOrder " + getStatus(answerEmitWorkOrderReceipt));
                         }
                     } catch (Exception e) {
@@ -116,15 +116,14 @@ public class MockWatcherService {
         iexecHubService.getIexecHub().workOrderActivatedEventObservable(ethConfig.getStartBlockParameter(), END)
                 .subscribe(workOrderActivatedEvent -> {
                     log.info("SCHEDLR received workOrderActivatedEvent " + workOrderActivatedEvent.woid);
-                    log.info("SCHEDLR calling pool for contribution of workers: " + mockConfig.getCallForContribution().getWorkers().toString());
-
                     setupForFutureContributions(workOrderActivatedEvent);
                     try {
                         TransactionReceipt callForContributionsReceipt = workerPoolService.getWorkerPool()
                                 .callForContributions(workOrderActivatedEvent.woid,
                                         mockConfig.getCallForContribution().getWorkers(),
                                         mockConfig.getCallForContribution().getEnclaveChallenge()).send();
-                        log.info("SCHEDLR callForContributions " + getStatus(callForContributionsReceipt));
+                        log.info("SCHEDLR callForContributions " + getStatus(callForContributionsReceipt)
+                                + " of workers " + mockConfig.getCallForContribution().getWorkers().toString());
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -148,10 +147,12 @@ public class MockWatcherService {
                     if (!isConsensusReached(contributeEvent)) {
                         return;
                     }
-                    log.info("SCHEDLR reavealing consensus " + hashResult(mockConfig.getWorkerResult()));
                     byte[] consensus = Numeric.hexStringToByteArray(hashResult(mockConfig.getWorkerResult()));
                     try {
-                        workerPoolService.getWorkerPool().revealConsensus(contributeEvent.woid, consensus).send();
+                        TransactionReceipt revealConsensusReceipt = workerPoolService.getWorkerPool()
+                                .revealConsensus(contributeEvent.woid, consensus).send();
+                        log.info("SCHEDLR revealConsensus " + hashResult(mockConfig.getWorkerResult()) + " "
+                                + getStatus(revealConsensusReceipt));
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -184,12 +185,12 @@ public class MockWatcherService {
                     log.info("SCHEDLR received RevealEvent: " + Numeric.toHexString(revealEvent.result));
                     log.info("SCHEDLR checking if reveal timeout reached?");
                     log.info("SCHEDLR found reveal timeout reached");
-                    log.info("SCHEDLR finalazing task");
                     try {
-                        workerPoolService.getWorkerPool().finalizedWork(revealEvent.woid,
+                        TransactionReceipt finalizedWorkReceipt = workerPoolService.getWorkerPool().finalizedWork(revealEvent.woid,
                                 mockConfig.getFinalizeWork().getStdout(),
                                 mockConfig.getFinalizeWork().getStderr(),
                                 mockConfig.getFinalizeWork().getUri()).send();
+                        log.info("SCHEDLR finalize " + getStatus(finalizedWorkReceipt));
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

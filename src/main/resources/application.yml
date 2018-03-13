@@ -8,8 +8,8 @@ web3j:
 
 ethereum:
   startBlock: 0
-  iexecHubAddress: ${iexecHub:0xb2a1565cf942ada668d33159bf6d20dbc41bb8e6}
-  rlcAddress: ${rlc:0x2b066222a661aaace8bd9e78d616e4e2006285cb}
+  rlcAddress: ${rlc:0x9a387bc37fe3cf411dfcd0721e34eac2e35fa46a}
+  iexecHubAddress: ${iexecHub:0x4ec80e6943278e5be4ca5dbd4361e8a46966393d}
 
 wallet:
     folder: "./src/main/resources/wallet"
@@ -24,7 +24,7 @@ workerpool:
   address:  #leave blank will create a new workerpool (else plug scheduler to existing one)
   name: "myWorkerPool"              #unchangeable after creation
   subscriptionLockStakePolicy: 0    #unchangeable after creation
-  subscriptionMinimumStakePolicy: 0
+  subscriptionMinimumStakePolicy: 10
   subscriptionMinimumScorePolicy: 0
   stakeRatioPolicy: 30
   schedulerRewardRatioPolicy: 1
@@ -46,11 +46,11 @@ mock:
     volume: 1
   answerEmitWorkOrder:
     marketorderIdx: 0
-    app: "0x0dd1c050e03a06b9a8bc4961f4a8583a125a9c32"
+    app: "0x1524ce15d079d23a2318af67c1e5070f6f76b7b6"
     dataset: 0
     params: "noParam"
     callback: 0
-    beneficiary: "0x5bef0af001905a28570362f4116a5126dfde8761"
+    beneficiary: "0x43e11356bd8e4bd323b3e6e46bb8cf08834c05a8"
   callForContribution:
     workers:
       - "0x70a1bebd73aef241154ea353d6c8c52d420d4f5b"

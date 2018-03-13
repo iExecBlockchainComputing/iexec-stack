@@ -16,6 +16,8 @@ import org.web3j.tx.ManagedTransaction;
 
 import javax.annotation.PostConstruct;
 
+import static com.iexec.scheduler.ethereum.Utils.getStatus;
+
 @Service
 public class IexecHubService {
 
@@ -45,13 +47,12 @@ public class IexecHubService {
 
     private String fetchWorkerPoolAddress() throws Exception {
         if (poolConfig.getAddress().isEmpty()) {
-            log.info("SCHEDLR CreateWorkerPool");
-            TransactionReceipt receipt = iexecHub.createWorkerPool(poolConfig.getName(),
+            TransactionReceipt createWorkerPoolReceipt = iexecHub.createWorkerPool(poolConfig.getName(),
                     poolConfig.getSubscriptionLockStakePolicy(),
                     poolConfig.getSubscriptionMinimumStakePolicy(),
                     poolConfig.getSubscriptionMinimumScorePolicy()).send();
-
-            return this.iexecHub.getCreateWorkerPoolEvents(receipt).get(0).workerPool;
+            log.info("SCHEDLR createWorkerPool " + getStatus(createWorkerPoolReceipt));
+            return this.iexecHub.getCreateWorkerPoolEvents(createWorkerPoolReceipt).get(0).workerPool;
         } else {
             log.info("SCHEDLR fetch WorkerPool address from conf");
             return poolConfig.getAddress();
