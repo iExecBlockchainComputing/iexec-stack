@@ -1,0 +1,3 @@
+[submodule "iexec-scheduler"]
+	path = iexec-scheduler
+	url = https://github.com/iExecBlockchainComputing/iexec-scheduler.git
