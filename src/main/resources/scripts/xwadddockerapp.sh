@@ -413,7 +413,7 @@ do
            [--stopsh     <bash script to stop  the container>]
            [--startcmd   <cmd  script to start the container>]
            [--stopcmd    <cmd  script to stop  the container>]
-           [--dockerfile <Dockerfile>]
+           [--dockerfile <Dockerfile>] (THIS IS DISABLED: you can not send Dockerfile)
            [--name <XtremWeb-HEP app name>]
 END_OF_USAGE
       exit 0
