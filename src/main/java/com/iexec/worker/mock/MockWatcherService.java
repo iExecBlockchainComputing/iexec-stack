@@ -1,9 +1,12 @@
 package com.iexec.worker.mock;
 
+import com.iexec.worker.contracts.generated.IexecHub;
+import com.iexec.worker.contracts.generated.WorkOrder;
 import com.iexec.worker.ethereum.CredentialsService;
 import com.iexec.worker.ethereum.EthConfig;
 import com.iexec.worker.ethereum.RlcService;
 import com.iexec.worker.iexechub.IexecHubService;
+import com.iexec.worker.scheduler.SchedulerApiService;
 import com.iexec.worker.workerpool.WorkerPoolService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,12 +14,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.web3j.crypto.Hash;
+import org.web3j.protocol.Web3j;
 import org.web3j.protocol.core.DefaultBlockParameterName;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.tuples.generated.Tuple2;
+import org.web3j.tx.Contract;
+import org.web3j.tx.ManagedTransaction;
 import org.web3j.utils.Numeric;
 
 import javax.annotation.PostConstruct;
+import java.math.BigDecimal;
 import java.math.BigInteger;
 
 import static com.iexec.worker.ethereum.Utils.*;
@@ -31,6 +38,8 @@ public class MockWatcherService {
     private final WorkerPoolService workerPoolService;
     private final RlcService rlcService;
     private final EthConfig ethConfig;
+    private final SchedulerApiService schedulerApiService;
+    private final Web3j web3j;
 
     //Mock values
     @Value("${mock.worker-result}")
@@ -44,12 +53,15 @@ public class MockWatcherService {
 
     @Autowired
     public MockWatcherService(CredentialsService credentialsService, EthConfig ethConfig, RlcService rlcService,
-                              IexecHubService iexecHubService, WorkerPoolService workerPoolService) {
+                              IexecHubService iexecHubService, WorkerPoolService workerPoolService,
+                              SchedulerApiService schedulerApiService, Web3j web3j) {
         this.credentialsService = credentialsService;
         this.iexecHubService = iexecHubService;
         this.workerPoolService = workerPoolService;
         this.rlcService = rlcService;
         this.ethConfig = ethConfig;
+        this.schedulerApiService = schedulerApiService;
+        this.web3j = web3j;
     }
 
     @PostConstruct
@@ -71,8 +83,8 @@ public class MockWatcherService {
 
     private void subscribeToWorkerPool() {
         try {
-            TransactionReceipt subscriptionDepositReceipt = iexecHubService.getIexecHub().deposit(BigInteger.valueOf(10)).send();
-            log.info("WORKER1 subscriptionDeposit " + getStatus(subscriptionDepositReceipt));
+            TransactionReceipt subscriptionDepositReceipt = iexecHubService.getIexecHub().deposit(schedulerApiService.getWorkerPoolPolicy().getSubscriptionMinimumStakePolicy()).send();
+            log.info("WORKER1 subscriptionDeposit " + schedulerApiService.getWorkerPoolPolicy().getSubscriptionMinimumStakePolicy() + " " + getStatus(subscriptionDepositReceipt));
             TransactionReceipt subscribeToPoolReceipt = workerPoolService.getWorkerPool().subscribeToPool().send();
             log.info("WORKER1 subscribeToPool " + getStatus(subscribeToPoolReceipt));
         } catch (Exception e) {
@@ -98,9 +110,18 @@ public class MockWatcherService {
                         byte[] r = Numeric.hexStringToByteArray(asciiToHex(contributeR));
                         byte[] s = Numeric.hexStringToByteArray(asciiToHex(contributeS));
 
+                        WorkOrder workOrder = WorkOrder.load(
+                                callForContributionEvent.woid, web3j, credentialsService.getCredentials(), ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT);
+
                         try {
-                            TransactionReceipt contributeDepositReceipt = iexecHubService.getIexecHub().deposit(BigInteger.valueOf(30)).send();
-                            log.info("WORKER1 contributeDeposit " + getStatus(contributeDepositReceipt));
+                            BigInteger m_emitcost = workOrder.m_emitcost().send();
+                            log.info("emitcost " + m_emitcost);
+                            m_emitcost = BigInteger.valueOf(100); //TODO - Check why emitcost==0
+
+                            Float deposit = (schedulerApiService.getWorkerPoolPolicy().getStakeRatioPolicy().floatValue()/100)*m_emitcost.floatValue();//(30/100)*100
+                            BigInteger depositBig = BigDecimal.valueOf(deposit).toBigInteger();
+                            TransactionReceipt contributeDepositReceipt = iexecHubService.getIexecHub().deposit(depositBig).send();
+                            log.info("WORKER1 contributeDeposit " + depositBig + " " + getStatus(contributeDepositReceipt));
                             TransactionReceipt contributeReceipt = workerPoolService.getWorkerPool().contribute(callForContributionEvent.woid, hashResultBytes, hashSignBytes, contributeV, r, s).send();
                             log.info("WORKER1 contribute " + getStatus(contributeReceipt));
                             log.info(contributeReceipt.getTransactionHash());

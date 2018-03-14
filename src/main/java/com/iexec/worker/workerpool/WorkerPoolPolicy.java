@@ -1,4 +1,4 @@
-package com.iexec.scheduler.workerpool;
+package com.iexec.worker.workerpool;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -102,4 +102,19 @@ public class WorkerPoolPolicy {
         this.resultRetentionPolicy = resultRetentionPolicy;
     }
 
+    @Override
+    public String toString() {
+        return "WorkerPoolPolicy{" +
+                "address='" + address + '\'' +
+                ", name='" + name + '\'' +
+                ", subscriptionLockStakePolicy=" + subscriptionLockStakePolicy +
+                ", subscriptionMinimumStakePolicy=" + subscriptionMinimumStakePolicy +
+                ", subscriptionMinimumScorePolicy=" + subscriptionMinimumScorePolicy +
+                ", stakeRatioPolicy=" + stakeRatioPolicy +
+                ", schedulerRewardRatioPolicy=" + schedulerRewardRatioPolicy +
+                ", resultRetentionPolicy=" + resultRetentionPolicy +
+                ", mode=" + mode +
+                ", list=" + list +
+                '}';
+    }
 }

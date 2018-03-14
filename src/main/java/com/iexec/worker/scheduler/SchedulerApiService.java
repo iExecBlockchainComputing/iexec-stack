@@ -1,6 +1,7 @@
 package com.iexec.worker.scheduler;
 
 import com.iexec.worker.sandbox.Signature;
+import com.iexec.worker.workerpool.WorkerPoolPolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,9 +23,9 @@ public class SchedulerApiService {
     public SchedulerApiService() {
     }
 
-    public String getWorkerPool() {
+    public WorkerPoolPolicy getWorkerPoolPolicy() {
         final String workerpoolUri = schedulerApiUrl + "/workerpool";
-        return new RestTemplate().getForObject(workerpoolUri, String.class);
+        return new RestTemplate().getForObject(workerpoolUri, WorkerPoolPolicy.class);
     }
 
     public String getIexecHub() {

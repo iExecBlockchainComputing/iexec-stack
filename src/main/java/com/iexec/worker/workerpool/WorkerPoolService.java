@@ -34,7 +34,7 @@ public class WorkerPoolService {
 
     @PostConstruct
     public void run() throws Exception {
-        String workerPoolAddress = schedulerApiService.getWorkerPool();
+        String workerPoolAddress = schedulerApiService.getWorkerPoolPolicy().getAddress();
         log.info("WORKER1 loading WorkerPool contract on " + workerPoolAddress);
 
         if (workerPoolAddress != null) {
