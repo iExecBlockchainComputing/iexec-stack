@@ -154,7 +154,6 @@ public class Version extends XMLable {
 	 *            is the build
 	 */
 	public void fromStrings(final String ver, final String bu) {
-        System.out.println("Version#fromStrings " + ver + " " + bu);
 		version = ver;
 		build = bu;
 	}
@@ -249,7 +248,6 @@ public class Version extends XMLable {
     	version = attrs.getValue(1);
         fromStrings(version, build);
         setCurrentVersion(new Version(version, build));
-        System.out.println("Version#fromXml this.toXml() = " + this.toXml());
 	}
 
 	/**
