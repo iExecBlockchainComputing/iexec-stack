@@ -2,7 +2,9 @@ package com.iexec.scheduler.mock;
 
 import com.iexec.scheduler.contracts.generated.IexecHub;
 import com.iexec.scheduler.contracts.generated.WorkerPool;
+import com.iexec.scheduler.ethereum.CredentialsService;
 import com.iexec.scheduler.ethereum.EthConfig;
+import com.iexec.scheduler.ethereum.RlcService;
 import com.iexec.scheduler.iexechub.IexecHubService;
 import com.iexec.scheduler.marketplace.MarketOrderDirectionEnum;
 import com.iexec.scheduler.marketplace.MarketplaceService;
@@ -19,6 +21,7 @@ import org.web3j.tuples.generated.Tuple7;
 import org.web3j.utils.Numeric;
 
 import javax.annotation.PostConstruct;
+import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,6 +36,8 @@ public class MockWatcherService {
     private final IexecHubService iexecHubService;
     private final WorkerPoolService workerPoolService;
     private final MarketplaceService marketplaceService;
+    private final RlcService rlcService;
+    private final CredentialsService credentialsService;
     private final MockConfig mockConfig;
     private final EthConfig ethConfig;
     private final byte[] EMPTY_BYTE = new byte[0];
@@ -41,10 +46,13 @@ public class MockWatcherService {
 
     @Autowired
     public MockWatcherService(IexecHubService iexecHubService, WorkerPoolService workerPoolService,
-                              MarketplaceService marketplaceService, MockConfig mockConfig, EthConfig ethConfig) {
+                              MarketplaceService marketplaceService, RlcService rlcService, CredentialsService credentialsService,
+                              MockConfig mockConfig, EthConfig ethConfig) {
         this.iexecHubService = iexecHubService;
         this.workerPoolService = workerPoolService;
         this.marketplaceService = marketplaceService;
+        this.rlcService = rlcService;
+        this.credentialsService = credentialsService;
         this.mockConfig = mockConfig;
         this.ethConfig = ethConfig;
     }
@@ -58,7 +66,6 @@ public class MockWatcherService {
         watchRevealAndFinalizeWork();
     }
 
-
     private void watchSubscriptionAndSetWorkerSubscribed() {
         log.info("SCHEDLR watching WorkerPoolSubscriptionEvent");
         iexecHubService.getIexecHub().workerPoolSubscriptionEventObservable(ethConfig.getStartBlockParameter(), END)
@@ -68,8 +75,13 @@ public class MockWatcherService {
                         workerSubscribed = true;
                         //TODO - emitMarketOrder if n workers are alive (not subscribed, means nothing)
                         try {
+                            TransactionReceipt approveReceipt = rlcService.getRlc().approve(iexecHubService.getIexecHub().getContractAddress(), BigInteger.valueOf(100)).send();
+                            log.info("SCHEDLR approve (emitMarketOrder) " + getStatus(approveReceipt));
+                            TransactionReceipt depositReceipt = iexecHubService.getIexecHub().deposit(BigInteger.valueOf(30)).send();
+                            log.info("SCHEDLR deposit (emitMarketOrder) " + getStatus(depositReceipt));
+
                             TransactionReceipt emitMarketOrderReceipt = marketplaceService.getMarketplace().emitMarketOrder(
-                                    mockConfig.getEmitMarketOrder().getDirection(),//TODO - dynamic values
+                                    mockConfig.getEmitMarketOrder().getDirection(),
                                     mockConfig.getEmitMarketOrder().getCategory(),
                                     mockConfig.getEmitMarketOrder().getTrust(),
                                     mockConfig.getEmitMarketOrder().getValue(),
@@ -85,12 +97,18 @@ public class MockWatcherService {
     }
 
     private void watchAskMarketOrderEmittedAndAnswerEmitWorkOrder() {
+        // /!\ ALL THIS BLOCK SHOULD MADE BY IEXECCLOUDUSER
         log.info("CLDUSER watching marketOrderEmittedEvent (auto answerEmitWorkOrder)");
         marketplaceService.getMarketplace().marketOrderEmittedEventObservable(ethConfig.getStartBlockParameter(), END)
                 .subscribe(marketOrderEmittedEvent -> {
                     log.info("SCHEDLR received marketOrderEmittedEvent " + marketOrderEmittedEvent.marketorderIdx);
                     //populate map and expose
                     try {
+                        TransactionReceipt approveReceipt = rlcService.getRlc().approve(iexecHubService.getIexecHub().getContractAddress(), BigInteger.valueOf(100)).send();
+                        log.info("SCHEDLR approve (answerEmitWorkOrder) " + getStatus(approveReceipt));
+                        TransactionReceipt depositReceipt = iexecHubService.getIexecHub().deposit(BigInteger.valueOf(100)).send();
+                        log.info("SCHEDLR deposit (answerEmitWorkOrder) " + getStatus(depositReceipt));
+
                         Tuple7 orderBook = marketplaceService.getMarketplace().m_orderBook(marketOrderEmittedEvent.marketorderIdx).send();
                         if (orderBook.getValue1().equals(MarketOrderDirectionEnum.ASK) &&
                                 orderBook.getValue7().equals(workerPoolService.getWorkerPoolAddress())) {
