@@ -4,6 +4,7 @@ module.exports = {
       host: "localhost",
       port: 8545,
       network_id: "*", // Match any network id
+      server: 'https://localhost:443'
     },
     ropsten: {
       host: "localhost",
@@ -25,5 +26,16 @@ module.exports = {
       network_id: "42",
       from:"",
      },
+     rsk: {
+ 	    host: "IP_RSK_TESTNET",
+      port: 4444,
+      network_id: "31", // Match any network id
+      gasPrice: 20000,
+      gas: 250000,
+      from: "A_PUBLIC_KEY",
+     }
   }
 };
+/*
+
+*/
