@@ -21,6 +21,7 @@ import org.web3j.tuples.generated.Tuple7;
 import org.web3j.utils.Numeric;
 
 import javax.annotation.PostConstruct;
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
@@ -75,10 +76,14 @@ public class MockWatcherService {
                         workerSubscribed = true;
                         //TODO - emitMarketOrder if n workers are alive (not subscribed, means nothing)
                         try {
+                            Float deposit = (workerPoolService.getPoolConfig().getStakeRatioPolicy().floatValue()/100)*mockConfig.getEmitMarketOrder().getValue().floatValue();//(30/100)*100
+                            BigInteger depositBig = BigDecimal.valueOf(deposit).toBigInteger();
                             TransactionReceipt approveReceipt = rlcService.getRlc().approve(iexecHubService.getIexecHub().getContractAddress(), BigInteger.valueOf(100)).send();
-                            log.info("SCHEDLR approve (emitMarketOrder) " + getStatus(approveReceipt));
-                            TransactionReceipt depositReceipt = iexecHubService.getIexecHub().deposit(BigInteger.valueOf(30)).send();
-                            log.info("SCHEDLR deposit (emitMarketOrder) " + getStatus(depositReceipt));
+                            log.info("SCHEDLR approve (emitMarketOrder) " + 100 + " " + getStatus(approveReceipt));
+                            TransactionReceipt depositReceipt = iexecHubService.getIexecHub().deposit(depositBig).send();
+                            log.info("SCHEDLR deposit (emitMarketOrder) " + depositBig + " " + getStatus(depositReceipt));
+
+                            log.info(mockConfig.getEmitMarketOrder().getValue().toString());
 
                             TransactionReceipt emitMarketOrderReceipt = marketplaceService.getMarketplace().emitMarketOrder(
                                     mockConfig.getEmitMarketOrder().getDirection(),
@@ -104,9 +109,11 @@ public class MockWatcherService {
                     log.info("SCHEDLR received marketOrderEmittedEvent " + marketOrderEmittedEvent.marketorderIdx);
                     //populate map and expose
                     try {
-                        TransactionReceipt approveReceipt = rlcService.getRlc().approve(iexecHubService.getIexecHub().getContractAddress(), BigInteger.valueOf(100)).send();
+                        BigInteger deposit = mockConfig.getEmitMarketOrder().getValue();
+                        log.info(deposit.toString());
+                        TransactionReceipt approveReceipt = rlcService.getRlc().approve(iexecHubService.getIexecHub().getContractAddress(), deposit).send();
                         log.info("SCHEDLR approve (answerEmitWorkOrder) " + getStatus(approveReceipt));
-                        TransactionReceipt depositReceipt = iexecHubService.getIexecHub().deposit(BigInteger.valueOf(100)).send();
+                        TransactionReceipt depositReceipt = iexecHubService.getIexecHub().deposit(deposit).send();
                         log.info("SCHEDLR deposit (answerEmitWorkOrder) " + getStatus(depositReceipt));
 
                         Tuple7 orderBook = marketplaceService.getMarketplace().m_orderBook(marketOrderEmittedEvent.marketorderIdx).send();

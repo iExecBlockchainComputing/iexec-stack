@@ -34,11 +34,6 @@ public class MockController {
         return true;
     }
 
-    @RequestMapping("/workerpool")
-    public String getWorkerpool() throws Exception {
-        return workerPoolService.getWorkerPoolAddress();
-    }
-
     @RequestMapping("/iexechub")
     public String getIexecHub() throws Exception {
         return iexecHubService.getIexecHub().getContractAddress();

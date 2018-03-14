@@ -148,4 +148,7 @@ public class WorkerPoolService {
         return workerPool.getContractAddress();
     }
 
+    public WorkerPoolConfig getPoolConfig() {
+        return poolConfig;
+    }
 }
