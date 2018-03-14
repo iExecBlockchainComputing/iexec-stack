@@ -9,6 +9,7 @@ targets="
 poco/WorkerPool
 poco/IexecHub
 poco/AuthorizedList
+poco/WorkOrder
 poco/rlc-token/contracts/RLC
 "
 
