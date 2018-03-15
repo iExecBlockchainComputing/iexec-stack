@@ -49,9 +49,7 @@ public class SubscriptionWatcherService implements Subscription {
     public void run() throws Exception {
         log.info("SCHEDLR watching WorkerPoolSubscriptionEvent");
         iexecHubService.getIexecHub().workerPoolSubscriptionEventObservable(ethConfig.getStartBlockParameter(), END)
-                .subscribe(workerPoolSubscriptionEvent -> {
-                    onSubscription(workerPoolSubscriptionEvent);
-                });
+                .subscribe(this::onSubscription);
     }
 
 

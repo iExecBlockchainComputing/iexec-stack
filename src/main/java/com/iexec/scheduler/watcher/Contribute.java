@@ -1,6 +1,5 @@
 package com.iexec.scheduler.watcher;
 
-import com.iexec.scheduler.contracts.generated.IexecHub;
 import com.iexec.scheduler.contracts.generated.WorkerPool;
 
 public interface Contribute {

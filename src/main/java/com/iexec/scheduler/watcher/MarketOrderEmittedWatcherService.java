@@ -51,9 +51,7 @@ public class MarketOrderEmittedWatcherService implements MarketOrderEmitted {
     public void run() throws Exception {
         log.info("CLDUSER watching marketOrderEmittedEvent (auto answerEmitWorkOrder)");
         marketplaceService.getMarketplace().marketOrderEmittedEventObservable(ethConfig.getStartBlockParameter(), END)
-                .subscribe(marketOrderEmittedEvent -> {
-                    onMarketOrderEmitted(marketOrderEmittedEvent);
-                });
+                .subscribe(this::onMarketOrderEmitted);
     }
 
     @Override

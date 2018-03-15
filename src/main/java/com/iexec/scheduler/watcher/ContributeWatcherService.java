@@ -40,9 +40,7 @@ public class ContributeWatcherService implements Contribute {
     public void run() throws Exception {
         log.info("SCHEDLR watching ContributeEvent (auto revealConsensus)");
         workerPoolService.getWorkerPool().contributeEventObservable(ethConfig.getStartBlockParameter(), END)
-                .subscribe(contributeEvent -> {
-                    onContributeEvent(contributeEvent);
-                });
+                .subscribe(this::onContributeEvent);
     }
 
     @Override

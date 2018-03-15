@@ -36,9 +36,7 @@ public class RevealWatcherService implements Reveal {
     public void run() throws Exception {
         log.info("SCHEDLR watching RevealEvent (auto finalizeWork)");
         workerPoolService.getWorkerPool().revealEventObservable(ethConfig.getStartBlockParameter(), END)
-                .subscribe(revealEvent -> {
-                    onReveal(revealEvent);
-                });
+                .subscribe(this::onReveal);
     }
 
     @Override

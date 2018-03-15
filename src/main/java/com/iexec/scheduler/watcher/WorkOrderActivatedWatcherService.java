@@ -48,9 +48,7 @@ public class WorkOrderActivatedWatcherService implements WorkOrderActivated {
     public void run() throws Exception {
         log.info("SCHEDLR watching workOrderActivatedEvent (auto callForContribution)");
         iexecHubService.getIexecHub().workOrderActivatedEventObservable(ethConfig.getStartBlockParameter(), END)
-                .subscribe(workOrderActivatedEvent -> {
-                    onWorkOrderActivated(workOrderActivatedEvent);
-                });
+                .subscribe(this::onWorkOrderActivated);
     }
 
     @Override
