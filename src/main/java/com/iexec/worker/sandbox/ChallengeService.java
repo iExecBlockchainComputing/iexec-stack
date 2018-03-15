@@ -34,6 +34,5 @@ public class ChallengeService {
         String address = schedulerApiService.postSignedChallenge(signature);
         log.info("public address from signed challenge: " + address);
         log.info("is worker address? " + address.equals(cleanHexPrefix(credentialsService.getCredentials().getAddress())));
-
     }
 }
