@@ -1,5 +1,9 @@
 # iExec Worker
 
+
+Please check first the iexec-scheduler readme 
+https://github.com/iExecBlockchainComputing/iexec-scheduler/blob/master/README.md
+
 ### Clone project with it submodules (PoCo & rlc-token)
 
 ```
@@ -25,9 +29,10 @@ Run scheduler
 Change conf and mock in application.yml 
 
 
-Send eth to worker
+Make sur the worker wallet has enough ETH & RLC
 ```
 eth.sendTransaction({from:eth.accounts[0], to:'0x70a1bebd73aef241154ea353d6c8c52d420d4f5b', value: web3.toWei(5, 'ether')})
+[...]
 ```
 
 
@@ -35,11 +40,10 @@ eth.sendTransaction({from:eth.accounts[0], to:'0x70a1bebd73aef241154ea353d6c8c52
 To start the worker, the following command can be used:
 ```
 gradle build bootRun
-
-
+```
 or
-
-java -jar iexec-worker.jar --workerpool=0x00000WORKERPOOLADDRESS --wallet.folder=.
+```
+java -jar iexec-worker.jar --wallet.folder=.
 ```
 
 

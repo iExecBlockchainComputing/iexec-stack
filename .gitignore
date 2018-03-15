@@ -22,7 +22,7 @@ hs_err_pid*
 
 # Ignore the contracts copied from PoCo and rlc-token projects
 src/main/resources/solidity/poco/*
-src/main/java/com/iexec/scheduler/contracts/*
+src/main/java/com/iexec/worker/contracts/*
 
 # Ignore Gradle GUI config
 gradle-app.setting
