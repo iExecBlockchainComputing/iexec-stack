@@ -1,21 +1,13 @@
 package com.iexec.scheduler.workerpool;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.web.bind.annotation.ResponseBody;
-
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
-@Configuration
-@ConfigurationProperties(prefix = "workerpool")
-@ResponseBody
-public class WorkerPoolConfig {
 
-    private List<String> list;
+public class WorkerPoolPolicy {
+
     private String address;
-    private BigInteger mode;
     private String name;
     private BigInteger subscriptionLockStakePolicy;
     private BigInteger subscriptionMinimumStakePolicy;
@@ -23,9 +15,19 @@ public class WorkerPoolConfig {
     private BigInteger stakeRatioPolicy;
     private BigInteger schedulerRewardRatioPolicy;
     private BigInteger resultRetentionPolicy;
+    private BigInteger mode;
+    private List<String> list;
 
-    public WorkerPoolConfig() {
-        this.list = new ArrayList<>();
+    public WorkerPoolPolicy() {
+        list = new ArrayList<>();
+    }
+
+    public List<String> getList() {
+        return list;
+    }
+
+    public void setList(List<String> list) {
+        this.list = list;
     }
 
     public String getAddress() {
@@ -34,14 +36,6 @@ public class WorkerPoolConfig {
 
     public void setAddress(String address) {
         this.address = address;
-    }
-
-    public List<String> getList() {
-        return this.list;
-    }
-
-    public void setList(List<String> list) {
-        this.list = list;
     }
 
     public BigInteger getMode() {

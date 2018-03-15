@@ -2,14 +2,17 @@ package com.iexec.scheduler.ethereum;
 
 import org.web3j.crypto.Hash;
 import org.web3j.protocol.Web3j;
+import org.web3j.protocol.core.Response;
+import org.web3j.protocol.core.methods.response.TransactionReceipt;
+import org.web3j.tx.Contract;
 
+import javax.lang.model.type.ErrorType;
 import java.io.IOException;
 import java.util.Collections;
 
 public final class Utils {
 
-    public static final int ETH_ADDRESS_LENGTH = 40;
-    public static final String HEX_PREFIX = "0x";
+    private static final String HEX_PREFIX = "0x";
 
     private Utils() {
         throw new IllegalAccessError("Utility class");
@@ -45,8 +48,11 @@ public final class Utils {
         return hex.toString() + "".join("", Collections.nCopies(32 - (hex.length() / 2), "00"));
     }
 
-    public static String cutLeadingZeros(String address64) {
-        return HEX_PREFIX + address64.substring(address64.length() - ETH_ADDRESS_LENGTH, address64.length());
+    public static TransactionError getStatus(TransactionReceipt transactionReceipt){
+        if (transactionReceipt.getGasUsed().compareTo(Contract.GAS_LIMIT) < 0){
+            return TransactionError.SUCCESS;
+        }
+        return TransactionError.FAILURE;
     }
-
+    
 }

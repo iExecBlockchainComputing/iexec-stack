@@ -1,4 +1,4 @@
-package com.iexec.scheduler.ethereum;
+package com.iexec.scheduler.sandbox;
 
 import org.web3j.crypto.Hash;
 import org.web3j.protocol.Web3j;
@@ -20,7 +20,6 @@ public final class Sandbox {
     public static void predicNextAddress(Web3j web3j) throws Exception {
         //address = sha3(rlp_encode(creator_account, creator_account_nonce))[12:]
         //web3.eth.getTransactionCount(accountAddress)
-
         String address = "0x8bd535d49b095ef648cd85ea827867d358872809";
 
         EthGetTransactionCount ethGetTransactionCount = web3j.ethGetTransactionCount(
@@ -30,7 +29,6 @@ public final class Sandbox {
         nonce.add(BigInteger.ONE);
 
         System.out.println(nonce.toString());
-
 
         List<RlpType> values = new ArrayList<>();
         values.add(RlpString.create(Numeric.hexStringToByteArray(address)));
@@ -47,45 +45,6 @@ public final class Sandbox {
 
 
         System.out.println(Numeric.toHexString(sha3));
-
-         /*
-
-
-        iexecHubService.getIexecHub().createWorkerPoolEventObservable(DefaultBlockParameterName.EARLIEST, DefaultBlockParameterName.LATEST)
-                .subscribe(createWorkerPoolEvent -> {
-
-                    //if (createWorkerPoolEvent.workerPoolOwner.equals(poolConfig.)) {
-                    log.info("SCHEDLR received CreateWorkerPoolEvent " + createWorkerPoolEvent.workerPoolName + ":" + createWorkerPoolEvent.workerPool);
-                    //WorkerPool workerPool = loadWorkerPool(createWorkerPoolEvent.workerPool);
-                    //setupWorkerPool(workerPool);
-                    //}
-                });
-
-        TransactionReceipt receipt = iexecHubService.getIexecHub().createWorkerPool(poolConfig.getName(),
-                poolConfig.getSubscriptionLockStakePolicy(),
-                poolConfig.getSubscriptionMinimumStakePolicy(),
-                poolConfig.getSubscriptionMinimumScorePolicy()).send();
-
-
-
-
-        EthGetTransactionReceipt transactionReceipt = web3j.ethGetTransactionReceipt(receipt.getTransactionHash()).send();
-
-
-
-
-
-
-        if (transactionReceipt.getTransactionReceipt().isPresent()){
-            for (Log tmp : transactionReceipt.getResult().getLogs()){
-                log.info(receipt.getLogs().indexOf(tmp)+" "+tmp.getData());
-
-            }
-        }
-
-        log.info(transactionReceipt.getTransactionReceipt().get().getLogsBloom());
-        log.info(receipt.getGasUsed().toString());*/
-
     }
 
 }
