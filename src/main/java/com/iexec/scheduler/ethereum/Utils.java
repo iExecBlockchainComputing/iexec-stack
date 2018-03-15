@@ -48,11 +48,11 @@ public final class Utils {
         return hex.toString() + "".join("", Collections.nCopies(32 - (hex.length() / 2), "00"));
     }
 
-    public static String getStatus(TransactionReceipt transactionReceipt){
+    public static TransactionError getStatus(TransactionReceipt transactionReceipt){
         if (transactionReceipt.getGasUsed().compareTo(Contract.GAS_LIMIT) < 0){
-            return "Succeed";
+            return TransactionError.SUCCESS;
         }
-        return "Failed";
+        return TransactionError.FAILURE;
     }
     
 }
