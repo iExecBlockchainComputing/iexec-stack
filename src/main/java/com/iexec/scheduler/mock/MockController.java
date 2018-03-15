@@ -15,16 +15,11 @@ import java.math.BigInteger;
 @RestController
 public class MockController {
 
-    private final MockWatcherService mockService;
-    private final WorkerPoolService workerPoolService;
     private final IexecHubService iexecHubService;
     private final EthConfig ethConfig;
 
     @Autowired
-    public MockController(MockWatcherService mockService, WorkerPoolService workerPoolService,
-                          IexecHubService iexecHubService, EthConfig ethConfig) {
-        this.mockService = mockService;
-        this.workerPoolService = workerPoolService;
+    public MockController(IexecHubService iexecHubService, EthConfig ethConfig) {
         this.iexecHubService = iexecHubService;
         this.ethConfig = ethConfig;
     }
