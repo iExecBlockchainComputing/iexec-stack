@@ -935,7 +935,7 @@ public enum XWPropertyDefs {
 		}
 	},
 	/**
-	 * All : default max computing seconds Property name : "wallclocktimevalue"
+	 * All : default max computing seconds
 	 * <p>
 	 * Property type : integer
 	 * </p>
@@ -953,7 +953,7 @@ public enum XWPropertyDefs {
 		 */
 		@Override
 		public String defaultValue() {
-			return "21600";
+			return "-1";
 		}
 	},
 	/**

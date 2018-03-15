@@ -4696,12 +4696,12 @@ public final class DBInterface {
 			throws IOException, InvalidKeyException, AccessControlException {
 		final UserInterface mandatingClient = checkClient(command, UserRightEnum.INSERTJOB);
 		final UserInterface mandatedClient = command.isMandated() ? checkMandatedClient(command) : null;
-		final WorkInterface job = (WorkInterface) command.getParameter();
+		final WorkInterface receivedJob = (WorkInterface) command.getParameter();
 		final HostInterface _host = command.getHost();
 
-		final UID jobUID = job.getUID();
+		final UID jobUID = receivedJob.getUID();
 
-		final UID appUID = job.getApplication();
+		final UID appUID = receivedJob.getApplication();
 		if (appUID == null) {
 			throw new IOException("addWork() : job defines no app ?!?");
 		}
@@ -4725,10 +4725,10 @@ public final class DBInterface {
 					"addWork() : " + mandatingClient.getLogin() + " don't have rights to submit job for app " + appUID);
 		}
 
-		job.setService(theApp.isService());
+		receivedJob.setService(theApp.isService());
 
-		final XWAccessRights jobRights = (job.getAccessRights() == null ? XWAccessRights.DEFAULT
-				: job.getAccessRights());
+		final XWAccessRights jobRights = (receivedJob.getAccessRights() == null ? XWAccessRights.DEFAULT
+				: receivedJob.getAccessRights());
 
 		final int jobRightsInt = jobRights.value() & theApp.getAccessRights().value();
 		logger.finest(String.format("DBInterface#addWork() jobRights.value() & theApp.getAccessRights().value() : %x & %x = %x",
@@ -4741,11 +4741,11 @@ public final class DBInterface {
 				theApp.getAccessRights().value(), XWAccessRights.STICKYBIT_INT, appStickyBit));
 
 		final XWAccessRights newJobRights = new XWAccessRights(jobRightsInt | appStickyBit);
-		job.setAccessRights(newJobRights);
+		receivedJob.setAccessRights(newJobRights);
 		final UserRightEnum clientRights = mandatingClient.getRights();
 
-		if (job.getOwner() == null) {
-			job.setOwner(mandatingClient.getUID());
+		if (receivedJob.getOwner() == null) {
+			receivedJob.setOwner(mandatingClient.getUID());
 		}
 
 		final WorkInterface theWork = work(mandatingClient, jobUID);
@@ -4770,35 +4770,38 @@ public final class DBInterface {
 				}
 
 				final Long wct = config.getLong(XWPropertyDefs.WALLCLOCKTIMEVALUE);
-				if (theWork.getMaxWallClockTime() > wct) {
-					theWork.setMaxWallClockTime(wct);
+				System.out.println("DBInterface#addWork update work wct = " + wct);
+				if ((wct > 0) && (receivedJob.getMaxWallClockTime() > wct)) {
+					System.out.println("DBInterface#addWork update work receivedJob.setWallClocktime("+wct+")");
+					receivedJob.setMaxWallClockTime(wct);
 				}
-				if ((theWork.getMinMemory() == 0) || (theWork.getMinMemory() < theApp.getMinMemory())) {
-					theWork.setMinMemory(theApp.getMinMemory());
+				System.out.println("DBInterface#addWork update work receivedJob = " + receivedJob.toXml());
+				if ((receivedJob.getMinMemory() == 0) || (receivedJob.getMinMemory() < theApp.getMinMemory())) {
+					receivedJob.setMinMemory(theApp.getMinMemory());
 				}
-				if ((theWork.getMinCpuSpeed() == 0) || (theWork.getMinCpuSpeed() < theApp.getMinCpuSpeed())) {
-					theWork.setMinCpuSpeed(theApp.getMinCpuSpeed());
+				if ((receivedJob.getMinCpuSpeed() == 0) || (receivedJob.getMinCpuSpeed() < theApp.getMinCpuSpeed())) {
+					receivedJob.setMinCpuSpeed(theApp.getMinCpuSpeed());
 				}
-				if ((theWork.getDiskSpace() == 0) || (theWork.getDiskSpace() < theApp.getMinFreeMassStorage())) {
-					theWork.setDiskSpace(theApp.getMinFreeMassStorage());
+				if ((receivedJob.getDiskSpace() == 0) || (receivedJob.getDiskSpace() < theApp.getMinFreeMassStorage())) {
+					receivedJob.setDiskSpace(theApp.getMinFreeMassStorage());
 				}
 
 				final UserInterface jobOwner = user(theWork.getOwner());
 				final UserInterface realClient = (mandatingClient.getRights().isWorker() ? jobOwner : mandatingClient);
 
-				useData(realClient, job.getResult());
+				useData(realClient, receivedJob.getResult());
 				removeData(realClient, theWork.getResult());
-				theWork.setResult(job.getResult());
+				//theWork.setResult(job.getResult());
 
-				useData(realClient, job.getStdin());
+				useData(realClient, receivedJob.getStdin());
 				removeData(realClient, theWork.getStdin());
-				theWork.setStdin(job.getStdin());
+				//theWork.setStdin(job.getStdin());
 
-				useData(realClient, job.getDirin());
+				useData(realClient, receivedJob.getDirin());
 				removeData(realClient, theWork.getDirin());
-				theWork.setDirin(job.getDirin());
+				//theWork.setDirin(job.getDirin());
 				try {
-					useData(realClient, job.getUserProxy());
+					useData(realClient, receivedJob.getUserProxy());
 				} catch (final AccessControlException e) {
 					logger.warn(e.getMessage());
 				}
@@ -4808,12 +4811,14 @@ public final class DBInterface {
 					logger.warn(e.getMessage());
 				}
 
-				theWork.updateInterface(job);
+				theWork.updateInterface(receivedJob);
 
 				final Vector<Table> rows = new Vector<>();
 
 				logger.debug(realClient.getLogin() + " is updating " + theWork.getUID() + " status = "
-						+ job.getStatus());
+						+ receivedJob.getStatus());
+
+				System.out.println("DBInterface#addWork theWork = " + theWork.toXml());
 
 				switch (theWork.getStatus()) {
 				case RESULTREQUEST:
@@ -4851,7 +4856,7 @@ public final class DBInterface {
 					if (theHost != null) {
 						theHost.decRunningJobs();
 					}
-					theWork.setResult(job.getResult());
+					theWork.setResult(receivedJob.getResult());
 					theWork.setCompleted();
 					if (theTask != null) {
 						final Date startdate = theTask.getLastStartDate();
@@ -4915,7 +4920,7 @@ public final class DBInterface {
 					theApp.incErrorJobs();
 					jobOwner.incErrorJobs();
 					jobOwner.decRunningJobs();
-					theWork.setError(job.getErrorMsg());
+					theWork.setError(receivedJob.getErrorMsg());
 					if (theTask != null) {
 						theTask.setError();
 					}
@@ -4941,43 +4946,41 @@ public final class DBInterface {
 				throw new AccessControlException("a worker can not insert a new work");
 			}
 			if (jobUID == null) {
-				job.setUID(new UID());
+				receivedJob.setUID(new UID());
 			}
-			if (job.getStatus() == null) {
-				job.setStatus(StatusEnum.UNAVAILABLE);
+			if (receivedJob.getStatus() == null) {
+				receivedJob.setStatus(StatusEnum.UNAVAILABLE);
 			}
 
 			final Long wct = config.getLong(XWPropertyDefs.WALLCLOCKTIMEVALUE);
-			if (job.getMaxWallClockTime() > wct) {
-				job.setMaxWallClockTime(wct);
+			System.out.println("DBInterface#addWork new work wct = " + wct);
+			if ((wct > 0) && (receivedJob.getMaxWallClockTime() > wct)) {
+				System.out.println("DBInterface#addWork new work receivedJob.setWallClocktime("+wct+")");
+				receivedJob.setMaxWallClockTime(wct);
 			}
+			System.out.println("DBInterface#addWork new work receivedJob = " + receivedJob.toXml());
 
 			final Vector<Table> rows = new Vector<>();
 
-			job.setReplicatedUid(null);
-			logger.debug(mandatingClient.getLogin() + " " + jobUID + " replications = " + job.getExpectedReplications()
-			+ " by " + job.getReplicaSetSize());
+			receivedJob.setReplicatedUid(null);
+			logger.debug(mandatingClient.getLogin() + " " + jobUID + " replications = " + receivedJob.getExpectedReplications()
+			+ " by " + receivedJob.getReplicaSetSize());
 
 			// if job.getExpectedReplications() < 0, we replicate for ever
-			int replica = job.getExpectedReplications() < 0 
-					? job.getExpectedReplications() - job.getReplicaSetSize()
+			int replica = receivedJob.getExpectedReplications() < 0
+					? receivedJob.getExpectedReplications() - receivedJob.getReplicaSetSize()
 					: 0;
 			boolean firstJob = true;
 
-			for (; (replica <= job.getReplicaSetSize()) && (replica <= job.getExpectedReplications()); replica++) {
-				final WorkInterface newWork = new WorkInterface(job);
+			for (; (replica <= receivedJob.getReplicaSetSize()) && (replica <= receivedJob.getExpectedReplications()); replica++) {
+				final WorkInterface newWork = new WorkInterface(receivedJob);
 				newWork.setUID(jobUID); // we insert the original work (to
 				// eventually be replicated)
 				if (firstJob) {
-					newWork.setTotalReplica(Math.min(job.getReplicaSetSize(), job.getExpectedReplications())); // this
-					// is
-					// the
-					// original
-					// work
+					newWork.setTotalReplica(Math.min(receivedJob.getReplicaSetSize(), receivedJob.getExpectedReplications()));
 					firstJob = false;
 				} else {
-					newWork.setUID(new UID()); // each eventual replica has its
-					// own UID
+					newWork.setUID(new UID());
 					newWork.replicate(jobUID);
 				}
 				newWork.setPending();
@@ -4999,6 +5002,8 @@ public final class DBInterface {
 				useData(mandatingClient, newWork.getDirin());
 
 				rows.add(newWork);
+				System.out.println("DBInterface#addWork receivedJob = " + receivedJob.toXml());
+				System.out.println("DBInterface#addWork newWork = " + newWork.toXml());
 				mandatingClient.incPendingJobs();
 			}
 
