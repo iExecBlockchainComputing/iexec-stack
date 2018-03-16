@@ -4748,6 +4748,25 @@ public final class DBInterface {
 			receivedJob.setOwner(mandatingClient.getUID());
 		}
 
+		final Long wct = config.getLong(XWPropertyDefs.WALLCLOCKTIMEVALUE);
+		System.out.println("DBInterface#addWork update work wct = " + wct);
+		if (wct > 0) {
+			if ((receivedJob.getMaxWallClockTime() <= 0) || (receivedJob.getMaxWallClockTime() > wct)) {
+				System.out.println("DBInterface#addWork update work receivedJob.setWallClocktime("+wct+")");
+				receivedJob.setMaxWallClockTime(wct);
+			}
+		}
+		System.out.println("DBInterface#addWork update work receivedJob = " + receivedJob.toXml());
+		if ((receivedJob.getMinMemory() == 0) || (receivedJob.getMinMemory() < theApp.getMinMemory())) {
+			receivedJob.setMinMemory(theApp.getMinMemory());
+		}
+		if ((receivedJob.getMinCpuSpeed() == 0) || (receivedJob.getMinCpuSpeed() < theApp.getMinCpuSpeed())) {
+			receivedJob.setMinCpuSpeed(theApp.getMinCpuSpeed());
+		}
+		if ((receivedJob.getDiskSpace() == 0) || (receivedJob.getDiskSpace() < theApp.getMinFreeMassStorage())) {
+			receivedJob.setDiskSpace(theApp.getMinFreeMassStorage());
+		}
+
 		final WorkInterface theWork = work(mandatingClient, jobUID);
 		if (theWork != null) {
 			if (theWork.canWrite(mandatingClient, appOwnerGroup) || clientRights.higherOrEquals(UserRightEnum.WORKER_USER)) {
@@ -4767,23 +4786,6 @@ public final class DBInterface {
 						throw new IOException(
 								mandatingClient.getLogin() + " work " + jobUID + " has no task run by " + _host.getUID());
 					}
-				}
-
-				final Long wct = config.getLong(XWPropertyDefs.WALLCLOCKTIMEVALUE);
-				System.out.println("DBInterface#addWork update work wct = " + wct);
-				if ((wct > 0) && (receivedJob.getMaxWallClockTime() > wct)) {
-					System.out.println("DBInterface#addWork update work receivedJob.setWallClocktime("+wct+")");
-					receivedJob.setMaxWallClockTime(wct);
-				}
-				System.out.println("DBInterface#addWork update work receivedJob = " + receivedJob.toXml());
-				if ((receivedJob.getMinMemory() == 0) || (receivedJob.getMinMemory() < theApp.getMinMemory())) {
-					receivedJob.setMinMemory(theApp.getMinMemory());
-				}
-				if ((receivedJob.getMinCpuSpeed() == 0) || (receivedJob.getMinCpuSpeed() < theApp.getMinCpuSpeed())) {
-					receivedJob.setMinCpuSpeed(theApp.getMinCpuSpeed());
-				}
-				if ((receivedJob.getDiskSpace() == 0) || (receivedJob.getDiskSpace() < theApp.getMinFreeMassStorage())) {
-					receivedJob.setDiskSpace(theApp.getMinFreeMassStorage());
 				}
 
 				final UserInterface jobOwner = user(theWork.getOwner());
@@ -4952,14 +4954,6 @@ public final class DBInterface {
 				receivedJob.setStatus(StatusEnum.UNAVAILABLE);
 			}
 
-			final Long wct = config.getLong(XWPropertyDefs.WALLCLOCKTIMEVALUE);
-			System.out.println("DBInterface#addWork new work wct = " + wct);
-			if ((wct > 0) && (receivedJob.getMaxWallClockTime() > wct)) {
-				System.out.println("DBInterface#addWork new work receivedJob.setWallClocktime("+wct+")");
-				receivedJob.setMaxWallClockTime(wct);
-			}
-			System.out.println("DBInterface#addWork new work receivedJob = " + receivedJob.toXml());
-
 			final Vector<Table> rows = new Vector<>();
 
 			receivedJob.setReplicatedUid(null);
@@ -4986,15 +4980,6 @@ public final class DBInterface {
 				newWork.setPending();
 				newWork.setArrivalDate(new java.util.Date());
 				newWork.setActive(true);
-				if ((newWork.getMinMemory() == 0) || (newWork.getMinMemory() > theApp.getMinMemory())) {
-					newWork.setMinMemory(theApp.getMinMemory());
-				}
-				if ((newWork.getMinCpuSpeed() == 0) || (newWork.getMinCpuSpeed() > theApp.getMinCpuSpeed())) {
-					newWork.setMinCpuSpeed(theApp.getMinCpuSpeed());
-				}
-				if ((newWork.getDiskSpace() == 0) || (newWork.getDiskSpace() > theApp.getMinFreeMassStorage())) {
-					newWork.setDiskSpace(theApp.getMinFreeMassStorage());
-				}
 				insert(newWork);
 
 				useData(mandatingClient, newWork.getResult());
