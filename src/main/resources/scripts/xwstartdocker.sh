@@ -101,6 +101,17 @@ warning ()
 
 #=============================================================================
 #
+#  Function  info (Message)
+#
+#=============================================================================
+info ()
+{
+  msg="$1"
+  echo  "$(date "$DATE_FORMAT")  $SCRIPTNAME  INFO : $msg"
+}
+
+#=============================================================================
+#
 #  Function  clean ()
 #
 #=============================================================================
@@ -217,8 +228,8 @@ if [ -f ${DOCKERFILENAME} ] ; then
     fatal "Dockerfile is not supported"
 fi
 
-echo "run docker from docker"
-echo "docker run -v $(pwd):/host -w /host --rm --name ${CONTAINERNAME} ${IMAGENAME} ${ARGS}"
+#info "run docker from docker"
+#info "docker run -v $(pwd):/host -w /host --rm --name ${CONTAINERNAME} ${IMAGENAME} ${ARGS}"
 docker run -v $(pwd):/host -w /host --rm --name ${CONTAINERNAME} ${IMAGENAME} ${ARGS}
 
 # clean everything

@@ -36,20 +36,6 @@ import xtremweb.communications.Connection;
 public enum XWPropertyDefs {
 
 	/**
-	 * @since 12.2.10
-	 */
-	LOGFILE {
-		/**
-		 * This retrieves the String representation of the default value
-		 *
-		 * @return "3600"
-		 */
-		@Override
-		public String defaultValue() {
-			return System.getProperty(propertyName());
-		}
-	},
-	/**
 	 * Server : an integer containing the amount of seconds users don't have to
 	 * relogin to Web interface
 	 * <p>

@@ -249,7 +249,7 @@ public class Executor {
 	/**
 	 * This sets and corrects the sleep delay
 	 */
-	private final long setDelay(final long delay) {
+	public final long setDelay(final long delay) {
 		sleep_delay = delay;
 		if ((sleep_delay < 0) || (sleep_delay > SLEEP_UNIT)) {
 			sleep_delay = SLEEP_UNIT;

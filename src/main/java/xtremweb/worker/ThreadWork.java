@@ -23,14 +23,7 @@
 
 package xtremweb.worker;
 
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.ConnectException;
 import java.net.Socket;
 import java.net.URISyntaxException;
@@ -321,10 +314,11 @@ public class ThreadWork extends Thread {
 					killed = true;
 					logger.exception("job launch error", e);
 					status = StatusEnum.ERROR;
-					currentWork.clean();
 					currentWork.setErrorMsg(e.getMessage());
 					mileStone.println("<executeerror>" + e + "</executeerror>");
-				}
+				} finally {
+                    currentWork.clean();
+                }
 				mileStone.println("</executejob>");
 
 				currentWork.setStatus(status);
@@ -578,6 +572,7 @@ public class ThreadWork extends Thread {
 	private void unload()
 			throws IOException, ClassNotFoundException, SAXException, URISyntaxException, InvalidKeyException {
 
+        logger.config("unload");
 		stopProxy();
 
 		final String unloadpath = getUnloadScriptPath();
@@ -588,15 +583,12 @@ public class ThreadWork extends Thread {
 		command.append(" " + currentWork.getCmdLine());
 
 		logger.config("unload");
-		System.out.println("log file = " + System.getProperty(XWPropertyDefs.LOGFILE.defaultValue()));
 
-		final File scratchDir = currentWork.getScratchDir();
-		try (final FileOutputStream out = new FileOutputStream(new File(scratchDir, "unloadout.txt"));
-				final FileOutputStream err = new FileOutputStream(new File(scratchDir, "unloaderr.txt"))) {
+        try {
 
 			final String[] envVars = getEnvVars();
-			final Executor unloader = new Executor(command.toString(), envVars, currentWork.getScratchDirName(), null,
-					out, err, Long.parseLong(Worker.getConfig().getProperty(XWPropertyDefs.TIMEOUT)));
+			final Executor unloader = new Executor(command.toString(), envVars);
+			unloader.setDelay(Long.parseLong(Worker.getConfig().getProperty(XWPropertyDefs.TIMEOUT)));
 			try {
 				unloader.startAndWait();
 			} catch (final ExecutorLaunchException | InterruptedException e) {
@@ -707,14 +699,12 @@ public class ThreadWork extends Thread {
 				if (currentWork.isService() == false) {
 					if (currentWork.hasPackage() == false) {
 						zipResult();
-                        currentWork.clean(false);
     					} else {
 						currentWork.setResult(null);
 					}
 				}
 			} catch (final IOException e) {
 				ret = StatusEnum.ERROR;
-				currentWork.clean();
                 currentWork.setError();
                 currentWork.setErrorMsg("Worker result error : " + e);
 				logger.exception("Result error(" + workUID + ")", e);
@@ -1458,9 +1448,9 @@ public class ThreadWork extends Thread {
 		}
 
         currentWork.setReturnCode(processReturnCode);
-        if(killed){
-            currentWork.clean();
-        }
+//        if(killed){
+//            currentWork.clean();
+//        }
 
 		logger.debug("end of executeNativeJob() " + workUID);
 	}
