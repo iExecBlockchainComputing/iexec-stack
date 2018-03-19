@@ -12,6 +12,7 @@ import java.util.Collections;
 
 public final class Utils {
 
+    public static final byte[] EMPTY_BYTE = new byte[0];
     private static final String HEX_PREFIX = "0x";
 
     private Utils() {
