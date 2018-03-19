@@ -104,10 +104,24 @@ public enum XWReturnCode {
 	 */
 	WALLCLOCKTIME,
 	/**
-	 * This defines the restart return code
+	 * This defines the wall clock time error return code This means the job has
+	 * reached its wall clock time
+	 *
+	 * @since 8.2.0
+	 */
+	ABORT {
+		@Override
+		public int getOrdinal() {
+			return 129;
+		}
+	},
+	/**
 	 */
 	UNKNOWN;
 
+	public int getOrdinal() {
+		return this.ordinal();
+	}
 	/**
 	 * This retreives an Columns from its integer value
 	 *

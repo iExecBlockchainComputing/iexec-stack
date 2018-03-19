@@ -806,6 +806,7 @@ public final class XWConfigurator extends Properties {
 			else {
 				setProperty(p);
 			}
+			logger.debug("getProperty(" + p + ") = " + getProperty(p));
 		}
 
 		if (getInt(XWPropertyDefs.SORETRIES) < 1) {

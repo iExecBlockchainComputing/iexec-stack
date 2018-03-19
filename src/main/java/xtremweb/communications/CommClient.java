@@ -871,7 +871,6 @@ public abstract class CommClient implements ClientAPI {
 		try {
 			sendCommand(command);
             Version version = newXMLVersion();
-			System.out.println("CommCleint#version = " + version);
             return version;
 		} finally {
 			close();
