@@ -50,14 +50,14 @@ public class ContributionMapService {
     }
 
     public boolean isConsensusReached(WorkerPool.ContributeEventResponse contributeEvent) {
-        log.info("SCHEDLR checking if consensus reached?");
+        log.debug("SCHEDLR checking if consensus reached?");
         for (String worker : mockConfig.getCallForContribution().getWorkers()) {
             Tuple2<String, String> orderWorkerTuple = new Tuple2<>(contributeEvent.woid, worker);
             if (Arrays.areEqual(contributionMap.get(orderWorkerTuple), EMPTY_BYTE)) {
                 return false;
             }
         }
-        log.info("SCHEDLR found consensus reached");
+        log.debug("SCHEDLR found consensus reached");
         return true;
     }
 

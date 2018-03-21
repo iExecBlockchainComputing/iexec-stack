@@ -30,7 +30,7 @@ public class RlcService {
 
     @PostConstruct
     public void run() throws Exception {
-        log.info("SCHEDLR loading Rlc contract");
+        log.debug("SCHEDLR loading Rlc contract");
         rlc = RLC.load(
                 ethConfig.getRlcAddress(), web3j, credentialsService.getCredentials(), ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT);
     }

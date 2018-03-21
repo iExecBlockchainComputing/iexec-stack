@@ -41,15 +41,15 @@ public class IexecHubService {
 
     @PostConstruct
     public void run() throws Exception {
-        log.info("SCHEDLR loading iexecHub");
+        log.debug("SCHEDLR loading iexecHub");
         this.iexecHub = IexecHub.load(
                 ethConfig.getIexecHubAddress(), web3j, credentialsService.getCredentials(), ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT);
         poolConfig.setAddress(fetchWorkerPoolAddress());
 
-        log.info("SCHEDLR watching workOrderActivatedEvent (auto callForContribution)");
+        log.debug("SCHEDLR watching workOrderActivatedEvent (auto callForContribution)");
         this.iexecHub.workOrderActivatedEventObservable(ethConfig.getStartBlockParameter(), END)
                 .subscribe(this::onWorkOrderActivated);
-        log.info("SCHEDLR watching WorkerPoolSubscriptionEvent");
+        log.debug("SCHEDLR watching WorkerPoolSubscriptionEvent");
         this.iexecHub.workerPoolSubscriptionEventObservable(ethConfig.getStartBlockParameter(), END)
                 .subscribe(this::onSubscription);
     }
@@ -60,23 +60,23 @@ public class IexecHubService {
                     poolConfig.getSubscriptionLockStakePolicy(),
                     poolConfig.getSubscriptionMinimumStakePolicy(),
                     poolConfig.getSubscriptionMinimumScorePolicy()).send();
-            log.info("SCHEDLR createWorkerPool " + getStatus(createWorkerPoolReceipt));
+            log.debug("SCHEDLR createWorkerPool " + getStatus(createWorkerPoolReceipt));
             return this.iexecHub.getCreateWorkerPoolEvents(createWorkerPoolReceipt).get(0).workerPool;
         } else {
-            log.info("SCHEDLR fetch WorkerPool address from conf");
+            log.debug("SCHEDLR fetch WorkerPool address from conf");
             return poolConfig.getAddress();
         }
     }
 
     public void onSubscription(IexecHub.WorkerPoolSubscriptionEventResponse workerPoolSubscriptionEvent) {
         if (workerPoolSubscriptionEvent.workerPool.equals(poolConfig.getAddress())) {
-            log.info("SCHEDLR received WorkerPoolSubscriptionEvent for worker " + workerPoolSubscriptionEvent.worker);
+            log.debug("SCHEDLR received WorkerPoolSubscriptionEvent for worker " + workerPoolSubscriptionEvent.worker);
             iexecHubWatcher.onSubscription(workerPoolSubscriptionEvent.worker);
         }
     }
 
     public void onWorkOrderActivated(IexecHub.WorkOrderActivatedEventResponse workOrderActivatedEvent) {
-        log.info("SCHEDLR received workOrderActivatedEvent " + workOrderActivatedEvent.woid);
+        log.debug("SCHEDLR received workOrderActivatedEvent " + workOrderActivatedEvent.woid);
         if (workOrderActivatedEvent.workerPool.equals(poolConfig.getAddress())) {
             iexecHubWatcher.woid(workOrderActivatedEvent.woid);
         }

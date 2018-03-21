@@ -43,7 +43,7 @@ public class MockWorkerPoolWatcherActuator implements WorkerPoolWatcher {
 
     @Override
     public void onReveal(WorkerPool.RevealEventResponse revealEvent) {
-        log.info("SCHEDLR checking if reveal timeout reached?");
+        log.debug("SCHEDLR checking if reveal timeout reached?");
         actuatorService.finalizeWork(revealEvent, mockConfig.getFinalizeWork().getStdout(),
                 mockConfig.getFinalizeWork().getStderr(),
                 mockConfig.getFinalizeWork().getUri());
