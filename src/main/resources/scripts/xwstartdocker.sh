@@ -228,9 +228,19 @@ if [ -f ${DOCKERFILENAME} ] ; then
     fatal "Dockerfile is not supported"
 fi
 
+#
+# --stop-timeout (SIGKILL)
+# --memory BYTES
+# --cpus 1
+#
+
+ENVFILENAME="/tmp/env_${XWJOBUID}.list"
+printenv | grep -vE "HOSTNAME|TERM|LS_COLORS|PATH|PWD|SHLVL|HOME|_|SHELL|TERM|SSH|LC_|LANG|LOG|XDG_RUNTIME_DIR|LESS|USER|MAIL"> ${ENVFILENAME}
 #info "run docker from docker"
 #info "docker run -v $(pwd):/host -w /host --rm --name ${CONTAINERNAME} ${IMAGENAME} ${ARGS}"
-docker run -v $(pwd):/host -w /host --rm --name ${CONTAINERNAME} ${IMAGENAME} ${ARGS}
+docker run -v $(pwd):/host -w /host --rm --name ${CONTAINERNAME} --env-file ${ENVFILENAME} ${IMAGENAME} ${ARGS}
+
+rm ${ENVFILENAME}
 
 # clean everything
 if [ "$TESTINGONLY" != "TRUE" ] ; then
