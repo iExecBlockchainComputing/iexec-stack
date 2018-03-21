@@ -1108,7 +1108,6 @@ public final class AppInterface extends Table {
 		 * This is the index based on ordinal so that the first value is
 		 * TableColumns + 1
 		 *
-		 * @see xtremweb.common#TableColumns
 		 * @see Enum#ordinal()
 		 * @since 8.2.0
 		 */
