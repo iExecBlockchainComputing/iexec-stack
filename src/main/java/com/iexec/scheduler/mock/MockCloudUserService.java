@@ -1,4 +1,4 @@
-package com.iexec.scheduler.watcher;
+package com.iexec.scheduler.mock;
 
 import com.iexec.scheduler.contracts.generated.Marketplace;
 import com.iexec.scheduler.ethereum.EthConfig;
@@ -6,7 +6,6 @@ import com.iexec.scheduler.ethereum.RlcService;
 import com.iexec.scheduler.iexechub.IexecHubService;
 import com.iexec.scheduler.marketplace.MarketOrderDirectionEnum;
 import com.iexec.scheduler.marketplace.MarketplaceService;
-import com.iexec.scheduler.mock.MockConfig;
 import com.iexec.scheduler.workerpool.WorkerPoolService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,11 +21,11 @@ import java.math.BigInteger;
 import static com.iexec.scheduler.ethereum.Utils.getStatus;
 
 @Service
-public class MarketOrderEmittedWatcherService implements MarketOrderEmitted {
+public class MockCloudUserService {
 
     // /!\ ALL THIS BLOCK SHOULD MADE BY IEXECCLOUDUSER
 
-    private static final Logger log = LoggerFactory.getLogger(MarketOrderEmittedWatcherService.class);
+    private static final Logger log = LoggerFactory.getLogger(MockCloudUserService.class);
     private static final DefaultBlockParameterName END = DefaultBlockParameterName.LATEST;
     private final IexecHubService iexecHubService;
     private final WorkerPoolService workerPoolService;
@@ -36,9 +35,9 @@ public class MarketOrderEmittedWatcherService implements MarketOrderEmitted {
     private final EthConfig ethConfig;
 
     @Autowired
-    public MarketOrderEmittedWatcherService(IexecHubService iexecHubService, WorkerPoolService workerPoolService,
-                                            MarketplaceService marketplaceService, RlcService rlcService,
-                                            MockConfig mockConfig, EthConfig ethConfig) {
+    public MockCloudUserService(IexecHubService iexecHubService, WorkerPoolService workerPoolService,
+                                MarketplaceService marketplaceService, RlcService rlcService,
+                                MockConfig mockConfig, EthConfig ethConfig) {
         this.iexecHubService = iexecHubService;
         this.workerPoolService = workerPoolService;
         this.marketplaceService = marketplaceService;
@@ -54,9 +53,12 @@ public class MarketOrderEmittedWatcherService implements MarketOrderEmitted {
                 .subscribe(this::onMarketOrderEmitted);
     }
 
-    @Override
     public void onMarketOrderEmitted(Marketplace.MarketOrderEmittedEventResponse marketOrderEmittedEvent) {
         log.info("SCHEDLR received marketOrderEmittedEvent " + marketOrderEmittedEvent.marketorderIdx);
+        answerEmitWorkOrder(marketOrderEmittedEvent);
+    }
+
+    private void answerEmitWorkOrder(Marketplace.MarketOrderEmittedEventResponse marketOrderEmittedEvent) {
         //populate map and expose
         try {
             BigInteger deposit = mockConfig.getEmitMarketOrder().getValue();
@@ -68,9 +70,9 @@ public class MarketOrderEmittedWatcherService implements MarketOrderEmitted {
 
             Tuple7 orderBook = marketplaceService.getMarketplace().m_orderBook(marketOrderEmittedEvent.marketorderIdx).send();
             if (orderBook.getValue1().equals(MarketOrderDirectionEnum.ASK) &&
-                    orderBook.getValue7().equals(workerPoolService.getWorkerPoolAddress())) {
+                    orderBook.getValue7().equals(workerPoolService.getPoolConfig().getAddress())) {
                 TransactionReceipt answerEmitWorkOrderReceipt = iexecHubService.getIexecHub().answerEmitWorkOrder(marketOrderEmittedEvent.marketorderIdx,
-                        workerPoolService.getWorkerPoolAddress(),
+                        workerPoolService.getPoolConfig().getAddress(),
                         mockConfig.getAnswerEmitWorkOrder().getApp(),
                         mockConfig.getAnswerEmitWorkOrder().getDataset(),
                         mockConfig.getAnswerEmitWorkOrder().getParams(),

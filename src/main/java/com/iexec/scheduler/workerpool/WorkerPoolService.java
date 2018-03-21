@@ -14,6 +14,7 @@ import org.web3j.protocol.Web3j;
 import org.web3j.protocol.core.DefaultBlockParameterName;
 import org.web3j.tx.Contract;
 import org.web3j.tx.ManagedTransaction;
+import org.web3j.utils.Numeric;
 
 import javax.annotation.PostConstruct;
 
@@ -21,12 +22,14 @@ import javax.annotation.PostConstruct;
 public class WorkerPoolService {
 
     private static final Logger log = LoggerFactory.getLogger(WorkerPoolService.class);
+    private static final DefaultBlockParameterName END = DefaultBlockParameterName.LATEST;
     private final Web3j web3j;
     private final CredentialsService credentialsService;
     private final IexecHubService iexecHubService;
     private final WorkerPoolConfig poolConfig;
     private final EthConfig ethConfig;
     private WorkerPool workerPool;
+    private WorkerPoolWatcher workerPoolWatcher;
 
     @Autowired
     public WorkerPoolService(Web3j web3j, CredentialsService credentialsService,
@@ -43,12 +46,19 @@ public class WorkerPoolService {
     public void run() throws Exception {
         loadWorkerPool();
         setupWorkerPool(workerPool);
+
+        log.info("SCHEDLR watching ContributeEvent (auto revealConsensus)");
+        this.workerPool.contributeEventObservable(ethConfig.getStartBlockParameter(), END)
+                .subscribe(this::onContributeEvent);
+        log.info("SCHEDLR watching RevealEvent (auto finalizeWork)");
+        this.workerPool.revealEventObservable(ethConfig.getStartBlockParameter(), END)
+                .subscribe(this::onReveal);
     }
 
     private void loadWorkerPool() {
-        log.info("SCHEDLR loading workerPool " + iexecHubService.getWorkerPoolAddress());
+        log.info("SCHEDLR loading workerPool " + poolConfig.getAddress());
         this.workerPool = WorkerPool.load(
-                iexecHubService.getWorkerPoolAddress(), web3j, credentialsService.getCredentials(), ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT);
+                poolConfig.getAddress(), web3j, credentialsService.getCredentials(), ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT);
     }
 
     private void setupWorkerPool(WorkerPool workerPool) {
@@ -140,13 +150,26 @@ public class WorkerPoolService {
                 });
     }
 
+    public void onContributeEvent(WorkerPool.ContributeEventResponse contributeEvent) {
+        log.info("SCHEDLR received ContributeEvent " + contributeEvent.woid + " of worker " + contributeEvent.worker);
+        workerPoolWatcher.onContributeEvent(contributeEvent);
+    }
+
+
+    public void onReveal(WorkerPool.RevealEventResponse revealEvent) {
+        log.info("SCHEDLR received RevealEvent: " + Numeric.toHexString(revealEvent.result));
+        workerPoolWatcher.onReveal(revealEvent);
+    }
+
+    public void register(WorkerPoolWatcher workerPoolWatcher) {
+
+        this.workerPoolWatcher = workerPoolWatcher;
+    }
+
     public WorkerPool getWorkerPool() {
         return workerPool;
     }
 
-    public String getWorkerPoolAddress() {
-        return workerPool.getContractAddress();
-    }
 
     public WorkerPoolConfig getPoolConfig() {
         return poolConfig;

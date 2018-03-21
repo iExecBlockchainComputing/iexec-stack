@@ -1,4 +1,4 @@
-package com.iexec.scheduler.watcher;
+package com.iexec.scheduler.database;
 
 import com.iexec.scheduler.contracts.generated.IexecHub;
 import com.iexec.scheduler.contracts.generated.WorkerPool;
@@ -35,9 +35,9 @@ public class ContributionMapService {
 
     }
 
-    public void setupForFutureContributions(IexecHub.WorkOrderActivatedEventResponse workOrderActivatedEvent) {
+    public void setupForFutureContributions(String woid) {
         for (String worker : mockConfig.getCallForContribution().getWorkers()) {
-            Tuple2<String, String> orderWorkerTuple = new Tuple2<>(workOrderActivatedEvent.woid, worker);
+            Tuple2<String, String> orderWorkerTuple = new Tuple2<>(woid, worker);
             contributionMap.put(orderWorkerTuple, EMPTY_BYTE);
         }
     }

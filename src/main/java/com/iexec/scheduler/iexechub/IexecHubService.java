@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.web3j.protocol.Web3j;
+import org.web3j.protocol.core.DefaultBlockParameterName;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.tx.Contract;
 import org.web3j.tx.ManagedTransaction;
@@ -22,12 +23,13 @@ import static com.iexec.scheduler.ethereum.Utils.getStatus;
 public class IexecHubService {
 
     private static final Logger log = LoggerFactory.getLogger(WorkerPoolService.class);
+    private static final DefaultBlockParameterName END = DefaultBlockParameterName.LATEST;
     private final Web3j web3j;
     private final CredentialsService credentialsService;
     private final WorkerPoolConfig poolConfig;
     private final EthConfig ethConfig;
     private IexecHub iexecHub;
-    private String workerPoolAddress;
+    private IexecHubWatcher iexecHubWatcher;
 
     @Autowired
     public IexecHubService(Web3j web3j, CredentialsService credentialsService, WorkerPoolConfig poolConfig, EthConfig ethConfig) {
@@ -42,7 +44,14 @@ public class IexecHubService {
         log.info("SCHEDLR loading iexecHub");
         this.iexecHub = IexecHub.load(
                 ethConfig.getIexecHubAddress(), web3j, credentialsService.getCredentials(), ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT);
-        this.workerPoolAddress = fetchWorkerPoolAddress();
+        poolConfig.setAddress(fetchWorkerPoolAddress());
+
+        log.info("SCHEDLR watching workOrderActivatedEvent (auto callForContribution)");
+        this.iexecHub.workOrderActivatedEventObservable(ethConfig.getStartBlockParameter(), END)
+                .subscribe(this::onWorkOrderActivated);
+        log.info("SCHEDLR watching WorkerPoolSubscriptionEvent");
+        this.iexecHub.workerPoolSubscriptionEventObservable(ethConfig.getStartBlockParameter(), END)
+                .subscribe(this::onSubscription);
     }
 
     private String fetchWorkerPoolAddress() throws Exception {
@@ -59,11 +68,27 @@ public class IexecHubService {
         }
     }
 
+    public void onSubscription(IexecHub.WorkerPoolSubscriptionEventResponse workerPoolSubscriptionEvent) {
+        if (workerPoolSubscriptionEvent.workerPool.equals(poolConfig.getAddress())) {
+            log.info("SCHEDLR received WorkerPoolSubscriptionEvent for worker " + workerPoolSubscriptionEvent.worker);
+            iexecHubWatcher.onSubscription(workerPoolSubscriptionEvent.worker);
+        }
+    }
+
+    public void onWorkOrderActivated(IexecHub.WorkOrderActivatedEventResponse workOrderActivatedEvent) {
+        log.info("SCHEDLR received workOrderActivatedEvent " + workOrderActivatedEvent.woid);
+        if (workOrderActivatedEvent.workerPool.equals(poolConfig.getAddress())) {
+            iexecHubWatcher.woid(workOrderActivatedEvent.woid);
+        }
+    }
+
+
+    public void register(IexecHubWatcher iexecHubWatcher) {
+        this.iexecHubWatcher = iexecHubWatcher;
+    }
+
     public IexecHub getIexecHub() {
         return iexecHub;
     }
 
-    public String getWorkerPoolAddress() {
-        return workerPoolAddress;
-    }
 }
