@@ -1,11 +1,9 @@
 package com.iexec.scheduler.workerpool;
 
-import com.iexec.scheduler.contracts.generated.IexecHub;
-import com.iexec.scheduler.ethereum.EthConfig;
 import com.iexec.scheduler.contracts.generated.AuthorizedList;
 import com.iexec.scheduler.contracts.generated.WorkerPool;
 import com.iexec.scheduler.ethereum.CredentialsService;
-import com.iexec.scheduler.iexechub.IexecHubService;
+import com.iexec.scheduler.ethereum.EthConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,14 +16,14 @@ import org.web3j.utils.Numeric;
 
 import javax.annotation.PostConstruct;
 
+import static com.iexec.scheduler.ethereum.Utils.END;
+
 @Service
 public class WorkerPoolService {
 
     private static final Logger log = LoggerFactory.getLogger(WorkerPoolService.class);
-    private static final DefaultBlockParameterName END = DefaultBlockParameterName.LATEST;
     private final Web3j web3j;
     private final CredentialsService credentialsService;
-    private final IexecHubService iexecHubService;
     private final WorkerPoolConfig poolConfig;
     private final EthConfig ethConfig;
     private WorkerPool workerPool;
@@ -33,26 +31,18 @@ public class WorkerPoolService {
 
     @Autowired
     public WorkerPoolService(Web3j web3j, CredentialsService credentialsService,
-                             IexecHubService iexecHubService,
                              WorkerPoolConfig poolConfig, EthConfig ethConfig) {
         this.web3j = web3j;
         this.credentialsService = credentialsService;
-        this.iexecHubService = iexecHubService;
         this.poolConfig = poolConfig;
         this.ethConfig = ethConfig;
     }
 
     @PostConstruct
-    public void run() throws Exception {
+    public void run() {
         loadWorkerPool();
         setupWorkerPool(workerPool);
-
-        log.debug("SCHEDLR watching ContributeEvent (auto revealConsensus)");
-        this.workerPool.contributeEventObservable(ethConfig.getStartBlockParameter(), END)
-                .subscribe(this::onContributeEvent);
-        log.debug("SCHEDLR watching RevealEvent (auto finalizeWork)");
-        this.workerPool.revealEventObservable(ethConfig.getStartBlockParameter(), END)
-                .subscribe(this::onReveal);
+        startWatchers();
     }
 
     private void loadWorkerPool() {
@@ -98,13 +88,13 @@ public class WorkerPoolService {
     }
 
     private void updateAuthorizedList(AuthorizedList workerAuthorizedList) throws Exception {
-        if (!poolConfig.getMode().equals(workerAuthorizedList.m_policy().send())){
+        if (!poolConfig.getMode().equals(workerAuthorizedList.m_policy().send())) {
             workerAuthorizedList.changeListPolicy(poolConfig.getMode()).send();
         }
 
         //TODO - Make possible to unblacklist an ex-blacklisted worker (and do the same for whitelisting feature)
         log.debug("SCHEDLR authorizedList needs changes?");
-        for (String worker: poolConfig.getList()){//update hole list if one worker is not whitelisted
+        for (String worker : poolConfig.getList()) {//update hole list if one worker is not whitelisted
             if (poolConfig.getMode().equals(PolicyEnum.WHITELIST) && !workerAuthorizedList.isWhitelisted(worker).send()) {
                 workerAuthorizedList.updateWhitelist(poolConfig.getList(), true).send();
                 log.debug("SCHEDLR yes");
@@ -150,13 +140,22 @@ public class WorkerPoolService {
                 });
     }
 
-    public void onContributeEvent(WorkerPool.ContributeEventResponse contributeEvent) {
+    private void startWatchers() {
+        log.debug("SCHEDLR watching ContributeEvent (auto revealConsensus)");
+        this.workerPool.contributeEventObservable(ethConfig.getStartBlockParameter(), END)
+                .subscribe(this::onContributeEvent);
+        log.debug("SCHEDLR watching RevealEvent (auto finalizeWork)");
+        this.workerPool.revealEventObservable(ethConfig.getStartBlockParameter(), END)
+                .subscribe(this::onReveal);
+    }
+
+    private void onContributeEvent(WorkerPool.ContributeEventResponse contributeEvent) {
         log.debug("SCHEDLR received ContributeEvent " + contributeEvent.woid + " of worker " + contributeEvent.worker);
         workerPoolWatcher.onContributeEvent(contributeEvent);
     }
 
 
-    public void onReveal(WorkerPool.RevealEventResponse revealEvent) {
+    private void onReveal(WorkerPool.RevealEventResponse revealEvent) {
         log.debug("SCHEDLR received RevealEvent: " + Numeric.toHexString(revealEvent.result));
         workerPoolWatcher.onReveal(revealEvent);
     }

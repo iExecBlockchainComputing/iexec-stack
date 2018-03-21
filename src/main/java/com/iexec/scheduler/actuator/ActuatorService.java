@@ -2,8 +2,9 @@ package com.iexec.scheduler.actuator;
 
 import com.iexec.scheduler.contracts.generated.WorkerPool;
 import com.iexec.scheduler.ethereum.RlcService;
-import com.iexec.scheduler.ethereum.TransactionError;
+import com.iexec.scheduler.ethereum.TransactionStatus;
 import com.iexec.scheduler.iexechub.IexecHubService;
+import com.iexec.scheduler.marketplace.MarketOrderDirectionEnum;
 import com.iexec.scheduler.marketplace.MarketplaceService;
 import com.iexec.scheduler.mock.MockConfig;
 import com.iexec.scheduler.workerpool.WorkerPoolService;
@@ -41,7 +42,7 @@ public class ActuatorService implements Actuator {
     }
 
     @Override
-    public TransactionError emitMarketOrder(BigInteger category, BigInteger trust, BigInteger value, BigInteger volume) {
+    public TransactionStatus emitMarketOrder(BigInteger category, BigInteger trust, BigInteger value, BigInteger volume) {
         //TODO - emitMarketOrder if n workers are alive (not subscribed, means nothing)
         try {
             Float deposit = (workerPoolService.getPoolConfig().getStakeRatioPolicy().floatValue() / 100) * mockConfig.getEmitMarketOrder().getValue().floatValue();//(30/100)*100
@@ -52,7 +53,7 @@ public class ActuatorService implements Actuator {
             log.debug("SCHEDLR deposit (emitMarketOrder) " + depositBig + " " + getStatus(depositReceipt));
 
             TransactionReceipt emitMarketOrderReceipt = marketplaceService.getMarketplace().emitMarketOrder(
-                    mockConfig.getEmitMarketOrder().getDirection(),
+                    MarketOrderDirectionEnum.ASK,
                     category,
                     trust,
                     value,
@@ -64,14 +65,14 @@ public class ActuatorService implements Actuator {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return TransactionError.FAILURE;
+        return TransactionStatus.FAILURE;
     }
 
 
     @Override
-    public TransactionError callForContributions(String woid,
-                                                 List<String> workers,
-                                                 String enclaveChallenge) {
+    public TransactionStatus callForContributions(String woid,
+                                                  List<String> workers,
+                                                  String enclaveChallenge) {
         try {
             TransactionReceipt callForContributionsReceipt = workerPoolService.getWorkerPool()
                     .callForContributions(woid, workers, enclaveChallenge).send();
@@ -81,12 +82,12 @@ public class ActuatorService implements Actuator {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return TransactionError.FAILURE;
+        return TransactionStatus.FAILURE;
     }
 
 
     @Override
-    public TransactionError revealConsensus(WorkerPool.ContributeEventResponse contributeEvent, String hashResult) {
+    public TransactionStatus revealConsensus(WorkerPool.ContributeEventResponse contributeEvent, String hashResult) {
         byte[] consensus = Numeric.hexStringToByteArray(hashResult);
         try {
             TransactionReceipt revealConsensusReceipt = workerPoolService.getWorkerPool()
@@ -97,11 +98,11 @@ public class ActuatorService implements Actuator {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return TransactionError.FAILURE;
+        return TransactionStatus.FAILURE;
     }
 
     @Override
-    public TransactionError finalizeWork(WorkerPool.RevealEventResponse revealEvent, String stdout, String stderr, String uri) {
+    public TransactionStatus finalizeWork(WorkerPool.RevealEventResponse revealEvent, String stdout, String stderr, String uri) {
         log.debug("SCHEDLR found reveal timeout reached");
         try {
             TransactionReceipt finalizedWorkReceipt = workerPoolService.getWorkerPool().finalizedWork(revealEvent.woid,
@@ -113,7 +114,7 @@ public class ActuatorService implements Actuator {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return TransactionError.FAILURE;
+        return TransactionStatus.FAILURE;
     }
 
 

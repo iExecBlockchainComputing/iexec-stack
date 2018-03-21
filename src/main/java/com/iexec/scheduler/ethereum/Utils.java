@@ -2,16 +2,16 @@ package com.iexec.scheduler.ethereum;
 
 import org.web3j.crypto.Hash;
 import org.web3j.protocol.Web3j;
-import org.web3j.protocol.core.Response;
+import org.web3j.protocol.core.DefaultBlockParameterName;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.tx.Contract;
 
-import javax.lang.model.type.ErrorType;
 import java.io.IOException;
 import java.util.Collections;
 
 public final class Utils {
 
+    public static final DefaultBlockParameterName END = DefaultBlockParameterName.LATEST;
     public static final byte[] EMPTY_BYTE = new byte[0];
     private static final String HEX_PREFIX = "0x";
 
@@ -49,11 +49,11 @@ public final class Utils {
         return hex.toString() + "".join("", Collections.nCopies(32 - (hex.length() / 2), "00"));
     }
 
-    public static TransactionError getStatus(TransactionReceipt transactionReceipt){
+    public static TransactionStatus getStatus(TransactionReceipt transactionReceipt){
         if (transactionReceipt.getGasUsed().compareTo(Contract.GAS_LIMIT) < 0){
-            return TransactionError.SUCCESS;
+            return TransactionStatus.SUCCESS;
         }
-        return TransactionError.FAILURE;
+        return TransactionStatus.FAILURE;
     }
     
 }

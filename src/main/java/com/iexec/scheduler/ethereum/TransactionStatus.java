@@ -1,6 +1,6 @@
 package com.iexec.scheduler.ethereum;
 
-public enum TransactionError {
+public enum TransactionStatus {
 
     SUCCESS,
     FAILURE;

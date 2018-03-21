@@ -11,13 +11,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.web3j.protocol.core.DefaultBlockParameterName;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.tuples.generated.Tuple7;
 
 import javax.annotation.PostConstruct;
 import java.math.BigInteger;
 
+import static com.iexec.scheduler.ethereum.Utils.END;
 import static com.iexec.scheduler.ethereum.Utils.getStatus;
 
 @Service
@@ -26,7 +26,6 @@ public class MockCloudUserService {
     // /!\ ALL THIS BLOCK SHOULD MADE BY IEXECCLOUDUSER
 
     private static final Logger log = LoggerFactory.getLogger(MockCloudUserService.class);
-    private static final DefaultBlockParameterName END = DefaultBlockParameterName.LATEST;
     private final IexecHubService iexecHubService;
     private final WorkerPoolService workerPoolService;
     private final MarketplaceService marketplaceService;

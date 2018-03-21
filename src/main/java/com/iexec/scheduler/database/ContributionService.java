@@ -1,6 +1,5 @@
 package com.iexec.scheduler.database;
 
-import com.iexec.scheduler.contracts.generated.IexecHub;
 import com.iexec.scheduler.contracts.generated.WorkerPool;
 import com.iexec.scheduler.mock.MockConfig;
 import org.bouncycastle.util.Arrays;
@@ -10,29 +9,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.web3j.tuples.generated.Tuple2;
 
-import javax.annotation.PostConstruct;
 import java.util.HashMap;
 import java.util.Map;
 
 import static com.iexec.scheduler.ethereum.Utils.EMPTY_BYTE;
 
 @Service
-public class ContributionMapService {
+public class ContributionService {
 
-    private static final Logger log = LoggerFactory.getLogger(ContributionMapService.class);
+    private static final Logger log = LoggerFactory.getLogger(ContributionService.class);
 
     private final MockConfig mockConfig;
     private Map<Tuple2<String, String>, byte[]> contributionMap;
 
     @Autowired
-    public ContributionMapService(MockConfig mockConfig) {
+    public ContributionService(MockConfig mockConfig) {
         this.mockConfig = mockConfig;
         this.contributionMap = new HashMap<>();
-    }
-
-    @PostConstruct
-    public void run() throws Exception {
-
     }
 
     public void setupForFutureContributions(String woid) {

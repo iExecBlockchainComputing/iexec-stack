@@ -1,7 +1,7 @@
 package com.iexec.scheduler.mock;
 
 import com.iexec.scheduler.contracts.generated.WorkerPool;
-import com.iexec.scheduler.database.ContributionMapService;
+import com.iexec.scheduler.database.ContributionService;
 import com.iexec.scheduler.actuator.*;
 import com.iexec.scheduler.workerpool.WorkerPoolService;
 import com.iexec.scheduler.workerpool.WorkerPoolWatcher;
@@ -16,17 +16,15 @@ import static com.iexec.scheduler.ethereum.Utils.hashResult;
 public class MockWorkerPoolWatcherActuator implements WorkerPoolWatcher {
 
     private static final Logger log = LoggerFactory.getLogger(MockWorkerPoolWatcherActuator.class);
-    private final WorkerPoolService workerPoolService;
     private final MockConfig mockConfig;
-    private final ContributionMapService contributionMapService;
+    private final ContributionService contributionService;
     private final ActuatorService actuatorService;
 
     @Autowired
     public MockWorkerPoolWatcherActuator(WorkerPoolService workerPoolService, MockConfig mockConfig,
-                                         ContributionMapService contributionMapService, ActuatorService actuatorService) {
-        this.workerPoolService = workerPoolService;
+                                         ContributionService contributionService, ActuatorService actuatorService) {
         this.mockConfig = mockConfig;
-        this.contributionMapService = contributionMapService;
+        this.contributionService = contributionService;
         this.actuatorService = actuatorService;
         workerPoolService.register(this);
     }
@@ -34,8 +32,8 @@ public class MockWorkerPoolWatcherActuator implements WorkerPoolWatcher {
 
     @Override
     public void onContributeEvent(WorkerPool.ContributeEventResponse contributeEvent) {
-        contributionMapService.addContributionToMap(contributeEvent);
-        if (!contributionMapService.isConsensusReached(contributeEvent)) {
+        contributionService.addContributionToMap(contributeEvent);
+        if (!contributionService.isConsensusReached(contributeEvent)) {
             return;
         }
         actuatorService.revealConsensus(contributeEvent, hashResult(mockConfig.getWorkerResult()));

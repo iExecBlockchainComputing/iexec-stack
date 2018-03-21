@@ -1,18 +1,18 @@
 package com.iexec.scheduler.actuator;
 
 import com.iexec.scheduler.contracts.generated.WorkerPool;
-import com.iexec.scheduler.ethereum.TransactionError;
+import com.iexec.scheduler.ethereum.TransactionStatus;
 
 import java.math.BigInteger;
 import java.util.List;
 
 public interface Actuator {
 
-    TransactionError callForContributions(String woid,
-                                          List<String> workers,
-                                          String enclaveChallenge);
+    TransactionStatus callForContributions(String woid,
+                                           List<String> workers,
+                                           String enclaveChallenge);
 
-    TransactionError emitMarketOrder(BigInteger category, BigInteger trust, BigInteger value, BigInteger volume);
-    TransactionError revealConsensus(WorkerPool.ContributeEventResponse contributeEvent, String hashResult);
-    TransactionError finalizeWork(WorkerPool.RevealEventResponse revealEvent, String stdout, String stderr, String uri);
+    TransactionStatus emitMarketOrder(BigInteger category, BigInteger trust, BigInteger value, BigInteger volume);
+    TransactionStatus revealConsensus(WorkerPool.ContributeEventResponse contributeEvent, String hashResult);
+    TransactionStatus finalizeWork(WorkerPool.RevealEventResponse revealEvent, String stdout, String stderr, String uri);
 }
