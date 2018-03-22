@@ -1,57 +1,65 @@
 package com.iexec.scheduler.database;
 
-import com.iexec.scheduler.contracts.generated.WorkerPool;
-import com.iexec.scheduler.mock.MockConfig;
-import org.bouncycastle.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.web3j.tuples.generated.Tuple2;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-
-import static com.iexec.scheduler.ethereum.Utils.EMPTY_BYTE;
 
 @Service
 public class ContributionService {
 
     private static final Logger log = LoggerFactory.getLogger(ContributionService.class);
 
-    private final MockConfig mockConfig;
-    private Map<Tuple2<String, String>, byte[]> contributionMap;
+    private Map<String, List<String>> calledWorkerMap;
+    private Map<String, List<Contribution>> contributionMap;
 
-    @Autowired
-    public ContributionService(MockConfig mockConfig) {
-        this.mockConfig = mockConfig;
+    public ContributionService() {
+        this.calledWorkerMap = new HashMap<>();
         this.contributionMap = new HashMap<>();
     }
 
-    public void setupForFutureContributions(String woid) {
-        for (String worker : mockConfig.getCallForContribution().getWorkers()) {
-            Tuple2<String, String> orderWorkerTuple = new Tuple2<>(woid, worker);
-            contributionMap.put(orderWorkerTuple, EMPTY_BYTE);
+    public void setCalledWorker(String workOrderId, List<String> workers) {
+        if (getCalledWorkers(workOrderId) == null && getContributions(workOrderId) == null) {
+            calledWorkerMap.put(workOrderId, workers);
+            contributionMap.put(workOrderId, new ArrayList<>());
         }
     }
 
-    public void addContributionToMap(WorkerPool.ContributeEventResponse contributeEvent) {
-        Tuple2<String, String> orderWorkerTuple = new Tuple2<>(contributeEvent.woid, contributeEvent.worker);
-        if (contributionMap.containsKey(orderWorkerTuple)) {
-            contributionMap.replace(orderWorkerTuple, contributeEvent.resultHash);
-        }
+    public boolean addContribution(Contribution contribution) {
+        String workOrderId = contribution.getWorkOrderId();
+        String worker = contribution.getWorker();
+        return hasWorkerBeenCalled(workOrderId, worker)
+                && !hasWorkerAlreadyContributed(workOrderId, worker)
+                && getContributions(workOrderId).add(contribution);
     }
 
-    public boolean isConsensusReached(WorkerPool.ContributeEventResponse contributeEvent) {
-        log.debug("SCHEDLR checking if consensus reached?");
-        for (String worker : mockConfig.getCallForContribution().getWorkers()) {
-            Tuple2<String, String> orderWorkerTuple = new Tuple2<>(contributeEvent.woid, worker);
-            if (Arrays.areEqual(contributionMap.get(orderWorkerTuple), EMPTY_BYTE)) {
-                return false;
+    public boolean hasAllWorkerContributed(String workOrderId) {
+        return getContributions(workOrderId).size() == getCalledWorkers(workOrderId).size();
+    }
+
+    private boolean hasWorkerBeenCalled(String workOrderId, String worker) {
+        return getCalledWorkers(workOrderId).contains(worker);
+    }
+
+    private boolean hasWorkerAlreadyContributed(String workOrderId, String worker) {
+        for (Contribution contribution : getContributions(workOrderId)) {
+            if (contribution.getWorker().equals(worker)) {
+                return true;
             }
         }
-        log.debug("SCHEDLR found consensus reached");
-        return true;
+        return false;
+    }
+
+    private List<Contribution> getContributions(String workOrderId) {
+        return contributionMap.get(workOrderId);
+    }
+
+    private List<String> getCalledWorkers(String workOrderId) {
+        return calledWorkerMap.get(workOrderId);
     }
 
 }

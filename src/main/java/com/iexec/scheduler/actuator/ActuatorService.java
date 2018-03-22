@@ -48,9 +48,9 @@ public class ActuatorService implements Actuator {
             Float deposit = (workerPoolService.getPoolConfig().getStakeRatioPolicy().floatValue() / 100) * mockConfig.getEmitMarketOrder().getValue().floatValue();//(30/100)*100
             BigInteger depositBig = BigDecimal.valueOf(deposit).toBigInteger();
             TransactionReceipt approveReceipt = rlcService.getRlc().approve(iexecHubService.getIexecHub().getContractAddress(), BigInteger.valueOf(100)).send();
-            log.debug("SCHEDLR approve (emitMarketOrder) " + 100 + " " + getStatus(approveReceipt));
+            log.info("SCHEDLR approve (emitMarketOrder) " + 100 + " " + getStatus(approveReceipt));
             TransactionReceipt depositReceipt = iexecHubService.getIexecHub().deposit(depositBig).send();
-            log.debug("SCHEDLR deposit (emitMarketOrder) " + depositBig + " " + getStatus(depositReceipt));
+            log.info("SCHEDLR deposit (emitMarketOrder) " + depositBig + " " + getStatus(depositReceipt));
 
             TransactionReceipt emitMarketOrderReceipt = marketplaceService.getMarketplace().emitMarketOrder(
                     MarketOrderDirectionEnum.ASK,
@@ -60,7 +60,7 @@ public class ActuatorService implements Actuator {
                     workerPoolService.getPoolConfig().getAddress(),
                     volume
             ).send();
-            log.debug("SCHEDLR emitMarketOrder " + getStatus(emitMarketOrderReceipt));
+            log.info("SCHEDLR emitMarketOrder " + getStatus(emitMarketOrderReceipt));
             return getStatus(emitMarketOrderReceipt);
         } catch (Exception e) {
             e.printStackTrace();
@@ -76,7 +76,7 @@ public class ActuatorService implements Actuator {
         try {
             TransactionReceipt callForContributionsReceipt = workerPoolService.getWorkerPool()
                     .callForContributions(woid, workers, enclaveChallenge).send();
-            log.debug("SCHEDLR callForContributions " + getStatus(callForContributionsReceipt)
+            log.info("SCHEDLR callForContributions " + getStatus(callForContributionsReceipt)
                     + " of workers " + workers.toString());
             return getStatus(callForContributionsReceipt);
         } catch (Exception e) {
@@ -92,7 +92,7 @@ public class ActuatorService implements Actuator {
         try {
             TransactionReceipt revealConsensusReceipt = workerPoolService.getWorkerPool()
                     .revealConsensus(contributeEvent.woid, consensus).send();
-            log.debug("SCHEDLR revealConsensus " + hashResult + " "
+            log.info("SCHEDLR revealConsensus " + hashResult + " "
                     + getStatus(revealConsensusReceipt));
             return getStatus(revealConsensusReceipt);
         } catch (Exception e) {
@@ -103,13 +103,13 @@ public class ActuatorService implements Actuator {
 
     @Override
     public TransactionStatus finalizeWork(WorkerPool.RevealEventResponse revealEvent, String stdout, String stderr, String uri) {
-        log.debug("SCHEDLR found reveal timeout reached");
+        log.info("SCHEDLR found reveal timeout reached");
         try {
             TransactionReceipt finalizedWorkReceipt = workerPoolService.getWorkerPool().finalizedWork(revealEvent.woid,
                     stdout,
                     stderr,
                     uri).send();
-            log.debug("SCHEDLR finalize " + getStatus(finalizedWorkReceipt));
+            log.info("SCHEDLR finalize " + getStatus(finalizedWorkReceipt));
             return getStatus(finalizedWorkReceipt);
         } catch (Exception e) {
             e.printStackTrace();

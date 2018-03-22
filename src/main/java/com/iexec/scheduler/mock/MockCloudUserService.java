@@ -47,13 +47,13 @@ public class MockCloudUserService {
 
     @PostConstruct
     public void run() throws Exception {
-        log.debug("CLDUSER watching marketOrderEmittedEvent (auto answerEmitWorkOrder)");
+        log.info("CLDUSER watching marketOrderEmittedEvent (auto answerEmitWorkOrder)");
         marketplaceService.getMarketplace().marketOrderEmittedEventObservable(ethConfig.getStartBlockParameter(), END)
                 .subscribe(this::onMarketOrderEmitted);
     }
 
     public void onMarketOrderEmitted(Marketplace.MarketOrderEmittedEventResponse marketOrderEmittedEvent) {
-        log.debug("SCHEDLR received marketOrderEmittedEvent " + marketOrderEmittedEvent.marketorderIdx);
+        log.info("SCHEDLR received marketOrderEmittedEvent " + marketOrderEmittedEvent.marketorderIdx);
         answerEmitWorkOrder(marketOrderEmittedEvent);
     }
 
@@ -61,11 +61,11 @@ public class MockCloudUserService {
         //populate map and expose
         try {
             BigInteger deposit = mockConfig.getEmitMarketOrder().getValue();
-            log.debug(deposit.toString());
+            log.info(deposit.toString());
             TransactionReceipt approveReceipt = rlcService.getRlc().approve(iexecHubService.getIexecHub().getContractAddress(), deposit).send();
-            log.debug("SCHEDLR approve (answerEmitWorkOrder) " + getStatus(approveReceipt));
+            log.info("SCHEDLR approve (answerEmitWorkOrder) " + getStatus(approveReceipt));
             TransactionReceipt depositReceipt = iexecHubService.getIexecHub().deposit(deposit).send();
-            log.debug("SCHEDLR deposit (answerEmitWorkOrder) " + getStatus(depositReceipt));
+            log.info("SCHEDLR deposit (answerEmitWorkOrder) " + getStatus(depositReceipt));
 
             Tuple7 orderBook = marketplaceService.getMarketplace().m_orderBook(marketOrderEmittedEvent.marketorderIdx).send();
             if (orderBook.getValue1().equals(MarketOrderDirectionEnum.ASK) &&
@@ -78,7 +78,7 @@ public class MockCloudUserService {
                         mockConfig.getAnswerEmitWorkOrder().getCallback(),
                         mockConfig.getAnswerEmitWorkOrder().getBeneficiary()
                 ).send();
-                log.debug("SCHEDLR answerEmitWorkOrder " + getStatus(answerEmitWorkOrderReceipt));
+                log.info("SCHEDLR answerEmitWorkOrder " + getStatus(answerEmitWorkOrderReceipt));
             }
         } catch (Exception e) {
             e.printStackTrace();
