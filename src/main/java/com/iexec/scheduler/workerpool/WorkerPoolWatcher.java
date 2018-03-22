@@ -1,8 +1,9 @@
-package com.iexec.scheduler.watcher;
+package com.iexec.scheduler.workerpool;
 
 import com.iexec.scheduler.contracts.generated.WorkerPool;
 
-public interface Contribute {
+public interface WorkerPoolWatcher {
 
     void onContributeEvent(WorkerPool.ContributeEventResponse contributeEvent);
+    void onReveal(WorkerPool.RevealEventResponse revealEvent);
 }

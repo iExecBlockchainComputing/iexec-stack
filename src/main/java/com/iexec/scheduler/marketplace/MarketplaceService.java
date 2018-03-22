@@ -21,16 +21,14 @@ public class MarketplaceService {
     private final Web3j web3j;
     private final CredentialsService credentialsService;
     private final IexecHubService iexecHubService;
-    private final EthConfig ethConfig;
     private Marketplace marketplace;
 
     @Autowired
     public MarketplaceService(Web3j web3j, CredentialsService credentialsService,
-                              IexecHubService iexecHubService, EthConfig ethConfig) {
+                              IexecHubService iexecHubService) {
         this.web3j = web3j;
         this.credentialsService = credentialsService;
         this.iexecHubService = iexecHubService;
-        this.ethConfig = ethConfig;
     }
 
     @PostConstruct

@@ -10,12 +10,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.web3j.protocol.Web3j;
+import org.web3j.protocol.core.DefaultBlockParameterName;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.tx.Contract;
 import org.web3j.tx.ManagedTransaction;
 
 import javax.annotation.PostConstruct;
 
+import static com.iexec.scheduler.ethereum.Utils.END;
 import static com.iexec.scheduler.ethereum.Utils.getStatus;
 
 @Service
@@ -27,7 +29,7 @@ public class IexecHubService {
     private final WorkerPoolConfig poolConfig;
     private final EthConfig ethConfig;
     private IexecHub iexecHub;
-    private String workerPoolAddress;
+    private IexecHubWatcher iexecHubWatcher;
 
     @Autowired
     public IexecHubService(Web3j web3j, CredentialsService credentialsService, WorkerPoolConfig poolConfig, EthConfig ethConfig) {
@@ -39,31 +41,56 @@ public class IexecHubService {
 
     @PostConstruct
     public void run() throws Exception {
-        log.info("SCHEDLR loading iexecHub");
         this.iexecHub = IexecHub.load(
                 ethConfig.getIexecHubAddress(), web3j, credentialsService.getCredentials(), ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT);
-        this.workerPoolAddress = fetchWorkerPoolAddress();
+        log.info("Load contract IexecHub [address:{}] ", ethConfig.getIexecHubAddress());
+        poolConfig.setAddress(fetchWorkerPoolAddress());
+        startWatchers();
     }
 
     private String fetchWorkerPoolAddress() throws Exception {
+        String workerPoolAddress;
         if (poolConfig.getAddress().isEmpty()) {
             TransactionReceipt createWorkerPoolReceipt = iexecHub.createWorkerPool(poolConfig.getName(),
                     poolConfig.getSubscriptionLockStakePolicy(),
                     poolConfig.getSubscriptionMinimumStakePolicy(),
                     poolConfig.getSubscriptionMinimumScorePolicy()).send();
-            log.info("SCHEDLR createWorkerPool " + getStatus(createWorkerPoolReceipt));
-            return this.iexecHub.getCreateWorkerPoolEvents(createWorkerPoolReceipt).get(0).workerPool;
+            workerPoolAddress = this.iexecHub.getCreateWorkerPoolEvents(createWorkerPoolReceipt).get(0).workerPool;
+            log.info("CreateWorkerPool [address:{}] ", workerPoolAddress);
         } else {
-            log.info("SCHEDLR fetch WorkerPool address from conf");
-            return poolConfig.getAddress();
+            workerPoolAddress = poolConfig.getAddress();
+            log.info("Get WorkerPool address from configuration [address:{}] ", workerPoolAddress);
         }
+        return workerPoolAddress;
+    }
+
+    private void startWatchers() {
+        this.iexecHub.workOrderActivatedEventObservable(ethConfig.getStartBlockParameter(), END)
+                .subscribe(this::onWorkOrderActivated);
+        this.iexecHub.workerPoolSubscriptionEventObservable(ethConfig.getStartBlockParameter(), END)
+                .subscribe(this::onSubscription);
+    }
+
+    private void onSubscription(IexecHub.WorkerPoolSubscriptionEventResponse workerPoolSubscriptionEvent) {
+        if (workerPoolSubscriptionEvent.workerPool.equals(poolConfig.getAddress())) {
+            log.info("Received WorkerPoolSubscriptionEvent [worker:{}]", workerPoolSubscriptionEvent.worker);
+            iexecHubWatcher.onSubscription(workerPoolSubscriptionEvent.worker);
+        }
+    }
+
+    private void onWorkOrderActivated(IexecHub.WorkOrderActivatedEventResponse workOrderActivatedEvent) {
+        log.info("Received WorkOrderActivatedEvent [woid:{}]", workOrderActivatedEvent.woid);
+        if (workOrderActivatedEvent.workerPool.equals(poolConfig.getAddress())) {
+            iexecHubWatcher.onWorkOrderActivated(workOrderActivatedEvent.woid);
+        }
+    }
+
+    public void register(IexecHubWatcher iexecHubWatcher) {
+        this.iexecHubWatcher = iexecHubWatcher;
     }
 
     public IexecHub getIexecHub() {
         return iexecHub;
     }
 
-    public String getWorkerPoolAddress() {
-        return workerPoolAddress;
-    }
 }

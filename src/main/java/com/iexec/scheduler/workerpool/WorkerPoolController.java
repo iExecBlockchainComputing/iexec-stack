@@ -24,7 +24,7 @@ public class WorkerPoolController {
     public WorkerPoolPolicy getPoolConf() throws Exception {
         //TODO - create converter + remove logic from controller
         WorkerPoolPolicy poolPolicy = new WorkerPoolPolicy();
-        poolPolicy.setAddress(workerPoolService.getWorkerPoolAddress());
+        poolPolicy.setAddress(workerPoolService.getPoolConfig().getAddress());
         poolPolicy.setSubscriptionLockStakePolicy(workerPoolConfig.getSubscriptionLockStakePolicy());
         poolPolicy.setSubscriptionMinimumScorePolicy(workerPoolConfig.getSubscriptionMinimumScorePolicy());
         poolPolicy.setSubscriptionMinimumStakePolicy(workerPoolConfig.getSubscriptionMinimumStakePolicy());
