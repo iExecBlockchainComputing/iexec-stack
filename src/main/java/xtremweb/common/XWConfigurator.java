@@ -537,7 +537,11 @@ public final class XWConfigurator extends Properties {
 	 * @see xtremweb.common.XWPropertyDefs#DBREQUESTLIMIT
 	 */
 	public int requestLimit() {
-		return getInt(XWPropertyDefs.DBREQUESTLIMIT);
+		int ret =  getInt(XWPropertyDefs.DBREQUESTLIMIT);
+		if (ret > XWTools.MAXDBREQUESTLIMIT) {
+		    ret = XWTools.MAXDBREQUESTLIMIT;
+		}
+		return ret;
 	}
 
 	/**
