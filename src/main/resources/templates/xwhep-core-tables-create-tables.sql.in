@@ -846,7 +846,7 @@ show warnings;
 create table if not exists  works  (
   uid                 char(36)          not null  primary key      comment 'Primary key',
   appUID              char(36)          not null                   comment 'Application UID',
-  envId               int unsigned      not null                   comment 'envId. See common/Envs.java',
+  envId               int unsigned      not null  default 1        comment 'envId. See common/Envs.java',
   statusId            tinyint unsigned  not null  default 255      comment 'Status Id. See common/XWStatus.java',
   status              varchar(36)       not null  default 'NONE'   comment 'Status. see common/XWStatus.java',
   sessionUID          char(36)                                     comment 'Optionnal. session UID',
