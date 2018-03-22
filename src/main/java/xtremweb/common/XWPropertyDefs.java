@@ -1228,7 +1228,7 @@ public enum XWPropertyDefs {
 		 */
 		@Override
 		public String defaultValue() {
-			return "1000";
+			return "" + XWTools.MAXDBREQUESTLIMIT;
 		}
 	},
 	/**
