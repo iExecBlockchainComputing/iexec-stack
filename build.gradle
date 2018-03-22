@@ -2,13 +2,14 @@ buildscript {
     repositories {
         mavenCentral()
     }
-    dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.5.9.RELEASE")
-    }
 }
 
 apply plugin: 'java'
-apply plugin: 'org.springframework.boot'
+
+jar {
+    baseName = 'iexec-scheduler-library'
+    version = '0.0.1-SNAPSHOT'
+}
 
 sourceCompatibility = 1.8
 
@@ -65,9 +66,5 @@ buildContracts.enabled = !project.hasProperty("skipContracts")
 
 // Force the rebuild of contracts before java build
 compileJava.dependsOn buildContracts
-
-bootRun {
-    systemProperties = System.properties
-}
 
 

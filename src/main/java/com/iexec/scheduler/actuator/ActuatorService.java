@@ -6,7 +6,6 @@ import com.iexec.scheduler.ethereum.TransactionStatus;
 import com.iexec.scheduler.iexechub.IexecHubService;
 import com.iexec.scheduler.marketplace.MarketOrderDirectionEnum;
 import com.iexec.scheduler.marketplace.MarketplaceService;
-import com.iexec.scheduler.mock.MockConfig;
 import com.iexec.scheduler.workerpool.WorkerPoolService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,23 +28,21 @@ public class ActuatorService implements Actuator {
     private final WorkerPoolService workerPoolService;
     private final MarketplaceService marketplaceService;
     private final RlcService rlcService;
-    private final MockConfig mockConfig;
 
     @Autowired
     public ActuatorService(IexecHubService iexecHubService, WorkerPoolService workerPoolService,
-                           MarketplaceService marketplaceService, RlcService rlcService, MockConfig mockConfig) {
+                           MarketplaceService marketplaceService, RlcService rlcService) {
         this.iexecHubService = iexecHubService;
         this.workerPoolService = workerPoolService;
         this.marketplaceService = marketplaceService;
         this.rlcService = rlcService;
-        this.mockConfig = mockConfig;
     }
 
     @Override
     public TransactionStatus emitMarketOrder(BigInteger category, BigInteger trust, BigInteger value, BigInteger volume) {
         //TODO - emitMarketOrder if n workers are alive (not subscribed, means nothing)
         try {
-            Float deposit = (workerPoolService.getPoolConfig().getStakeRatioPolicy().floatValue() / 100) * mockConfig.getEmitMarketOrder().getValue().floatValue();//(30/100)*100
+            Float deposit = (workerPoolService.getPoolConfig().getStakeRatioPolicy().floatValue() / 100) * value.floatValue();//(30/100)*100
             BigInteger depositAmount = BigDecimal.valueOf(deposit).toBigInteger();
             BigInteger approveAmount = BigInteger.valueOf(100);//should be the same than deposit, Poco needs changes
             TransactionReceipt approveReceipt = rlcService.getRlc().approve(iexecHubService.getIexecHub().getContractAddress(), approveAmount).send();
