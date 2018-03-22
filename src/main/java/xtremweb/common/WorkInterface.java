@@ -211,7 +211,26 @@ public class WorkInterface extends Table {
 		/**
 		 * This is the column index of the command line, if any
 		 */
-		CMDLINE,
+		CMDLINE {
+			/**
+			 * This creates an object from String representation for this column
+			 * value This cleans the parameter to ensure SQL compliance
+			 *
+			 * @param v
+			 * the String representation
+			 * @return a Boolean representing the column value
+			 * @throws Exception
+			 * is thrown on instantiation error
+			 */
+			@Override
+			public String fromString(final String v) {
+				String val = v;
+				val = val.replaceAll("[\\n\'\"]+", "_");
+				val = val.replaceAll("&amp;", "&");
+				val = val.replaceAll("&", "&amp;");
+				return val;
+			}
+		},
 		/**
 		 * This is the column index of the stdin data URI, if any If not set,
 		 * this is replaced by AppInterface#DEFAULTSTDINURI
