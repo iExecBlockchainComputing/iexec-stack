@@ -102,7 +102,7 @@ services:
       - iexec-net
 
   db-viewer:
-    image: adminer
+    image: adminer:4.6.2
     restart: always
     ports:
       - 8080:8080
