@@ -47,9 +47,6 @@ import xtremweb.security.XWAccessRights;
  *
  * @author <a href="mailto:lodygens /at\ .in2p3.fr>Oleg Lodygensky</a>
  * @version %I%, %G%
- */
-
-/**
  * This describes an XtremWeb work. <br />
  * This describes a row of the works SQL table on server side.<br />
  * This aims to transfer work through the network too.
@@ -1614,7 +1611,7 @@ public class WorkInterface extends Table {
         return 0;
     }
 	/**
-	 * This retrieves the environment ID, if not set  this call setEnvId(0) and returns 0
+	 * This retrieves the environment ID, if not set  this call setEnvId(1) and returns 1
 	 *
 	 * @since 13.0.0
 	 * @return this attribute
@@ -1624,8 +1621,8 @@ public class WorkInterface extends Table {
 		if (ret != null) {
 			return ret.intValue();
 		}
-		setEnvId(0);
-		return 0;
+		setEnvId(1);
+		return 1;
 	}
 
 	/**
