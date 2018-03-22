@@ -121,6 +121,11 @@ public class XWTools {
 	 */
 	public static final int LONGFILESIZE = 250 * 1024;
 	/**
+	 * This is the maximum amount of rows returned by an SQL statement
+	 * @since 12.2.10
+	 */
+	public static final int MAXDBREQUESTLIMIT = 1000;
+	/**
 	 * This defines the maximum amount of messages in one single socket. The
 	 * server automatically closes socket when this limit is reached. This
 	 * ensures that client do not block a socket for too long since the server

@@ -538,8 +538,8 @@ public final class XWConfigurator extends Properties {
 	 */
 	public int requestLimit() {
 		int ret =  getInt(XWPropertyDefs.DBREQUESTLIMIT);
-		if (ret > 1000) {
-		    ret = 1000;
+		if (ret > XWTools.MAXDBREQUESTLIMIT) {
+		    ret = XWTools.MAXDBREQUESTLIMIT;
 		}
 		return ret;
 	}
