@@ -46,9 +46,9 @@ public class WorkerPoolService {
     }
 
     private void loadWorkerPool() {
-        log.info("SCHEDLR loading workerPool " + poolConfig.getAddress());
         this.workerPool = WorkerPool.load(
                 poolConfig.getAddress(), web3j, credentialsService.getCredentials(), ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT);
+        log.info("Load contract WorkerPool [address:{}] ", poolConfig.getAddress());
     }
 
     private void setupWorkerPool(WorkerPool workerPool) {
@@ -70,7 +70,7 @@ public class WorkerPoolService {
     }
 
     private void updateWorkerPoolPolicy(WorkerPool workerPool) throws Exception {
-        log.info("SCHEDLR pool policy needs changes?");
+        boolean updated = false;
         if (!poolConfig.getStakeRatioPolicy().equals(workerPool.m_stakeRatioPolicy().send()) ||
                 !poolConfig.getSchedulerRewardRatioPolicy().equals(workerPool.m_schedulerRewardRatioPolicy().send()) ||
                 !poolConfig.getSubscriptionMinimumStakePolicy().equals(workerPool.m_subscriptionMinimumStakePolicy().send()) ||
@@ -81,10 +81,9 @@ public class WorkerPoolService {
                     poolConfig.getResultRetentionPolicy(),
                     poolConfig.getSubscriptionMinimumStakePolicy(),
                     poolConfig.getSubscriptionMinimumScorePolicy()).send();
-            log.info("SCHEDLR yes");
-        } else {
-            log.info("SCHEDLR no");
+            updated = true;
         }
+        log.info("PoolPolicy updated [updated:{}]", updated);
     }
 
     private void updateAuthorizedList(AuthorizedList workerAuthorizedList) throws Exception {
@@ -93,70 +92,68 @@ public class WorkerPoolService {
         }
 
         //TODO - Make possible to unblacklist an ex-blacklisted worker (and do the same for whitelisting feature)
-        log.info("SCHEDLR authorizedList needs changes?");
+        boolean updated = false;
         for (String worker : poolConfig.getList()) {//update hole list if one worker is not whitelisted
             if (poolConfig.getMode().equals(PolicyEnum.WHITELIST) && !workerAuthorizedList.isWhitelisted(worker).send()) {
                 workerAuthorizedList.updateWhitelist(poolConfig.getList(), true).send();
-                log.info("SCHEDLR yes");
-                return;
+                updated = true;
+                break;
             } else if (poolConfig.getMode().equals(PolicyEnum.BLACKLIST) && !workerAuthorizedList.isblacklisted(worker).send()) {
                 workerAuthorizedList.updateBlacklist(poolConfig.getList(), true).send();
-                log.info("SCHEDLR yes");
-                return;
+                updated = true;
+                break;
             }
         }
-        log.info("SCHEDLR no");
+        log.info("WorkerAuthorizedList updated [updated:{}]", updated);
     }
 
     private void watchWorkerPoolPolicy(WorkerPool workerPool) {
-        log.info("SCHEDLR watching WorkerPoolPolicyUpdateEvent");
         workerPool.workerPoolPolicyUpdateEventObservable(ethConfig.getStartBlockParameter(), DefaultBlockParameterName.LATEST)
                 .subscribe(workerPoolPolicyUpdateEvent -> {
-                    log.info("SCHEDLR received WorkerPoolPolicyUpdateEvent (newSchedulerRewardRatioPolicy,..)");
+                    log.info("Received WorkerPoolPolicyUpdateEvent");
                 });
     }
 
     private void watchPolicyChange(AuthorizedList authorizedList) {
-        log.info("SCHEDLR watching PolicyChangeEvent (black/whitelist)");
         authorizedList.policyChangeEventObservable(ethConfig.getStartBlockParameter(), DefaultBlockParameterName.LATEST)
                 .subscribe(policyChangeEvent -> {
-                    log.info("SCHEDLR received policyChangeEvent (black/whitelist) on workerpool from " + policyChangeEvent.oldPolicy + " to " + policyChangeEvent.newPolicy);
+                    log.info("Received PolicyChangeEvent on WorkerAuthorizedList [oldPolicy:{}, newPolicy:{}]",
+                            policyChangeEvent.oldPolicy, policyChangeEvent.newPolicy);
                 });
     }
 
     private void watchBlacklistChange(AuthorizedList authorizedList) {
-        log.info("SCHEDLR watching BlacklistChangeEvent (0xbadworker,..)");
         authorizedList.blacklistChangeEventObservable(ethConfig.getStartBlockParameter(), DefaultBlockParameterName.LATEST)
                 .subscribe(blacklistChangeEvent -> {
-                    log.info("SCHEDLR received BlacklistChangeEvent: " + blacklistChangeEvent.actor + " listed " + blacklistChangeEvent.isBlacklisted);
+                    log.info("Received BlacklistChangeEvent on WorkerAuthorizedList [actor:{}, isBlacklisted:{}]",
+                            blacklistChangeEvent.actor, blacklistChangeEvent.isBlacklisted);
                 });
     }
 
     private void watchWhitelistChange(AuthorizedList authorizedList) {
-        log.info("SCHEDLR watching WhitelistChangeEvent (0xgoodworker,..)");
         authorizedList.whitelistChangeEventObservable(ethConfig.getStartBlockParameter(), DefaultBlockParameterName.LATEST)
                 .subscribe(whitelistChangeEvent -> {
-                    log.info("SCHEDLR received WhitelistChangeEvent: " + whitelistChangeEvent.actor + " listed " + whitelistChangeEvent.isWhitelisted);
+                    log.info("Received WhitelistChangeEvent on WorkerAuthorizedList [actor:{}, isBlacklisted:{}]",
+                            whitelistChangeEvent.actor, whitelistChangeEvent.isWhitelisted);
                 });
     }
 
     private void startWatchers() {
-        log.info("SCHEDLR watching ContributeEvent (auto revealConsensus)");
         this.workerPool.contributeEventObservable(ethConfig.getStartBlockParameter(), END)
                 .subscribe(this::onContributeEvent);
-        log.info("SCHEDLR watching RevealEvent (auto finalizeWork)");
         this.workerPool.revealEventObservable(ethConfig.getStartBlockParameter(), END)
                 .subscribe(this::onReveal);
     }
 
     private void onContributeEvent(WorkerPool.ContributeEventResponse contributeEvent) {
-        log.info("SCHEDLR received ContributeEvent " + contributeEvent.woid + " of worker " + contributeEvent.worker);
+        log.info("Received ContributeEvent [woid:{}, worker:{}]",
+                contributeEvent.woid, contributeEvent.worker);
         workerPoolWatcher.onContributeEvent(contributeEvent);
     }
 
 
     private void onReveal(WorkerPool.RevealEventResponse revealEvent) {
-        log.info("SCHEDLR received RevealEvent: " + Numeric.toHexString(revealEvent.result));
+        log.info("Received RevealEvent [result:{}]", Numeric.toHexString(revealEvent.result));
         workerPoolWatcher.onReveal(revealEvent);
     }
 

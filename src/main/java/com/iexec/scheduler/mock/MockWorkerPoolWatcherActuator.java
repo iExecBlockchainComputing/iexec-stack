@@ -45,7 +45,6 @@ public class MockWorkerPoolWatcherActuator implements WorkerPoolWatcher {
     public void onContributeEvent(WorkerPool.ContributeEventResponse contributeEvent) {
         Contribution contribution = new Contribution(contributeEvent.woid, contributeEvent.worker, contributeEvent.resultHash);
         contributionService.addContribution(contribution);
-        log.info("SCHEDLR checking if consensus worker contributed (or timeout) reached?");
         if (contributionService.hasAllWorkerContributed(contributeEvent.woid)) { //TODO - add contribute timeout
             actuatorService.revealConsensus(contributeEvent, hashResult(mockConfig.getWorkerResult()));
         }
@@ -55,7 +54,6 @@ public class MockWorkerPoolWatcherActuator implements WorkerPoolWatcher {
     public void onReveal(WorkerPool.RevealEventResponse revealEvent) {
         if (!revealed.contains(revealEvent.woid)){
             revealed.add(revealEvent.woid);
-            log.info("SCHEDLR finalizeWork");
             actuatorService.finalizeWork(revealEvent, mockConfig.getFinalizeWork().getStdout(),
                     mockConfig.getFinalizeWork().getStderr(),
                     mockConfig.getFinalizeWork().getUri());
