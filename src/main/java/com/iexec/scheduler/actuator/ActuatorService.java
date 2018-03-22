@@ -75,14 +75,14 @@ public class ActuatorService implements Actuator {
 
 
     @Override
-    public TransactionStatus callForContributions(String woid,
+    public TransactionStatus callForContributions(String workOrderId,
                                                   List<String> workers,
                                                   String enclaveChallenge) {
         try {
             TransactionReceipt callForContributionsReceipt = workerPoolService.getWorkerPool()
-                    .callForContributions(woid, workers, enclaveChallenge).send();
-            log.info("CallForContributions [woid:{}, workers:{}, enclaveChallenge:{}, transactionStatus:{}] ",
-                    woid, workers.toString(), enclaveChallenge, getStatus(callForContributionsReceipt));
+                    .callForContributions(workOrderId, workers, enclaveChallenge).send();
+            log.info("CallForContributions [workOrderId:{}, workers:{}, enclaveChallenge:{}, transactionStatus:{}] ",
+                    workOrderId, workers.toString(), enclaveChallenge, getStatus(callForContributionsReceipt));
             return getStatus(callForContributionsReceipt);
         } catch (Exception e) {
             e.printStackTrace();

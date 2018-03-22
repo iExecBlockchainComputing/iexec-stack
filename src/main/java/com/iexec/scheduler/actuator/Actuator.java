@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface Actuator {
 
-    TransactionStatus callForContributions(String woid,
+    TransactionStatus callForContributions(String workOrderId,
                                            List<String> workers,
                                            String enclaveChallenge);
 
