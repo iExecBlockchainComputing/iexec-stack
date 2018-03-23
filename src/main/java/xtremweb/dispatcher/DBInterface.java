@@ -1095,7 +1095,7 @@ public final class DBInterface {
      */
     protected EnvelopeInterface envelope(final UserInterface u, final String conditions) throws IOException {
         final EnvelopeInterface row = readableEnvelope(u);
-        return selectOne(row);
+        return selectOne(row, conditions);
     }
 
     /**
@@ -3844,29 +3844,29 @@ public final class DBInterface {
      *                is thrown on credential error
      * @exception AccessControlException
      *                is thrown on access rights violation
-     * @since 13.1.0
+     * @since 13.0.0
      */
-    public WorkInterface getEnvelopeById(final XMLRPCCommand command)
+    public EnvelopeInterface getEnvelopeById(final XMLRPCCommand command)
             throws IOException, InvalidKeyException, AccessControlException {
 
-        final UserInterface theClient = checkClient(command, UserRightEnum.GETJOB);
+        final UserInterface theClient = checkClient(command, UserRightEnum.GETENVELOPE);
         final URI uri = command.getURI();
-        final String extId = uri.getPath().substring(1, uri.getPath().length());
+        final String id = uri.getPath().substring(1, uri.getPath().length());
 
-        final WorkInterface theWorkById = work(theClient,
-                WorkInterface.Columns.SGID.toString() + "='" + extId + "'");
+        final EnvelopeInterface theEnvelope = envelope(theClient,
+                EnvelopeInterface.Columns.ENVID.toString() + "='" + id + "'");
 
-        if (theWorkById == null) {
+        if (theEnvelope == null) {
             return null;
         }
 
-        final UserInterface owner = user(theWorkById.getOwner());
+        final UserInterface owner = user(theEnvelope.getOwner());
         final UID ownerGroup = (owner == null ? null : owner.getGroup());
-        if (!theWorkById.canRead(theClient, ownerGroup)
+        if (!theEnvelope.canRead(theClient, ownerGroup)
                 && theClient.getRights().lowerThan(UserRightEnum.SUPER_USER)) {
-            throw new AccessControlException(theClient.getLogin() + " can't read " + extId);
+            throw new AccessControlException(theClient.getLogin() + " can't read " + id);
         }
-        return theWorkById;
+        return theEnvelope;
     }
 
     /**
@@ -5114,32 +5114,52 @@ public final class DBInterface {
 		return work.getStatus();
 	}
 
-	/**
-	 * This retrieves works UIDs for the specified client. Since 7.0.0 non
-	 * privileged users get their own jobs only
-	 *
-	 * @param command is the command to execute
-	 * @return null on error; a Collection of UID otherwise
-	 * @exception IOException
-	 *                is thrown general error
-	 * @exception InvalidKeyException
-	 *                is thrown on credential error
-	 * @exception AccessControlException
-	 *                is thrown on access rights violation
-	 */
-	public Collection<UID> getAllJobs(final XMLRPCCommand command)
-			throws IOException, InvalidKeyException, AccessControlException {
+    /**
+     * This retrieves works UIDs for the specified client. Since 7.0.0 non
+     * privileged users get their own jobs only
+     *
+     * @param command is the command to execute
+     * @return null on error; a Collection of UID otherwise
+     * @exception IOException
+     *                is thrown general error
+     * @exception InvalidKeyException
+     *                is thrown on credential error
+     * @exception AccessControlException
+     *                is thrown on access rights violation
+     */
+    public Collection<UID> getAllJobs(final XMLRPCCommand command)
+            throws IOException, InvalidKeyException, AccessControlException {
 
-		final UserInterface theClient = checkClient(command, UserRightEnum.LISTJOB);
-		final StatusEnum status = ((XMLRPCCommandGetWorks) command).getStatus();
+        final UserInterface theClient = checkClient(command, UserRightEnum.LISTJOB);
+        final StatusEnum status = ((XMLRPCCommandGetWorks) command).getStatus();
 
-		if (theClient.getRights().higherOrEquals(UserRightEnum.ADVANCED_USER)) {
-			return worksUID(theClient, status);
-		}
-		return ownerWorksUID(theClient, status);
-	}
+        if (theClient.getRights().higherOrEquals(UserRightEnum.ADVANCED_USER)) {
+            return worksUID(theClient, status);
+        }
+        return ownerWorksUID(theClient, status);
+    }
 
-	/**
+    /**
+     * This retrieves envelopes UID
+     *
+     * @param command is the command to execute
+     * @return null on error; a Collection of UID otherwise
+     * @exception IOException
+     *                is thrown general error
+     * @exception InvalidKeyException
+     *                is thrown on credential error
+     * @exception AccessControlException
+     *                is thrown on access rights violation
+     * @since 13.0.0
+     */
+    public Collection<UID> getAllEnvelopes(final XMLRPCCommand command)
+            throws IOException, InvalidKeyException, AccessControlException {
+
+        final UserInterface theClient = checkClient(command, UserRightEnum.LISTENVELOPE);
+            return envelopesUID(theClient);
+    }
+
+    /**
 	 * This checks client rights and returns getJob(UserInterface, UID)
 	 *
 	 * @see #getJob(XMLRPCCommand)
