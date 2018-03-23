@@ -4849,14 +4849,11 @@ public final class DBInterface {
 		}
 
 		final Long wct = config.getLong(XWPropertyDefs.WALLCLOCKTIMEVALUE);
-		System.out.println("DBInterface#addWork update work wct = " + wct);
 		if (wct > 0) {
 			if ((receivedJob.getMaxWallClockTime() <= 0) || (receivedJob.getMaxWallClockTime() > wct)) {
-				System.out.println("DBInterface#addWork update work receivedJob.setWallClocktime("+wct+")");
 				receivedJob.setMaxWallClockTime(wct);
 			}
 		}
-		System.out.println("DBInterface#addWork update work receivedJob = " + receivedJob.toXml());
 		if ((receivedJob.getMinMemory() == 0) || (receivedJob.getMinMemory() < theApp.getMinMemory())) {
 			receivedJob.setMinMemory(theApp.getMinMemory());
 		}

@@ -791,10 +791,6 @@ public class WorkInterface extends Table {
 		} catch (final Exception e) {
 		}
 		try {
-			setDiskSpace((Long) Columns.DISKSPACE.fromResultSet(rs));
-		} catch (final Exception e) {
-		}
-		try {
 			setMinCpuSpeed((Integer) Columns.MINCPUSPEED.fromResultSet(rs));
 		} catch (final Exception e) {
 		}
@@ -804,6 +800,10 @@ public class WorkInterface extends Table {
 		}
         try {
             setMaxWallClockTime((Long) Columns.MAXWALLCLOCKTIME.fromResultSet(rs));
+        } catch (final Exception e) {
+        }
+        try {
+            setMinFreeMassStorage((Long) Columns.MINFREEMASSSTORAGE.fromResultSet(rs));
         } catch (final Exception e) {
         }
         try {
@@ -1053,6 +1053,7 @@ public class WorkInterface extends Table {
         setMinMemory(itf.getMinMemory());
         setMaxMemory(itf.getMaxMemory());
         setMaxCpuSpeed(itf.getMaxCpuSpeed());
+        setMinFreeMassStorage(itf.getMinFreeMassStorage());
         setMaxFreeMassStorage(itf.getMaxFreeMassStorage());
 		setMinCpuSpeed(itf.getMinCpuSpeed());
 		setStatus(itf.getStatus());
@@ -1065,7 +1066,6 @@ public class WorkInterface extends Table {
 		setCompEndDate(itf.getCompEndDate());
 		setRetry(itf.getRetry());
 		setListenPort(itf.getListenPort());
-		setDiskSpace(itf.getDiskSpace());
 	}
 
 	/**
@@ -1245,8 +1245,7 @@ public class WorkInterface extends Table {
 	}
 
 	/**
-	 * This retrieves the wallclocktime attribute. If it is not set, it is forced its
-	 * default value
+	 * This retrieves the wallclocktime attribute. If it is not set, this returns 0
 	 *
 	 * @return the wall clock time in seconds
 	 * @since 8.2.0
@@ -1256,9 +1255,7 @@ public class WorkInterface extends Table {
 		if (ret != null) {
 			return ret.longValue();
 		}
-		final Long def = Long.parseLong(XWPropertyDefs.WALLCLOCKTIMEVALUE.defaultValue());
-		setMaxWallClockTime(def);
-		return def;
+		return 0L;
 	}
 
 	/**
@@ -1575,8 +1572,20 @@ public class WorkInterface extends Table {
 		return 0;
 	}
     /**
+     * This retrieves the min needed mass storage usage
+     * @return this attribute, or 0 if not set
+     * @since 13.0.0
+     */
+    public final long getMinFreeMassStorage() {
+        final Long ret = (Long) getValue(Columns.MINFREEMASSSTORAGE);
+        if (ret != null) {
+            return ret.longValue();
+        }
+        return 0L;
+    }
+    /**
      * This retrieves the max authorized mass storage usage
-     * @return this attribute
+     * @return this attribute, or 0 if not set
      * @since 13.0.0
      */
     public final long getMaxFreeMassStorage() {
@@ -1991,50 +2000,28 @@ public class WorkInterface extends Table {
 	/**
 	 * This sets the minimal amount of RAM this work needs, in Kb. Provided
 	 * value must be positive and can not exceed XWPropertyDefs.MAXRAMSPACE.
-	 * If(v > XWPropertyDefs.MAXDISKSPACE) v is forced to
-	 * XWPropertyDefs.MAXDISKSPACE. If(v < 0) v is forced to 0.
 	 *
 	 * @param v
 	 *            is the minimal amount of RAM this work needs in Kb
 	 * @return true if value has changed, false otherwise
-	 * @see XWPropertyDefs#MAXRAMSPACE
 	 */
-	public final boolean setMinMemory(final int v) {
+	public final boolean setMinMemory(final long v) {
 		try {
-			final String sysValueStr = System.getProperty(XWPropertyDefs.MAXRAMSPACE.toString());
-			final String maxValueStr = sysValueStr == null ? XWPropertyDefs.MAXRAMSPACE.defaultValue() : sysValueStr;
-			final int maxValue = Integer.valueOf(maxValueStr);
-			final int value = v > maxValue ? maxValue : v;
-			return setValue(Columns.MINMEMORY, Integer.valueOf(value < 0 ? 0 : value));
+			final long maxMemory = getMaxMemory();
+			final long valeur = (v < 0 ? 0 : v);
+			return setValue(Columns.MINMEMORY, (valeur > maxMemory ? maxMemory : valeur));
 		} catch (final Exception e) {
 			return setValue(Columns.MINMEMORY, 0);
 		}
 	}
-
-	/**
-	 * This sets the minimal amount of disk this work needs, in Mb. Provided
-	 * value must be positive and can not exceed XWPropertyDefs.MAXDISKSPACE.
-	 * If(v > XWPropertyDefs.MAXDISKSPACE) v is forced to
-	 * XWPropertyDefs.MAXDISKSPACE. If(v < 0) v is forced to 0.
-	 *
-	 * @param v
-	 *            is the disk space in Mb.
-	 * @return true if value has changed, false otherwise
-	 * @since 8.0.0
-	 * @see XWPropertyDefs#MAXDISKSPACE
-	 */
-	public final boolean setDiskSpace(final long v) {
-		try {
-			final String sysValueStr = System.getProperty(XWPropertyDefs.MAXDISKSPACE.toString());
-			final String maxValueStr = sysValueStr == null ? XWPropertyDefs.MAXDISKSPACE.defaultValue() : sysValueStr;
-			final long maxValue = Long.valueOf(maxValueStr);
-			final long value = v > maxValue ? maxValue : v;
-			setValue(Columns.MINFREEMASSSTORAGE, Long.valueOf(value < 0L ? 0L : value));
-			return setValue(Columns.DISKSPACE, Long.valueOf(value < 0L ? 0L : value));
-		} catch (final Exception e) {
-			return setValue(Columns.DISKSPACE, 0L);
-		}
-	}
+    /**
+     * This sets the min needed mass storage usage
+     * @return true if value has changed, false otherwise
+     * @since 13.0.0
+     */
+    public final boolean setMinFreeMassStorage(final long v) {
+        return setValue(Columns.MINFREEMASSSTORAGE, Long.valueOf(v < 0L ? 0L : v));
+    }
     /**
      * This sets the max authorized mass storage usage
      * This is automatically set by the scheduler based on the environment
