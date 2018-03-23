@@ -1083,6 +1083,20 @@ public final class DBInterface {
     }
 
     /**
+     * This retrieves a Envelope from DB by its ID
+     *
+     * @param u
+     *            is the requesting user
+     * @param id is the envelope ID
+     * @return the last loaded row
+     * @since 13.0.0
+     */
+    protected EnvelopeInterface envelope(final UserInterface u, final int id) throws IOException {
+        final EnvelopeInterface row = readableEnvelope(u);
+        return selectOne(row, "maintable.envid='" + id + "'");
+    }
+
+    /**
      * This retrieves a Envelope from DB for the requesting user according to
      * conditions. Envelope access rights are checked.
      *
@@ -4853,7 +4867,10 @@ public final class DBInterface {
 			receivedJob.setDiskSpace(theApp.getMinFreeMassStorage());
 		}
 
-		final WorkInterface theWork = work(mandatingClient, jobUID);
+        final int envelopeId = receivedJob.getEnvId();
+        final EnvelopeInterface envelopeItf = select(new EnvelopeInterface(), "maintable.envid='" + envelopeId + "'");
+
+        final WorkInterface theWork = work(mandatingClient, jobUID);
 		if (theWork != null) {
 			if (theWork.canWrite(mandatingClient, appOwnerGroup) || clientRights.higherOrEquals(UserRightEnum.WORKER_USER)) {
 

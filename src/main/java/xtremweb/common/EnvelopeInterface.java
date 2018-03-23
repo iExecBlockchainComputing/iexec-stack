@@ -34,8 +34,7 @@ import java.sql.ResultSet;
 
 /**
  * This class describes a row of the envs SQL table.
- * Created: Mar 21st, 2018
- *
+ * Please note that an envelope is always public
  * @author <a href="mailto:lodygens /at\ .in2p3.fr>Oleg Lodygensky</a>
  * @version %I%, %G%
  * @since 13.0.0
@@ -244,7 +243,7 @@ public final class EnvelopeInterface extends Table {
 	private static final int ENUMSIZE = Columns.values().length;
 
 	/**
-	 * This is the default constructor
+	 * This is the default constructor. Access rights are set to public
 	 */
 	public EnvelopeInterface() {
 
@@ -339,7 +338,7 @@ public final class EnvelopeInterface extends Table {
 	}
 
 	/**
-	 * This fills columns from DB
+	 * This fills columns from DB. Access rights are set to public
 	 *
 	 * @param rs
 	 *            is the SQL data set
@@ -351,7 +350,7 @@ public final class EnvelopeInterface extends Table {
 		try {
 			setUID((UID) TableColumns.UID.fromResultSet(rs));
             setOwner((UID) TableColumns.OWNERUID.fromResultSet(rs));
-            setAccessRights((XWAccessRights) TableColumns.ACCESSRIGHTS.fromResultSet(rs));
+            setAccessRights(XWAccessRights.DEFAULT);
             setErrorMsg( (String)TableColumns.ERRORMSG.fromResultSet(rs));
 			setName((String) Columns.NAME.fromResultSet(rs));
             setEnvId((Integer) Columns.ENVID.fromResultSet(rs));
@@ -385,7 +384,7 @@ public final class EnvelopeInterface extends Table {
         }
     }
 	/**
-	 * This updates this object from interface.
+	 * This updates this object from interface. Access rights are set to public
 	 */
 	@Override
 	public void updateInterface(final Table appitf) throws IOException {
@@ -393,9 +392,7 @@ public final class EnvelopeInterface extends Table {
 		if (itf.getName() != null) {
 			setName(itf.getName());
 		}
-		if (itf.getAccessRights() != null) {
-			setAccessRights(itf.getAccessRights());
-		}
+		setAccessRights(XWAccessRights.DEFAULT);
 		if (itf.getMaxMemory() != 0) {
 			setMaxMemory(itf.getMaxMemory());
 		}
