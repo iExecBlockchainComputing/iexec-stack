@@ -8,9 +8,7 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
-@Configuration
-@ConfigurationProperties(prefix = "workerpool")
-@ResponseBody
+
 public class WorkerPoolConfig {
 
     private List<String> list;

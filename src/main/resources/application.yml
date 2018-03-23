@@ -1,26 +1,18 @@
-server:
-  port: 8080 #8080 is default
-  contextPath: /
-
-web3j:
-  client-address: ${ethNode:http://localhost:8545} #default
-  admin-client: false #default
-
-ethereum:
+web3jConfig:
+  clientAddress: http://localhost:8545 #default
+  adminClient: false #default
   startBlock: 0
-  rlcAddress: ${rlc:0x9a387bc37fe3cf411dfcd0721e34eac2e35fa46a}
-  iexecHubAddress: ${iexecHub:0x4ec80e6943278e5be4ca5dbd4361e8a46966393d}
+contractConfig:
+  rlcAddress: 0x480814b6baddf1022e01f78013e58c477ee196ac
+  iexecHubAddress: 0xdbd90c7f5123f1cd9911810061846915ef2b9cf8
 
-wallet:
-    folder: "./src/main/resources/wallet"
-
-scheduler:
+walletConfig:
   address: "0x8bd535d49b095ef648cd85ea827867d358872809"
-  wallet:
-    filename: "UTC--2018-02-14T08-32-12.500000000Z--8bd535d49b095ef648cd85ea827867d358872809.json"
-    password: "whatever"
+  folder: "./iexec-scheduler/src/main/resources/wallet"
+  filename: "UTC--2018-02-14T08-32-12.500000000Z--8bd535d49b095ef648cd85ea827867d358872809.json"
+  password: "whatever"
 
-workerpool:
+workerPoolConfig:
   address:  #leave blank will create a new workerpool (else plug scheduler to existing one)
   name: "myWorkerPool"              #unchangeable after creation
   subscriptionLockStakePolicy: 0    #unchangeable after creation

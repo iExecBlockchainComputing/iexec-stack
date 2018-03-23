@@ -12,30 +12,32 @@ import org.web3j.tx.ManagedTransaction;
 
 import javax.annotation.PostConstruct;
 
-@Service
+
 public class RlcService {
+
+    /*
 
     private static final Logger log = LoggerFactory.getLogger(RlcService.class);
     private final Web3j web3j;
     private final CredentialsService credentialsService;
-    private final EthConfig ethConfig;
+    private final Web3jConfig web3jConfig;
     private RLC rlc;
 
     @Autowired
-    public RlcService(Web3j web3j, CredentialsService credentialsService, EthConfig ethConfig) {
+    public RlcService(Web3j web3j, CredentialsService credentialsService, Web3jConfig web3jConfig) {
         this.credentialsService = credentialsService;
         this.web3j = web3j;
-        this.ethConfig = ethConfig;
+        this.web3jConfig = web3jConfig;
     }
 
     @PostConstruct
     public void run() throws Exception {
         rlc = RLC.load(
-                ethConfig.getRlcAddress(), web3j, credentialsService.getCredentials(), ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT);
+                web3jConfig.getRlcAddress(), web3j, credentialsService.getCredentials(), ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT);
     }
 
     public RLC getRlc() {
         return this.rlc;
-    }
+    }*/
 
 }

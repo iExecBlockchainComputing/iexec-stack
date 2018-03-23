@@ -1,35 +1,44 @@
 package com.iexec.scheduler.ethereum;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.web3j.crypto.CipherException;
 import org.web3j.crypto.Credentials;
 import org.web3j.crypto.WalletUtils;
 
-import javax.annotation.PostConstruct;
+import java.io.IOException;
 
 @Service
 public class CredentialsService {
 
+    private static CredentialsService instance;
     private Credentials credentials;
+    private static WalletConfig walletConfig;
 
-    @Value("${wallet.folder}")
-    private String walletFolder;
-    @Value("${scheduler.wallet.filename}")
-    private String schedulerWalletFilename;
-    @Value("${scheduler.wallet.password}")
-    private String schedulerWalletPassword;
-
-    @Autowired
-    public CredentialsService() {
+    public static CredentialsService getInstance() {
+        if (instance==null){
+            instance = new CredentialsService();
+        }
+        return instance;
     }
 
-    @PostConstruct
-    public void run() throws Exception {
-        credentials = WalletUtils.loadCredentials(schedulerWalletPassword, walletFolder + "/" + schedulerWalletFilename);
+    private CredentialsService() {
+        walletConfig = ConfigurationService.getInstance().getConfiguration().getWalletConfig();
+        try {
+            credentials = WalletUtils.loadCredentials(walletConfig.getPassword(), walletConfig.getFolder() + "/" + walletConfig.getFilename());
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (CipherException e) {
+            e.printStackTrace();
+        }
     }
 
     public Credentials getCredentials() {
         return credentials;
     }
+
+    public static void main(String[] args) {
+        ConfigurationService.getInstance().setConfigPath("./iexec-scheduler/src/main/resources/application.yml");
+        System.out.println(CredentialsService.getInstance().getCredentials().getAddress());
+    }
+
 }

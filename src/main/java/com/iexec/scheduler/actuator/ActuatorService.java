@@ -21,8 +21,9 @@ import java.util.List;
 import static com.iexec.scheduler.ethereum.Utils.getStatus;
 
 @Service
-public class ActuatorService implements Actuator {
+public class ActuatorService {//implements Actuator {
 
+    /*
     private static final Logger log = LoggerFactory.getLogger(ActuatorService.class);
     private final IexecHubService iexecHubService;
     private final WorkerPoolService workerPoolService;
@@ -42,7 +43,7 @@ public class ActuatorService implements Actuator {
     public TransactionStatus emitMarketOrder(BigInteger category, BigInteger trust, BigInteger value, BigInteger volume) {
         //TODO - emitMarketOrder if n workers are alive (not subscribed, means nothing)
         try {
-            Float deposit = (workerPoolService.getPoolConfig().getStakeRatioPolicy().floatValue() / 100) * value.floatValue();//(30/100)*100
+            Float deposit = (workerPoolService.getWorkerPoolConfig().getStakeRatioPolicy().floatValue() / 100) * value.floatValue();//(30/100)*100
             BigInteger depositAmount = BigDecimal.valueOf(deposit).toBigInteger();
             BigInteger approveAmount = BigInteger.valueOf(100);//should be the same than deposit, Poco needs changes
             TransactionReceipt approveReceipt = rlcService.getRlc().approve(iexecHubService.getIexecHub().getContractAddress(), approveAmount).send();
@@ -57,7 +58,7 @@ public class ActuatorService implements Actuator {
                     category,
                     trust,
                     value,
-                    workerPoolService.getPoolConfig().getAddress(),
+                    workerPoolService.getWorkerPoolConfig().getAddress(),
                     volume
             ).send();
             log.info("EmitMarketOrder [category:{}, trust:{}, value:{}, volume:{}, transactionStatus:{}] ",
@@ -117,6 +118,6 @@ public class ActuatorService implements Actuator {
             e.printStackTrace();
         }
         return TransactionStatus.FAILURE;
-    }
+    }*/
 
 }

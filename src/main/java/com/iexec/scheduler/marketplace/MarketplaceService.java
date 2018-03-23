@@ -2,7 +2,6 @@ package com.iexec.scheduler.marketplace;
 
 import com.iexec.scheduler.contracts.generated.Marketplace;
 import com.iexec.scheduler.ethereum.CredentialsService;
-import com.iexec.scheduler.ethereum.EthConfig;
 import com.iexec.scheduler.iexechub.IexecHubService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,9 +13,10 @@ import org.web3j.tx.ManagedTransaction;
 
 import javax.annotation.PostConstruct;
 
-@Service
+
 public class MarketplaceService {
 
+    /*
     private static final Logger log = LoggerFactory.getLogger(MarketplaceService.class);
     private final Web3j web3j;
     private final CredentialsService credentialsService;
@@ -40,4 +40,6 @@ public class MarketplaceService {
     public Marketplace getMarketplace() {
         return marketplace;
     }
+
+    */
 }
