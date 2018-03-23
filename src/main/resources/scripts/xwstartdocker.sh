@@ -238,7 +238,12 @@ ENVFILENAME="/tmp/env_${XWJOBUID}.list"
 printenv | grep -vE "HOSTNAME|TERM|LS_COLORS|PATH|PWD|SHLVL|HOME|_|SHELL|TERM|SSH|LC_|LANG|LOG|XDG_RUNTIME_DIR|LESS|USER|MAIL"> ${ENVFILENAME}
 #info "run docker from docker"
 #info "docker run -v $(pwd):/host -w /host --rm --name ${CONTAINERNAME} ${IMAGENAME} ${ARGS}"
-docker run -v $(pwd):/host -w /host --rm --name ${CONTAINERNAME} --env-file ${ENVFILENAME} ${IMAGENAME} ${ARGS}
+#docker run -v $(pwd):/host -w /host --rm --name ${CONTAINERNAME} --env-file ${ENVFILENAME} ${IMAGENAME} ${ARGS}
+docker run -v $(pwd):/host -w /host --rm --name ${CONTAINERNAME} --env-file ${ENVFILENAME} ${IMAGENAME} ${ARGS} 2>&1 |  grep -vE "Unable to find image|Pulling from|Pull complete|Digest:|Status:|: Pulling fs layer|: Verifying Checksum|: Download complete"
+
+#docker run --rm  debian echo toto 2>&1 | grep -vE "Unable to find image|Pulling from|Pull complete|Digest:|Status:|: Pulling fs layer|: Verifying Checksum|: Download complete"
+
+
 
 rm ${ENVFILENAME}
 
