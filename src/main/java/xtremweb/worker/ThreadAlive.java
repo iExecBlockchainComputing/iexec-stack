@@ -380,7 +380,11 @@ public class ThreadAlive extends Thread {
 
 			if (newKeystoreData.getMD5().compareTo(currentKeystoreMD5) != 0) {
 				logger.info("Downloading new keystore");
-				CommManager.getInstance().downloadData(keystoreUri);
+				try {
+					CommManager.getInstance().downloadData(keystoreUri, XWPostParams.MAXUPLOADSIZE, false);
+				} catch(final XWCommException e) {
+					logger.exception(e);
+				}
 				final File newKeystoreFile = CommManager.getInstance().commClient(keystoreUri)
 						.getContentFile(keystoreUri);
 

@@ -466,18 +466,6 @@ public class WorkInterface extends Table {
 			}
 		},
 		/**
-		 * This is the column index of the needed disk space to run job This is
-		 * used when launching a VM; this is in Mb
-		 *
-		 * @since 8.0.0
-		 */
-		DISKSPACE {
-			@Override
-			public Long fromString(final String v) {
-				return Long.valueOf(v);
-			}
-		},
-		/**
 		 * This is the column index of the minimum memory needed to run job for
 		 * this application. This is in Kb
 		 */
@@ -1283,22 +1271,6 @@ public class WorkInterface extends Table {
 		setRetry(0);
 		return 0;
 	}
-
-	/**
-	 * This retrieves the minimal amount of disk spave needed by this work. This
-	 * is in Mb.
-	 *
-	 * @return the attribute or 0 if not set
-	 * @since 8.0.0
-	 */
-	public long getDiskSpace() {
-		final Long ret = (Long) getValue(Columns.DISKSPACE);
-		if (ret != null) {
-			return ret.longValue();
-		}
-		return 0L;
-	}
-
 	/**
 	 * This retrieves the minimal amount of memory needed by this work; if not
 	 * set it is forced to 0. This is in Kb

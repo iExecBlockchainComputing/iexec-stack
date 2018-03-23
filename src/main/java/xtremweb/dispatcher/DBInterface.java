@@ -4848,24 +4848,27 @@ public final class DBInterface {
 			receivedJob.setOwner(mandatingClient.getUID());
 		}
 
-		final Long wct = config.getLong(XWPropertyDefs.WALLCLOCKTIMEVALUE);
-		if (wct > 0) {
-			if ((receivedJob.getMaxWallClockTime() <= 0) || (receivedJob.getMaxWallClockTime() > wct)) {
-				receivedJob.setMaxWallClockTime(wct);
-			}
-		}
 		if ((receivedJob.getMinMemory() == 0) || (receivedJob.getMinMemory() < theApp.getMinMemory())) {
 			receivedJob.setMinMemory(theApp.getMinMemory());
 		}
 		if ((receivedJob.getMinCpuSpeed() == 0) || (receivedJob.getMinCpuSpeed() < theApp.getMinCpuSpeed())) {
 			receivedJob.setMinCpuSpeed(theApp.getMinCpuSpeed());
 		}
-		if ((receivedJob.getDiskSpace() == 0) || (receivedJob.getDiskSpace() < theApp.getMinFreeMassStorage())) {
-			receivedJob.setDiskSpace(theApp.getMinFreeMassStorage());
+		if ((receivedJob.getMinFreeMassStorage() == 0) || (receivedJob.getMinFreeMassStorage() < theApp.getMinFreeMassStorage())) {
+			receivedJob.setMinFreeMassStorage(theApp.getMinFreeMassStorage());
 		}
 
-        final int envelopeId = receivedJob.getEnvId();
-        final EnvelopeInterface envelopeItf = select(new EnvelopeInterface(), "maintable.envid='" + envelopeId + "'");
+        final EnvelopeInterface envelopeItf = select(new EnvelopeInterface(),
+                "maintable.envid='" + receivedJob.getEnvId() + "'");
+
+        if(envelopeItf == null) {
+            throw new IOException("envelope not found " + receivedJob.getEnvId());
+        }
+
+        receivedJob.setMaxWallClockTime(envelopeItf.getMaxWallClockTime());
+        receivedJob.setMaxMemory(envelopeItf.getMaxMemory());
+        receivedJob.setMaxCpuSpeed(envelopeItf.getMaxCpuSpeed());
+        receivedJob.setMaxFreeMassStorage(envelopeItf.getMaxFreeMassStorage());
 
         final WorkInterface theWork = work(mandatingClient, jobUID);
 		if (theWork != null) {

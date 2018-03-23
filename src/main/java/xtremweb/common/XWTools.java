@@ -157,10 +157,10 @@ public class XWTools {
 	 */
 	public static final long TWOGIGABYTES = 2 * ONEGIGABYTES;
 	/**
-	 * This defines file size limit : 500Mb
+	 * This defines file size limit : 50Mb
 	 * @since 12.2.3
 	 */
-	public static final long MAXFILESIZE = 500 * ONEMEGABYTES;
+	public static final long MAXFILESIZE = 50 * ONEMEGABYTES;
 	/**
 	 * This defines the maximum size of work disk space (30Gb)
 	 *

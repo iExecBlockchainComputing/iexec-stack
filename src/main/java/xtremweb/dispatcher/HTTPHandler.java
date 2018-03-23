@@ -241,7 +241,6 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 		 * This writes resource content to the given response. This calls
 		 * writeBinary() for non text resources
 		 *
-		 * @see #writeBinary(HttpServletResponse)
 		 * @param response
 		 *            is the output channel to write to
 		 * @throws IOException
@@ -388,7 +387,7 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 		dataUpload = null;
 		diskFactory = new DiskFileItemFactory();
 		servletUpload = new ServletFileUpload(diskFactory);
-		servletUpload.setSizeMax(getConfig().getLong(XWPropertyDefs.MAXFILESIZE));
+		servletUpload.setSizeMax(XWPostParams.MAXUPLOADSIZE);
 		getLogger().debug("new Thread " + Thread.currentThread().getName());
 	}
 
@@ -407,7 +406,7 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 		dataUpload = null;
 		diskFactory = new DiskFileItemFactory();
 		servletUpload = new ServletFileUpload(diskFactory);
-		servletUpload.setSizeMax(getConfig().getLong(XWPropertyDefs.MAXFILESIZE));
+		servletUpload.setSizeMax(XWPostParams.MAXUPLOADSIZE);
 		getLogger().debug("new Thread " + Thread.currentThread().getName());
 	}
 
@@ -832,7 +831,7 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 	public synchronized void writeFile(final File f) throws IOException {
 		try (final StreamIO io = new StreamIO(new DataOutputStream(response.getOutputStream()), null, false)) {
 			mileStone("<writeFile file='" + f + "'>");
-			io.writeFileContent(f, getConfig().getLong(XWPropertyDefs.MAXFILESIZE));
+			io.writeFileContent(f, XWPostParams.MAXUPLOADSIZE);
 		} catch (final Exception e) {
 			getLogger().exception(e);
 			mileStone("<error method='writeFile' msg='" + e.getMessage() + "' />");
@@ -1585,11 +1584,8 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 	 * Data must be defined on server side (i.e. sendData() must be called
 	 * first)
 	 *
-	 * @param client
-	 *            is the caller attributes
-	 * @param uid
-	 *            is the UID of the data to upload
-	 * @see #sendData(UserInterface, DataInterface)
+	 * @param command
+	 *            is the command
 	 */
 	@Override
 	public synchronized long uploadData(final XMLRPCCommand command)

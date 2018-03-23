@@ -302,12 +302,14 @@ public class ThreadWork extends Thread {
 
 					final String jobuid = currentWork.getUID().toString();
 					addEnvVar(XWJOBUIDNAME, jobuid);
-					addEnvVar(XWCPULOADNAME, "" + Worker.getConfig().getHost().getCpuLoad());
-					if (currentWork.getDiskSpace() > 0) {
-						addEnvVar(XWDISKSPACENAME, "" + currentWork.getDiskSpace());
+					if (currentWork.getMaxFreeMassStorage() > 0) {
+						addEnvVar(XWDISKSPACENAME, "" + currentWork.getMaxFreeMassStorage());
 					}
-					if (currentWork.getMinMemory() > 0) {
-						addEnvVar(XWRAMSIZENAME, "" + currentWork.getMinMemory());
+					if (currentWork.getMaxMemory() > 0) {
+						addEnvVar(XWRAMSIZENAME, "" + currentWork.getMaxMemory());
+					}
+					if (currentWork.getMaxCpuSpeed() > 0) {
+						addEnvVar(XWCPULOADNAME, "" + currentWork.getMaxCpuSpeed());
 					}
 					status = executeJob();
 				} catch (final Throwable e) {
@@ -1138,7 +1140,7 @@ public class ThreadWork extends Thread {
 				final StreamIO io = new StreamIO(output, null, 10240, Worker.getConfig().nio())) {
 
 			logger.debug("installFile = " + fData + " is not a zip file; just copy it to PWD : " + fout);
-			io.writeFileContent(fData);
+			io.writeFileContent(fData, currentWork.getMaxFreeMassStorage());
 			return fout;
 		} finally {
 			CommManager.getInstance().commClient().unlock(uri);
