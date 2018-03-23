@@ -23,16 +23,6 @@
 
 package xtremweb.communications;
 
-/**
- * CommClient.java
- *
- *
- * Created: Jun 2nd, 2005
- *
- * @author Oleg Lodygensky
- * @since RPCXW
- */
-
 import java.io.*;
 import java.net.NoRouteToHostException;
 import java.net.SocketTimeoutException;
@@ -80,6 +70,15 @@ import xtremweb.common.XWPropertyDefs;
 import xtremweb.common.XWTools;
 import xtremweb.security.XWAccessRights;
 
+/**
+ * CommClient.java
+ *
+ *
+ * Created: Jun 2nd, 2005
+ *
+ * @author Oleg Lodygensky
+ * @since RPCXW
+ */
 public abstract class CommClient implements ClientAPI {
 
 	private final Logger logger;
@@ -962,7 +961,6 @@ public abstract class CommClient implements ClientAPI {
 			throws InvalidKeyException, AccessControlException, IOException, SAXException {
 		return get(command, true);
 	}
-
 	/**
 	 * This retrieves an object definition given its URI, from server or from
 	 * cache, if already in cache.
@@ -977,6 +975,51 @@ public abstract class CommClient implements ClientAPI {
 	 * @since 11.1.0
 	 */
 	public Table get(final XMLRPCCommandGetWorkByExternalId command, final boolean bypass)
+			throws InvalidKeyException, AccessControlException, IOException, SAXException {
+		if (!bypass) {
+			final Table object = cache.get(command.getURI());
+			if (object != null) {
+				return object;
+			}
+		}
+
+		try {
+			sendCommand(command);
+			final Table object = newTableInterface();
+			if (object != null) {
+				cache.add(object, command.getURI());
+			}
+			return object;
+		} finally {
+			close();
+		}
+	}
+	/**
+	 * This calls get(command, true)
+	 *
+	 * @param command
+	 *            is the GET command to send to server
+	 * @see #get(XMLRPCCommandGetEnvelopeById, boolean)
+	 * @since 13.0.0
+	 */
+	public Table get(final XMLRPCCommandGetEnvelopeById command)
+			throws InvalidKeyException, AccessControlException, IOException, SAXException {
+		return get(command, true);
+	}
+	/**
+	 * This retrieves an object definition given its URI, from server or from
+	 * cache, if already in cache.
+	 *
+	 * @param command
+	 *            is the GET command to send to server
+	 * @param bypass
+	 *            if true object is downloaded from server even if already in
+	 *            cache if false, object is only downloaded if not already in
+	 *            cache
+	 * @return an object definition
+	 * @since 13.0.0
+	 */
+	public Table get(final XMLRPCCommandGetEnvelopeById command, final boolean bypass)
 			throws InvalidKeyException, AccessControlException, IOException, SAXException {
 		if (!bypass) {
 			final Table object = cache.get(command.getURI());
@@ -1880,7 +1923,42 @@ public abstract class CommClient implements ClientAPI {
 		}
 		return xmlv;
 	}
-    /**
+
+	/**
+	 * This retrieves all envelopes from server
+	 *
+	 * @return a vector of UIDs
+	 * @since 13.0.0
+	 */
+	@Override
+	public XMLVector getEnvelopes()
+			throws InvalidKeyException, AccessControlException, IOException, SAXException, URISyntaxException {
+
+		final URI uri = newURI();
+		final XMLRPCCommandGetEnvelopes cmd = new XMLRPCCommandGetEnvelopes(uri, config.getUser());
+		return getEnvelopes(cmd);
+	}
+
+	/**
+	 * This retrieves all envelopes from server
+	 *
+	 * @return a vector of UIDs
+	 * @since 13.0.0
+	 */
+	@Override
+	public XMLVector getEnvelopes(final XMLRPCCommandGetEnvelopes command)
+			throws InvalidKeyException, AccessControlException, IOException, SAXException {
+
+		XMLVector xmlv = null;
+		try {
+			sendCommand(command);
+			xmlv = newXMLVector();
+		} finally {
+			close();
+		}
+		return xmlv;
+	}
+	/**
      * This calls getWorkByExternalId(extId, true)
      * @since 11.1.0
      */

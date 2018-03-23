@@ -3797,43 +3797,79 @@ public final class DBInterface {
 		return theTaskbyWork;
 	}
 
-	/**
-	 * This retrieves a work given its external id
-	 *
-	 * @param command is the command to execute
-	 * @return null on error; a TaskInterface otherwise
-	 * @exception IOException
-	 *                is thrown general error
-	 * @exception InvalidKeyException
-	 *                is thrown on credential error
-	 * @exception AccessControlException
-	 *                is thrown on access rights violation
-	 * @since 11.1.0
-	 */
-	public WorkInterface getWorkByExternalId(final XMLRPCCommand command)
-			throws IOException, InvalidKeyException, AccessControlException {
+    /**
+     * This retrieves a work given its external id
+     *
+     * @param command is the command to execute
+     * @return null on error; a TaskInterface otherwise
+     * @exception IOException
+     *                is thrown general error
+     * @exception InvalidKeyException
+     *                is thrown on credential error
+     * @exception AccessControlException
+     *                is thrown on access rights violation
+     * @since 11.1.0
+     */
+    public WorkInterface getWorkByExternalId(final XMLRPCCommand command)
+            throws IOException, InvalidKeyException, AccessControlException {
 
-		final UserInterface theClient = checkClient(command, UserRightEnum.GETJOB);
-		final URI uri = command.getURI();
-		final String extId = uri.getPath().substring(1, uri.getPath().length());
+        final UserInterface theClient = checkClient(command, UserRightEnum.GETJOB);
+        final URI uri = command.getURI();
+        final String extId = uri.getPath().substring(1, uri.getPath().length());
 
-		final WorkInterface theWorkById = work(theClient,
-				WorkInterface.Columns.SGID.toString() + "='" + extId + "'");
+        final WorkInterface theWorkById = work(theClient,
+                WorkInterface.Columns.SGID.toString() + "='" + extId + "'");
 
-		if (theWorkById == null) {
-			return null;
-		}
+        if (theWorkById == null) {
+            return null;
+        }
 
-		final UserInterface owner = user(theWorkById.getOwner());
-		final UID ownerGroup = (owner == null ? null : owner.getGroup());
-		if (!theWorkById.canRead(theClient, ownerGroup)
-				&& theClient.getRights().lowerThan(UserRightEnum.SUPER_USER)) {
-			throw new AccessControlException(theClient.getLogin() + " can't read " + extId);
-		}
-		return theWorkById;
-	}
+        final UserInterface owner = user(theWorkById.getOwner());
+        final UID ownerGroup = (owner == null ? null : owner.getGroup());
+        if (!theWorkById.canRead(theClient, ownerGroup)
+                && theClient.getRights().lowerThan(UserRightEnum.SUPER_USER)) {
+            throw new AccessControlException(theClient.getLogin() + " can't read " + extId);
+        }
+        return theWorkById;
+    }
 
-	/**
+    /**
+     * This retrieves an envelope given its id
+     *
+     * @param command is the command to execute
+     * @return null on error; a TaskInterface otherwise
+     * @exception IOException
+     *                is thrown general error
+     * @exception InvalidKeyException
+     *                is thrown on credential error
+     * @exception AccessControlException
+     *                is thrown on access rights violation
+     * @since 13.1.0
+     */
+    public WorkInterface getEnvelopeById(final XMLRPCCommand command)
+            throws IOException, InvalidKeyException, AccessControlException {
+
+        final UserInterface theClient = checkClient(command, UserRightEnum.GETJOB);
+        final URI uri = command.getURI();
+        final String extId = uri.getPath().substring(1, uri.getPath().length());
+
+        final WorkInterface theWorkById = work(theClient,
+                WorkInterface.Columns.SGID.toString() + "='" + extId + "'");
+
+        if (theWorkById == null) {
+            return null;
+        }
+
+        final UserInterface owner = user(theWorkById.getOwner());
+        final UID ownerGroup = (owner == null ? null : owner.getGroup());
+        if (!theWorkById.canRead(theClient, ownerGroup)
+                && theClient.getRights().lowerThan(UserRightEnum.SUPER_USER)) {
+            throw new AccessControlException(theClient.getLogin() + " can't read " + extId);
+        }
+        return theWorkById;
+    }
+
+    /**
 	 * This retrieves an application given its name
 	 *
 	 * @param command is the command to execute
