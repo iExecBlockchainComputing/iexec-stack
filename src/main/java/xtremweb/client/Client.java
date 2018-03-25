@@ -2643,15 +2643,6 @@ public final class Client {
 			}
 
 			try {
-				final Long wct = (Long) args.getOption(CommandLineOptions.WALLCLOCKTIME);
-				if (wct != null) {
-					work.setMaxWallClockTime(wct.longValue());
-				}
-			} catch (final Exception e) {
-				logger.exception("Can't set WALLCLOCKTIME", e);
-			}
-
-			try {
 				final Integer replica = (Integer) args.getOption(CommandLineOptions.REPLICA);
 				if (replica != null) {
 					work.setExpectedReplications(replica.intValue());
