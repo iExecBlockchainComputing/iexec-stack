@@ -357,8 +357,9 @@ public final class EnvelopeInterface extends Table {
 			setMaxMemory((Long) Columns.MAXMEMORY.fromResultSet(rs));
 			setMaxCpuSpeed((Integer) Columns.MAXCPUSPEED.fromResultSet(rs));
 			setMaxFreeMassStorage((Long) Columns.MAXFREEMASSSTORAGE.fromResultSet(rs));
-			setMaxWallClockTime((Integer) Columns.MAXWALLCLOCKTIME.fromResultSet(rs));
+			setMaxWallClockTime((Long) Columns.MAXWALLCLOCKTIME.fromResultSet(rs));
 		} catch (final Exception e) {
+			getLogger().exception(e);
 			throw new IOException(e.toString());
 		}
 
