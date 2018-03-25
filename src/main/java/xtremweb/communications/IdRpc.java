@@ -669,7 +669,7 @@ public enum IdRpc {
 		@Override
 		public String helpClient() {
 			return this.toString()
-					+ " <id> [name] [maxwallclocktime] [maxcpuspeed] [maxmemory] [maxstorage]";
+					+ " <id> [name] [maxcpuspeed] [maxwallclocktime] [maxmemory] [maxstorage]";
 		}
 
 		@Override

@@ -1720,6 +1720,83 @@ public final class Client {
 	}
 
 	/**
+	 * This retrieves, stores and displays applications installed in XtremWeb
+	 * server. <blockquote> Command line parameters : --xwgetapps </blockquote>
+	 *
+	 * @param display
+	 *            is true to display applications
+	 * @throws InstantiationException
+	 * @throws IOException
+	 * @throws URISyntaxException
+	 * @throws IllegalAccessException
+	 * @throws SAXException
+	 * @throws ClassNotFoundException
+	 * @throws AccessControlException
+	 * @throws InvalidKeyException
+	 * @since 13.0.0
+	 */
+	private Collection<XMLValue> getEnvelopes(final boolean display)
+			throws URISyntaxException, IOException, InstantiationException, InvalidKeyException, AccessControlException,
+			ClassNotFoundException, SAXException, XWCommException {
+
+		final URI uri = commClient().newURI();
+		final XMLRPCCommandGetEnvelopes cmd = new XMLRPCCommandGetEnvelopes(uri, config.getUser());
+		final XMLVector xmluids = (XMLVector) sendCommand(cmd, false);
+		final Collection<XMLValue> uids = xmluids.getXmlValues();
+		get(uids, display);
+		return uids;
+	}
+	/**
+	 * This inserts/updates an application in server.<br>
+	 * This does not read from cache because we need the exact last app
+	 * definition in order to correctly update it if it exists. <blockquote>
+	 * Command line parameters : --xwsendapp appName cpuType osName binFileName
+	 * </blockquote> The user must have the right to do so
+	 *
+	 * @throws IOException
+	 * @throws ParseException
+	 * @throws SAXException
+	 * @throws ClassNotFoundException
+	 * @throws InstantiationException
+	 * @throws URISyntaxException
+	 * @throws AccessControlException
+	 * @throws InvalidKeyException
+	 * @throws NoSuchAlgorithmException
+	 * @since 13.0.0
+	 */
+	private void sendEnvelope() throws IOException, ParseException, InvalidKeyException, AccessControlException,
+			URISyntaxException, InstantiationException, ClassNotFoundException, SAXException, NoSuchAlgorithmException {
+
+		final List envelopeParams = (List) args.commandParams();
+
+		EnvelopeInterface env;
+		final File xmlFile = (File) args.getOption(CommandLineOptions.XML);
+
+		if (xmlFile != null) {
+			final FileInputStream fis = new FileInputStream(xmlFile);
+			env = (EnvelopeInterface) Table.newInterface(fis);
+			if (env.getEnvId() <= 0) {
+				throw new IOException("envelope id can not be zero");
+			}
+			if (env.getUID() == null) {
+				env.setUID(new UID());
+			}
+		} else {
+            if (envelopeParams == null) {
+                throw new ParseException("no param provided", 0);
+            }
+            env = new EnvelopeInterface(new UID());
+            env.setName((String) envelopeParams.get(0));
+            env.setMaxCpuSpeed(Integer.valueOf((String)envelopeParams.get(1)));
+            env.setMaxWallClockTime(Long.valueOf((String)envelopeParams.get(2)));
+            env.setMaxMemory(Long.valueOf((String)envelopeParams.get(3)));
+            env.setMaxFreeMassStorage(Long.valueOf((String)envelopeParams.get(4)));
+
+        }
+		commClient().send(env);
+		println(commClient().newURI(env.getUID()));
+	}
+	/**
 	 * This retrieves, stores and displays groups installed in XtremWeb server.
 	 *
 	 * @throws AccessControlException
@@ -3260,6 +3337,12 @@ public final class Client {
 				break;
 			case SENDDATA:
 				sendData();
+				break;
+			case GETENVELOPES:
+				getEnvelopes(true);
+				break;
+			case SENDENVELOPE:
+				sendEnvelope();
 				break;
 			case GETGROUPS:
 				getGroups(true);
