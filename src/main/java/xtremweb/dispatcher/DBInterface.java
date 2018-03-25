@@ -4844,6 +4844,7 @@ public final class DBInterface {
 		receivedJob.setAccessRights(newJobRights);
 		final UserRightEnum clientRights = mandatingClient.getRights();
 
+
 		if (receivedJob.getOwner() == null) {
 			receivedJob.setOwner(mandatingClient.getUID());
 		}
