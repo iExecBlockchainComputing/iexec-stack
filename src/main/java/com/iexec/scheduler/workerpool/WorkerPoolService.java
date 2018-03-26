@@ -73,7 +73,7 @@ public class WorkerPoolService {
         }
     }
 
-    private void updateWorkerPoolPolicy(WorkerPool workerPool) throws Exception {
+    private boolean updateWorkerPoolPolicy(WorkerPool workerPool) throws Exception {
         boolean updated = false;
         if (!workerPoolConfig.getStakeRatioPolicy().equals(workerPool.m_stakeRatioPolicy().send()) ||
                 !workerPoolConfig.getSchedulerRewardRatioPolicy().equals(workerPool.m_schedulerRewardRatioPolicy().send()) ||
@@ -88,9 +88,10 @@ public class WorkerPoolService {
             updated = true;
         }
         log.info("PoolPolicy updated [updated:{}]", updated);
+        return updated;
     }
 
-    private void updateAuthorizedList(AuthorizedList workerAuthorizedList) throws Exception {
+    private boolean updateAuthorizedList(AuthorizedList workerAuthorizedList) throws Exception {
         if (!workerPoolConfig.getMode().equals(workerAuthorizedList.m_policy().send())) {
             workerAuthorizedList.changeListPolicy(workerPoolConfig.getMode()).send();
         }
@@ -109,6 +110,7 @@ public class WorkerPoolService {
             }
         }
         log.info("WorkerAuthorizedList updated [updated:{}]", updated);
+        return updated;
     }
 
     private void watchWorkerPoolPolicy(WorkerPool workerPool) {
