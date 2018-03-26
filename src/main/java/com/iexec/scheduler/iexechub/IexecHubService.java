@@ -1,78 +1,83 @@
 package com.iexec.scheduler.iexechub;
 
+
 import com.iexec.scheduler.contracts.generated.IexecHub;
-import com.iexec.scheduler.ethereum.CredentialsService;
-import com.iexec.scheduler.ethereum.EthConfig;
+import com.iexec.scheduler.ethereum.*;
 import com.iexec.scheduler.workerpool.WorkerPoolConfig;
 import com.iexec.scheduler.workerpool.WorkerPoolService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.web3j.protocol.Web3j;
-import org.web3j.protocol.core.DefaultBlockParameterName;
+
+
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.tx.Contract;
 import org.web3j.tx.ManagedTransaction;
 
-import javax.annotation.PostConstruct;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static com.iexec.scheduler.ethereum.Utils.END;
-import static com.iexec.scheduler.ethereum.Utils.getStatus;
 
-@Service
 public class IexecHubService {
 
+
     private static final Logger log = LoggerFactory.getLogger(WorkerPoolService.class);
-    private final Web3j web3j;
-    private final CredentialsService credentialsService;
-    private final WorkerPoolConfig poolConfig;
-    private final EthConfig ethConfig;
+    private static IexecHubService instance;
+    private static final Web3jService web3jService = Web3jService.getInstance();
+    private static final CredentialsService credentialsService = CredentialsService.getInstance();
+    private static final Configuration configuration = IexecConfigurationService.getInstance().getConfiguration();
+    private static final Web3jConfig web3jConfig  = configuration.getWeb3jConfig();
+    private static final ContractConfig contractConfig = configuration.getContractConfig();
+    private static final WorkerPoolConfig workerPoolConfig = configuration.getWorkerPoolConfig();
     private IexecHub iexecHub;
     private IexecHubWatcher iexecHubWatcher;
 
-    @Autowired
-    public IexecHubService(Web3j web3j, CredentialsService credentialsService, WorkerPoolConfig poolConfig, EthConfig ethConfig) {
-        this.credentialsService = credentialsService;
-        this.web3j = web3j;
-        this.poolConfig = poolConfig;
-        this.ethConfig = ethConfig;
+    public static IexecHubService getInstance() {
+        if (instance==null){
+            instance = new IexecHubService();
+        }
+        return instance;
     }
 
-    @PostConstruct
-    public void run() throws Exception {
+    private IexecHubService() {
+        run();
+    }
+
+    private void run() {
         this.iexecHub = IexecHub.load(
-                ethConfig.getIexecHubAddress(), web3j, credentialsService.getCredentials(), ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT);
-        log.info("Load contract IexecHub [address:{}] ", ethConfig.getIexecHubAddress());
-        poolConfig.setAddress(fetchWorkerPoolAddress());
+                contractConfig.getIexecHubAddress(), web3jService.getWeb3j(), credentialsService.getCredentials(), ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT);
+        log.info("Load contract IexecHub [address:{}] ", contractConfig.getIexecHubAddress());
+        workerPoolConfig.setAddress(fetchWorkerPoolAddress());
         startWatchers();
     }
 
-    private String fetchWorkerPoolAddress() throws Exception {
-        String workerPoolAddress;
-        if (poolConfig.getAddress().isEmpty()) {
-            TransactionReceipt createWorkerPoolReceipt = iexecHub.createWorkerPool(poolConfig.getName(),
-                    poolConfig.getSubscriptionLockStakePolicy(),
-                    poolConfig.getSubscriptionMinimumStakePolicy(),
-                    poolConfig.getSubscriptionMinimumScorePolicy()).send();
-            workerPoolAddress = this.iexecHub.getCreateWorkerPoolEvents(createWorkerPoolReceipt).get(0).workerPool;
-            log.info("CreateWorkerPool [address:{}] ", workerPoolAddress);
+    private String fetchWorkerPoolAddress(){
+        String workerPoolAddress = null;
+        if (workerPoolConfig.getAddress()==null) {
+            try {
+                TransactionReceipt createWorkerPoolReceipt = iexecHub.createWorkerPool(workerPoolConfig.getName(),
+                        workerPoolConfig.getSubscriptionLockStakePolicy(),
+                        workerPoolConfig.getSubscriptionMinimumStakePolicy(),
+                        workerPoolConfig.getSubscriptionMinimumScorePolicy()).send();
+                workerPoolAddress = this.iexecHub.getCreateWorkerPoolEvents(createWorkerPoolReceipt).get(0).workerPool;
+                log.info("CreateWorkerPool [address:{}] ", workerPoolAddress);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         } else {
-            workerPoolAddress = poolConfig.getAddress();
+            workerPoolAddress = workerPoolConfig.getAddress();
             log.info("Get WorkerPool address from configuration [address:{}] ", workerPoolAddress);
         }
         return workerPoolAddress;
     }
 
     private void startWatchers() {
-        this.iexecHub.workOrderActivatedEventObservable(ethConfig.getStartBlockParameter(), END)
+        this.iexecHub.workOrderActivatedEventObservable(web3jConfig.getStartBlockParameter(), END)
                 .subscribe(this::onWorkOrderActivated);
-        this.iexecHub.workerPoolSubscriptionEventObservable(ethConfig.getStartBlockParameter(), END)
+        this.iexecHub.workerPoolSubscriptionEventObservable(web3jConfig.getStartBlockParameter(), END)
                 .subscribe(this::onSubscription);
     }
 
     private void onSubscription(IexecHub.WorkerPoolSubscriptionEventResponse workerPoolSubscriptionEvent) {
-        if (workerPoolSubscriptionEvent.workerPool.equals(poolConfig.getAddress())) {
+        if (workerPoolSubscriptionEvent.workerPool.equals(workerPoolConfig.getAddress())) {
             log.info("Received WorkerPoolSubscriptionEvent [worker:{}]", workerPoolSubscriptionEvent.worker);
             iexecHubWatcher.onSubscription(workerPoolSubscriptionEvent.worker);
         }
@@ -80,7 +85,7 @@ public class IexecHubService {
 
     private void onWorkOrderActivated(IexecHub.WorkOrderActivatedEventResponse workOrderActivatedEvent) {
         log.info("Received WorkOrderActivatedEvent [woid:{}]", workOrderActivatedEvent.woid);
-        if (workOrderActivatedEvent.workerPool.equals(poolConfig.getAddress())) {
+        if (workOrderActivatedEvent.workerPool.equals(workerPoolConfig.getAddress())) {
             iexecHubWatcher.onWorkOrderActivated(workOrderActivatedEvent.woid);
         }
     }
