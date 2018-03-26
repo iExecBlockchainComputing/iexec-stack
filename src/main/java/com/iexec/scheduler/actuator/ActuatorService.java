@@ -1,6 +1,8 @@
 package com.iexec.scheduler.actuator;
 
 import com.iexec.scheduler.contracts.generated.WorkerPool;
+import com.iexec.scheduler.ethereum.ConfigurationService;
+import com.iexec.scheduler.ethereum.CredentialsService;
 import com.iexec.scheduler.ethereum.RlcService;
 import com.iexec.scheduler.ethereum.TransactionStatus;
 import com.iexec.scheduler.iexechub.IexecHubService;
@@ -20,23 +22,23 @@ import java.util.List;
 
 import static com.iexec.scheduler.ethereum.Utils.getStatus;
 
-@Service
-public class ActuatorService {//implements Actuator {
+public class ActuatorService implements Actuator {
 
-    /*
     private static final Logger log = LoggerFactory.getLogger(ActuatorService.class);
-    private final IexecHubService iexecHubService;
-    private final WorkerPoolService workerPoolService;
-    private final MarketplaceService marketplaceService;
-    private final RlcService rlcService;
+    private static ActuatorService instance;
+    private final static IexecHubService iexecHubService = IexecHubService.getInstance();
+    private final static WorkerPoolService workerPoolService = WorkerPoolService.getInstance();
+    private final static MarketplaceService marketplaceService = MarketplaceService.getInstance();
+    private final static RlcService rlcService = RlcService.getInstance();
 
-    @Autowired
-    public ActuatorService(IexecHubService iexecHubService, WorkerPoolService workerPoolService,
-                           MarketplaceService marketplaceService, RlcService rlcService) {
-        this.iexecHubService = iexecHubService;
-        this.workerPoolService = workerPoolService;
-        this.marketplaceService = marketplaceService;
-        this.rlcService = rlcService;
+    public static ActuatorService getInstance() {
+        if (instance==null){
+            instance = new ActuatorService();
+        }
+        return instance;
+    }
+
+    private ActuatorService() {
     }
 
     @Override
@@ -118,6 +120,6 @@ public class ActuatorService {//implements Actuator {
             e.printStackTrace();
         }
         return TransactionStatus.FAILURE;
-    }*/
+    }
 
 }

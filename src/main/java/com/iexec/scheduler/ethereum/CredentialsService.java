@@ -1,25 +1,16 @@
 package com.iexec.scheduler.ethereum;
 
-import org.springframework.stereotype.Service;
 import org.web3j.crypto.CipherException;
 import org.web3j.crypto.Credentials;
 import org.web3j.crypto.WalletUtils;
 
 import java.io.IOException;
 
-@Service
 public class CredentialsService {
 
     private static CredentialsService instance;
+    private static  WalletConfig walletConfig;
     private Credentials credentials;
-    private static WalletConfig walletConfig;
-
-    public static CredentialsService getInstance() {
-        if (instance==null){
-            instance = new CredentialsService();
-        }
-        return instance;
-    }
 
     private CredentialsService() {
         walletConfig = ConfigurationService.getInstance().getConfiguration().getWalletConfig();
@@ -32,13 +23,15 @@ public class CredentialsService {
         }
     }
 
-    public Credentials getCredentials() {
-        return credentials;
+    public static CredentialsService getInstance() {
+        if (instance == null) {
+            instance = new CredentialsService();
+        }
+        return instance;
     }
 
-    public static void main(String[] args) {
-        ConfigurationService.getInstance().setConfigPath("./iexec-scheduler/src/main/resources/application.yml");
-        System.out.println(CredentialsService.getInstance().getCredentials().getAddress());
+    public Credentials getCredentials() {
+        return credentials;
     }
 
 }

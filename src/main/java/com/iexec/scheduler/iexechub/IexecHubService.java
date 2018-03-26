@@ -20,15 +20,15 @@ public class IexecHubService {
 
 
     private static final Logger log = LoggerFactory.getLogger(WorkerPoolService.class);
-    private final Web3jService web3jService = Web3jService.getInstance();
-    private final CredentialsService credentialsService = CredentialsService.getInstance();
-    private final Configuration configuration = ConfigurationService.getInstance().getConfiguration();
-    private final Web3jConfig web3jConfig  = configuration.getWeb3jConfig();
-    private final ContractConfig contractConfig = configuration.getContractConfig();
-    private final WorkerPoolConfig workerPoolConfig = configuration.getWorkerPoolConfig();
+    private static IexecHubService instance;
+    private static final Web3jService web3jService = Web3jService.getInstance();
+    private static final CredentialsService credentialsService = CredentialsService.getInstance();
+    private static final Configuration configuration = ConfigurationService.getInstance().getConfiguration();
+    private static final Web3jConfig web3jConfig  = configuration.getWeb3jConfig();
+    private static final ContractConfig contractConfig = configuration.getContractConfig();
+    private static final WorkerPoolConfig workerPoolConfig = configuration.getWorkerPoolConfig();
     private IexecHub iexecHub;
     private IexecHubWatcher iexecHubWatcher;
-    private static IexecHubService instance;
 
     public static IexecHubService getInstance() {
         if (instance==null){

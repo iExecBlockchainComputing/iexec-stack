@@ -21,22 +21,22 @@ public class WorkerPoolService {
     private final Web3jService web3jService = Web3jService.getInstance();
     private final CredentialsService credentialsService = CredentialsService.getInstance();
     private final Configuration configuration = ConfigurationService.getInstance().getConfiguration();
-    private final Web3jConfig web3jConfig  = configuration.getWeb3jConfig();
+    private final Web3jConfig web3jConfig = configuration.getWeb3jConfig();
     private final ContractConfig contractConfig = configuration.getContractConfig();
     private final WorkerPoolConfig workerPoolConfig = configuration.getWorkerPoolConfig();
     private WorkerPool workerPool;
     private WorkerPoolWatcher workerPoolWatcher;
 
 
+    private WorkerPoolService() {
+        run();
+    }
+
     public static WorkerPoolService getInstance() {
-        if (instance==null){
+        if (instance == null) {
             instance = new WorkerPoolService();
         }
         return instance;
-    }
-
-    private WorkerPoolService() {
-        run();
     }
 
     private void run() {
@@ -46,11 +46,13 @@ public class WorkerPoolService {
     }
 
     private void loadWorkerPool() {
-        //TODO - change dependency here
-        IexecHubService iexecHubService = IexecHubService.getInstance();
-        this.workerPool = WorkerPool.load(
-                workerPoolConfig.getAddress(), web3jService.getWeb3j(), credentialsService.getCredentials(), ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT);
-        log.info("Load contract WorkerPool [address:{}] ", workerPoolConfig.getAddress());
+        if (IexecHubService.getInstance() != null
+                && workerPoolConfig.getAddress() != null
+                && !workerPoolConfig.getAddress().isEmpty()) {
+            this.workerPool = WorkerPool.load(
+                    workerPoolConfig.getAddress(), web3jService.getWeb3j(), credentialsService.getCredentials(), ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT);
+            log.info("Load contract WorkerPool [address:{}] ", workerPoolConfig.getAddress());
+        }
     }
 
     private void setupWorkerPool(WorkerPool workerPool) {

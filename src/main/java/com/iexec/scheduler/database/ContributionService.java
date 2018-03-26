@@ -2,24 +2,29 @@ package com.iexec.scheduler.database;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Service
 public class ContributionService {
 
     private static final Logger log = LoggerFactory.getLogger(ContributionService.class);
-
+    private static ContributionService instance;
     private Map<String, List<String>> calledWorkerMap;
     private Map<String, List<Contribution>> contributionMap;
 
-    public ContributionService() {
+    private ContributionService() {
         this.calledWorkerMap = new HashMap<>();
         this.contributionMap = new HashMap<>();
+    }
+
+    public static ContributionService getInstance() {
+        if (instance == null) {
+            instance = new ContributionService();
+        }
+        return instance;
     }
 
     public void setCalledWorker(String workOrderId, List<String> workers) {
