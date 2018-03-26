@@ -1120,7 +1120,7 @@ public final class DBInterface {
 
     /**
      * This retrieves a Envelope from DB for the requesting user according to
-     * conditions. Envelope access rights are checked.
+     * conditions
      *
      * @param u
      *            is the requesting user
@@ -1135,8 +1135,7 @@ public final class DBInterface {
     }
 
     /**
-     * This retrieves a Envelope from DB for the requesting user. Envelope access
-     * rights are checked.
+     * This retrieves a Envelope from DB for the requesting user
      *
      * @param u
      *            is the requesting user
@@ -1150,7 +1149,7 @@ public final class DBInterface {
 
     /**
      * This retrieves a Envelope from DB for the requesting user according to
-     * criteria. Envelope access rights are checked.
+     * criteria
      *
      * @param u
      *            is the requesting user
@@ -1165,8 +1164,7 @@ public final class DBInterface {
     }
 
     /**
-     * This retrieves Envelope UID from DB for the requesting user. Envelope
-     * access rights are checked.
+     * This retrieves Envelope UID from DB for the requesting user
      *
      * @param u
      *            is the requesting user
@@ -1179,7 +1177,7 @@ public final class DBInterface {
 
     /**
      * This retrieves a Envelope from DB for the requesting user according to
-     * criteria. Envelope access rights are checked.
+     * criteria
      *
      * @param u
      *            is the requesting user
@@ -5263,6 +5261,9 @@ public final class DBInterface {
             envitf.setOwner(theClient.getUID());
         }
         insert(envitf);
+
+        // read from DB to retrieve ID
+        putToCache(readableEnvelope(theClient, envitf.getUID()));
 
         return true;
     }

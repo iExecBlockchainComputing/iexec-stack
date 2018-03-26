@@ -424,6 +424,7 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 			case SEND:
 			case SENDAPP:
 			case SENDDATA:
+			case SENDENVELOPE:
 			case SENDGROUP:
 			case SENDSESSION:
 //			case SENDTRACE:

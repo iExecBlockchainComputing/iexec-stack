@@ -351,7 +351,6 @@ public final class EnvelopeInterface extends Table {
 			setUID((UID) TableColumns.UID.fromResultSet(rs));
             setOwner((UID) TableColumns.OWNERUID.fromResultSet(rs));
             setAccessRights(XWAccessRights.DEFAULT);
-            setErrorMsg( (String)TableColumns.ERRORMSG.fromResultSet(rs));
 			setName((String) Columns.NAME.fromResultSet(rs));
             setEnvId((Integer) Columns.ENVID.fromResultSet(rs));
 			setMaxMemory((Long) Columns.MAXMEMORY.fromResultSet(rs));
@@ -361,6 +360,10 @@ public final class EnvelopeInterface extends Table {
 		} catch (final Exception e) {
 			getLogger().exception(e);
 			throw new IOException(e.toString());
+		}
+		try {
+			setErrorMsg( (String)TableColumns.ERRORMSG.fromResultSet(rs));
+		} catch (final Exception e) {
 		}
 
 		setDirty(false);
