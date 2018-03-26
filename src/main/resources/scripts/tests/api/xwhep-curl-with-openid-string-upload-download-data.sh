@@ -88,13 +88,13 @@ curl  -s  -S  $CURL_CHECK_CERT_OPTION  "$XWHEP_URL?$OPENID_STRING"  |  \
 
 #---------------------------------------------------------------------------
 #  REST command to XtremWeb-HEP with parameters :
-#  uploaddata/UUID?DATASIZE=...&DATAMD5SUM=...   --post-data=DATAFILE=...
+#  uploaddata/UUID?DATASIZE=...&DATASHASUM=...   --post-data=DATAFILE=...
 #  Upload is NOT handled by 'wget', we really have to use 'curl'.
 #---------------------------------------------------------------------------
 DATAFILE="$0"
 DATASIZE=$(stat -c '%s' "$DATAFILE")
 DATAMD5SUM=$(md5sum "$DATAFILE"  |   cut -d ' ' -f 1)
-XWHEP_URL="$XWHEP_BASE_URL/uploaddata/$XWHEP_UUID?DATASIZE=$DATASIZE&DATAMD5SUM=$DATAMD5SUM"
+XWHEP_URL="$XWHEP_BASE_URL/uploaddata/$XWHEP_UUID?DATASIZE=$DATASIZE&DATASHASUM=$DATAMD5SUM"
 XWHEP_URL_OPENID="$XWHEP_URL&$OPENID_STRING"
 
 CURL_UPLOAD_PARAM="DATAFILE=@$DATAFILE"

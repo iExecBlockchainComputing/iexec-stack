@@ -610,7 +610,7 @@ create table if not exists  datas  (
   links          int(4)                                       comment 'How many times it is used. can be deleted if 0',
   accessDate     datetime                                     comment 'Last access date',
   insertionDate  datetime                                     comment 'Creation date',
-  md5            varchar(254)                                 comment 'Data md5',
+  shasum         varchar(254)                                 comment 'Data sha sum',
   size           bigint                                       comment 'Effective file size',
   sendToClient   char(5)                     default 'false'  comment 'Optionnal. used by replication',
   replicated     char(5)                     default 'false'  comment 'Optionnal. used by replication',

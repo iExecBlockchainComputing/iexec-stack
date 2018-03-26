@@ -148,7 +148,7 @@ xw_send_data ()
     fi
     
     #-------------------------------------------------------------------------
-    #  If the XtremWeb-HEP size and MD5 are those of the inserted file, OK
+    #  If the XtremWeb-HEP size and SHASUM are those of the inserted file, OK
     #-------------------------------------------------------------------------
     if [ '(' "$XW_ATTR_SIZE" = "$XW_FILE_SIZE" ')' -a  \
          '(' "$XW_ATTR_MD5"  = "$XW_FILE_MD5"  ')' ]; then
@@ -205,7 +205,7 @@ xw_send_data ()
     fi
     
     #-------------------------------------------------------------------------
-    #  If the size and MD5 of the downloaded file are NOT those of the
+    #  If the size and SHASUM of the downloaded file are NOT those of the
     #  inserted file, that is an error
     #-------------------------------------------------------------------------
     if [ '(' $(gunzip -c "$XW_FILE_DOWNLOAD" | wc -c) !=  \
@@ -226,7 +226,7 @@ xw_send_data ()
     fi
     
     #-------------------------------------------------------------------------
-    #  Here the size and MD5 of the downloaded file are those of the inserted
+    #  Here the size and SHASUM of the downloaded file are those of the inserted
     #  file, OK
     #-------------------------------------------------------------------------
     rm "$XW_FILE_DOWNLOAD"
