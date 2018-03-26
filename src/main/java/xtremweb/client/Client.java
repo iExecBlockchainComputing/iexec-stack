@@ -41,7 +41,6 @@ import java.net.URL;
 import java.net.UnknownHostException;
 import java.security.AccessControlException;
 import java.security.InvalidKeyException;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateExpiredException;
@@ -337,8 +336,8 @@ public final class Client {
 			return;
 		}
 
-		if (data.getMD5() == null) {
-			throw new IOException(uri.toString() + " MD5 is not set");
+		if (data.getShasum() == null) {
+			throw new IOException(uri.toString() + " SHASUM is not set");
 		}
 
 		final CommClient commClient = commClient(uri);
@@ -370,9 +369,9 @@ public final class Client {
 		final File fdata = new File(fpath, fname);
 		logger.debug("Download uri = " + uri + " fdata = " + fdata);
 		commClient.downloadData(uri, fdata);
-		if (data.getMD5().compareTo(XWTools.sha256CheckSum(fdata)) != 0) {
+		if (data.getShasum().compareTo(XWTools.sha256CheckSum(fdata)) != 0) {
 			fdata.delete();
-			throw new IOException(uri.toString() + " MD5 differs : " + data.getMD5() + " != " + XWTools.sha256CheckSum(fdata));
+			throw new IOException(uri.toString() + " SHASUM differs : " + data.getShasum() + " != " + XWTools.sha256CheckSum(fdata));
 		}
 		logger.info("Downloaded to : " + fdata.getAbsolutePath());
 	}
@@ -1694,7 +1693,7 @@ public final class Client {
 			}
 			data.setStatus(StatusEnum.UNAVAILABLE);
 			data.setSize(dataFile.length());
-			data.setMD5(XWTools.sha256CheckSum(dataFile));
+			data.setShasum(XWTools.sha256CheckSum(dataFile));
 		}
 
 		logger.debug("sendData(" + data.toXml() + ", " + dataFile + ")");
@@ -3120,7 +3119,7 @@ public final class Client {
 					}
 					final String currentKeystoreSHA = XWTools.sha256CheckSum(currentKeystoreFile);
 
-					if (newKeystoreData.getMD5().compareTo(currentKeystoreSHA) != 0) {
+					if (newKeystoreData.getShasum().compareTo(currentKeystoreSHA) != 0) {
 						println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
 						println("*                                                 *");
 						println("*                  ATTENTION                      *");

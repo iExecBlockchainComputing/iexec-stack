@@ -31,7 +31,6 @@ import java.net.UnknownHostException;
 import java.security.AccessControlException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Enumeration;
@@ -1349,7 +1348,7 @@ public class ThreadWork extends Thread {
 			}
 			if (resultFile.exists()) {
 				try {
-					data.setMD5(XWTools.sha256CheckSum(resultFile));
+					data.setShasum(XWTools.sha256CheckSum(resultFile));
 				} catch (NoSuchAlgorithmException e) {
 					logger.exception(e);
 				}

@@ -813,8 +813,8 @@ public final class CommManager extends Thread {
 				throw new IOException("can't retreive data " + uri);
 			}
 
-			if (data.getMD5() == null) {
-				throw new IOException(uri.toString() + " MD5 is not set");
+			if (data.getShasum() == null) {
+				throw new IOException(uri.toString() + " SHASUM is not set");
 			}
             if (data.getSize() > maxLength) {
                 throw new XWCommException(new XMLRPCResult(XWReturnCode.DISK,
@@ -855,7 +855,7 @@ public final class CommManager extends Thread {
 			final long start = System.currentTimeMillis();
 			long fsize = fdata.length();
 
-			if ((fdata.exists()) && (!bypass) && (data.getMD5().compareTo(XWTools.sha256CheckSum(fdata)) == 0)
+			if ((fdata.exists()) && (!bypass) && (data.getShasum().compareTo(XWTools.sha256CheckSum(fdata)) == 0)
 					&& (data.getSize() == fsize)) {
 				logger.config("Not necessary to download data " + data.getUID());
 				return;
@@ -885,8 +885,8 @@ public final class CommManager extends Thread {
 			Worker.getConfig().getHost().setDownloadBandwidth(bandwidth);
 			logger.info("Download bandwidth = " + bandwidth);
 
-			if ((data.getMD5().compareTo(XWTools.sha256CheckSum(fdata)) != 0) || (data.getSize() != fsize)) {
-				throw new IOException(uri.toString() + " MD5 or size differs");
+			if ((data.getShasum().compareTo(XWTools.sha256CheckSum(fdata)) != 0) || (data.getSize() != fsize)) {
+				throw new IOException(uri.toString() + " SHASUM or size differs");
 			}
         } catch (XWCommException e) {
             throw e;
