@@ -1082,6 +1082,28 @@ public final class DBInterface {
         return select(readableRow);
     }
 
+	/**
+	 * This retrieves an envelope
+	 *
+	 * @param command
+	 * @return an envelope interface
+	 * @since 13.0.0
+	 */
+	protected EnvelopeInterface envelope(final XMLRPCCommand command) throws InvalidKeyException, IOException, AccessControlException {
+		final UID uid = command.getURI().getUID();
+		if (uid == null) {
+			return null;
+		}
+
+		final EnvelopeInterface row = new EnvelopeInterface();
+		final UserInterface mandatingClient = checkClient(command, UserRightEnum.GETENVELOPE);
+		final EnvelopeInterface ret = getFromCache(mandatingClient, uid, row);
+		if (ret != null) {
+			return ret;
+		}
+		final EnvelopeInterface readableRow = readableEnvelope(mandatingClient, uid);
+		return select(readableRow);
+	}
     /**
      * This retrieves a Envelope from DB by its ID
      *
@@ -2377,7 +2399,7 @@ public final class DBInterface {
 	 * This retrieves readable works for the given user
 	 *
 	 * @param command
-	 * @return a vector of works
+	 * @return a work interface
 	 * @since 11.4.0
 	 */
 	protected WorkInterface work(final XMLRPCCommand command) throws InvalidKeyException, IOException, AccessControlException {
@@ -3714,61 +3736,68 @@ public final class DBInterface {
 		} catch (final AccessControlException e) {
 		}
 		try {
-		ret = getTask(command);
-		if (ret != null) {
-			return ret;
-		}
+    		ret = getTask(command);
+	    	if (ret != null) {
+		    	return ret;
+		    }
 		} catch (final AccessControlException e) {
 		}
 		try {
-		ret = data(command);
-		if (ret != null) {
-			return ret;
-		}
+    		ret = data(command);
+	    	if (ret != null) {
+		    	return ret;
+		    }
 		} catch (final AccessControlException e) {
 		}
 		try {
-		ret = getApplication(command);
-		if (ret != null) {
-			return ret;
-		}
+    		ret = getApplication(command);
+	    	if (ret != null) {
+		    	return ret;
+		    }
 		} catch (final AccessControlException e) {
 		}
 		try {
-		ret = getUser(command);
-		if (ret != null) {
-			return ret;
-		}
+    		ret = getUser(command);
+	    	if (ret != null) {
+		    	return ret;
+		    }
 		} catch (final AccessControlException e) {
 		}
 		try {
-		ret = getUserGroup(command);
-		if (ret != null) {
-			return ret;
-		}
+    		ret = getUserGroup(command);
+	    	if (ret != null) {
+		    	return ret;
+		    }
 		} catch (final AccessControlException e) {
 		}
 		try {
-		ret = getSession(client, uid);
-		if (ret != null) {
-			return ret;
-		}
+    		ret = getSession(client, uid);
+	    	if (ret != null) {
+		    	return ret;
+		    }
 		} catch (final AccessControlException e) {
 		}
 		try {
-		ret = getGroup(client, uid);
-		if (ret != null) {
-			return ret;
-		}
+    		ret = getGroup(client, uid);
+	    	if (ret != null) {
+		    	return ret;
+		    }
 		} catch (final AccessControlException e) {
 		}
-		try {
-		ret = getHost(command);
-		if (ret != null) {
-			return ret;
-		}
-		} catch (final AccessControlException e) {
-		}
+        try {
+            ret = getHost(command);
+            if (ret != null) {
+                return ret;
+            }
+        } catch (final AccessControlException e) {
+        }
+        try {
+            ret = getEnvelope(command);
+            if (ret != null) {
+                return ret;
+            }
+        } catch (final AccessControlException e) {
+        }
 
 		return null;
 	}
@@ -5157,27 +5186,7 @@ public final class DBInterface {
         return ownerWorksUID(theClient, status);
     }
 
-    /**
-     * This retrieves envelopes UID
-     *
-     * @param command is the command to execute
-     * @return null on error; a Collection of UID otherwise
-     * @exception IOException
-     *                is thrown general error
-     * @exception InvalidKeyException
-     *                is thrown on credential error
-     * @exception AccessControlException
-     *                is thrown on access rights violation
-     * @since 13.0.0
-     */
-    public Collection<UID> getAllEnvelopes(final XMLRPCCommand command)
-            throws IOException, InvalidKeyException, AccessControlException {
-
-        final UserInterface theClient = checkClient(command, UserRightEnum.LISTENVELOPE);
-            return envelopesUID(theClient);
-    }
-
-    /**
+	/**
 	 * This checks client rights and returns getJob(UserInterface, UID)
 	 *
 	 * @see #getJob(XMLRPCCommand)
@@ -5187,6 +5196,38 @@ public final class DBInterface {
 
 		return work(command);
 	}
+
+	/**
+	 * This retrieves envelopes UID
+	 *
+	 * @param command is the command to execute
+	 * @return null on error; a Collection of UID otherwise
+	 * @exception IOException
+	 *                is thrown general error
+	 * @exception InvalidKeyException
+	 *                is thrown on credential error
+	 * @exception AccessControlException
+	 *                is thrown on access rights violation
+	 * @since 13.0.0
+	 */
+	public Collection<UID> getAllEnvelopes(final XMLRPCCommand command)
+			throws IOException, InvalidKeyException, AccessControlException {
+
+		final UserInterface theClient = checkClient(command, UserRightEnum.LISTENVELOPE);
+		return envelopesUID(theClient);
+	}
+
+	/**
+	 * This checks client rights and returns getJob(UserInterface, UID)
+	 *
+	 * @see #getJob(XMLRPCCommand)
+	 * @since 13.0.0
+	 */
+	protected EnvelopeInterface getEnvelope(final XMLRPCCommand command)
+			throws IOException, InvalidKeyException, AccessControlException {
+		return envelope(command);
+	}
+
 
 	/**
 	 * This checks client integrity and returns getHost(UserInterface, UID)

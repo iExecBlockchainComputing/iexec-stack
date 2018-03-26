@@ -67,9 +67,7 @@ public final class DBCommandGetEnvelopes extends DBCommand implements CommCallba
 	public XMLable exec(final XMLRPCCommand command)
 			throws IOException, InvalidKeyException, AccessControlException {
 
-		final StatusEnum status = ((XMLRPCCommandGetWorks) command).getStatus();
-		mileStone.println("<getenvelopes status=\"" + status + "\" >");
-
+		mileStone.println("<getenvelopes>");
 		final Vector<UID> ret = (Vector<UID>) dbInterface.getAllEnvelopes(command);
 		XMLVector v = null;
 		if (ret != null) {

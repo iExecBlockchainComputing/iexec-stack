@@ -472,17 +472,14 @@ public final class EnvelopeInterface extends Table {
     /**
      * This gets this envelope name
      *
-     * @return the name, or null if not set
+     * @return the name, or -1 if not set
      */
     public int getEnvId() {
-        try {
-            final Integer ret = (Integer) getValue(Columns.ENVID);
-            if (ret != null) {
-                return ret.intValue();
-            }
-        } catch (final Exception e) {
-        }
-        return 0;
+    	final Integer ret = (Integer) getValue(Columns.ENVID);
+    	if (ret != null) {
+    		return ret.intValue();
+    	}
+        return -1;
     }
 	/**
 	 * This sets parameter value; this is called from

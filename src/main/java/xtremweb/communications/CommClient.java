@@ -41,33 +41,7 @@ import javax.net.ssl.SSLHandshakeException;
 
 import org.xml.sax.SAXException;
 
-import xtremweb.common.AppInterface;
-import xtremweb.common.Cache;
-import xtremweb.common.DataInterface;
-import xtremweb.common.GroupInterface;
-import xtremweb.common.HostInterface;
-import xtremweb.common.Logger;
-import xtremweb.common.LoggerLevel;
-import xtremweb.common.MileStone;
-import xtremweb.common.SessionInterface;
-import xtremweb.common.StatusEnum;
-import xtremweb.common.Table;
-import xtremweb.common.TaskInterface;
-import xtremweb.common.TraceInterface;
-import xtremweb.common.UID;
-import xtremweb.common.UserGroupInterface;
-import xtremweb.common.UserInterface;
-import xtremweb.common.Version;
-import xtremweb.common.WorkInterface;
-import xtremweb.common.WorkerParameters;
-import xtremweb.common.XMLHashtable;
-import xtremweb.common.XMLReader;
-import xtremweb.common.XMLValue;
-import xtremweb.common.XMLVector;
-import xtremweb.common.XMLable;
-import xtremweb.common.XWConfigurator;
-import xtremweb.common.XWPropertyDefs;
-import xtremweb.common.XWTools;
+import xtremweb.common.*;
 import xtremweb.security.XWAccessRights;
 
 /**
@@ -613,6 +587,12 @@ public abstract class CommClient implements ClientAPI {
 		try {
 			input.reset();
 			input.mark(XWTools.BUFFEREND);
+			return newEnvelopeInterface(input);
+		} catch (final SAXException e) {
+		}
+		try {
+			input.reset();
+			input.mark(XWTools.BUFFEREND);
 			return newTraceInterface(input);
 		} catch (final SAXException e) {
 		}
@@ -650,6 +630,16 @@ public abstract class CommClient implements ClientAPI {
 	protected DataInterface newDataInterface(final InputStream input)
 			throws InvalidKeyException, AccessControlException, IOException, SAXException {
 		final DataInterface itf = new DataInterface();
+		return newTableInterface(itf, input);
+	}
+
+	/**
+	 * This creates an object from channel
+	 * @since 13.0.0
+	 */
+	protected EnvelopeInterface newEnvelopeInterface(final InputStream input)
+			throws InvalidKeyException, AccessControlException, IOException, SAXException {
+		final EnvelopeInterface itf = new EnvelopeInterface();
 		return newTableInterface(itf, input);
 	}
 
