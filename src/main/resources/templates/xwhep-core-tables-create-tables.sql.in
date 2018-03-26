@@ -818,8 +818,8 @@ create table if not exists  envs  (
 
   name               varchar(254)      not null  default 'NONE'   comment 'Envelope name is a free text',
   maxWallClockTime   int(10)           not null  default 900      comment 'how many seconds a job can be computed in seconds; default 5mn',
-  maxFreeMassStorage bigint            not null  default 536870912 comment 'Max mass storage usage in Mb; default 500Mb',
-  maxMemory          bigint            not null  default 5242880  comment 'Max RAM usage in Mb; default 5Mb',
+  maxFreeMassStorage bigint            not null  default 5368709120 comment 'Max mass storage usage in Mb; default 5Gb',
+  maxMemory          bigint            not null  default 536870912  comment 'Max RAM usage in Mb; default 512Mb',
   maxCpuSpeed        int               not null  default 50       comment 'Max CPU usage in percentage; default 50%',
 
 
@@ -995,7 +995,7 @@ insert into users (uid,login,password,fname,lname,email,rights,owneruid,accessri
 -- ---------------------------------------------------------------------------
 
 insert into envs (uid, owneruid, accessrights, errormsg, name, envid)
-        values ("@ENVUID@", "@ADMINUID@", "1792", '', 'DefaultEnv', 0);
+        values ("@ENVUID@", "@ADMINUID@", "1877", '', 'DefaultEnv', 0);
 
 -- If your dispatcher complains about handshake, try this :
 -- set password for xtremweb@localhost = old_password('xwpassword');
