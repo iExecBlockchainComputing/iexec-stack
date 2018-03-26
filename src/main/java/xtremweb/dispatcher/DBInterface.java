@@ -5229,6 +5229,43 @@ public final class DBInterface {
 	}
 
 
+    /**
+     * This adds/updates an envelope
+     *
+     * @param command is the command to execute
+     * @return true on success; false on DB error or group already exists
+     * @exception IOException
+     *                is thrown on DB access or I/O error
+     * @exception InvalidKeyException
+     *                is thrown on client integrity error (user unknown, bad
+     *                password...)
+     * @exception AccessControlException
+     *                is thrown if client does not have enough rights
+     * @since 13.0.0
+     */
+    protected boolean addEnvelope(final XMLRPCCommand command)
+            throws IOException, InvalidKeyException, AccessControlException {
+
+        final UserInterface theClient = checkClient(command, UserRightEnum.INSERTGROUP);
+        final EnvelopeInterface envitf = (EnvelopeInterface) command.getParameter();
+        final EnvelopeInterface env = envelope(theClient, envitf.getUID());
+        if (env != null) {
+            env.updateInterface(envitf);
+            update(theClient, UserRightEnum.INSERTENVELOPE, env);
+            return true;
+        }
+
+        if (envitf.getUID() == null) {
+            final UID uid = new UID();
+            envitf.setUID(uid);
+        }
+        if (envitf.getOwner() == null) {
+            envitf.setOwner(theClient.getUID());
+        }
+        insert(envitf);
+
+        return true;
+    }
 	/**
 	 * This checks client integrity and returns getHost(UserInterface, UID)
 	 *
