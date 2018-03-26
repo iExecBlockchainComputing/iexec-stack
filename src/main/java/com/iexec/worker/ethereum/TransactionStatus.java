@@ -1,6 +1,6 @@
 package com.iexec.worker.ethereum;
 
-public enum TransactionError {
+public enum TransactionStatus {
 
     SUCCESS,
     FAILURE;

@@ -29,9 +29,10 @@ dependencies {
     compile "org.web3j:core:$web3jVersion"
     compile "org.web3j:web3j-spring-boot-starter:$web3jSpringBootVersion"
 
-    // spring boot dependencies
-    compile "org.springframework.boot:spring-boot-starter-web:$springBootVersion"
-    compile "org.springframework.boot:spring-boot-configuration-processor:$springBootVersion"
+    compile "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.3.0"
+    compile "com.fasterxml.jackson.core:jackson-databind:2.2.3"
+
+    compile 'org.apache.commons:commons-lang3:3.4'
 
     testCompile "junit:junit:$junitVersion"
 }

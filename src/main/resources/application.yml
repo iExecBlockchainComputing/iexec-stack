@@ -1,39 +1,16 @@
-server:
-  contextPath: /
-  port: 8081
-  #port: 8082
+web3jConfig:
+  clientAddress: http://localhost:8545 #default
+  adminClient: false #default
+  startBlock: 0
+contractConfig:
+  rlcAddress: 0x621680e7bc7cce562b1893d2eb710bb4e1e4b398
+  iexecHubAddress: 0xbde4b8308f301d5edaa23b70f7d18255fc06e3f8
+  workerPoolAddress: 0x3ca0eea68e9aa244804bd3a342e36bbd4e1e410d
+  subscriptionMinimumStakePolicy: 10
+  stakeRatioPolicy: 30
 
-web3j:
-  client-address: ${ethNode:http://localhost:8545} #default
-  admin-client: false #default
-
-ethereum:
-  start-block: 0
-
-scheduler:
-  protocol: "http"
-  domain: "localhost"
-  port: 8080
-  base-path: "" #/v1
-  api-url: "${scheduler.protocol}://${scheduler.domain}:${scheduler.port}${scheduler.base-path}"
-
-wallet:
-    folder: "./src/main/resources/wallet"
-
-worker:
+walletConfig:
   address: "0x70a1bebd73aef241154ea353d6c8c52d420d4f5b"
-  #address: "0x55b541c70252aa3eb1581b8e74ce1ec17126b33a"
-  wallet:
-    filename: "UTC--2018-02-14T11-15-48.411000000Z--70a1bebd73aef241154ea353d6c8c52d420d4f5b.json"
-    #filename: "UTC--2018-03-02T08-49-16.972000000Z--55b541c70252aa3eb1581b8e74ce1ec17126b33a.json"
-    password: "whatever"
-
-
-# Mock values
-mock:
-  worker-result:
-    "iExec the wanderer" #hash 0x2fa3c6dc29e10dfc01cea7e9443ffe431e6564e74f5dcf4de4b04f2e5d343d70
-  contribute:
-    v: 0
-    r: "O" #ascii string
-    s: "O"
+  folder: "./iexec-worker/src/main/resources/wallet"
+  filename: "UTC--2018-02-14T11-15-48.411000000Z--70a1bebd73aef241154ea353d6c8c52d420d4f5b.json"
+  password: "whatever"
