@@ -23,7 +23,7 @@ public class IexecHubService {
     private static IexecHubService instance;
     private static final Web3jService web3jService = Web3jService.getInstance();
     private static final CredentialsService credentialsService = CredentialsService.getInstance();
-    private static final Configuration configuration = ConfigurationService.getInstance().getConfiguration();
+    private static final Configuration configuration = IexecConfigurationService.getInstance().getConfiguration();
     private static final Web3jConfig web3jConfig  = configuration.getWeb3jConfig();
     private static final ContractConfig contractConfig = configuration.getContractConfig();
     private static final WorkerPoolConfig workerPoolConfig = configuration.getWorkerPoolConfig();

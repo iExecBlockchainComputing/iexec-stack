@@ -1,8 +1,6 @@
 package com.iexec.scheduler.actuator;
 
 import com.iexec.scheduler.contracts.generated.WorkerPool;
-import com.iexec.scheduler.ethereum.ConfigurationService;
-import com.iexec.scheduler.ethereum.CredentialsService;
 import com.iexec.scheduler.ethereum.RlcService;
 import com.iexec.scheduler.ethereum.TransactionStatus;
 import com.iexec.scheduler.iexechub.IexecHubService;
@@ -11,8 +9,6 @@ import com.iexec.scheduler.marketplace.MarketplaceService;
 import com.iexec.scheduler.workerpool.WorkerPoolService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.utils.Numeric;
 

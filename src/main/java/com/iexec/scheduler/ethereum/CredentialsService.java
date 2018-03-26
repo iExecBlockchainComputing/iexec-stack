@@ -13,7 +13,7 @@ public class CredentialsService {
     private Credentials credentials;
 
     private CredentialsService() {
-        walletConfig = ConfigurationService.getInstance().getConfiguration().getWalletConfig();
+        walletConfig = IexecConfigurationService.getInstance().getConfiguration().getWalletConfig();
         try {
             credentials = WalletUtils.loadCredentials(walletConfig.getPassword(), walletConfig.getFolder() + "/" + walletConfig.getFilename());
         } catch (IOException e) {

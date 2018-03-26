@@ -20,7 +20,7 @@ public class WorkerPoolService {
     private static WorkerPoolService instance;
     private final Web3jService web3jService = Web3jService.getInstance();
     private final CredentialsService credentialsService = CredentialsService.getInstance();
-    private final Configuration configuration = ConfigurationService.getInstance().getConfiguration();
+    private final Configuration configuration = IexecConfigurationService.getInstance().getConfiguration();
     private final Web3jConfig web3jConfig = configuration.getWeb3jConfig();
     private final ContractConfig contractConfig = configuration.getContractConfig();
     private final WorkerPoolConfig workerPoolConfig = configuration.getWorkerPoolConfig();

@@ -12,7 +12,7 @@ public class RlcService {
 
     private static final Logger log = LoggerFactory.getLogger(RlcService.class);
     private static RlcService instance;
-    private static final Configuration configuration = ConfigurationService.getInstance().getConfiguration();
+    private static final Configuration configuration = IexecConfigurationService.getInstance().getConfiguration();
     private static final Web3jService web3jService = Web3jService.getInstance();
     private static final CredentialsService credentialsService = CredentialsService.getInstance();
     private RLC rlc;

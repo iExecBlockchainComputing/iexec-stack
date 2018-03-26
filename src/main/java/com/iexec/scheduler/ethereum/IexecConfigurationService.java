@@ -6,21 +6,27 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import java.io.File;
 
 
-public class ConfigurationService {
+public class IexecConfigurationService {
 
-    private static ConfigurationService instance;
+    private static IexecConfigurationService instance;
     private String configPath;
     private Configuration configuration;
 
 
-    public static ConfigurationService getInstance() {
+    public static IexecConfigurationService getInstance() {
         if (instance==null){
-            instance = new ConfigurationService();
+            instance = new IexecConfigurationService();
         }
         return instance;
     }
 
-    private ConfigurationService() {
+    public static void initialize(String configurationFilePath) {
+        if (configurationFilePath!=null){
+            getInstance().setConfigPath(configurationFilePath);
+        }
+    }
+
+    private IexecConfigurationService() {
     }
 
     public Configuration getConfiguration() {
@@ -35,13 +41,8 @@ public class ConfigurationService {
         return this.configuration;
     }
 
-    public void setConfigPath(String configPath) {
+    private void setConfigPath(String configPath) {
         this.configPath = configPath;
-    }
-
-    public static void main(String[] args) {
-        ConfigurationService.getInstance().setConfigPath("./iexec-scheduler/src/main/resources/application.yml");
-        System.out.println(ConfigurationService.getInstance().getConfiguration());
     }
 
 }
