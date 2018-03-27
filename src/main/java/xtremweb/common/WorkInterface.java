@@ -444,9 +444,9 @@ public class WorkInterface extends Table {
 			}
 		},
 		/**
-		 * This is the column index of the wall clock time in seconds
-		 *
-		 * @since 8.2.0
+		 * This is copied from envelope
+		 * @since 13.0.0
+		 * @see EnvelopeInterface
 		 */
 		MAXWALLCLOCKTIME {
 			@Override
@@ -485,15 +485,15 @@ public class WorkInterface extends Table {
                 return Integer.valueOf(v);
             }
         },
-        /**
-         * This is the column index of the minimum CPU speed; this is in percentage.
-         * This is automaticaly set by the scheduler based on the environment
-         * @since 13.0.0
-         */
+		/**
+		 * This is copied from envelope
+		 * @since 13.0.0
+		 * @see EnvelopeInterface
+		 */
         MAXCPUSPEED {
             @Override
-            public Integer fromString(final String v) {
-                return Integer.valueOf(v);
+            public Float fromString(final String v) {
+                return Float.valueOf(v);
             }
         },
 		/**
@@ -539,12 +539,11 @@ public class WorkInterface extends Table {
                 return Long.valueOf(v);
             }
         },
-        /**
-         * This is the column index of the maximum authorized free mass storage
-         * This is automatically set byt the scheduler based on the environment
-         *
-         * @since 13.0.0
-         */
+		/**
+		 * This is copied from envelope
+		 * @since 13.0.0
+		 * @see EnvelopeInterface
+		 */
         MAXFREEMASSSTORAGE {
             /**
              * This creates an object from String representation for this column
@@ -562,27 +561,11 @@ public class WorkInterface extends Table {
             }
         },
         /**
-         * This is the column index of the maximum authorized RAM
-         * This is automatically set byt the scheduler based on the environment
-         *
+		 * This is copied from envelope
          * @since 13.0.0
+		 * @see EnvelopeInterface
          */
-        MAXMEMORY {
-            /**
-             * This creates an object from String representation for this column
-             * value
-             *
-             * @param v
-             *            the String representation
-             * @return an Integer representing the column value
-             * @throws Exception
-             *             is thrown on instantiation error
-             */
-            @Override
-            public Long fromString(final String v) {
-                return Long.valueOf(v);
-            }
-        };
+        MAXMEMORY;
 
 		/**
 		 * This is the index based on ordinal so that the first value is
@@ -799,11 +782,11 @@ public class WorkInterface extends Table {
         } catch (final Exception e) {
         }
         try {
-            setMaxCpuSpeed((Integer) Columns.MAXCPUSPEED.fromResultSet(rs));
+            setMaxCpuSpeed((Float) Columns.MAXCPUSPEED.fromResultSet(rs));
         } catch (final Exception e) {
         }
         try {
-            setMaxMemory((Long) Columns.MAXMEMORY.fromResultSet(rs));
+            setMaxMemory((String) Columns.MAXMEMORY.fromResultSet(rs));
         } catch (final Exception e) {
         }
 		try {
@@ -1572,24 +1555,24 @@ public class WorkInterface extends Table {
      * @return this attribute
      * @since 13.0.0
      */
-    public final long getMaxMemory() {
-        final Long ret = (Long) getValue(Columns.MAXMEMORY);
-        if (ret != null) {
-            return ret.longValue();
-        }
-        return 0L;
+    public final String getMaxMemory() throws IOException{
+		final String ret = (String) getValue(Columns.MAXMEMORY);
+		if (ret == null) {
+			throw new IOException("" + getEnvId() + " : no max memory");
+		}
+		return ret;
     }
     /**
      * This retrieves the max authorized CPU usage in percentage
      * @return this attribute
      * @since 13.0.0
      */
-    public final int getMaxCpuSpeed() {
-        final Integer ret = (Integer) getValue(Columns.MAXCPUSPEED);
+    public final float getMaxCpuSpeed() {
+        final Float ret = (Float) getValue(Columns.MAXCPUSPEED);
         if (ret != null) {
-            return ret.intValue();
+            return ret.floatValue();
         }
-        return 0;
+        return 0.5f;
     }
 	/**
 	 * This retrieves the environment ID, if not set  this call setEnvId(1) and returns 1
@@ -1977,14 +1960,12 @@ public class WorkInterface extends Table {
 	 *            is the minimal amount of RAM this work needs in Kb
 	 * @return true if value has changed, false otherwise
 	 */
-	public final boolean setMinMemory(final long v) {
+	public final boolean setMinMemory(final String v) {
 		try {
-			final long maxMemory = getMaxMemory();
-			final long valeur = (v < 0 ? 0 : v);
-			return setValue(Columns.MINMEMORY, (valeur > maxMemory ? maxMemory : valeur));
+			return setValue(Columns.MAXMEMORY, (v == null ? "512m" : v));
 		} catch (final Exception e) {
-			return setValue(Columns.MINMEMORY, 0);
 		}
+		return false;
 	}
     /**
      * This sets the min needed mass storage usage
@@ -2009,8 +1990,12 @@ public class WorkInterface extends Table {
      * @return true if value has changed, false otherwise
      * @since 13.0.0
      */
-    public final boolean setMaxMemory(final long v) {
-        return setValue(Columns.MAXMEMORY, Long.valueOf(v < 0L ? 0L : v));
+    public final boolean setMaxMemory(final String v) {
+		try {
+			return setValue(Columns.MAXMEMORY, (v == null ? "512m" : v));
+		} catch (final Exception e) {
+		}
+		return false;
     }
     /**
      * This sets the max authorized CPU usage; this is in percentage

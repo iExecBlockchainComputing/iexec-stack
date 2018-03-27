@@ -989,7 +989,6 @@ public class ThreadWork extends Thread {
 	 * @see xtremweb.common.AppTypeEnum#checkParams(String)
 	 * @since 12.2.8
 	 */
-/*
 	private void checkAppParams(final String params)
 			throws AccessControlException,
 			IOException,
@@ -1012,7 +1011,7 @@ public class ThreadWork extends Thread {
 
 		app.checkParams(params);
 	}
-*/
+
 	/**
 	 * This retrieves the current work command line
 	 *
@@ -1031,7 +1030,7 @@ public class ThreadWork extends Thread {
 		final String wcmdline = currentWork.getCmdLine();
 
 		if (wcmdline != null) {
-//			checkAppParams(wcmdline);
+			checkAppParams(wcmdline);
 			final Collection<String> wcmdvector = XWTools.split(wcmdline);
 			if (ret == null) {
 				ret = wcmdvector;

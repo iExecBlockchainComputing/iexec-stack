@@ -132,36 +132,27 @@ public final class EnvelopeInterface extends Table {
 			}
 		},
 		/**
-		 * This is the column index of the max memory. This is in bytes
+		 * This is the column index of the max memory.
+		 * This is a string
+		 * Memory limit (format: <number>[<unit>]).
+		 * Number is a positive integer. Unit can be one of b, k, m, or g. Minimum is 4M
+		 * @link{https://docs.docker.com/engine/reference/run/#user-memory-constraints}
 		 */
-		MAXMEMORY {
-			/**
-			 * This creates an object from String representation for this column
-			 * value
-			 *
-			 * @param v
-			 *            the String representation
-			 * @return an Integer representing the column value
-			 */
-			@Override
-			public Long fromString(final String v) {
-                return Long.valueOf(v);
-			}
-		},
+		MAXMEMORY,
 		/**
 		 * This is the column index of the max CPU speed. This is in MHz
+		 * @link{https://docs.docker.com/engine/reference/run/#cpu-period-constraint}
 		 */
 		MAXCPUSPEED {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
-			 *
 			 * @param v the String representation
-			 * @return an Integer representing the column value
+			 * @return an Float representing the column value
 			 */
 			@Override
-            public Integer fromString(final String v) {
-                return Integer.valueOf(v);
+            public Float fromString(final String v) {
+                return Float.valueOf(v);
             }
 		};
 		/**
@@ -353,7 +344,7 @@ public final class EnvelopeInterface extends Table {
             setAccessRights(XWAccessRights.DEFAULT);
 			setName((String) Columns.NAME.fromResultSet(rs));
             setEnvId((Integer) Columns.ENVID.fromResultSet(rs));
-			setMaxMemory((Long) Columns.MAXMEMORY.fromResultSet(rs));
+			setMaxMemory((String) Columns.MAXMEMORY.fromResultSet(rs));
 			setMaxCpuSpeed((Integer) Columns.MAXCPUSPEED.fromResultSet(rs));
 			setMaxFreeMassStorage((Long) Columns.MAXFREEMASSSTORAGE.fromResultSet(rs));
 			setMaxWallClockTime((Long) Columns.MAXWALLCLOCKTIME.fromResultSet(rs));
@@ -405,17 +396,17 @@ public final class EnvelopeInterface extends Table {
 	}
 
 	/**
-	 * This retrieves the mimimum RAM needed for this application
+	 * This retrieves the max RAM needed for this envelope
 	 *
-	 * @return the mimimum RAM needed for this application in Kb
+	 * @return the max RAM needed for this envelope
 	 * @exception IOException if value not defined
 	 */
-	public long getMaxMemory() throws IOException {
-		final Long ret = (Long) getValue(Columns.MAXMEMORY);
-		if (ret != null) {
-			return ret.longValue();
-		}
-		throw new IOException("" + getEnvId() + " : no max cpu speed");
+	public String getMaxMemory() throws IOException {
+		final String ret = (String) getValue(Columns.MAXMEMORY);
+		if (ret == null) {
+            throw new IOException("" + getEnvId() + " : no max memory");
+        }
+        return ret;
 	}
 
 	/**
@@ -424,10 +415,10 @@ public final class EnvelopeInterface extends Table {
 	 * @return the max CPU speed
 	 * @exception IOException if value not defined
 	 */
-	public int getMaxCpuSpeed() throws IOException {
-		final Integer ret = (Integer) getValue(Columns.MAXCPUSPEED);
+	public float getMaxCpuSpeed() throws IOException {
+		final Float ret = (Float) getValue(Columns.MAXCPUSPEED);
 		if (ret != null) {
-			return ret.intValue();
+			return ret.floatValue();
 		}
 		throw new IOException("" + getEnvId() + " : no max cpu speed");
 	}
@@ -511,9 +502,9 @@ public final class EnvelopeInterface extends Table {
 	 * @param v is the max amount of RAM
 	 * @return true if value has changed, false otherwise
 	 */
-	public final boolean setMaxMemory(final long v) {
+	public final boolean setMaxMemory(final String v) {
 		try {
-			return setValue(Columns.MAXMEMORY, Long.valueOf(v < 0 ? 0 : v));
+			return setValue(Columns.MAXMEMORY, (v == null ? "512m" : v));
 		} catch (final Exception e) {
 		}
 		return false;
@@ -525,8 +516,9 @@ public final class EnvelopeInterface extends Table {
 	 * @param v is the max CPU speed
 	 * @return true if value has changed, false otherwise
 	 */
-	public boolean setMaxCpuSpeed(final int v) {
-		return setValue(Columns.MAXCPUSPEED, Integer.valueOf(v < 0 ? 0 : v));
+	public boolean setMaxCpuSpeed(final float v) {
+	    final float value = v > 1.0f ? 1.0f : v;
+		return setValue(Columns.MAXCPUSPEED, Float.valueOf(value < 0.0f ? 0.5f : value));
 	}
 
 	/**
