@@ -2,14 +2,16 @@ buildscript {
     repositories {
         mavenCentral()
     }
+
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:2.0.0.RELEASE")
+    }
 }
 
 apply plugin: 'java'
+apply plugin: 'org.springframework.boot'
 
-jar {
-    baseName = 'iexec-scheduler-library'
-    version = '0.0.1-SNAPSHOT'
-}
+
 
 sourceCompatibility = 1.8
 
@@ -42,6 +44,12 @@ dependencies {
 
     testCompile "junit:junit:$junitVersion"
 }
+
+
+bootJar.enabled = false
+jar.enabled = true
+
+
 
 task copyContracts(type: Copy) {
     into "./src/main/resources/solidity/poco"
