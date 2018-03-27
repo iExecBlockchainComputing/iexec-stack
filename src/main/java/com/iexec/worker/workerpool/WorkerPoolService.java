@@ -1,47 +1,66 @@
 package com.iexec.worker.workerpool;
 
 import com.iexec.worker.contracts.generated.WorkerPool;
-import com.iexec.worker.ethereum.CredentialsService;
-import com.iexec.worker.ethereum.EthConfig;
-import com.iexec.worker.scheduler.SchedulerApiService;
+import com.iexec.worker.ethereum.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.web3j.protocol.Web3j;
 import org.web3j.tx.Contract;
 import org.web3j.tx.ManagedTransaction;
 
-import javax.annotation.PostConstruct;
+import static com.iexec.worker.ethereum.Utils.END;
 
-@Service
 public class WorkerPoolService {
 
     private static final Logger log = LoggerFactory.getLogger(WorkerPoolService.class);
-    private final Web3j web3j;
-    private final CredentialsService credentialsService;
-    private final EthConfig ethConfig;
-    private final SchedulerApiService schedulerApiService;
+    private static WorkerPoolService instance;
+    private final Web3jService web3jService = Web3jService.getInstance();
+    private final CredentialsService credentialsService = CredentialsService.getInstance();
+    private final Configuration configuration = IexecConfigurationService.getInstance().getConfiguration();
+    private final Web3jConfig web3jConfig = configuration.getWeb3jConfig();
+    private final ContractConfig contractConfig = configuration.getContractConfig();
     private WorkerPool workerPool;
+    private WorkerPoolWatcher workerPoolWatcher;
 
-    @Autowired
-    public WorkerPoolService(Web3j web3j, CredentialsService credentialsService, EthConfig ethConfig, SchedulerApiService schedulerApiService) {
-        this.credentialsService = credentialsService;
-        this.web3j = web3j;
-        this.ethConfig = ethConfig;
-        this.schedulerApiService = schedulerApiService;
+    private WorkerPoolService() {
+        run();
     }
 
-    @PostConstruct
-    public void run() throws Exception {
-        String workerPoolAddress = schedulerApiService.getWorkerPoolPolicy().getAddress();
-        log.info("WORKER1 loading WorkerPool contract on " + workerPoolAddress);
+    public static WorkerPoolService getInstance() {
+        if (instance == null) {
+            instance = new WorkerPoolService();
+        }
+        return instance;
+    }
 
+    public void run() {
+        String workerPoolAddress = contractConfig.getWorkerPoolAddress();
+        log.info("Loading WorkerPool contract [address:{}]", workerPoolAddress);
         if (workerPoolAddress != null) {
             workerPool = WorkerPool.load(
-                    workerPoolAddress, web3j, credentialsService.getCredentials(), ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT);
+                    workerPoolAddress, web3jService.getWeb3j(), credentialsService.getCredentials(), ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT);
 
         }
+        this.getWorkerPool().revealConsensusEventObservable(web3jConfig.getStartBlockParameter(), END)
+                .subscribe(this::onRevealConsensus);
+        this.getWorkerPool().callForContributionEventObservable(web3jConfig.getStartBlockParameter(), END)
+                .subscribe(this::onCallForContribution);
+    }
+
+    private void onCallForContribution(WorkerPool.CallForContributionEventResponse callForContributionEvent) {
+        if (callForContributionEvent.worker.equals(credentialsService.getCredentials().getAddress())) {
+            log.info("Received CallForContributionEvent [workOrderId:{}]", callForContributionEvent.woid);
+            workerPoolWatcher.onCallForContribution(callForContributionEvent.woid);
+        }
+    }
+
+    private void onRevealConsensus(WorkerPool.RevealConsensusEventResponse revealConsensusEvent) {
+        log.info("Received RevealConsensusEvent [workOrderId:{}]", revealConsensusEvent.woid);
+        workerPoolWatcher.onRevealConsensus(revealConsensusEvent.woid);
+
+    }
+
+    public void registerWorkerPoolWatcher(WorkerPoolWatcher workerPoolWatcher) {
+        this.workerPoolWatcher = workerPoolWatcher;
     }
 
     public WorkerPool getWorkerPool() {
