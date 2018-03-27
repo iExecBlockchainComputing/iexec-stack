@@ -85,6 +85,7 @@ public class ActuatorService implements Actuator {
                     depositBig, getStatus(contributeDepositReceipt));
             TransactionReceipt contributeReceipt = workerPoolService.getWorkerPool().contribute(workOrderId, hashResultBytes, hashSignBytes, contributeV, r, s).send();
             log.info("Contribute [hashResult:{}, signResult:{}, transactionStatus:{}]", hashResult, signResult, getStatus(contributeReceipt));
+            return getStatus(contributeReceipt);
         } catch (Exception e) {
             e.printStackTrace();
         }
