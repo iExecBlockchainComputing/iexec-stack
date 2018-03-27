@@ -5,6 +5,7 @@ project.ext{
     root = '.'
     build = root + '/build'
     libXtremWeb = root + '/libXtremWeb'
+    libIexecScheduler = root + '/iexec-scheduler/build/libs'
     src = root + '/src'
     res = src + '/main/resources'
     conf = res + '/conf'
