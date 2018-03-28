@@ -1,7 +1,5 @@
 package com.iexec.scheduler.ethereum;
 
-import javax.validation.constraints.NotNull;
-
 public class WalletConfig {
 
     private String address;

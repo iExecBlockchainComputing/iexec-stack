@@ -1,9 +1,5 @@
 package com.iexec.scheduler.workerpool;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.web.bind.annotation.ResponseBody;
-
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
