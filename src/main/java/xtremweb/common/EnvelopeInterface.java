@@ -56,7 +56,7 @@ public final class EnvelopeInterface extends Table {
 	/**
 	 * This is the XML tag
 	 */
-	public static final String THISTAG = "env";
+	public static final String THISTAG = "envelope";
 
 	/**
 	 * This enumerates this interface columns. The base enumerations are defined
