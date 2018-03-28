@@ -1,55 +1,47 @@
 buildscript {
     repositories {
         mavenCentral()
+        jcenter()
     }
 
     dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:2.0.0.RELEASE")
+        classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.3'
     }
 }
 
+apply plugin: 'com.github.johnrengelman.shadow'
 apply plugin: 'java'
-apply plugin: 'org.springframework.boot'
-
 
 
 sourceCompatibility = 1.8
+
 
 repositories {
     mavenCentral()
 }
 
 ext {
-    web3jVersion = '3.3.1'
+    web3jVersion = '3.2.0'
     web3jSpringBootVersion = '1.5.0'
     logbackVersion = '1.2.3'
     junitVersion = '4.12'
     springBootVersion = '1.5.9.RELEASE'
 }
 
+version = '0.1.0'
+
 dependencies {
     // web3j dependencies
     compile "org.web3j:core:$web3jVersion"
-    compile "org.web3j:web3j-spring-boot-starter:$web3jSpringBootVersion"
 
-    // spring boot dependencies
-    compile "org.springframework.boot:spring-boot-starter-web:$springBootVersion"
-    compile "org.springframework.boot:spring-boot-configuration-processor:$springBootVersion"
 
     compile "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.3.0"
     compile "com.fasterxml.jackson.core:jackson-databind:2.2.3"
 
     compile 'org.apache.commons:commons-lang3:3.4'
 
-
     testCompile "junit:junit:$junitVersion"
 }
-
-
-bootJar.enabled = false
-jar.enabled = true
-
-
 
 task copyContracts(type: Copy) {
     into "./src/main/resources/solidity/poco"
@@ -78,7 +70,16 @@ task buildContracts(type: Exec) {
 }
 buildContracts.enabled = !project.hasProperty("skipContracts")
 
+
 // Force the rebuild of contracts before java build
-compileJava.dependsOn buildContracts
+compileJava.dependsOn(buildContracts)
+
+shadowJar {
+    baseName = 'iexec-scheduler'
+    classifier = null
+    version = null
+}
+
+build.dependsOn(shadowJar)
 
 

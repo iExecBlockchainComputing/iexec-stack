@@ -1,12 +1,8 @@
 package com.iexec.scheduler.ethereum;
 
-import javax.validation.constraints.NotNull;
-
 public class ContractConfig {
 
-    @NotNull
     private String iexecHubAddress;
-    @NotNull
     private String rlcAddress;
 
     public String getIexecHubAddress() {

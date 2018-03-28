@@ -51,7 +51,6 @@ public class IexecHubService {
 
     private String fetchWorkerPoolAddress(){
         String workerPoolAddress = null;
-        log.info("aaa "+workerPoolConfig.getAddress());
         if (workerPoolConfig.getAddress()==null || workerPoolConfig.getAddress().isEmpty()) {
             try {
                 TransactionReceipt createWorkerPoolReceipt = iexecHub.createWorkerPool(workerPoolConfig.getName(),
