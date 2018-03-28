@@ -20,6 +20,8 @@ dependencies {
     compile "org.web3j:core:3.2.0"
 
     compile project(':iexec-scheduler')
+    compile project(':iexec-worker')
+
 
     api 'org.apache.commons:commons-math3:3.6.1'
 
@@ -119,11 +121,9 @@ task copyMiscToDist(type: Copy) {
     }
 
     into("/lib") {
-        from libXtremWeb
-    }
+        from(libXtremWeb,libIexecScheduler,libIexecWorker)
+        include('*.jar')
 
-    into("/lib") {
-        from libIexecScheduler
     }
 
     into("/benchmark/apptest") {
@@ -137,6 +137,10 @@ task copyMiscToDist(type: Copy) {
         include('COPYING')
         include('INSTALL')
         include('License**')
+    }
+
+    into("/wallet") {
+        from wallet
     }
 
     into("/lib") {

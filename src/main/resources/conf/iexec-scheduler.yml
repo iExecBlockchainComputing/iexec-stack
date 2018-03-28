@@ -3,12 +3,12 @@ web3jConfig:
   adminClient: false #default
   startBlock: 0
 contractConfig:
-  rlcAddress: 0x48a14efadd9054ac82957c3c55d9c47521c2f999
-  iexecHubAddress: 0x0e88110b6c6ec0b45bcbc6ee2da4560c3db8a763
+  rlcAddress: 
+  iexecHubAddress: 
 
 walletConfig:
   address: "0x8bd535d49b095ef648cd85ea827867d358872809"
-  folder: "../conf/wallet"
+  folder: "../wallet"
   filename: "UTC--2018-02-14T08-32-12.500000000Z--8bd535d49b095ef648cd85ea827867d358872809.json"
   password: "whatever"
 

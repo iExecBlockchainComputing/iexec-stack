@@ -34,8 +34,10 @@ import java.net.URL;
 
 import javax.net.ssl.SSLHandshakeException;
 
+import com.iexec.worker.ethereum.IexecConfigurationService;
 import xtremweb.communications.CommClient;
 import xtremweb.exec.Executor;
+import xtremweb.worker.WorkerWatcherImpl;
 
 /**
  * This launches XtremWeb from its JAR file. This first retrieve URL from config
@@ -75,6 +77,11 @@ public final class HTTPLauncher {
 	 * @throws IOException 
 	 */
 	private HTTPLauncher(final String[] a) throws IOException {
+
+		IexecConfigurationService.initialize("../conf/iexec-worker.yml");
+		WorkerWatcherImpl workerWatcher = new WorkerWatcherImpl();
+
+
 		final String[] argv = a.clone();
 		CommandLineParser args = null;
 		try {

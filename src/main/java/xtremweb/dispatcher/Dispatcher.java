@@ -29,7 +29,9 @@ import java.util.Iterator;
 import java.util.Timer;
 
 import com.iexec.scheduler.ethereum.IexecConfigurationService;
+import com.iexec.scheduler.iexechub.IexecHubService;
 import com.iexec.scheduler.iexechub.IexecHubWatcher;
+import com.iexec.scheduler.workerpool.WorkerPoolService;
 import org.eclipse.jetty.server.session.SessionHandler;
 
 import xtremweb.common.CommandLineOptions;
@@ -136,7 +138,8 @@ public class Dispatcher {
 	 * Main function
 	 */
 	public void go() throws Exception {
-		IexecConfigurationService.initialize("../conf/application.yml");
+
+		IexecConfigurationService.initialize("../conf/iexec-scheduler.yml");
 		IexecHubWatcher iexecHubWatcher = new IexecHubWatcherImpl();
 
 		timer = new Timer();
