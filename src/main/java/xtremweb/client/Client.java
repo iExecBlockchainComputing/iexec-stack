@@ -1789,7 +1789,8 @@ public final class Client {
             env.setMaxCpuSpeed(Integer.valueOf((String)envelopeParams.get(1)));
             env.setMaxWallClockTime(Long.valueOf((String)envelopeParams.get(2)));
             env.setMaxMemory(Long.valueOf((String)envelopeParams.get(3)));
-            env.setMaxFreeMassStorage(Long.valueOf((String)envelopeParams.get(4)));
+			env.setMaxFreeMassStorage(Long.valueOf((String)envelopeParams.get(4)));
+			env.setMaxFileSize(Long.valueOf((String)envelopeParams.get(5)));
 
         }
 		commClient().send(env);
