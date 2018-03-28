@@ -4,7 +4,6 @@ import com.iexec.worker.contracts.generated.IexecHub;
 import com.iexec.worker.ethereum.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
 import org.web3j.tx.Contract;
 import org.web3j.tx.ManagedTransaction;
 

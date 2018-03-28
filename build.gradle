@@ -1,16 +1,19 @@
 buildscript {
     repositories {
         mavenCentral()
+        jcenter()
     }
+
     dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.5.9.RELEASE")
+        classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.3'
     }
 }
 
+apply plugin: 'com.github.johnrengelman.shadow'
 apply plugin: 'java'
-apply plugin: 'org.springframework.boot'
 
 sourceCompatibility = 1.8
+
 
 repositories {
     mavenCentral()
@@ -27,7 +30,6 @@ ext {
 dependencies {
     // web3j dependencies
     compile "org.web3j:core:$web3jVersion"
-    compile "org.web3j:web3j-spring-boot-starter:$web3jSpringBootVersion"
 
     compile "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.3.0"
     compile "com.fasterxml.jackson.core:jackson-databind:2.2.3"
@@ -67,8 +69,12 @@ buildContracts.enabled = !project.hasProperty("skipContracts")
 // Force the rebuild of contracts before java build
 compileJava.dependsOn buildContracts
 
-bootRun {
-    systemProperties = System.properties
+shadowJar {
+    baseName = 'iexec-scheduler'
+    classifier = null
+    version = null
 }
+
+build.dependsOn(shadowJar)
 
 
