@@ -3010,10 +3010,7 @@ public final class AppInterface extends Table {
 	}
 
 	/**
-	 * This sets the minimal disk space for this application Provided value can
-	 * not exceed XWPropertyDefs.MAXDISKSPACE If(v >
-	 * XWPropertyDefs.MAXDISKSPACE) v is forced to XWPropertyDefs.MAXDISKSPACE.
-	 * If(v < 0) v is forced to 0.
+	 * This sets the minimal disk space for this application
 	 *
 	 * @param v
 	 *            is the minimal amount of disk space this work needs in Mb.

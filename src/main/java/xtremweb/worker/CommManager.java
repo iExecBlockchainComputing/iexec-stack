@@ -522,20 +522,20 @@ public final class CommManager extends Thread {
 	private void downloadWork(final Work w) throws IOException {
 
 		try {
-			downloadData(w.getStdin(), w.getMaxFreeMassStorage(), false);
+			downloadData(w.getStdin(), w.getMaxFileSize(), false);
 		} catch (final Exception e) {
 			throw new IOException("can't download stdin (" + w.getStdin() + ")");
 		}
 
 		try {
 			final URI uri = w.getDirin();
-			downloadData(uri, w.getMaxFreeMassStorage(), false);
+			downloadData(uri, w.getMaxFileSize(), false);
 			final DataInterface dirin = getData(uri, false);
 			if (dirin != null) {
 				final DataTypeEnum dirinType = dirin.getType();
 				logger.debug("dirinType = " + dirinType);
 				if ((dirinType != null) && (dirinType == DataTypeEnum.URIPASSTHROUGH)) {
-					uriPassThrough(uri, w.getMaxFreeMassStorage());
+					uriPassThrough(uri, w.getMaxFileSize());
 				}
 			}
 		} catch (final Exception e) {
@@ -1117,7 +1117,7 @@ public final class CommManager extends Thread {
 						throw new IOException("can't download work :" + e.getMessage());
 					}
 					try {
-                        downloadApp(newWork.getApplication(), newWork.getMaxFreeMassStorage());
+                        downloadApp(newWork.getApplication(), newWork.getMaxFileSize());
 					} catch (final Exception e) {
 						logger.exception("Download app err : ", e);
 						throw new IOException("can't download app : " + e.getMessage());
@@ -1232,7 +1232,7 @@ public final class CommManager extends Thread {
 			if (content.exists()) {
 				commClient.send(data);
 				logger.debug("CommManager#uploadResults " + data.toXml());
-				uploadData(resultURI, theWork.getMaxFreeMassStorage());
+				uploadData(resultURI, theWork.getMaxFileSize());
 				theWork.setStatus(StatusEnum.COMPLETED);
 			}
 

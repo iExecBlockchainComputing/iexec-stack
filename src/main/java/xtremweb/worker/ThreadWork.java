@@ -1138,7 +1138,7 @@ public class ThreadWork extends Thread {
 				final StreamIO io = new StreamIO(output, null, 10240, Worker.getConfig().nio())) {
 
 			logger.debug("installFile = " + fData + " is not a zip file; just copy it to PWD : " + fout);
-			io.writeFileContent(fData, currentWork.getMaxFreeMassStorage());
+			io.writeFileContent(fData, currentWork.getMaxFileSize());
 			return fout;
 		} finally {
 			CommManager.getInstance().commClient().unlock(uri);

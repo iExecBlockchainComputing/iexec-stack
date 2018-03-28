@@ -98,7 +98,7 @@ public final class EnvelopeInterface extends Table {
             }
         },
         /**
-         * This is the column index of the max wall clock time
+         * This is the column index of the max wall clock time; this is in seconds
          */
 		MAXWALLCLOCKTIME {
 			/**
@@ -132,15 +132,41 @@ public final class EnvelopeInterface extends Table {
 			}
 		},
 		/**
-		 * This is the column index of the max memory.
-		 * This is a string
-		 * Memory limit (format: <number>[<unit>]).
-		 * Number is a positive integer. Unit can be one of b, k, m, or g. Minimum is 4M
-		 * @link{https://docs.docker.com/engine/reference/run/#user-memory-constraints}
+		 * This is the column index of the max file size. This is in bytes
 		 */
-		MAXMEMORY,
+		MAXFILESIZE {
+			/**
+			 * This creates an object from String representation for this column
+			 * value
+			 *
+			 * @param v
+			 *            the String representation
+			 * @return an Integer representing the column value
+			 */
+			@Override
+			public Long fromString(final String v) {
+				return Long.valueOf(v);
+			}
+		},
 		/**
-		 * This is the column index of the max CPU speed. This is in MHz
+		 * This is the column index of the max memory. This is in bytes
+		 */
+		MAXMEMORY{
+			/**
+			 * This creates an object from String representation for this column
+			 * value
+			 *
+			 * @param v
+			 *            the String representation
+			 * @return an Integer representing the column value
+			 */
+			@Override
+			public Long fromString(final String v) {
+				return Long.valueOf(v);
+			}
+		},
+		/**
+		 * This is the column index of the max CPU speed. This is in percentage
 		 * @link{https://docs.docker.com/engine/reference/run/#cpu-period-constraint}
 		 */
 		MAXCPUSPEED {
@@ -344,9 +370,10 @@ public final class EnvelopeInterface extends Table {
             setAccessRights(XWAccessRights.DEFAULT);
 			setName((String) Columns.NAME.fromResultSet(rs));
             setEnvId((Integer) Columns.ENVID.fromResultSet(rs));
-			setMaxMemory((String) Columns.MAXMEMORY.fromResultSet(rs));
-			setMaxCpuSpeed((Integer) Columns.MAXCPUSPEED.fromResultSet(rs));
+			setMaxMemory((Long) Columns.MAXMEMORY.fromResultSet(rs));
+			setMaxCpuSpeed((Float) Columns.MAXCPUSPEED.fromResultSet(rs));
 			setMaxFreeMassStorage((Long) Columns.MAXFREEMASSSTORAGE.fromResultSet(rs));
+			setMaxFileSize((Long) Columns.MAXFILESIZE.fromResultSet(rs));
 			setMaxWallClockTime((Long) Columns.MAXWALLCLOCKTIME.fromResultSet(rs));
 		} catch (final Exception e) {
 			getLogger().exception(e);
@@ -391,6 +418,7 @@ public final class EnvelopeInterface extends Table {
 		setMaxMemory(itf.getMaxMemory());
 		setMaxCpuSpeed(itf.getMaxCpuSpeed());
 		setMaxFreeMassStorage(itf.getMaxFreeMassStorage());
+		setMaxFileSize(itf.getMaxFileSize());
 		setMaxWallClockTime(itf.getMaxWallClockTime());
 		setEnvId(itf.getEnvId());
 	}
@@ -401,12 +429,12 @@ public final class EnvelopeInterface extends Table {
 	 * @return the max RAM needed for this envelope
 	 * @exception IOException if value not defined
 	 */
-	public String getMaxMemory() throws IOException {
-		final String ret = (String) getValue(Columns.MAXMEMORY);
-		if (ret == null) {
-            throw new IOException("" + getEnvId() + " : no max memory");
-        }
-        return ret;
+	public long getMaxMemory() throws IOException {
+		final Long ret = (Long) getValue(Columns.MAXMEMORY);
+		if (ret != null) {
+			return ret.longValue();
+		}
+		throw new IOException("" + getEnvId() + " : no max memory");
 	}
 
 	/**
@@ -426,7 +454,7 @@ public final class EnvelopeInterface extends Table {
 	/**
 	 * This retrieves the maximum amount of disk for this envelope
 	 *
-	 * @return the max disk space, or 0 if not set
+	 * @return the max disk space, in bytes
 	 * @exception IOException if value not defined
 	 */
 	public long getMaxFreeMassStorage() throws IOException {
@@ -436,11 +464,24 @@ public final class EnvelopeInterface extends Table {
 		}
 		throw new IOException("" + getEnvId() + " : no max free max storage");
 	}
+	/**
+	 * This retrieves the max file size for this envelope
+	 *
+	 * @return the max file size, in bytes
+	 * @exception IOException if value not defined
+	 */
+	public long getMaxFileSize() throws IOException {
+		final Long ret = (Long) getValue(Columns.MAXFILESIZE);
+		if (ret != null) {
+			return ret.longValue();
+		}
+		throw new IOException("" + getEnvId() + " : no max file size");
+	}
 
 	/**
 	 * This retrieves the maximum wall clock time for this envelope
 	 *
-	 * @return the max wall clock time
+	 * @return the max wall clock time, in seconds
 	 * @exception IOException if value not defined
 	 */
 	public long getMaxWallClockTime() throws IOException {
@@ -499,12 +540,12 @@ public final class EnvelopeInterface extends Table {
 	/**
 	 * This sets the maximum amount of RAM for this envelope
 	 *
-	 * @param v is the max amount of RAM
+	 * @param v is the max amount of RAM in bytes
 	 * @return true if value has changed, false otherwise
 	 */
-	public final boolean setMaxMemory(final String v) {
+	public final boolean setMaxMemory(final long v) {
 		try {
-			return setValue(Columns.MAXMEMORY, (v == null ? "512m" : v));
+			return setValue(Columns.MAXMEMORY, Long.valueOf(v < 0L ? 0L : v));
 		} catch (final Exception e) {
 		}
 		return false;
@@ -513,7 +554,7 @@ public final class EnvelopeInterface extends Table {
 	/**
 	 * This sets the max CPU speed for this envelope
 	 *
-	 * @param v is the max CPU speed
+	 * @param v is the max CPU speed in percentage
 	 * @return true if value has changed, false otherwise
 	 */
 	public boolean setMaxCpuSpeed(final float v) {
@@ -524,7 +565,7 @@ public final class EnvelopeInterface extends Table {
 	/**
 	 * This sets the max disk space for this envelope
 	 *
-	 * @param v is the max amount of disk space
+	 * @param v is the max amount of disk space in bytes
 	 * @return true if value has changed, false otherwise
 	 */
 	public boolean setMaxFreeMassStorage(final long v) {
@@ -534,10 +575,23 @@ public final class EnvelopeInterface extends Table {
 		}
 		return false;
 	}
+	/**
+	 * This sets the max file size for this envelope
+	 *
+	 * @param v is the max file size, in bytes
+	 * @return true if value has changed, false otherwise
+	 */
+	public boolean setMaxFileSize(final long v) {
+		try {
+			return setValue(Columns.MAXFILESIZE, Long.valueOf(v < 0L ? 0L : v));
+		} catch (final Exception e) {
+		}
+		return false;
+	}
     /**
-     * This sets the max disk space for this envelope
+     * This sets the max computing time
      *
-     * @param v is the max amount of disk space
+     * @param v is the max computing time, in seconds
      * @return true if value has changed, false otherwise
      */
     public boolean setMaxWallClockTime(final long v) {

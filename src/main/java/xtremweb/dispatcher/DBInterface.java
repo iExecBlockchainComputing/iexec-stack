@@ -4876,14 +4876,11 @@ public final class DBInterface {
 			receivedJob.setOwner(mandatingClient.getUID());
 		}
 
-		if ((receivedJob.getMinMemory() == 0) || (receivedJob.getMinMemory() < theApp.getMinMemory())) {
-			receivedJob.setMinMemory(theApp.getMinMemory());
+		if (receivedJob.getMinCpuSpeed() < theApp.getMinCpuSpeed()) {
+			throw new IOException("job.getMinCpuSpeed < app.getMinCpuSpeed");
 		}
-		if ((receivedJob.getMinCpuSpeed() == 0) || (receivedJob.getMinCpuSpeed() < theApp.getMinCpuSpeed())) {
-			receivedJob.setMinCpuSpeed(theApp.getMinCpuSpeed());
-		}
-		if ((receivedJob.getMinFreeMassStorage() == 0) || (receivedJob.getMinFreeMassStorage() < theApp.getMinFreeMassStorage())) {
-			receivedJob.setMinFreeMassStorage(theApp.getMinFreeMassStorage());
+		if (receivedJob.getMinFreeMassStorage() < theApp.getMinFreeMassStorage()) {
+			throw new IOException("job getMinFreeMassStorage < app.getMinFreeMassStorage");
 		}
 
         final EnvelopeInterface envelopeItf = select(new EnvelopeInterface(),
@@ -4894,9 +4891,10 @@ public final class DBInterface {
         }
 
         receivedJob.setMaxWallClockTime(envelopeItf.getMaxWallClockTime());
-        receivedJob.setMaxMemory(envelopeItf.getMaxMemory());
+		receivedJob.setMaxMemory(envelopeItf.getMaxMemory());
         receivedJob.setMaxCpuSpeed(envelopeItf.getMaxCpuSpeed());
         receivedJob.setMaxFreeMassStorage(envelopeItf.getMaxFreeMassStorage());
+		receivedJob.setMaxFileSize(envelopeItf.getMaxFileSize());
 
         final WorkInterface theWork = work(mandatingClient, jobUID);
 		if (theWork != null) {

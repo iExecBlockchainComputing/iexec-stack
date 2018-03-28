@@ -174,6 +174,10 @@ public class XWTools {
 	 */
 	public static final long MAXRAMSIZE = ONEGIGABYTES;
 	/**
+	 * @since 13.0.0
+	 */
+	public static final String DEFAULTRAMSIZE = "512m";
+	/**
 	 * This helps to format date : the format is "yyyy-MM-dd HH:mm:ss"
 	 */
 	private static final SimpleDateFormat sqlDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");

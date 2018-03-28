@@ -444,17 +444,6 @@ public class WorkInterface extends Table {
 			}
 		},
 		/**
-		 * This is copied from envelope
-		 * @since 13.0.0
-		 * @see EnvelopeInterface
-		 */
-		MAXWALLCLOCKTIME {
-			@Override
-			public Long fromString(final String v) {
-				return new Long(v);
-			}
-		},
-		/**
 		 * This is the column index of the retry
 		 *
 		 * @since 8.0.0
@@ -471,8 +460,8 @@ public class WorkInterface extends Table {
 		 */
 		MINMEMORY {
 			@Override
-			public Integer fromString(final String v) {
-				return Integer.valueOf(v);
+			public Long fromString(final String v) {
+				return Long.valueOf(v);
 			}
 		},
         /**
@@ -483,17 +472,6 @@ public class WorkInterface extends Table {
             @Override
             public Integer fromString(final String v) {
                 return Integer.valueOf(v);
-            }
-        },
-		/**
-		 * This is copied from envelope
-		 * @since 13.0.0
-		 * @see EnvelopeInterface
-		 */
-        MAXCPUSPEED {
-            @Override
-            public Float fromString(final String v) {
-                return Float.valueOf(v);
             }
         },
 		/**
@@ -540,32 +518,93 @@ public class WorkInterface extends Table {
             }
         },
 		/**
-		 * This is copied from envelope
-		 * @since 13.0.0
+		 * This is copied from the envelope
 		 * @see EnvelopeInterface
 		 */
-        MAXFREEMASSSTORAGE {
-            /**
-             * This creates an object from String representation for this column
-             * value
-             *
-             * @param v
-             *            the String representation
-             * @return an Integer representing the column value
-             * @throws Exception
-             *             is thrown on instantiation error
-             */
-            @Override
-            public Long fromString(final String v) {
-                return Long.valueOf(v);
-            }
-        },
-        /**
-		 * This is copied from envelope
-         * @since 13.0.0
+		MAXWALLCLOCKTIME {
+					/**
+					 * This creates an object from String representation for this column
+					 * value This cleans the parameter to ensure SQL compliance
+					 *
+					 * @param v
+					 *            the String representation
+					 * @return a Boolean representing the column value
+					 */
+					@Override
+					public Long fromString(final String v) {
+						return Long.valueOf(v);
+					}
+				},
+		/**
+		 * This is copied from the envelope
 		 * @see EnvelopeInterface
-         */
-        MAXMEMORY;
+		 */
+		MAXFREEMASSSTORAGE {
+			/**
+			 * This creates an object from String representation for this column
+			 * value
+			 *
+			 * @param v
+			 *            the String representation
+			 * @return an Integer representing the column value
+			 */
+			@Override
+			public Long fromString(final String v) {
+				return Long.valueOf(v);
+			}
+		},
+		/**
+		 * This is copied from the envelope
+		 * @see EnvelopeInterface
+		 */
+		MAXFILESIZE {
+			/**
+			 * This creates an object from String representation for this column
+			 * value
+			 *
+			 * @param v
+			 *            the String representation
+			 * @return an Integer representing the column value
+			 */
+			@Override
+			public Long fromString(final String v) {
+				return Long.valueOf(v);
+			}
+		},
+		/**
+		 * This is copied from the envelope
+		 * @see EnvelopeInterface
+		 */
+		MAXMEMORY{
+			/**
+			 * This creates an object from String representation for this column
+			 * value
+			 *
+			 * @param v
+			 *            the String representation
+			 * @return an Integer representing the column value
+			 */
+			@Override
+			public Long fromString(final String v) {
+				return Long.valueOf(v);
+			}
+		},
+		/**
+		 * This is copied from the envelope
+		 * @see EnvelopeInterface
+		 */
+		MAXCPUSPEED {
+			/**
+			 * This creates an object from String representation for this column
+			 * value
+			 * @param v the String representation
+			 * @return an Float representing the column value
+			 */
+			@Override
+			public Float fromString(final String v) {
+				return Float.valueOf(v);
+			}
+		};
 
 		/**
 		 * This is the index based on ordinal so that the first value is
@@ -758,7 +797,7 @@ public class WorkInterface extends Table {
 			setStatus(StatusEnum.UNAVAILABLE);
 		}
 		try {
-			setMinMemory((Integer) Columns.MINMEMORY.fromResultSet(rs));
+			setMinMemory((Long) Columns.MINMEMORY.fromResultSet(rs));
 		} catch (final Exception e) {
 		}
 		try {
@@ -777,16 +816,20 @@ public class WorkInterface extends Table {
             setMinFreeMassStorage((Long) Columns.MINFREEMASSSTORAGE.fromResultSet(rs));
         } catch (final Exception e) {
         }
-        try {
-            setMaxFreeMassStorage((Long) Columns.MAXFREEMASSSTORAGE.fromResultSet(rs));
-        } catch (final Exception e) {
-        }
+		try {
+			setMaxFreeMassStorage((Long) Columns.MAXFREEMASSSTORAGE.fromResultSet(rs));
+		} catch (final Exception e) {
+		}
+		try {
+			setMaxFileSize((Long) Columns.MAXFILESIZE.fromResultSet(rs));
+		} catch (final Exception e) {
+		}
         try {
             setMaxCpuSpeed((Float) Columns.MAXCPUSPEED.fromResultSet(rs));
         } catch (final Exception e) {
         }
         try {
-            setMaxMemory((String) Columns.MAXMEMORY.fromResultSet(rs));
+            setMaxMemory((Long) Columns.MAXMEMORY.fromResultSet(rs));
         } catch (final Exception e) {
         }
 		try {
@@ -1025,7 +1068,8 @@ public class WorkInterface extends Table {
         setMaxMemory(itf.getMaxMemory());
         setMaxCpuSpeed(itf.getMaxCpuSpeed());
         setMinFreeMassStorage(itf.getMinFreeMassStorage());
-        setMaxFreeMassStorage(itf.getMaxFreeMassStorage());
+		setMaxFreeMassStorage(itf.getMaxFreeMassStorage());
+		setMaxFileSize(itf.getMaxFileSize());
 		setMinCpuSpeed(itf.getMinCpuSpeed());
 		setStatus(itf.getStatus());
 		setSmartSocketAddr(itf.getSmartSocketAddr());
@@ -1260,13 +1304,12 @@ public class WorkInterface extends Table {
 	 *
 	 * @return the minimal amount of memory needed by this work in Kb
 	 */
-	public int getMinMemory() {
-		final Integer ret = (Integer) getValue(Columns.MINMEMORY);
-		if (ret != null) {
-			return ret.intValue();
-		}
-		setMinMemory(0);
-		return 0;
+	public Long getMinMemory() {
+        final Long ret = (Long) getValue(Columns.MINMEMORY);
+        if (ret != null) {
+            return ret.longValue();
+        }
+        return 0L;
 	}
 
 	/**
@@ -1538,29 +1581,41 @@ public class WorkInterface extends Table {
         }
         return 0L;
     }
+	/**
+	 * This retrieves the max authorized mass storage usage, according to the envelope
+	 * @return this attribute, or 0 if not set
+	 * @since 13.0.0
+	 */
+	public final long getMaxFreeMassStorage() {
+		final Long ret = (Long) getValue(Columns.MAXFREEMASSSTORAGE);
+		if (ret != null) {
+			return ret.longValue();
+		}
+		return 0L;
+	}
+	/**
+	 * This retrieves the max authorized file size, according to the envelope
+	 * @return this attribute, or 0 if not set
+	 * @since 13.0.0
+	 */
+	public final long getMaxFileSize() {
+		final Long ret = (Long) getValue(Columns.MAXFILESIZE);
+		if (ret != null) {
+			return ret.longValue();
+		}
+		return 0L;
+	}
     /**
-     * This retrieves the max authorized mass storage usage
+     * This retrieves the max authorized RAM usage, according to the envelope
      * @return this attribute, or 0 if not set
      * @since 13.0.0
      */
-    public final long getMaxFreeMassStorage() {
-        final Long ret = (Long) getValue(Columns.MAXFREEMASSSTORAGE);
-        if (ret != null) {
-            return ret.longValue();
-        }
-        return 0L;
-    }
-    /**
-     * This retrieves the max authorized RAM usage
-     * @return this attribute
-     * @since 13.0.0
-     */
-    public final String getMaxMemory() throws IOException{
-		final String ret = (String) getValue(Columns.MAXMEMORY);
-		if (ret == null) {
-			throw new IOException("" + getEnvId() + " : no max memory");
+    public final Long getMaxMemory() throws IOException{
+		final Long ret = (Long) getValue(Columns.MAXMEMORY);
+		if (ret != null) {
+			return ret.longValue();
 		}
-		return ret;
+		return 0L;
     }
     /**
      * This retrieves the max authorized CPU usage in percentage
@@ -1953,19 +2008,14 @@ public class WorkInterface extends Table {
 	}
 
 	/**
-	 * This sets the minimal amount of RAM this work needs, in Kb. Provided
-	 * value must be positive and can not exceed XWPropertyDefs.MAXRAMSPACE.
+	 * This sets the minimal amount of RAM this work needs, in bytes.
 	 *
 	 * @param v
 	 *            is the minimal amount of RAM this work needs in Kb
 	 * @return true if value has changed, false otherwise
 	 */
-	public final boolean setMinMemory(final String v) {
-		try {
-			return setValue(Columns.MAXMEMORY, (v == null ? "512m" : v));
-		} catch (final Exception e) {
-		}
-		return false;
+	public final boolean setMinMemory(final long v) {
+        return setValue(Columns.MINMEMORY, Long.valueOf(v < 0L ? 0L : v));
 	}
     /**
      * This sets the min needed mass storage usage
@@ -1975,27 +2025,32 @@ public class WorkInterface extends Table {
     public final boolean setMinFreeMassStorage(final long v) {
         return setValue(Columns.MINFREEMASSSTORAGE, Long.valueOf(v < 0L ? 0L : v));
     }
-    /**
-     * This sets the max authorized mass storage usage
-     * This is automatically set by the scheduler based on the environment
-     * @return true if value has changed, false otherwise
-     * @since 13.0.0
-     */
-    public final boolean setMaxFreeMassStorage(final long v) {
-        return setValue(Columns.MAXFREEMASSSTORAGE, Long.valueOf(v < 0L ? 0L : v));
-    }
+	/**
+	 * This sets the max authorized mass storage usage
+	 * This is automatically set by the scheduler based on the environment
+	 * @return true if value has changed, false otherwise
+	 * @since 13.0.0
+	 */
+	public final boolean setMaxFreeMassStorage(final long v) {
+		return setValue(Columns.MAXFREEMASSSTORAGE, Long.valueOf(v < 0L ? 0L : v));
+	}
+	/**
+	 * This sets the max file size
+	 * This is automatically set by the scheduler based on the environment
+	 * @return true if value has changed, false otherwise
+	 * @since 13.0.0
+	 */
+	public final boolean setMaxFileSize(final long v) {
+		return setValue(Columns.MAXFILESIZE, Long.valueOf(v < 0L ? 0L : v));
+	}
     /**
      * This sets the max authorized RAM usage
      * This is automatically set by the scheduler based on the environment
      * @return true if value has changed, false otherwise
      * @since 13.0.0
      */
-    public final boolean setMaxMemory(final String v) {
-		try {
-			return setValue(Columns.MAXMEMORY, (v == null ? "512m" : v));
-		} catch (final Exception e) {
-		}
-		return false;
+    public final boolean setMaxMemory(final long v) {
+		return setValue(Columns.MAXMEMORY, Long.valueOf(v < 0L ? 0L : v));
     }
     /**
      * This sets the max authorized CPU usage; this is in percentage
@@ -2003,8 +2058,9 @@ public class WorkInterface extends Table {
      * @return true if value has changed, false otherwise
      * @since 13.0.0
      */
-    public final boolean setMaxCpuSpeed(final int v) {
-        return setValue(Columns.MAXCPUSPEED, Integer.valueOf(v < 0 ? 0 : v));
+    public final boolean setMaxCpuSpeed(final float v) {
+        final float value = v > 1.0f ? 1.0f : v;
+        return setValue(Columns.MAXCPUSPEED, Float.valueOf(value < 0.0f ? 0.5f : value));
     }
     /**
      * This sets the minimal CPU clock rate this work needs
