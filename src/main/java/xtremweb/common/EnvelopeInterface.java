@@ -267,7 +267,9 @@ public final class EnvelopeInterface extends Table {
 		super(THISTAG, ENVTABLENAME);
 		setAttributeLength(ENUMSIZE);
 		setAccessRights(XWAccessRights.DEFAULT);
-		setShortIndexes(new int[] { TableColumns.UID.getOrdinal(), Columns.NAME.getOrdinal() });
+		setShortIndexes(new int[] { TableColumns.UID.getOrdinal(),
+				Columns.NAME.getOrdinal(),
+				Columns.ENVID.getOrdinal() });
 	}
 
 	/**
