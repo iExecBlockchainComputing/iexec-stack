@@ -270,6 +270,11 @@ public final class EnvelopeInterface extends Table {
 		setShortIndexes(new int[] { TableColumns.UID.getOrdinal(),
 				Columns.NAME.getOrdinal(),
 				Columns.ENVID.getOrdinal() });
+		setMaxCpuSpeed(XWTools.DEFAULTCPUSPEED);
+		setMaxFileSize(XWTools.MAXFILESIZE);
+		setMaxFreeMassStorage(XWTools.MAXDISKSIZE);
+		setMaxWallClockTime(XWTools.DEFAULTWALLCLOCKTIME);
+		setMaxMemory(XWTools.MAXRAMSIZE);
 	}
 
 	/**
