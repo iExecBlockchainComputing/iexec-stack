@@ -816,7 +816,7 @@ create table if not exists  envs  (
   errorMsg           varchar(254)                                comment 'Error message',
   mtime              timestamp                                   comment 'Timestamp of last update',
   name               varchar(254)   not null  default 'NONE'     comment 'Envelope name is a free text',
-  maxWallClockTime   bigint         not null  default 900        comment 'Max amount of seconds a job can be computed; default 5mn',
+  maxWallClockTime   bigint         not null  default 300        comment 'Max amount of seconds a job can be computed; default 5mn',
   maxFreeMassStorage bigint         not null  default 5368709120 comment 'Max mass storage usage in bytes; default 5Gb',
   maxFileSize        bigint         not null  default 104857600  comment 'Max file length in bytes; default 100Mb',
   maxMemory          bigint         not null  default 536870912  comment 'Max RAM usage in bytes; default 512Mb',
