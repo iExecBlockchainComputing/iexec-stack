@@ -5260,8 +5260,8 @@ public final class DBInterface {
         }
         insert(envitf);
 
-        // read from DB to retrieve ID
-        putToCache(readableEnvelope(theClient, envitf.getUID()));
+        // read from DB, in case some values are null (and set to default by insert db)
+        putToCache(envelope(theClient, "maintable.uid='" + envitf.getUID() + "'"));
 
         return true;
     }
