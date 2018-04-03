@@ -19,6 +19,7 @@
 set title "XWHEP : Jobs per day\nTITLE"
 set xlabel "Days"
 set ylabel "Jobs"
+set y2label "Retry"
 set encoding iso_8859_1
 set key inside
 #set key 80, 535
