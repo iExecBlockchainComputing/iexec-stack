@@ -42,14 +42,14 @@ public class WorkerPoolService {
         }
         this.getWorkerPool().revealConsensusEventObservable(web3jConfig.getStartBlockParameter(), END)
                 .subscribe(this::onRevealConsensus);
-        this.getWorkerPool().callForContributionEventObservable(web3jConfig.getStartBlockParameter(), END)
-                .subscribe(this::onCallForContribution);
+        this.getWorkerPool().allowWorkerToContributeEventObservable(web3jConfig.getStartBlockParameter(), END)
+                .subscribe(this::onAllowWorkerToContribute);
     }
 
-    private void onCallForContribution(WorkerPool.CallForContributionEventResponse callForContributionEvent) {
-        if (callForContributionEvent.worker.equals(credentialsService.getCredentials().getAddress())) {
-            log.info("Received CallForContributionEvent [workOrderId:{}]", callForContributionEvent.woid);
-            workerPoolWatcher.onCallForContribution(callForContributionEvent.woid);
+    private void onAllowWorkerToContribute(WorkerPool.AllowWorkerToContributeEventResponse allowWorkerToContributeEvent) {
+        if (allowWorkerToContributeEvent.worker.equals(credentialsService.getCredentials().getAddress())) {
+            log.info("Received AllowWorkerToContributeEvent [workOrderId:{}]", allowWorkerToContributeEvent.woid);
+            workerPoolWatcher.onAllowWorkerToContribute(allowWorkerToContributeEvent.woid);
         }
     }
 

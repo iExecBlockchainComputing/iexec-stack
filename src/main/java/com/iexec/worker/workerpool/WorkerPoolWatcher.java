@@ -5,6 +5,6 @@ public interface WorkerPoolWatcher {
 
     void onRevealConsensus(String workOrderId);
 
-    void onCallForContribution(String workOrderId);
+    void onAllowWorkerToContribute(String workOrderId);
 
 }
