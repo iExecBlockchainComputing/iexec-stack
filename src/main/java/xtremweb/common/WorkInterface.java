@@ -723,6 +723,7 @@ public class WorkInterface extends Table {
 		setStatus(StatusEnum.UNAVAILABLE);
 		setService(false);
 		setSendToClient(false);
+		setArrivalDate();
 		setMaxRetry(Integer.parseInt(XWPropertyDefs.MAXRETRY.defaultValue()));
 		setAccessRights(XWAccessRights.DEFAULT);
 		setShortIndexes(new int[] { TableColumns.UID.getOrdinal(), Columns.STATUS.getOrdinal(),
@@ -2141,6 +2142,14 @@ public class WorkInterface extends Table {
 		return setValue(Columns.RESULTURI, v);
 	}
 
+	/**
+	 * This set the submission date
+	 *
+	 * @return true if value has changed, false otherwise
+	 */
+	public final boolean setArrivalDate() {
+		return setArrivalDate(new java.util.Date());
+	}
 	/**
 	 * This set the submission date
 	 *
