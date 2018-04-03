@@ -43,11 +43,10 @@ create table if not exists  envs  (
 engine  = InnoDB,
 comment = 'envs = envelopes defining resources usage limit';
 
-show warnings;
-
 create table if not exists  envs_history  like  envs;
 
-show warnings;
+insert into envs (uid, owneruid, accessrights, errormsg, name, envid)
+        values ("cb2b401c-374a-11e8-a703-4f504e4b684f", (select uid from users where rights="SUPER_USER" limit 1), "1877", '', 'DefaultEnv', 0);
 
 
 ALTER TABLE  works ADD    COLUMN envId              int unsigned   not null  default 1  comment 'envId. See common/Envs.java';
@@ -63,6 +62,7 @@ ALTER TABLE  works MODIFY COLUMN maxWallClockTime   bigint         not null  def
 ALTER TABLE  works DROP   COLUMN wallclocktime;
 ALTER TABLE  works DROP   COLUMN diskSpace;
 
+update table works set envid='1', maxWallClocktime='300', maxFreeMassStorage='5368709120', maxFileSize='104857600', maxMemory='536870912', maxCpuSpeed='0.5';
 --
 -- End Of File
 --
