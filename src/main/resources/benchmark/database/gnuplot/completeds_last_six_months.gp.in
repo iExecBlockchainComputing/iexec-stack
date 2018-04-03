@@ -17,7 +17,7 @@
 #
 
 set title "XWHEP : Completed Jobs last six months, per week\nTITLE"
-set xlabel "Weeks"
+set xlabel "Month"
 set ylabel "Jobs"
 set encoding iso_8859_1
 set key outside
@@ -28,6 +28,9 @@ set key spacing 1.5
 set key width 1.5
 #set logscale y
 set xtics rotate
+set xdata time
+set timefmt "%Y/%m"
+set format x "%Y/%m"
 
 
 

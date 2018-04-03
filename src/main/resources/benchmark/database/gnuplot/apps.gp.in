@@ -16,38 +16,26 @@
 # limitations under the License.
 #
 
-set title "XWHEP: Jobs per minute\nTITLE"
-set xlabel "Time"
+set title "XWHEP : applications\nTITLE"
+set xlabel "Applications"
 set ylabel "Jobs"
-#set encoding iso_8859_1
+set encoding iso_8859_1
 set key outside
 #set key 80, 535
-#set size 2,1.5
+#set key 1,3
+#set size 1.3,1
 set key spacing 1.5
 set key width 1.5
-#set logscale y
-
-set logscale y2
-set y2tics
-
+set logscale y
 #set xdata time
-#set timefmt "%Y/%m/%d %H:%M"
-#set format x "%H:%M"
-#set xtics rotate
+#set timefmt "%Y/%m/%d %H"
+#set format x "%Y/%m/%d %H"
+set xtics rotate
 
-set y2range[1:10000]
-
-#set terminal postscript	eps
-#set output 'linear_FILEOUTps'
-
-#plot 'FILEINcsv' using 1 with impulses title 'Delai'
 
 
 set terminal png
-set output 'FILEOUT_summary.png'
+set output 'FILEOUT_apps.png'
 
-plot  'FILEIN_submission_per_minute.csv' using 3 with lines  lt 2  lw 2 title 'Submitted',\
-      'FILEIN_started_per_minute.csv' using 3 with lines  lt 3  lw 2 title 'Started',\
-      'FILEIN_restarteds_per_minute.csv' using 3 with lines  lt 4  lw 2 title 'Restarted',\
-      'FILEIN_completeds_per_minute.csv' using 3 with lines  lt 1  lw 2 title 'Completed',\
-      'FILEIN_cumulcompleteds_per_minute.csv' using 4 with lines  lt -1 lw 2 title 'Completions' axis x1y2
+plot 'FILEIN_apps.csv' using 2 with lines  lt 2  lw 2 title 'Completeds', \
+     'FILEIN_apps.csv' using 5 with lines  lt 2  lw 2 title 'Errors'

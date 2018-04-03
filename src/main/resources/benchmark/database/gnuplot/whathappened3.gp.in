@@ -16,25 +16,39 @@
 # limitations under the License.
 #
 
-set title "XWHEP : Completed Jobs last three months, per week\nTITLE"
-set xlabel "Weeks"
+set title "XWHEP : Jobs per day\nTITLE"
+set xlabel "Days"
 set ylabel "Jobs"
 set encoding iso_8859_1
-set key outside
+set key inside
 #set key 80, 535
 #set key 1,3
-#set size 1.3,1
-set key spacing 1.5
-set key width 1.5
-#set logscale y
-set xtics rotate
+set size 1,1
+set key spacing 1
+set key width .1
+set logscale y
 set xdata time
-set timefmt "%Y/%m"
-set format x "%Y/%m"
+set timefmt "%Y-%m-%d"
+set format x "%b '%y"
+set xtics rotate
 
+
+#set logscale y2
+set y2tics
+
+#set yrange[0:1000]
+
+#set terminal postscript	eps
+#set output 'linear_FILEOUTps'
+
+#plot 'FILEINcsv' using 1 with impulses title 'Delai'
 
 
 set terminal png
-set output 'FILEOUT_completeds_last_three_months.png'
+set output 'FILEOUT_whathappened3.png'
 
-plot 'FILEIN_completeds_last_three_months.csv' using 1:2 with lines  lt 2  lw 2 title 'Completeds'
+set style fill pattern 1
+
+plot 'FILEIN_whathappened3.csv' using 1:2 with fsteps lt 2  lw 2 title 'Completeds',\
+     'FILEIN_whathappened3.csv' using 1:3 with fsteps lt 3  lw 2 title 'Retry' axis x1y2,\
+     'FILEIN_whathappened3.csv' using 1:4 with boxes  lt -1  lw 2 title 'Errors'

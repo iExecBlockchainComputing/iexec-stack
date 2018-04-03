@@ -127,6 +127,21 @@ insert into pilotedjobs (thedate,piloteds)
 	 and hosts.pilotjob="true" 
        group by date(completeddate);
 
+-- select "create temporary table for pilot jobs (EGEE ressources)";
+
+create temporary table resources (
+       thedate datetime,
+       resources int(10) default 0
+);
+
+-- select "fill temporary table pilotedjobs";
+
+insert into resources (thedate,resources)
+       select date(lastalive),count(*)
+       from hosts
+       where not isnull(lastalive)
+       and   date(lastalive)>"2009-10-01"
+       group by date(lastalive);
 
 -- select "create temporary table for pilot jobs (EGEE ressources)";
 
@@ -156,6 +171,7 @@ create temporary table stats (
        errors int(10) default 0,
        proxieds int(10) default 0,
        piloteds int(10) default 0,
+       resources int(10) default 0,
        pilotjobs int(10) default 0
 );
 
@@ -179,6 +195,11 @@ insert into stats (thedate,piloteds)
        from completedjobs
 	      join pilotedjobs
 	      on date(pilotedjobs.thedate)=date(completedjobs.thedate);
+insert into stats (thedate,resources)
+       select date(resources.thedate),resources
+       from resources
+	      join completedjobs
+	      on date(resources.thedate)=date(completedjobs.thedate);
 insert into stats (thedate,pilotjobs)
        select date(completedjobs.thedate),pilotjobs
        from completedjobs

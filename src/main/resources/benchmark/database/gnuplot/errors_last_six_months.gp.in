@@ -28,6 +28,9 @@ set key spacing 1.5
 set key width 1.5
 #set logscale y
 set xtics rotate
+set xdata time
+set timefmt "%Y/%m"
+set format x "%Y/%m"
 
 
 
