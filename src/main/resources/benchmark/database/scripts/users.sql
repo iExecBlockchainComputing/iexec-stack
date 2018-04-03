@@ -16,4 +16,4 @@
 -- limitations under the License.
 -- 
 SET GLOBAL sql_mode = '';
-select login,nbJobs,pendingJobs,runningJobs,errorJobs from users;
+select login,nbJobs,pendingJobs,runningJobs,errorJobs from users union select login,nbJobs,pendingJobs,runningJobs,errorJobs from users_history;

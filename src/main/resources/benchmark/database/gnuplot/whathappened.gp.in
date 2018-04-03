@@ -50,6 +50,6 @@ set output 'FILEOUT_whathappened3.png'
 
 set style fill pattern 1
 
-plot 'FILEIN_whathappened3.csv' using 1:2 with fsteps lt 2  lw 2 title 'Completeds',\
-     'FILEIN_whathappened3.csv' using 1:3 with fsteps lt 3  lw 2 title 'Retry' axis x1y2,\
-     'FILEIN_whathappened3.csv' using 1:4 with boxes  lt -1  lw 2 title 'Errors'
+plot 'FILEIN_whathappened.csv' using 1:2 with fsteps lt 2  lw 2 title 'Completeds',\
+     'FILEIN_whathappened.csv' using 1:3 with fsteps lt 3  lw 2 title 'Retry' axis x1y2,\
+     'FILEIN_whathappened.csv' using 1:4 with boxes  lt -1  lw 2 title 'Errors'

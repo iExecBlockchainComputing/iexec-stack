@@ -44,7 +44,7 @@ all: $(GPS)
 	rm -f gptmp_file
 	mv $@ ../fig/$(DBNAME)_$@
 	echo $(DBNAME) $< $@ $*
-	@if [ "$*" != "summary" -a ! -s $(CSVDIR)/$(DBNAME)_$*.csv ]; then rm -f ../fig/$(DBNAME)_$@ ; echo canceling ../fig//$(DBNAME)_$@ ; fi
+	@if [ "$*" != "summary" -a ! -s $(CSVDIR)/$(DBNAME)_$*.csv ]; then rm -f ../fig/$(DBNAME)_$@ ; echo canceling gnuplot ../fig//$(DBNAME)_$@ ; fi
 
 clean :
 	rm -f ../fig/*gp

@@ -40,7 +40,7 @@ all: $(CSVS)
 %csv : %sql
 	@echo "$(ECHOMYSQL) < $< > $(CSVDIR)/$(DBNAME)_$@"
 	$(MYSQL) $(DBNAME)  < $< > $(CSVDIR)/$(DBNAME)_$@
-	@if [ ! -s $(CSVDIR)/$(DBNAME)_$@ ]; then rm -f $(CSVDIR)/$(DBNAME)_$@ ; echo canceling $(CSVDIR)/$(DBNAME)_$@ ; fi
+	@if [ ! -s $(CSVDIR)/$(DBNAME)_$@ ]; then rm -f $(CSVDIR)/$(DBNAME)_$@ ; echo canceling script $(CSVDIR)/$(DBNAME)_$@ ; fi
 
 clean :
 	rm -f *~ *dat *csv  $(CSVDIR)/*

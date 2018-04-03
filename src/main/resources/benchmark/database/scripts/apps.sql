@@ -16,4 +16,4 @@
 -- limitations under the License.
 -- 
 SET GLOBAL sql_mode = '';
-select apps.name, nbjobs,pendingjobs,runningjobs,errorjobs from apps;
+select name, nbjobs,pendingjobs,runningjobs,errorjobs from apps union select name, nbjobs,pendingjobs,runningjobs,errorjobs from apps_history;

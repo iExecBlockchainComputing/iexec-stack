@@ -37,5 +37,8 @@ set xtics rotate
 set terminal png
 set output 'FILEOUT_users.png'
 
-plot 'FILEIN_users.csv' using 2 with lines  lt 2  lw 2 title 'Completeds', \
-     'FILEIN_users.csv' using 5 with lines  lt 2  lw 2 title 'Errors'
+#plot 'FILEIN_users.csv' using 2 with lines  lt 2  lw 2 title 'Completeds', \
+#     'FILEIN_users.csv' using 5 with lines  lt 2  lw 2 title 'Errors'
+
+plot 'FILEIN_users.csv' using 2 with boxes lt 2  lw 2 title 'Completeds',\
+     'FILEIN_users.csv' using 5 with boxes  lt -1  lw 2 title 'Errors'
