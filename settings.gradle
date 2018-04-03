@@ -16,3 +16,6 @@ include 'services:webservice'
 */
 
 rootProject.name = 'xtremweb'
+
+include 'iexec-scheduler'
+include 'iexec-worker'

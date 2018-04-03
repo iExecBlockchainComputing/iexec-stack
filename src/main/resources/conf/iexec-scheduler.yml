@@ -1,0 +1,35 @@
+web3jConfig:
+  clientAddress: http://localhost:8545 #default
+  adminClient: false #default
+  startBlock: 0
+contractConfig:
+  rlcAddress: 
+  iexecHubAddress: 
+
+walletConfig:
+  address: "0x8bd535d49b095ef648cd85ea827867d358872809"
+  folder: "../wallet"
+  filename: "UTC--2018-02-14T08-32-12.500000000Z--8bd535d49b095ef648cd85ea827867d358872809.json"
+  password: "whatever"
+
+workerPoolConfig:
+  address:  #leave blank will create a new workerpool (else plug scheduler to existing one)
+  name: "myWorkerPool"              #unchangeable after creation
+  subscriptionLockStakePolicy: 0    #unchangeable after creation
+  subscriptionMinimumStakePolicy: 10
+  subscriptionMinimumScorePolicy: 0
+  stakeRatioPolicy: 30
+  schedulerRewardRatioPolicy: 1
+  resultRetentionPolicy: 7
+  mode: 1
+  list:
+    - "0x000000000000000000000000000000000000bad1"
+    - "0x000000000000000000000000000000000000bad2"
+
+
+
+
+
+
+
+

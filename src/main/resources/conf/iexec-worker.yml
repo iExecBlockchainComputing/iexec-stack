@@ -1,0 +1,16 @@
+web3jConfig:
+  clientAddress: http://localhost:8545 #default
+  adminClient: false #default
+  startBlock: 0
+contractConfig:
+  rlcAddress: 
+  iexecHubAddress: 
+  workerPoolAddress: 
+  subscriptionMinimumStakePolicy: 10
+  stakeRatioPolicy: 30
+
+walletConfig:
+  address: "0x70a1bebd73aef241154ea353d6c8c52d420d4f5b"
+  folder: "../wallet"
+  filename: "UTC--2018-02-14T11-15-48.411000000Z--70a1bebd73aef241154ea353d6c8c52d420d4f5b.json"
+  password: "whatever"
