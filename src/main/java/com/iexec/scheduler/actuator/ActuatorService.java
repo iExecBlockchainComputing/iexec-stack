@@ -38,20 +38,17 @@ public class ActuatorService implements Actuator {
     }
 
     @Override
-    public TransactionStatus emitMarketOrder(BigInteger category, BigInteger trust, BigInteger value, BigInteger volume) {
-        //TODO - emitMarketOrder if n workers are alive (not subscribed, means nothing)
+    public TransactionStatus createMarketOrder(BigInteger category, BigInteger trust, BigInteger value, BigInteger volume) {
+        //TODO - createMarketOrder if n workers are alive (not subscribed, means nothing)
         try {
-            Float deposit = (workerPoolService.getWorkerPoolConfig().getStakeRatioPolicy().floatValue() / 100) * value.floatValue();//(30/100)*100
-            BigInteger depositAmount = BigDecimal.valueOf(deposit).toBigInteger();
-            BigInteger approveAmount = BigInteger.valueOf(100);//should be the same than deposit, Poco needs changes
-            TransactionReceipt approveReceipt = rlcService.getRlc().approve(iexecHubService.getIexecHub().getContractAddress(), approveAmount).send();
-            log.info("Approve for emitMarketOrder [approveAmount:{}, transactionStatus:{}] ",
-                    approveAmount, getStatus(approveReceipt));
-            TransactionReceipt depositReceipt = iexecHubService.getIexecHub().deposit(depositAmount).send();
-            log.info("Deposit for emitMarketOrder [depositAmount:{}, transactionStatus:{}] ",
-                    depositAmount, getStatus(depositReceipt));
+            TransactionReceipt approveReceipt = rlcService.getRlc().approve(iexecHubService.getIexecHub().getContractAddress(), value).send();
+            log.info("Approve for createMarketOrder [approveAmount:{}, transactionStatus:{}] ",
+                    value, getStatus(approveReceipt));
+            TransactionReceipt depositReceipt = iexecHubService.getIexecHub().deposit(value).send();
+            log.info("Deposit for createMarketOrder [depositAmount:{}, transactionStatus:{}] ",
+                    value, getStatus(depositReceipt));
 
-            TransactionReceipt emitMarketOrderReceipt = marketplaceService.getMarketplace().emitMarketOrder(
+            TransactionReceipt createMarketOrderReceipt = marketplaceService.getMarketplace().createMarketOrder(
                     MarketOrderDirectionEnum.ASK,
                     category,
                     trust,
@@ -59,10 +56,10 @@ public class ActuatorService implements Actuator {
                     workerPoolService.getWorkerPoolConfig().getAddress(),
                     volume
             ).send();
-            log.info("EmitMarketOrder [category:{}, trust:{}, value:{}, volume:{}, transactionStatus:{}] ",
-                    category, trust, value, volume, getStatus(emitMarketOrderReceipt));
+            log.info("CreateMarketOrder [category:{}, trust:{}, value:{}, volume:{}, transactionStatus:{}] ",
+                    category, trust, value, volume, getStatus(createMarketOrderReceipt));
 
-            return getStatus(emitMarketOrderReceipt);
+            return getStatus(createMarketOrderReceipt);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -71,15 +68,15 @@ public class ActuatorService implements Actuator {
 
 
     @Override
-    public TransactionStatus callForContributions(String workOrderId,
-                                                  List<String> workers,
-                                                  String enclaveChallenge) {
+    public TransactionStatus allowWorkersToContribute(String workOrderId,
+                                                      List<String> workers,
+                                                      String enclaveChallenge) {
         try {
-            TransactionReceipt callForContributionsReceipt = workerPoolService.getWorkerPool()
-                    .callForContributions(workOrderId, workers, enclaveChallenge).send();
-            log.info("CallForContributions [workOrderId:{}, workers:{}, enclaveChallenge:{}, transactionStatus:{}] ",
-                    workOrderId, workers.toString(), enclaveChallenge, getStatus(callForContributionsReceipt));
-            return getStatus(callForContributionsReceipt);
+            TransactionReceipt allowWorkersToContributeReceipt = workerPoolService.getWorkerPool()
+                    .allowWorkersToContribute(workOrderId, workers, enclaveChallenge).send();
+            log.info("AllowWorkersToContribute [workOrderId:{}, workers:{}, enclaveChallenge:{}, transactionStatus:{}] ",
+                    workOrderId, workers.toString(), enclaveChallenge, getStatus(allowWorkersToContributeReceipt));
+            return getStatus(allowWorkersToContributeReceipt);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -105,13 +102,13 @@ public class ActuatorService implements Actuator {
     @Override
     public TransactionStatus finalizeWork(String workOrderId, String stdout, String stderr, String uri) {
         try {
-            TransactionReceipt finalizedWorkReceipt = workerPoolService.getWorkerPool().finalizedWork(workOrderId,
+            TransactionReceipt finalizeWorkReceipt = workerPoolService.getWorkerPool().finalizeWork(workOrderId,
                     stdout,
                     stderr,
                     uri).send();
             log.info("FinalizeWork [stdout:{}, stderr:{}, uri:{}, transactionStatus:{}] ",
-                    stdout, stderr, uri, getStatus(finalizedWorkReceipt));
-            return getStatus(finalizedWorkReceipt);
+                    stdout, stderr, uri, getStatus(finalizeWorkReceipt));
+            return getStatus(finalizeWorkReceipt);
         } catch (Exception e) {
             e.printStackTrace();
         }

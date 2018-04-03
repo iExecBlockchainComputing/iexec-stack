@@ -3,8 +3,8 @@ web3jConfig:
   adminClient: false #default
   startBlock: 0
 contractConfig:
-  rlcAddress: 0x480814b6baddf1022e01f78013e58c477ee196ac
-  iexecHubAddress: 0xdbd90c7f5123f1cd9911810061846915ef2b9cf8
+  rlcAddress: 0x02ad89e52637c44cb0197eaac91b6a57e89752b8
+  iexecHubAddress: 0x2d2f9b72227261f76975d683304ef2fa80c131f6
 
 walletConfig:
   address: "0x8bd535d49b095ef648cd85ea827867d358872809"
@@ -20,11 +20,6 @@ workerPoolConfig:
   subscriptionMinimumScorePolicy: 0
   stakeRatioPolicy: 30
   schedulerRewardRatioPolicy: 1
-  resultRetentionPolicy: 7
-  mode: 1
-  list:
-    - "0x000000000000000000000000000000000000bad1"
-    - "0x000000000000000000000000000000000000bad2"
 
 
 

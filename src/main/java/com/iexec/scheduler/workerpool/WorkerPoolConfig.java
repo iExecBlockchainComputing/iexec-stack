@@ -7,9 +7,7 @@ import java.util.List;
 
 public class WorkerPoolConfig {
 
-    private List<String> list;
     private String address;
-    private BigInteger mode;
     private String name;
     private BigInteger subscriptionLockStakePolicy;
     private BigInteger subscriptionMinimumStakePolicy;
@@ -19,7 +17,6 @@ public class WorkerPoolConfig {
     private BigInteger resultRetentionPolicy;
 
     public WorkerPoolConfig() {
-        this.list = new ArrayList<>();
     }
 
     public String getAddress() {
@@ -28,22 +25,6 @@ public class WorkerPoolConfig {
 
     public void setAddress(String address) {
         this.address = address;
-    }
-
-    public List<String> getList() {
-        return this.list;
-    }
-
-    public void setList(List<String> list) {
-        this.list = list;
-    }
-
-    public BigInteger getMode() {
-        return mode;
-    }
-
-    public void setMode(BigInteger mode) {
-        this.mode = mode;
     }
 
     public String getName() {

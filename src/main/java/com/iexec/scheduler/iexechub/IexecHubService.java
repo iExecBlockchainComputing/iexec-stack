@@ -54,7 +54,7 @@ public class IexecHubService {
         if (workerPoolConfig.getAddress()==null || workerPoolConfig.getAddress().isEmpty()) {
             try {
                 TransactionReceipt createWorkerPoolReceipt = iexecHub.createWorkerPool(workerPoolConfig.getName(),
-                        workerPoolConfig.getSubscriptionLockStakePolicy(),
+                            workerPoolConfig.getSubscriptionLockStakePolicy(),
                         workerPoolConfig.getSubscriptionMinimumStakePolicy(),
                         workerPoolConfig.getSubscriptionMinimumScorePolicy()).send();
                 workerPoolAddress = this.iexecHub.getCreateWorkerPoolEvents(createWorkerPoolReceipt).get(0).workerPool;
@@ -90,7 +90,7 @@ public class IexecHubService {
         }
     }
 
-    public void register(IexecHubWatcher iexecHubWatcher) {
+    public void registerIexecHubWatcher(IexecHubWatcher iexecHubWatcher) {
         this.iexecHubWatcher = iexecHubWatcher;
     }
 

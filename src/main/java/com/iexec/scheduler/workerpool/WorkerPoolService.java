@@ -57,20 +57,19 @@ public class WorkerPoolService {
 
     private void setupWorkerPool(WorkerPool workerPool) {
         try {
-            String workersAuthorizedListAddress = workerPool.m_workersAuthorizedListAddress().send();
-            AuthorizedList workerAuthorizedList = AuthorizedList.load(
-                    workersAuthorizedListAddress, web3jService.getWeb3j(), credentialsService.getCredentials(), ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT);
-
             watchWorkerPoolPolicy(workerPool);
-            watchPolicyChange(workerAuthorizedList);
-            watchBlacklistChange(workerAuthorizedList);
-            watchWhitelistChange(workerAuthorizedList);
-
             updateWorkerPoolPolicy(workerPool);
-            updateAuthorizedList(workerAuthorizedList);
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+    }
+
+    private void watchWorkerPoolPolicy(WorkerPool workerPool) {
+        workerPool.workerPoolPolicyUpdateEventObservable(web3jConfig.getStartBlockParameter(), DefaultBlockParameterName.LATEST)
+                .subscribe(workerPoolPolicyUpdateEvent -> {
+                    log.info("Received WorkerPoolPolicyUpdateEvent");
+                });
     }
 
     private boolean updateWorkerPoolPolicy(WorkerPool workerPool) throws Exception {
@@ -82,66 +81,12 @@ public class WorkerPoolService {
 
             workerPool.changeWorkerPoolPolicy(workerPoolConfig.getStakeRatioPolicy(),
                     workerPoolConfig.getSchedulerRewardRatioPolicy(),
-                    workerPoolConfig.getResultRetentionPolicy(),
                     workerPoolConfig.getSubscriptionMinimumStakePolicy(),
                     workerPoolConfig.getSubscriptionMinimumScorePolicy()).send();
             updated = true;
         }
         log.info("PoolPolicy updated [updated:{}]", updated);
         return updated;
-    }
-
-    private boolean updateAuthorizedList(AuthorizedList workerAuthorizedList) throws Exception {
-        if (!workerPoolConfig.getMode().equals(workerAuthorizedList.m_policy().send())) {
-            workerAuthorizedList.changeListPolicy(workerPoolConfig.getMode()).send();
-        }
-
-        //TODO - Make possible to unblacklist an ex-blacklisted worker (and do the same for whitelisting feature)
-        boolean updated = false;
-        for (String worker : workerPoolConfig.getList()) {//update hole list if one worker is not whitelisted
-            if (workerPoolConfig.getMode().equals(PolicyEnum.WHITELIST) && !workerAuthorizedList.isWhitelisted(worker).send()) {
-                workerAuthorizedList.updateWhitelist(workerPoolConfig.getList(), true).send();
-                updated = true;
-                break;
-            } else if (workerPoolConfig.getMode().equals(PolicyEnum.BLACKLIST) && !workerAuthorizedList.isblacklisted(worker).send()) {
-                workerAuthorizedList.updateBlacklist(workerPoolConfig.getList(), true).send();
-                updated = true;
-                break;
-            }
-        }
-        log.info("WorkerAuthorizedList updated [updated:{}]", updated);
-        return updated;
-    }
-
-    private void watchWorkerPoolPolicy(WorkerPool workerPool) {
-        workerPool.workerPoolPolicyUpdateEventObservable(web3jConfig.getStartBlockParameter(), DefaultBlockParameterName.LATEST)
-                .subscribe(workerPoolPolicyUpdateEvent -> {
-                    log.info("Received WorkerPoolPolicyUpdateEvent");
-                });
-    }
-
-    private void watchPolicyChange(AuthorizedList authorizedList) {
-        authorizedList.policyChangeEventObservable(web3jConfig.getStartBlockParameter(), DefaultBlockParameterName.LATEST)
-                .subscribe(policyChangeEvent -> {
-                    log.info("Received PolicyChangeEvent on WorkerAuthorizedList [oldPolicy:{}, newPolicy:{}]",
-                            policyChangeEvent.oldPolicy, policyChangeEvent.newPolicy);
-                });
-    }
-
-    private void watchBlacklistChange(AuthorizedList authorizedList) {
-        authorizedList.blacklistChangeEventObservable(web3jConfig.getStartBlockParameter(), DefaultBlockParameterName.LATEST)
-                .subscribe(blacklistChangeEvent -> {
-                    log.info("Received BlacklistChangeEvent on WorkerAuthorizedList [actor:{}, isBlacklisted:{}]",
-                            blacklistChangeEvent.actor, blacklistChangeEvent.isBlacklisted);
-                });
-    }
-
-    private void watchWhitelistChange(AuthorizedList authorizedList) {
-        authorizedList.whitelistChangeEventObservable(web3jConfig.getStartBlockParameter(), DefaultBlockParameterName.LATEST)
-                .subscribe(whitelistChangeEvent -> {
-                    log.info("Received WhitelistChangeEvent on WorkerAuthorizedList [actor:{}, isBlacklisted:{}]",
-                            whitelistChangeEvent.actor, whitelistChangeEvent.isWhitelisted);
-                });
     }
 
     private void startWatchers() {

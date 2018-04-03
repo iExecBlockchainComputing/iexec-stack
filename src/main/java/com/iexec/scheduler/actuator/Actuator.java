@@ -8,11 +8,11 @@ import java.util.List;
 
 public interface Actuator {
 
-    TransactionStatus callForContributions(String workOrderId,
-                                           List<String> workers,
-                                           String enclaveChallenge);
+    TransactionStatus allowWorkersToContribute(String workOrderId,
+                                               List<String> workers,
+                                               String enclaveChallenge);
 
-    TransactionStatus emitMarketOrder(BigInteger category, BigInteger trust, BigInteger value, BigInteger volume);
+    TransactionStatus createMarketOrder(BigInteger category, BigInteger trust, BigInteger value, BigInteger volume);
 
     TransactionStatus revealConsensus(String workOrderId, String hashResult);
 
