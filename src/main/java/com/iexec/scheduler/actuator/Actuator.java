@@ -13,6 +13,8 @@ public interface Actuator {
                                            String enclaveChallenge);
 
     TransactionStatus emitMarketOrder(BigInteger category, BigInteger trust, BigInteger value, BigInteger volume);
-    TransactionStatus revealConsensus(WorkerPool.ContributeEventResponse contributeEvent, String hashResult);
-    TransactionStatus finalizeWork(WorkerPool.RevealEventResponse revealEvent, String stdout, String stderr, String uri);
+
+    TransactionStatus revealConsensus(String workOrderId, String hashResult);
+
+    TransactionStatus finalizeWork(String workOrderId, String stdout, String stderr, String uri);
 }

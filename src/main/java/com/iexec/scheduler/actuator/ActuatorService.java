@@ -88,11 +88,11 @@ public class ActuatorService implements Actuator {
 
 
     @Override
-    public TransactionStatus revealConsensus(WorkerPool.ContributeEventResponse contributeEvent, String hashResult) {
+    public TransactionStatus revealConsensus(String workOrderId, String hashResult) {
         byte[] consensus = Numeric.hexStringToByteArray(hashResult);
         try {
             TransactionReceipt revealConsensusReceipt = workerPoolService.getWorkerPool()
-                    .revealConsensus(contributeEvent.woid, consensus).send();
+                    .revealConsensus(workOrderId, consensus).send();
             log.info("RevealConsensus [hashResult:{}, transactionStatus:{}] ",
                     hashResult, getStatus(revealConsensusReceipt));
             return getStatus(revealConsensusReceipt);
@@ -103,9 +103,9 @@ public class ActuatorService implements Actuator {
     }
 
     @Override
-    public TransactionStatus finalizeWork(WorkerPool.RevealEventResponse revealEvent, String stdout, String stderr, String uri) {
+    public TransactionStatus finalizeWork(String workOrderId, String stdout, String stderr, String uri) {
         try {
-            TransactionReceipt finalizedWorkReceipt = workerPoolService.getWorkerPool().finalizedWork(revealEvent.woid,
+            TransactionReceipt finalizedWorkReceipt = workerPoolService.getWorkerPool().finalizedWork(workOrderId,
                     stdout,
                     stderr,
                     uri).send();
