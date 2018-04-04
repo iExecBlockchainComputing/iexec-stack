@@ -5042,20 +5042,32 @@ public final class DBInterface {
 						}
 					}
 					break;
-				case ERROR:
-					if (theHost != null) {
-						theHost.incErrorJobs();
-						theHost.decRunningJobs();
-					}
-					theApp.decRunningJobs();
-					theApp.incErrorJobs();
-					jobOwner.incErrorJobs();
-					jobOwner.decRunningJobs();
-					theWork.setError(receivedJob.getErrorMsg());
-					if (theTask != null) {
-						theTask.setError();
-					}
-					break;
+					case ERROR:
+						if (theHost != null) {
+							theHost.incErrorJobs();
+							theHost.decRunningJobs();
+						}
+						theApp.decRunningJobs();
+						theApp.incErrorJobs();
+						jobOwner.incErrorJobs();
+						jobOwner.decRunningJobs();
+						theWork.setError(receivedJob.getErrorMsg());
+						if (theTask != null) {
+							theTask.setError();
+						}
+						break;
+					case FAILED:
+						if (theHost != null) {
+							theHost.decRunningJobs();
+						}
+						theApp.decRunningJobs();
+						jobOwner.incErrorJobs();
+						jobOwner.decRunningJobs();
+						theWork.setFailed(receivedJob.getErrorMsg());
+						if (theTask != null) {
+							theTask.setFailed();
+						}
+						break;
 				}
 
 				if (theTask != null) {

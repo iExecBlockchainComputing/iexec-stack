@@ -60,7 +60,7 @@ public class WorkInterface extends Table {
 	 */
 	public static final String TABLENAME = ("works");
 
-	/**
+    /**
 	 * This enumerates this interface columns
 	 */
 	public enum Columns implements XWBaseColumn {
@@ -1919,6 +1919,10 @@ public class WorkInterface extends Table {
 		setSendToClient(false);
 	}
 
+	public boolean isPending() {
+        return getStatus() == StatusEnum.PENDING;
+    }
+
 	/**
 	 * This marks this work as completed
 	 */
@@ -1942,7 +1946,12 @@ public class WorkInterface extends Table {
 		setStatus(StatusEnum.RUNNING);
 	}
 
-	/**
+    public boolean isRunning() {
+	    return getStatus() == StatusEnum.RUNNING;
+    }
+
+
+    /**
 	 * This marks this work as being replicated
 	 *
 	 * @since 10.2.0
@@ -1996,6 +2005,39 @@ public class WorkInterface extends Table {
 	public void setError(final String v) {
 		setStatus(StatusEnum.ERROR);
 		setErrorMsg(v);
+	}
+	/**
+	 * This tests if status is ERROR
+	 * @since 13.0.0
+	 */
+	public boolean isError() {
+		return getStatus() == StatusEnum.ERROR;
+	}
+
+    public boolean isAborted() {
+        return getStatus() == StatusEnum.ABORTED;
+    }
+	public synchronized void setAborted() {
+        setStatus(StatusEnum.ABORTED);
+    }
+
+	/**
+	 * This marks this work as FAILED
+	 *
+	 * @param v
+	 *            is the error msg, if any
+	 * @since 13.0.0
+	 */
+	public void setFailed(final String v) {
+		setStatus(StatusEnum.FAILED);
+		setErrorMsg(v);
+	}
+	/**
+	 * This tests if status is FAILED
+	 * @since 13.0.0
+	 */
+	public boolean isFailed() {
+		return getStatus() == StatusEnum.FAILED;
 	}
 
 	/**

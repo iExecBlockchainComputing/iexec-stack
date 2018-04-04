@@ -103,7 +103,7 @@ public class XWUtilMacOSX extends XWUtilImpl {
 			if (exec.startAndWait() != 0) {
 				return "";
 			}
-		} catch (IOException | ExecutorLaunchException | InterruptedException e1) {
+		} catch (Exception e1) {
 			new File(".", XWTools.STDOUT).delete();
 			new File(".", XWTools.STDERR).delete();
 			return "";

@@ -24,21 +24,13 @@
 package xtremweb.exec;
 
 /**
- * Created: Sun Mar 28 22:21:40 2004
- *
- * @author <a href="mailto:fedak@lri.fr">Gilles Fedak</a>
- * @version 1.0
+ * This exception is raised if wall clock time is reached
+ * @author Oleg Lodygensky
+ * @since 13.0.0
  */
-public class ExecutorLaunchException extends Exception {
+public class ExecutorWallClockTimeException extends Exception {
 
-	private String errmsg;
-    public String getErrMsg() { return errmsg; }
+    public ExecutorWallClockTimeException () {
+    }
 
-    public ExecutorLaunchException() {
-        errmsg = null;
-    } // ExecutorLaunchException constructor
-    public ExecutorLaunchException(final String m) {
-        errmsg = m;
-    } // ExecutorLaunchException constructor
-
-} // ExecutorLaunchException
+}

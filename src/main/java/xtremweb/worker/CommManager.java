@@ -1135,8 +1135,7 @@ public final class CommManager extends Thread {
 					logger.exception("Downloading error", e);
 
 					if (newWork != null) {
-						newWork.setError();
-						newWork.setErrorMsg("IOError : " + e.getMessage());
+						newWork.setError("IOError : " + e.getMessage());
 						sendResult(newWork);
 					} else {
 						logger.error("Downloading error : newWork = null ?!?!");
@@ -1240,7 +1239,7 @@ public final class CommManager extends Thread {
 
         } catch (final XWCommException e) {
             logger.exception("CommManager#uploadResults", e);
-            theWork.setError(e.getMessage());
+            theWork.setFailed(e.getMessage());
             throw e;
         } catch (final Exception e) {
 			logger.exception("CommManager#uploadResults", e);
