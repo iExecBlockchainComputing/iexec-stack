@@ -40,41 +40,12 @@ dependencies {
 
     compile 'org.apache.commons:commons-lang3:3.4'
 
+    compile files('../iexec-common/build/libs/iexec-common-0.1.0-SNAPSHOT.jar')
+
     testCompile "junit:junit:$junitVersion"
 
     deployerJars "io.packagecloud.maven.wagon:maven-packagecloud-wagon:0.0.6"
 }
-
-task copyContracts(type: Copy) {
-    into "./src/main/resources/solidity/poco"
-
-    into(".") {
-        from "./PoCo/contracts"
-    }
-
-    eachFile { copyDetails ->
-        if (copyDetails.path == './IexecHub.sol') {
-            filter { line ->
-                line.replace("import \"rlc-token/contracts/RLC.sol\";", "import \"./rlc-token/contracts/RLC.sol\";")
-            }
-        }
-    }
-
-    into("./rlc-token") {
-        from "./rlc-token"
-    }
-}
-
-task buildContracts(type: Exec) {
-    dependsOn copyContracts
-
-    commandLine("sh", "-c", "cd ./scripts && ./buildContracts.sh")
-}
-buildContracts.enabled = !project.hasProperty("skipContracts")
-
-
-// Force the rebuild of contracts before java build
-compileJava.dependsOn(buildContracts)
 
 shadowJar {
     baseName='iexec-scheduler'

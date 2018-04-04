@@ -1,7 +1,8 @@
 package com.iexec.scheduler.workerpool;
 
-import com.iexec.scheduler.contracts.generated.WorkerPool;
-import com.iexec.scheduler.ethereum.*;
+import com.iexec.common.contracts.generated.WorkerPool;
+import com.iexec.common.ethereum.*;
+import com.iexec.common.workerpool.WorkerPoolConfig;
 import com.iexec.scheduler.iexechub.IexecHubService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,7 +11,7 @@ import org.web3j.tx.Contract;
 import org.web3j.tx.ManagedTransaction;
 import org.web3j.utils.Numeric;
 
-import static com.iexec.scheduler.ethereum.Utils.END;
+import static com.iexec.common.ethereum.Utils.END;
 
 
 public class WorkerPoolService {

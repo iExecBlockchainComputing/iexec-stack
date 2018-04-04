@@ -1,10 +1,10 @@
 package com.iexec.scheduler.marketplace;
 
-import com.iexec.scheduler.contracts.generated.Marketplace;
-import com.iexec.scheduler.ethereum.Configuration;
-import com.iexec.scheduler.ethereum.IexecConfigurationService;
-import com.iexec.scheduler.ethereum.CredentialsService;
-import com.iexec.scheduler.ethereum.Web3jService;
+import com.iexec.common.contracts.generated.Marketplace;
+import com.iexec.common.ethereum.Configuration;
+import com.iexec.common.ethereum.CredentialsService;
+import com.iexec.common.ethereum.IexecConfigurationService;
+import com.iexec.common.ethereum.Web3jService;
 import com.iexec.scheduler.iexechub.IexecHubService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -1,22 +1,18 @@
 package com.iexec.scheduler.iexechub;
 
 
-import com.iexec.scheduler.contracts.generated.IexecHub;
-import com.iexec.scheduler.ethereum.*;
-import com.iexec.scheduler.workerpool.WorkerPoolConfig;
+import com.iexec.common.contracts.generated.IexecHub;
+import com.iexec.common.ethereum.*;
+import com.iexec.common.workerpool.WorkerPoolConfig;
 import com.iexec.scheduler.workerpool.WorkerPoolService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
-import org.web3j.tuples.generated.Tuple4;
 import org.web3j.tx.Contract;
 import org.web3j.tx.ManagedTransaction;
 
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
+import static com.iexec.common.ethereum.Utils.END;
 
-import static com.iexec.scheduler.ethereum.Utils.END;
 
 public class IexecHubService {
 
@@ -77,12 +73,12 @@ public class IexecHubService {
         this.iexecHub.workerPoolSubscriptionEventObservable(web3jConfig.getStartBlockParameter(), END)
                 .subscribe(this::onSubscription);
         this.iexecHub.rewardEventObservable(web3jConfig.getStartBlockParameter(), END).subscribe(rewardEvent -> {
-            if (rewardEvent.user.equals(credentialsService.getCredentials().getAddress())){
+            if (rewardEvent.user.equals(credentialsService.getCredentials().getAddress())) {
                 log.info("Received RewardEvent [amount:{}]", rewardEvent.amount);
             }
         });
         this.iexecHub.seizeEventObservable(web3jConfig.getStartBlockParameter(), END).subscribe(seizeEvent -> {
-            if (seizeEvent.user.equals(credentialsService.getCredentials().getAddress())){
+            if (seizeEvent.user.equals(credentialsService.getCredentials().getAddress())) {
                 log.info("Received SeizeEvent [amount:{}]", seizeEvent.amount);
             }
         });

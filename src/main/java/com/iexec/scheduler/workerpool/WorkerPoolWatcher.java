@@ -1,6 +1,7 @@
 package com.iexec.scheduler.workerpool;
 
-import com.iexec.scheduler.contracts.generated.WorkerPool;
+
+import com.iexec.common.contracts.generated.WorkerPool;
 
 public interface WorkerPoolWatcher {
 

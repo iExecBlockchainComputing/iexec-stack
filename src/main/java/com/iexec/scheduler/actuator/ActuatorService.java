@@ -1,10 +1,10 @@
 package com.iexec.scheduler.actuator;
 
-import com.iexec.scheduler.contracts.generated.IexecHub;
-import com.iexec.scheduler.ethereum.RlcService;
-import com.iexec.scheduler.ethereum.TransactionStatus;
+import com.iexec.common.contracts.generated.IexecHub;
+import com.iexec.common.ethereum.RlcService;
+import com.iexec.common.ethereum.TransactionStatus;
+import com.iexec.common.marketplace.MarketOrderDirectionEnum;
 import com.iexec.scheduler.iexechub.IexecHubService;
-import com.iexec.scheduler.marketplace.MarketOrderDirectionEnum;
 import com.iexec.scheduler.marketplace.MarketplaceService;
 import com.iexec.scheduler.workerpool.WorkerPoolService;
 import org.slf4j.Logger;
@@ -17,7 +17,7 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.iexec.scheduler.ethereum.Utils.getStatus;
+import static com.iexec.common.ethereum.Utils.getStatus;
 
 public class ActuatorService implements Actuator {
 
