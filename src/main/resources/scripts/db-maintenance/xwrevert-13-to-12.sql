@@ -39,5 +39,12 @@ ALTER TABLE  works ADD    COLUMN wallclocktime int(10)                   comment
 ALTER TABLE  works ADD    COLUMN diskSpace bigint             default 0  comment 'Optionnal. disk space needed  This is in Mb';
 
 --
+-- remove status FAILED
+--
+update table works set statusId='5', status='ERROR' where statusId='14';
+DELETE FROM statuses where statusId='14';
+
+
+--
 -- End Of File
 --

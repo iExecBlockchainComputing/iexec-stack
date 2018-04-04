@@ -63,6 +63,8 @@ ALTER TABLE  works DROP   COLUMN wallclocktime;
 ALTER TABLE  works DROP   COLUMN diskSpace;
 
 update table works set envid='1', maxWallClocktime='300', maxFreeMassStorage='5368709120', maxFileSize='104857600', maxMemory='536870912', maxCpuSpeed='0.5';
+
+insert into statuses (statusId, statusName, statusObjects, statusComment, statusDeprecated) values (14, 'FAILED',        'works',               'The job does not fill its envelope requirements',                                   null);
 --
 -- End Of File
 --
