@@ -76,6 +76,16 @@ public class IexecHubService {
                 .subscribe(this::onWorkOrderActivated);
         this.iexecHub.workerPoolSubscriptionEventObservable(web3jConfig.getStartBlockParameter(), END)
                 .subscribe(this::onSubscription);
+        this.iexecHub.rewardEventObservable(web3jConfig.getStartBlockParameter(), END).subscribe(rewardEvent -> {
+            if (rewardEvent.user.equals(credentialsService.getCredentials().getAddress())){
+                log.info("Received RewardEvent [amount:{}]", rewardEvent.amount);
+            }
+        });
+        this.iexecHub.seizeEventObservable(web3jConfig.getStartBlockParameter(), END).subscribe(seizeEvent -> {
+            if (seizeEvent.user.equals(credentialsService.getCredentials().getAddress())){
+                log.info("Received SeizeEvent [amount:{}]", seizeEvent.amount);
+            }
+        });
     }
 
     private void onSubscription(IexecHub.WorkerPoolSubscriptionEventResponse workerPoolSubscriptionEvent) {
