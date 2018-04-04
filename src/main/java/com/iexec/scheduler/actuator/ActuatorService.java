@@ -1,6 +1,6 @@
 package com.iexec.scheduler.actuator;
 
-import com.iexec.scheduler.contracts.generated.WorkerPool;
+import com.iexec.scheduler.contracts.generated.IexecHub;
 import com.iexec.scheduler.ethereum.RlcService;
 import com.iexec.scheduler.ethereum.TransactionStatus;
 import com.iexec.scheduler.iexechub.IexecHubService;
@@ -10,10 +10,11 @@ import com.iexec.scheduler.workerpool.WorkerPoolService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
+import org.web3j.tuples.generated.Tuple4;
 import org.web3j.utils.Numeric;
 
-import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.iexec.scheduler.ethereum.Utils.getStatus;
@@ -21,20 +22,20 @@ import static com.iexec.scheduler.ethereum.Utils.getStatus;
 public class ActuatorService implements Actuator {
 
     private static final Logger log = LoggerFactory.getLogger(ActuatorService.class);
-    private static ActuatorService instance;
     private final static IexecHubService iexecHubService = IexecHubService.getInstance();
     private final static WorkerPoolService workerPoolService = WorkerPoolService.getInstance();
     private final static MarketplaceService marketplaceService = MarketplaceService.getInstance();
     private final static RlcService rlcService = RlcService.getInstance();
+    private static ActuatorService instance;
+
+    private ActuatorService() {
+    }
 
     public static ActuatorService getInstance() {
-        if (instance==null){
+        if (instance == null) {
             instance = new ActuatorService();
         }
         return instance;
-    }
-
-    private ActuatorService() {
     }
 
     @Override
@@ -114,5 +115,25 @@ public class ActuatorService implements Actuator {
         }
         return TransactionStatus.FAILURE;
     }
+
+    @Override
+    public List<IexecHub.CreateCategoryEventResponse> getCategories() {
+        List<IexecHub.CreateCategoryEventResponse> categoryEvents = new ArrayList<>();
+        try {
+            for (int i = 1; i < iexecHubService.getIexecHub().m_categoriesCount().send().intValue() + 1; i++) {
+                Tuple4<BigInteger, String, String, BigInteger> category = iexecHubService.getIexecHub().getCategory(new BigInteger(String.valueOf(i))).send();
+                IexecHub.CreateCategoryEventResponse categoryEvent = new IexecHub.CreateCategoryEventResponse();
+                categoryEvent.catid = category.getValue1();
+                categoryEvent.name = category.getValue2();
+                categoryEvent.description = category.getValue3();
+                categoryEvent.workClockTimeRef = category.getValue4();
+                categoryEvents.add(categoryEvent);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return categoryEvents;
+    }
+
 
 }

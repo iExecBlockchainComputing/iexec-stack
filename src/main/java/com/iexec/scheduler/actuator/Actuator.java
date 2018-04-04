@@ -1,5 +1,6 @@
 package com.iexec.scheduler.actuator;
 
+import com.iexec.scheduler.contracts.generated.IexecHub;
 import com.iexec.scheduler.contracts.generated.WorkerPool;
 import com.iexec.scheduler.ethereum.TransactionStatus;
 
@@ -17,4 +18,6 @@ public interface Actuator {
     TransactionStatus revealConsensus(String workOrderId, String hashResult);
 
     TransactionStatus finalizeWork(String workOrderId, String stdout, String stderr, String uri);
+
+    List<IexecHub.CreateCategoryEventResponse> getCategories();
 }
