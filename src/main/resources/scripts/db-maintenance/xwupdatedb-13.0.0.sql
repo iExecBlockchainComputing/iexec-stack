@@ -53,7 +53,7 @@ ALTER TABLE  works ADD    COLUMN envId              int unsigned   not null  def
 ALTER TABLE  works ADD    COLUMN maxFreeMassStorage bigint         not null  default 5368709120   comment 'Max mass storage usage in bytes; default 5Gb';
 ALTER TABLE  works ADD    COLUMN maxFileSize        bigint         not null  default 104857600    comment 'Max file length in bytes; default 100Mb';
 ALTER TABLE  works ADD    COLUMN maxMemory          bigint         not null  default 536870912    comment 'Max RAM usage in bytes; default 512Mb';
-ALTER TABLE  works ADD    COLUMN maxCpuSpeed        float          not null  default 0.5          comment 'Max CPU usage in percentage; default 50% (https://docs.docker.com/engine/reference/run/#cpu-period-constraint)'
+ALTER TABLE  works ADD    COLUMN maxCpuSpeed        float          not null  default 0.5          comment 'Max CPU usage in percentage; default 50% (https://docs.docker.com/engine/reference/run/#cpu-period-constraint)';
 
 ALTER TABLE  works MODIFY COLUMN minMemory           bigint                      default 0        comment 'Optionnal. minimum memory needed in Kb';
 ALTER TABLE  works MODIFY COLUMN minCPUSpeed         int                         default 0        comment 'Optionnal. minimum CPU speed needed in MHz';
