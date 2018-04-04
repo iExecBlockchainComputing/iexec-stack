@@ -15,19 +15,8 @@ public class WorkerPoolPolicy {
     private BigInteger stakeRatioPolicy;
     private BigInteger schedulerRewardRatioPolicy;
     private BigInteger resultRetentionPolicy;
-    private BigInteger mode;
-    private List<String> list;
 
     public WorkerPoolPolicy() {
-        list = new ArrayList<>();
-    }
-
-    public List<String> getList() {
-        return list;
-    }
-
-    public void setList(List<String> list) {
-        this.list = list;
     }
 
     public String getAddress() {
@@ -36,14 +25,6 @@ public class WorkerPoolPolicy {
 
     public void setAddress(String address) {
         this.address = address;
-    }
-
-    public BigInteger getMode() {
-        return mode;
-    }
-
-    public void setMode(BigInteger mode) {
-        this.mode = mode;
     }
 
     public String getName() {

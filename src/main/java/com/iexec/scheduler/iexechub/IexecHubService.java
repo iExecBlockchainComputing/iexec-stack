@@ -5,14 +5,16 @@ import com.iexec.scheduler.contracts.generated.IexecHub;
 import com.iexec.scheduler.ethereum.*;
 import com.iexec.scheduler.workerpool.WorkerPoolConfig;
 import com.iexec.scheduler.workerpool.WorkerPoolService;
-
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
+import org.web3j.tuples.generated.Tuple4;
 import org.web3j.tx.Contract;
 import org.web3j.tx.ManagedTransaction;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.iexec.scheduler.ethereum.Utils.END;
 
@@ -20,25 +22,25 @@ public class IexecHubService {
 
 
     private static final Logger log = LoggerFactory.getLogger(WorkerPoolService.class);
-    private static IexecHubService instance;
     private static final Web3jService web3jService = Web3jService.getInstance();
     private static final CredentialsService credentialsService = CredentialsService.getInstance();
     private static final Configuration configuration = IexecConfigurationService.getInstance().getConfiguration();
-    private static final Web3jConfig web3jConfig  = configuration.getWeb3jConfig();
+    private static final Web3jConfig web3jConfig = configuration.getWeb3jConfig();
     private static final ContractConfig contractConfig = configuration.getContractConfig();
     private static final WorkerPoolConfig workerPoolConfig = configuration.getWorkerPoolConfig();
+    private static IexecHubService instance;
     private IexecHub iexecHub;
     private IexecHubWatcher iexecHubWatcher;
 
+    private IexecHubService() {
+        run();
+    }
+
     public static IexecHubService getInstance() {
-        if (instance==null){
+        if (instance == null) {
             instance = new IexecHubService();
         }
         return instance;
-    }
-
-    private IexecHubService() {
-        run();
     }
 
     private void run() {
@@ -49,9 +51,9 @@ public class IexecHubService {
         startWatchers();
     }
 
-    private String fetchWorkerPoolAddress(){
+    private String fetchWorkerPoolAddress() {
         String workerPoolAddress = null;
-        if (workerPoolConfig.getAddress()==null || workerPoolConfig.getAddress().isEmpty()) {
+        if (workerPoolConfig.getAddress() == null || workerPoolConfig.getAddress().isEmpty()) {
             try {
                 TransactionReceipt createWorkerPoolReceipt = iexecHub.createWorkerPool(workerPoolConfig.getName(),
                         workerPoolConfig.getSubscriptionLockStakePolicy(),
@@ -74,6 +76,16 @@ public class IexecHubService {
                 .subscribe(this::onWorkOrderActivated);
         this.iexecHub.workerPoolSubscriptionEventObservable(web3jConfig.getStartBlockParameter(), END)
                 .subscribe(this::onSubscription);
+        this.iexecHub.rewardEventObservable(web3jConfig.getStartBlockParameter(), END).subscribe(rewardEvent -> {
+            if (rewardEvent.user.equals(credentialsService.getCredentials().getAddress())){
+                log.info("Received RewardEvent [amount:{}]", rewardEvent.amount);
+            }
+        });
+        this.iexecHub.seizeEventObservable(web3jConfig.getStartBlockParameter(), END).subscribe(seizeEvent -> {
+            if (seizeEvent.user.equals(credentialsService.getCredentials().getAddress())){
+                log.info("Received SeizeEvent [amount:{}]", seizeEvent.amount);
+            }
+        });
     }
 
     private void onSubscription(IexecHub.WorkerPoolSubscriptionEventResponse workerPoolSubscriptionEvent) {
@@ -90,7 +102,7 @@ public class IexecHubService {
         }
     }
 
-    public void register(IexecHubWatcher iexecHubWatcher) {
+    public void registerIexecHubWatcher(IexecHubWatcher iexecHubWatcher) {
         this.iexecHubWatcher = iexecHubWatcher;
     }
 
