@@ -6,7 +6,7 @@
 ```
 git clone --recurse-submodules https://github.com/iExecBlockchainComputing/iexec-scheduler.git          *
 ```
-or ```git clone https://github.com/iExecBlockchainComputing/iexec-scheduler.git   & cd iexec-scheduler & git submodule update --init --recursive```
+or ```git clone https://github.com/iExecBlockchainComputing/iexec-scheduler.git   && cd iexec-scheduler && git submodule update --init --recursive```
 ```
 cd iexec-scheduler/Poco
 npm install
