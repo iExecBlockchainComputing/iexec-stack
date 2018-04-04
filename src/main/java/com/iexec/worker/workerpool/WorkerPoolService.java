@@ -47,16 +47,17 @@ public class WorkerPoolService {
     }
 
     private void onAllowWorkerToContribute(WorkerPool.AllowWorkerToContributeEventResponse allowWorkerToContributeEvent) {
-        if (allowWorkerToContributeEvent.worker.equals(credentialsService.getCredentials().getAddress())) {
+        if (allowWorkerToContributeEvent.worker.equals(credentialsService.getCredentials().getAddress()) && workerPoolWatcher != null) {
             log.info("Received AllowWorkerToContributeEvent [workOrderId:{}]", allowWorkerToContributeEvent.woid);
             workerPoolWatcher.onAllowWorkerToContribute(allowWorkerToContributeEvent.woid);
         }
     }
 
     private void onRevealConsensus(WorkerPool.RevealConsensusEventResponse revealConsensusEvent) {
-        log.info("Received RevealConsensusEvent [workOrderId:{}]", revealConsensusEvent.woid);
-        workerPoolWatcher.onRevealConsensus(revealConsensusEvent.woid);
-
+        if (workerPoolWatcher != null){
+            log.info("Received RevealConsensusEvent [workOrderId:{}]", revealConsensusEvent.woid);
+            workerPoolWatcher.onRevealConsensus(revealConsensusEvent.woid);
+        }
     }
 
     public void registerWorkerPoolWatcher(WorkerPoolWatcher workerPoolWatcher) {

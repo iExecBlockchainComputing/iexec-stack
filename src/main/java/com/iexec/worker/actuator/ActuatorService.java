@@ -62,6 +62,18 @@ public class ActuatorService implements Actuator {
     }
 
     @Override
+    public TransactionStatus unsubscribeFromPool() {
+        try {
+            TransactionReceipt unsubscribeFromPoolReceipt = workerPoolService.getWorkerPool().unsubscribeFromPool().send();
+            log.info("UnsubscribeFromPool [transactionStatus:{}] ", getStatus(unsubscribeFromPoolReceipt));
+            return getStatus(unsubscribeFromPoolReceipt);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return TransactionStatus.FAILURE;
+    }
+
+    @Override
     public TransactionStatus contribute(String workOrderId, String workerResult, BigInteger contributeV, String contributeR, String contributeS) {
         String hashResult = hashResult(workerResult);
         String signResult = signByteResult(workerResult, credentialsService.getCredentials().getAddress());
