@@ -8,6 +8,8 @@ public interface Actuator {
 
     TransactionStatus subscribeToPool();
 
+    TransactionStatus unsubscribeFromPool();
+
     TransactionStatus contribute(String workOrderId, String workerResult, BigInteger contributeV, String contributeR, String contributeS);
 
     TransactionStatus reveal(String workOrderId, String workerResult);

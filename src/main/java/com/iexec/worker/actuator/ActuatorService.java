@@ -1,6 +1,7 @@
 package com.iexec.worker.actuator;
 
 
+import com.iexec.worker.contracts.generated.Marketplace;
 import com.iexec.worker.contracts.generated.WorkOrder;
 import com.iexec.worker.ethereum.*;
 import com.iexec.worker.iexechub.IexecHubService;
@@ -61,6 +62,18 @@ public class ActuatorService implements Actuator {
     }
 
     @Override
+    public TransactionStatus unsubscribeFromPool() {
+        try {
+            TransactionReceipt unsubscribeFromPoolReceipt = workerPoolService.getWorkerPool().unsubscribeFromPool().send();
+            log.info("UnsubscribeFromPool [transactionStatus:{}] ", getStatus(unsubscribeFromPoolReceipt));
+            return getStatus(unsubscribeFromPoolReceipt);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return TransactionStatus.FAILURE;
+    }
+
+    @Override
     public TransactionStatus contribute(String workOrderId, String workerResult, BigInteger contributeV, String contributeR, String contributeS) {
         String hashResult = hashResult(workerResult);
         String signResult = signByteResult(workerResult, credentialsService.getCredentials().getAddress());
@@ -74,14 +87,14 @@ public class ActuatorService implements Actuator {
                 workOrderId, web3jService.getWeb3j(), credentialsService.getCredentials(), ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT);
 
         try {
-            BigInteger m_emitcost = workOrder.m_emitcost().send();
-            log.info("[emitcost:{}]",m_emitcost);//TODO - Check why emitcost==0
-            m_emitcost = BigInteger.valueOf(100);
-
-            Float deposit = (contractConfig.getStakeRatioPolicy().floatValue() / 100) * m_emitcost.floatValue();//(30/100)*100
+            Marketplace marketplace = Marketplace.load(
+                    iexecHubService.getIexecHub().marketplaceAddress().send(), web3jService.getWeb3j(), credentialsService.getCredentials(), ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT);
+            BigInteger marketOrderValue = marketplace.getMarketOrderValue(workOrder.m_marketorderIdx().send()).send();
+            log.info("[marketOrderValue:{}]", marketOrderValue);
+            Float deposit = (contractConfig.getStakeRatioPolicy().floatValue() / 100) * marketOrderValue.floatValue();//(30/100)*100
             BigInteger depositBig = BigDecimal.valueOf(deposit).toBigInteger();
             TransactionReceipt contributeDepositReceipt = iexecHubService.getIexecHub().deposit(depositBig).send();
-            log.info("Deposit for emitMarketOrder [depositAmount:{}, transactionStatus:{}] ",
+            log.info("Deposit for contribute [depositAmount:{}, transactionStatus:{}] ",
                     depositBig, getStatus(contributeDepositReceipt));
             TransactionReceipt contributeReceipt = workerPoolService.getWorkerPool().contribute(workOrderId, hashResultBytes, hashSignBytes, contributeV, r, s).send();
             log.info("Contribute [hashResult:{}, signResult:{}, transactionStatus:{}]", hashResult, signResult, getStatus(contributeReceipt));

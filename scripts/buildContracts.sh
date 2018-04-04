@@ -8,8 +8,8 @@ baseDir="../src/main/resources/solidity"
 targets="
 poco/WorkerPool
 poco/IexecHub
-poco/AuthorizedList
 poco/WorkOrder
+poco/Marketplace
 poco/rlc-token/contracts/RLC
 "
 
