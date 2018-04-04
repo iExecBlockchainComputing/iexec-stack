@@ -1,6 +1,5 @@
 package com.iexec.scheduler.workerpool;
 
-import com.iexec.scheduler.contracts.generated.AuthorizedList;
 import com.iexec.scheduler.contracts.generated.WorkerPool;
 import com.iexec.scheduler.ethereum.*;
 import com.iexec.scheduler.iexechub.IexecHubService;
