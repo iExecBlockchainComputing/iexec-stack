@@ -11,12 +11,16 @@ buildscript {
 
 apply plugin: 'com.github.johnrengelman.shadow'
 apply plugin: 'java'
+apply plugin: 'maven'
 
 sourceCompatibility = 1.8
 
-
 repositories {
     mavenCentral()
+}
+
+configurations {
+    deployerJars
 }
 
 ext {
@@ -37,6 +41,8 @@ dependencies {
     compile 'org.apache.commons:commons-lang3:3.4'
 
     testCompile "junit:junit:$junitVersion"
+
+    deployerJars "io.packagecloud.maven.wagon:maven-packagecloud-wagon:0.0.6"
 }
 
 task copyContracts(type: Copy) {
@@ -70,11 +76,23 @@ buildContracts.enabled = !project.hasProperty("skipContracts")
 compileJava.dependsOn buildContracts
 
 shadowJar {
-    baseName = 'iexec-scheduler'
-    classifier = null
-    version = null
+    baseName=rootProject.name
+    classifier=null
+    version=version
 }
 
 build.dependsOn(shadowJar)
 
+def gitBranch = 'git name-rev --name-only HEAD'.execute().text.trim()
+def isMasterBranch = gitBranch == "remotes/origin/master"
+def canUploadArchives = true //isMasterBranch
 
+uploadArchives {
+    repositories.mavenDeployer {
+        configuration = configurations.deployerJars
+        repository(url: "packagecloud+https://packagecloud.io/iexec/worker") {
+            authentication(password: mavenPassword)
+        }
+    }
+}
+uploadArchives.enabled = canUploadArchives
