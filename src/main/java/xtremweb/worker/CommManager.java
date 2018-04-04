@@ -575,11 +575,10 @@ public final class CommManager extends Thread {
      *
      * @param uid
      *            is the data uid
-     * @param maxLength is the max data size defined by the envelope
      * @throws AccessControlException
      * @throws InvalidKeyException
      */
-    private void downloadApp(final UID uid, final long maxLength) throws ClassNotFoundException, UnknownHostException, ConnectException,
+    private void downloadApp(final UID uid) throws ClassNotFoundException, UnknownHostException, ConnectException,
             IOException, SAXException, URISyntaxException, InvalidKeyException, AccessControlException {
 
         final AppInterface app = getApp(uid);
@@ -602,7 +601,10 @@ public final class CommManager extends Thread {
         }
 
         try {
-            downloadData(uri, maxLength, false);
+            final DataInterface data = getData(uri, false);
+            downloadData(uri,
+                    data != null ? data.getSize() : 0,
+                    false);
         } catch (final Exception e) {
             logger.exception(e);
             throw new IOException("can't download binary (" + uri + ")");
@@ -611,7 +613,10 @@ public final class CommManager extends Thread {
         try {
             logger.error("CommManager : can't use app library; please use executables");
             uri = app.getLibrary(cpu, os);
-            downloadData(uri, maxLength, false);
+            final DataInterface data = getData(uri, false);
+            downloadData(uri,
+                    data != null ? data.getSize() : 0,
+                    false);
         } catch (final Exception e) {
             logger.exception(e);
             throw new IOException("can't download library (" + uri + ")");
@@ -619,7 +624,10 @@ public final class CommManager extends Thread {
 
         try {
             uri = app.getLaunchScript(os);
-            downloadData(uri, maxLength, false);
+            final DataInterface data = getData(uri, false);
+            downloadData(uri,
+                    data != null ? data.getSize() : 0,
+                    false);
         } catch (final Exception e) {
             logger.exception(e);
             throw new IOException("can't download init script (" + uri + ")");
@@ -627,7 +635,10 @@ public final class CommManager extends Thread {
 
         try {
             uri = app.getUnloadScript(os);
-            downloadData(uri, maxLength, false);
+            final DataInterface data = getData(uri, false);
+            downloadData(uri,
+                    data != null ? data.getSize() : 0,
+                    false);
         } catch (final Exception e) {
             logger.exception(e);
             throw new IOException("can't download unload script (" + uri + ")");
@@ -635,7 +646,10 @@ public final class CommManager extends Thread {
 
         try {
             uri = app.getBaseDirin();
-            downloadData(uri, maxLength, false);
+            final DataInterface data = getData(uri, false);
+            downloadData(uri,
+                    data != null ? data.getSize() : 0,
+                    false);
         } catch (final Exception e) {
             logger.exception(e);
             throw new IOException("can't download base dirin (" + uri + ")");
@@ -643,7 +657,10 @@ public final class CommManager extends Thread {
 
         try {
             uri = app.getDefaultDirin();
-            downloadData(uri, maxLength, false);
+            final DataInterface data = getData(uri, false);
+            downloadData(uri,
+                    data != null ? data.getSize() : 0,
+                    false);
         } catch (final Exception e) {
             logger.exception(e);
             throw new IOException("can't download default dirin (" + uri + ")");
@@ -651,7 +668,10 @@ public final class CommManager extends Thread {
 
         try {
             uri = app.getDefaultStdin();
-            downloadData(uri, maxLength, false);
+            final DataInterface data = getData(uri, false);
+            downloadData(uri,
+                    data != null ? data.getSize() : 0,
+                    false);
         } catch (final Exception e) {
             logger.exception(e);
             throw new IOException("can't download default stdin (" + uri + ")");
@@ -1117,7 +1137,7 @@ public final class CommManager extends Thread {
 						throw new IOException("can't download work :" + e.getMessage());
 					}
 					try {
-                        downloadApp(newWork.getApplication(), newWork.getMaxFileSize());
+                        downloadApp(newWork.getApplication());
 					} catch (final Exception e) {
 						logger.exception("Download app err : ", e);
 						throw new IOException("can't download app : " + e.getMessage());
@@ -1249,7 +1269,7 @@ public final class CommManager extends Thread {
 		} finally {
 
             try {
-                logger.finest("CommManager#uploadResults : " + theWork.toXml());
+                logger.debug("CommManager#uploadResults : " + theWork.toXml());
                 workSend(theWork);
             } catch (final Exception e) {
                 logger.exception(e);
