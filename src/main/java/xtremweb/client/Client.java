@@ -919,6 +919,7 @@ public final class Client {
 
 			switch (jobStatus) {
 			case COMPLETED:
+			case FAILED:
 			case ERROR:
 				if (((WorkInterface) obj).getExpectedReplications() > 0) {
 					// we delay replicated work removal to keep a chance to
