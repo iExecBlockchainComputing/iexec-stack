@@ -3,8 +3,6 @@
 set -e
 set -o pipefail
 
-baseDir="../src/main/resources/solidity"
-
 targets="
 poco/IexecHub
 poco/WorkerPool
@@ -18,6 +16,9 @@ poco/rlc-token/contracts/RLC
 
 currentdir=`pwd`
 echo $(pwd)
+
+baseDir=$currentdir"/../src/main/resources/solidity"
+echo $baseDir
 
 for target in ${targets}; do
     dirName=$(dirname "${target}")
