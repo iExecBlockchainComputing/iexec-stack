@@ -38,15 +38,15 @@ package xtremweb.common;
  *     |                     v                           |
  *     |                  Running <--- ResultRequest -> Lost
  *     |                     |               ^           ^
- *     |                     v               |           ^
- *     |                     |               |           ^
- *     |                Replicating          |           ^
- *     |                     |               |           ^
  *     |                     v               |           |
- *  Aborted <----+-----------+---------------+-----------+
- *               |           |               |           |
- *               v           v               v           |
- *             Error    Completed <-- DataRequest -------+
+ *     |                     |               |           |
+ *     |                Replicating          |           |
+ *     |                     |               |           |
+ *     |                     v               |           |
+ *  Aborted <----+-----------+---------------+-----------+-----------+
+ *               |           |               |           |           |
+ *               v           v               v           |           v
+ *             Error    Completed <-- DataRequest -------+         Failed
  *
  * </code>
  *
