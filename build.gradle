@@ -1,0 +1,97 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.3'
+    }
+}
+
+apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: 'java'
+apply plugin: 'maven'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+configurations {
+    deployerJars
+}
+
+ext {
+    web3jVersion = '3.2.0'
+    logbackVersion = '1.2.3'
+    junitVersion = '4.12'
+    springBootVersion = '1.5.9.RELEASE'
+}
+
+dependencies {
+    // web3j dependencies
+    compile "org.web3j:core:$web3jVersion"
+
+    compile "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.3.0"
+    compile "com.fasterxml.jackson.core:jackson-databind:2.2.3"
+
+    compile 'org.apache.commons:commons-lang3:3.4'
+
+    testCompile "junit:junit:$junitVersion"
+
+    deployerJars "io.packagecloud.maven.wagon:maven-packagecloud-wagon:0.0.6"
+}
+
+task copyContracts(type: Copy) {
+    into "./src/main/resources/solidity/poco"
+
+    into(".") {
+        from "./PoCo/contracts"
+    }
+
+    eachFile { copyDetails ->
+        if (copyDetails.path == './IexecHub.sol') {
+            filter { line ->
+                line.replace("import \"rlc-token/contracts/RLC.sol\";", "import \"./rlc-token/contracts/RLC.sol\";")
+            }
+        }
+    }
+
+    into("./rlc-token") {
+        from "./rlc-token"
+    }
+}
+
+task buildContracts(type: Exec) {
+    dependsOn copyContracts
+
+    commandLine("sh", "-c", "cd ./scripts && ./buildContracts.sh")
+}
+buildContracts.enabled = !project.hasProperty("skipContracts")
+
+// Force the rebuild of contracts before java build
+compileJava.dependsOn(buildContracts)
+
+shadowJar {
+    baseName = rootProject.name
+    classifier = null
+    version = version
+}
+
+build.dependsOn(shadowJar)
+
+def gitBranch = 'git name-rev --name-only HEAD'.execute().text.trim()
+def isMasterBranch = gitBranch == "remotes/origin/master"
+def canUploadArchives = isMasterBranch
+
+uploadArchives {
+    repositories.mavenDeployer {
+        configuration = configurations.deployerJars
+        repository(url: "packagecloud+https://packagecloud.io/iexec/common") {
+            authentication(password: mavenPassword)
+        }
+    }
+}
+uploadArchives.enabled = canUploadArchives
