@@ -1,8 +1,13 @@
 package com.iexec.scheduler.workerpool;
 
 import com.iexec.common.contracts.generated.WorkerPool;
-import com.iexec.common.ethereum.*;
+import com.iexec.common.ethereum.ContractConfig;
+import com.iexec.common.ethereum.CredentialsService;
+import com.iexec.common.ethereum.Web3jConfig;
+import com.iexec.common.ethereum.Web3jService;
 import com.iexec.common.workerpool.WorkerPoolConfig;
+import com.iexec.scheduler.ethereum.SchedulerConfiguration;
+import com.iexec.scheduler.ethereum.SchedulerConfigurationService;
 import com.iexec.scheduler.iexechub.IexecHubService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,9 +25,9 @@ public class WorkerPoolService {
     private static WorkerPoolService instance;
     private final Web3jService web3jService = Web3jService.getInstance();
     private final CredentialsService credentialsService = CredentialsService.getInstance();
-    private final Configuration configuration = IexecConfigurationService.getInstance().getConfiguration();
-    private final Web3jConfig web3jConfig = configuration.getWeb3jConfig();
-    private final ContractConfig contractConfig = configuration.getContractConfig();
+    private final SchedulerConfiguration configuration = SchedulerConfigurationService.getInstance().getSchedulerConfiguration();
+    private final Web3jConfig web3jConfig = configuration.getCommonConfiguration().getWeb3jConfig();
+    private final ContractConfig contractConfig = configuration.getCommonConfiguration().getContractConfig();
     private final WorkerPoolConfig workerPoolConfig = configuration.getWorkerPoolConfig();
     private WorkerPool workerPool;
     private WorkerPoolWatcher workerPoolWatcher;
