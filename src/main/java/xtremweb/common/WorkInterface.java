@@ -47,9 +47,6 @@ import xtremweb.security.XWAccessRights;
  *
  * @author <a href="mailto:lodygens /at\ .in2p3.fr>Oleg Lodygensky</a>
  * @version %I%, %G%
- */
-
-/**
  * This describes an XtremWeb work. <br />
  * This describes a row of the works SQL table on server side.<br />
  * This aims to transfer work through the network too.
@@ -63,7 +60,7 @@ public class WorkInterface extends Table {
 	 */
 	public static final String TABLENAME = ("works");
 
-	/**
+    /**
 	 * This enumerates this interface columns
 	 */
 	public enum Columns implements XWBaseColumn {
@@ -362,6 +359,17 @@ public class WorkInterface extends Table {
 			}
 		},
 		/**
+		 * This is the column index of environment
+		 *
+		 * @since 13.0.0
+		 */
+		ENVID {
+			@Override
+			public Integer fromString(final String v) throws URISyntaxException {
+				return Integer.valueOf(v);
+			}
+		},
+		/**
 		 * This is the column index of the amount of expected replicas This job
 		 * is replicated forever, if < 0
 		 *
@@ -436,17 +444,6 @@ public class WorkInterface extends Table {
 			}
 		},
 		/**
-		 * This is the column index of the wall clock time in seconds
-		 *
-		 * @since 8.2.0
-		 */
-		MAXWALLCLOCKTIME {
-			@Override
-			public Long fromString(final String v) {
-				return new Long(v);
-			}
-		},
-		/**
 		 * This is the column index of the retry
 		 *
 		 * @since 8.0.0
@@ -458,37 +455,25 @@ public class WorkInterface extends Table {
 			}
 		},
 		/**
-		 * This is the column index of the needed disk space to run job This is
-		 * used when launching a VM; this is in Mb
-		 *
-		 * @since 8.0.0
-		 */
-		DISKSPACE {
-			@Override
-			public Long fromString(final String v) {
-				return Long.valueOf(v);
-			}
-		},
-		/**
 		 * This is the column index of the minimum memory needed to run job for
 		 * this application. This is in Kb
 		 */
 		MINMEMORY {
 			@Override
-			public Integer fromString(final String v) {
-				return Integer.valueOf(v);
+			public Long fromString(final String v) {
+				return Long.valueOf(v);
 			}
 		},
-		/**
-		 * This is the column index of the minimum CPU spped needed to run job
-		 * for this application<br />
-		 */
-		MINCPUSPEED {
-			@Override
-			public Integer fromString(final String v) {
-				return Integer.valueOf(v);
-			}
-		},
+        /**
+         * This is the column index of the minimum CPU speed needed to run job
+         * for this application<br />
+         */
+        MINCPUSPEED {
+            @Override
+            public Integer fromString(final String v) {
+                return Integer.valueOf(v);
+            }
+        },
 		/**
 		 * This is the column index of the status
 		 *
@@ -510,13 +495,51 @@ public class WorkInterface extends Table {
 				return StatusEnum.valueOf(v.toUpperCase());
 			}
 		},
+        /**
+         * This is the column index of the minimal free mass storage needed by
+         * the application. This is in MegaBytes
+         *
+         * @since 9.0.0
+         */
+        MINFREEMASSSTORAGE {
+            /**
+             * This creates an object from String representation for this column
+             * value
+             *
+             * @param v
+             *            the String representation
+             * @return an Integer representing the column value
+             * @throws Exception
+             *             is thrown on instantiation error
+             */
+            @Override
+            public Long fromString(final String v) {
+                return Long.valueOf(v);
+            }
+        },
 		/**
-		 * This is the column index of the minimal free mass storage needed by
-		 * the application. This is in MegaBytes
-		 *
-		 * @since 9.0.0
+		 * This is copied from the envelope
+		 * @see EnvelopeInterface
 		 */
-		MINFREEMASSSTORAGE {
+		MAXWALLCLOCKTIME {
+					/**
+					 * This creates an object from String representation for this column
+					 * value This cleans the parameter to ensure SQL compliance
+					 *
+					 * @param v
+					 *            the String representation
+					 * @return a Boolean representing the column value
+					 */
+					@Override
+					public Long fromString(final String v) {
+						return Long.valueOf(v);
+					}
+				},
+		/**
+		 * This is copied from the envelope
+		 * @see EnvelopeInterface
+		 */
+		MAXFREEMASSSTORAGE {
 			/**
 			 * This creates an object from String representation for this column
 			 * value
@@ -524,12 +547,62 @@ public class WorkInterface extends Table {
 			 * @param v
 			 *            the String representation
 			 * @return an Integer representing the column value
-			 * @throws Exception
-			 *             is thrown on instantiation error
 			 */
 			@Override
 			public Long fromString(final String v) {
 				return Long.valueOf(v);
+			}
+		},
+		/**
+		 * This is copied from the envelope
+		 * @see EnvelopeInterface
+		 */
+		MAXFILESIZE {
+			/**
+			 * This creates an object from String representation for this column
+			 * value
+			 *
+			 * @param v
+			 *            the String representation
+			 * @return an Integer representing the column value
+			 */
+			@Override
+			public Long fromString(final String v) {
+				return Long.valueOf(v);
+			}
+		},
+		/**
+		 * This is copied from the envelope
+		 * @see EnvelopeInterface
+		 */
+		MAXMEMORY{
+			/**
+			 * This creates an object from String representation for this column
+			 * value
+			 *
+			 * @param v
+			 *            the String representation
+			 * @return an Integer representing the column value
+			 */
+			@Override
+			public Long fromString(final String v) {
+				return Long.valueOf(v);
+			}
+		},
+		/**
+		 * This is copied from the envelope
+		 * @see EnvelopeInterface
+		 */
+		MAXCPUSPEED {
+			/**
+			 * This creates an object from String representation for this column
+			 * value
+			 * @param v the String representation
+			 * @return an Float representing the column value
+			 */
+			@Override
+			public Float fromString(final String v) {
+				return Float.valueOf(v);
 			}
 		};
 
@@ -537,7 +610,6 @@ public class WorkInterface extends Table {
 		 * This is the index based on ordinal so that the first value is
 		 * TableColumns + 1
 		 *
-		 * @see xtremweb.common#TableColumns
 		 * @see Enum#ordinal()
 		 * @since 8.2.0
 		 */
@@ -651,8 +723,8 @@ public class WorkInterface extends Table {
 		setStatus(StatusEnum.UNAVAILABLE);
 		setService(false);
 		setSendToClient(false);
+		setArrivalDate();
 		setMaxRetry(Integer.parseInt(XWPropertyDefs.MAXRETRY.defaultValue()));
-		setMaxWallClockTime(Long.parseLong(XWPropertyDefs.WALLCLOCKTIMEVALUE.defaultValue()));
 		setAccessRights(XWAccessRights.DEFAULT);
 		setShortIndexes(new int[] { TableColumns.UID.getOrdinal(), Columns.STATUS.getOrdinal(),
 				Columns.COMPLETEDDATE.getOrdinal(), Columns.LABEL.getOrdinal() });
@@ -726,11 +798,7 @@ public class WorkInterface extends Table {
 			setStatus(StatusEnum.UNAVAILABLE);
 		}
 		try {
-			setMinMemory((Integer) Columns.MINMEMORY.fromResultSet(rs));
-		} catch (final Exception e) {
-		}
-		try {
-			setDiskSpace((Long) Columns.DISKSPACE.fromResultSet(rs));
+			setMinMemory((Long) Columns.MINMEMORY.fromResultSet(rs));
 		} catch (final Exception e) {
 		}
 		try {
@@ -741,10 +809,30 @@ public class WorkInterface extends Table {
 			setMaxRetry((Integer) Columns.MAXRETRY.fromResultSet(rs));
 		} catch (final Exception e) {
 		}
+        try {
+            setMaxWallClockTime((Long) Columns.MAXWALLCLOCKTIME.fromResultSet(rs));
+        } catch (final Exception e) {
+        }
+        try {
+            setMinFreeMassStorage((Long) Columns.MINFREEMASSSTORAGE.fromResultSet(rs));
+        } catch (final Exception e) {
+        }
 		try {
-			setMaxWallClockTime((Long) Columns.MAXWALLCLOCKTIME.fromResultSet(rs));
+			setMaxFreeMassStorage((Long) Columns.MAXFREEMASSSTORAGE.fromResultSet(rs));
 		} catch (final Exception e) {
 		}
+		try {
+			setMaxFileSize((Long) Columns.MAXFILESIZE.fromResultSet(rs));
+		} catch (final Exception e) {
+		}
+        try {
+            setMaxCpuSpeed((Float) Columns.MAXCPUSPEED.fromResultSet(rs));
+        } catch (final Exception e) {
+        }
+        try {
+            setMaxMemory((Long) Columns.MAXMEMORY.fromResultSet(rs));
+        } catch (final Exception e) {
+        }
 		try {
 			setListenPort((String) Columns.LISTENPORT.fromResultSet(rs));
 		} catch (final Exception e) {
@@ -823,6 +911,10 @@ public class WorkInterface extends Table {
 		}
 		try {
 			setExpectedReplications((Integer) Columns.REPLICATIONS.fromResultSet(rs));
+		} catch (final Exception e) {
+		}
+		try {
+			setEnvId((Integer) Columns.ENVID.fromResultSet(rs));
 		} catch (final Exception e) {
 		}
 		try {
@@ -950,6 +1042,7 @@ public class WorkInterface extends Table {
 		setTotalReplica(itf.getTotalReplica());
 		setReplicaSetSize(itf.getReplicaSetSize());
 		setExpectedReplications(itf.getExpectedReplications());
+		setEnvId(itf.getEnvId());
 		setReplicatedUid(itf.getReplicatedUid());
 		setDataDriven(itf.getDataDriven());
 		setExpectedHost(itf.getExpectedHost());
@@ -972,7 +1065,12 @@ public class WorkInterface extends Table {
 		setSgId(itf.getSgId());
 		setMaxRetry(itf.getMaxRetry());
 		setMaxWallClockTime(itf.getMaxWallClockTime());
-		setMinMemory(itf.getMinMemory());
+        setMinMemory(itf.getMinMemory());
+        setMaxMemory(itf.getMaxMemory());
+        setMaxCpuSpeed(itf.getMaxCpuSpeed());
+        setMinFreeMassStorage(itf.getMinFreeMassStorage());
+		setMaxFreeMassStorage(itf.getMaxFreeMassStorage());
+		setMaxFileSize(itf.getMaxFileSize());
 		setMinCpuSpeed(itf.getMinCpuSpeed());
 		setStatus(itf.getStatus());
 		setSmartSocketAddr(itf.getSmartSocketAddr());
@@ -984,7 +1082,6 @@ public class WorkInterface extends Table {
 		setCompEndDate(itf.getCompEndDate());
 		setRetry(itf.getRetry());
 		setListenPort(itf.getListenPort());
-		setDiskSpace(itf.getDiskSpace());
 	}
 
 	/**
@@ -1164,8 +1261,7 @@ public class WorkInterface extends Table {
 	}
 
 	/**
-	 * This retrieves the wallclocktime attribute. If it is not set, it is forced its
-	 * default value
+	 * This retrieves the wallclocktime attribute. If it is not set, this returns 0
 	 *
 	 * @return the wall clock time in seconds
 	 * @since 8.2.0
@@ -1175,9 +1271,7 @@ public class WorkInterface extends Table {
 		if (ret != null) {
 			return ret.longValue();
 		}
-		final Long def = Long.parseLong(XWPropertyDefs.WALLCLOCKTIMEVALUE.defaultValue());
-		setMaxWallClockTime(def);
-		return def;
+		return 0L;
 	}
 
 	/**
@@ -1205,35 +1299,18 @@ public class WorkInterface extends Table {
 		setRetry(0);
 		return 0;
 	}
-
-	/**
-	 * This retrieves the minimal amount of disk spave needed by this work. This
-	 * is in Mb.
-	 *
-	 * @return the attribute or 0 if not set
-	 * @since 8.0.0
-	 */
-	public long getDiskSpace() {
-		final Long ret = (Long) getValue(Columns.DISKSPACE);
-		if (ret != null) {
-			return ret.longValue();
-		}
-		return 0L;
-	}
-
 	/**
 	 * This retrieves the minimal amount of memory needed by this work; if not
 	 * set it is forced to 0. This is in Kb
 	 *
 	 * @return the minimal amount of memory needed by this work in Kb
 	 */
-	public int getMinMemory() {
-		final Integer ret = (Integer) getValue(Columns.MINMEMORY);
-		if (ret != null) {
-			return ret.intValue();
-		}
-		setMinMemory(0);
-		return 0;
+	public Long getMinMemory() {
+        final Long ret = (Long) getValue(Columns.MINMEMORY);
+        if (ret != null) {
+            return ret.longValue();
+        }
+        return 0L;
 	}
 
 	/**
@@ -1492,6 +1569,80 @@ public class WorkInterface extends Table {
 		}
 		setExpectedReplications(0);
 		return 0;
+	}
+    /**
+     * This retrieves the min needed mass storage usage
+     * @return this attribute, or 0 if not set
+     * @since 13.0.0
+     */
+    public final long getMinFreeMassStorage() {
+        final Long ret = (Long) getValue(Columns.MINFREEMASSSTORAGE);
+        if (ret != null) {
+            return ret.longValue();
+        }
+        return 0L;
+    }
+	/**
+	 * This retrieves the max authorized mass storage usage, according to the envelope
+	 * @return this attribute, or 0 if not set
+	 * @since 13.0.0
+	 */
+	public final long getMaxFreeMassStorage() {
+		final Long ret = (Long) getValue(Columns.MAXFREEMASSSTORAGE);
+		if (ret != null) {
+			return ret.longValue();
+		}
+		return 0L;
+	}
+	/**
+	 * This retrieves the max authorized file size, according to the envelope
+	 * @return this attribute, or 0 if not set
+	 * @since 13.0.0
+	 */
+	public final long getMaxFileSize() {
+		final Long ret = (Long) getValue(Columns.MAXFILESIZE);
+		if (ret != null) {
+			return ret.longValue();
+		}
+		return 0L;
+	}
+    /**
+     * This retrieves the max authorized RAM usage, according to the envelope
+     * @return this attribute, or 0 if not set
+     * @since 13.0.0
+     */
+    public final Long getMaxMemory() throws IOException{
+		final Long ret = (Long) getValue(Columns.MAXMEMORY);
+		if (ret != null) {
+			return ret.longValue();
+		}
+		return 0L;
+    }
+    /**
+     * This retrieves the max authorized CPU usage in percentage
+     * @return this attribute
+     * @since 13.0.0
+     */
+    public final float getMaxCpuSpeed() {
+        final Float ret = (Float) getValue(Columns.MAXCPUSPEED);
+        if (ret != null) {
+            return ret.floatValue();
+        }
+        return 0.5f;
+    }
+	/**
+	 * This retrieves the environment ID, if not set  this call setEnvId(1) and returns 1
+	 *
+	 * @since 13.0.0
+	 * @return this attribute
+	 */
+	public final int getEnvId() {
+		final Integer ret = (Integer) getValue(Columns.ENVID);
+		if (ret != null) {
+			return ret.intValue();
+		}
+		setEnvId(1);
+		return 1;
 	}
 
 	/**
@@ -1768,6 +1919,10 @@ public class WorkInterface extends Table {
 		setSendToClient(false);
 	}
 
+	public boolean isPending() {
+        return getStatus() == StatusEnum.PENDING;
+    }
+
 	/**
 	 * This marks this work as completed
 	 */
@@ -1791,7 +1946,12 @@ public class WorkInterface extends Table {
 		setStatus(StatusEnum.RUNNING);
 	}
 
-	/**
+    public boolean isRunning() {
+	    return getStatus() == StatusEnum.RUNNING;
+    }
+
+
+    /**
 	 * This marks this work as being replicated
 	 *
 	 * @since 10.2.0
@@ -1846,6 +2006,39 @@ public class WorkInterface extends Table {
 		setStatus(StatusEnum.ERROR);
 		setErrorMsg(v);
 	}
+	/**
+	 * This tests if status is ERROR
+	 * @since 13.0.0
+	 */
+	public boolean isError() {
+		return getStatus() == StatusEnum.ERROR;
+	}
+
+    public boolean isAborted() {
+        return getStatus() == StatusEnum.ABORTED;
+    }
+	public synchronized void setAborted() {
+        setStatus(StatusEnum.ABORTED);
+    }
+
+	/**
+	 * This marks this work as FAILED
+	 *
+	 * @param v
+	 *            is the error msg, if any
+	 * @since 13.0.0
+	 */
+	public void setFailed(final String v) {
+		setStatus(StatusEnum.FAILED);
+		setErrorMsg(v);
+	}
+	/**
+	 * This tests if status is FAILED
+	 * @since 13.0.0
+	 */
+	public boolean isFailed() {
+		return getStatus() == StatusEnum.FAILED;
+	}
 
 	/**
 	 * This sets the port this work may listen to
@@ -1858,61 +2051,68 @@ public class WorkInterface extends Table {
 	}
 
 	/**
-	 * This sets the minimal amount of RAM this work needs, in Kb. Provided
-	 * value must be positive and can not exceed XWPropertyDefs.MAXRAMSPACE.
-	 * If(v > XWPropertyDefs.MAXDISKSPACE) v is forced to
-	 * XWPropertyDefs.MAXDISKSPACE. If(v < 0) v is forced to 0.
+	 * This sets the minimal amount of RAM this work needs, in bytes.
 	 *
 	 * @param v
 	 *            is the minimal amount of RAM this work needs in Kb
 	 * @return true if value has changed, false otherwise
-	 * @see XWPropertyDefs#MAXRAMSPACE
 	 */
-	public final boolean setMinMemory(final int v) {
-		try {
-			final String sysValueStr = System.getProperty(XWPropertyDefs.MAXRAMSPACE.toString());
-			final String maxValueStr = sysValueStr == null ? XWPropertyDefs.MAXRAMSPACE.defaultValue() : sysValueStr;
-			final int maxValue = Integer.valueOf(maxValueStr);
-			final int value = v > maxValue ? maxValue : v;
-			return setValue(Columns.MINMEMORY, Integer.valueOf(value < 0 ? 0 : value));
-		} catch (final Exception e) {
-			return setValue(Columns.MINMEMORY, 0);
-		}
+	public final boolean setMinMemory(final long v) {
+        return setValue(Columns.MINMEMORY, Long.valueOf(v < 0L ? 0L : v));
 	}
-
+    /**
+     * This sets the min needed mass storage usage
+     * @return true if value has changed, false otherwise
+     * @since 13.0.0
+     */
+    public final boolean setMinFreeMassStorage(final long v) {
+        return setValue(Columns.MINFREEMASSSTORAGE, Long.valueOf(v < 0L ? 0L : v));
+    }
 	/**
-	 * This sets the minimal amount of disk this work needs, in Mb. Provided
-	 * value must be positive and can not exceed XWPropertyDefs.MAXDISKSPACE.
-	 * If(v > XWPropertyDefs.MAXDISKSPACE) v is forced to
-	 * XWPropertyDefs.MAXDISKSPACE. If(v < 0) v is forced to 0.
-	 *
-	 * @param v
-	 *            is the disk space in Mb.
+	 * This sets the max authorized mass storage usage
+	 * This is automatically set by the scheduler based on the environment
 	 * @return true if value has changed, false otherwise
-	 * @since 8.0.0
-	 * @see XWPropertyDefs#MAXDISKSPACE
+	 * @since 13.0.0
 	 */
-	public final boolean setDiskSpace(final long v) {
-		try {
-			final String sysValueStr = System.getProperty(XWPropertyDefs.MAXDISKSPACE.toString());
-			final String maxValueStr = sysValueStr == null ? XWPropertyDefs.MAXDISKSPACE.defaultValue() : sysValueStr;
-			final long maxValue = Long.valueOf(maxValueStr);
-			final long value = v > maxValue ? maxValue : v;
-			setValue(Columns.MINFREEMASSSTORAGE, Long.valueOf(value < 0L ? 0L : value));
-			return setValue(Columns.DISKSPACE, Long.valueOf(value < 0L ? 0L : value));
-		} catch (final Exception e) {
-			return setValue(Columns.DISKSPACE, 0L);
-		}
+	public final boolean setMaxFreeMassStorage(final long v) {
+		return setValue(Columns.MAXFREEMASSSTORAGE, Long.valueOf(v < 0L ? 0L : v));
 	}
-
 	/**
-	 * This sets the minimal CPU clock rate this work needs
-	 *
+	 * This sets the max file size
+	 * This is automatically set by the scheduler based on the environment
 	 * @return true if value has changed, false otherwise
+	 * @since 13.0.0
 	 */
-	public final boolean setMinCpuSpeed(final int v) {
-		return setValue(Columns.MINCPUSPEED, Integer.valueOf(v < 0 ? 0 : v));
+	public final boolean setMaxFileSize(final long v) {
+		return setValue(Columns.MAXFILESIZE, Long.valueOf(v < 0L ? 0L : v));
 	}
+    /**
+     * This sets the max authorized RAM usage
+     * This is automatically set by the scheduler based on the environment
+     * @return true if value has changed, false otherwise
+     * @since 13.0.0
+     */
+    public final boolean setMaxMemory(final long v) {
+		return setValue(Columns.MAXMEMORY, Long.valueOf(v < 0L ? 0L : v));
+    }
+    /**
+     * This sets the max authorized CPU usage; this is in percentage
+     * This is automatically set by the scheduler based on the environment
+     * @return true if value has changed, false otherwise
+     * @since 13.0.0
+     */
+    public final boolean setMaxCpuSpeed(final float v) {
+        final float value = v > 1.0f ? 1.0f : v;
+        return setValue(Columns.MAXCPUSPEED, Float.valueOf(value < 0.0f ? 0.5f : value));
+    }
+    /**
+     * This sets the minimal CPU clock rate this work needs
+     *
+     * @return true if value has changed, false otherwise
+     */
+    public final boolean setMinCpuSpeed(final int v) {
+        return setValue(Columns.MINCPUSPEED, Integer.valueOf(v < 0 ? 0 : v));
+    }
 
 	/**
 	 * This sets the server managing this work
@@ -1984,6 +2184,14 @@ public class WorkInterface extends Table {
 		return setValue(Columns.RESULTURI, v);
 	}
 
+	/**
+	 * This set the submission date
+	 *
+	 * @return true if value has changed, false otherwise
+	 */
+	public final boolean setArrivalDate() {
+		return setArrivalDate(new java.util.Date());
+	}
 	/**
 	 * This set the submission date
 	 *
@@ -2147,12 +2355,19 @@ public class WorkInterface extends Table {
 		final Integer b = new Integer(v);
 		return setValue(Columns.REPLICATIONS, b);
 	}
+	/**
+	 * This sets the environment ID
+	 *
+	 * @since 13.0.0
+	 * @return true if value has changed, false otherwise
+	 */
+	public final boolean setEnvId(final int v) {
+		final Integer b = new Integer(v);
+		return setValue(Columns.ENVID, b);
+	}
 
 	/**
 	 * This set work to WAITING status
-	 *
-	 * @param uid
-	 *            is the work uid
 	 */
 	public void unlockWork() throws IOException {
 		if (!isWaiting()) {
