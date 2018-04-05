@@ -2,13 +2,8 @@ package com.iexec.scheduler.iexechub;
 
 
 import com.iexec.common.contracts.generated.IexecHub;
-import com.iexec.common.ethereum.ContractConfig;
-import com.iexec.common.ethereum.CredentialsService;
-import com.iexec.common.ethereum.Web3jConfig;
-import com.iexec.common.ethereum.Web3jService;
+import com.iexec.common.ethereum.*;
 import com.iexec.common.workerpool.WorkerPoolConfig;
-import com.iexec.scheduler.ethereum.SchedulerConfiguration;
-import com.iexec.scheduler.ethereum.SchedulerConfigurationService;
 import com.iexec.scheduler.workerpool.WorkerPoolService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,11 +20,11 @@ public class IexecHubService {
     private static final Logger log = LoggerFactory.getLogger(WorkerPoolService.class);
     private static final Web3jService web3jService = Web3jService.getInstance();
     private static final CredentialsService credentialsService = CredentialsService.getInstance();
-    private static final SchedulerConfiguration configuration = SchedulerConfigurationService.getInstance().getSchedulerConfiguration();
-    private static final Web3jConfig web3jConfig = configuration.getCommonConfiguration().getWeb3jConfig();
-    private static final ContractConfig contractConfig = configuration.getCommonConfiguration().getContractConfig();
-    private static final WorkerPoolConfig workerPoolConfig = configuration.getWorkerPoolConfig();
     private static IexecHubService instance;
+    private final CommonConfiguration configuration = IexecConfigurationService.getInstance().getCommonConfiguration();
+    private final NodeConfig nodeConfig = configuration.getNodeConfig();
+    private final ContractConfig contractConfig = configuration.getContractConfig();
+    private final WorkerPoolConfig workerPoolConfig = contractConfig.getWorkerPoolConfig();
     private IexecHub iexecHub;
     private IexecHubWatcher iexecHubWatcher;
 
@@ -73,16 +68,16 @@ public class IexecHubService {
     }
 
     private void startWatchers() {
-        this.iexecHub.workOrderActivatedEventObservable(web3jConfig.getStartBlockParameter(), END)
+        this.iexecHub.workOrderActivatedEventObservable(nodeConfig.getStartBlockParameter(), END)
                 .subscribe(this::onWorkOrderActivated);
-        this.iexecHub.workerPoolSubscriptionEventObservable(web3jConfig.getStartBlockParameter(), END)
+        this.iexecHub.workerPoolSubscriptionEventObservable(nodeConfig.getStartBlockParameter(), END)
                 .subscribe(this::onSubscription);
-        this.iexecHub.rewardEventObservable(web3jConfig.getStartBlockParameter(), END).subscribe(rewardEvent -> {
+        this.iexecHub.rewardEventObservable(nodeConfig.getStartBlockParameter(), END).subscribe(rewardEvent -> {
             if (rewardEvent.user.equals(credentialsService.getCredentials().getAddress())) {
                 log.info("Received RewardEvent [amount:{}]", rewardEvent.amount);
             }
         });
-        this.iexecHub.seizeEventObservable(web3jConfig.getStartBlockParameter(), END).subscribe(seizeEvent -> {
+        this.iexecHub.seizeEventObservable(nodeConfig.getStartBlockParameter(), END).subscribe(seizeEvent -> {
             if (seizeEvent.user.equals(credentialsService.getCredentials().getAddress())) {
                 log.info("Received SeizeEvent [amount:{}]", seizeEvent.amount);
             }

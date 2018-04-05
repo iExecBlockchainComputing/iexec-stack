@@ -1,24 +1,23 @@
+walletConfig:
+  folder: "./iexec-scheduler/src/main/resources/wallet"
+  filename: "UTC--2018-02-14T08-32-12.500000000Z--8bd535d49b095ef648cd85ea827867d358872809.json"
+  password: "whatever"
 commonConfigration:
-  web3jConfig:
+  nodeConfig:
     clientAddress: http://localhost:8545 #default
     adminClient: false #default
     startBlock: 0
   contractConfig:
     rlcAddress: 0x02ad89e52637c44cb0197eaac91b6a57e89752b8
     iexecHubAddress: 0x2d2f9b72227261f76975d683304ef2fa80c131f6
-  walletConfig:
-    address: "0x8bd535d49b095ef648cd85ea827867d358872809"
-    folder: "./iexec-scheduler/src/main/resources/wallet"
-    filename: "UTC--2018-02-14T08-32-12.500000000Z--8bd535d49b095ef648cd85ea827867d358872809.json"
-    password: "whatever"
-workerPoolConfig:
-  address:  #leave blank will create a new workerpool (else plug scheduler to existing one)
-  name: "myWorkerPool"              #unchangeable after creation
-  subscriptionLockStakePolicy: 0    #unchangeable after creation
-  subscriptionMinimumStakePolicy: 10
-  subscriptionMinimumScorePolicy: 0
-  stakeRatioPolicy: 30
-  schedulerRewardRatioPolicy: 1
+    workerPoolConfig:
+      address:  #leave blank will create a new workerpool (else plug scheduler to existing one)
+      name: "myWorkerPool"              #unchangeable after creation
+      subscriptionLockStakePolicy: 0    #unchangeable after creation
+      subscriptionMinimumStakePolicy: 10
+      subscriptionMinimumScorePolicy: 0
+      stakeRatioPolicy: 30
+      schedulerRewardRatioPolicy: 1
 
 
 

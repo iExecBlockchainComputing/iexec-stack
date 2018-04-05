@@ -1,26 +1,36 @@
 package com.iexec.scheduler.ethereum;
 
 import com.iexec.common.ethereum.CommonConfiguration;
-import com.iexec.common.ethereum.CommonConfigurationService;
-import com.iexec.common.workerpool.WorkerPoolConfig;
+import com.iexec.common.ethereum.IexecConfigurationService;
+import com.iexec.common.ethereum.WalletConfig;
 
 public class SchedulerConfiguration {
 
-    private WorkerPoolConfig workerPoolConfig;
+    private WalletConfig walletConfig;
+    private CommonConfiguration commonConfiguration;
 
+    /*
     public CommonConfiguration getCommonConfiguration() {
-        return CommonConfigurationService.getInstance().getConfiguration();
+        return IexecConfigurationService.getInstance().getConfiguration();
     }
 
     public void setCommonConfiguration(CommonConfiguration commonConfiguration) {
-        CommonConfigurationService.getInstance().setConfiguration(commonConfiguration);
+        CommonIexecConfigurationService.getInstance().setConfiguration(commonConfiguration);
+    }*/
+
+    public CommonConfiguration getCommonConfiguration() {
+        return commonConfiguration;
     }
 
-    public WorkerPoolConfig getWorkerPoolConfig() {
-        return workerPoolConfig;
+    public void setCommonConfiguration(CommonConfiguration commonConfiguration) {
+        this.commonConfiguration = commonConfiguration;
     }
 
-    public void setWorkerPoolConfig(WorkerPoolConfig workerPoolConfig) {
-        this.workerPoolConfig = workerPoolConfig;
+    public WalletConfig getWalletConfig() {
+        return walletConfig;
+    }
+
+    public void setWalletConfig(WalletConfig walletConfig) {
+        this.walletConfig = walletConfig;
     }
 }
