@@ -1,13 +1,15 @@
 package com.iexec.worker.workerpool;
 
-import com.iexec.worker.contracts.generated.WorkerPool;
-import com.iexec.worker.ethereum.*;
+import com.iexec.common.contracts.generated.WorkerPool;
+import com.iexec.common.ethereum.*;
+import com.iexec.common.workerpool.WorkerPoolConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.web3j.tx.Contract;
 import org.web3j.tx.ManagedTransaction;
 
-import static com.iexec.worker.ethereum.Utils.END;
+import static com.iexec.common.ethereum.Utils.END;
+
 
 public class WorkerPoolService {
 
@@ -15,9 +17,10 @@ public class WorkerPoolService {
     private static WorkerPoolService instance;
     private final Web3jService web3jService = Web3jService.getInstance();
     private final CredentialsService credentialsService = CredentialsService.getInstance();
-    private final Configuration configuration = IexecConfigurationService.getInstance().getConfiguration();
-    private final Web3jConfig web3jConfig = configuration.getWeb3jConfig();
+    private final CommonConfiguration configuration = IexecConfigurationService.getInstance().getCommonConfiguration();
+    private final NodeConfig nodeConfig = configuration.getNodeConfig();
     private final ContractConfig contractConfig = configuration.getContractConfig();
+    private final WorkerPoolConfig workerPoolConfig = contractConfig.getWorkerPoolConfig();
     private WorkerPool workerPool;
     private WorkerPoolWatcher workerPoolWatcher;
 
@@ -33,16 +36,16 @@ public class WorkerPoolService {
     }
 
     public void run() {
-        String workerPoolAddress = contractConfig.getWorkerPoolAddress();
+        String workerPoolAddress = workerPoolConfig.getAddress();
         log.info("Loading WorkerPool contract [address:{}]", workerPoolAddress);
         if (workerPoolAddress != null) {
             workerPool = WorkerPool.load(
                     workerPoolAddress, web3jService.getWeb3j(), credentialsService.getCredentials(), ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT);
 
         }
-        this.getWorkerPool().revealConsensusEventObservable(web3jConfig.getStartBlockParameter(), END)
+        this.getWorkerPool().revealConsensusEventObservable(nodeConfig.getStartBlockParameter(), END)
                 .subscribe(this::onRevealConsensus);
-        this.getWorkerPool().allowWorkerToContributeEventObservable(web3jConfig.getStartBlockParameter(), END)
+        this.getWorkerPool().allowWorkerToContributeEventObservable(nodeConfig.getStartBlockParameter(), END)
                 .subscribe(this::onAllowWorkerToContribute);
     }
 

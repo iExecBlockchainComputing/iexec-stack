@@ -1,6 +1,6 @@
 package com.iexec.worker.actuator;
 
-import com.iexec.worker.ethereum.TransactionStatus;
+import com.iexec.common.ethereum.TransactionStatus;
 
 import java.math.BigInteger;
 

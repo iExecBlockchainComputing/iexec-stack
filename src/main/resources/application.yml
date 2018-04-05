@@ -1,16 +1,6 @@
-web3jConfig:
-  clientAddress: http://localhost:8545 #default
-  adminClient: false #default
-  startBlock: 0
-contractConfig:
-  rlcAddress: 0x621680e7bc7cce562b1893d2eb710bb4e1e4b398
-  iexecHubAddress: 0xbde4b8308f301d5edaa23b70f7d18255fc06e3f8
-  workerPoolAddress: 0x3ca0eea68e9aa244804bd3a342e36bbd4e1e410d
-  subscriptionMinimumStakePolicy: 10
-  stakeRatioPolicy: 30
-
 walletConfig:
   address: "0x70a1bebd73aef241154ea353d6c8c52d420d4f5b"
-  folder: "./iexec-worker/src/main/resources/wallet"
+  folder: "./src/main/resources/wallet"
   filename: "UTC--2018-02-14T11-15-48.411000000Z--70a1bebd73aef241154ea353d6c8c52d420d4f5b.json"
   password: "whatever"
+schedulerUrl: http://localhost:8080/
