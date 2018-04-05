@@ -9,11 +9,11 @@ import java.io.IOException;
 public class CredentialsService {
 
     private static CredentialsService instance;
-    private static  WalletConfig walletConfig;
+    private static WalletConfig walletConfig;
     private Credentials credentials;
 
     private CredentialsService() {
-        walletConfig = IexecConfigurationService.getInstance().getConfiguration().getWalletConfig();
+        walletConfig = CommonConfigurationService.getInstance().getConfiguration().getWalletConfig();
         try {
             credentials = WalletUtils.loadCredentials(walletConfig.getPassword(), walletConfig.getFolder() + "/" + walletConfig.getFilename());
         } catch (IOException e) {

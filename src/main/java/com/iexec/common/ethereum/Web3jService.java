@@ -12,12 +12,12 @@ public class Web3jService {
     private Web3j web3j;
 
     private Web3jService() {
-        web3j = Web3j.build(new HttpService(IexecConfigurationService.getInstance().getConfiguration().getWeb3jConfig().getClientAddress()));  // defaults to http://localhost:8545/
+        web3j = Web3j.build(new HttpService(CommonConfigurationService.getInstance().getConfiguration().getWeb3jConfig().getClientAddress()));  // defaults to http://localhost:8545/
     }
 
 
     public static Web3jService getInstance() {
-        if (instance==null){
+        if (instance == null) {
             instance = new Web3jService();
         }
         return instance;

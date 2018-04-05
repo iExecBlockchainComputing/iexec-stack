@@ -1,10 +1,10 @@
 package com.iexec.common.ethereum;
 
-public class Configuration {
+public class CommonConfiguration {
 
     private Web3jConfig web3jConfig;
-    private ContractConfig contractConfig;
     private WalletConfig walletConfig;
+    private ContractConfig contractConfig;
 
     public Web3jConfig getWeb3jConfig() {
         return web3jConfig;
@@ -12,14 +12,6 @@ public class Configuration {
 
     public void setWeb3jConfig(Web3jConfig web3jConfig) {
         this.web3jConfig = web3jConfig;
-    }
-
-    public ContractConfig getContractConfig() {
-        return contractConfig;
-    }
-
-    public void setContractConfig(ContractConfig contractConfig) {
-        this.contractConfig = contractConfig;
     }
 
     public WalletConfig getWalletConfig() {
@@ -30,4 +22,11 @@ public class Configuration {
         this.walletConfig = walletConfig;
     }
 
+    public ContractConfig getContractConfig() {
+        return contractConfig;
+    }
+
+    public void setContractConfig(ContractConfig contractConfig) {
+        this.contractConfig = contractConfig;
+    }
 }
