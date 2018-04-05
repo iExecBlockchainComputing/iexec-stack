@@ -1035,7 +1035,7 @@ public class ThreadWork extends Thread {
 		final String wcmdline = currentWork.getCmdLine();
 
 		if (wcmdline != null) {
-			checkAppParams(wcmdline);
+//			checkAppParams(wcmdline);
 			final Collection<String> wcmdvector = XWTools.split(wcmdline);
 			if (ret == null) {
 				ret = wcmdvector;

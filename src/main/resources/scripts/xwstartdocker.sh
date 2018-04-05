@@ -1,16 +1,16 @@
 #!/bin/sh
 #=============================================================================
 #
-#  File    : xwstartdocker.sh
-#  Date    : November, 2011
+#  File    : docker
+#  Date    : March, 2018
 #  Author  : Oleg Lodygensky
 #
 #  Change log:
 #  - Jul 3rd,2017 : Oleg Lodygensky; creation
 #
 #  OS      : Linux, mac os x
-# 
-#  Purpose : this script creates and starts a new Docker container on worker side
+#
+#  Purpose : this script checks docker usage on worker side
 #
 # Some environment variables, automatically set by the volunteer resource:
 #  - XWJOBUID : this must contain the job UID on worker side
@@ -33,42 +33,231 @@
 # Author         : Oleg Lodygensky
 # Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
 # Web            : http://www.xtremweb-hep.org
-# 
+#
 #      This file is part of XtremWeb-HEP.
 #
-#    XtremWeb-HEP is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU General Public License as published by
-#    the Free Software Foundation, either version 3 of the License, or
-#    (at your option) any later version.
+# Copyright [2018] [CNRS]
 #
-#    XtremWeb-HEP is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU General Public License for more details.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
 #
-#    You should have received a copy of the GNU General Public License
-#    along with XtremWeb-HEP.  If not, see <http://www.gnu.org/licenses/>.
+#     http://www.apache.org/licenses/LICENSE-2.0
+
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 #
 #
+#
+
+
 
 
 THISOS=`uname -s`
 
 case "$THISOS" in
-  
+
   Darwin )
     DATE_FORMAT='+%Y-%m-%d %H:%M:%S%z'
     ;;
-  
+
   Linux )
     DATE_FORMAT='--rfc-3339=seconds'
     ;;
-  
+
   * )
     fatal  "OS not supported ($THISOS)"  TRUE
     ;;
-  
+
 esac
+
+
+
+#
+# next array contains forbidden docker parameters
+# These must be a copy of xtremweb.common.AppTypeEnum#dockerForbiddenParams
+#
+dockerForbiddenParams=(	"--add-host"\
+                              "--attach"\
+                              "--blkio-weight"\
+                              "--blkio-weight-device"\
+                              "--cap-add"\
+                              "--cap-drop"\
+                              "--cgroup-parent"\
+                              "--cidfile"\
+                              "--cpu-period"\
+                              "--cpu-quota"\
+                              "--cpu-rt-period"\
+                              "--cpu-rt-runtime"\
+                              "--cpu-shares"\
+                              "--cpus"\
+                              "--cpuset-cpus"\
+                              "--cpuset-mems"\
+                              "--detach"\
+                              "--detach-keys"\
+                              "--device"\
+                              "--device-cgroup-rule"\
+                              "--device-read-bps"\
+                              "--device-read-iops"\
+                              "--device-write-bps"\
+                              "--device-write-iops"\
+                              "--dns"\
+                              "--dns-option"\
+                              "--dns-search"\
+                              "--entrypoint"\
+                              "--expose"\
+                              "--group-add"\
+                              "--health-cmd"\
+                              "--health-interval"\
+                              "--health-retries"\
+                              "--health-start-period"\
+                              "--health-timeout"\
+                              "--hostname"\
+                              "--init"\
+                              "--interactive"\
+                              "--ip"\
+                              "--ip6"\
+                              "--ipc"\
+                              "--isolation"\
+                              "--kernel-memory"\
+                              "--link"\
+                              "--link-local-ip"\
+                              "--log-driver"\
+                              "--mac-address"\
+                              "--memory"\
+                              "--memory-reservation"\
+                              "--memory-swap"\
+                              "--memory-swappiness"\
+                              "--mount"\
+                              "--network"\
+                              "--network-alias"\
+                              "--no-healthcheck"\
+                              "--oom-kill-disable"\
+                              "--oom-score-adj"\
+                              "--pids-limit"\
+                              "--platform"\
+                              "--privileged"\
+                              "--runtime"\
+                              "--security-opt"\
+                              "--shm-size"\
+                              "--sig-proxy"\
+                              "--stop-signal"\
+                              "--stop-timeout"\
+                              "--storage-opt"\
+                              "--sysctl"\
+                              "--tmpfs"\
+                              "--ulimit"\
+                              "--user"\
+                              "--userns"\
+                              "--uts"\
+                              "--volume-driver"\
+                              "--volumes-from"\
+                              "--volume"\
+                              "--workdir")
+
+
+#=============================================================================
+#
+#  Function  isForbidden (param)
+#
+#=============================================================================
+isForbidden()
+{
+    param=$1
+    for item in ${dockerForbiddenParams[*]}
+    do
+        [ ${param} = ${item} ] && debug "${param} is forbidden" && return 1
+    done
+    debug "${param} is not forbidden"
+}
+
+
+#=============================================================================
+#
+#  Function  fatal (Message, Force)
+#
+#=============================================================================
+fatal ()
+{
+  msg="$1"
+  FORCE="$2"
+  [ "$msg" ]  ||  msg="Ctrl+C"
+
+  echo  "$(date "$DATE_FORMAT")  $SCRIPTNAME  FATAL : $msg"
+
+  [ "$FORCE" = "TRUE" ]  &&  clean
+
+
+  exit 1
+}
+
+#=============================================================================
+#
+#  Function  warning (Message)
+#
+#=============================================================================
+warning ()
+{
+  msg="$1"
+  echo  "$(date "$DATE_FORMAT")  $SCRIPTNAME  WARNING : $msg"
+}
+
+#=============================================================================
+#
+#  Function  info (Message)
+#
+#=============================================================================
+info ()
+{
+  msg="$1"
+  echo  "$(date "$DATE_FORMAT")  $SCRIPTNAME  INFO : $msg"
+}
+
+#=============================================================================
+#
+#  Function  clean ()
+#
+#=============================================================================
+clean ()
+{
+  echo
+  info_message  "clean '${CONTAINERNAME}'"
+
+  [ "$VERBOSE" ]  &&  echo  > /dev/stderr
+  [ "${CONTAINERNAME}" ]  ||  return
+  }
+
+#=============================================================================
+#
+#  Function  usage ()
+#
+#=============================================================================
+usage()
+{
+cat << END_OF_USAGE
+  This script is an example only to show how to start a Docker container
+  on a distributed volunteer resource.
+
+  Some environment variables, automatically set by the volunteer resource:
+  - XWJOBUID : this must contain the job UID on worker side
+  - XWSCRATCHPATH : this must contains the directory where drive are stored
+  - XWRAMSIZE : this may contain expected RAM size
+  - XWDOCKERIMAGE : this may contain docker image name
+  - XWDISKSPACE : this may contain expected storage capacity
+  - XWPORTS  : this may contain a comma separated ports list
+               ssh  port forwarding localhost:$XWPORTS[0] to guest:22
+               http port forwarding localhost:$XWPORTS[1] to guest:80
+
+  This script does not permit the Dockerfile usage to build Docker image.
+  If Dockerfile is found, this script fails.
+
+END_OF_USAGE
+
+  exit 0
+}
 
 
 #=============================================================================
@@ -78,9 +267,100 @@ esac
 #=============================================================================
 trap  fatal  INT  TERM
 
-which docker
 
-docker $#
+
+SCRIPTNAME="$(basename "$0")"
+
+if [ "${SCRIPTNAME#*.sh}" ]; then
+  SCRIPTNAME=xwstartdocker  .sh
+  VERBOSE=TRUE
+  TESTINGONLY=''                         # Worker, so debug is NOT possible
+else
+  VERBOSE=''
+  TESTINGONLY=TRUE                       # Local machine, so debug is possible
+fi
+
+if [ "$TESTINGONLY" = "TRUE" ] ; then
+  XWJOBUID="$(date '+%Y-%m-%d-%H-%M-%S')"
+  XWSCRATCHPATH="$(dirname "$0")"
+  SAVDIR=`pwd`
+  cd "$XWSCRATCHPATH"
+  XWSCRATCHPATH=`pwd`
+  cd "$SAVDIR"
+  XWCPULOAD=100
+else
+  [ -z "$XWJOBUID" ] && fatal "XWJOBUID is not set"
+  [ -z "$XWSCRATCHPATH" ] && fatal "XWSCRATCHPATH is not set"
+  [ -z "$XWCPULOAD" ] && fatal "XWCPULOAD is not set"
+  [ -z "$XWRAMSIZE" ] && fatal "XWRAMSIZE is not set"
+  [ -z "$XWDISKSPACE" ] && fatal "XWDISKSPACE is not set"
+fi
+
+
+IMAGENAME=""
+CONTAINERNAME="xwcontainer_${XWJOBUID}"
+DOCKERFILENAME="Dockerfile"
+
+
+while [ $# -gt 0 ]; do
+
+# 5 avril 2018: not tested yet !
+#  isForbidden $1 || fatal "forbidden param $1"
+
+  case "$1" in
+
+    --help )
+      usage
+      ;;
+
+    --verbose | --debug )
+      VERBOSE=1
+      set -x
+      ;;
+
+    --xwimage )
+	  shift
+	  IMAGENAME=$1
+      ;;
+
+  	* )
+  	  ARGS="$ARGS $1"
+  	  ;;
+  esac
+
+  shift
+
+done
+
+[ ! -z ${XWDOCKERIMAGE} ] && IMAGENAME="${XWDOCKERIMAGE}"
+
+if [ -f ${DOCKERFILENAME} ] ; then
+#    IMAGENAME="xwimg_${XWJOBUID}"
+#    docker build --force-rm --tag ${IMAGENAME} .
+    fatal "Dockerfile is not supported"
+fi
+
+#
+# --stop-timeout (SIGKILL)
+# --memory BYTES
+# --cpus 1
+#
+
+ENVFILENAME="/tmp/env_${XWJOBUID}.list"
+printenv | grep -vE "HOSTNAME|TERM|LS_COLORS|PATH|PWD|SHLVL|HOME|_|SHELL|TERM|SSH|LC_|LANG|LOG|XDG_RUNTIME_DIR|LESS|USER|MAIL"> ${ENVFILENAME}
+# this calls our docker script
+#docker run -v $(pwd):/host -w /host --rm --name ${CONTAINERNAME} --env-file ${ENVFILENAME} ${IMAGENAME} ${ARGS} 2>&1 |  grep -vE "Unable to find image|Pulling from|Pull complete|Digest:|Status:|: Pulling fs layer|: Verifying Checksum|: Download complete|: Already exists"
+
+docker run -v $(pwd):/host -w /host --rm --name ${CONTAINERNAME} --env-file ${ENVFILENAME} ${IMAGENAME} ${ARGS} 2>&1 |  grep -vE "Unable to find image|Pulling from|Pull complete|Digest:|Status:|: Pulling fs layer|: Verifying Checksum|: Download complete|: Already exists"
+
+
+
+rm ${ENVFILENAME}
+
+# clean everything
+if [ "$TESTINGONLY" != "TRUE" ] ; then
+  docker rmi ${IMAGENAME} > /dev/null  2>&1
+fi
 
 
 exit 0
