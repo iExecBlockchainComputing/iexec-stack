@@ -1,8 +1,7 @@
 package com.iexec.scheduler.actuator;
 
-import com.iexec.scheduler.contracts.generated.IexecHub;
-import com.iexec.scheduler.contracts.generated.WorkerPool;
-import com.iexec.scheduler.ethereum.TransactionStatus;
+import com.iexec.common.contracts.generated.IexecHub;
+import com.iexec.common.ethereum.TransactionStatus;
 
 import java.math.BigInteger;
 import java.util.List;
