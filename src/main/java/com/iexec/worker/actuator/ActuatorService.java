@@ -1,9 +1,9 @@
 package com.iexec.worker.actuator;
 
-
-import com.iexec.worker.contracts.generated.Marketplace;
-import com.iexec.worker.contracts.generated.WorkOrder;
-import com.iexec.worker.ethereum.*;
+import com.iexec.common.contracts.generated.Marketplace;
+import com.iexec.common.contracts.generated.WorkOrder;
+import com.iexec.common.ethereum.*;
+import com.iexec.common.workerpool.WorkerPoolConfig;
 import com.iexec.worker.iexechub.IexecHubService;
 import com.iexec.worker.workerpool.WorkerPoolService;
 import org.slf4j.Logger;
@@ -17,7 +17,8 @@ import org.web3j.utils.Numeric;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
-import static com.iexec.worker.ethereum.Utils.*;
+import static com.iexec.common.ethereum.Utils.*;
+
 
 public class ActuatorService implements Actuator {
 
@@ -28,8 +29,10 @@ public class ActuatorService implements Actuator {
     private final static CredentialsService credentialsService = CredentialsService.getInstance();
     private static ActuatorService instance;
     private final Web3jService web3jService = Web3jService.getInstance();
-    private final Configuration configuration = IexecConfigurationService.getInstance().getConfiguration();
+    private final CommonConfiguration configuration = IexecConfigurationService.getInstance().getCommonConfiguration();
+    private final NodeConfig nodeConfig = configuration.getNodeConfig();
     private final ContractConfig contractConfig = configuration.getContractConfig();
+    private final WorkerPoolConfig workerPoolConfig = contractConfig.getWorkerPoolConfig();
 
     private ActuatorService() {
     }
@@ -48,7 +51,7 @@ public class ActuatorService implements Actuator {
             TransactionReceipt approveReceipt = rlcService.getRlc().approve(iexecHubService.getIexecHub().getContractAddress(), approveAmount).send();
             log.info("Approve for subscribeToPool [approveAmount:{}, transactionStatus:{}] ",
                     approveAmount, getStatus(approveReceipt));
-            BigInteger depositAmount = contractConfig.getSubscriptionMinimumStakePolicy();
+            BigInteger depositAmount = workerPoolConfig.getSubscriptionMinimumStakePolicy();
             TransactionReceipt depositReceipt = iexecHubService.getIexecHub().deposit(depositAmount).send();
             log.info("Deposit for subscribeToPool [depositAmount:{}, transactionStatus:{}] ",
                     depositAmount, getStatus(depositReceipt));
@@ -91,7 +94,7 @@ public class ActuatorService implements Actuator {
                     iexecHubService.getIexecHub().marketplaceAddress().send(), web3jService.getWeb3j(), credentialsService.getCredentials(), ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT);
             BigInteger marketOrderValue = marketplace.getMarketOrderValue(workOrder.m_marketorderIdx().send()).send();
             log.info("[marketOrderValue:{}]", marketOrderValue);
-            Float deposit = (contractConfig.getStakeRatioPolicy().floatValue() / 100) * marketOrderValue.floatValue();//(30/100)*100
+            Float deposit = (workerPoolConfig.getStakeRatioPolicy().floatValue() / 100) * marketOrderValue.floatValue();//(30/100)*100
             BigInteger depositBig = BigDecimal.valueOf(deposit).toBigInteger();
             TransactionReceipt contributeDepositReceipt = iexecHubService.getIexecHub().deposit(depositBig).send();
             log.info("Deposit for contribute [depositAmount:{}, transactionStatus:{}] ",
