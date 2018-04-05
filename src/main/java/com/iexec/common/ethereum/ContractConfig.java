@@ -1,9 +1,12 @@
 package com.iexec.common.ethereum;
 
+import com.iexec.common.workerpool.WorkerPoolConfig;
+
 public class ContractConfig {
 
     private String iexecHubAddress;
     private String rlcAddress;
+    private WorkerPoolConfig workerPoolConfig;
 
     public String getIexecHubAddress() {
         return iexecHubAddress;
@@ -19,5 +22,13 @@ public class ContractConfig {
 
     public void setRlcAddress(String rlcAddress) {
         this.rlcAddress = rlcAddress;
+    }
+
+    public WorkerPoolConfig getWorkerPoolConfig() {
+        return workerPoolConfig;
+    }
+
+    public void setWorkerPoolConfig(WorkerPoolConfig workerPoolConfig) {
+        this.workerPoolConfig = workerPoolConfig;
     }
 }

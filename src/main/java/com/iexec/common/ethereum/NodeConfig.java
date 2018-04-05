@@ -4,7 +4,7 @@ import org.web3j.protocol.core.DefaultBlockParameter;
 
 import java.math.BigInteger;
 
-public class Web3jConfig {
+public class NodeConfig {
 
     private String clientAddress;
     private String adminClient;

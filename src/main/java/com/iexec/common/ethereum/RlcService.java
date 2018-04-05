@@ -11,7 +11,7 @@ import org.web3j.tx.ManagedTransaction;
 public class RlcService {
 
     private static final Logger log = LoggerFactory.getLogger(RlcService.class);
-    private static final CommonConfiguration configuration = CommonConfigurationService.getInstance().getConfiguration();
+    private static final CommonConfiguration configuration = IexecConfigurationService.getInstance().getCommonConfiguration();
     private static final Web3jService web3jService = Web3jService.getInstance();
     private static final CredentialsService credentialsService = CredentialsService.getInstance();
     private static RlcService instance;
