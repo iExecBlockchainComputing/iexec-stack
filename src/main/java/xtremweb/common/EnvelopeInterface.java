@@ -110,8 +110,8 @@ public final class EnvelopeInterface extends Table {
 			 * @return a Boolean representing the column value
 			 */
 			@Override
-			public Long fromString(final String v) {
-                return Long.valueOf(v);
+			public Integer fromString(final String v) {
+                return Integer.valueOf(v);
 			}
 		},
 		/**
@@ -381,7 +381,7 @@ public final class EnvelopeInterface extends Table {
 			setMaxCpuSpeed((Float) Columns.MAXCPUSPEED.fromResultSet(rs));
 			setMaxFreeMassStorage((Long) Columns.MAXFREEMASSSTORAGE.fromResultSet(rs));
 			setMaxFileSize((Long) Columns.MAXFILESIZE.fromResultSet(rs));
-			setMaxWallClockTime((Long) Columns.MAXWALLCLOCKTIME.fromResultSet(rs));
+			setMaxWallClockTime((Integer) Columns.MAXWALLCLOCKTIME.fromResultSet(rs));
 		} catch (final Exception e) {
 			getLogger().exception(e);
 			throw new IOException(e.toString());
@@ -491,10 +491,10 @@ public final class EnvelopeInterface extends Table {
 	 * @return the max wall clock time, in seconds
 	 * @exception IOException if value not defined
 	 */
-	public long getMaxWallClockTime() throws IOException {
-		final Long ret = (Long) getValue(Columns.MAXWALLCLOCKTIME);
+	public int getMaxWallClockTime() throws IOException {
+		final Integer ret = (Integer) getValue(Columns.MAXWALLCLOCKTIME);
 		if (ret != null) {
-			return ret.longValue();
+			return ret.intValue();
 		}
 		throw new IOException("" + getEnvId() + " : no max wall clock time");
 	}
@@ -601,9 +601,9 @@ public final class EnvelopeInterface extends Table {
      * @param v is the max computing time, in seconds
      * @return true if value has changed, false otherwise
      */
-    public boolean setMaxWallClockTime(final long v) {
+    public boolean setMaxWallClockTime(final int v) {
         try {
-            return setValue(Columns.MAXWALLCLOCKTIME, Long.valueOf(v < 0L ? 0L : v));
+            return setValue(Columns.MAXWALLCLOCKTIME, Integer.valueOf(v < 0 ? 0 : v));
         } catch (final Exception e) {
         }
         return false;

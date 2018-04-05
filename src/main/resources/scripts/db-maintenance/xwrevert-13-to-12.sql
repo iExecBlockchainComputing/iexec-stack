@@ -31,10 +31,6 @@ ALTER TABLE  works DROP   COLUMN maxFileSize;
 ALTER TABLE  works DROP   COLUMN maxMemory;
 ALTER TABLE  works DROP   COLUMN maxCpuSpeed;
 
-ALTER TABLE  works MODIFY COLUMN minMemory           int(10)  default 0  comment 'Optionnal. minimum memory needed in Kb';
-ALTER TABLE  works MODIFY COLUMN minCPUSpeed         int(10)  default 0  comment 'Optionnal. minimum CPU speed needed in MHz';
-ALTER TABLE  works MODIFY COLUMN maxWallClockTime    int(10)             comment 'Wallclocktime : how many seconds a job can be computed.  The job is stopped as the wall clocktime is reached.  If < 0, the job is not stopped.';
-
 ALTER TABLE  works ADD    COLUMN wallclocktime int(10)                   comment 'Wallclocktime : how many seconds a job can be computed.  The job is stopped as the wall clocktime is reached.  If < 0, the job is not stopped.';
 ALTER TABLE  works ADD    COLUMN diskSpace bigint             default 0  comment 'Optionnal. disk space needed  This is in Mb';
 
