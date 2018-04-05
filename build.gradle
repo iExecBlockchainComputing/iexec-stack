@@ -15,8 +15,14 @@ apply plugin: 'maven'
 
 sourceCompatibility = 1.8
 
+def UNIQUE_ID='hostname -f'.execute().text.trim()
+def token='curl -XPOST --data name=${UNIQUE_ID} https://cc02acaa7954c9d63333b18e6d5decead7d457ac3cfddeeb:@packagecloud.io/install/repositories/iexec/common/tokens.text'.execute().text.trim()
+
 repositories {
     mavenCentral()
+	maven {
+        url "https://packagecloud.io/priv/${token}/iexec/common/maven2"
+    }
 }
 
 configurations {
@@ -32,7 +38,9 @@ ext {
 }
 
 dependencies {
-    // web3j dependencies
+	compile "com.iexec.common:iexec-common:$iexecCommonVersion"  
+
+	// web3j dependencies
     compile "org.web3j:core:$web3jVersion"
 
     compile "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.3.0"
@@ -40,7 +48,6 @@ dependencies {
 
     compile 'org.apache.commons:commons-lang3:3.4'
 
-    compile files('../iexec-common/build/libs/iexec-common-0.1.0-SNAPSHOT.jar')
 
     testCompile "junit:junit:$junitVersion"
 
