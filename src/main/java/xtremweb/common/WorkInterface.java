@@ -604,7 +604,29 @@ public class WorkInterface extends Table {
 			public Float fromString(final String v) {
 				return Float.valueOf(v);
 			}
-		};
+		},
+        /**
+         * This is the column index of the upload bandwidth usage (in Mb/s)
+         *
+         * @since 13.0.1
+         */
+        UPLOADBANDWIDTH {
+            @Override
+            public Float fromString(final String v) {
+                return new Float(v);
+            }
+        },
+        /**
+         * This is the column index of the download bandwidth usage (in Mb/s)
+         *
+         * @since 13.0.1
+         */
+        DOWNLOADBANDWIDTH {
+            @Override
+            public Float fromString(final String v) {
+                return new Float(v);
+            }
+        };
 
 		/**
 		 * This is the index based on ordinal so that the first value is
@@ -831,6 +853,14 @@ public class WorkInterface extends Table {
         }
         try {
             setMaxMemory((Long) Columns.MAXMEMORY.fromResultSet(rs));
+        } catch (final Exception e) {
+        }
+        try {
+            setUploadBandwidth((Float) Columns.UPLOADBANDWIDTH.fromResultSet(rs));
+        } catch (final Exception e) {
+        }
+        try {
+            setDownloadBandwidth((Float) Columns.DOWNLOADBANDWIDTH.fromResultSet(rs));
         } catch (final Exception e) {
         }
 		try {
@@ -1064,7 +1094,9 @@ public class WorkInterface extends Table {
 		setUserProxy(itf.getUserProxy());
 		setSgId(itf.getSgId());
 		setMaxRetry(itf.getMaxRetry());
-		setMaxWallClockTime(itf.getMaxWallClockTime());
+        setMaxWallClockTime(itf.getMaxWallClockTime());
+        setUploadBandwidth(itf.getUploadBandwidth());
+        setDownloadBandwidth(itf.getDownloadBandwidth());
         setMinMemory(itf.getMinMemory());
         setMaxMemory(itf.getMaxMemory());
         setMaxCpuSpeed(itf.getMaxCpuSpeed());
@@ -1274,6 +1306,35 @@ public class WorkInterface extends Table {
 		return 0;
 	}
 
+    /**
+     * This retrieves the upload bandwidth usage
+     *
+     * @return the value of the attribute
+     * @since 13.0.1
+     */
+    public float getUploadBandwidth() {
+        try {
+            return ((Float) getValue(Columns.UPLOADBANDWIDTH)).floatValue();
+        } catch (final Exception e) {
+        }
+        setUploadBandwidth(0);
+        return 0;
+    }
+
+    /**
+     * This retrieves the download bandwidth usage
+     *
+     * @return the value of the attribute
+     * @since 13.0.1
+     */
+    public float getDownloadBandwidth() {
+        try {
+            return ((Float) getValue(Columns.DOWNLOADBANDWIDTH)).floatValue();
+        } catch (final Exception e) {
+        }
+        setDownloadBandwidth(0);
+        return 0;
+    }
 	/**
 	 * This retrieves a comma separated ports list. The ports are those this job
 	 * listens to
@@ -1873,6 +1934,58 @@ public class WorkInterface extends Table {
 		final boolean ret = setValue(Columns.MAXWALLCLOCKTIME, i);
 		return ret;
 	}
+
+    /**
+     * This calculates the upload bandwidth usage in Mb/s, providing the
+     * transfert delay
+     *
+     * @param transfert
+     *            is the delay needed to upload data content
+     * @param size
+     *            is the transfert size in bytes
+     * @since 13.0.1
+     */
+    public void setUploadBandwidth(final long transfert, final long size) throws IOException {
+        final long s = size / (1024 * 1024);
+        final float b = s / transfert;
+        setUploadBandwidth(b);
+    }
+
+    /**
+     * This sets this data upload bandwidth usage (in Mb/s)
+     *
+     * @return true is value has changed
+     * @since 13.0.1
+     */
+    public boolean setUploadBandwidth(final float v) {
+        return setValue(Columns.UPLOADBANDWIDTH, Float.valueOf(v));
+    }
+
+    /**
+     * This calculates the download bandwidth usage in Mb/s, providing the
+     * transfer delay
+     *
+     * @param transfert
+     *            is the delay needed to download data content
+     * @param size
+     *            is the transfer size in bytes
+     * @since 13.0.1
+     */
+    public void setDownloadBandwidth(final long transfert, final long size) throws IOException {
+        final long s = size / (1024 * 1024);
+        final float b = s / transfert;
+        setDownloadBandwidth(b);
+    }
+
+    /**
+     * This sets this data download bandwidth usage (in Mb/s)
+     *
+     * @return true is value has changed
+     * @since 13.0.1
+     */
+    public boolean setDownloadBandwidth(final float v) {
+        return setValue(Columns.DOWNLOADBANDWIDTH, Float.valueOf(v));
+    }
 
 	/**
 	 * This increments trial

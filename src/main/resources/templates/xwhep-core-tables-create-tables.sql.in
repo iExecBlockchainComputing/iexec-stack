@@ -866,6 +866,8 @@ create table if not exists  works  (
   maxFileSize         bigint            not null  default 104857600  comment 'Max file length in bytes; default 100Mb',
   maxMemory           bigint            not null  default 536870912  comment 'Max RAM usage in bytes; default 512Mb',
   maxCpuSpeed         float             not null  default 0.5      comment 'Max CPU usage in percentage; default 50% (https://docs.docker.com/engine/reference/run/#cpu-period-constraint)',
+  uploadbandwidth     float                       default 0.0      comment 'Upload bandwidth usage (in Mb/s)',
+  downloadbandwidth   float                       default 0.0      comment 'Download bandwidth usage (in Mb/s)',
   returnCode          int(3)                                       comment 'Application return code',
   server              varchar(254)                                 comment 'For replication',
   cmdLine             text                                         comment 'This work command line to provide to application',

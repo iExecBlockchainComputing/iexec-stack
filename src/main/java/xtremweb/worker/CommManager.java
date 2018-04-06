@@ -516,26 +516,28 @@ public final class CommManager extends Thread {
 	/**
 	 * This all data associated to the current work
 	 *
-	 * @param w is the work
+	 * @param theWork is the work
 	 *
 	 */
-	private void downloadWork(final Work w) throws IOException {
+	private void downloadWork(final Work theWork) throws IOException {
 
 		try {
-			downloadData(w.getStdin(), w.getMaxFileSize(), false);
+			final float downloadBandwidth = downloadData(theWork.getStdin(), theWork.getMaxFileSize(), false);
+			theWork.setDownloadBandwidth(downloadBandwidth);
 		} catch (final Exception e) {
-			throw new IOException("can't download stdin (" + w.getStdin() + ")");
+			throw new IOException("can't download stdin (" + theWork.getStdin() + ")");
 		}
 
 		try {
-			final URI uri = w.getDirin();
-			downloadData(uri, w.getMaxFileSize(), false);
-			final DataInterface dirin = getData(uri, false);
+			final URI uri = theWork.getDirin();
+			final float downloadBandwidth = downloadData(uri, theWork.getMaxFileSize(), false);
+            theWork.setDownloadBandwidth(downloadBandwidth);
+            final DataInterface dirin = getData(uri, false);
 			if (dirin != null) {
 				final DataTypeEnum dirinType = dirin.getType();
 				logger.debug("dirinType = " + dirinType);
 				if ((dirinType != null) && (dirinType == DataTypeEnum.URIPASSTHROUGH)) {
-					uriPassThrough(uri, w.getMaxFileSize());
+					uriPassThrough(uri, theWork.getMaxFileSize());
 				}
 			}
 		} catch (final Exception e) {
@@ -544,7 +546,7 @@ public final class CommManager extends Thread {
 		}
 
 		try {
-			final DataInterface drivenData = getData(w.getDataDriven(), false);
+			final DataInterface drivenData = getData(theWork.getDataDriven(), false);
 			if (drivenData != null) {
 				final String sharedDataPkgs = Worker.getConfig().getHost().getSharedDatas();
 				logger.debug("downloadWork worker sharedDataPkg = " + sharedDataPkgs);
@@ -553,7 +555,7 @@ public final class CommManager extends Thread {
 				for (final Iterator<String> datasIterator = datas.iterator(); datasIterator.hasNext();) {
 					final String sharedData = datasIterator.next();
 					if (drivenData.getPackage().compareTo(sharedData) == 0) {
-						w.setDataPackage(sharedData);
+						theWork.setDataPackage(sharedData);
 						found = true;
 						break;
 					}
@@ -731,7 +733,7 @@ public final class CommManager extends Thread {
 	 * @throws AccessControlException
 	 * @throws InvalidKeyException
 	 */
-	private void uploadData(final URI uri, final long maxLength) throws ClassNotFoundException, UnknownHostException, ConnectException,
+	private float uploadData(final URI uri, final long maxLength) throws ClassNotFoundException, UnknownHostException, ConnectException,
 	IOException, SAXException, InvalidKeyException, AccessControlException, URISyntaxException, XWCommException {
 
 		if (uri == null) {
@@ -771,6 +773,7 @@ public final class CommManager extends Thread {
 			final float bandwidth = fsize / (end - start);
 			logger.info("Upload bandwidth = " + bandwidth);
 			Worker.getConfig().getHost().setUploadBandwidth(bandwidth);
+			return bandwidth;
 		} finally {
 			if (islocked && (commClient != null)) {
 				commClient.unlock(uri);
@@ -798,7 +801,7 @@ public final class CommManager extends Thread {
 	 * @throws InvalidKeyException
 	 * @since 13.0.0
 	 */
-	protected synchronized void downloadData(URI uri, final long maxLength, final boolean bypass)
+	protected synchronized float downloadData(URI uri, final long maxLength, final boolean bypass)
 			throws ClassNotFoundException, UnknownHostException, ConnectException, IOException, SAXException,
 			InvalidKeyException, AccessControlException, URISyntaxException, XWCommException {
 
@@ -812,14 +815,14 @@ public final class CommManager extends Thread {
 
 			if ((uri == null) || (uri.isNull())) {
 				logger.finest("downloadData : uri is null");
-				return;
+				return -1;
 			}
 
 			commClient = commClient(uri);
 
 			if (uri.isHttp() || uri.isHttps() || uri.isAttic()) {
 				wget(uri, maxLength);
-				return;
+				return -1;
 			}
 
 			DataInterface data = null;
@@ -878,7 +881,7 @@ public final class CommManager extends Thread {
 			if ((fdata.exists()) && (!bypass) && (data.getShasum().compareTo(XWTools.sha256CheckSum(fdata)) == 0)
 					&& (data.getSize() == fsize)) {
 				logger.config("Not necessary to download data " + data.getUID());
-				return;
+				return -1;
 			}
 
 			if (uri.isHttp() || uri.isAttic()) {
@@ -1251,8 +1254,9 @@ public final class CommManager extends Thread {
 			if (content.exists()) {
 				commClient.send(data);
 				logger.debug("CommManager#uploadResults " + data.toXml());
-				uploadData(resultURI, theWork.getMaxFileSize());
-				theWork.setStatus(StatusEnum.COMPLETED);
+				final float updloadBandwidth = uploadData(resultURI, theWork.getMaxFileSize());
+                theWork.setStatus(StatusEnum.COMPLETED);
+                theWork.setUploadBandwidth(updloadBandwidth);
 			}
 
             message(false);

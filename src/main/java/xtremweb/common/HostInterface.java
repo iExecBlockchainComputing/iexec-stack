@@ -221,14 +221,6 @@ public final class HostInterface extends Table {
 		 * @since 2.0.0
 		 */
 		UPLOADBANDWIDTH {
-			/**
-			 * This creates an object from String representation for this column
-			 * value
-			 *
-			 * @param v
-			 *            the String representation
-			 * @return a Float representing the column value
-			 */
 			@Override
 			public Float fromString(final String v) {
 				return new Float(v);
@@ -240,14 +232,6 @@ public final class HostInterface extends Table {
 		 * @since 2.0.0
 		 */
 		DOWNLOADBANDWIDTH {
-			/**
-			 * This creates an object from String representation for this column
-			 * value
-			 *
-			 * @param v
-			 *            the String representation
-			 * @return a Float representing the column value
-			 */
 			@Override
 			public Float fromString(final String v) {
 				return new Float(v);
@@ -1002,7 +986,6 @@ public final class HostInterface extends Table {
 				setVersion((String) Columns.VERSION.fromResultSet(rs));
 			} catch (final Exception e) {
 			}
-
 			try {
 				setJobId((URI) Columns.JOBID.fromResultSet(rs));
 			} catch (final Exception e) {
@@ -1269,6 +1252,8 @@ public final class HostInterface extends Table {
 		setPoolWorkSize(itf.getPoolWorkSize());
 		setJobId(itf.getJobId());
 		setBatchId(itf.getBatchId());
+		setUploadBandwidth(itf.getUploadBandwidth());
+		setDownloadBandwidth(itf.getDownloadBandwidth());
 	}
 
 	/**

@@ -507,9 +507,6 @@ if [ "$DBVENDOR" = "mysql" ] ; then
 			fi
 		fi
 
-        mysql $MYSQLOPTS "$DBNAME" -e "drop view if exists view_users_works"
-        mysql $MYSQLOPTS "$DBNAME" -e "drop view if exists view_works"
-
 		# Create DB views
 		for XWSETUPDBSQL_VIEWS in $XWSETUPDBSQL_VIEWS_LIST
 		do
@@ -535,6 +532,8 @@ if [ "$DBVENDOR" = "mysql" ] ; then
 	#
 	mysql $MYSQLOPTS "$DBNAME" -e "CREATE TABLE IF NOT EXISTS version (version char(20),installation datetime)"
 
+    DBUPDATED="NO"
+
 	for CHECKFILE in `ls $SQL_SCRIPTS_DIR/$XWCHECKDBSQLNAME*.sql` ; do
 
 		VFILE=$(basename $CHECKFILE | cut -d '-' -f 2 | sed "s/\.sql//g")
@@ -549,10 +548,50 @@ if [ "$DBVENDOR" = "mysql" ] ; then
 				fatal "Update to '$VFILE' failed"
 			fi
 			echo "Database schema '$DBNAME' : updated to '$VFILE'"
+			DBUPDATED="YES"
 		else
 			echo "Database schema '$DBNAME' : is compliant to $VFILE"
 		fi
 	done
+
+    if [ "${DBUPDATED}" = "YES" ] ; then
+
+        mysql $MYSQLOPTS "$DBNAME" -e "drop view if exists view_users_works"
+        mysql $MYSQLOPTS "$DBNAME" -e "drop view if exists view_works"
+
+        # Create the SQL script for the creation of DB views in the current schema
+		if [ -r "$XWSETUPDBSQL_QUERY_FOR_TABLE_VIEWS" ]; then
+			echo "Create the SQL script for the creation of DB views in the current schema ..."
+			mysql $MYSQLOPTS "$DBNAME"   < "$XWSETUPDBSQL_QUERY_FOR_TABLE_VIEWS"  |  \
+			  sed  -e  's=, *null,.*=='  > "$XWSETUPDBSQL_VIEWS_FOR_TABLES"
+			if [ $? -ne 0 ] ; then
+				fatal "\"mysql $MYSQLOPTS < $XWSETUPDBSQL_QUERY_FOR_TABLE_VIEWS\" failed"
+			fi
+		fi
+
+		# Create the SQL script for the creation of DB views in the current schema
+		if [ -r "$XWSETUPDBSQL_QUERY_FOR_USERS_VIEWS" ]; then
+			echo "Create the SQL script for the creation of DB users views in the current schema ..."
+			mysql $MYSQLOPTS "$DBNAME"   < "$XWSETUPDBSQL_QUERY_FOR_USERS_VIEWS"  |  \
+			  sed  -e  's=, *null,.*=='  > "$XWSETUPDBSQL_VIEWS_FOR_USERS"
+			if [ $? -ne 0 ] ; then
+				fatal "\"mysql $MYSQLOPTS < $XWSETUPDBSQL_QUERY_FOR_USERS_VIEWS\" failed"
+			fi
+		fi
+
+		# Create DB views
+		for XWSETUPDBSQL_VIEWS in $XWSETUPDBSQL_VIEWS_LIST
+		do
+			if [ -r "$XWSETUPDBSQL_VIEWS" ]; then
+				echo "Creating DB views using $(basename ${XWSETUPDBSQL_VIEWS}) ..."
+				mysql $MYSQLOPTS "$DBNAME" < "$XWSETUPDBSQL_VIEWS"
+				if [ $? -ne 0 ] ; then
+					fatal "\"mysql $MYSQLOPTS < $XWSETUPDBSQL_VIEWS\" failed"
+				fi
+			fi
+		done
+
+    fi
 
 	echo "Seting current version with xwsetversion.sql"
 	mysql $MYSQLOPTS "$DBNAME" < $XWSETVERSIONSQL
