@@ -18,7 +18,7 @@
 -- ===========================================================================
 
 
-SELECT uploadbandwidth FROM work;
+SELECT uploadbandwidth FROM works;
 
 --
 -- End Of File

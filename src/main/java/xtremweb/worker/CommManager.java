@@ -821,8 +821,7 @@ public final class CommManager extends Thread {
 			commClient = commClient(uri);
 
 			if (uri.isHttp() || uri.isHttps() || uri.isAttic()) {
-				wget(uri, maxLength);
-				return -1;
+				return wget(uri, maxLength);
 			}
 
 			DataInterface data = null;
@@ -911,6 +910,9 @@ public final class CommManager extends Thread {
 			if ((data.getShasum().compareTo(XWTools.sha256CheckSum(fdata)) != 0) || (data.getSize() != fsize)) {
 				throw new IOException(uri.toString() + " SHASUM or size differs");
 			}
+
+            return bandwidth;
+
         } catch (XWCommException e) {
             throw e;
         } catch (NoSuchAlgorithmException e) {
@@ -935,6 +937,7 @@ public final class CommManager extends Thread {
             fdata = null;
 			notifyAll();
 		}
+		return -1;
 	}
 
 	/**
@@ -946,11 +949,11 @@ public final class CommManager extends Thread {
 	 * @throws AccessControlException
 	 * @throws InvalidKeyException
 	 */
-	private void wget(final URI uri, final long maxLength) throws ClassNotFoundException, UnknownHostException, ConnectException, IOException,
+	private float wget(final URI uri, final long maxLength) throws ClassNotFoundException, UnknownHostException, ConnectException, IOException,
 	SAXException, InvalidKeyException, AccessControlException, URISyntaxException, XWCommException {
 
 		if (uri == null) {
-			return;
+			return -1;
 		}
 		CommClient commClient = null;
 		DataInterface data = null;
@@ -1009,6 +1012,7 @@ public final class CommManager extends Thread {
 			final float bandwidth = fsize / (end - start);
 			Worker.getConfig().getHost().setDownloadBandwidth(bandwidth);
 			logger.info("Download bandwidth = " + bandwidth);
+			return bandwidth;
 		} finally {
 			if (islocked && (commClient != null)) {
 				commClient.unlock(uri);
