@@ -861,7 +861,7 @@ create table if not exists  works  (
   minMemory           int(10)                     default 0        comment 'Optionnal. minimum memory needed in Kb',
   minCPUSpeed         int(10)                     default 0        comment 'Optionnal. minimum CPU speed needed in MHz' ,
   minFreeMassStorage  bigint                      default 0        comment 'Min free amount of mass storage in Mb',
-  maxWallClockTime    int(10)                     default 300      comment 'Wallclocktime : how many seconds a job can be computed.  The job is stopped as the wall clocktime is reached.  If < 0, the job is not stopped.';
+  maxWallClockTime    int(10)                     default 300      comment 'Wallclocktime : how many seconds a job can be computed.  The job is stopped as the wall clocktime is reached.  If < 0, the job is not stopped.',
   maxFreeMassStorage  bigint            not null  default 5368709120 comment 'Max mass storage usage in bytes; default 5Gb',
   maxFileSize         bigint            not null  default 104857600  comment 'Max file length in bytes; default 100Mb',
   maxMemory           bigint            not null  default 536870912  comment 'Max RAM usage in bytes; default 512Mb',
