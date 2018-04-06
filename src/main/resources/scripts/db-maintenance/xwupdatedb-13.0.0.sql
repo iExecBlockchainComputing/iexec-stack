@@ -28,7 +28,7 @@ create table if not exists  envs  (
   errorMsg           varchar(254)                                comment 'Error message',
   mtime              timestamp                                   comment 'Timestamp of last update',
   name               varchar(254)   not null  default 'NONE'     comment 'Envelope name is a free text',
-  maxWallClockTime   bigint         not null  default 300        comment 'Max amount of seconds a job can be computed; default 5mn',
+  maxWallClockTime   int(10)        not null  default 300        comment 'Max amount of seconds a job can be computed; default 5mn',
   maxFreeMassStorage bigint         not null  default 5368709120 comment 'Max mass storage usage in bytes; default 5Gb',
   maxFileSize        bigint         not null  default 104857600  comment 'Max file length in bytes; default 100Mb',
   maxMemory          bigint         not null  default 536870912  comment 'Max RAM usage in bytes; default 512Mb',
@@ -55,14 +55,10 @@ ALTER TABLE  works ADD    COLUMN maxFileSize        bigint         not null  def
 ALTER TABLE  works ADD    COLUMN maxMemory          bigint         not null  default 536870912    comment 'Max RAM usage in bytes; default 512Mb';
 ALTER TABLE  works ADD    COLUMN maxCpuSpeed        float          not null  default 0.5          comment 'Max CPU usage in percentage; default 50% (https://docs.docker.com/engine/reference/run/#cpu-period-constraint)';
 
-ALTER TABLE  works MODIFY COLUMN minMemory           bigint                      default 0        comment 'Optionnal. minimum memory needed in Kb';
-ALTER TABLE  works MODIFY COLUMN minCPUSpeed         int                         default 0        comment 'Optionnal. minimum CPU speed needed in MHz';
-ALTER TABLE  works MODIFY COLUMN maxWallClockTime   bigint         not null  default 900          comment 'Max amount of seconds a job can be computed; default 5mn';
-
 ALTER TABLE  works DROP   COLUMN wallclocktime;
 ALTER TABLE  works DROP   COLUMN diskSpace;
 
-update works set envid='1', maxWallClocktime='300', maxFreeMassStorage='5368709120', maxFileSize='104857600', maxMemory='536870912', maxCpuSpeed='0.5';
+UPDATE works SET envid='1', maxWallClocktime='300', maxFreeMassStorage='5368709120', maxFileSize='104857600', maxMemory='536870912', maxCpuSpeed='0.5';
 
 insert into statuses (statusId, statusName, statusObjects, statusComment, statusDeprecated) values (14, 'FAILED',        'works',               'The job does not fill its envelope requirements',                                   null);
 --

@@ -160,7 +160,7 @@ public class XWTools {
 	 * This defines the default wall cloacktime to 300s (5mn)
 	 * @since 13.0.0
 	 */
-	public static final long DEFAULTWALLCLOCKTIME = 300;
+	public static final int DEFAULTWALLCLOCKTIME = 300;
 	/**
 	 * This defines the default CPU speed in percentage
 	 * @href https://docs.docker.com/engine/reference/run/#cpu-period-constraint

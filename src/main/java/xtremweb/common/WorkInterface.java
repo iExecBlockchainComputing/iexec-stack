@@ -460,8 +460,8 @@ public class WorkInterface extends Table {
 		 */
 		MINMEMORY {
 			@Override
-			public Long fromString(final String v) {
-				return Long.valueOf(v);
+			public Integer fromString(final String v) {
+				return Integer.valueOf(v);
 			}
 		},
         /**
@@ -522,19 +522,19 @@ public class WorkInterface extends Table {
 		 * @see EnvelopeInterface
 		 */
 		MAXWALLCLOCKTIME {
-					/**
-					 * This creates an object from String representation for this column
-					 * value This cleans the parameter to ensure SQL compliance
-					 *
-					 * @param v
-					 *            the String representation
-					 * @return a Boolean representing the column value
-					 */
-					@Override
-					public Long fromString(final String v) {
-						return Long.valueOf(v);
-					}
-				},
+            /**
+             * This creates an object from String representation for this column
+             * value This cleans the parameter to ensure SQL compliance
+             *
+             * @param v
+             *            the String representation
+             * @return an Integer
+             */
+            @Override
+            public Integer fromString(final String v) {
+                return Integer.valueOf(v);
+            }
+        },
 		/**
 		 * This is copied from the envelope
 		 * @see EnvelopeInterface
@@ -798,7 +798,7 @@ public class WorkInterface extends Table {
 			setStatus(StatusEnum.UNAVAILABLE);
 		}
 		try {
-			setMinMemory((Long) Columns.MINMEMORY.fromResultSet(rs));
+			setMinMemory((Integer) Columns.MINMEMORY.fromResultSet(rs));
 		} catch (final Exception e) {
 		}
 		try {
@@ -810,7 +810,7 @@ public class WorkInterface extends Table {
 		} catch (final Exception e) {
 		}
         try {
-            setMaxWallClockTime((Long) Columns.MAXWALLCLOCKTIME.fromResultSet(rs));
+            setMaxWallClockTime((Integer) Columns.MAXWALLCLOCKTIME.fromResultSet(rs));
         } catch (final Exception e) {
         }
         try {
@@ -1266,12 +1266,12 @@ public class WorkInterface extends Table {
 	 * @return the wall clock time in seconds
 	 * @since 8.2.0
 	 */
-	public long getMaxWallClockTime() {
-		final Long ret = (Long) getValue(Columns.MAXWALLCLOCKTIME);
+	public int getMaxWallClockTime() {
+		final Integer ret = (Integer) getValue(Columns.MAXWALLCLOCKTIME);
 		if (ret != null) {
-			return ret.longValue();
+			return ret.intValue();
 		}
-		return 0L;
+		return 0;
 	}
 
 	/**
@@ -1305,12 +1305,12 @@ public class WorkInterface extends Table {
 	 *
 	 * @return the minimal amount of memory needed by this work in Kb
 	 */
-	public Long getMinMemory() {
-        final Long ret = (Long) getValue(Columns.MINMEMORY);
+	public int getMinMemory() {
+        final Integer ret = (Integer) getValue(Columns.MINMEMORY);
         if (ret != null) {
-            return ret.longValue();
+            return ret.intValue();
         }
-        return 0L;
+        return 0;
 	}
 
 	/**
@@ -1868,8 +1868,8 @@ public class WorkInterface extends Table {
 	 * @return true if value has changed, false otherwise
 	 * @since 8.2.0
 	 */
-	public final boolean setMaxWallClockTime(final long v) {
-		final Long i = new Long(v);
+	public final boolean setMaxWallClockTime(final int v) {
+		final Integer i = new Integer(v);
 		final boolean ret = setValue(Columns.MAXWALLCLOCKTIME, i);
 		return ret;
 	}
@@ -2057,8 +2057,8 @@ public class WorkInterface extends Table {
 	 *            is the minimal amount of RAM this work needs in Kb
 	 * @return true if value has changed, false otherwise
 	 */
-	public final boolean setMinMemory(final long v) {
-        return setValue(Columns.MINMEMORY, Long.valueOf(v < 0L ? 0L : v));
+	public final boolean setMinMemory(final int v) {
+        return setValue(Columns.MINMEMORY, Integer.valueOf(v < 0 ? 0 : v));
 	}
     /**
      * This sets the min needed mass storage usage
