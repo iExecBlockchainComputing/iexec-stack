@@ -26,7 +26,7 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
 
     @Override
     public void onSubscription(String worker) {
-        //actuatorService.createMarketOrder(BigInteger.ONE, BigInteger.ZERO, BigInteger.valueOf(100), BigInteger.ONE); //on N worker alive
+        actuatorService.createMarketOrder(BigInteger.ONE, BigInteger.ZERO, BigInteger.valueOf(100), BigInteger.ONE); //on N worker alive
     }
 
     @Override
