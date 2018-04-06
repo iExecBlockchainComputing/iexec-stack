@@ -507,9 +507,6 @@ if [ "$DBVENDOR" = "mysql" ] ; then
 			fi
 		fi
 
-        mysql $MYSQLOPTS "$DBNAME" -e "drop view if exists view_users_works"
-        mysql $MYSQLOPTS "$DBNAME" -e "drop view if exists view_works"
-
 		# Create DB views
 		for XWSETUPDBSQL_VIEWS in $XWSETUPDBSQL_VIEWS_LIST
 		do
