@@ -1,5 +1,5 @@
 walletConfig:
-  folder: "./src/main/resources/wallet"
+  folder: "../wallet"
   filename: "UTC--2018-02-14T08-32-12.500000000Z--8bd535d49b095ef648cd85ea827867d358872809.json"
   password: "whatever"
 commonConfiguration:
