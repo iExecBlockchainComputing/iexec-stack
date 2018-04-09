@@ -80,83 +80,83 @@ esac
 # next array contains forbidden docker parameters
 # These must be a copy of xtremweb.common.AppTypeEnum#dockerForbiddenParams
 #
-dockerForbiddenParams=(	"--add-host"\
-                              "--attach"\
-                              "--blkio-weight"\
-                              "--blkio-weight-device"\
-                              "--cap-add"\
-                              "--cap-drop"\
-                              "--cgroup-parent"\
-                              "--cidfile"\
-                              "--cpu-period"\
-                              "--cpu-quota"\
-                              "--cpu-rt-period"\
-                              "--cpu-rt-runtime"\
-                              "--cpu-shares"\
-                              "--cpus"\
-                              "--cpuset-cpus"\
-                              "--cpuset-mems"\
-                              "--detach"\
-                              "--detach-keys"\
-                              "--device"\
-                              "--device-cgroup-rule"\
-                              "--device-read-bps"\
-                              "--device-read-iops"\
-                              "--device-write-bps"\
-                              "--device-write-iops"\
-                              "--dns"\
-                              "--dns-option"\
-                              "--dns-search"\
-                              "--entrypoint"\
-                              "--expose"\
-                              "--group-add"\
-                              "--health-cmd"\
-                              "--health-interval"\
-                              "--health-retries"\
-                              "--health-start-period"\
-                              "--health-timeout"\
-                              "--hostname"\
-                              "--init"\
-                              "--interactive"\
-                              "--ip"\
-                              "--ip6"\
-                              "--ipc"\
-                              "--isolation"\
-                              "--kernel-memory"\
-                              "--link"\
-                              "--link-local-ip"\
-                              "--log-driver"\
-                              "--mac-address"\
-                              "--memory"\
-                              "--memory-reservation"\
-                              "--memory-swap"\
-                              "--memory-swappiness"\
-                              "--mount"\
-                              "--network"\
-                              "--network-alias"\
-                              "--no-healthcheck"\
-                              "--oom-kill-disable"\
-                              "--oom-score-adj"\
-                              "--pids-limit"\
-                              "--platform"\
-                              "--privileged"\
-                              "--runtime"\
-                              "--security-opt"\
-                              "--shm-size"\
-                              "--sig-proxy"\
-                              "--stop-signal"\
-                              "--stop-timeout"\
-                              "--storage-opt"\
-                              "--sysctl"\
-                              "--tmpfs"\
-                              "--ulimit"\
-                              "--user"\
-                              "--userns"\
-                              "--uts"\
-                              "--volume-driver"\
-                              "--volumes-from"\
-                              "--volume"\
-                              "--workdir")
+#dockerForbiddenParams=(	"--add-host"\
+#                              "--attach"\
+#                              "--blkio-weight"\
+#                              "--blkio-weight-device"\
+#                              "--cap-add"\
+#                              "--cap-drop"\
+#                              "--cgroup-parent"\
+#                              "--cidfile"\
+#                              "--cpu-period"\
+#                              "--cpu-quota"\
+#                              "--cpu-rt-period"\
+#                              "--cpu-rt-runtime"\
+#                              "--cpu-shares"\
+#                              "--cpus"\
+#                              "--cpuset-cpus"\
+#                              "--cpuset-mems"\
+#                              "--detach"\
+#                              "--detach-keys"\
+#                              "--device"\
+#                              "--device-cgroup-rule"\
+#                              "--device-read-bps"\
+#                              "--device-read-iops"\
+#                              "--device-write-bps"\
+#                              "--device-write-iops"\
+#                              "--dns"\
+#                              "--dns-option"\
+#                              "--dns-search"\
+#                              "--entrypoint"\
+#                              "--expose"\
+#                              "--group-add"\
+#                              "--health-cmd"\
+#                              "--health-interval"\
+#                              "--health-retries"\
+#                              "--health-start-period"\
+#                              "--health-timeout"\
+#                              "--hostname"\
+#                              "--init"\
+#                              "--interactive"\
+#                              "--ip"\
+#                              "--ip6"\
+#                              "--ipc"\
+#                              "--isolation"\
+#                              "--kernel-memory"\
+#                              "--link"\
+#                              "--link-local-ip"\
+#                              "--log-driver"\
+#                              "--mac-address"\
+#                              "--memory"\
+#                              "--memory-reservation"\
+#                              "--memory-swap"\
+#                              "--memory-swappiness"\
+#                              "--mount"\
+#                              "--network"\
+#                              "--network-alias"\
+#                              "--no-healthcheck"\
+#                              "--oom-kill-disable"\
+#                              "--oom-score-adj"\
+#                              "--pids-limit"\
+#                              "--platform"\
+#                              "--privileged"\
+#                              "--runtime"\
+#                              "--security-opt"\
+#                              "--shm-size"\
+#                              "--sig-proxy"\
+#                              "--stop-signal"\
+#                              "--stop-timeout"\
+#                              "--storage-opt"\
+#                              "--sysctl"\
+#                              "--tmpfs"\
+#                              "--ulimit"\
+#                              "--user"\
+#                              "--userns"\
+#                              "--uts"\
+#                              "--volume-driver"\
+#                              "--volumes-from"\
+#                              "--volume"\
+#                              "--workdir")
 
 
 #=============================================================================
@@ -164,15 +164,14 @@ dockerForbiddenParams=(	"--add-host"\
 #  Function  isForbidden (param)
 #
 #=============================================================================
-isForbidden()
-{
-    param=$1
-    for item in ${dockerForbiddenParams[*]}
-    do
-        [ ${param} = ${item} ] && debug "${param} is forbidden" && return 1
-    done
-    debug "${param} is not forbidden"
-}
+#isForbidden(){
+#    param=$1
+#    for item in ${dockerForbiddenParams[*]}
+#    do
+#        [ ${param} = ${item} ] && debug "${param} is forbidden" && return 1
+#    done
+#    debug "${param} is not forbidden"
+#}
 
 
 #=============================================================================
@@ -272,7 +271,7 @@ trap  fatal  INT  TERM
 SCRIPTNAME="$(basename "$0")"
 
 if [ "${SCRIPTNAME#*.sh}" ]; then
-  SCRIPTNAME=xwstartdocker  .sh
+  SCRIPTNAME=xwstartdocker.sh
   VERBOSE=TRUE
   TESTINGONLY=''                         # Worker, so debug is NOT possible
 else
