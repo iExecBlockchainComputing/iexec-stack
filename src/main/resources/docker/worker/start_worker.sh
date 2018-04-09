@@ -72,5 +72,16 @@ fi
 
 cat /etc/hosts
 
+replace_predefined_var_in_conf_worker () {
+   varName=$1;
+   eval varValue=\$$varName
+   if [ ! -z $varValue ] ; then
+     sed -i "s/$varName/$varValue/g" /iexec/conf/iexec-worker.yml
+   fi
+}
+
+
+replace_predefined_var_in_conf_worker WALLETPASSWORD
+
 # Start the worker
 /iexec/bin/xtremweb.worker console

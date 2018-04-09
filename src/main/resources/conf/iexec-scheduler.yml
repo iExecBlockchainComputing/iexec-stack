@@ -1,15 +1,15 @@
 walletConfig:
-  folder: "../wallet"
-  filename: "UTC--2018-02-14T08-32-12.500000000Z--8bd535d49b095ef648cd85ea827867d358872809.json"
-  password: "whatever"
+  folder: "/iexec/wallet"
+  filename: "wallet.json"
+  password: WALLETPASSWORD
 commonConfiguration:
   nodeConfig:
-    clientAddress: http://localhost:8545 #default
+    clientAddress: ETHNODE
     adminClient: false #default
     startBlock: 0
   contractConfig:
-    rlcAddress: 0xCHANGE_IT
-    iexecHubAddress: 0xCHANGE_IT
+    rlcAddress: RLCCONTRACT
+    iexecHubAddress: IEXECHUBCONTRACT
     workerPoolConfig:
       address:  #leave blank will create a new workerpool (else plug scheduler to existing one)
       name: "myWorkerPool"              #unchangeable after creation
