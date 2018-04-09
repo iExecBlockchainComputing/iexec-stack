@@ -38,7 +38,7 @@ package xtremweb.common;
 
 public enum CPUEnum {
 
-	NONE, IX86, X86_64, IA64, PPC, SPARC, ALPHA, AMD64, ARM32, ARM64;
+	NONE, ALL, IX86, X86_64, IA64, PPC, SPARC, ALPHA, AMD64, ARM32, ARM64;
 
 	public static final CPUEnum LAST = ARM64;
 	public static final int SIZE = LAST.ordinal() + 1;
