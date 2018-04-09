@@ -1,0 +1,11 @@
+pipeline:
+  deploy:
+    image: appleboy/drone-ssh
+    host: explorer.iex.ec
+    username: ubuntu
+    secrets: [ ssh_key, docker_username, docker_password ]
+    envs: [ docker_username, docker_password ]
+    port: 22
+    when:
+      event: push
+      branch: master
