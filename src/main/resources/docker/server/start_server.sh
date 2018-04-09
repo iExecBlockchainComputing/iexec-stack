@@ -30,6 +30,19 @@ replace_predefined_var_in_conf WORKERPASSWORD
 replace_predefined_var_in_conf WORKERUID
 replace_predefined_var_in_conf LOGGERLEVEL
 
+replace_predefined_var_in_conf_scheduler () {
+   varName=$1;
+   eval varValue=\$$varName
+   if [ ! -z $varValue ] ; then
+     sed -i "s/$varName/$varValue/g" /iexec/conf/iexec-scheduler.yml
+   fi
+}
+
+replace_predefined_var_in_conf_scheduler RLCCONTRACT
+replace_predefined_var_in_conf_scheduler IEXECHUBCONTRACT
+replace_predefined_var_in_conf_scheduler WALLETPASSWORD
+
+
 replace_commented_var_in_conf () {
   varName=$1;
   eval varValue=\$$varName
