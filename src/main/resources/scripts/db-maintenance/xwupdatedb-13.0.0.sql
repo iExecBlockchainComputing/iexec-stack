@@ -58,6 +58,7 @@ ALTER TABLE  works DROP   COLUMN wallclocktime;
 ALTER TABLE  works DROP   COLUMN diskSpace;
 
 ALTER TABLE datas ADD COLUMN shasum varchar(254) comment 'Shasum for datas';
+ALTER TABLE datas_history ADD COLUMN shasum varchar(254) comment 'Shasum for datas';
 
 UPDATE works SET envid='1', maxWallClocktime='300', maxFreeMassStorage='5368709120', maxFileSize='104857600', maxMemory='536870912', maxCpuSpeed='0.5';
 

@@ -35,6 +35,7 @@ ALTER TABLE  works ADD    COLUMN wallclocktime int(10)                   comment
 ALTER TABLE  works ADD    COLUMN diskSpace bigint             default 0  comment 'Optionnal. disk space needed  This is in Mb';
 
 ALTER TABLE  datas DROP   COLUMN shasum;
+ALTER TABLE  datas_history DROP   COLUMN shasum;
 
 --
 -- remove status FAILED
