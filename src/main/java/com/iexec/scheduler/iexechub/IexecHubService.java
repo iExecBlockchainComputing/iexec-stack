@@ -85,15 +85,15 @@ public class IexecHubService {
     }
 
     private void onSubscription(IexecHub.WorkerPoolSubscriptionEventResponse workerPoolSubscriptionEvent) {
-        if (workerPoolSubscriptionEvent.workerPool.equals(workerPoolConfig.getAddress())) {
+        if (workerPoolSubscriptionEvent.workerPool.equals(workerPoolConfig.getAddress()) && iexecHubWatcher != null) {
             log.info("Received WorkerPoolSubscriptionEvent [worker:{}]", workerPoolSubscriptionEvent.worker);
             iexecHubWatcher.onSubscription(workerPoolSubscriptionEvent.worker);
         }
     }
 
     private void onWorkOrderActivated(IexecHub.WorkOrderActivatedEventResponse workOrderActivatedEvent) {
-        log.info("Received WorkOrderActivatedEvent [woid:{}]", workOrderActivatedEvent.woid);
-        if (workOrderActivatedEvent.workerPool.equals(workerPoolConfig.getAddress())) {
+        if (workOrderActivatedEvent.workerPool.equals(workerPoolConfig.getAddress()) && iexecHubWatcher != null) {
+            log.info("Received WorkOrderActivatedEvent [woid:{}]", workOrderActivatedEvent.woid);
             iexecHubWatcher.onWorkOrderActivated(workOrderActivatedEvent.woid);
         }
     }

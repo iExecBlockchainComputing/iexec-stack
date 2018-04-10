@@ -12,7 +12,7 @@ public interface Actuator {
                                                List<String> workers,
                                                String enclaveChallenge);
 
-    TransactionStatus createMarketOrder(BigInteger category, BigInteger trust, BigInteger value, BigInteger volume);
+    BigInteger createMarketOrder(BigInteger category, BigInteger trust, BigInteger value, BigInteger volume);
 
     TransactionStatus revealConsensus(String workOrderId, String hashResult);
 
