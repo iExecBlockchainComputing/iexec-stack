@@ -728,7 +728,7 @@ public final class CommManager extends Thread {
 	 *
 	 * @param uri
 	 *            is the data uri
-     * @param maxLength is the max data size as definedby the envelope
+     * @param maxLength is the max data size as definedby the category
 	 * @throws URISyntaxException
 	 * @throws AccessControlException
 	 * @throws InvalidKeyException
@@ -758,7 +758,7 @@ public final class CommManager extends Thread {
             if (fdata.length() > maxLength) {
                 throw new XWCommException(new XMLRPCResult(XWReturnCode.DISK,
                         "uploadData(" + uri.toString() +
-                        ") file too long for the envelope (" +
+                        ") file too long for the category (" +
                         fdata.length() + ", " +
                         maxLength + ")"));
             }
@@ -791,7 +791,7 @@ public final class CommManager extends Thread {
 	 *
 	 * @param uri
 	 *            is the data uri
-	 * @param maxLength is the data size limit given by the envelope
+	 * @param maxLength is the data size limit given by the category
 	 * @param bypass
 	 *            if false, data content is not downloaded if data already in
 	 *            cache and if data integrity is fine; if true, data content is
@@ -841,7 +841,7 @@ public final class CommManager extends Thread {
             if (data.getSize() > maxLength) {
                 throw new XWCommException(new XMLRPCResult(XWReturnCode.DISK,
                         "downloadData(" + uri.toString() +
-                                ") file too long for the envelope (" +
+                                ") file too long for the category (" +
                                 fdata.length() + ", " +
                                 maxLength + ")"));
             }

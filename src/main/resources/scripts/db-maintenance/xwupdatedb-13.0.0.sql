@@ -24,7 +24,7 @@ create table if not exists  envs  (
   envId              int unsigned   not null  auto_increment     comment 'EnvID referenced by smart contracts',
   uid                char(36)       not null  primary key        comment 'Primary key',
   ownerUID           char(36)       not null                     comment 'User UID',
-  accessRights       int(4)                   default 0x755      comment 'Please note that an envelope is always public',
+  accessRights       int(4)                   default 0x755      comment 'Please note that an category is always public',
   errorMsg           varchar(254)                                comment 'Error message',
   mtime              timestamp                                   comment 'Timestamp of last update',
   name               varchar(254)   not null  default 'NONE'     comment 'Envelope name is a free text',
@@ -40,7 +40,7 @@ create table if not exists  envs  (
   index  ownerUID (ownerUID)
   )
 engine  = InnoDB,
-comment = 'envs = envelopes defining resources usage limit';
+comment = 'envs = categories defining resources usage limit';
 
 create table if not exists  envs_history  like  envs;
 
@@ -62,7 +62,7 @@ ALTER TABLE datas_history ADD COLUMN shasum varchar(254) comment 'Shasum for dat
 
 UPDATE works SET envid='1', maxWallClocktime='300', maxFreeMassStorage='5368709120', maxFileSize='104857600', maxMemory='536870912', maxCpuSpeed='0.5';
 
-insert into statuses (statusId, statusName, statusObjects, statusComment, statusDeprecated) values (14, 'FAILED', 'works', 'The job does not fill its envelope requirements', null);
+insert into statuses (statusId, statusName, statusObjects, statusComment, statusDeprecated) values (14, 'FAILED', 'works', 'The job does not fill its category requirements', null);
 
 insert into versions (version, installation) values ('13.0.0', now());
 --

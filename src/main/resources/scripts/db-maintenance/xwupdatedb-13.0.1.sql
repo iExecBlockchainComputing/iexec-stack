@@ -24,6 +24,7 @@
 ALTER TABLE  works ADD    COLUMN   uploadbandwidth     float default 0.0      comment 'Upload bandwidth usage (in Mb/s)';
 ALTER TABLE  works ADD    COLUMN   downloadbandwidth   float default 0.0      comment 'Download bandwidth usage (in Mb/s)';
 
+rename table  envs to categories;
 
 --
 -- End Of File

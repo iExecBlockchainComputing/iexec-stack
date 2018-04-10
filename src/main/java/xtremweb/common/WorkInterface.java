@@ -359,11 +359,11 @@ public class WorkInterface extends Table {
 			}
 		},
 		/**
-		 * This is the column index of environment
+		 * This is the column index of category; this is optional
 		 *
 		 * @since 13.0.0
 		 */
-		ENVID {
+		CATEGORYID {
 			@Override
 			public Integer fromString(final String v) throws URISyntaxException {
 				return Integer.valueOf(v);
@@ -518,8 +518,8 @@ public class WorkInterface extends Table {
             }
         },
 		/**
-		 * This is copied from the envelope
-		 * @see EnvelopeInterface
+		 * This is copied from the category
+		 * @see CategoryInterface
 		 */
 		MAXWALLCLOCKTIME {
             /**
@@ -536,8 +536,8 @@ public class WorkInterface extends Table {
             }
         },
 		/**
-		 * This is copied from the envelope
-		 * @see EnvelopeInterface
+		 * This is copied from the category
+		 * @see CategoryInterface
 		 */
 		MAXFREEMASSSTORAGE {
 			/**
@@ -554,8 +554,8 @@ public class WorkInterface extends Table {
 			}
 		},
 		/**
-		 * This is copied from the envelope
-		 * @see EnvelopeInterface
+		 * This is copied from the category
+		 * @see CategoryInterface
 		 */
 		MAXFILESIZE {
 			/**
@@ -572,8 +572,8 @@ public class WorkInterface extends Table {
 			}
 		},
 		/**
-		 * This is copied from the envelope
-		 * @see EnvelopeInterface
+		 * This is copied from the category
+		 * @see CategoryInterface
 		 */
 		MAXMEMORY{
 			/**
@@ -590,8 +590,8 @@ public class WorkInterface extends Table {
 			}
 		},
 		/**
-		 * This is copied from the envelope
-		 * @see EnvelopeInterface
+		 * This is copied from the category
+		 * @see CategoryInterface
 		 */
 		MAXCPUSPEED {
 			/**
@@ -736,6 +736,7 @@ public class WorkInterface extends Table {
 
 	/**
 	 * This is the default constructor. There is no replication by default.
+     * CategoryId is set to 0
 	 */
 	public WorkInterface() {
 
@@ -755,6 +756,7 @@ public class WorkInterface extends Table {
 		setExpectedReplications(0);
 		setTotalReplica(0);
 		setReplicaSetSize(0);
+		setCategoryId(0);
 	}
 
 	/**
@@ -944,7 +946,7 @@ public class WorkInterface extends Table {
 		} catch (final Exception e) {
 		}
 		try {
-			setEnvId((Integer) Columns.ENVID.fromResultSet(rs));
+			setCategoryId((Integer) Columns.CATEGORYID.fromResultSet(rs));
 		} catch (final Exception e) {
 		}
 		try {
@@ -1072,7 +1074,7 @@ public class WorkInterface extends Table {
 		setTotalReplica(itf.getTotalReplica());
 		setReplicaSetSize(itf.getReplicaSetSize());
 		setExpectedReplications(itf.getExpectedReplications());
-		setEnvId(itf.getEnvId());
+		setCategoryId(itf.getCategoryId());
 		setReplicatedUid(itf.getReplicatedUid());
 		setDataDriven(itf.getDataDriven());
 		setExpectedHost(itf.getExpectedHost());
@@ -1644,7 +1646,7 @@ public class WorkInterface extends Table {
         return 0L;
     }
 	/**
-	 * This retrieves the max authorized mass storage usage, according to the envelope
+	 * This retrieves the max authorized mass storage usage, according to the category
 	 * @return this attribute, or 0 if not set
 	 * @since 13.0.0
 	 */
@@ -1656,7 +1658,7 @@ public class WorkInterface extends Table {
 		return 0L;
 	}
 	/**
-	 * This retrieves the max authorized file size, according to the envelope
+	 * This retrieves the max authorized file size, according to the category
 	 * @return this attribute, or 0 if not set
 	 * @since 13.0.0
 	 */
@@ -1668,7 +1670,7 @@ public class WorkInterface extends Table {
 		return 0L;
 	}
     /**
-     * This retrieves the max authorized RAM usage, according to the envelope
+     * This retrieves the max authorized RAM usage, according to the category
      * @return this attribute, or 0 if not set
      * @since 13.0.0
      */
@@ -1692,18 +1694,18 @@ public class WorkInterface extends Table {
         return 0.5f;
     }
 	/**
-	 * This retrieves the environment ID, if not set  this call setEnvId(1) and returns 1
-	 *
+	 * This retrieves the category ID, if not set  this call setCategoryId(0) and returns 0
+	 * CategoryId is optional
 	 * @since 13.0.0
 	 * @return this attribute
 	 */
-	public final int getEnvId() {
-		final Integer ret = (Integer) getValue(Columns.ENVID);
+	public final int getCategoryId() {
+		final Integer ret = (Integer) getValue(Columns.CATEGORYID);
 		if (ret != null) {
 			return ret.intValue();
 		}
-		setEnvId(1);
-		return 1;
+		setCategoryId(0);
+		return 0;
 	}
 
 	/**
@@ -2183,7 +2185,7 @@ public class WorkInterface extends Table {
     }
 	/**
 	 * This sets the max authorized mass storage usage
-	 * This is automatically set by the scheduler based on the environment
+	 * This is automatically set by the scheduler based on the category
 	 * @return true if value has changed, false otherwise
 	 * @since 13.0.0
 	 */
@@ -2192,7 +2194,7 @@ public class WorkInterface extends Table {
 	}
 	/**
 	 * This sets the max file size
-	 * This is automatically set by the scheduler based on the environment
+	 * This is automatically set by the scheduler based on the category
 	 * @return true if value has changed, false otherwise
 	 * @since 13.0.0
 	 */
@@ -2201,7 +2203,7 @@ public class WorkInterface extends Table {
 	}
     /**
      * This sets the max authorized RAM usage
-     * This is automatically set by the scheduler based on the environment
+     * This is automatically set by the scheduler based on the category
      * @return true if value has changed, false otherwise
      * @since 13.0.0
      */
@@ -2210,7 +2212,7 @@ public class WorkInterface extends Table {
     }
     /**
      * This sets the max authorized CPU usage; this is in percentage
-     * This is automatically set by the scheduler based on the environment
+     * This is automatically set by the scheduler based on the category
      * @return true if value has changed, false otherwise
      * @since 13.0.0
      */
@@ -2469,14 +2471,22 @@ public class WorkInterface extends Table {
 		return setValue(Columns.REPLICATIONS, b);
 	}
 	/**
-	 * This sets the environment ID
-	 *
+	 * This sets the category ID
+	 * @param cid is the categoryId
 	 * @since 13.0.0
 	 * @return true if value has changed, false otherwise
 	 */
-	public final boolean setEnvId(final int v) {
-		final Integer b = new Integer(v);
-		return setValue(Columns.ENVID, b);
+	public final boolean setCategoryId(final int cid) {
+		final Integer b = new Integer(cid);
+        if (cid == 0) {
+            setMaxCpuSpeed(XWTools.DEFAULTCPUSPEED);
+            setMaxFileSize(XWTools.MAXFILESIZE);
+            setMaxFreeMassStorage(XWTools.MAXDISKSIZE);
+            setMaxWallClockTime(XWTools.DEFAULTWALLCLOCKTIME);
+            setMaxMemory(XWTools.MAXRAMSIZE);
+        }
+
+        return setValue(Columns.CATEGORYID, b);
 	}
 
 	/**
