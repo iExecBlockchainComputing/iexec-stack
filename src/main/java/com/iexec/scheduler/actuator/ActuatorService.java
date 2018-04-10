@@ -39,7 +39,7 @@ public class ActuatorService implements Actuator {
     }
 
     @Override
-    public TransactionStatus createMarketOrder(BigInteger category, BigInteger trust, BigInteger value, BigInteger volume) {
+    public BigInteger createMarketOrder(BigInteger category, BigInteger trust, BigInteger value, BigInteger volume) {
         //TODO - createMarketOrder if n workers are alive (not subscribed, means nothing)
         try {
             TransactionReceipt approveReceipt = rlcService.getRlc().approve(iexecHubService.getIexecHub().getContractAddress(), value).send();
@@ -60,11 +60,11 @@ public class ActuatorService implements Actuator {
             log.info("CreateMarketOrder [category:{}, trust:{}, value:{}, volume:{}, transactionStatus:{}] ",
                     category, trust, value, volume, getStatus(createMarketOrderReceipt));
 
-            return getStatus(createMarketOrderReceipt);
+            return marketplaceService.getMarketplace().getMarketOrderEmittedEvents(createMarketOrderReceipt).get(0).marketorderIdx;
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return TransactionStatus.FAILURE;
+        return null;
     }
 
 
