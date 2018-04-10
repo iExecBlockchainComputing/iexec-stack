@@ -11,7 +11,7 @@ ADD docker/server/start_server.sh /iexec/start_server.sh
 
 WORKDIR /iexec
 
-RUN apt-get update && export DEBIAN_FRONTEND=noninteractive && apt-get install -y openjdk-8-jre zip unzip wget
+RUN apt-get update && export DEBIAN_FRONTEND=noninteractive && apt-get install -y openjdk-8-jdk zip unzip wget
 
 RUN apt-get install -y make iputils-ping
 
