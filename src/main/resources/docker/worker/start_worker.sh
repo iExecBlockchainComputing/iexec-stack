@@ -13,6 +13,14 @@ fi
 # download the certificate from the server
 echo "Downloading certificate from scheduler..."
 echo -n | openssl s_client -connect $SCHEDULER_DOMAIN:443 | sed -ne "/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p" > /iexec/certificate/xwscheduler.crt
+if [ -s /iexec/certificate/xwscheduler.crt ]
+then
+	echo "Certificate has been downloaded"
+else
+	echo "Certificate couldn't be downloaded, stopping now"
+	exit 0
+fi
+
 echo "Converting downloaded certificate to x509 DER..."
 openssl x509 -outform der -in /iexec/certificate/xwscheduler.crt -out /iexec/certificate/xwscheduler.pem
 sed -i "s/^DISPATCHERS=.*/DISPATCHERS=$SCHEDULER_DOMAIN/g" /iexec/conf/xtremweb.worker.conf
@@ -61,6 +69,13 @@ fi
 if [ ! -z $SANDBOXENABLED ] ; then
 	sed -i "s/^SANDBOXENABLED=.*/SANDBOXENABLED=$SANDBOXENABLED/g" /iexec/conf/xtremweb.worker.conf
 fi
+
+# Change a flag in the docker start script to still be able to debug
+sed -i "s/TESTINGONLY=.*/TESTINGONLY=FALSE/g" /iexec/bin/xwstartdocker.sh
+
+# Add the bin folder to the path
+echo "export PATH=/iexec/bin:\$PATH" >> /root/.bashrc
+source .bashrc
 
 cat /etc/hosts
 
