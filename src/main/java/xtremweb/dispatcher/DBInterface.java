@@ -4881,19 +4881,19 @@ public final class DBInterface {
 			throw new IOException("job getMinFreeMassStorage < app.getMinFreeMassStorage");
 		}
 
-        final CategoryInterface categoryId = select(new CategoryInterface(),
+        final CategoryInterface receivedJobCategory = select(new CategoryInterface(),
                 "maintable." + CategoryInterface.Columns.CATEGORYID.toString() + "='" + receivedJob.getCategoryId() + "'");
 
-        if(categoryId == null) {
-            throw new IOException("category not found " + receivedJob.getCategoryId());
+        if(receivedJobCategory != null) {
+            receivedJob.setMaxWallClockTime(receivedJobCategory.getMaxWallClockTime());
+            receivedJob.setMaxMemory(receivedJobCategory.getMaxMemory());
+            receivedJob.setMaxCpuSpeed(receivedJobCategory.getMaxCpuSpeed());
+            receivedJob.setMaxFreeMassStorage(receivedJobCategory.getMaxFreeMassStorage());
+            receivedJob.setMaxFileSize(receivedJobCategory.getMaxFileSize());
+        } else {
+            // reset limits to defaults
+            receivedJob.setCategoryId(0);
         }
-
-        receivedJob.setMaxWallClockTime(categoryId.getMaxWallClockTime());
-		receivedJob.setMaxMemory(categoryId.getMaxMemory());
-        receivedJob.setMaxCpuSpeed(categoryId.getMaxCpuSpeed());
-        receivedJob.setMaxFreeMassStorage(categoryId.getMaxFreeMassStorage());
-		receivedJob.setMaxFileSize(categoryId.getMaxFileSize());
-
         final WorkInterface theWork = work(mandatingClient, jobUID);
 		if (theWork != null) {
 			if (theWork.canWrite(mandatingClient, appOwnerGroup) || clientRights.higherOrEquals(UserRightEnum.WORKER_USER)) {

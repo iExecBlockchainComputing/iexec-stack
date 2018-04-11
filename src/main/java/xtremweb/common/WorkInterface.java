@@ -358,17 +358,28 @@ public class WorkInterface extends Table {
 				return new Boolean(v);
 			}
 		},
-		/**
-		 * This is the column index of category; this is optional
-		 *
-		 * @since 13.0.0
-		 */
-		CATEGORYID {
-			@Override
-			public Integer fromString(final String v) throws URISyntaxException {
-				return Integer.valueOf(v);
-			}
-		},
+        /**
+         * This is the column index of category; this is optional
+         *
+         * @since 13.0.0
+         */
+        CATEGORYID {
+            @Override
+            public Integer fromString(final String v) throws URISyntaxException {
+                return Integer.valueOf(v);
+            }
+        },
+        /**
+         * This is the column index of market order id; this is optional
+         *
+         * @since 13.0.0
+         */
+        MARKETORDERID {
+            @Override
+            public Integer fromString(final String v) throws URISyntaxException {
+                return Integer.valueOf(v);
+            }
+        },
 		/**
 		 * This is the column index of the amount of expected replicas This job
 		 * is replicated forever, if < 0
@@ -736,7 +747,7 @@ public class WorkInterface extends Table {
 
 	/**
 	 * This is the default constructor. There is no replication by default.
-     * CategoryId is set to 0
+     * categoryId is set to 0; marketOrderId is set to 0
 	 */
 	public WorkInterface() {
 
@@ -756,7 +767,8 @@ public class WorkInterface extends Table {
 		setExpectedReplications(0);
 		setTotalReplica(0);
 		setReplicaSetSize(0);
-		setCategoryId(0);
+        setCategoryId(0);
+        setMarketOrderId(0);
 	}
 
 	/**
@@ -945,10 +957,14 @@ public class WorkInterface extends Table {
 			setExpectedReplications((Integer) Columns.REPLICATIONS.fromResultSet(rs));
 		} catch (final Exception e) {
 		}
-		try {
-			setCategoryId((Integer) Columns.CATEGORYID.fromResultSet(rs));
-		} catch (final Exception e) {
-		}
+        try {
+            setCategoryId((Integer) Columns.CATEGORYID.fromResultSet(rs));
+        } catch (final Exception e) {
+        }
+        try {
+            setMarketOrderId((Integer) Columns.MARKETORDERID.fromResultSet(rs));
+        } catch (final Exception e) {
+        }
 		try {
 			setTotalReplica((Integer) Columns.TOTALR.fromResultSet(rs));
 		} catch (final Exception e) {
@@ -1074,7 +1090,8 @@ public class WorkInterface extends Table {
 		setTotalReplica(itf.getTotalReplica());
 		setReplicaSetSize(itf.getReplicaSetSize());
 		setExpectedReplications(itf.getExpectedReplications());
-		setCategoryId(itf.getCategoryId());
+        setCategoryId(itf.getCategoryId());
+        setMarketOrderId(itf.getMarketOrderId());
 		setReplicatedUid(itf.getReplicatedUid());
 		setDataDriven(itf.getDataDriven());
 		setExpectedHost(itf.getExpectedHost());
@@ -1096,9 +1113,9 @@ public class WorkInterface extends Table {
 		setUserProxy(itf.getUserProxy());
 		setSgId(itf.getSgId());
 		setMaxRetry(itf.getMaxRetry());
-        setMaxWallClockTime(itf.getMaxWallClockTime());
         setUploadBandwidth(itf.getUploadBandwidth());
         setDownloadBandwidth(itf.getDownloadBandwidth());
+        setMaxWallClockTime(itf.getMaxWallClockTime());
         setMinMemory(itf.getMinMemory());
         setMaxMemory(itf.getMaxMemory());
         setMaxCpuSpeed(itf.getMaxCpuSpeed());
@@ -1693,20 +1710,31 @@ public class WorkInterface extends Table {
         }
         return 0.5f;
     }
-	/**
-	 * This retrieves the category ID, if not set  this call setCategoryId(0) and returns 0
-	 * CategoryId is optional
-	 * @since 13.0.0
-	 * @return this attribute
-	 */
-	public final int getCategoryId() {
-		final Integer ret = (Integer) getValue(Columns.CATEGORYID);
-		if (ret != null) {
-			return ret.intValue();
-		}
-		setCategoryId(0);
-		return 0;
-	}
+    /**
+     * This retrieves the category ID, if not set  this call setCategoryId(0) and returns 0
+     * @since 13.0.0
+     * @return this attribute
+     */
+    public final int getCategoryId() {
+        final Integer ret = (Integer) getValue(Columns.CATEGORYID);
+        if (ret != null) {
+            return ret.intValue();
+        }
+        setCategoryId(0);
+        return 0;
+    }
+    /**
+     * This retrieves the market order ID
+     * @since 13.0.0
+     * @return this attribute, or 0 if not set
+     */
+    public final int getMarketOrderId() {
+        final Integer ret = (Integer) getValue(Columns.MARKETORDERID);
+        if (ret != null) {
+            return ret.intValue();
+        }
+        return 0;
+    }
 
 	/**
 	 * This marks this work as not managed by server yet
@@ -2470,14 +2498,14 @@ public class WorkInterface extends Table {
 		final Integer b = new Integer(v);
 		return setValue(Columns.REPLICATIONS, b);
 	}
-	/**
-	 * This sets the category ID
-	 * @param cid is the categoryId
-	 * @since 13.0.0
-	 * @return true if value has changed, false otherwise
-	 */
-	public final boolean setCategoryId(final int cid) {
-		final Integer b = new Integer(cid);
+    /**
+     * This sets the category ID
+     * @param cid is the categoryId
+     * @since 13.0.0
+     * @return true if value has changed, false otherwise
+     */
+    public final boolean setCategoryId(final int cid) {
+        final Integer b = new Integer(cid);
         if (cid == 0) {
             setMaxCpuSpeed(XWTools.DEFAULTCPUSPEED);
             setMaxFileSize(XWTools.MAXFILESIZE);
@@ -2487,7 +2515,17 @@ public class WorkInterface extends Table {
         }
 
         return setValue(Columns.CATEGORYID, b);
-	}
+    }
+    /**
+     * This sets the market order ID
+     * @param mid is the market order id; if <= 0, value is forced to 0
+     * @since 13.0.0
+     * @return true if value has changed, false otherwise
+     */
+    public final boolean setMarketOrderId(final int mid) {
+        final Integer b = new Integer(mid > 0 ? mid : 0);
+        return setValue(Columns.MARKETORDERID, b);
+    }
 
 	/**
 	 * This set work to WAITING status
