@@ -74,7 +74,8 @@ fi
 sed -i "s/TESTINGONLY=.*/TESTINGONLY=FALSE/g" /iexec/bin/xwstartdocker.sh
 
 # Add the bin folder to the path
-export PATH=/iexec/bin:$PATH
+echo "export PATH=/iexec/bin:\$PATH" >> /root/.bashrc
+source .bashrc
 
 cat /etc/hosts
 
