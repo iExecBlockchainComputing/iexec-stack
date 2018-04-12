@@ -15,7 +15,7 @@ public class CredentialsService {
     private CredentialsService() {
         walletConfig = IexecConfigurationService.getInstance().getWalletConfig();
         try {
-            credentials = WalletUtils.loadCredentials(walletConfig.getPassword(), walletConfig.getFolder() + "/" + walletConfig.getFilename());
+            credentials = WalletUtils.loadCredentials(walletConfig.getPassword(), walletConfig.getPath());
         } catch (IOException e) {
             e.printStackTrace();
         } catch (CipherException e) {
