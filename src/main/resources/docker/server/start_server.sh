@@ -37,6 +37,7 @@ replace_predefined_var_in_conf_scheduler () {
      sed -i "s/$varName/$varValue/g" /iexec/conf/iexec-scheduler.yml
    fi
 }
+
 replace_predefined_var_in_conf_scheduler ETHNODE
 replace_predefined_var_in_conf_scheduler RLCCONTRACT
 replace_predefined_var_in_conf_scheduler IEXECHUBCONTRACT
