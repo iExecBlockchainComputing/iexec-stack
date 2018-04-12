@@ -2,24 +2,15 @@ package com.iexec.common.ethereum;
 
 public class WalletConfig {
 
-    private String folder;
-    private String filename;
+    private String path;
     private String password;
 
-    public String getFolder() {
-        return folder;
+    public String getPath() {
+        return path;
     }
 
-    public void setFolder(String folder) {
-        this.folder = folder;
-    }
-
-    public String getFilename() {
-        return filename;
-    }
-
-    public void setFilename(String filename) {
-        this.filename = filename;
+    public void setPath(String path) {
+        this.path = path;
     }
 
     public String getPassword() {

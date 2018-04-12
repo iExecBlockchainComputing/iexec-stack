@@ -7,7 +7,6 @@ import java.math.BigInteger;
 public class NodeConfig {
 
     private String clientAddress;
-    private String adminClient;
     private int startBlock;
 
     public String getClientAddress() {
@@ -16,14 +15,6 @@ public class NodeConfig {
 
     public void setClientAddress(String clientAddress) {
         this.clientAddress = clientAddress;
-    }
-
-    public String getAdminClient() {
-        return adminClient;
-    }
-
-    public void setAdminClient(String adminClient) {
-        this.adminClient = adminClient;
     }
 
     public int getStartBlock() {
