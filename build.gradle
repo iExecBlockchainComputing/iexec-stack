@@ -45,6 +45,7 @@ dependencies {
     compile "org.json:json:20160810" // ? https://mvnrepository.com/artifact/org.json/json
     compile "org.web3j:core:3.2.0"
 
+    compile 'ch.qos.logback:logback-classic:1.0.13'
 
     //compile files('../iexec-scheduler/build/libs/iexec-scheduler-0.1.0-SNAPSHOT.jar')
     compile "com.iexec.scheduler:iexec-scheduler:0.1.0-SNAPSHOT"

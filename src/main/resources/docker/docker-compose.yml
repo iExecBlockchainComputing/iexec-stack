@@ -22,7 +22,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - ${CERTIFICATE_AND_PRIVATE_KEYS_REPO}:/iexec/keystore
       - ${SCHEDULER_PERSISTING_FOLDER}:/var/xwhep
-      - ${SCHEDULERWALLETPATH}:/iexec/wallet/wallet.json   
+      - ${SCHEDULERWALLETPATH}:/iexec/wallet/wallet.json
     environment:
       - DBHOST=${DBHOST}
       - DBNAME=${MYSQL_DB_NAME}

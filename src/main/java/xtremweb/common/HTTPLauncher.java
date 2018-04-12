@@ -58,7 +58,7 @@ public final class HTTPLauncher {
      */
     private HTTPLauncher(final String[] a) throws IOException {
         /*
-        IexecWorkerLibrary.initialize("/iexec/conf/iexec-worker.yml", new CommonConfigurationGetter() {
+        IexecWorkerLibrary.initialize(config.getConfigFile().getParentFile().getAbsolutePath()+"/iexec-worker.yml", new CommonConfigurationGetter() {
             @Override
             public CommonConfiguration getCommonConfiguration(String schedulerApiUrl) {
                 final String url = schedulerApiUrl + "/commonconfiguration";

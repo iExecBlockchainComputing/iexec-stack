@@ -30,18 +30,14 @@ replace_predefined_var_in_conf WORKERPASSWORD
 replace_predefined_var_in_conf WORKERUID
 replace_predefined_var_in_conf LOGGERLEVEL
 
-replace_predefined_var_in_conf_scheduler () {
-   varName=$1;
-   eval varValue=\$$varName
-   if [ ! -z $varValue ] ; then
-     sed -i "s/$varName/$varValue/g" /iexec/conf/iexec-scheduler.yml
-   fi
-}
 
-replace_predefined_var_in_conf_scheduler ETHNODE
-replace_predefined_var_in_conf_scheduler RLCCONTRACT
-replace_predefined_var_in_conf_scheduler IEXECHUBCONTRACT
-replace_predefined_var_in_conf_scheduler WALLETPASSWORD
+iexecSchedulerYmlFile=/iexec/conf/iexec-scheduler.yml
+
+sed -i "s/path:.*/path: \/iexec\/wallet\/wallet.json/g"             $iexecSchedulerYmlFile
+sed -i "s/password:.*/password: \"$WALLETPASSWORD\"/g"              $iexecSchedulerYmlFile
+sed -i "s/clientAddress:.*/clientAddress: $ETHNODE/g"               $iexecSchedulerYmlFile
+sed -i "s/rlcAddress:.*/rlcAddress: $RLCCONTRACT/g"                 $iexecSchedulerYmlFile
+sed -i "s/iexecHubAddress:.*/iexecHubAddress: $IEXECHUBCONTRACT/g"  $iexecSchedulerYmlFile
 
 
 replace_commented_var_in_conf () {

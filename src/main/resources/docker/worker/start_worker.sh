@@ -72,16 +72,11 @@ fi
 
 cat /etc/hosts
 
-replace_predefined_var_in_conf_worker () {
-   varName=$1;
-   eval varValue=\$$varName
-   if [ ! -z $varValue ] ; then
-     sed -i "s/$varName/$varValue/g" /iexec/conf/iexec-worker.yml
-   fi
-}
+iexecWorkerYmlFile=/iexec/conf/iexec-worker.yml
 
+sed -i "s/path:.*/path: /iexec/wallet/wallet.json/g"    iexecWorkerYmlFile
+sed -i "s/password:.*/password: \"$WALLETPASSWORD\"/g"  iexecWorkerYmlFile
 
-replace_predefined_var_in_conf_worker WALLETPASSWORD
 
 # Start the worker
 /iexec/bin/xtremweb.worker console

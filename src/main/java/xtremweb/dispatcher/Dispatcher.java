@@ -173,7 +173,7 @@ public class Dispatcher {
      */
     public void go() throws Exception {
 
-        IexecSchedulerLibrary.initialize("/iexec/conf/iexec-scheduler.yml");
+        IexecSchedulerLibrary.initialize(config.getConfigFile().getParentFile().getAbsolutePath() + "/iexec-scheduler.yml");
         SchedulerPocoWatcherImpl schedulerPocoWatcher = new SchedulerPocoWatcherImpl();
 
         timer = new Timer();
