@@ -47,11 +47,10 @@ public class ActuatorService implements Actuator {
     @Override
     public TransactionStatus subscribeToPool() {
         try {
-            BigInteger approveAmount = BigInteger.valueOf(100);
-            TransactionReceipt approveReceipt = rlcService.getRlc().approve(iexecHubService.getIexecHub().getContractAddress(), approveAmount).send();
-            log.info("Approve for subscribeToPool [approveAmount:{}, transactionStatus:{}] ",
-                    approveAmount, getStatus(approveReceipt));
             BigInteger depositAmount = workerPoolConfig.getSubscriptionMinimumStakePolicy();
+            TransactionReceipt approveReceipt = rlcService.getRlc().approve(iexecHubService.getIexecHub().getContractAddress(), depositAmount).send();
+            log.info("Approve for subscribeToPool [approveAmount:{}, transactionStatus:{}] ",
+                    depositAmount, getStatus(approveReceipt));
             TransactionReceipt depositReceipt = iexecHubService.getIexecHub().deposit(depositAmount).send();
             log.info("Deposit for subscribeToPool [depositAmount:{}, transactionStatus:{}] ",
                     depositAmount, getStatus(depositReceipt));
