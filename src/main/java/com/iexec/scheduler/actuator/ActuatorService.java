@@ -60,7 +60,7 @@ public class ActuatorService implements Actuator {
             log.info("CreateMarketOrder [category:{}, trust:{}, value:{}, volume:{}, transactionStatus:{}] ",
                     category, trust, value, volume, getStatus(createMarketOrderReceipt));
 
-            return marketplaceService.getMarketplace().getMarketOrderEmittedEvents(createMarketOrderReceipt).get(0).marketorderIdx;
+            return marketplaceService.getMarketplace().getMarketOrderCreatedEvents(createMarketOrderReceipt).get(0).marketorderIdx;
         } catch (Exception e) {
             e.printStackTrace();
         }
