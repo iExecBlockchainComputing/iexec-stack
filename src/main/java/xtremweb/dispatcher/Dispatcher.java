@@ -172,13 +172,13 @@ public class Dispatcher {
      * Main function
      */
     public void go() throws Exception {
-
         try {
-            IexecSchedulerLibrary.initialize("../conf/iexec-scheduler.yml");
+            IexecSchedulerLibrary.initialize(config.getConfigFile().getParentFile().getAbsolutePath() + "/iexec-scheduler.yml");
             SchedulerPocoWatcherImpl schedulerPocoWatcher = new SchedulerPocoWatcherImpl();
         } catch(final Exception e) {
             logger.exception("Can connect to blockchain ", e);
         }
+
         timer = new Timer();
 
         try {
