@@ -103,6 +103,27 @@ public class XWTools {
 	 * This defines the name of the stderr file
 	 */
 	public static final String STDERR = "stderr" + DataTypeEnum.TEXT.getFileExtension();
+    /**
+     * This is the launchscript header name
+     * @since 13.0.0
+     */
+    public static final String LAUNCHSCRIPTHEADER = "xwstart";
+    /**
+     * This is the launchscript trailer name
+     * @since 13.0.0
+     */
+    public static final String LAUNCHSCRIPTTRAILER = ".sh";
+    /**
+     * This is the unload script header name
+     * @since 13.0.0
+     */
+    public static final String UNLOADSCRIPTHEADER = "xwstop";
+    /**
+     * This is the unload script trailer name
+     * @since 13.0.0
+     */
+    public static final String UNLOADSCRIPTTRAILER = ".sh";
+
 	/**
 	 * This defines buffer size for communications : 16Kb
 	 *
@@ -157,33 +178,33 @@ public class XWTools {
 	 */
 	public static final long TWOGIGABYTES = 2 * ONEGIGABYTES;
 	/**
-	 * This defines the default wall cloacktime to 300s (5mn)
+	 * This defines the default wall cloacktime to 3600s (1h)
 	 * @since 13.0.0
 	 */
-	public static final int DEFAULTWALLCLOCKTIME = 300;
+	public static final int DEFAULTWALLCLOCKTIME = 3600;
 	/**
 	 * This defines the default CPU speed in percentage
 	 * @href https://docs.docker.com/engine/reference/run/#cpu-period-constraint
 	 * @since 13.0.0
 	 */
-	public static final float DEFAULTCPUSPEED = 0.5f;
+	public static final float DEFAULTCPUSPEED = 1.0f;
 	/**
-	 * This defines file size limit : 100Mb
+	 * This defines file size limit : 500Mb
 	 * @since 12.2.3
 	 */
-	public static final long MAXFILESIZE = 100 * ONEMEGABYTES;
+	public static final long MAXFILESIZE = 500 * ONEMEGABYTES;
 	/**
 	 * This defines the maximum size of work disk space (30Gb)
 	 *
 	 * @since 8.0.0
 	 */
-	public static final long MAXDISKSIZE = 5 * ONEGIGABYTES;
+	public static final long MAXDISKSIZE = 30 * ONEGIGABYTES;
 	/**
 	 * This defines the maximum size of work RAM space (1Gb) 
 	 *
 	 * @since 9.1.0
 	 */
-	public static final long MAXRAMSIZE = 512 * ONEKILOBYTES;
+	public static final long MAXRAMSIZE = 1 * ONEGIGABYTES;
 	/**
 	 * This helps to format date : the format is "yyyy-MM-dd HH:mm:ss"
 	 */

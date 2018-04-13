@@ -212,37 +212,40 @@ insert into userRights (userRightId, userRightName, userRightDescription) values
 insert into userRights (userRightId, userRightName, userRightDescription) values ( 7, 'GETHOST',         null);
 insert into userRights (userRightId, userRightName, userRightDescription) values ( 8, 'GETAPP',          null);
 insert into userRights (userRightId, userRightName, userRightDescription) values ( 9, 'GETUSER',         null);
-insert into userRights (userRightId, userRightName, userRightDescription) values (10, 'UPDATEWORK',      'worker can update work for the owner');
-insert into userRights (userRightId, userRightName, userRightDescription) values (11, 'WORKER_USER',     'worker cannot do everything');
-insert into userRights (userRightId, userRightName, userRightDescription) values (12, 'VWORKER_USER',    'vworker can take advantage of stickybit');
-insert into userRights (userRightId, userRightName, userRightDescription) values (13, 'BROADCAST',       'submit one job to all workers');
-insert into userRights (userRightId, userRightName, userRightDescription) values (14, 'LISTJOB',         null);
-insert into userRights (userRightId, userRightName, userRightDescription) values (15, 'DELETEJOB',       null);
-insert into userRights (userRightId, userRightName, userRightDescription) values (16, 'LISTDATA',        null);
-insert into userRights (userRightId, userRightName, userRightDescription) values (17, 'DELETEDATA',      null);
-insert into userRights (userRightId, userRightName, userRightDescription) values (18, 'LISTGROUP',       null);
-insert into userRights (userRightId, userRightName, userRightDescription) values (19, 'INSERTGROUP',     null);
-insert into userRights (userRightId, userRightName, userRightDescription) values (20, 'DELETEGROUP',     null);
-insert into userRights (userRightId, userRightName, userRightDescription) values (21, 'LISTSESSION',     null);
-insert into userRights (userRightId, userRightName, userRightDescription) values (22, 'INSERSESSION',    null);
-insert into userRights (userRightId, userRightName, userRightDescription) values (23, 'DELETESESSION',   null);
-insert into userRights (userRightId, userRightName, userRightDescription) values (24, 'LISTHOST',        null);
-insert into userRights (userRightId, userRightName, userRightDescription) values (25, 'LISTUSER',        null);
-insert into userRights (userRightId, userRightName, userRightDescription) values (26, 'LISTUSERGROUP',   null);
-insert into userRights (userRightId, userRightName, userRightDescription) values (27, 'GETUSERGROUP',    null);
-insert into userRights (userRightId, userRightName, userRightDescription) values (28, 'INSERTAPP',       null);
-insert into userRights (userRightId, userRightName, userRightDescription) values (29, 'DELETEAPP',       null);
-insert into userRights (userRightId, userRightName, userRightDescription) values (30, 'LISTAPP',         null);
-insert into userRights (userRightId, userRightName, userRightDescription) values (31, 'STANDARD_USER',   'non privileged user');
-insert into userRights (userRightId, userRightName, userRightDescription) values (32, 'INSERTUSER',      null);
-insert into userRights (userRightId, userRightName, userRightDescription) values (33, 'DELETEUSER',      null);
-insert into userRights (userRightId, userRightName, userRightDescription) values (34, 'ADVANCED_USER',   'privileged user (e.g. user group manager)');
-insert into userRights (userRightId, userRightName, userRightDescription) values (35, 'MANDATED_USER',   'can work in name of another user');
-insert into userRights (userRightId, userRightName, userRightDescription) values (36, 'INSERTHOST',      null);
-insert into userRights (userRightId, userRightName, userRightDescription) values (37, 'DELETEHOST',      null);
-insert into userRights (userRightId, userRightName, userRightDescription) values (38, 'INSERTUSERGROUP', null);
-insert into userRights (userRightId, userRightName, userRightDescription) values (39, 'DELETEUSERGROUP', null);
-insert into userRights (userRightId, userRightName, userRightDescription) values (40, 'SUPER_USER',      'can do all');
+insert into userRights (userRightId, userRightName, userRightDescription) values (10, 'GETENVELOPE',     null);
+insert into userRights (userRightId, userRightName, userRightDescription) values (11, 'UPDATEWORK',      'worker can update work for the owner');
+insert into userRights (userRightId, userRightName, userRightDescription) values (12, 'WORKER_USER',     'worker cannot do everything');
+insert into userRights (userRightId, userRightName, userRightDescription) values (13, 'VWORKER_USER',    'vworker can take advantage of stickybit');
+insert into userRights (userRightId, userRightName, userRightDescription) values (14, 'BROADCAST',       'submit one job to all workers');
+insert into userRights (userRightId, userRightName, userRightDescription) values (15, 'LISTJOB',         null);
+insert into userRights (userRightId, userRightName, userRightDescription) values (16, 'DELETEJOB',       null);
+insert into userRights (userRightId, userRightName, userRightDescription) values (17, 'LISTDATA',        null);
+insert into userRights (userRightId, userRightName, userRightDescription) values (18, 'DELETEDATA',      null);
+insert into userRights (userRightId, userRightName, userRightDescription) values (19, 'LISTGROUP',       null);
+insert into userRights (userRightId, userRightName, userRightDescription) values (20, 'INSERTGROUP',     null);
+insert into userRights (userRightId, userRightName, userRightDescription) values (21, 'DELETEGROUP',     null);
+insert into userRights (userRightId, userRightName, userRightDescription) values (22, 'LISTSESSION',     null);
+insert into userRights (userRightId, userRightName, userRightDescription) values (23, 'INSERTSESSION',    null);
+insert into userRights (userRightId, userRightName, userRightDescription) values (24, 'DELETESESSION',   null);
+insert into userRights (userRightId, userRightName, userRightDescription) values (25, 'LISTHOST',        null);
+insert into userRights (userRightId, userRightName, userRightDescription) values (26, 'LISTUSER',        null);
+insert into userRights (userRightId, userRightName, userRightDescription) values (27, 'LISTUSERGROUP',   null);
+insert into userRights (userRightId, userRightName, userRightDescription) values (28, 'GETUSERGROUP',    null);
+insert into userRights (userRightId, userRightName, userRightDescription) values (29, 'INSERTAPP',       null);
+insert into userRights (userRightId, userRightName, userRightDescription) values (30, 'DELETEAPP',       null);
+insert into userRights (userRightId, userRightName, userRightDescription) values (31, 'LISTAPP',         null);
+insert into userRights (userRightId, userRightName, userRightDescription) values (32, 'LISTENVELOPE',   'non privileged user');
+insert into userRights (userRightId, userRightName, userRightDescription) values (33, 'STANDARD_USER',   'non privileged user');
+insert into userRights (userRightId, userRightName, userRightDescription) values (34, 'INSERTUSER',      null);
+insert into userRights (userRightId, userRightName, userRightDescription) values (35, 'DELETEUSER',      null);
+insert into userRights (userRightId, userRightName, userRightDescription) values (36, 'ADVANCED_USER',   'privileged user (e.g. user group manager)');
+insert into userRights (userRightId, userRightName, userRightDescription) values (37, 'MANDATED_USER',   'can work in name of another user');
+insert into userRights (userRightId, userRightName, userRightDescription) values (38, 'INSERTHOST',      null);
+insert into userRights (userRightId, userRightName, userRightDescription) values (39, 'INSERTENVELOPE',  null);
+insert into userRights (userRightId, userRightName, userRightDescription) values (40, 'DELETEHOST',      null);
+insert into userRights (userRightId, userRightName, userRightDescription) values (41, 'INSERTUSERGROUP', null);
+insert into userRights (userRightId, userRightName, userRightDescription) values (42, 'DELETEUSERGROUP', null);
+insert into userRights (userRightId, userRightName, userRightDescription) values (43, 'SUPER_USER',      'can do all');
 
 -- ---------------------------------------------------------------------------
 -- Data for table "statuses"
@@ -261,7 +264,7 @@ insert into statuses (statusId, statusName, statusObjects, statusComment, status
 insert into statuses (statusId, statusName, statusObjects, statusComment, statusDeprecated) values (11, 'AVAILABLE',     'datas',               'The data is available and can be downloaded on demand',                             null);
 insert into statuses (statusId, statusName, statusObjects, statusComment, statusDeprecated) values (12, 'UNAVAILABLE',   'datas',               'The data is not available and can not be downloaded on demand',                     null);
 insert into statuses (statusId, statusName, statusObjects, statusComment, statusDeprecated) values (13, 'REPLICATING',   'works',               'The object is being replicated',                                                    null);
-insert into statuses (statusId, statusName, statusObjects, statusComment, statusDeprecated) values (14, 'FAILED',        'works',               'The job does not fill its envelope requirements',                                   null);
+insert into statuses (statusId, statusName, statusObjects, statusComment, statusDeprecated) values (14, 'FAILED',        'works',               'The job does not fill its category requirements',                                   null);
 
 -- ---------------------------------------------------------------------------
 -- Data for table "dataTypes"
@@ -801,19 +804,19 @@ create table if not exists  groups_history  like  groups;
 show warnings;
 
 -- ---------------------------------------------------------------------------
--- Table "envs" :
--- This table contains "envelopes" that each work must belong to
--- An envelope defines maximum usage of CPU, bandwith, wall clocktime
+-- Table "categories" :
+-- This table contains "categories" that each work must belong to
+-- A category defines maximum usage of CPU, bandwith, wall clocktime
 -- Since 13.0.0
 -- ---------------------------------------------------------------------------
-create table if not exists  envs  (
-  envId              int unsigned   not null  auto_increment     comment 'EnvID referenced by smart contracts',
+create table if not exists  categories (
+  categoryId         int unsigned   not null  auto_increment     comment 'catID referenced by smart contracts',
   uid                char(36)       not null  primary key        comment 'Primary key',
   ownerUID           char(36)       not null                     comment 'User UID',
-  accessRights       int(4)                   default 0x755      comment 'Please note that an envelope is always public',
+  accessRights       int(4)                   default 0x755      comment 'Please note that a category is always public',
   errorMsg           varchar(254)                                comment 'Error message',
   mtime              timestamp                                   comment 'Timestamp of last update',
-  name               varchar(254)   not null  default 'NONE'     comment 'Envelope name is a free text',
+  name               varchar(254)   not null  default 'NONE'     comment 'Category name is a free text',
   maxWallClockTime   int(10)        not null  default 300        comment 'Max amount of seconds a job can be computed; default 5mn',
   maxFreeMassStorage bigint         not null  default 5368709120 comment 'Max mass storage usage in bytes; default 5Gb',
   maxFileSize        bigint         not null  default 104857600  comment 'Max file length in bytes; default 100Mb',
@@ -822,16 +825,16 @@ create table if not exists  envs  (
 
 
   index  name     (name),
-  index  envId    (envId),
+  index  categoryId    (categoryId),
   index  ownerUID (ownerUID),
   foreign key (owneruid) references users(uid)
   )
 engine  = @DBENGINE@,
-comment = 'envs = envelopes defining resources usage limit';
+comment = 'categories = categories defining resources usage limits';
 
 show warnings;
 
-create table if not exists  envs_history  like  envs;
+create table if not exists  categories_history  like  categories;
 
 show warnings;
 
@@ -844,7 +847,8 @@ show warnings;
 create table if not exists  works  (
   uid                 char(36)          not null  primary key      comment 'Primary key',
   appUID              char(36)          not null                   comment 'Application UID',
-  envId               int unsigned      not null  default 1        comment 'envId. See common/Envs.java',
+  categoryId          int unsigned                default 0        comment 'categoryId. See common/CategoryInterface.java',
+  marketOrderId       int unsigned                default 0        comment 'blockchain market order id',
   statusId            tinyint unsigned  not null  default 255      comment 'Status Id. See common/XWStatus.java',
   status              varchar(36)       not null  default 'NONE'   comment 'Status. see common/XWStatus.java',
   sessionUID          char(36)                                     comment 'Optionnal. session UID',
@@ -905,10 +909,10 @@ create table if not exists  works  (
   index  groupUID            (groupUID),
   index  expectedhostUID     (expectedhostUID),
   index  ownerUID            (ownerUID),
-  index  envId               (envId),
+  index  categoryId          (categoryId),
   index  sgId                (sgId),
   index  completedDate       (completedDate),
-  foreign key (envId) references envs(envId)
+  foreign key (categoryId) references categories(categoryId)
 
   )
 engine  = @DBENGINE@,
@@ -991,12 +995,6 @@ insert into users (uid,login,password,fname,lname,email,rights,owneruid,accessri
                "@DBADMINEMAIL@","VWORKER_USER","@ADMINUID@","1792",
                (select userRightId from userRights where userRightName = 'VWORKER_USER'));
 
--- ---------------------------------------------------------------------------
--- Data for table "envs"
--- ---------------------------------------------------------------------------
-
-insert into envs (uid, owneruid, accessrights, errormsg, name, envid)
-        values ("@ENVUID@", "@ADMINUID@", "1877", '', 'DefaultEnv', 0);
 
 -- If your dispatcher complains about handshake, try this :
 -- set password for xtremweb@localhost = old_password('xwpassword');

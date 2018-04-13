@@ -44,13 +44,11 @@ import xtremweb.communications.URI;
 import xtremweb.communications.XMLRPCCommand;
 import xtremweb.communications.XMLRPCCommandActivateHost;
 import xtremweb.communications.XMLRPCCommandChmod;
-import xtremweb.communications.XMLRPCCommandGetUserByLogin;
 import xtremweb.communications.XMLRPCCommandGetWorks;
 import xtremweb.database.ColumnSelection;
 import xtremweb.database.DBConnPoolThread;
 import xtremweb.database.SQLRequest;
 import xtremweb.database.SQLRequestReadable;
-import xtremweb.database.SQLRequestWorkRequest;
 import xtremweb.database.SQLRequestWorkStatus;
 import xtremweb.security.X509Proxy;
 import xtremweb.security.XWAccessRights;
@@ -1024,102 +1022,102 @@ public final class DBInterface {
 	}
 
     /**
-     * This creates a new readable session to retrieve from DB
+     * This creates a new readable category to retrieve from DB
      *
      * @param u
      *            is the requesting user
      * @since 13.0.0
      */
-    private EnvelopeInterface readableEnvelope(final UserInterface u) throws IOException {
-        return readableObject(new EnvelopeInterface(), u);
+    private CategoryInterface readableCategory(final UserInterface u) throws IOException {
+        return readableObject(new CategoryInterface(), u);
     }
     /**
-     * This creates a new readable session to retrieve from DB
+     * This creates a new readable category to retrieve from DB
      *
      * @param u
      *            is the requesting user
      * @param uid
-     *            is the UID of the session to retrieve
+     *            is the UID of the category to retrieve
      * @since 13.0.0
      */
-    private EnvelopeInterface readableEnvelope(final UserInterface u, final UID uid) throws IOException {
-        return readableObject(new EnvelopeInterface(), u, uid);
+    private CategoryInterface readableCategory(final UserInterface u, final UID uid) throws IOException {
+        return readableObject(new CategoryInterface(), u, uid);
     }
 
     /**
-     * This creates a new readable Envelope to retrieve Envelopes UID from DB
+     * This creates a new readable category to retrieve category UID from DB
      *
      * @param u
      *            is the requesting user
      * @since 13.0.0
      */
-    private EnvelopeInterface readableEnvelopeUID(final UserInterface u) throws IOException {
-        return readableObjectUID(new EnvelopeInterface(), u);
+    private CategoryInterface readableCategoryUID(final UserInterface u) throws IOException {
+        return readableObjectUID(new CategoryInterface(), u);
     }
 
     /**
-     * This retrieves a Envelope for the requesting user. Envelope access rights
+     * This retrieves a category for the requesting user. category access rights
      * are checked.
      *
      * @param u
      *            is the requesting user
      * @param uid
-     *            is the UID of the Envelope to retrieve
+     *            is the UID of the category to retrieve
      * @since 13.0.0
      */
-    protected EnvelopeInterface envelope(final UserInterface u, final UID uid)
+    protected CategoryInterface category(final UserInterface u, final UID uid)
             throws IOException, AccessControlException {
 
         if (uid == null) {
             return null;
         }
-        final EnvelopeInterface row = new EnvelopeInterface();
-        final EnvelopeInterface ret = getFromCache(u, uid, row);
+        final CategoryInterface row = new CategoryInterface();
+        final CategoryInterface ret = getFromCache(u, uid, row);
         if (ret != null) {
             return ret;
         }
-        final EnvelopeInterface readableRow = readableEnvelope(u, uid);
+        final CategoryInterface readableRow = readableCategory(u, uid);
         return select(readableRow);
     }
 
 	/**
-	 * This retrieves an envelope
+	 * This retrieves a category
 	 *
 	 * @param command
-	 * @return an envelope interface
+	 * @return a category interface
 	 * @since 13.0.0
 	 */
-	protected EnvelopeInterface envelope(final XMLRPCCommand command) throws InvalidKeyException, IOException, AccessControlException {
+	protected CategoryInterface category(final XMLRPCCommand command) throws InvalidKeyException, IOException, AccessControlException {
 		final UID uid = command.getURI().getUID();
 		if (uid == null) {
 			return null;
 		}
 
-		final EnvelopeInterface row = new EnvelopeInterface();
-		final UserInterface mandatingClient = checkClient(command, UserRightEnum.GETENVELOPE);
-		final EnvelopeInterface ret = getFromCache(mandatingClient, uid, row);
+		final CategoryInterface row = new CategoryInterface();
+		final UserInterface mandatingClient = checkClient(command, UserRightEnum.GETCATEGORY);
+		final CategoryInterface ret = getFromCache(mandatingClient, uid, row);
 		if (ret != null) {
 			return ret;
 		}
-		final EnvelopeInterface readableRow = readableEnvelope(mandatingClient, uid);
+		final CategoryInterface readableRow = readableCategory(mandatingClient, uid);
 		return select(readableRow);
 	}
     /**
-     * This retrieves a Envelope from DB by its ID
+     * This retrieves a category from DB by its ID
      *
      * @param u
      *            is the requesting user
-     * @param id is the envelope ID
+     * @param id is the category ID
      * @return the last loaded row
      * @since 13.0.0
      */
-    protected EnvelopeInterface envelope(final UserInterface u, final int id) throws IOException {
-        final EnvelopeInterface row = readableEnvelope(u);
-        return selectOne(row, "maintable.envid='" + id + "'");
+    protected CategoryInterface category(final UserInterface u, final int id) throws IOException {
+        final CategoryInterface row = readableCategory(u);
+        return selectOne(row, "maintable." + CategoryInterface.Columns.CATEGORYID.toString()+ "='" + id + "'");
     }
 
     /**
-     * This retrieves a Envelope from DB for the requesting user according to
+     * This retrieves a category from DB for the requesting user according to
      * conditions
      *
      * @param u
@@ -1129,54 +1127,54 @@ public final class DBInterface {
      * @return the last loaded row
      * @since 13.0.0
      */
-    protected EnvelopeInterface envelope(final UserInterface u, final String conditions) throws IOException {
-        final EnvelopeInterface row = readableEnvelope(u);
+    protected CategoryInterface category(final UserInterface u, final String conditions) throws IOException {
+        final CategoryInterface row = readableCategory(u);
         return selectOne(row, conditions);
     }
 
     /**
-     * This retrieves a Envelope from DB for the requesting user
+     * This retrieves a category from DB for the requesting user
      *
      * @param u
      *            is the requesting user
-     * @return a Collection of Envelopes
+     * @return a Collection of category
      * @since 13.0.0
      */
-    protected Collection<EnvelopeInterface> envelopes(final UserInterface u) throws IOException {
-        final EnvelopeInterface row = readableEnvelope(u);
+    protected Collection<CategoryInterface> categories(final UserInterface u) throws IOException {
+        final CategoryInterface row = readableCategory(u);
         return selectAll(row);
     }
 
     /**
-     * This retrieves a Envelope from DB for the requesting user according to
+     * This retrieves a category from DB for the requesting user according to
      * criteria
      *
      * @param u
      *            is the requesting user
      * @param criteria
      *            restrict selected rows
-     * @return a Collection of Envelopes
+     * @return a Collection of category
      * @since 13.0.0
      */
-    protected Collection<EnvelopeInterface> envelopes(final UserInterface u, final String criteria) throws IOException {
-        final EnvelopeInterface row = readableEnvelope(u);
+    protected Collection<CategoryInterface> categories(final UserInterface u, final String criteria) throws IOException {
+        final CategoryInterface row = readableCategory(u);
         return selectAll(row, criteria);
     }
 
     /**
-     * This retrieves Envelope UID from DB for the requesting user
+     * This retrieves category UID from DB for the requesting user
      *
      * @param u
      *            is the requesting user
      * @return a Collection of UID
      * @since 13.0.0
      */
-    protected Collection<UID> envelopesUID(final UserInterface u) throws IOException {
-        return envelopesUID(u, (String) null);
+    protected Collection<UID> categoriesUID(final UserInterface u) throws IOException {
+        return categoriesUID(u, (String) null);
     }
 
     /**
-     * This retrieves a Envelope from DB for the requesting user according to
+     * This retrieves a category from DB for the requesting user according to
      * criteria
      *
      * @param u
@@ -1184,22 +1182,22 @@ public final class DBInterface {
      * @return a Collection of UID
      * @since 13.0.0
      */
-    protected Collection<UID> envelopesUID(final UserInterface u, final String criterias) throws IOException {
-        final EnvelopeInterface row = readableEnvelopeUID(u);
+    protected Collection<UID> categoriesUID(final UserInterface u, final String criterias) throws IOException {
+        final CategoryInterface row = readableCategoryUID(u);
         return selectUID(row, criterias);
     }
 
     /**
-     * This retrieves the number of Envelopes
+     * This retrieves the number of category
      *
      * @param u
      *            is the requesting user
-     * @return how many Envelopes exist
+     * @return how many category exist
      * @since 13.0.0
      */
-    protected int envelopeSize(final UserInterface u) throws IOException {
+    protected int categorieSize(final UserInterface u) throws IOException {
         try {
-            envelopesUID(u).size();
+            categoriesUID(u).size();
         } catch (final Exception e) {
         }
         return 0;
@@ -3514,18 +3512,6 @@ public final class DBInterface {
 					|| theApp.canWrite(theClient, ownerGroup)
 					|| theClient.getRights().higherOrEquals(UserRightEnum.ADVANCED_USER)) {
 
-				useData(theClient, appitf.getLaunchScriptSh());
-				removeData(theClient, theApp.getLaunchScriptSh());
-				theApp.setLaunchScriptSh(appitf.getLaunchScriptSh());
-				useData(theClient, appitf.getLaunchScriptCmd());
-				removeData(theClient, theApp.getLaunchScriptCmd());
-				theApp.setLaunchScriptCmd(appitf.getLaunchScriptCmd());
-				useData(theClient, appitf.getUnloadScriptSh());
-				removeData(theClient, theApp.getUnloadScriptSh());
-				theApp.setUnloadScriptSh(appitf.getUnloadScriptSh());
-				useData(theClient, appitf.getUnloadScriptCmd());
-				removeData(theClient, theApp.getUnloadScriptCmd());
-				theApp.setUnloadScriptCmd(appitf.getUnloadScriptCmd());
 				useData(theClient, appitf.getDefaultStdin());
 				removeData(theClient, theApp.getDefaultStdin());
 				theApp.setDefaultStdin(appitf.getDefaultStdin());
@@ -3790,7 +3776,7 @@ public final class DBInterface {
         } catch (final AccessControlException e) {
         }
         try {
-            ret = getEnvelope(command);
+            ret = getCategory(command);
             if (ret != null) {
                 return ret;
             }
@@ -3875,7 +3861,7 @@ public final class DBInterface {
     }
 
     /**
-     * This retrieves an envelope given its id
+     * This retrieves a category given its id
      *
      * @param command is the command to execute
      * @return null on error; a TaskInterface otherwise
@@ -3887,27 +3873,27 @@ public final class DBInterface {
      *                is thrown on access rights violation
      * @since 13.0.0
      */
-    public EnvelopeInterface getEnvelopeById(final XMLRPCCommand command)
+    public CategoryInterface getCategoryById(final XMLRPCCommand command)
             throws IOException, InvalidKeyException, AccessControlException {
 
-        final UserInterface theClient = checkClient(command, UserRightEnum.GETENVELOPE);
+        final UserInterface theClient = checkClient(command, UserRightEnum.GETCATEGORY);
         final URI uri = command.getURI();
         final String id = uri.getPath().substring(1, uri.getPath().length());
 
-        final EnvelopeInterface theEnvelope = envelope(theClient,
-                EnvelopeInterface.Columns.ENVID.toString() + "='" + id + "'");
+        final CategoryInterface theCategory = category(theClient,
+                CategoryInterface.Columns.CATEGORYID.toString() + "='" + id + "'");
 
-        if (theEnvelope == null) {
+        if (theCategory == null) {
             return null;
         }
 
-        final UserInterface owner = user(theEnvelope.getOwner());
+        final UserInterface owner = user(theCategory.getOwner());
         final UID ownerGroup = (owner == null ? null : owner.getGroup());
-        if (!theEnvelope.canRead(theClient, ownerGroup)
+        if (!theCategory.canRead(theClient, ownerGroup)
                 && theClient.getRights().lowerThan(UserRightEnum.SUPER_USER)) {
             throw new AccessControlException(theClient.getLogin() + " can't read " + id);
         }
-        return theEnvelope;
+        return theCategory;
     }
 
     /**
@@ -3986,10 +3972,6 @@ public final class DBInterface {
 			throw new AccessControlException(theClient.getLogin() + " can not remove app " + theApp.getName());
 		}
 
-		removeData(theClient, theApp.getLaunchScriptSh());
-		removeData(theClient, theApp.getLaunchScriptCmd());
-		removeData(theClient, theApp.getUnloadScriptSh());
-		removeData(theClient, theApp.getUnloadScriptCmd());
 		removeData(theClient, theApp.getDefaultStdin());
 		removeData(theClient, theApp.getBaseDirin());
 		removeData(theClient, theApp.getDefaultDirin());
@@ -4883,19 +4865,19 @@ public final class DBInterface {
 			throw new IOException("job getMinFreeMassStorage < app.getMinFreeMassStorage");
 		}
 
-        final EnvelopeInterface envelopeItf = select(new EnvelopeInterface(),
-                "maintable.envid='" + receivedJob.getEnvId() + "'");
+        final CategoryInterface receivedJobCategory = select(new CategoryInterface(),
+                "maintable." + CategoryInterface.Columns.CATEGORYID.toString() + "='" + receivedJob.getCategoryId() + "'");
 
-        if(envelopeItf == null) {
-            throw new IOException("envelope not found " + receivedJob.getEnvId());
+        if(receivedJobCategory != null) {
+            receivedJob.setMaxWallClockTime(receivedJobCategory.getMaxWallClockTime());
+            receivedJob.setMaxMemory(receivedJobCategory.getMaxMemory());
+            receivedJob.setMaxCpuSpeed(receivedJobCategory.getMaxCpuSpeed());
+            receivedJob.setMaxFreeMassStorage(receivedJobCategory.getMaxFreeMassStorage());
+            receivedJob.setMaxFileSize(receivedJobCategory.getMaxFileSize());
+        } else {
+            // reset limits to defaults
+            receivedJob.setCategoryId(0);
         }
-
-        receivedJob.setMaxWallClockTime(envelopeItf.getMaxWallClockTime());
-		receivedJob.setMaxMemory(envelopeItf.getMaxMemory());
-        receivedJob.setMaxCpuSpeed(envelopeItf.getMaxCpuSpeed());
-        receivedJob.setMaxFreeMassStorage(envelopeItf.getMaxFreeMassStorage());
-		receivedJob.setMaxFileSize(envelopeItf.getMaxFileSize());
-
         final WorkInterface theWork = work(mandatingClient, jobUID);
 		if (theWork != null) {
 			if (theWork.canWrite(mandatingClient, appOwnerGroup) || clientRights.higherOrEquals(UserRightEnum.WORKER_USER)) {
@@ -5206,7 +5188,7 @@ public final class DBInterface {
 	}
 
 	/**
-	 * This retrieves envelopes UID
+	 * This retrieves categories UID
 	 *
 	 * @param command is the command to execute
 	 * @return null on error; a Collection of UID otherwise
@@ -5218,27 +5200,27 @@ public final class DBInterface {
 	 *                is thrown on access rights violation
 	 * @since 13.0.0
 	 */
-	public Collection<UID> getAllEnvelopes(final XMLRPCCommand command)
+	public Collection<UID> getAllCategories(final XMLRPCCommand command)
 			throws IOException, InvalidKeyException, AccessControlException {
 
-		final UserInterface theClient = checkClient(command, UserRightEnum.LISTENVELOPE);
-		return envelopesUID(theClient);
+		final UserInterface theClient = checkClient(command, UserRightEnum.LISTCATEGORY);
+		return categoriesUID(theClient);
 	}
 
 	/**
-	 * This checks client rights and returns getJob(UserInterface, UID)
+	 * This calls category(command)
 	 *
-	 * @see #getJob(XMLRPCCommand)
+	 * @see #category(command)
 	 * @since 13.0.0
 	 */
-	protected EnvelopeInterface getEnvelope(final XMLRPCCommand command)
+	protected CategoryInterface getCategory(final XMLRPCCommand command)
 			throws IOException, InvalidKeyException, AccessControlException {
-		return envelope(command);
+		return category(command);
 	}
 
 
     /**
-     * This adds/updates an envelope
+     * This adds/updates an category
      *
      * @param command is the command to execute
      * @return true on success; false on DB error or group already exists
@@ -5251,29 +5233,29 @@ public final class DBInterface {
      *                is thrown if client does not have enough rights
      * @since 13.0.0
      */
-    protected boolean addEnvelope(final XMLRPCCommand command)
+    protected boolean addCategory(final XMLRPCCommand command)
             throws IOException, InvalidKeyException, AccessControlException {
 
-        final UserInterface theClient = checkClient(command, UserRightEnum.INSERTGROUP);
-        final EnvelopeInterface envitf = (EnvelopeInterface) command.getParameter();
-        final EnvelopeInterface env = envelope(theClient, envitf.getUID());
-        if (env != null) {
-            env.updateInterface(envitf);
-            update(theClient, UserRightEnum.INSERTENVELOPE, env);
+        final UserInterface theClient = checkClient(command, UserRightEnum.INSERTCATEGORY);
+        final CategoryInterface catitf = (CategoryInterface) command.getParameter();
+        final CategoryInterface category = category(theClient, catitf.getUID());
+        if (category != null) {
+            category.updateInterface(catitf);
+            update(theClient, UserRightEnum.INSERTCATEGORY, category);
             return true;
         }
 
-        if (envitf.getUID() == null) {
+        if (catitf.getUID() == null) {
             final UID uid = new UID();
-            envitf.setUID(uid);
+            catitf.setUID(uid);
         }
-        if (envitf.getOwner() == null) {
-            envitf.setOwner(theClient.getUID());
+        if (catitf.getOwner() == null) {
+            catitf.setOwner(theClient.getUID());
         }
-        insert(envitf);
+        insert(catitf);
 
         // read from DB, in case some values are null (and set to default by insert db)
-        putToCache(envelope(theClient, "maintable.uid='" + envitf.getUID() + "'"));
+        putToCache(category(theClient, "maintable.uid='" + catitf.getUID() + "'"));
 
         return true;
     }

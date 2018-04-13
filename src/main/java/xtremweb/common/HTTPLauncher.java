@@ -61,12 +61,13 @@ public final class HTTPLauncher {
         IexecWorkerLibrary.initialize(config.getConfigFile().getParentFile().getAbsolutePath()+"/iexec-worker.yml", new CommonConfigurationGetter() {
             @Override
             public CommonConfiguration getCommonConfiguration(String schedulerApiUrl) {
-                final String url = schedulerApiUrl + "/commonconfiguration";
-                return new RestTemplate().getForObject(url, CommonConfiguration.class);
+                final String url = schedulerApiUrl + "/getbcinfo";
+                return new CommonConfiguration();
             }
         });
         WorkerPocoWatcherImpl workerPocoWatcher = new WorkerPocoWatcherImpl();
         */
+
 
         final String[] argv = a.clone();
         CommandLineParser args = null;
