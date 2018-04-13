@@ -229,7 +229,7 @@ public enum AppTypeEnum {
 	 * @since 13.0.0
 	 */
 	final public String getLaunchScriptName() {
-		return XWTools.LAUNCHSCRIPTHEADER + this.toString() + XWTools.LAUNCHSCRIPTTRAILER;
+		return XWTools.LAUNCHSCRIPTHEADER + this.toString().toLowerCase() + XWTools.LAUNCHSCRIPTTRAILER;
 	}
 	/**
 	 * This retrieves application unlaunch script name.
@@ -238,7 +238,7 @@ public enum AppTypeEnum {
 	 * @since 13.0.0
 	 */
 	final public String getUnloadScriptName() {
-		return XWTools.UNLOADSCRIPTHEADER + this.toString() + XWTools.UNLOADSCRIPTTRAILER;
+		return XWTools.UNLOADSCRIPTHEADER + this.toString().toLowerCase() + XWTools.UNLOADSCRIPTTRAILER;
 	}
 
 	/**
