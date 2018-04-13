@@ -85,3 +85,17 @@ services:
     networks:
       - iexec-net
 
+  grafana:
+    image: grafanacustom:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - DBHOST=db
+      - MYSQL_DB_NAME=${MYSQL_DB_NAME}
+      - MYSQL_USER=${MYSQL_ADMIN_USER}
+      - MYSQL_PASSWORD=${MYSQL_ADMIN_PASSWORD}
+    networks:
+      - iexec-net
+    restart: unless-stopped
+
