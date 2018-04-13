@@ -20,16 +20,21 @@
 --
 
 
-drop table if exists  envs;
-drop table if exists  envs_history;
+drop table if exists  categories;
+drop table if exists  categories_history;
 
 
 
-ALTER TABLE  works DROP   COLUMN envId;
+
+ALTER TABLE  works DROP   COLUMN categoryId;
+ALTER TABLE  works DROP   COLUMN marketOrderId;
+
 ALTER TABLE  works DROP   COLUMN maxFreeMassStorage;
 ALTER TABLE  works DROP   COLUMN maxFileSize;
 ALTER TABLE  works DROP   COLUMN maxMemory;
 ALTER TABLE  works DROP   COLUMN maxCpuSpeed;
+ALTER TABLE  works DROP   COLUMN uploadbandwidth;
+ALTER TABLE  works DROP   COLUMN downloadbandwidth;
 
 ALTER TABLE  works ADD    COLUMN wallclocktime int(10)                   comment 'Wallclocktime : how many seconds a job can be computed.  The job is stopped as the wall clocktime is reached.  If < 0, the job is not stopped.';
 ALTER TABLE  works ADD    COLUMN diskSpace bigint             default 0  comment 'Optionnal. disk space needed  This is in Mb';
@@ -37,8 +42,9 @@ ALTER TABLE  works ADD    COLUMN diskSpace bigint             default 0  comment
 ALTER TABLE  works DROP   COLUMN uploadbandwidth;
 ALTER TABLE  works DROP   COLUMN downloadbandwidth;
 
-ALTER TABLE  datas DROP   COLUMN shasum;
-ALTER TABLE  datas_history DROP   COLUMN shasum;
+
+ALTER TABLE datas         CHANGE COLUMN shasum md5 varchar(254) comment 'Shasum for datas';
+ALTER TABLE datas_history CHANGE COLUMN shasum md5 varchar(254) comment 'Shasum for datas';
 
 --
 -- remove status FAILED
