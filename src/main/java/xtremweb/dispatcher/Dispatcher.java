@@ -23,8 +23,11 @@
 
 package xtremweb.dispatcher;
 
+import com.iexec.common.ethereum.CommonConfiguration;
+import com.iexec.common.ethereum.IexecConfigurationService;
 import com.iexec.scheduler.ethereum.IexecSchedulerLibrary;
-import org.eclipse.jetty.server.session.SessionHandler;
+import com.iexec.common.workerpool.WorkerPoolConfig;
+
 import xtremweb.common.*;
 import xtremweb.communications.AccessLogger;
 import xtremweb.communications.HTTPServer;
@@ -36,6 +39,8 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Timer;
+
+import org.eclipse.jetty.server.session.SessionHandler;
 
 /**
  * Dispatcher Implementation
@@ -295,12 +300,24 @@ public class Dispatcher {
         }
 
         logger.info("XWHEP Dispatcher(" + Version.currentVersion + ") started [" + new Date() + "]");
-        logger.info("DB vendor  = " + config.getProperty(XWPropertyDefs.DBVENDOR));
-        logger.info("mileStone  = " + config.getProperty(XWPropertyDefs.MILESTONES));
-        logger.info("Time out   = " + config.getProperty(XWPropertyDefs.TIMEOUT));
-        logger.info("Disk opt'd = " + config.getProperty(XWPropertyDefs.OPTIMIZEDISK));
-        logger.info("Net  opt'd = " + config.getProperty(XWPropertyDefs.OPTIMIZENETWORK));
-        logger.info("NIO        = " + config.getProperty(XWPropertyDefs.JAVANIO));
+        logger.info("DB vendor       = " + config.getProperty(XWPropertyDefs.DBVENDOR));
+        logger.info("mileStone       = " + config.getProperty(XWPropertyDefs.MILESTONES));
+        logger.info("Time out        = " + config.getProperty(XWPropertyDefs.TIMEOUT));
+        logger.info("Disk opt'd      = " + config.getProperty(XWPropertyDefs.OPTIMIZEDISK));
+        logger.info("Net  opt'd      = " + config.getProperty(XWPropertyDefs.OPTIMIZENETWORK));
+        logger.info("NIO             = " + config.getProperty(XWPropertyDefs.JAVANIO));
+        if ((IexecConfigurationService.getInstance() != null) &&
+                (IexecConfigurationService.getInstance().getCommonConfiguration() != null)) {
+            CommonConfiguration commonConfiguration = IexecConfigurationService.getInstance().getCommonConfiguration();
+            logger.info("Eth client addr = " + commonConfiguration.getNodeConfig().getClientAddress());
+            logger.info("iExec Hub  addr = " + commonConfiguration.getContractConfig().getIexecHubAddress());
+            logger.info("iExec RLC  addr = " + commonConfiguration.getContractConfig().getRlcAddress());
+            WorkerPoolConfig workerPoolConfig = commonConfiguration.getContractConfig().getWorkerPoolConfig();
+            if (workerPoolConfig != null) {
+                logger.info("iExec WorkerPool name = " + workerPoolConfig.getName());
+                logger.info("iExec WorkerPool addr = " + workerPoolConfig.getAddress());
+            }
+        }
         config.dump(System.out, "XWHEP Dispatcher started ");
     }
 

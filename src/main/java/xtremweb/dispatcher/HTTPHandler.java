@@ -57,6 +57,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.iexec.common.ethereum.CommonConfiguration;
+import com.iexec.common.ethereum.IexecConfigurationService;
+import com.iexec.common.workerpool.WorkerPoolConfig;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
@@ -107,8 +110,16 @@ import xtremweb.security.XWAccessRights;
 public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 
 	public static final String PATH = "/";
-
+	/**
+	 * This is public path to get api help
+	 */
 	public static final String APIPATH = "/api";
+	/**
+	 * This is a public path to retrieve iExec ETH configuration
+	 * @since 13.0.0
+	 */
+	public static final String IEXECETHCONFPATH = "/iexecethconf";
+
 	/**
 	 * This is the name of the cookie containing the user UID
 	 */
@@ -167,6 +178,7 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 	private static final String[] names = { DASHBOARDFILENAME_HTML, DASHBOARDFILENAME_CSS, FAVICOFILENAME_ICO,
 			RESOURCEFILENAME_LOGO, SCRIPTFILENAME_JS };
 	private static final String TEXTHTML = "text/html";
+	private static final String TEXTPLAIN = "text/plain";
 	private static final String TEXTCSS = "text/css";
 	private static final String IMAGEXICON = "image/x-icon";
 	private static final String IMAGEJPEG = "image/jpeg";
@@ -737,6 +749,49 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 	 *
 	 * @since 8.0.2
 	 */
+	protected synchronized void writeIexecEthConf() throws IOException {
+
+		if (response == null) {
+			throw new IOException("Can't write : this.response is not set");
+		}
+
+		mileStone("<writeIexecEthConf>");
+
+		try {
+			final PrintWriter writer = response.getWriter();
+			final StringBuilder  msg = new StringBuilder();
+			if ((IexecConfigurationService.getInstance() != null) &&
+					(IexecConfigurationService.getInstance().getCommonConfiguration() != null)) {
+				CommonConfiguration commonConfiguration = IexecConfigurationService.getInstance().getCommonConfiguration();
+				msg.append("iExec Hub  addr = " + commonConfiguration.getContractConfig().getIexecHubAddress() + "\n");
+				msg.append("iExec RLC  addr = " + commonConfiguration.getContractConfig().getRlcAddress() + "\n");
+				WorkerPoolConfig workerPoolConfig = commonConfiguration.getContractConfig().getWorkerPoolConfig();
+				if (workerPoolConfig != null) {
+					msg.append("iExec WorkerPool addr = " + workerPoolConfig.getAddress() + "\n");
+				}
+			}
+
+			response.setContentType(TEXTPLAIN + ";charset=UTF-8");
+			response.setHeader(CONTENTLENGTHLABEL, "" + msg.length());
+			writer.println(msg);
+			response.setStatus(HttpServletResponse.SC_OK);
+		} catch (final Exception e) {
+			getLogger().exception(e);
+			mileStone("<error method='writeIexecEthConf' msg='" + e.getMessage() + "' />");
+			throw new IOException(e.toString());
+		} finally {
+			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			resetIdRpc();
+			mileStone("</writeIexecEthConf>");
+			notifyAll();
+		}
+	}
+
+	/**
+	 * This writes the API to output stream
+	 *
+	 * @since 8.0.2
+	 */
 	protected synchronized void writeApi(final UserInterface client, final URI baseUri) throws IOException {
 
 		if (response == null) {
@@ -1001,8 +1056,13 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 		}
 
 		if (target.compareToIgnoreCase(APIPATH) == 0) {
-			resetIdRpc();
 			writeApi(user, baseUri);
+			baseRequest.setHandled(true);
+			return;
+		}
+
+		if (target.compareToIgnoreCase(IEXECETHCONFPATH) == 0) {
+			writeIexecEthConf();
 			baseRequest.setHandled(true);
 			return;
 		}
