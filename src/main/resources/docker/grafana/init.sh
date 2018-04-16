@@ -21,14 +21,14 @@ AddDataSource() {
 				\"isDefault\":true,
 				\"jsonData\":{\"keepCookies\":[]},
 				\"readOnly\":false}" \
-   http://admin:admin@localhost:3000/api/datasources
+   http://admin:$GF_SECURITY_ADMIN_PASSWORD@localhost:3000/api/datasources
 }
 
 AddDashBoards(){
 	for filename in /dashboards/*.json; do
 		curl -H "Content-Type: application/json" \
 			-X POST -d "`cat $filename`" \
-		http://admin:admin@localhost:3000/api/dashboards/db
+		http://admin:$GF_SECURITY_ADMIN_PASSWORD@localhost:3000/api/dashboards/db
 	done
 }
 

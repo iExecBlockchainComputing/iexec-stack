@@ -87,7 +87,7 @@ services:
 
   grafana:
     image: iexechub/grafana:${GRAFANA_DOCKER_IMAGE_VERSION}
-    container_name: grafana
+    container_name: iexecgrafana
     ports:
       - "3000:3000"
     environment:
@@ -95,6 +95,7 @@ services:
       - MYSQL_DB_NAME=${MYSQL_DB_NAME}
       - MYSQL_USER=${MYSQL_ADMIN_USER}
       - MYSQL_PASSWORD=${MYSQL_ADMIN_PASSWORD}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD}
     networks:
       - iexec-net
     restart: unless-stopped
