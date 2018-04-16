@@ -1,4 +1,4 @@
-FROM grafana/grafana:latest
+FROM grafana/grafana:5.0.4
 
 COPY ./init.sh /init.sh
 COPY ./dashboards dashboards
