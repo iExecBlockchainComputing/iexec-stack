@@ -1,6 +1,6 @@
 {
   "name": "rlc-faucet-contract",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "",
   "main": "truffle.js",
   "scripts": {
@@ -8,14 +8,17 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/iExecBlockchainComputing/rlc-faucet-contract.git"
+    "url":
+      "git+https://github.com/iExecBlockchainComputing/rlc-faucet-contract.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/iExecBlockchainComputing/rlc-faucet-contract/issues"
+    "url":
+      "https://github.com/iExecBlockchainComputing/rlc-faucet-contract/issues"
   },
-  "homepage": "https://github.com/iExecBlockchainComputing/rlc-faucet-contract#readme",
+  "homepage":
+    "https://github.com/iExecBlockchainComputing/rlc-faucet-contract#readme",
   "devDependencies": {
     "truffle": "3.4.9",
     "bluebird": "3.5.0",
