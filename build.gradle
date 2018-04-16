@@ -44,30 +44,50 @@ dependencies {
     deployerJars "io.packagecloud.maven.wagon:maven-packagecloud-wagon:0.0.6"
 }
 
-task copyContracts(type: Copy) {
-    into "./src/main/resources/solidity/poco"
 
-    into(".") {
-        from "./PoCo/contracts"
+
+task clearExistingRLCJsonFile(type: Delete) {
+    delete 'rlc-faucet-contract/build/contracts/RLC.json'
+}
+
+task renameFaucetRLC(type: Copy) {
+    dependsOn clearExistingRLCJsonFile
+    from 'rlc-faucet-contract/build/contracts/'
+    into 'rlc-faucet-contract/build/contracts/'
+    // Use a closure to map the file name
+    rename { String fileName ->
+        fileName.replace('FaucetRLC.json', 'RLC.json')
     }
-
     eachFile { copyDetails ->
-        if (copyDetails.path == './IexecHub.sol') {
-            filter { line ->
-                line.replace("import \"rlc-token/contracts/RLC.sol\";", "import \"./rlc-token/contracts/RLC.sol\";")
-            }
+        filter { line ->
+            line.replace("FaucetRLC", "RLC")
         }
     }
 
-    into("./rlc-token") {
-        from "./rlc-token"
-    }
 }
 
-task buildContracts(type: Exec) {
-    dependsOn copyContracts
 
-    commandLine("sh", "-c", "cd ./scripts && ./buildContracts.sh")
+task buildContracts() {
+    dependsOn renameFaucetRLC
+    doLast {
+        exec {
+            commandLine 'sh', '-c', './extlib/web3j-3.2.0/bin/web3j truffle generate PoCo/build/contracts/WorkerPool.json -p com.iexec.common.contracts.generated -o src/main/java/'
+        }
+        exec {
+            commandLine 'sh', '-c', './extlib/web3j-3.2.0/bin/web3j truffle generate PoCo/build/contracts/IexecHub.json -p com.iexec.common.contracts.generated -o src/main/java/'
+        }
+        exec {
+            commandLine 'sh', '-c', './extlib/web3j-3.2.0/bin/web3j truffle generate PoCo/build/contracts/WorkOrder.json -p com.iexec.common.contracts.generated -o src/main/java/'
+        }
+        exec {
+            commandLine 'sh', '-c', './extlib/web3j-3.2.0/bin/web3j truffle generate PoCo/build/contracts/Marketplace.json -p com.iexec.common.contracts.generated -o src/main/java/'
+        }
+        exec {
+            commandLine 'sh', '-c', './extlib/web3j-3.2.0/bin/web3j truffle generate rlc-faucet-contract/build/contracts/RLC.json -p com.iexec.common.contracts.generated -o src/main/java/'
+        }
+    }
+
+
 }
 buildContracts.enabled = !project.hasProperty("skipContracts")
 
