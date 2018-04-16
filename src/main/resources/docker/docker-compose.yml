@@ -86,7 +86,7 @@ services:
       - iexec-net
 
   grafana:
-    image: grafanacustom:latest
+    image: iexechub/grafana:${GRAFANA_DOCKER_IMAGE_VERSION}
     container_name: grafana
     ports:
       - "3000:3000"
