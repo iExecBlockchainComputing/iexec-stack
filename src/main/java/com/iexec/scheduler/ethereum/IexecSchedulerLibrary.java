@@ -30,13 +30,19 @@ public class IexecSchedulerLibrary {
         if (configurationFilePath != null) {
             getInstance().setConfigPath(configurationFilePath);
             SchedulerConfiguration schedulerConfiguration = IexecSchedulerLibrary.getInstance().getSchedulerConfiguration();
-            IexecConfigurationService.initialize(schedulerConfiguration.getWalletConfig(), schedulerConfiguration.getCommonConfiguration());
+            if (schedulerConfiguration!=null){
+                IexecConfigurationService.initialize(schedulerConfiguration.getWalletConfig(), schedulerConfiguration.getCommonConfiguration());
+            } else {
+                throw new ExceptionInInitializerError("Unable to initialize IexecSchedulerLibrary (scheduler configuration file not found)");
+            }
         }
     }
 
     public static void initialize(WalletConfig walletConfig, CommonConfiguration commonConfiguration) {
         if (walletConfig != null && commonConfiguration != null) {
             IexecConfigurationService.initialize(walletConfig, commonConfiguration);
+        } else {
+            throw new ExceptionInInitializerError("Unable to initialize IexecSchedulerLibrary (walletConfig or commonConfiguration is null)");
         }
     }
 
