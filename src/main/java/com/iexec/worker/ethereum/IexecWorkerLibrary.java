@@ -29,13 +29,19 @@ public class IexecWorkerLibrary {
         if (configurationFilePath != null) {
             getInstance().setConfigPath(configurationFilePath);
             WorkerConfiguration workerConfiguration = IexecWorkerLibrary.getInstance().getWorkerConfiguration();
-            IexecConfigurationService.initialize(workerConfiguration.getWalletConfig(), commonConfigurationGetter.getCommonConfiguration(workerConfiguration.getSchedulerUrl()));
+            if (workerConfiguration != null) {
+                IexecConfigurationService.initialize(workerConfiguration.getWalletConfig(), commonConfigurationGetter.getCommonConfiguration(workerConfiguration.getSchedulerUrl()));
+            } else {
+                throw new ExceptionInInitializerError("Unable to initialize IexecWorkerLibrary (worker configuration file not found)");
+            }
         }
     }
-    
+
     public static void initialize(WalletConfig walletConfig, CommonConfiguration commonConfiguration) {
         if (walletConfig != null && commonConfiguration != null) {
             IexecConfigurationService.initialize(walletConfig, commonConfiguration);
+        } else {
+            throw new ExceptionInInitializerError("Unable to initialize IexecWorkerLibrary (walletConfig or commonConfiguration is null)");
         }
     }
 
