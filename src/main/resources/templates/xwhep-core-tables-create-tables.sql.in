@@ -810,7 +810,7 @@ show warnings;
 -- Since 13.0.0
 -- ---------------------------------------------------------------------------
 create table if not exists  categories (
-  categoryId         bigint         not null                     comment 'catID referenced by smart contracts',
+  categoryId         bigint         not null  unique             comment 'catID referenced by smart contracts',
   uid                char(36)       not null  primary key        comment 'Primary key',
   ownerUID           char(36)       not null                     comment 'User UID',
   accessRights       int(4)                   default 0x755      comment 'Please note that a category is always public',
@@ -825,7 +825,7 @@ create table if not exists  categories (
 
 
   index  name     (name),
-  index  categoryId    (categoryId),
+  index  idx_categoryId    (categoryId),
   index  ownerUID (ownerUID),
   foreign key (owneruid) references users(uid)
   )
@@ -847,7 +847,7 @@ show warnings;
 create table if not exists  works  (
   uid                 char(36)          not null  primary key      comment 'Primary key',
   appUID              char(36)          not null                   comment 'Application UID',
-  categoryId          bigint                      default 0        comment 'categoryId. See common/CategoryInterface.java',
+  categoryId          bigint            unique    default 0        comment 'categoryId. See common/CategoryInterface.java',
   marketOrderId       int unsigned                default 0        comment 'blockchain market order id',
   statusId            tinyint unsigned  not null  default 255      comment 'Status Id. See common/XWStatus.java',
   status              varchar(36)       not null  default 'NONE'   comment 'Status. see common/XWStatus.java',
@@ -909,7 +909,7 @@ create table if not exists  works  (
   index  groupUID            (groupUID),
   index  expectedhostUID     (expectedhostUID),
   index  ownerUID            (ownerUID),
-  index  categoryId          (categoryId),
+  index  idx_categoryId          (categoryId),
   index  sgId                (sgId),
   index  completedDate       (completedDate),
   foreign key (categoryId) references categories(categoryId)

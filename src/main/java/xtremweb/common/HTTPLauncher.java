@@ -57,17 +57,6 @@ public final class HTTPLauncher {
      * @throws IOException
      */
     private HTTPLauncher(final String[] a) throws IOException {
-        /*
-        IexecWorkerLibrary.initialize(config.getConfigFile().getParentFile().getAbsolutePath()+"/iexec-worker.yml", new CommonConfigurationGetter() {
-            @Override
-            public CommonConfiguration getCommonConfiguration(String schedulerApiUrl) {
-                final String url = schedulerApiUrl + "/getbcinfo";
-                return new CommonConfiguration();
-            }
-        });
-        WorkerPocoWatcherImpl workerPocoWatcher = new WorkerPocoWatcherImpl();
-        */
-
 
         final String[] argv = a.clone();
         CommandLineParser args = null;

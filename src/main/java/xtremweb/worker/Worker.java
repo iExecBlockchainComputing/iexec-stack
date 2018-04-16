@@ -30,6 +30,7 @@ import java.util.Properties;
 
 import javax.naming.ConfigurationException;
 
+import com.iexec.worker.ethereum.IexecWorkerLibrary;
 import xtremweb.common.CommandLineOptions;
 import xtremweb.common.CommandLineParser;
 import xtremweb.common.Logger;
@@ -133,6 +134,17 @@ public class Worker {
 				logger.fatal("can retreive config file misc/config.defaults");
 			}
 		}
+
+/*
+        IexecWorkerLibrary.initialize(config.getConfigFile().getParentFile().getAbsolutePath()+"/iexec-worker.yml", new CommonConfigurationGetter() {
+            @Override
+            public CommonConfiguration getCommonConfiguration(String schedulerApiUrl) {
+                final String url = schedulerApiUrl + XWTools.IEXECETHCONFPATH;
+                return new CommonConfiguration();
+            }
+        });
+        WorkerPocoWatcherImpl workerPocoWatcher = new WorkerPocoWatcherImpl();
+*/
 
 		config.dump(System.out, "XWHEP Worker started ");
 

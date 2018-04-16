@@ -114,13 +114,8 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 	 * This is public path to get api help
 	 */
 	public static final String APIPATH = "/api";
-	/**
-	 * This is a public path to retrieve iExec ETH configuration
-	 * @since 13.0.0
-	 */
-	public static final String IEXECETHCONFPATH = "/iexecethconf";
 
-	/**
+    /**
 	 * This is the name of the cookie containing the user UID
 	 */
 	public static final String COOKIE_USERUID = "USERUID";
@@ -1061,7 +1056,7 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 			return;
 		}
 
-		if (target.compareToIgnoreCase(IEXECETHCONFPATH) == 0) {
+		if (target.compareToIgnoreCase(XWTools.IEXECETHCONFPATH) == 0) {
 			writeIexecEthConf();
 			baseRequest.setHandled(true);
 			return;

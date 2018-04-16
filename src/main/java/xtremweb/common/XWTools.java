@@ -75,7 +75,13 @@ import org.json.JSONTokener;
  */
 
 public class XWTools {
-	private XWTools() {
+    /**
+     * This is a public path to retrieve iExec ETH configuration
+     * @since 13.0.0
+     */
+    public static final String IEXECETHCONFPATH = "/iexecethconf";
+
+    private XWTools() {
 	}
 
 	private static final Logger logger = new Logger();

@@ -1107,7 +1107,7 @@ public final class DBInterface {
      * @return the last loaded row
      * @since 13.0.0
      */
-    protected CategoryInterface category(final UserInterface u, final int id) throws IOException {
+    protected CategoryInterface category(final UserInterface u, final long id) throws IOException {
         final CategoryInterface row = readableCategory(u);
         return selectOne(row, "maintable." + CategoryInterface.Columns.CATEGORYID.toString()+ "='" + id + "'");
     }
@@ -5246,7 +5246,7 @@ public final class DBInterface {
 	/**
 	 * This calls category(command)
 	 *
-	 * @see #category(command)
+	 * @see #category(XMLRPCCommand)
 	 * @since 13.0.0
 	 */
 	protected CategoryInterface getCategory(final XMLRPCCommand command)
@@ -5274,7 +5274,7 @@ public final class DBInterface {
 
         final UserInterface theClient = checkClient(command, UserRightEnum.INSERTCATEGORY);
         final CategoryInterface catitf = (CategoryInterface) command.getParameter();
-        final CategoryInterface category = category(theClient, catitf.getUID());
+        final CategoryInterface category = category(theClient, catitf.getCategoryId());
         if (category != null) {
             category.updateInterface(catitf);
             update(theClient, UserRightEnum.INSERTCATEGORY, category);
