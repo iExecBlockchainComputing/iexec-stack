@@ -25,6 +25,7 @@ package xtremweb.dispatcher;
 
 import com.iexec.common.ethereum.CommonConfiguration;
 import com.iexec.common.ethereum.IexecConfigurationService;
+import com.iexec.common.ethereum.Web3jService;
 import com.iexec.scheduler.ethereum.IexecSchedulerLibrary;
 import com.iexec.common.workerpool.WorkerPoolConfig;
 
@@ -35,6 +36,7 @@ import xtremweb.communications.TCPServer;
 import xtremweb.security.PEMPublicKeyValidator;
 import xtremweb.security.X509ProxyValidator;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
@@ -177,12 +179,6 @@ public class Dispatcher {
      * Main function
      */
     public void go() throws Exception {
-        try {
-            IexecSchedulerLibrary.initialize(config.getConfigFile().getParentFile().getAbsolutePath() + "/iexec-scheduler.yml");
-            SchedulerPocoWatcherImpl schedulerPocoWatcher = new SchedulerPocoWatcherImpl();
-        } catch(final Exception e) {
-            logger.exception("Can connect to blockchain ", e);
-        }
 
         timer = new Timer();
 
@@ -299,6 +295,21 @@ public class Dispatcher {
             }
         }
 
+        try {
+            IexecSchedulerLibrary.initialize(config.getConfigFile().getParentFile().getAbsolutePath() + "/iexec-scheduler.yml");
+            boolean ethNodeRunning = Web3jService.getInstance().getWeb3j().web3ClientVersion().send().getWeb3ClientVersion() != null;
+            if (ethNodeRunning) {
+                SchedulerPocoWatcherImpl schedulerPocoWatcher = new SchedulerPocoWatcherImpl();
+            }
+            else {
+                throw new IOException("Unable to connect to ETH node");
+            }
+             config.blockchainServices = true;
+        } catch(final Exception e) {
+            logger.exception("Can't access to blockchain services", e);
+        }
+
+
         logger.info("XWHEP Dispatcher(" + Version.currentVersion + ") started [" + new Date() + "]");
         logger.info("DB vendor       = " + config.getProperty(XWPropertyDefs.DBVENDOR));
         logger.info("mileStone       = " + config.getProperty(XWPropertyDefs.MILESTONES));
@@ -306,18 +317,6 @@ public class Dispatcher {
         logger.info("Disk opt'd      = " + config.getProperty(XWPropertyDefs.OPTIMIZEDISK));
         logger.info("Net  opt'd      = " + config.getProperty(XWPropertyDefs.OPTIMIZENETWORK));
         logger.info("NIO             = " + config.getProperty(XWPropertyDefs.JAVANIO));
-        if ((IexecConfigurationService.getInstance() != null) &&
-                (IexecConfigurationService.getInstance().getCommonConfiguration() != null)) {
-            CommonConfiguration commonConfiguration = IexecConfigurationService.getInstance().getCommonConfiguration();
-            logger.info("Eth client addr = " + commonConfiguration.getNodeConfig().getClientAddress());
-            logger.info("iExec Hub  addr = " + commonConfiguration.getContractConfig().getIexecHubAddress());
-            logger.info("iExec RLC  addr = " + commonConfiguration.getContractConfig().getRlcAddress());
-            WorkerPoolConfig workerPoolConfig = commonConfiguration.getContractConfig().getWorkerPoolConfig();
-            if (workerPoolConfig != null) {
-                logger.info("iExec WorkerPool name = " + workerPoolConfig.getName());
-                logger.info("iExec WorkerPool addr = " + workerPoolConfig.getAddress());
-            }
-        }
         config.dump(System.out, "XWHEP Dispatcher started ");
     }
 

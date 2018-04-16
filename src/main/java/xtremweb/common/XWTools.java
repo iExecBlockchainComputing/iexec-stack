@@ -125,6 +125,25 @@ public class XWTools {
     public static final String UNLOADSCRIPTTRAILER = ".sh";
 
 	/**
+	 * This is the header text to write/retrieve iExec Hub Addr
+	 * @since 13.0.0
+	 * @see xtremweb.dispatcher.HTTPHandler
+	 */
+	public static final String IEXECHUBADDRTEXT = "iExec Hub addr = ";
+	/**
+	 * This is the header text to write/retrieve iExec RLC Addr
+	 * @since 13.0.0
+	 * @see xtremweb.dispatcher.HTTPHandler
+	 */
+	public static final String IEXECRLCADDRTEXT = "iExec RLC addr = ";
+	/**
+	 * This is the header text to write/retrieve iExec Woker Pool Addr
+	 * @since 13.0.0
+	 * @see xtremweb.dispatcher.HTTPHandler
+	 */
+	public static final String IEXECWORKERPOOLADDRTEXT = "iExec WorkerPool addr = ";
+
+	/**
 	 * This defines buffer size for communications : 16Kb
 	 *
 	 * @see StreamIO#DEFLENGTH

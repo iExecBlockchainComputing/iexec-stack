@@ -763,11 +763,11 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 			if ((IexecConfigurationService.getInstance() != null) &&
 					(IexecConfigurationService.getInstance().getCommonConfiguration() != null)) {
 				CommonConfiguration commonConfiguration = IexecConfigurationService.getInstance().getCommonConfiguration();
-				msg.append("iExec Hub  addr = " + commonConfiguration.getContractConfig().getIexecHubAddress() + "\n");
-				msg.append("iExec RLC  addr = " + commonConfiguration.getContractConfig().getRlcAddress() + "\n");
+				msg.append(XWTools.IEXECHUBADDRTEXT + commonConfiguration.getContractConfig().getIexecHubAddress() + "\n");
+				msg.append(XWTools.IEXECRLCADDRTEXT + commonConfiguration.getContractConfig().getRlcAddress() + "\n");
 				WorkerPoolConfig workerPoolConfig = commonConfiguration.getContractConfig().getWorkerPoolConfig();
 				if (workerPoolConfig != null) {
-					msg.append("iExec WorkerPool addr = " + workerPoolConfig.getAddress() + "\n");
+					msg.append(XWTools.IEXECWORKERPOOLADDRTEXT + workerPoolConfig.getAddress() + "\n");
 				}
 			}
 
