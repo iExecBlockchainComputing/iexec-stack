@@ -1771,7 +1771,7 @@ public final class Client {
 		if (xmlFile != null) {
 			final FileInputStream fis = new FileInputStream(xmlFile);
 			theCategory = (CategoryInterface) Table.newInterface(fis);
-			if (theCategory.getEnvId() <= 0) {
+			if (theCategory.getCategoryId() <= 0) {
 				throw new IOException("category id can not be zero");
 			}
 			if (theCategory.getUID() == null) {

@@ -33,7 +33,7 @@ import java.security.InvalidKeyException;
 import java.sql.ResultSet;
 
 /**
- * This class describes a row of the envs SQL table.
+ * This class describes a row of the categories SQL table.
  * Please note that an category is always public
  * @author <a href="mailto:lodygens /at\ .in2p3.fr>Oleg Lodygensky</a>
  * @version %I%, %G%
@@ -46,12 +46,12 @@ public final class CategoryInterface extends Table {
 	 * xtremweb.dispatcher.App
 	 *
 	 */
-	private static final String ENVTABLENAME = "categories";
+	private static final String CATEGORYTABLENAME = "categories";
 
 	/**
-	 * This the application name length as defined in DB
+	 * This the category name length as defined in DB
 	 */
-	private static final int ENVNAMELENGTH = 100;
+	private static final int CATEGORYNAMELENGTH = 100;
 
 	/**
 	 * This is the XML tag
@@ -90,11 +90,11 @@ public final class CategoryInterface extends Table {
              *
              * @param v
              *            the String representation
-             * @return a Boolean representing the column value
+             * @return a Long representing the column value
              */
             @Override
-            public Integer fromString(final String v) {
-                return Integer.valueOf(v);
+            public Long fromString(final String v) {
+                return Long.valueOf(v);
             }
         },
         /**
@@ -264,7 +264,7 @@ public final class CategoryInterface extends Table {
 	 */
 	public CategoryInterface() {
 
-		super(THISTAG, ENVTABLENAME);
+		super(THISTAG, CATEGORYTABLENAME);
 		setAttributeLength(ENUMSIZE);
 		setAccessRights(XWAccessRights.DEFAULT);
 		setShortIndexes(new int[] { TableColumns.UID.getOrdinal(),
@@ -376,7 +376,7 @@ public final class CategoryInterface extends Table {
             setOwner((UID) TableColumns.OWNERUID.fromResultSet(rs));
             setAccessRights(XWAccessRights.DEFAULT);
 			setName((String) Columns.NAME.fromResultSet(rs));
-            setEnvId((Integer) Columns.CATEGORYID.fromResultSet(rs));
+            setCategoryId((Long) Columns.CATEGORYID.fromResultSet(rs));
 			setMaxMemory((Long) Columns.MAXMEMORY.fromResultSet(rs));
 			setMaxCpuSpeed((Float) Columns.MAXCPUSPEED.fromResultSet(rs));
 			setMaxFreeMassStorage((Long) Columns.MAXFREEMASSSTORAGE.fromResultSet(rs));
@@ -427,7 +427,7 @@ public final class CategoryInterface extends Table {
 		setMaxFreeMassStorage(itf.getMaxFreeMassStorage());
 		setMaxFileSize(itf.getMaxFileSize());
 		setMaxWallClockTime(itf.getMaxWallClockTime());
-		setEnvId(itf.getEnvId());
+		setCategoryId(itf.getCategoryId());
 	}
 
 	/**
@@ -441,7 +441,7 @@ public final class CategoryInterface extends Table {
 		if (ret != null) {
 			return ret.longValue();
 		}
-		throw new IOException("" + getEnvId() + " : no max memory");
+		throw new IOException("" + getCategoryId() + " : no max memory");
 	}
 
 	/**
@@ -455,7 +455,7 @@ public final class CategoryInterface extends Table {
 		if (ret != null) {
 			return ret.floatValue();
 		}
-		throw new IOException("" + getEnvId() + " : no max cpu speed");
+		throw new IOException("" + getCategoryId() + " : no max cpu speed");
 	}
 
 	/**
@@ -469,7 +469,7 @@ public final class CategoryInterface extends Table {
 		if (ret != null) {
 			return ret.longValue();
 		}
-		throw new IOException("" + getEnvId() + " : no max free max storage");
+		throw new IOException("" + getCategoryId() + " : no max free max storage");
 	}
 	/**
 	 * This retrieves the max file size for this category
@@ -482,7 +482,7 @@ public final class CategoryInterface extends Table {
 		if (ret != null) {
 			return ret.longValue();
 		}
-		throw new IOException("" + getEnvId() + " : no max file size");
+		throw new IOException("" + getCategoryId() + " : no max file size");
 	}
 
 	/**
@@ -496,7 +496,7 @@ public final class CategoryInterface extends Table {
 		if (ret != null) {
 			return ret.intValue();
 		}
-		throw new IOException("" + getEnvId() + " : no max wall clock time");
+		throw new IOException("" + getCategoryId() + " : no max wall clock time");
 	}
 
     /**
@@ -512,16 +512,16 @@ public final class CategoryInterface extends Table {
         return null;
     }
     /**
-     * This gets this category name
+     * This gets this category id
      *
      * @return the name, or -1 if not set
      */
-    public int getEnvId() {
-    	final Integer ret = (Integer) getValue(Columns.CATEGORYID);
+    public long getCategoryId() {
+    	final Long ret = (Long) getValue(Columns.CATEGORYID);
     	if (ret != null) {
     		return ret.intValue();
     	}
-        return -1;
+        return -1L;
     }
 	/**
 	 * This sets parameter value; this is called from
@@ -614,22 +614,22 @@ public final class CategoryInterface extends Table {
      * @param v is the max amount of disk space
      * @return true if value has changed, false otherwise
      */
-    public boolean setEnvId(final int v) {
+    public boolean setCategoryId(final long v) {
         try {
-            return setValue(Columns.CATEGORYID, Integer.valueOf(v < 0 ? 0 : v));
+            return setValue(Columns.CATEGORYID, Long.valueOf(v < 0L ? 0L : v));
         } catch (final Exception e) {
         }
         return false;
     }
 	/**
-	 * This set this category name; name is eventually truncated to ENVNAMELENGTH
+	 * This set this category name; name is eventually truncated to CATEGORYNAMELENGTH
 	 * @return true if value has changed, false otherwise
-	 * @see #ENVNAMELENGTH
+	 * @see #CATEGORYNAMELENGTH
 	 */
 	public boolean setName(final String v) {
 		String value = v;
-		if ((value != null) && (value.length() > ENVNAMELENGTH)) {
-			value = value.substring(0, ENVNAMELENGTH - 1);
+		if ((value != null) && (value.length() > CATEGORYNAMELENGTH)) {
+			value = value.substring(0, CATEGORYNAMELENGTH - 1);
 			getLogger().warn("Name too long; truncated to " + value);
 		}
 		return setValue(Columns.NAME, value == null ? null : value);

@@ -21,7 +21,7 @@
 
 
 create table if not exists  categories  (
-  categoryId         int unsigned   not null  auto_increment     comment 'EnvID referenced by smart contracts',
+  categoryId         bigint         not null                    comment 'EnvID referenced by smart contracts',
   uid                char(36)       not null  primary key        comment 'Primary key',
   ownerUID           char(36)       not null                     comment 'User UID',
   accessRights       int(4)                   default 0x755      comment 'Please note that an category is always public',
@@ -36,7 +36,7 @@ create table if not exists  categories  (
 
 
   index  name     (name),
-  index  envId    (envId),
+  index  categoryId    (categoryId),
   index  ownerUID (ownerUID)
   )
 engine  = InnoDB,

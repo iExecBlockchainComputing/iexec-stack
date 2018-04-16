@@ -23,9 +23,11 @@
 
 package xtremweb.dispatcher;
 
+import com.iexec.common.contracts.generated.IexecHub;
 import com.iexec.common.ethereum.CommonConfiguration;
 import com.iexec.common.ethereum.IexecConfigurationService;
 import com.iexec.common.ethereum.Web3jService;
+import com.iexec.scheduler.actuator.ActuatorService;
 import com.iexec.scheduler.ethereum.IexecSchedulerLibrary;
 import com.iexec.common.workerpool.WorkerPoolConfig;
 
@@ -37,10 +39,7 @@ import xtremweb.security.PEMPublicKeyValidator;
 import xtremweb.security.X509ProxyValidator;
 
 import java.io.IOException;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.Timer;
+import java.util.*;
 
 import org.eclipse.jetty.server.session.SessionHandler;
 
@@ -307,6 +306,23 @@ public class Dispatcher {
              config.blockchainServices = true;
         } catch(final Exception e) {
             logger.exception("Can't access to blockchain services", e);
+        }
+
+        final ActuatorService actuatorService = ActuatorService.getInstance();
+        final List<IexecHub.CreateCategoryEventResponse> categories =
+                actuatorService  != null ?
+                        actuatorService.getCategories() :
+                        null;
+        if (categories != null) {
+            for (final Iterator<IexecHub.CreateCategoryEventResponse> iter = categories.iterator(); iter.hasNext(); ) {
+                try {
+                    final IexecHub.CreateCategoryEventResponse category = iter.next();
+                    logger.debug(category.catid + " " + category.name);
+                    db.insertCategory(category);
+                } catch (final Exception e) {
+                    logger.warn("Unable to start service : " + e);
+                }
+            }
         }
 
 

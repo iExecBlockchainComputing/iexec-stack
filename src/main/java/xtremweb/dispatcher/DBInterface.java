@@ -38,13 +38,9 @@ import java.util.Iterator;
 
 import javax.mail.MessagingException;
 
+import com.iexec.common.contracts.generated.IexecHub;
 import xtremweb.common.*;
-import xtremweb.communications.EmailSender;
-import xtremweb.communications.URI;
-import xtremweb.communications.XMLRPCCommand;
-import xtremweb.communications.XMLRPCCommandActivateHost;
-import xtremweb.communications.XMLRPCCommandChmod;
-import xtremweb.communications.XMLRPCCommandGetWorks;
+import xtremweb.communications.*;
 import xtremweb.database.ColumnSelection;
 import xtremweb.database.DBConnPoolThread;
 import xtremweb.database.SQLRequest;
@@ -3393,46 +3389,86 @@ public final class DBInterface {
 		return true;
 	}
 
-	/**
-	 * This inserts or updates a service. This should not be called from
-	 * communication handlers since this does not verify client identity. This
-	 * is to be called from the dispatcher package itself only.
-	 *
-	 * @param classname
-	 *            is the java class name of the service
-	 * @exception ClassNotFoundException
-	 *                is throws if classname can't be instantiated
-	 * @exception IOException
-	 *                is thrown on DB access or I/O error
-	 * @exception InvalidKeyException
-	 *                is thrown on client integrity error (user unknown, bad
-	 *                password...)
-	 * @exception AccessControlException
-	 *                is thrown if client does not have enough rights
-	 */
-	public void insertService(final String classname)
-			throws ClassNotFoundException, IOException, InvalidKeyException, AccessControlException {
+    /**
+     * This inserts or updates a service. This should not be called from
+     * communication handlers since this does not verify client identity. This
+     * is to be called from the dispatcher package itself only.
+     *
+     * @param classname
+     *            is the java class name of the service
+     * @exception ClassNotFoundException
+     *                is throws if classname can't be instantiated
+     * @exception IOException
+     *                is thrown on DB access or I/O error
+     * @exception InvalidKeyException
+     *                is thrown on client integrity error (user unknown, bad
+     *                password...)
+     * @exception AccessControlException
+     *                is thrown if client does not have enough rights
+     */
+    public void insertService(final String classname)
+            throws ClassNotFoundException, IOException, InvalidKeyException, AccessControlException {
 
-		final UserInterface admin = user(SQLRequest.MAINTABLEALIAS + "." + UserInterface.Columns.LOGIN.toString() + "='"
-				+ config.getProperty(XWPropertyDefs.ADMINLOGIN) + "'");
+        final UserInterface admin = user(SQLRequest.MAINTABLEALIAS + "." + UserInterface.Columns.LOGIN.toString() + "='"
+                + config.getProperty(XWPropertyDefs.ADMINLOGIN) + "'");
 
-		if (admin == null) {
-			throw new IOException("Can't retrieve UserInterface " + config.getProperty(XWPropertyDefs.ADMINLOGIN));
-		}
+        if (admin == null) {
+            throw new IOException("Can't retrieve UserInterface " + config.getProperty(XWPropertyDefs.ADMINLOGIN));
+        }
 
-		final String ifname = classname.substring(0, classname.lastIndexOf('.') + 1) + "Interface";
-		final Object obj = Class.forName(ifname);
+        final String ifname = classname.substring(0, classname.lastIndexOf('.') + 1) + "Interface";
+        final Object obj = Class.forName(ifname);
 
-		if (obj == null) {
-			logger.error("DBInterface#insertService() : service '" + ifname + "'not found");
-			throw new ClassNotFoundException("insertService() : service '" + ifname + "'not found");
-		}
+        if (obj == null) {
+            logger.error("DBInterface#insertService() : service '" + ifname + "'not found");
+            throw new ClassNotFoundException("insertService() : service '" + ifname + "'not found");
+        }
 
-		final AppInterface app = new AppInterface(new UID());
-		app.setName(classname);
-		app.setService(true);
-		addApp(admin, app);
-	}
+        final AppInterface app = new AppInterface(new UID());
+        app.setName(classname);
+        app.setService(true);
+        addApp(admin, app);
+    }
+    /**
+     * This inserts or updates a category as found from the blockchain
+     * @see xtremweb.dispatcher.Dispatcher
+     * @since 13.0.0
+     * @param category
+     *            is the category to insert
+     * @exception ClassNotFoundException
+     *                is throws if classname can't be instantiated
+     * @exception IOException
+     *                is thrown on DB access or I/O error
+     * @exception InvalidKeyException
+     *                is thrown on client integrity error (user unknown, bad
+     *                password...)
+     * @exception AccessControlException
+     *                is thrown if client does not have enough rights
+     */
+    public void insertCategory(final IexecHub.CreateCategoryEventResponse category)
+            throws ClassNotFoundException, IOException, InvalidKeyException, AccessControlException {
+
+        final UserInterface admin = user(SQLRequest.MAINTABLEALIAS + "." + UserInterface.Columns.LOGIN.toString() + "='"
+                + config.getProperty(XWPropertyDefs.ADMINLOGIN) + "'");
+
+        if (admin == null) {
+            throw new IOException("Can't retrieve UserInterface " + config.getProperty(XWPropertyDefs.ADMINLOGIN));
+        }
+
+        final CategoryInterface catItf = new CategoryInterface(new UID());
+        catItf.setCategoryId(category.catid.longValue());
+        catItf.setName(category.name);
+        catItf.setMaxWallClockTime(category.workClockTimeRef.intValue());
+        catItf.setMaxCpuSpeed(1.0f);
+        catItf.setMaxFileSize(XWTools.MAXFILESIZE);
+        catItf.setMaxFreeMassStorage(XWTools.MAXDISKSIZE);
+        catItf.setMaxMemory(XWTools.MAXRAMSIZE);
+        XMLRPCCommandSendCategory cmd = new XMLRPCCommandSendCategory();
+        cmd.setUser(admin);
+        cmd.setParameter(catItf);
+
+        addCategory(cmd);
+    }
 
 	/**
 	 * This adds/updates an application UserRights.SUPER_USER privilege is
