@@ -143,11 +143,23 @@ public class XWTools {
 	 */
 	public static final String IEXECRLCADDRTEXT = "iExec RLC addr = ";
 	/**
+	 * This is the header text to write/retrieve Eth node addr
+	 * @since 13.0.0
+	 * @see xtremweb.dispatcher.HTTPHandler
+	 */
+	public static final String ETHNODEADDRTEXT = "Eth node addr = ";
+	/**
 	 * This is the header text to write/retrieve iExec Woker Pool Addr
 	 * @since 13.0.0
 	 * @see xtremweb.dispatcher.HTTPHandler
 	 */
 	public static final String IEXECWORKERPOOLADDRTEXT = "iExec WorkerPool addr = ";
+	/**
+	 * This is the header text to write/retrieve iExec Woker Pool name
+	 * @since 13.0.0
+	 * @see xtremweb.dispatcher.HTTPHandler
+	 */
+	public static final String IEXECWORKERPOOLNAMETEXT = "iExec WorkerPool name = ";
 
 	/**
 	 * This defines buffer size for communications : 16Kb

@@ -59,6 +59,7 @@ public enum CPUEnum {
 	 * @see #getCpuName(String)
 	 */
 	public static String getCpuName() {
+		System.out.println("******************************    getCpuName() ");
 		try {
 			return getCpuName(System.getProperty("os.arch"));
 		} catch (final Exception e) {
@@ -77,6 +78,8 @@ public enum CPUEnum {
 	 *                XtremWeb
 	 */
 	public static String getCpuName(final String archName) throws IllegalArgumentException {
+
+		System.out.println("******************************    getCpuName(" + archName+ ") ");
 
 		if ((archName.compareToIgnoreCase("i86") == 0) || (archName.compareToIgnoreCase("x86") == 0)
 				|| (archName.compareToIgnoreCase("ix86") == 0) || (archName.compareToIgnoreCase("i386") == 0)

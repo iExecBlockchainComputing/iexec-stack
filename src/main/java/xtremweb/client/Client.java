@@ -69,6 +69,7 @@ import xtremweb.security.XWAccessRights;
  * This class describes a generic client to XtremWeb. It is designed to submit,
  * delete jobs as to get job status and results. <br />
  * <br />
+ * <br />
  * Examples can be found in CommandLineParser.
  *
  * @see xtremweb.common.CommandLineParser
