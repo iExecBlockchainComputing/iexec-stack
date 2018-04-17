@@ -13,6 +13,8 @@ public class IexecConfigurationService {
         if (walletConfig != null && commonConfiguration != null) {
             getInstance().setWalletConfig(walletConfig);
             getInstance().setCommonConfiguration(commonConfiguration);
+        } else {
+            throw new ExceptionInInitializerError("Failed to initialize IexecConfigurationService (bad walletConfig or commonConfiguration)");
         }
     }
 
