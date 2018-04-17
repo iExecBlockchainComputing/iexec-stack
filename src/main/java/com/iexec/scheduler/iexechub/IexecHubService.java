@@ -7,9 +7,12 @@ import com.iexec.common.workerpool.WorkerPoolConfig;
 import com.iexec.scheduler.workerpool.WorkerPoolService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.web3j.ens.EnsResolutionException;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.tx.Contract;
 import org.web3j.tx.ManagedTransaction;
+
+import java.io.IOException;
 
 import static com.iexec.common.ethereum.Utils.END;
 
@@ -40,11 +43,22 @@ public class IexecHubService {
     }
 
     private void run() {
-        this.iexecHub = IexecHub.load(
-                contractConfig.getIexecHubAddress(), web3jService.getWeb3j(), credentialsService.getCredentials(), ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT);
-        log.info("Load contract IexecHub [address:{}] ", contractConfig.getIexecHubAddress());
-        workerPoolConfig.setAddress(fetchWorkerPoolAddress());
-        startWatchers();
+        String iexecHubAddress = contractConfig.getIexecHubAddress();
+        ExceptionInInitializerError exceptionInInitializerError = new ExceptionInInitializerError("Failed to load IexecHub contract from address " + iexecHubAddress);
+        if(iexecHubAddress != null && !iexecHubAddress.isEmpty()) {
+            try {
+                this.iexecHub = IexecHub.load(
+                        iexecHubAddress, web3jService.getWeb3j(), credentialsService.getCredentials(), ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT);
+                //if (!iexecHub.isValid()){ throw exceptionInInitializerError;}
+                log.info("Load contract IexecHub [address:{}] ", iexecHubAddress);
+            } catch (EnsResolutionException e){
+                throw exceptionInInitializerError;
+            }
+            workerPoolConfig.setAddress(fetchWorkerPoolAddress());
+            startWatchers();
+        } else {
+            throw exceptionInInitializerError;
+        }
     }
 
     private String fetchWorkerPoolAddress() {

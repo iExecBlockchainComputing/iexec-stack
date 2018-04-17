@@ -20,11 +20,17 @@ public class MarketplaceService {
     private Marketplace marketplace;
 
     private MarketplaceService() {
-        try {
-            this.marketplace = Marketplace.load(
-                    iexecHubService.getIexecHub().marketplaceAddress().send(), web3jService.getWeb3j(), credentialsService.getCredentials(), ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT);
-        } catch (Exception e) {
-            e.printStackTrace();
+        ExceptionInInitializerError exceptionInInitializerError = new ExceptionInInitializerError("Failed to load Marketplace contract");
+        if (iexecHubService!=null){
+            try {
+                String marketplaceAddress = iexecHubService.getIexecHub().marketplaceAddress().send();
+                this.marketplace = Marketplace.load(
+                        marketplaceAddress, web3jService.getWeb3j(), credentialsService.getCredentials(), ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT);
+            } catch (Exception e) {
+                throw  exceptionInInitializerError;
+            }
+        } else {
+            throw  exceptionInInitializerError;
         }
     }
 

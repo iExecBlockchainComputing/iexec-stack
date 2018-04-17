@@ -1,11 +1,13 @@
 package com.iexec.scheduler.workerpool;
 
+import com.iexec.common.contracts.generated.IexecHub;
 import com.iexec.common.contracts.generated.WorkerPool;
 import com.iexec.common.ethereum.*;
 import com.iexec.common.workerpool.WorkerPoolConfig;
 import com.iexec.scheduler.iexechub.IexecHubService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.web3j.ens.EnsResolutionException;
 import org.web3j.protocol.core.DefaultBlockParameterName;
 import org.web3j.tx.Contract;
 import org.web3j.tx.ManagedTransaction;
@@ -46,12 +48,21 @@ public class WorkerPoolService {
     }
 
     private void loadWorkerPool() {
+        String workerpookAddress = workerPoolConfig.getAddress();
+        ExceptionInInitializerError exceptionInInitializerError = new ExceptionInInitializerError("Failed to load WorkerPool contract from address " + workerpookAddress);
         if (IexecHubService.getInstance() != null
-                && workerPoolConfig.getAddress() != null
-                && !workerPoolConfig.getAddress().isEmpty()) {
-            this.workerPool = WorkerPool.load(
-                    workerPoolConfig.getAddress(), web3jService.getWeb3j(), credentialsService.getCredentials(), ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT);
-            log.info("Load contract WorkerPool [address:{}] ", workerPoolConfig.getAddress());
+                && workerpookAddress != null
+                && !workerpookAddress.isEmpty()) {
+            try {
+                this.workerPool = WorkerPool.load(
+                        workerpookAddress, web3jService.getWeb3j(), credentialsService.getCredentials(), ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT);
+                //if (!workerPool.isValid()){ throw exceptionInInitializerError;}
+                log.info("Load contract WorkerPool [address:{}] ", workerpookAddress);
+            } catch (EnsResolutionException e){
+                throw exceptionInInitializerError;
+            }
+        } else {
+            throw exceptionInInitializerError;
         }
     }
 
