@@ -5,6 +5,7 @@ import com.iexec.common.ethereum.*;
 import com.iexec.common.workerpool.WorkerPoolConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.web3j.ens.EnsResolutionException;
 import org.web3j.tx.Contract;
 import org.web3j.tx.ManagedTransaction;
 
@@ -35,13 +36,20 @@ public class WorkerPoolService {
         return instance;
     }
 
-    public void run() {
+    private void run() {
         String workerPoolAddress = workerPoolConfig.getAddress();
-        log.info("Loading WorkerPool contract [address:{}]", workerPoolAddress);
-        if (workerPoolAddress != null) {
-            workerPool = WorkerPool.load(
-                    workerPoolAddress, web3jService.getWeb3j(), credentialsService.getCredentials(), ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT);
-
+        ExceptionInInitializerError exceptionInInitializerError = new ExceptionInInitializerError("Failed to load WorkerPool contract from address " + workerPoolAddress);
+        if (workerPoolAddress != null && !workerPoolAddress.isEmpty()) {
+            try {
+                workerPool = WorkerPool.load(
+                        workerPoolAddress, web3jService.getWeb3j(), credentialsService.getCredentials(), ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT);
+                //if (!workerPool.isValid()){ throw exceptionInInitializerError;}
+                log.info("Loading WorkerPool contract [address:{}]", workerPoolAddress);
+            } catch (EnsResolutionException e){
+                throw exceptionInInitializerError;
+            }
+        } else {
+            throw exceptionInInitializerError;
         }
         this.getWorkerPool().revealConsensusEventObservable(nodeConfig.getStartBlockParameter(), END)
                 .subscribe(this::onRevealConsensus);

@@ -5,6 +5,7 @@ import com.iexec.common.ethereum.*;
 import com.iexec.common.workerpool.WorkerPoolConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.web3j.ens.EnsResolutionException;
 import org.web3j.tx.Contract;
 import org.web3j.tx.ManagedTransaction;
 
@@ -36,8 +37,19 @@ public class IexecHubService {
     }
 
     private void run() {
-        this.iexecHub = IexecHub.load(
-                contractConfig.getIexecHubAddress(), web3jService.getWeb3j(), credentialsService.getCredentials(), ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT);
+        String iexecHubAddress = contractConfig.getIexecHubAddress();
+        ExceptionInInitializerError exceptionInInitializerError = new ExceptionInInitializerError("Failed to load IexecHub contract from address " + iexecHubAddress);
+        if (iexecHubAddress!=null && !iexecHubAddress.isEmpty()){
+            try {
+                this.iexecHub = IexecHub.load(
+                        iexecHubAddress, web3jService.getWeb3j(), credentialsService.getCredentials(), ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT);
+                //if (!iexecHub.isValid()){ throw exceptionInInitializerError;}
+            } catch (EnsResolutionException e){
+                throw exceptionInInitializerError;
+            }
+        } else {
+            throw exceptionInInitializerError;
+        }
         this.iexecHub.workOrderCompletedEventObservable(nodeConfig.getStartBlockParameter(), END).subscribe(workOrderCompletedEvent -> {
             if (workOrderCompletedEvent.workerPool.equals(workerPoolConfig.getAddress()) && iexecHubWatcher != null) {
                 log.info("Received WorkOrderCompletedEvent [workOrderId:{}]", workOrderCompletedEvent.woid);

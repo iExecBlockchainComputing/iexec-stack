@@ -95,6 +95,9 @@ public class ActuatorService implements Actuator {
             log.info("[marketOrderValue:{}]", marketOrderValue);
             Float deposit = (workerPoolConfig.getStakeRatioPolicy().floatValue() / 100) * marketOrderValue.floatValue();//(30/100)*100
             BigInteger depositBig = BigDecimal.valueOf(deposit).toBigInteger();
+            TransactionReceipt approveReceipt = rlcService.getRlc().approve(iexecHubService.getIexecHub().getContractAddress(), depositBig).send();
+            log.info("Approve for contribute [approveAmount:{}, transactionStatus:{}] ",
+                    depositBig, getStatus(approveReceipt));
             TransactionReceipt contributeDepositReceipt = iexecHubService.getIexecHub().deposit(depositBig).send();
             log.info("Deposit for contribute [depositAmount:{}, transactionStatus:{}] ",
                     depositBig, getStatus(contributeDepositReceipt));
