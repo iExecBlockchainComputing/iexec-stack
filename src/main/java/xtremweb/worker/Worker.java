@@ -38,6 +38,8 @@ import com.iexec.worker.ethereum.IexecWorkerLibrary;
 import xtremweb.common.*;
 import xtremweb.communications.HTTPServer;
 
+import static xtremweb.common.XWPropertyDefs.BLOCKCHAINETHENABLED;
+
 /**
  * This class describes the XtremWeb Worker. It has a single infinite loop,
  * where it creates a new <CODE>ThreadLaunch</CODE>, starts it and waits for it
@@ -132,72 +134,73 @@ public class Worker {
 			}
 		}
 
+        if (config.getBoolean(BLOCKCHAINETHENABLED) == true) {
 
-        IexecWorkerLibrary.initialize(config.getConfigFile().getParentFile().getAbsolutePath()+"/iexec-worker.yml", new CommonConfigurationGetter() {
-            @Override
-            public CommonConfiguration getCommonConfiguration(String schedulerApiUrl) {
-				try {
+            IexecWorkerLibrary.initialize(config.getConfigFile().getParentFile().getAbsolutePath() + "/iexec-worker.yml", new CommonConfigurationGetter() {
+                @Override
+                public CommonConfiguration getCommonConfiguration(String schedulerApiUrl) {
+                    try {
 
-				    final URL url = new URL(schedulerApiUrl + XWTools.IEXECETHCONFPATH);
+                        final URL url = new URL(schedulerApiUrl + XWTools.IEXECETHCONFPATH);
 
-					String iexecHubAddr = null;
-                    String ethNodeAddr = null;
-                    String rlcAddr = null;
-                    String workerPoolAddr = null;
-                    String workerPoolName = null;
+                        String iexecHubAddr = null;
+                        String ethNodeAddr = null;
+                        String rlcAddr = null;
+                        String workerPoolAddr = null;
+                        String workerPoolName = null;
 
-					try(BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()))) {
+                        try (BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()))) {
 
-                        logger.info("Retrieving blockchain config");
-						String inputLine;
-						while((inputLine =in.readLine())!=null){
-							logger.info(inputLine);
-                            if(inputLine.indexOf(XWTools.IEXECHUBADDRTEXT) > 0) {
-                                iexecHubAddr = inputLine.substring(inputLine.indexOf(XWTools.IEXECHUBADDRTEXT) + 1);
+                            logger.info("Retrieving blockchain config");
+                            String inputLine;
+                            while ((inputLine = in.readLine()) != null) {
+                                logger.info(inputLine);
+                                if (inputLine.indexOf(XWTools.IEXECHUBADDRTEXT) > 0) {
+                                    iexecHubAddr = inputLine.substring(inputLine.indexOf(XWTools.IEXECHUBADDRTEXT) + 1);
+                                }
+                                if (inputLine.indexOf(XWTools.IEXECRLCADDRTEXT) > 0) {
+                                    rlcAddr = inputLine.substring(inputLine.indexOf(XWTools.IEXECRLCADDRTEXT) + 1);
+                                }
+                                if (inputLine.indexOf(XWTools.IEXECWORKERPOOLADDRTEXT) > 0) {
+                                    workerPoolAddr = inputLine.substring(inputLine.indexOf(XWTools.IEXECWORKERPOOLADDRTEXT) + 1);
+                                }
+                                if (inputLine.indexOf(XWTools.IEXECWORKERPOOLNAMETEXT) > 0) {
+                                    workerPoolName = inputLine.substring(inputLine.indexOf(XWTools.IEXECWORKERPOOLNAMETEXT) + 1);
+                                }
+                                logger.debug("'" + inputLine + "'.indexOf(" + XWTools.ETHNODEADDRTEXT + ")" + " = "
+                                        + inputLine.indexOf(XWTools.ETHNODEADDRTEXT));
+                                if (inputLine.indexOf(XWTools.ETHNODEADDRTEXT) > 0) {
+                                    ethNodeAddr = inputLine.substring(inputLine.indexOf(XWTools.ETHNODEADDRTEXT) + 1);
+                                    logger.debug("ethNodeAddr = " + ethNodeAddr);
+                                }
                             }
-                            if(inputLine.indexOf(XWTools.IEXECRLCADDRTEXT) > 0) {
-                                rlcAddr = inputLine.substring(inputLine.indexOf(XWTools.IEXECRLCADDRTEXT) + 1);
-                            }
-                            if(inputLine.indexOf(XWTools.IEXECWORKERPOOLADDRTEXT) > 0) {
-                                workerPoolAddr = inputLine.substring(inputLine.indexOf(XWTools.IEXECWORKERPOOLADDRTEXT) + 1);
-                            }
-                            if(inputLine.indexOf(XWTools.IEXECWORKERPOOLNAMETEXT) > 0) {
-                                workerPoolName = inputLine.substring(inputLine.indexOf(XWTools.IEXECWORKERPOOLNAMETEXT) + 1);
-                            }
-                            logger.debug("'"+inputLine + "'.indexOf(" + XWTools.ETHNODEADDRTEXT + ")" + " = "
-                                    + inputLine.indexOf(XWTools.ETHNODEADDRTEXT));
-                            if(inputLine.indexOf(XWTools.ETHNODEADDRTEXT) > 0) {
-                                ethNodeAddr = inputLine.substring(inputLine.indexOf(XWTools.ETHNODEADDRTEXT) + 1);
-                                logger.debug("ethNodeAddr = " + ethNodeAddr);
-                            }
-						}
-					}
-                    final CommonConfiguration conf = new CommonConfiguration();
-                    final WorkerPoolConfig workerPoolConf = new WorkerPoolConfig();
-                    workerPoolConf.setAddress(workerPoolAddr);
-                    workerPoolConf.setName(workerPoolName);
+                        }
+                        final CommonConfiguration conf = new CommonConfiguration();
+                        final WorkerPoolConfig workerPoolConf = new WorkerPoolConfig();
+                        workerPoolConf.setAddress(workerPoolAddr);
+                        workerPoolConf.setName(workerPoolName);
 
-                    final ContractConfig contractConf = new ContractConfig();
-                    contractConf.setIexecHubAddress(iexecHubAddr);
-                    contractConf.setRlcAddress(rlcAddr);
+                        final ContractConfig contractConf = new ContractConfig();
+                        contractConf.setIexecHubAddress(iexecHubAddr);
+                        contractConf.setRlcAddress(rlcAddr);
 
-                    final NodeConfig nodeConf = new NodeConfig();
-                    nodeConf.setClientAddress(ethNodeAddr);
+                        final NodeConfig nodeConf = new NodeConfig();
+                        nodeConf.setClientAddress(ethNodeAddr);
 
-                    contractConf.setWorkerPoolConfig(workerPoolConf);
-                    conf.setContractConfig(contractConf);
-                    conf.setNodeConfig(nodeConf);
-					return conf;
+                        contractConf.setWorkerPoolConfig(workerPoolConf);
+                        conf.setContractConfig(contractConf);
+                        conf.setNodeConfig(nodeConf);
+                        return conf;
 
-				} catch (final Exception e) {
-					logger.exception("Can't get iExec config from " + schedulerApiUrl + XWTools.IEXECETHCONFPATH, e);
-				}
+                    } catch (final Exception e) {
+                        logger.exception("Can't get iExec config from " + schedulerApiUrl + XWTools.IEXECETHCONFPATH, e);
+                    }
 
-				return null;
-            }
-        });
-        WorkerPocoWatcherImpl workerPocoWatcher = new WorkerPocoWatcherImpl();
-
+                    return null;
+                }
+            });
+            WorkerPocoWatcherImpl workerPocoWatcher = new WorkerPocoWatcherImpl();
+        }
 
 		config.dump(System.out, "XWHEP Worker started ");
 

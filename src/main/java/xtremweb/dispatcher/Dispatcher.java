@@ -43,6 +43,8 @@ import java.util.*;
 
 import org.eclipse.jetty.server.session.SessionHandler;
 
+import static xtremweb.common.XWPropertyDefs.BLOCKCHAINETHENABLED;
+
 /**
  * Dispatcher Implementation
  * The Dispatcher is responsible for delivering task to servers
@@ -294,37 +296,37 @@ public class Dispatcher {
             }
         }
 
-        try {
-            IexecSchedulerLibrary.initialize(config.getConfigFile().getParentFile().getAbsolutePath() + "/iexec-scheduler.yml");
-            boolean ethNodeRunning = Web3jService.getInstance().getWeb3j().web3ClientVersion().send().getWeb3ClientVersion() != null;
-            if (ethNodeRunning) {
-                SchedulerPocoWatcherImpl schedulerPocoWatcher = new SchedulerPocoWatcherImpl();
+        if (config.getBoolean(BLOCKCHAINETHENABLED) == true) {
+            try {
+                IexecSchedulerLibrary.initialize(config.getConfigFile().getParentFile().getAbsolutePath() + "/iexec-scheduler.yml");
+                boolean ethNodeRunning = Web3jService.getInstance().getWeb3j().web3ClientVersion().send().getWeb3ClientVersion() != null;
+                if (ethNodeRunning) {
+                    SchedulerPocoWatcherImpl schedulerPocoWatcher = new SchedulerPocoWatcherImpl();
+                } else {
+                    throw new IOException("Unable to connect to ETH node");
+                }
+                config.blockchainServices = true;
+            } catch (final Exception e) {
+                logger.exception("Can't access to blockchain services", e);
             }
-            else {
-                throw new IOException("Unable to connect to ETH node");
-            }
-             config.blockchainServices = true;
-        } catch(final Exception e) {
-            logger.exception("Can't access to blockchain services", e);
-        }
 
-        final ActuatorService actuatorService = ActuatorService.getInstance();
-        final List<IexecHub.CreateCategoryEventResponse> categories =
-                actuatorService  != null ?
-                        actuatorService.getCategories() :
-                        null;
-        if (categories != null) {
-            for (final Iterator<IexecHub.CreateCategoryEventResponse> iter = categories.iterator(); iter.hasNext(); ) {
-                try {
-                    final IexecHub.CreateCategoryEventResponse category = iter.next();
-                    logger.debug(category.catid + " " + category.name);
-                    db.insertCategory(category);
-                } catch (final Exception e) {
-                    logger.warn("Unable to start service : " + e);
+            final ActuatorService actuatorService = ActuatorService.getInstance();
+            final List<IexecHub.CreateCategoryEventResponse> categories =
+                    actuatorService != null ?
+                            actuatorService.getCategories() :
+                            null;
+            if (categories != null) {
+                for (final Iterator<IexecHub.CreateCategoryEventResponse> iter = categories.iterator(); iter.hasNext(); ) {
+                    try {
+                        final IexecHub.CreateCategoryEventResponse category = iter.next();
+                        logger.debug(category.catid + " " + category.name);
+                        db.insertCategory(category);
+                    } catch (final Exception e) {
+                        logger.warn("Unable to start service : " + e);
+                    }
                 }
             }
         }
-
 
         logger.info("XWHEP Dispatcher(" + Version.currentVersion + ") started [" + new Date() + "]");
         logger.info("DB vendor       = " + config.getProperty(XWPropertyDefs.DBVENDOR));

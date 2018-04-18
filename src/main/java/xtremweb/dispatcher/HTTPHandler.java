@@ -96,6 +96,8 @@ import xtremweb.database.SQLRequest;
 import xtremweb.dispatcher.HTTPOAuthHandler.OAuthException;
 import xtremweb.security.XWAccessRights;
 
+import static xtremweb.common.XWPropertyDefs.BLOCKCHAINETHENABLED;
+
 /**
  * This handles incoming communications through TCP<br>
  * This answers request from TCPClient
@@ -757,24 +759,26 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 		mileStone("<writeIexecEthConf>");
 
 		try {
-			final PrintWriter writer = response.getWriter();
-			final StringBuilder  msg = new StringBuilder();
-			if ((IexecConfigurationService.getInstance() != null) &&
-					(IexecConfigurationService.getInstance().getCommonConfiguration() != null)) {
-				CommonConfiguration commonConfiguration = IexecConfigurationService.getInstance().getCommonConfiguration();
-				msg.append(XWTools.IEXECHUBADDRTEXT + commonConfiguration.getContractConfig().getIexecHubAddress() + "\n");
-				msg.append(XWTools.IEXECRLCADDRTEXT + commonConfiguration.getContractConfig().getRlcAddress() + "\n");
-				msg.append(XWTools.ETHNODEADDRTEXT + commonConfiguration.getNodeConfig().getClientAddress() + "\n");
-				WorkerPoolConfig workerPoolConfig = commonConfiguration.getContractConfig().getWorkerPoolConfig();
-				if (workerPoolConfig != null) {
-					msg.append(XWTools.IEXECWORKERPOOLADDRTEXT + workerPoolConfig.getAddress() + "\n");
-					msg.append(XWTools.IEXECWORKERPOOLNAMETEXT + workerPoolConfig.getName() + "\n");
-				}
-			}
+            if (getConfig().getBoolean(BLOCKCHAINETHENABLED) == true) {
+                final PrintWriter writer = response.getWriter();
+                final StringBuilder msg = new StringBuilder();
+                if ((IexecConfigurationService.getInstance() != null) &&
+                        (IexecConfigurationService.getInstance().getCommonConfiguration() != null)) {
+                    CommonConfiguration commonConfiguration = IexecConfigurationService.getInstance().getCommonConfiguration();
+                    msg.append(XWTools.IEXECHUBADDRTEXT + commonConfiguration.getContractConfig().getIexecHubAddress() + "\n");
+                    msg.append(XWTools.IEXECRLCADDRTEXT + commonConfiguration.getContractConfig().getRlcAddress() + "\n");
+                    msg.append(XWTools.ETHNODEADDRTEXT + commonConfiguration.getNodeConfig().getClientAddress() + "\n");
+                    WorkerPoolConfig workerPoolConfig = commonConfiguration.getContractConfig().getWorkerPoolConfig();
+                    if (workerPoolConfig != null) {
+                        msg.append(XWTools.IEXECWORKERPOOLADDRTEXT + workerPoolConfig.getAddress() + "\n");
+                        msg.append(XWTools.IEXECWORKERPOOLNAMETEXT + workerPoolConfig.getName() + "\n");
+                    }
+                }
 
-			response.setContentType(TEXTPLAIN + ";charset=UTF-8");
-			response.setHeader(CONTENTLENGTHLABEL, "" + msg.length());
-			writer.println(msg);
+                response.setContentType(TEXTPLAIN + ";charset=UTF-8");
+                response.setHeader(CONTENTLENGTHLABEL, "" + msg.length());
+                writer.println(msg);
+            }
 			response.setStatus(HttpServletResponse.SC_OK);
 		} catch (final Exception e) {
 			getLogger().exception(e);
