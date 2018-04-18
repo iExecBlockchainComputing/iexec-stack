@@ -265,8 +265,12 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 	private static final String CONTENTTYPEVALUE = "application/octet-stream";
 	/** This is the content length label HTTP header */
 	private static final String CONTENTLENGTHLABEL = "Content-Length";
-	/** This is the content shasum label HTTP header */
+	/**
+	 * This is the content shasum label HTTP header
+	 * @since 12.10.0
+	 */
 	private static final String CONTENTSHASUMLABEL = "Content-SHASUM";
+
 	/** This is the content disposition label HTTP header */
 	private static final String CONTENTDISPOSITIONLABEL = "Content-Disposition";
 	/** This is the last modified label HTTP header */
@@ -1057,6 +1061,9 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 							case DATASHASUM:
 								dataUploadshasum = item.getString();
 								break;
+							case DATAMD5SUM:
+								dataUploadshasum = item.getString();
+								break;
 							}
 						} catch (final Exception e) {
 							logger.exception(e);
@@ -1079,7 +1086,9 @@ public class HTTPHandler extends xtremweb.dispatcher.CommHandler {
 			}
 
 			if (dataUpload != null) {
-				final String value = request.getParameter(XWPostParams.DATASHASUM.toString());
+				final String value = request.getParameter(XWPostParams.DATASHASUM.toString()) != null ?
+						request.getParameter(XWPostParams.DATASHASUM.toString()) :
+						request.getParameter(XWPostParams.DATAMD5SUM.toString()) ;
 				if (value != null) {
 					if (dataUploadshasum == null) {
 						dataUploadshasum = value;
