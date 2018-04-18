@@ -44,31 +44,24 @@ dependencies {
     deployerJars "io.packagecloud.maven.wagon:maven-packagecloud-wagon:0.0.6"
 }
 
-task copyContracts(type: Copy) {
-    into "./src/main/resources/solidity/poco"
 
-    into(".") {
-        from "./PoCo/contracts"
-    }
+def pocoJsonFiles = [
+        'PoCo/build/contracts/IexecHub.json',
+        'PoCo/build/contracts/WorkerPool.json',
+        'PoCo/build/contracts/Marketplace.json',
+        'PoCo/build/contracts/WorkOrder.json',
+        'rlc-faucet-contract/build/contracts/RLC.json'
+]
 
-    eachFile { copyDetails ->
-        if (copyDetails.path == './IexecHub.sol') {
-            filter { line ->
-                line.replace("import \"rlc-token/contracts/RLC.sol\";", "import \"./rlc-token/contracts/RLC.sol\";")
-            }
+task buildContracts() {
+    pocoJsonFiles.each{ pocoJsonFile ->
+        exec{
+            args pocoJsonFile
+            commandLine 'sh', '-c', './extlib/web3j-3.3.1/bin/web3j truffle generate '+ args.first() +' -p com.iexec.common.contracts.generated -o src/main/java/'
         }
     }
-
-    into("./rlc-token") {
-        from "./rlc-token"
-    }
 }
 
-task buildContracts(type: Exec) {
-    dependsOn copyContracts
-
-    commandLine("sh", "-c", "cd ./scripts && ./buildContracts.sh")
-}
 buildContracts.enabled = !project.hasProperty("skipContracts")
 
 // Force the rebuild of contracts before java build
