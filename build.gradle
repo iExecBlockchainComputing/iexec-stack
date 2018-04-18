@@ -45,25 +45,6 @@ dependencies {
 }
 
 
-
-task clearExistingRLCJsonFile(type: Delete) {
-    delete 'rlc-faucet-contract/build/contracts/RLC.json'
-}
-
-task renameFaucetRLC(type: Copy) {
-    dependsOn clearExistingRLCJsonFile
-    from 'rlc-faucet-contract/build/contracts/'
-    into 'rlc-faucet-contract/build/contracts/'
-    rename { String fileName ->
-        fileName.replace('FaucetRLC.json', 'RLC.json')
-    }
-    eachFile { copyDetails ->
-        filter { line ->
-            line.replace("FaucetRLC", "RLC")
-        }
-    }
-}
-
 def pocoJsonFiles = [
         'PoCo/build/contracts/IexecHub.json',
         'PoCo/build/contracts/WorkerPool.json',
@@ -73,7 +54,6 @@ def pocoJsonFiles = [
 ]
 
 task buildContracts() {
-    dependsOn renameFaucetRLC
     pocoJsonFiles.each{ pocoJsonFile ->
         exec{
             args pocoJsonFile
