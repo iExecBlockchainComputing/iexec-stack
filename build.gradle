@@ -54,7 +54,6 @@ task renameFaucetRLC(type: Copy) {
     dependsOn clearExistingRLCJsonFile
     from 'rlc-faucet-contract/build/contracts/'
     into 'rlc-faucet-contract/build/contracts/'
-    // Use a closure to map the file name
     rename { String fileName ->
         fileName.replace('FaucetRLC.json', 'RLC.json')
     }
@@ -63,32 +62,26 @@ task renameFaucetRLC(type: Copy) {
             line.replace("FaucetRLC", "RLC")
         }
     }
-
 }
 
+def pocoJsonFiles = [
+        'PoCo/build/contracts/IexecHub.json',
+        'PoCo/build/contracts/WorkerPool.json',
+        'PoCo/build/contracts/Marketplace.json',
+        'PoCo/build/contracts/WorkOrder.json',
+        'rlc-faucet-contract/build/contracts/RLC.json'
+]
 
 task buildContracts() {
     dependsOn renameFaucetRLC
-    doLast {
-        exec {
-            commandLine 'sh', '-c', './extlib/web3j-3.2.0/bin/web3j truffle generate PoCo/build/contracts/WorkerPool.json -p com.iexec.common.contracts.generated -o src/main/java/'
-        }
-        exec {
-            commandLine 'sh', '-c', './extlib/web3j-3.2.0/bin/web3j truffle generate PoCo/build/contracts/IexecHub.json -p com.iexec.common.contracts.generated -o src/main/java/'
-        }
-        exec {
-            commandLine 'sh', '-c', './extlib/web3j-3.2.0/bin/web3j truffle generate PoCo/build/contracts/WorkOrder.json -p com.iexec.common.contracts.generated -o src/main/java/'
-        }
-        exec {
-            commandLine 'sh', '-c', './extlib/web3j-3.2.0/bin/web3j truffle generate PoCo/build/contracts/Marketplace.json -p com.iexec.common.contracts.generated -o src/main/java/'
-        }
-        exec {
-            commandLine 'sh', '-c', './extlib/web3j-3.2.0/bin/web3j truffle generate rlc-faucet-contract/build/contracts/RLC.json -p com.iexec.common.contracts.generated -o src/main/java/'
+    pocoJsonFiles.each{ pocoJsonFile ->
+        exec{
+            args pocoJsonFile
+            commandLine 'sh', '-c', './extlib/web3j-3.3.1/bin/web3j truffle generate '+ args.first() +' -p com.iexec.common.contracts.generated -o src/main/java/'
         }
     }
-
-
 }
+
 buildContracts.enabled = !project.hasProperty("skipContracts")
 
 // Force the rebuild of contracts before java build
