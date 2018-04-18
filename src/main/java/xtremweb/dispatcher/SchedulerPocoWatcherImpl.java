@@ -1,16 +1,17 @@
 package xtremweb.dispatcher;
 
 import com.iexec.common.contracts.generated.WorkerPool;
-import com.iexec.common.ethereum.Utils;
+import com.iexec.common.ethereum.IexecConfigurationService;
+import com.iexec.common.ethereum.Web3jService;
 import com.iexec.scheduler.actuator.ActuatorService;
 import com.iexec.scheduler.database.ContributionService;
 import com.iexec.scheduler.iexechub.IexecHubService;
 import com.iexec.scheduler.iexechub.IexecHubWatcher;
 import com.iexec.scheduler.workerpool.WorkerPoolService;
 import com.iexec.scheduler.workerpool.WorkerPoolWatcher;
+import xtremweb.common.Logger;
 
-import java.math.BigInteger;
-import java.util.Arrays;
+import java.io.IOException;
 
 public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatcher {
 
@@ -18,15 +19,24 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
     private final static WorkerPoolService workerPoolService = WorkerPoolService.getInstance();
     private final static ContributionService contributionService = ContributionService.getInstance();
     private final static ActuatorService actuatorService = ActuatorService.getInstance();
+    private final Logger logger;
+
 
     public SchedulerPocoWatcherImpl() {
+        logger = new Logger(this);
+        logger.info(IexecConfigurationService.getInstance().getCommonConfiguration().getContractConfig().getWorkerPoolConfig().getAddress());
+        try {
+            logger.info(Web3jService.getInstance().getWeb3j().web3ClientVersion().send().getWeb3ClientVersion());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         iexecHubService.registerIexecHubWatcher(this);
         workerPoolService.registerWorkerPoolWatcher(this);
     }
 
     @Override
     public void onSubscription(String worker) {
-        actuatorService.createMarketOrder(BigInteger.ONE, BigInteger.ZERO, BigInteger.valueOf(100), BigInteger.ONE); //on N worker alive
+        //   actuatorService.createMarketOrder(BigInteger.ONE, BigInteger.ZERO, BigInteger.valueOf(100), BigInteger.ONE); //on N worker alive
     }
 
     @Override

@@ -75,7 +75,13 @@ import org.json.JSONTokener;
  */
 
 public class XWTools {
-	private XWTools() {
+    /**
+     * This is a public path to retrieve iExec ETH configuration
+     * @since 13.0.0
+     */
+    public static final String IEXECETHCONFPATH = "/iexecethconf";
+
+    private XWTools() {
 	}
 
 	private static final Logger logger = new Logger();
@@ -123,6 +129,37 @@ public class XWTools {
      * @since 13.0.0
      */
     public static final String UNLOADSCRIPTTRAILER = ".sh";
+
+	/**
+	 * This is the header text to write/retrieve iExec Hub Addr
+	 * @since 13.0.0
+	 * @see xtremweb.dispatcher.HTTPHandler
+	 */
+	public static final String IEXECHUBADDRTEXT = "iExec Hub addr = ";
+	/**
+	 * This is the header text to write/retrieve iExec RLC Addr
+	 * @since 13.0.0
+	 * @see xtremweb.dispatcher.HTTPHandler
+	 */
+	public static final String IEXECRLCADDRTEXT = "iExec RLC addr = ";
+	/**
+	 * This is the header text to write/retrieve Eth node addr
+	 * @since 13.0.0
+	 * @see xtremweb.dispatcher.HTTPHandler
+	 */
+	public static final String ETHNODEADDRTEXT = "Eth node addr = ";
+	/**
+	 * This is the header text to write/retrieve iExec Woker Pool Addr
+	 * @since 13.0.0
+	 * @see xtremweb.dispatcher.HTTPHandler
+	 */
+	public static final String IEXECWORKERPOOLADDRTEXT = "iExec WorkerPool addr = ";
+	/**
+	 * This is the header text to write/retrieve iExec Woker Pool name
+	 * @since 13.0.0
+	 * @see xtremweb.dispatcher.HTTPHandler
+	 */
+	public static final String IEXECWORKERPOOLNAMETEXT = "iExec WorkerPool name = ";
 
 	/**
 	 * This defines buffer size for communications : 16Kb

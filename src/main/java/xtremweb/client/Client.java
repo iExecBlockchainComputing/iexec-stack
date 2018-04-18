@@ -69,6 +69,7 @@ import xtremweb.security.XWAccessRights;
  * This class describes a generic client to XtremWeb. It is designed to submit,
  * delete jobs as to get job status and results. <br />
  * <br />
+ * <br />
  * Examples can be found in CommandLineParser.
  *
  * @see xtremweb.common.CommandLineParser
@@ -1771,7 +1772,7 @@ public final class Client {
 		if (xmlFile != null) {
 			final FileInputStream fis = new FileInputStream(xmlFile);
 			theCategory = (CategoryInterface) Table.newInterface(fis);
-			if (theCategory.getEnvId() <= 0) {
+			if (theCategory.getCategoryId() <= 0) {
 				throw new IOException("category id can not be zero");
 			}
 			if (theCategory.getUID() == null) {

@@ -21,7 +21,7 @@
 
 
 create table if not exists  categories  (
-  categoryId         int unsigned   not null  auto_increment     comment 'EnvID referenced by smart contracts',
+  categoryId         bigint         not null  unique             comment 'catID referenced by smart contracts',
   uid                char(36)       not null  primary key        comment 'Primary key',
   ownerUID           char(36)       not null                     comment 'User UID',
   accessRights       int(4)                   default 0x755      comment 'Please note that an category is always public',
@@ -36,7 +36,7 @@ create table if not exists  categories  (
 
 
   index  name     (name),
-  index  envId    (envId),
+  index  categoryId    (categoryId),
   index  ownerUID (ownerUID)
   )
 engine  = InnoDB,
@@ -44,8 +44,8 @@ comment = 'envs = categories defining resources usage limit';
 
 create table if not exists  categories_history  like  categories;
 
-ALTER TABLE  works ADD    COLUMN categoryId          int unsigned   not null  default 1            comment 'envId. See common/Envs.java';
-ALTER TABLE  works ADD    COLUMN marketOrderId       int unsigned             default 0            comment 'blockchain market order id',
+ALTER TABLE  works ADD    COLUMN categoryId          bigint         unique    default 0        comment 'categoryId. See common/CategoryInterface.java';
+ALTER TABLE  works ADD    COLUMN marketOrderId       int unsigned             default 0            comment 'blockchain market order id';
 ALTER TABLE  works ADD    COLUMN maxFreeMassStorage  bigint         not null  default 5368709120   comment 'Max mass storage usage in bytes; default 5Gb';
 ALTER TABLE  works ADD    COLUMN maxFileSize         bigint         not null  default 104857600    comment 'Max file length in bytes; default 100Mb';
 ALTER TABLE  works ADD    COLUMN maxMemory           bigint         not null  default 536870912    comment 'Max RAM usage in bytes; default 512Mb';

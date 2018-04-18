@@ -23,8 +23,14 @@
 
 package xtremweb.dispatcher;
 
+import com.iexec.common.contracts.generated.IexecHub;
+import com.iexec.common.ethereum.CommonConfiguration;
+import com.iexec.common.ethereum.IexecConfigurationService;
+import com.iexec.common.ethereum.Web3jService;
+import com.iexec.scheduler.actuator.ActuatorService;
 import com.iexec.scheduler.ethereum.IexecSchedulerLibrary;
-import org.eclipse.jetty.server.session.SessionHandler;
+import com.iexec.common.workerpool.WorkerPoolConfig;
+
 import xtremweb.common.*;
 import xtremweb.communications.AccessLogger;
 import xtremweb.communications.HTTPServer;
@@ -32,10 +38,10 @@ import xtremweb.communications.TCPServer;
 import xtremweb.security.PEMPublicKeyValidator;
 import xtremweb.security.X509ProxyValidator;
 
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.Timer;
+import java.io.IOException;
+import java.util.*;
+
+import org.eclipse.jetty.server.session.SessionHandler;
 
 /**
  * Dispatcher Implementation
@@ -173,12 +179,6 @@ public class Dispatcher {
      */
     public void go() throws Exception {
 
-        try {
-            IexecSchedulerLibrary.initialize("../conf/iexec-scheduler.yml");
-            SchedulerPocoWatcherImpl schedulerPocoWatcher = new SchedulerPocoWatcherImpl();
-        } catch(final Exception e) {
-            logger.exception("Can connect to blockchain ", e);
-        }
         timer = new Timer();
 
         try {
@@ -294,13 +294,45 @@ public class Dispatcher {
             }
         }
 
+        try {
+            IexecSchedulerLibrary.initialize(config.getConfigFile().getParentFile().getAbsolutePath() + "/iexec-scheduler.yml");
+            boolean ethNodeRunning = Web3jService.getInstance().getWeb3j().web3ClientVersion().send().getWeb3ClientVersion() != null;
+            if (ethNodeRunning) {
+                SchedulerPocoWatcherImpl schedulerPocoWatcher = new SchedulerPocoWatcherImpl();
+            }
+            else {
+                throw new IOException("Unable to connect to ETH node");
+            }
+             config.blockchainServices = true;
+        } catch(final Exception e) {
+            logger.exception("Can't access to blockchain services", e);
+        }
+
+        final ActuatorService actuatorService = ActuatorService.getInstance();
+        final List<IexecHub.CreateCategoryEventResponse> categories =
+                actuatorService  != null ?
+                        actuatorService.getCategories() :
+                        null;
+        if (categories != null) {
+            for (final Iterator<IexecHub.CreateCategoryEventResponse> iter = categories.iterator(); iter.hasNext(); ) {
+                try {
+                    final IexecHub.CreateCategoryEventResponse category = iter.next();
+                    logger.debug(category.catid + " " + category.name);
+                    db.insertCategory(category);
+                } catch (final Exception e) {
+                    logger.warn("Unable to start service : " + e);
+                }
+            }
+        }
+
+
         logger.info("XWHEP Dispatcher(" + Version.currentVersion + ") started [" + new Date() + "]");
-        logger.info("DB vendor  = " + config.getProperty(XWPropertyDefs.DBVENDOR));
-        logger.info("mileStone  = " + config.getProperty(XWPropertyDefs.MILESTONES));
-        logger.info("Time out   = " + config.getProperty(XWPropertyDefs.TIMEOUT));
-        logger.info("Disk opt'd = " + config.getProperty(XWPropertyDefs.OPTIMIZEDISK));
-        logger.info("Net  opt'd = " + config.getProperty(XWPropertyDefs.OPTIMIZENETWORK));
-        logger.info("NIO        = " + config.getProperty(XWPropertyDefs.JAVANIO));
+        logger.info("DB vendor       = " + config.getProperty(XWPropertyDefs.DBVENDOR));
+        logger.info("mileStone       = " + config.getProperty(XWPropertyDefs.MILESTONES));
+        logger.info("Time out        = " + config.getProperty(XWPropertyDefs.TIMEOUT));
+        logger.info("Disk opt'd      = " + config.getProperty(XWPropertyDefs.OPTIMIZEDISK));
+        logger.info("Net  opt'd      = " + config.getProperty(XWPropertyDefs.OPTIMIZENETWORK));
+        logger.info("NIO             = " + config.getProperty(XWPropertyDefs.JAVANIO));
         config.dump(System.out, "XWHEP Dispatcher started ");
     }
 
