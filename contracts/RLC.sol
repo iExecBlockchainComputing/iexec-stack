@@ -4,13 +4,13 @@ import "./Ownable.sol";
 import "./SafeMath.sol";
 import "./ERC20.sol";
 import "./TokenSpender.sol";
-contract FaucetRLC is ERC20, SafeMath, Ownable {
+contract RLC is ERC20, SafeMath, Ownable {
 
     /* Public variables of the token */
   string public name;       //fancy name
   string public symbol;
   uint8 public decimals;    //How many decimals to show.
-  string public version = 'v0.1'; 
+  string public version = 'v0.1';
   uint public initialSupply;
   uint public totalSupply;
   bool public locked;
@@ -31,8 +31,8 @@ contract FaucetRLC is ERC20, SafeMath, Ownable {
     balances[faucetAgent1] = 29000000000000000;
     balances[faucetAgent2] = 29000000000000000;
     balances[faucetAgent3] = 29000000000000000;
-    name = 'iEx.ec Network Token';        // Set the name for display purposes     
-    symbol = 'RLC';                       // Set the symbol for display purposes  
+    name = 'iEx.ec Network Token';        // Set the name for display purposes
+    symbol = 'RLC';                       // Set the symbol for display purposes
     decimals = 9;                        // Amount of decimals for display purposes
   }
 
@@ -77,7 +77,7 @@ contract FaucetRLC is ERC20, SafeMath, Ownable {
 
   function transferFrom(address _from, address _to, uint _value) returns (bool) {
     var _allowance = allowed[_from][msg.sender];
-    
+
     balances[_to] = safeAdd(balances[_to], _value);
     balances[_from] = safeSub(balances[_from], _value);
     allowed[_from][msg.sender] = safeSub(_allowance, _value);
@@ -96,7 +96,7 @@ contract FaucetRLC is ERC20, SafeMath, Ownable {
   }
 
     /* Approve and then comunicate the approved contract in a single tx */
-  function approveAndCall(address _spender, uint256 _value, bytes _extraData){    
+  function approveAndCall(address _spender, uint256 _value, bytes _extraData){
       TokenSpender spender = TokenSpender(_spender);
       if (approve(_spender, _value)) {
           spender.receiveApproval(msg.sender, _value, this, _extraData);
@@ -106,6 +106,5 @@ contract FaucetRLC is ERC20, SafeMath, Ownable {
   function allowance(address _owner, address _spender) constant returns (uint remaining) {
     return allowed[_owner][_spender];
   }
-  
-}
 
+}
