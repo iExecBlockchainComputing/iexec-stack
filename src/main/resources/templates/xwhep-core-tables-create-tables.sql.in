@@ -911,8 +911,7 @@ create table if not exists  works  (
   index  ownerUID            (ownerUID),
   index  idx_categoryId          (categoryId),
   index  sgId                (sgId),
-  index  completedDate       (completedDate),
-  foreign key (categoryId) references categories(categoryId)
+  index  completedDate       (completedDate)
 
   )
 engine  = @DBENGINE@,
