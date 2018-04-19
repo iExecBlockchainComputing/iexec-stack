@@ -42,12 +42,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Vector;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 import xtremweb.common.*;
 import xtremweb.communications.URI;
@@ -105,7 +100,7 @@ public class DBConnPoolThread extends Thread {
 	 *
 	 * @since 7.5.0
 	 */
-	private List<String> updateFifo;
+	private Hashtable<URI, String> updateFifo;
 
 	/**
 	 * This is the singleton
@@ -147,7 +142,7 @@ public class DBConnPoolThread extends Thread {
 				+ "' dbpassword = '" + config.getProperty(XWPropertyDefs.DBPASS) + "'");
 
 		connPool = Collections.synchronizedList(new LinkedList<Connection>());
-		updateFifo = Collections.synchronizedList(new LinkedList<String>());
+		updateFifo = new Hashtable<>();
 
 		for (int i = 0; i < MAXX_CONNECTIONS; i++) {
 
@@ -230,13 +225,24 @@ public class DBConnPoolThread extends Thread {
 				logger.finest("DBConnPoolThread woken up");
 			} catch (final InterruptedException e) {
 			}
+			URI key = null;
 			try {
-				while (!updateFifo.isEmpty()) {
-					executeQuery(updateFifo.remove(0), null);
-				}
+//				while (!updateFifo.isEmpty()) {
+//					executeQuery(updateFifo.remove(0), null);
+//				}
+                for (Enumeration<URI> enums = updateFifo.keys(); enums.hasMoreElements();) {
+                    key = enums.nextElement();
+                    executeQuery(updateFifo.remove(key), null);
+                }
 			} catch (final Exception e) {
-				logger.exception(e);
-			}
+                logger.exception(e);
+                if (key != null) {
+                    try {
+                        removeFromCache(key);
+                    } catch (IOException e1) {
+                    }
+                }
+            }
 		}
 	}
 
@@ -264,7 +270,7 @@ public class DBConnPoolThread extends Thread {
 	 *            is the row type
 	 * @return a vector of rows found in DB, or null if no row found
 	 */
-	protected final synchronized <T extends Type> Collection<T> executeQuery(final String query, final T row)
+	protected final synchronized <T extends Table> Collection<T> executeQuery(final String query, final T row)
 			throws IOException {
 		return executeQuery(null, query, row);
 	}
@@ -278,8 +284,12 @@ public class DBConnPoolThread extends Thread {
 	 *            is the row type
 	 * @return a vector of rows found in DB, or null if no row found
 	 */
-	protected final synchronized <T extends Type> Collection<T> executeQuery(final Connection conn, final String query,
+	protected final synchronized <T extends Table> Collection<T> executeQuery(final Connection conn, final String query,
 			final T row) throws IOException {
+
+	    if(query == null) {
+	        return null;
+        }
 
 		// if (row == null) {
 		// Thread.currentThread().dumpStack();
@@ -337,7 +347,10 @@ public class DBConnPoolThread extends Thread {
 		} catch (final Exception ex2) {
 			logger.exception("ExecuteQuery  (" + query + ")", ex2);
 			mileStone.println("<executeQueryError />");
-			throw new IOException(ex2);
+            if (row != null) {
+                removeFromCache(row.getUID());
+            }
+            throw new IOException(ex2);
 		} finally {
 			try {
 				if (rs != null) {
@@ -456,6 +469,10 @@ public class DBConnPoolThread extends Thread {
 	 */
 	public <T extends Table> void update(final Collection<T> rows, final String criterias) throws IOException {
 
+	    if(rows == null) {
+	        return;
+        }
+
 		try {
 			final Iterator<T> rowit = rows.iterator();
 			while (rowit.hasNext()) {
@@ -479,6 +496,9 @@ public class DBConnPoolThread extends Thread {
 	public synchronized <T extends Table> void update(final T row, final String criteria, final boolean pool)
 			throws IOException {
 
+	    if(!row.isDirty()) {
+	        return;
+        }
 		try {
 			final String rowset = row.toString();
 			final String theCriteria = criteria != null ? criteria : row.criteria();
@@ -492,11 +512,13 @@ public class DBConnPoolThread extends Thread {
 
 			if (pool == true) {
 				logger.finest("updateFifo.add(" + query + ")");
-				updateFifo.add(query);
+				updateFifo.put(newURI(row.getUID()), query);
 			} else {
 				executeQuery(query, row);
 			}
-			notify();
+			row.setDirty(false);
+            putToCache(row);
+            notify();
 
 		} catch (final Exception e) {
 			logger.exception(e);
@@ -532,7 +554,7 @@ public class DBConnPoolThread extends Thread {
 	 * @see Table#criteria()
 	 * @since 10.0.0
 	 */
-	public <T extends Type> T selectOne(final T row, final String criterias) throws IOException {
+	public <T extends Table> T selectOne(final T row, final String criterias) throws IOException {
 
 		final Vector<T> v = (Vector<T>) select(row, criterias, 1);
 		if ((v != null) && (!v.isEmpty())) {
@@ -552,7 +574,7 @@ public class DBConnPoolThread extends Thread {
 	 * @see Table#criteria()
 	 * @since 10.0.0
 	 */
-	public <T extends Type> Collection<T> selectAll(final T row, final String criterias) throws IOException {
+	public <T extends Table> Collection<T> selectAll(final T row, final String criterias) throws IOException {
 
 		return select(row, criterias, config.requestLimit());
 	}
@@ -569,7 +591,7 @@ public class DBConnPoolThread extends Thread {
 	 *            is the max expected amount of rows
 	 * @see Table#criteria()
 	 */
-	public <T extends Type> Collection<T> select(final T row, final String criterias, final int limit)
+	public <T extends Table> Collection<T> select(final T row, final String criterias, final int limit)
 			throws IOException {
 
 		final String groupBy = row.groupBy();
@@ -598,7 +620,7 @@ public class DBConnPoolThread extends Thread {
 	 * @param row
 	 *            is the row type
 	 */
-	public <T extends Type> Collection<T> select(final T row) throws IOException {
+	public <T extends Table> Collection<T> select(final T row) throws IOException {
 		return select(row, null, config.requestLimit());
 	}
 
@@ -647,7 +669,7 @@ public class DBConnPoolThread extends Thread {
 	 * @param row
 	 *            is the row to insert
 	 */
-	public synchronized <T extends Type> void insert(final T row) throws IOException {
+	public synchronized <T extends Table> void insert(final T row) throws IOException, URISyntaxException {
 
 		final String criteria = row.valuesToString();
 
@@ -659,7 +681,8 @@ public class DBConnPoolThread extends Thread {
 				+ row.getColumns() + (") ") + " VALUES (" + criteria + ")";
 
 		// executeQuery(query, row);
-		updateFifo.add(query);
+		updateFifo.put(newURI(row.getUID()), query);
+        putToCache(row);
 		notify();
 	}
 
@@ -685,13 +708,15 @@ public class DBConnPoolThread extends Thread {
 
 			query = "DELETE FROM " + config.getProperty(XWPropertyDefs.DBNAME) + "." + row.tableName() + " WHERE "
 					+ criteria;
-			// executeQuery(query, row);
-			updateFifo.add(query);
+
+            executeQuery(query, row);
 			notify();
 		} catch (final Exception e) {
 			logger.exception(e);
 			throw new IOException(e.toString());
-		}
+		} finally {
+            removeFromCache(row);
+        }
 	}
 
 	/**
@@ -709,8 +734,7 @@ public class DBConnPoolThread extends Thread {
 					+ WorkInterface.Columns.STATUS.toString() + "='" + StatusEnum.WAITING + "' or "
 					+ WorkInterface.Columns.STATUS.toString() + "='" + StatusEnum.PENDING + "') OR ISNULL(status))";
 
-			// executeQuery(query, null);
-			updateFifo.add(query);
+			executeQuery(query, null);
 			notify();
 		} catch (final Exception e) {
 			logger.exception(e);
@@ -793,6 +817,25 @@ public class DBConnPoolThread extends Thread {
 	/**
 	 * This retrieves an object from cache
 	 *
+	 * @since 8.2.0
+	 */
+	public <T extends Table> T getFromCache(final URI uri, final T row) {
+		final Table itf = getFromCache(uri);
+		if (itf == null) {
+			return null;
+		}
+		//
+		// we must check interface type because the cache contains all object
+		// types
+		//
+		if (itf.getClass().toString().compareTo(row.getClass().toString()) != 0) {
+			return null;
+		}
+		return (T) itf;
+	}
+	/**
+	 * This retrieves an object from cache
+	 *
 	 * @since 13.0.4
 	 */
 	public <T extends Table> T getFromCache(final UserInterface u, final UID uid, final T row)
@@ -825,8 +868,100 @@ public class DBConnPoolThread extends Thread {
 		}
 		return getFromCache(uri, row);
 	}
-
 	/**
+	 * This retrieves an object interface from cache
+	 * @param theClient represents the user; authentication is not checked here and must have been check by the caller
+	 * @param uri is the uri of the object to retrieve
+	 * @since 7.4.0
+	 */
+	private Table getFromCache(final UserInterface theClient, final URI uri) throws IOException, AccessControlException {
+
+		final Table ret = getFromCache(uri);
+
+		if (ret == null) {
+			return null;
+		}
+
+		final UserInterface owner = user(ret.getOwner());
+		final UID ownerGroup = (owner == null ? null : owner.getGroup());
+
+		final boolean accessdenied = !ret.canRead(theClient, ownerGroup)
+				&& theClient.getRights().lowerThan(UserRightEnum.ADVANCED_USER);
+
+		if (accessdenied) {
+			throw new AccessControlException(theClient.getLogin() + " can't access " + uri);
+		}
+		return ret;
+	}
+	/**
+	 * This retrieves a row from DB by its UID
+	 *
+	 * @param row
+	 *            defines the row type
+	 * @param uid
+	 *            is the UID of the row to retrieve
+	 * @return the first found row, or null if not found
+	 */
+	protected <T extends Table> T select(final T row, final UID uid) throws IOException {
+		if (uid == null) {
+			return null;
+		}
+		return select(row, SQLRequest.MAINTABLEALIAS + ".UID='" + uid.toString() + "'");
+	}
+	/**
+	 * This retrieves all rows from table and caches them This forces DB read
+	 *
+	 * @param row
+	 *            defines the row type
+	 * @param criterias
+	 *            is the SQL criterias
+	 * @return the first found row, or null if not found
+	 */
+	protected <T extends Table> T select(final T row, final String criterias) throws IOException {
+		return selectOne(row, criterias);
+	}
+	/**
+	 * This retrieves an object independently of access rights from cache
+	 * or from DB
+	 *
+	 * @param uid
+	 *            is the UID of the host to retrieve
+	 * @since 13.0.0
+	 */
+	public <T extends Table> T object(final T t, final UID uid) throws IOException {
+		T ret = getFromCache(uid, t);
+		if (ret != null) {
+			return ret;
+		}
+		ret = select(t, uid);
+		return ret;
+	}
+	/**
+	 * This retrieves users for the requesting user. This first looks in cache,
+	 * then in DB. Access rights are not checked.
+	 *
+	 * @param uid
+	 *            is the UID
+	 * @since 5.8.0
+	 */
+	protected UserInterface user(final UID uid) throws IOException {
+		return object(new UserInterface(), uid);
+	}
+
+    /**
+     * This removes an object from cache
+     *
+     * @since 13.0.4
+     */
+    public <T extends Table> void removeFromCache(final T row) {
+        try {
+            removeFromCache(row.getUID());
+        } catch (final Exception e) {
+            logger.exception("can't remove from cache", e);
+        }
+    }
+
+    /**
 	 * This removes an object from cache
 	 *
 	 * @since 13.0.4
