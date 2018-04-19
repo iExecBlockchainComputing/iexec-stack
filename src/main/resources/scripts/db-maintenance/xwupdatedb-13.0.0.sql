@@ -44,7 +44,7 @@ comment = 'envs = categories defining resources usage limit';
 
 create table if not exists  categories_history  like  categories;
 
-ALTER TABLE  works ADD    COLUMN categoryId          bigint         unique    default 0        comment 'categoryId. See common/CategoryInterface.java';
+ALTER TABLE  works ADD    COLUMN categoryId          bigint                   default 0        comment 'categoryId. See common/CategoryInterface.java';
 ALTER TABLE  works ADD    COLUMN marketOrderId       int unsigned             default 0            comment 'blockchain market order id';
 ALTER TABLE  works ADD    COLUMN maxFreeMassStorage  bigint         not null  default 5368709120   comment 'Max mass storage usage in bytes; default 5Gb';
 ALTER TABLE  works ADD    COLUMN maxFileSize         bigint         not null  default 104857600    comment 'Max file length in bytes; default 100Mb';
