@@ -35,6 +35,8 @@
 package xtremweb.database;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.security.AccessControlException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -47,15 +49,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import xtremweb.common.Logger;
-import xtremweb.common.MileStone;
-import xtremweb.common.StatusEnum;
-import xtremweb.common.Table;
-import xtremweb.common.Type;
-import xtremweb.common.UID;
-import xtremweb.common.WorkInterface;
-import xtremweb.common.XWConfigurator;
-import xtremweb.common.XWPropertyDefs;
+import xtremweb.common.*;
+import xtremweb.communications.URI;
 
 /**
  * This is a threaded version of DBConnPool to improve performances This acts as
@@ -65,6 +60,13 @@ import xtremweb.common.XWPropertyDefs;
  * @since 7.5.0
  */
 public class DBConnPoolThread extends Thread {
+
+	/**
+	 * This is a cache to reduce MySQL accesses
+	 * This has been moved from DBInterface to here since 13.0.4
+	 * @since 13.0.4
+	 */
+	private Cache cache = null;
 
 	/**
 	 * This stores the table history suffix name = "_history" This was in
@@ -118,7 +120,7 @@ public class DBConnPoolThread extends Thread {
 	/**
 	 * This is the default and only constructor
 	 */
-	public DBConnPoolThread(final XWConfigurator c) {
+	public DBConnPoolThread(final XWConfigurator c)  throws IOException {
 
 		if (getInstance() != null) {
 			return;
@@ -164,6 +166,8 @@ public class DBConnPoolThread extends Thread {
 		nbConnections = 0;
 
 		checkAppTypes();
+
+		cache = new Cache(config);
 
 		if (getInstance() == null) {
 			setInstance(this);
@@ -504,7 +508,6 @@ public class DBConnPoolThread extends Thread {
 	 * This creates a FROM sql statement part for the given row in the form
 	 * "dbname.t1 [...][,dbname.t2 [...]]"
 	 *
-	 * @see TableRow#fromTableNames()
 	 * @since 7.0.0
 	 * @param row
 	 *            is the TableRow to use in SQL statement
@@ -727,5 +730,133 @@ public class DBConnPoolThread extends Thread {
 	 */
 	public static void setInstance(final DBConnPoolThread instance) {
 		DBConnPoolThread.instance = instance;
+	}
+
+	/**
+	 * This is this local host name; this is used to create URI to store objects
+	 * in local cache
+	 */
+	private final String localHostName = XWTools.getLocalHostName();
+
+	/**
+	 * This creates a new URI for the provided UID
+	 *
+	 * @since 13.0.4
+	 * @return a new URI, if UID is not null, null otherwise
+	 */
+	public URI newURI(final UID uid) throws URISyntaxException {
+		if (uid == null) {
+			return null;
+		}
+		return new URI(localHostName, uid);
+	}
+	/**
+	 * This caches an object interface
+	 *
+	 * @since 13.0.4
+	 */
+	public void putToCache(final Table itf) {
+
+		if (itf == null) {
+			return;
+		}
+
+		try {
+			final UID uid = itf.getUID();
+			final URI uri = newURI(uid);
+			cache.add(itf, uri);
+		} catch (final Exception e) {
+			logger.exception("can't put to cache", e);
+		}
+	}
+
+	/**
+	 * This retrieves an object from cache
+	 *
+	 * @since 13.0.4
+	 */
+	public <T extends Table> T getFromCache(final UID uid, final T row) {
+		if (uid == null) {
+			return null;
+		}
+		try {
+			final URI uri = newURI(uid);
+			if (uri == null) {
+				return null;
+			}
+			return getFromCache(uri, row);
+		} catch (final Exception e) {
+			logger.exception("can't retrieve from cache", e);
+			return null;
+		}
+	}
+	/**
+	 * This retrieves an object from cache
+	 *
+	 * @since 13.0.4
+	 */
+	public <T extends Table> T getFromCache(final UserInterface u, final UID uid, final T row)
+			throws IOException, AccessControlException {
+
+		if (uid == null) {
+			return null;
+		}
+		try {
+			final URI uri = newURI(uid);
+			return getFromCache(u, uri, row);
+		} catch (final URISyntaxException e) {
+			logger.exception(e);
+			return null;
+		}
+	}
+	/**
+	 * This retrieves an object from cache
+	 *
+	 * @since 7.4.0
+	 */
+	private <T extends Table> T getFromCache(final UserInterface u, final URI uri, final T row)
+			throws IOException, AccessControlException {
+		if (uri == null) {
+			return null;
+		}
+		final Table itf = getFromCache(u, uri);
+		if (itf == null) {
+			return null;
+		}
+		return getFromCache(uri, row);
+	}
+
+	/**
+	 * This removes an object from cache
+	 *
+	 * @since 13.0.4
+	 */
+	public void removeFromCache(final UID uid) {
+		try {
+			final URI uri = newURI(uid);
+			removeFromCache(uri);
+		} catch (final Exception e) {
+			logger.exception("can't remove from cache", e);
+		}
+	}
+
+	/**
+	 * This caches an object interface
+	 *
+	 * @since 13.0.4
+	 */
+	public Table getFromCache(final URI uri) {
+		return cache.get(uri);
+	}
+	/**
+	 * This removes an object from cache
+	 *
+	 * @since 13.0.4
+	 */
+	public void removeFromCache(final URI uri) throws IOException {
+		if (uri == null) {
+			return;
+		}
+		cache.remove(uri);
 	}
 }

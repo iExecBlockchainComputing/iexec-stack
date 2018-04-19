@@ -98,29 +98,11 @@ public final class DBInterface {
 	private final DBConnPoolThread dbConnPool;
 
 	/**
-	 * This is a cache to reduce MySQL accesses
-	 *
-	 * @since 7.4.0
-	 */
-	private final Cache cache;
-	/**
-	 * This is this local host name; this is used to create URI to store objects
-	 * in local cache
-	 */
-	private final String localHostName = XWTools.getLocalHostName();
-
-	/**
 	 * This creates a new URI for the provided UID
 	 *
 	 * @since 7.4.0
 	 * @return a new URI, if UID is not null, null otherwise
 	 */
-	private URI newURI(final UID uid) throws URISyntaxException {
-		if (uid == null) {
-			return null;
-		}
-		return new URI(localHostName, uid);
-	}
 
 	/**
 	 * This caches an object interface
@@ -128,18 +110,7 @@ public final class DBInterface {
 	 * @since 7.4.0
 	 */
 	protected void putToCache(final Table itf) {
-
-		if (itf == null) {
-			return;
-		}
-
-		try {
-			final UID uid = itf.getUID();
-			final URI uri = newURI(uid);
-			cache.add(itf, uri);
-		} catch (final Exception e) {
-			logger.exception("can't put to cache", e);
-		}
+		dbConnPool.getInstance().putToCache(itf);
 	}
 
 	/**
@@ -159,7 +130,7 @@ public final class DBInterface {
 	 * @since 7.4.0
 	 */
 	private Table getFromCache(final URI uri) {
-		return cache.get(uri);
+		return dbConnPool.getInstance().getFromCache(uri);
 	}
 
 	/**
@@ -188,19 +159,7 @@ public final class DBInterface {
 	 * @since 7.4.0
 	 */
 	private <T extends Table> T getFromCache(final UID uid, final T row) {
-		if (uid == null) {
-			return null;
-		}
-		try {
-			final URI uri = newURI(uid);
-			if (uri == null) {
-				return null;
-			}
-			return getFromCache(uri, row);
-		} catch (final Exception e) {
-			logger.exception("can't retrieve from cache", e);
-			return null;
-		}
+        return dbConnPool.getInstance().getFromCache(uid, row);
 	}
 
 	/**
@@ -236,17 +195,7 @@ public final class DBInterface {
 	 */
 	private <T extends Table> T getFromCache(final UserInterface u, final UID uid, final T row)
 			throws IOException, AccessControlException {
-
-		if (uid == null) {
-			return null;
-		}
-		try {
-			final URI uri = newURI(uid);
-			return getFromCache(u, uri, row);
-		} catch (final URISyntaxException e) {
-			logger.exception(e);
-			return null;
-		}
+        return dbConnPool.getInstance().getFromCache(u, uid, row);
 	}
 
 	/**
@@ -285,12 +234,7 @@ public final class DBInterface {
 	 * @since 7.4.0
 	 */
 	private void removeFromCache(final UID uid) {
-		try {
-			final URI uri = newURI(uid);
-			removeFromCache(uri);
-		} catch (final Exception e) {
-			logger.exception("can't remove from cache", e);
-		}
+        dbConnPool.getInstance().removeFromCache(uid);
 	}
 
 	/**
@@ -299,10 +243,7 @@ public final class DBInterface {
 	 * @since 7.4.0
 	 */
 	private void removeFromCache(final URI uri) throws IOException {
-		if (uri == null) {
-			return;
-		}
-		cache.remove(uri);
+		dbConnPool.getInstance().removeFromCache(uri);
 	}
 
 	/**
@@ -320,7 +261,6 @@ public final class DBInterface {
 		config = c;
 		dbConnPool = new DBConnPoolThread(config);
 		dbConnPool.start();
-		cache = new Cache(config);
 
 		emailSender = new EmailSender();
 
