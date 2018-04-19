@@ -1042,14 +1042,11 @@ public class XWTools {
 //    	}
 //    	return hexString.toString();
 //    }
-    public static String sha256(String data) throws NoSuchAlgorithmException {
+    public static String sha256(final String data) throws NoSuchAlgorithmException {
         MessageDigest md = MessageDigest.getInstance( "SHA-256" );
-        String text = "Text to hash, cryptographically.";
-
         // Change this to UTF-16 if needed
-        md.update( text.getBytes( StandardCharsets.UTF_8 ) );
+        md.update( data.getBytes( StandardCharsets.UTF_8 ) );
         byte[] digest = md.digest();
-
         return String.format( "%064x", new BigInteger( 1, digest ) );
       }
     /**
@@ -1080,10 +1077,11 @@ public class XWTools {
 			logger.info("uid3 " + uid3 + " " + uid3.hashCode() + " " + (uid3.hashCode() % 1000));
 			logger.info("uid3 " + uid3 + " " + createDir("/tmp", uid3));
 
-			logger.info("sha256  (\"test string to sha256\") = " + sha256("test string to sha256"));
-
 			if (argv.length > 1) {
-				logger.info("sha256CheckSum  (" + argv[1] + ") = " + sha256CheckSum(new File(argv[1])));
+				logger.info("sha256  (\"" + argv[1] + "\") = " + sha256(argv[1]));
+				File f = new File(argv[1]);
+				if(f.exists())
+					logger.info("sha256CheckSum  (" + argv[1] + ") = " + sha256CheckSum(f));
 			}
 
 		} catch (final Exception e) {
