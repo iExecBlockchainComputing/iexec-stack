@@ -19,6 +19,8 @@
 
 --
 
+SET FOREIGN_KEY_CHECKS=0;
+
 
 drop table if exists  categories;
 drop table if exists  categories_history;
@@ -54,7 +56,6 @@ DELETE FROM statuses where statusId='14';
 
 
 
-SET FOREIGN_KEY_CHECKS=0;
 
 drop table userRights;
 
