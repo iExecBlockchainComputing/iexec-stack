@@ -847,7 +847,7 @@ show warnings;
 create table if not exists  works  (
   uid                 char(36)          not null  primary key      comment 'Primary key',
   appUID              char(36)          not null                   comment 'Application UID',
-  categoryId          bigint            unique    default 0        comment 'categoryId. See common/CategoryInterface.java',
+  categoryId          bigint                      default 0        comment 'categoryId. See common/CategoryInterface.java',
   marketOrderId       int unsigned                default 0        comment 'blockchain market order id',
   statusId            tinyint unsigned  not null  default 255      comment 'Status Id. See common/XWStatus.java',
   status              varchar(36)       not null  default 'NONE'   comment 'Status. see common/XWStatus.java',
