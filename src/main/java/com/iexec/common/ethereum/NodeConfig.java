@@ -1,5 +1,6 @@
 package com.iexec.common.ethereum;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.web3j.protocol.core.DefaultBlockParameter;
 
 import java.math.BigInteger;
@@ -25,6 +26,7 @@ public class NodeConfig {
         this.startBlock = startBlock;
     }
 
+    @JsonIgnore
     public DefaultBlockParameter getStartBlockParameter() {
         return DefaultBlockParameter.valueOf(BigInteger.valueOf(startBlock));
     }
