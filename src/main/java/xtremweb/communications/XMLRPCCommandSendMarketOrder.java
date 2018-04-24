@@ -23,33 +23,26 @@
 
 package xtremweb.communications;
 
+import org.xml.sax.SAXException;
+import xtremweb.common.*;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.rmi.RemoteException;
 import java.security.AccessControlException;
 import java.security.InvalidKeyException;
 
-import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
-
-import xtremweb.common.Table;
-import xtremweb.common.UID;
-import xtremweb.common.UserInterface;
-import xtremweb.common.XMLReader;
-import xtremweb.common.XMLable;
-import xtremweb.common.XWConfigurator;
-
 /**
- * @author <a href="mailto:lodygens /a|t\ lal.in2p3.fr>Oleg Lodygensky</a>
- * @since 11.5.0
+ * @author Oleg Lodygensky
+ * @since 13.0.5
  */
 
-public class XMLRPCCommandSendData extends XMLRPCCommandSend  {
+public class XMLRPCCommandSendMarketOrder extends XMLRPCCommandSend  {
 
 	/**
 	 * This is the RPC id
 	 */
-	public static final IdRpc IDRPC = IdRpc.SENDDATA;
+	public static final IdRpc IDRPC = IdRpc.SENDMARKETORDER;
 	/**
 	 * This is the XML tag
 	 */
@@ -58,7 +51,7 @@ public class XMLRPCCommandSendData extends XMLRPCCommandSend  {
 	/**
 	 * This constructs a new command
 	 */
-	public XMLRPCCommandSendData() throws IOException {
+	public XMLRPCCommandSendMarketOrder() throws IOException {
 		super(null, IDRPC);
 	}
 
@@ -70,7 +63,7 @@ public class XMLRPCCommandSendData extends XMLRPCCommandSend  {
 	 * @param p
 	 *            defines the object to send
 	 */
-	public XMLRPCCommandSendData(final URI uri, final Table p) throws IOException {
+	public XMLRPCCommandSendMarketOrder(final URI uri, final Table p) throws IOException {
 		super(uri, IDRPC);
 		setParameter(p);
 	}
@@ -85,7 +78,7 @@ public class XMLRPCCommandSendData extends XMLRPCCommandSend  {
 	 * @param p
 	 *            defines the object to send
 	 */
-	public XMLRPCCommandSendData(final URI uri, final UserInterface u, final Table p) throws IOException {
+	public XMLRPCCommandSendMarketOrder(final URI uri, final UserInterface u, final Table p) throws IOException {
 
 		this(uri, p);
 		setUser(u);
@@ -98,9 +91,9 @@ public class XMLRPCCommandSendData extends XMLRPCCommandSend  {
 	 * @param input
 	 *            is the input stream
 	 * @throws InvalidKeyException
-	 * @see xtremweb.common.XMLReader#read(InputStream)
+	 * @see XMLReader#read(InputStream)
 	 */
-	public XMLRPCCommandSendData(final InputStream input) throws IOException, SAXException, InvalidKeyException {
+	public XMLRPCCommandSendMarketOrder(final InputStream input) throws IOException, SAXException, InvalidKeyException {
 		this();
 		final XMLReader reader = new XMLReader(this);
 		reader.read(input);
@@ -136,7 +129,7 @@ public class XMLRPCCommandSendData extends XMLRPCCommandSend  {
 	public static void main(final String[] argv) {
 		try {
 			final XWConfigurator config = new XWConfigurator(argv[0], false);
-			final XMLRPCCommandSend cmd = new XMLRPCCommandSendData(new URI(config.getCurrentDispatcher(), new UID()),
+			final XMLRPCCommandSend cmd = new XMLRPCCommandSendMarketOrder(new URI(config.getCurrentDispatcher(), new UID()),
 					config.getUser());
 			cmd.test(argv);
 		} catch (final Exception e) {
