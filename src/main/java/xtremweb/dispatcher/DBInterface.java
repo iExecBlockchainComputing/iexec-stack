@@ -5501,7 +5501,7 @@ public final class DBInterface {
      *                is thrown if client does not have enough rights
      * @since 13.1.0
      */
-    protected boolean addMarketOrder(final UserInterface u, final CategoryInterface moitf)
+    protected boolean addMarketOrder(final UserInterface u, final MarketOrderInterface moitf)
             throws IOException, InvalidKeyException, AccessControlException, URISyntaxException {
 
         final UserInterface theClient = checkClient(u, UserRightEnum.INSERTMARKETORDER);

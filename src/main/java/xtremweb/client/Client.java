@@ -1748,53 +1748,6 @@ public final class Client {
 		return uids;
 	}
 	/**
-	 * This inserts/updates a category in server.
-	 *
-	 * @throws IOException
-	 * @throws ParseException
-	 * @throws SAXException
-	 * @throws ClassNotFoundException
-	 * @throws InstantiationException
-	 * @throws URISyntaxException
-	 * @throws AccessControlException
-	 * @throws InvalidKeyException
-	 * @throws NoSuchAlgorithmException
-	 * @since 13.0.0
-	 */
-	private void sendCategory() throws IOException, ParseException, InvalidKeyException, AccessControlException,
-			URISyntaxException, InstantiationException, ClassNotFoundException, SAXException, NoSuchAlgorithmException {
-
-		final List categoryParams = (List) args.commandParams();
-
-		CategoryInterface theCategory;
-		final File xmlFile = (File) args.getOption(CommandLineOptions.XML);
-
-		if (xmlFile != null) {
-			final FileInputStream fis = new FileInputStream(xmlFile);
-			theCategory = (CategoryInterface) Table.newInterface(fis);
-			if (theCategory.getCategoryId() <= 0) {
-				throw new IOException("category id can not be zero");
-			}
-			if (theCategory.getUID() == null) {
-				theCategory.setUID(new UID());
-			}
-		} else {
-            if (categoryParams == null) {
-                throw new ParseException("no param provided", 0);
-            }
-            theCategory = new CategoryInterface(new UID());
-            theCategory.setName((String) categoryParams.get(0));
-            theCategory.setMaxCpuSpeed(Integer.valueOf((String)categoryParams.get(1)));
-            theCategory.setMaxWallClockTime(Integer.valueOf((String)categoryParams.get(2)));
-            theCategory.setMaxMemory(Long.valueOf((String)categoryParams.get(3)));
-			theCategory.setMaxFreeMassStorage(Long.valueOf((String)categoryParams.get(4)));
-			theCategory.setMaxFileSize(Long.valueOf((String)categoryParams.get(5)));
-
-        }
-		commClient().send(theCategory);
-		println(commClient().newURI(theCategory.getUID()));
-	}
-	/**
 	 * This retrieves, stores and displays groups installed in XtremWeb server.
 	 *
 	 * @throws AccessControlException
@@ -3338,9 +3291,6 @@ public final class Client {
 				break;
 			case GETCATEGORIES:
 				getCategories(true);
-				break;
-			case SENDCATEGORY:
-				sendCategory();
 				break;
 			case GETGROUPS:
 				getGroups(true);

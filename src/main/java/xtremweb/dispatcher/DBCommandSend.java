@@ -57,8 +57,8 @@ public abstract class DBCommandSend extends DBCommand implements CommCallback {
 			return new DBCommandSendUsergroup();
 		case SENDWORK:
 			return new DBCommandSendWork();
-		case SENDCATEGORY:
-			return new DBCommandSendCategory();
+		case SENDMARKETORDER:
+			return new DBCommandSendMarketOrder();
 		}
 
 		throw new ClassCastException("invalid RPC " + rpc);

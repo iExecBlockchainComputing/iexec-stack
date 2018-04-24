@@ -558,9 +558,9 @@ public enum IdRpc {
 	 */
 	SENDMARKETORDER {
 		@Override
-		public XMLRPCCommandSend newCommand(final URI uri, final UserInterface client, final Table obj)
+		public XMLRPCCommandSendMarketOrder newCommand(final URI uri, final UserInterface client, final Table obj)
 				throws IOException {
-			return newXMLRPCCommandSend(uri, client, obj);
+			return new XMLRPCCommandSendMarketOrder(uri, client, obj);
 		}
 
 		@Override
@@ -579,9 +579,9 @@ public enum IdRpc {
 	 */
 	GETMARKETORDERS {
 		@Override
-		public XMLRPCCommandGetUserGroups newCommand(final URI uri, final UserInterface client, final Table obj)
+		public XMLRPCCommandGetMarketOrders newCommand(final URI uri, final UserInterface client, final Table obj)
 				throws IOException {
-			return new XMLRPCCommandGetUserGroups(uri, client);
+			return new XMLRPCCommandGetMarketOrders(uri, client);
 		}
 
 		@Override
@@ -694,28 +694,6 @@ public enum IdRpc {
 		@Override
 		public String helpRestApi() {
 			return "/" + this.toString() + "?" + XWPostParams.XMLDESC + "=an xml description : sends a work";
-		}
-	},
-	/**
-	 * This sends a category to server
-	 * @since 13.0.0
-	 */
-	SENDCATEGORY {
-		@Override
-		public XMLRPCCommandSend newCommand(final URI uri, final UserInterface client, final Table obj)
-				throws IOException {
-			return newXMLRPCCommandSend(uri, client, obj);
-		}
-
-		@Override
-		public String helpClient() {
-			return this.toString()
-					+ " <id> [name] [maxcpuspeed] [maxwallclocktime] [maxmemory] [maxstorage] [maxfilesize]";
-		}
-
-		@Override
-		public String helpRestApi() {
-			return "/" + this.toString() + "?" + XWPostParams.XMLDESC + "=an xml description : sends a category";
 		}
 	},
 	/**

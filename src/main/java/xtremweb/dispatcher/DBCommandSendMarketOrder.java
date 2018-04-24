@@ -24,6 +24,7 @@ package xtremweb.dispatcher;
 
 import xtremweb.common.CategoryInterface;
 import xtremweb.common.CommCallback;
+import xtremweb.common.MarketOrderInterface;
 import xtremweb.common.XMLable;
 import xtremweb.communications.XMLRPCCommand;
 
@@ -34,15 +35,15 @@ import java.security.InvalidKeyException;
 
 /**
  * @author Oleg Lodygensky
- * @since 13.0.0
+ * @since 13.1.0
  */
 
-public final class DBCommandSendCategory extends DBCommandSend implements CommCallback {
+public final class DBCommandSendMarketOrder extends DBCommandSend implements CommCallback {
 
-	public DBCommandSendCategory() throws IOException {
+	public DBCommandSendMarketOrder() throws IOException {
 		super();
 	}
-	public DBCommandSendCategory(final DBInterface dbi) throws IOException {
+	public DBCommandSendMarketOrder(final DBInterface dbi) throws IOException {
 		super();
 		dbInterface = dbi;
 	}
@@ -51,7 +52,7 @@ public final class DBCommandSendCategory extends DBCommandSend implements CommCa
 			throws IOException, InvalidKeyException, AccessControlException {
 		try {
 			mileStone.println("<dbcommandsendcategory>");
-			dbInterface.addCategory(command.getUser(), (CategoryInterface) command.getParam());
+			dbInterface.addMarketOrder(command.getUser(), (MarketOrderInterface) command.getParam());
 		} catch (URISyntaxException e) {
 			mileStone.println("<error msg =\"" + e.getMessage() + "\" />");
 		}
