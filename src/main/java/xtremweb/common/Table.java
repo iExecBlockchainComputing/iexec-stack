@@ -313,6 +313,13 @@ public abstract class Table extends Type {
 		try {
 			input.reset();
 			input.mark(XWTools.BUFFEREND);
+			final Table ret = new MarketOrderInterface();
+			return readInterface(input, ret);
+		} catch (final SAXException e) {
+		}
+		try {
+			input.reset();
+			input.mark(XWTools.BUFFEREND);
 			final Table ret = new UserInterface();
 			return readInterface(input, ret);
 		} catch (final SAXException e) {

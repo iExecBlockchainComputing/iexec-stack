@@ -181,7 +181,7 @@ public final class MarketOrderInterface extends Table {
 				return TableColumns.fromInt(v);
 			} catch (final Exception e) {
 			}
-			for (final AppInterface.Columns c : AppInterface.Columns.values()) {
+			for (final MarketOrderInterface.Columns c : MarketOrderInterface.Columns.values()) {
 				if (c.getOrdinal() == v) {
 					return c;
 				}
@@ -638,10 +638,10 @@ public final class MarketOrderInterface extends Table {
 
 	/**
 	 * This is for testing only Without any argument, this dumps a
-	 * GroupInterface object. If the first argument is an XML file containing a
-	 * description of a GroupInterface, this creates a GroupInterface from XML
+	 * MarketOrderInterface object. If the first argument is an XML file containing a
+	 * description of a MarketOrderInterface, this creates a MarketOrderInterface from XML
 	 * description and dumps it. <br />
-	 * Usage : java -cp xtremweb.jar xtremweb.common.GroupInterface [xmlFile]
+	 * Usage : java -cp xtremweb.jar xtremweb.common.MarketOrderInterface [xmlFile]
 	 */
 	public static void main(final String[] argv) {
 		try {
@@ -661,7 +661,7 @@ public final class MarketOrderInterface extends Table {
 		} catch (final Exception e) {
 			final Logger logger = new Logger();
 			logger.exception("Usage : java -cp " + XWTools.JARFILENAME
-					+ " xtremweb.common.GroupInterface [anXMLDescriptionFile]", e);
+					+ " xtremweb.common.MarketOrderInterface [anXMLDescriptionFile]", e);
 		}
 	}
 }

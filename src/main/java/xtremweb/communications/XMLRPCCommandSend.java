@@ -33,20 +33,7 @@ import java.security.InvalidKeyException;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
-import xtremweb.common.AppInterface;
-import xtremweb.common.DataInterface;
-import xtremweb.common.CategoryInterface;
-import xtremweb.common.GroupInterface;
-import xtremweb.common.Logger;
-import xtremweb.common.SessionInterface;
-import xtremweb.common.Table;
-import xtremweb.common.UserGroupInterface;
-import xtremweb.common.UserInterface;
-import xtremweb.common.WorkInterface;
-import xtremweb.common.XMLEndParseException;
-import xtremweb.common.XMLReader;
-import xtremweb.common.XMLable;
-import xtremweb.common.XWTools;
+import xtremweb.common.*;
 
 /**
  * XMLRPCCommandSend.java
@@ -82,6 +69,9 @@ public abstract class XMLRPCCommandSend extends XMLRPCCommand {
 			return new XMLRPCCommandSendUserGroup(uri, obj);
 		}
 		if(obj instanceof WorkInterface) {
+			return new XMLRPCCommandSendWork(uri, obj);
+		}
+		if(obj instanceof MarketOrderInterface) {
 			return new XMLRPCCommandSendWork(uri, obj);
 		}
 		throw new IOException("unkown ovject type");
