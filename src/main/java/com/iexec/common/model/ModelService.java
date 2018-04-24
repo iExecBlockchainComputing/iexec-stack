@@ -1,12 +1,11 @@
-package com.iexec.common.ethereum;
+package com.iexec.common.model;
 
 
 import com.iexec.common.contracts.generated.App;
 import com.iexec.common.contracts.generated.Dataset;
 import com.iexec.common.contracts.generated.WorkOrder;
-import com.iexec.common.model.AppModel;
-import com.iexec.common.model.DatasetModel;
-import com.iexec.common.model.WorkOrderModel;
+import com.iexec.common.ethereum.CredentialsService;
+import com.iexec.common.ethereum.Web3jService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.web3j.tx.Contract;
