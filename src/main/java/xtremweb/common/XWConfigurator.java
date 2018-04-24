@@ -224,11 +224,23 @@ public final class XWConfigurator extends Properties {
 		return ++nbJobs;
 	}
 
-	/**
-	 * @since 13.0.0
-	 */
-	public boolean blockchainServices = false;
-	/**
+    /**
+     * This checks if blockchain service is enabled
+     * @return true if blockchain service is enabled
+     * @since 13.1.0
+     */
+    public boolean blockchainEnabled() {
+        return getBoolean(BLOCKCHAINETHENABLED);
+    }
+    /**
+     * This disables blockchain access
+     * @since 13.1.0
+     */
+    public void disableBlockchain() {
+        setProperty(XWPropertyDefs.BLOCKCHAINETHENABLED, "false");
+    }
+
+    /**
 	 * This is the maximum jobs this worker will compute before dying This is
 	 * expecially usefull to deploy workers over Grids
 	 *
@@ -2408,10 +2420,11 @@ public final class XWConfigurator extends Properties {
 		out.println("Sun RPC interposition port : " + getPort(Connection.SUNRPCPORT));
 		out.println("Sandbox path : " + getProperty(XWPropertyDefs.SANDBOXPATH));
 		out.println("Sandbox launch args : " + getProperty(XWPropertyDefs.SANDBOXSTARTARGS));
+		out.println("Blockchain service  : " + getBoolean(BLOCKCHAINETHENABLED));
 
-		if ((getBoolean(BLOCKCHAINETHENABLED) == true)  &&
-				(blockchainServices) && (IexecConfigurationService.getInstance() != null) &&
-				(IexecConfigurationService.getInstance().getCommonConfiguration() != null)) {
+		if (blockchainEnabled()
+				&& (IexecConfigurationService.getInstance() != null)
+				&& (IexecConfigurationService.getInstance().getCommonConfiguration() != null)) {
 
 			final CommonConfiguration commonConfiguration = IexecConfigurationService.getInstance().getCommonConfiguration();
 			out.println("Wallet     addr     : " + CredentialsService.getInstance().getCredentials().getAddress());
@@ -2424,8 +2437,8 @@ public final class XWConfigurator extends Properties {
 				out.println("iExec WorkerPool addr : " + workerPoolConfig.getAddress());
 			}
 		} else {
-			out.println("Blockchain service : disabled");
-		}
+		    disableBlockchain();
+        }
 
 		out.println("Host " + _host.toXml());
 	}

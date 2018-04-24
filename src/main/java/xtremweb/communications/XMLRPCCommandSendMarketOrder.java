@@ -34,7 +34,7 @@ import java.security.InvalidKeyException;
 
 /**
  * @author Oleg Lodygensky
- * @since 13.0.5
+ * @since 13.1.0
  */
 
 public class XMLRPCCommandSendMarketOrder extends XMLRPCCommandSend  {

@@ -36,7 +36,7 @@ import java.security.InvalidKeyException;
  * This class defines the XMLRPCCommand to retrieve categories UID
  *
  * @author Oleg Lodygensky
- * @since 13.0.5
+ * @since 13.1.0
  */
 public class XMLRPCCommandGetMarketOrders extends XMLRPCCommand {
 

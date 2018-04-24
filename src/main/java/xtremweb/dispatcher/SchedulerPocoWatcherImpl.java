@@ -4,6 +4,9 @@ import com.iexec.common.contracts.generated.WorkerPool;
 import com.iexec.common.contracts.generated.WorkOrder;
 import com.iexec.common.ethereum.IexecConfigurationService;
 import com.iexec.common.ethereum.Web3jService;
+import com.iexec.common.model.AppModel;
+import com.iexec.common.model.ModelService;
+import com.iexec.common.model.WorkOrderModel;
 import com.iexec.scheduler.actuator.ActuatorService;
 import com.iexec.scheduler.database.ContributionService;
 import com.iexec.scheduler.iexechub.IexecHubService;
@@ -43,6 +46,9 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
     @Override
     public void onWorkOrderActivated(String workOrderId) {
         //actuatorService.allowWorkersToContribute(workOrderId, Arrays.asList("0x70a1bebd73aef241154ea353d6c8c52d420d4f5b"), "O");
+        WorkOrderModel workOrderModel = ModelService.getInstance().getWorkOrderModel(workOrderId);
+        AppModel appModel = ModelService.getInstance().getAppModel(workOrderModel.getApp());
+//        DatasetModel datasetModel = ModelService.getInstance().getDatasetModel(workOrderModel.getDataset());
     }
 
     @Override

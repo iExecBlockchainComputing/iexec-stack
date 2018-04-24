@@ -85,7 +85,7 @@ public enum UserRightEnum {
 	GETCATEGORY,
 	/**
 	 * retrieve market order
-	 * @since 13.0.5
+	 * @since 13.1.0
 	 */
 	GETMARKETORDER,
 	/**
@@ -184,7 +184,7 @@ public enum UserRightEnum {
 	LISTCATEGORY,
 	/**
 	 * retrieve market orders list
-	 * @since 13.0.5
+	 * @since 13.1.0
 	 */
 	LISTMARKETORDER,
 	/**
@@ -219,7 +219,7 @@ public enum UserRightEnum {
 	INSERTCATEGORY,
 	/**
 	 * this is a privileged right : send/update market order
-	 * @since 13.0.5
+	 * @since 13.1.0
 	 */
 	INSERTMARKETORDER,
 	/**
@@ -236,7 +236,7 @@ public enum UserRightEnum {
 	DELETEUSERGROUP,
 	/**
 	 * this is a privileged right : delete market order
-	 * @since 13.0.5
+	 * @since 13.1.0
 	 */
 	DELETEMARKETORDER,
 	/**

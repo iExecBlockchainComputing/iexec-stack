@@ -305,7 +305,6 @@ public class Dispatcher {
                 } else {
                     throw new IOException("Unable to connect to ETH node");
                 }
-                config.blockchainServices = true;
             } catch (final Exception e) {
                 logger.exception("Can't access to blockchain services", e);
             }

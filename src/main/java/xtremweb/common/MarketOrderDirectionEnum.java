@@ -24,7 +24,7 @@
 package xtremweb.common;
 
 /**
- * @since 13.0.5
+ * @since 13.1.0
  *
  * @author Oleg Lodygensky
  */

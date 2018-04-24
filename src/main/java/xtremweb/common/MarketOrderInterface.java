@@ -35,7 +35,7 @@ import java.sql.ResultSet;
 
 /**
  * @author Oleg Lodygensky
- * @since 13.0.5
+ * @since 13.1.0
  */
 
 /**

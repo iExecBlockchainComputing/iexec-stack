@@ -1918,7 +1918,7 @@ public abstract class CommClient implements ClientAPI {
 	 * This retrieves all market orders from server
 	 *
 	 * @return a vector of UIDs
-	 * @since 13.0.5
+	 * @since 13.1.0
 	 */
 	@Override
 	public XMLVector getMarketOrders()
@@ -1933,7 +1933,7 @@ public abstract class CommClient implements ClientAPI {
 	 * This retrieves all market orders from server
 	 *
 	 * @return a vector of UIDs
-	 * @since 13.0.5
+	 * @since 13.1.0
 	 */
 	@Override
 	public XMLVector getMarketOrders(final XMLRPCCommandGetMarketOrders command)

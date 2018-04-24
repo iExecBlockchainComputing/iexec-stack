@@ -1084,7 +1084,7 @@ public final class DBInterface {
 	 *
 	 * @param u
 	 *            is the requesting user
-	 * @since 13.0.5
+	 * @since 13.1.0
 	 */
 	private MarketOrderInterface readableMarketOrder(final UserInterface u) throws IOException {
 		return readableObject(new MarketOrderInterface(), u);
@@ -1096,7 +1096,7 @@ public final class DBInterface {
 	 *            is the requesting user
 	 * @param uid
 	 *            is the UID of the market order to retrieve
-	 * @since 13.0.5
+	 * @since 13.1.0
 	 */
 	private MarketOrderInterface readableMarketOrder(final UserInterface u, final UID uid) throws IOException {
 		return readableObject(new MarketOrderInterface(), u, uid);
@@ -1107,7 +1107,7 @@ public final class DBInterface {
 	 *
 	 * @param u
 	 *            is the requesting user
-	 * @since 13.0.5
+	 * @since 13.1.0
 	 */
 	private MarketOrderInterface readableMarketOrderUID(final UserInterface u) throws IOException {
 		return readableObjectUID(new MarketOrderInterface(), u);
@@ -1121,7 +1121,7 @@ public final class DBInterface {
 	 *            is the requesting user
 	 * @param uid
 	 *            is the UID of the readable market to retrieve
-	 * @since 13.0.5
+	 * @since 13.1.0
 	 */
 	protected MarketOrderInterface marketOrder(final UserInterface u, final UID uid)
 			throws IOException, AccessControlException {
@@ -1143,7 +1143,7 @@ public final class DBInterface {
 	 *
 	 * @param command
 	 * @return a market order interface
-	 * @since 13.0.5
+	 * @since 13.1.0
 	 */
 	protected MarketOrderInterface marketOrder(final XMLRPCCommand command) throws InvalidKeyException, IOException, AccessControlException {
 		final UID uid = command.getURI().getUID();
@@ -1169,7 +1169,7 @@ public final class DBInterface {
 	 * @param conditions
 	 *            restrict selected rows
 	 * @return the last loaded row
-	 * @since 13.0.5
+	 * @since 13.1.0
 	 */
 	protected MarketOrderInterface marketOrder(final UserInterface u, final String conditions) throws IOException {
 		final MarketOrderInterface row = readableMarketOrder(u);
@@ -1182,7 +1182,7 @@ public final class DBInterface {
 	 * @param u
 	 *            is the requesting user
 	 * @return a Collection of market order
-	 * @since 13.0.5
+	 * @since 13.1.0
 	 */
 	protected Collection<MarketOrderInterface> marketOrder(final UserInterface u) throws IOException {
 		final MarketOrderInterface row = readableMarketOrder(u);
@@ -1195,7 +1195,7 @@ public final class DBInterface {
 	 * @param u
 	 *            is the requesting user
 	 * @return a Collection of UID
-	 * @since 13.0.5
+	 * @since 13.1.0
 	 */
 	protected Collection<UID> marketOrdersUID(final UserInterface u) throws IOException {
 		return marketOrdersUID(u, (String) null);
@@ -1208,7 +1208,7 @@ public final class DBInterface {
 	 * @param u
 	 *            is the requesting user
 	 * @return a Collection of UID
-	 * @since 13.0.5
+	 * @since 13.1.0
 	 */
 	protected Collection<UID> marketOrdersUID(final UserInterface u, final String criterias) throws IOException {
 		final MarketOrderInterface row = readableMarketOrderUID(u);
@@ -1221,7 +1221,7 @@ public final class DBInterface {
 	 * @param u
 	 *            is the requesting user
 	 * @return how many market order exist
-	 * @since 13.0.5
+	 * @since 13.1.0
 	 */
 	protected int marketOrdersSize(final UserInterface u) throws IOException {
 		try {
@@ -4222,7 +4222,7 @@ public final class DBInterface {
      *                password...)
      * @exception AccessControlException
      *                is thrown if client does not have enough rights
-     * @since 13.0.5
+     * @since 13.1.0
      */
     protected boolean removeMarketOrder(final XMLRPCCommand command)
             throws IOException, InvalidKeyException, AccessControlException {
@@ -5468,7 +5468,7 @@ public final class DBInterface {
      *                is thrown on credential error
      * @exception AccessControlException
      *                is thrown on access rights violation
-     * @since 13.0.5
+     * @since 13.1.0
      */
     public Collection<UID> getAllMarketOrders(final XMLRPCCommand command)
             throws IOException, InvalidKeyException, AccessControlException {
@@ -5480,7 +5480,7 @@ public final class DBInterface {
      * This calls marketOrder(command)
      *
      * @see #marketOrder(XMLRPCCommand)
-     * @since 13.0.5
+     * @since 13.1.0
      */
     protected MarketOrderInterface getMarketOrder(final XMLRPCCommand command)
             throws IOException, InvalidKeyException, AccessControlException {
@@ -5499,7 +5499,7 @@ public final class DBInterface {
      *                password...)
      * @exception AccessControlException
      *                is thrown if client does not have enough rights
-     * @since 13.0.5
+     * @since 13.1.0
      */
     protected boolean addMarketOrder(final UserInterface u, final CategoryInterface moitf)
             throws IOException, InvalidKeyException, AccessControlException, URISyntaxException {
