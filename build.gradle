@@ -50,7 +50,9 @@ def pocoJsonFiles = [
         'PoCo/build/contracts/WorkerPool.json',
         'PoCo/build/contracts/Marketplace.json',
         'PoCo/build/contracts/WorkOrder.json',
-        'rlc-faucet-contract/build/contracts/RLC.json'
+        'PoCo/build/contracts/App.json',
+        'PoCo/build/contracts/Dataset.json',
+        'rlc-faucet-contract/build/contracts/RLC.json',
 ]
 
 task buildContracts() {
