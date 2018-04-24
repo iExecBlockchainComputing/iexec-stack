@@ -89,8 +89,8 @@ public final class MarketOrderInterface extends Table {
          */
 		TRUST {
 			@Override
-			public Long fromString(final String v) {
-				return Long.valueOf(v);
+			public Float fromString(final String v) {
+				return Float.valueOf(v);
 			}
 		},
         /**
@@ -209,6 +209,8 @@ public final class MarketOrderInterface extends Table {
 
 	/**
 	 * This is the default constructor
+     * TRUST is forced to 0.5
+     * EXPECTEDWORKERS is forced to 10
 	 */
 	public MarketOrderInterface() {
 
@@ -217,6 +219,7 @@ public final class MarketOrderInterface extends Table {
 		setAttributeLength(ENUMSIZE);
 
 		setAccessRights(XWAccessRights.USERALL);
+		setTrust(0.7f);
 		setShortIndexes(new int[] { TableColumns.UID.getOrdinal(), Columns.CATEGORYID.getOrdinal(), Columns.DIRECTION.getOrdinal() });
 	}
 
@@ -279,7 +282,7 @@ public final class MarketOrderInterface extends Table {
             setNbWorkers((Long) Columns.NBWORKERS.fromResultSet(rs));
 			setDirection((MarketOrderDirectionEnum) Columns.DIRECTION.fromResultSet(rs));
 			setPrice((Long) Columns.PRICE.fromResultSet(rs));
-			setTrust((Long) Columns.TRUST.fromResultSet(rs));
+			setTrust((Float) Columns.TRUST.fromResultSet(rs));
 			setVolume((Long) Columns.VOLUME.fromResultSet(rs));
 			setRemaining((Long) Columns.REMAINING.fromResultSet(rs));
 			setWorkerPoolAddr((String) Columns.WORKERPOOLADDR.fromResultSet(rs));
@@ -424,13 +427,11 @@ public final class MarketOrderInterface extends Table {
      * This retrieves the amount of needed worker to safely reach the trust
      *
      * @return this attribute, or null if not set
-     * @exception IOException
-     *                is thrown is attribute is nor well formed
      */
-    public Long getExpectedWorkers() throws IOException {
+    public Long getExpectedWorkers() {
         try {
             return (Long) getValue(Columns.EXPECTEDWORKERS);
-        } catch (final NullPointerException e) {
+        } catch (final Exception e) {
             return null;
         }
     }
@@ -438,13 +439,11 @@ public final class MarketOrderInterface extends Table {
      * This retrieves the amount of booked worker to reach the trust
      *
      * @return this attribute, or null if not set
-     * @exception IOException
-     *                is thrown is attribute is nor well formed
      */
-    public Long getNbWorkers() throws IOException {
+    public Long getNbWorkers()  {
         try {
             return (Long) getValue(Columns.NBWORKERS);
-        } catch (final NullPointerException e) {
+        } catch (final Exception e) {
             return null;
         }
     }
@@ -452,13 +451,11 @@ public final class MarketOrderInterface extends Table {
 	 * This retrieves the trust value
 	 *
 	 * @return this attribute, or null if not set
-	 * @exception IOException
-	 *                is thrown is attribute is nor well formed
 	 */
-	public Long getTrust() throws IOException {
+	public Float getTrust()  {
 		try {
-			return (Long) getValue(Columns.TRUST);
-		} catch (final NullPointerException e) {
+			return (Float) getValue(Columns.TRUST);
+		} catch (final Exception e) {
 			return null;
 		}
 	}
@@ -467,13 +464,11 @@ public final class MarketOrderInterface extends Table {
 	 * This is named "value" in smart contract
 	 *
 	 * @return this attribute, or null if not set
-	 * @exception IOException
-	 *                is thrown is attribute is nor well formed
 	 */
-	public Long getPrice() throws IOException {
+	public Long getPrice()  {
 		try {
 			return (Long) getValue(Columns.PRICE);
-		} catch (final NullPointerException e) {
+		} catch (final Exception e) {
 			return null;
 		}
 	}
@@ -481,13 +476,11 @@ public final class MarketOrderInterface extends Table {
 	 * This retrieves the volume
 	 *
 	 * @return this attribute, or null if not set
-	 * @exception IOException
-	 *                is thrown is attribute is nor well formed
 	 */
-	public Long getVolume() throws IOException {
+	public Long getVolume()  {
 		try {
 			return (Long) getValue(Columns.VOLUME);
-		} catch (final NullPointerException e) {
+		} catch (final Exception e) {
 			return null;
 		}
 	}
@@ -495,13 +488,11 @@ public final class MarketOrderInterface extends Table {
 	 * This retrieves the remaining
 	 *
 	 * @return this attribute, or null if not set
-	 * @exception IOException
-	 *                is thrown is attribute is nor well formed
 	 */
-	public Long getRemaining() throws IOException {
+	public Long getRemaining()  {
 		try {
 			return (Long) getValue(Columns.REMAINING);
-		} catch (final NullPointerException e) {
+		} catch (final Exception e) {
 			return null;
 		}
 	}
@@ -509,13 +500,11 @@ public final class MarketOrderInterface extends Table {
 	 * This retrieves the worker pool address
 	 *
 	 * @return this attribute, or null if not set
-	 * @exception IOException
-	 *                is thrown is attribute is nor well formed
 	 */
-	public String getWorkerPoolAddr() throws IOException {
+	public String getWorkerPoolAddr() {
 		try {
 			return (String) getValue(Columns.WORKERPOOLADDR);
-		} catch (final NullPointerException e) {
+		} catch (final Exception e) {
 			return null;
 		}
 	}
@@ -523,13 +512,11 @@ public final class MarketOrderInterface extends Table {
 	 * This retrieves the worker pool owner address
 	 *
 	 * @return this attribute, or null if not set
-	 * @exception IOException
-	 *                is thrown is attribute is nor well formed
 	 */
-	public String getWorkerPoolOwnerAddr() throws IOException {
+	public String getWorkerPoolOwnerAddr() {
 		try {
 			return (String) getValue(Columns.WORKERPOOLOWNERADDR);
-		} catch (final NullPointerException e) {
+		} catch (final Exception e) {
 			return null;
 		}
 	}
@@ -566,108 +553,86 @@ public final class MarketOrderInterface extends Table {
      * This sets the category id
      * @param c is the category id
      * @return true if value has changed, false otherwise
-     * @exception IOException
-     *                is thrown is attribute is nor well formed
      */
-    public boolean setCategoryId(final Long c) throws IOException {
+    public boolean setCategoryId(final Long c)  {
         return setValue(Columns.CATEGORYID, c);
     }
     /**
      * This sets the amount of needed workers to safely reach the trust
      * @param e is the amount of needed workers
      * @return true if value has changed, false otherwise
-     * @exception IOException
-     *                is thrown is attribute is nor well formed
      */
-    public boolean setExpectedWorkers(final Long e) throws IOException {
+    public boolean setExpectedWorkers(final Long e)  {
         return setValue(Columns.EXPECTEDWORKERS, e);
     }
     /**
      * This sets the amount of booked workers to reach the trust
      * @param n is the amount of booked workers
      * @return true if value has changed, false otherwise
-     * @exception IOException
-     *                is thrown is attribute is nor well formed
      */
-    public boolean setNbWorkers(final Long n) throws IOException {
+    public boolean setNbWorkers(final Long n)  {
         return setValue(Columns.NBWORKERS, n);
     }
     /**
      * This increments the amount of booked workers to reach the trust
      * @return true if value has changed, false otherwise
-     * @exception IOException
-     *                is thrown is attribute is nor well formed
      */
-    public boolean incNbWorkers() throws IOException {
+    public boolean incNbWorkers()  {
         return setValue(Columns.NBWORKERS, getNbWorkers() + 1);
     }
     /**
      * This decrements the amount of booked workers to reach the trust
      * @return true if value has changed, false otherwise
-     * @exception IOException
-     *                is thrown is attribute is nor well formed
      */
-    public boolean decNbWorkers() throws IOException {
+    public boolean decNbWorkers()  {
         return setValue(Columns.NBWORKERS, getNbWorkers() - 1);
     }
 	/**
 	 * This sets the trust value
 	 * @param t is the trust
      * @return true if value has changed, false otherwise
-	 * @exception IOException
-	 *                is thrown is attribute is nor well formed
 	 */
-	public boolean setTrust(final Long t) throws IOException {
+	public boolean setTrust(final Float t)  {
 		return setValue(Columns.TRUST, t);
 	}
 	/**
 	 * This sets the price value
 	 * @param p is the price
      * @return true if value has changed, false otherwise
-	 * @exception IOException
-	 *                is thrown is attribute is nor well formed
 	 */
-	public boolean setPrice(final Long p) throws IOException {
+	public boolean setPrice(final Long p)  {
 		return setValue(Columns.PRICE, p);
 	}
 	/**
 	 * This sets the volume
 	 * @param v is the volume
      * @return true if value has changed, false otherwise
-	 * @exception IOException
-	 *                is thrown is attribute is nor well formed
 	 */
-	public boolean setVolume(final Long v) throws IOException {
+	public boolean setVolume(final Long v)  {
 		return setValue(Columns.VOLUME, v);
 	}
 	/**
 	 * This sets the remaining
 	 * @param r is the remaining
      * @return true if value has changed, false otherwise
-	 * @exception IOException
-	 *                is thrown is attribute is nor well formed
 	 */
-	public boolean setRemaining(final Long r) throws IOException {
+	public boolean setRemaining(final Long r)  {
 		return setValue(Columns.REMAINING, r);
 	}
 	/**
 	 * This sets the worker pool address
 	 * @param addr is the worker pool address
      * @return true if value has changed, false otherwise
-	 * @exception IOException
-	 *                is thrown is attribute is nor well formed
 	 */
-	public boolean setWorkerPoolAddr(final String addr) throws IOException {
+	public boolean setWorkerPoolAddr(final String addr)  {
 		return setValue(Columns.WORKERPOOLADDR, addr);
 	}
 	/**
 	 * This sets the worker pool owner address
 	 * @param addr is the worker pool owner address
      * @return true if value has changed, false otherwise
-	 * @exception IOException
-	 *                is thrown is attribute is nor well formed
 	 */
-	public boolean setWorkerPoolOwnerAddr(final String addr) throws IOException {
+	public boolean setWorkerPoolOwnerAddr(final String addr)  {
 		return setValue(Columns.WORKERPOOLOWNERADDR, addr);
 	}
 

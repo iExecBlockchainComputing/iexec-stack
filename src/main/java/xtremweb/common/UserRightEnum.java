@@ -235,6 +235,11 @@ public enum UserRightEnum {
 	 */
 	DELETEUSERGROUP,
 	/**
+	 * this is a privileged right : delete market order
+	 * @since 13.0.5
+	 */
+	DELETEMARKETORDER,
+	/**
 	 * all rights
 	 */
 	SUPER_USER;

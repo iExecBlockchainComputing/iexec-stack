@@ -73,9 +73,6 @@ public class WorkInterface extends Table {
 		 * This is the column index of the session UID, if any
 		 */
 		SESSIONUID {
-			/**
-			 * This creates a new UID from string
-			 */
 			@Override
 			public UID fromString(final String v) {
 				return new UID(v);
@@ -85,9 +82,6 @@ public class WorkInterface extends Table {
 		 * This is the column index of the group UID, if any
 		 */
 		GROUPUID {
-			/**
-			 * This creates a new UID from string
-			 */
 			@Override
 			public UID fromString(final String v) {
 				return new UID(v);
@@ -99,16 +93,6 @@ public class WorkInterface extends Table {
 		 * @since 7.2.0
 		 */
 		SGID {
-			/**
-			 * This creates an object from String representation for this column
-			 * value This cleans the parameter to ensure SQL compliance
-			 *
-			 * @param v
-			 *            the String representation
-			 * @return a String representing the column value
-			 * @throws Exception
-			 *             is thrown on instantiation error
-			 */
 			@Override
 			public String fromString(final String v) {
 				String val = v;
@@ -124,9 +108,6 @@ public class WorkInterface extends Table {
 		 * @since RPCXW
 		 */
 		EXPECTEDHOSTUID {
-			/**
-			 * This creates a new UID from string
-			 */
 			@Override
 			public UID fromString(final String v) {
 				return new UID(v);
@@ -152,9 +133,6 @@ public class WorkInterface extends Table {
 		 * This is column index of the the application UID
 		 */
 		APPUID {
-			/**
-			 * This creates a new UID from string
-			 */
 			@Override
 			public UID fromString(final String v) {
 				return new UID(v);
@@ -209,16 +187,6 @@ public class WorkInterface extends Table {
 		 * This is the column index of the command line, if any
 		 */
 		CMDLINE {
-			/**
-			 * This creates an object from String representation for this column
-			 * value This cleans the parameter to ensure SQL compliance
-			 *
-			 * @param v
-			 * the String representation
-			 * @return a Boolean representing the column value
-			 * @throws Exception
-			 * is thrown on instantiation error
-			 */
 			@Override
 			public String fromString(final String v) {
 				String val = v;
@@ -358,28 +326,28 @@ public class WorkInterface extends Table {
 				return new Boolean(v);
 			}
 		},
-        /**
-         * This is the column index of category; this is optional
-         *
-         * @since 13.0.0
-         */
-        CATEGORYID {
-            @Override
-            public Integer fromString(final String v) throws URISyntaxException {
-                return Integer.valueOf(v);
-            }
-        },
-        /**
-         * This is the column index of market order id; this is optional
-         *
-         * @since 13.0.0
-         */
-        MARKETORDERID {
-            @Override
-            public Integer fromString(final String v) throws URISyntaxException {
-                return Integer.valueOf(v);
-            }
-        },
+		/**
+		 * This is the column index of category; this is optional
+		 *
+		 * @since 13.0.0
+		 */
+		CATEGORYID {
+			@Override
+			public Integer fromString(final String v) throws URISyntaxException {
+				return Integer.valueOf(v);
+			}
+		},
+		/**
+		 * This is the column index of market order uid; this is optional
+		 *
+		 * @since 13.1.0
+		 */
+		MARKETORDERUID {
+			@Override
+			public UID fromString(final String v) throws URISyntaxException {
+				return new UID(v);
+			}
+		},
 		/**
 		 * This is the column index of the amount of expected replicas This job
 		 * is replicated forever, if < 0
@@ -747,7 +715,7 @@ public class WorkInterface extends Table {
 
 	/**
 	 * This is the default constructor. There is no replication by default.
-     * categoryId is set to 0; marketOrderId is set to 0
+     * categoryId is set to 0
 	 */
 	public WorkInterface() {
 
@@ -768,7 +736,7 @@ public class WorkInterface extends Table {
 		setTotalReplica(0);
 		setReplicaSetSize(0);
         setCategoryId(0);
-        setMarketOrderId(0);
+        setMarketOrderUid(null);
 	}
 
 	/**
@@ -962,7 +930,7 @@ public class WorkInterface extends Table {
         } catch (final Exception e) {
         }
         try {
-            setMarketOrderId((Integer) Columns.MARKETORDERID.fromResultSet(rs));
+            setMarketOrderUid((UID) Columns.MARKETORDERUID.fromResultSet(rs));
         } catch (final Exception e) {
         }
 		try {
@@ -1091,7 +1059,7 @@ public class WorkInterface extends Table {
 		setReplicaSetSize(itf.getReplicaSetSize());
 		setExpectedReplications(itf.getExpectedReplications());
         setCategoryId(itf.getCategoryId());
-        setMarketOrderId(itf.getMarketOrderId());
+        setMarketOrderUid(itf.getMarketOrderUid());
 		setReplicatedUid(itf.getReplicatedUid());
 		setDataDriven(itf.getDataDriven());
 		setExpectedHost(itf.getExpectedHost());
@@ -1724,16 +1692,12 @@ public class WorkInterface extends Table {
         return 0;
     }
     /**
-     * This retrieves the market order ID
-     * @since 13.0.0
-     * @return this attribute, or 0 if not set
+     * This retrieves the market order UID
+     * @since 13.1.0
+     * @return this attribute, or null if not set
      */
-    public final int getMarketOrderId() {
-        final Integer ret = (Integer) getValue(Columns.MARKETORDERID);
-        if (ret != null) {
-            return ret.intValue();
-        }
-        return 0;
+    public final UID getMarketOrderUid() {
+        return (UID) getValue(Columns.MARKETORDERUID);
     }
 
 	/**
@@ -2518,13 +2482,12 @@ public class WorkInterface extends Table {
     }
     /**
      * This sets the market order ID
-     * @param mid is the market order id; if <= 0, value is forced to 0
+     * @param uid is the market order uid
      * @since 13.0.0
      * @return true if value has changed, false otherwise
      */
-    public final boolean setMarketOrderId(final int mid) {
-        final Integer b = new Integer(mid > 0 ? mid : 0);
-        return setValue(Columns.MARKETORDERID, b);
+    public final boolean setMarketOrderUid(final UID uid) {
+        return setValue(Columns.MARKETORDERUID, uid);
     }
 
 	/**

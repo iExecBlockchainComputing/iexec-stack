@@ -25,14 +25,11 @@ SET FOREIGN_KEY_CHECKS=0;
 drop table if exists  categories;
 drop table if exists  categories_history;
 
-drop table if exists  marketorders;
-drop table if exists  marketorders_history;
 
 
 
 ALTER TABLE  works DROP   COLUMN categoryId;
 ALTER TABLE  works DROP   COLUMN marketOrderId;
-
 ALTER TABLE  works DROP   COLUMN maxFreeMassStorage;
 ALTER TABLE  works DROP   COLUMN maxFileSize;
 ALTER TABLE  works DROP   COLUMN maxMemory;

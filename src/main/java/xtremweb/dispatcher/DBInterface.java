@@ -2850,10 +2850,14 @@ public final class DBInterface {
 			return true;
 		}
 
-		if (removeUserGroup(theClient, uid)) {
-			logger.finest("usergroup deleted " + uid);
-			return true;
-		}
+        if (removeUserGroup(theClient, uid)) {
+            logger.finest("usergroup deleted " + uid);
+            return true;
+        }
+        if (removeMarketOrder(theClient, uid)) {
+            logger.finest("market order deleted " + uid);
+            return true;
+        }
 
 		throw new IOException("Object not found");
 	}
@@ -4140,75 +4144,142 @@ public final class DBInterface {
 		return true;
 	}
 
-	/**
-	 * This deletes a session from DB and all its associated jobs
-	 *
-	 * @param command is the command to execute
-	 * @return true on success; false otherwise
-	 * @exception IOException
-	 *                is thrown on DB access or I/O error
-	 * @exception InvalidKeyException
-	 *                is thrown on client integrity error (user unknown, bad
-	 *                password...)
-	 * @exception AccessControlException
-	 *                is thrown if client does not have enough rights
-	 */
-	protected boolean removeSession(final XMLRPCCommand command)
-			throws IOException, InvalidKeyException, AccessControlException {
+    /**
+     * This deletes a session from DB and all its associated jobs
+     *
+     * @param command is the command to execute
+     * @return true on success; false otherwise
+     * @exception IOException
+     *                is thrown on DB access or I/O error
+     * @exception InvalidKeyException
+     *                is thrown on client integrity error (user unknown, bad
+     *                password...)
+     * @exception AccessControlException
+     *                is thrown if client does not have enough rights
+     */
+    protected boolean removeSession(final XMLRPCCommand command)
+            throws IOException, InvalidKeyException, AccessControlException {
 
-		final UserInterface theClient = checkClient(command, UserRightEnum.DELETEGROUP);
-		final UID sessionUid = command.getURI().getUID();
-		if (sessionUid == null) {
-			return false;
-		}
-		final SessionInterface session = session(theClient, sessionUid);
-		if (session == null) {
-			return false;
-		}
+        final UserInterface theClient = checkClient(command, UserRightEnum.DELETEGROUP);
+        final UID sessionUid = command.getURI().getUID();
+        if (sessionUid == null) {
+            return false;
+        }
+        final SessionInterface session = session(theClient, sessionUid);
+        if (session == null) {
+            return false;
+        }
 
-		if (deleteJobs(theClient, getSessionJobs(command))) {
-			return delete(theClient, session);
-		}
+        if (deleteJobs(theClient, getSessionJobs(command))) {
+            return delete(theClient, session);
+        }
 
-		return true;
-	}
+        return false;
+    }
+    /**
+     * This deletes a session from DB and all its associated jobs
+     *
+     * @param client
+     *            describes the requesting client
+     * @param sessionUid
+     *            is the UID of the session to delete
+     * @return true on success; false otherwise
+     * @exception IOException
+     *                is thrown on DB access or I/O error
+     * @exception InvalidKeyException
+     *                is thrown on client integrity error (user unknown, bad
+     *                password...)
+     * @exception AccessControlException
+     *                is thrown if client does not have enough rights
+     */
+    protected boolean removeSession(final UserInterface client, final UID sessionUid)
+            throws IOException, InvalidKeyException, AccessControlException {
 
-	/**
-	 * This deletes a session from DB and all its associated jobs
-	 *
-	 * @param client
-	 *            describes the requesting client
-	 * @param sessionUid
-	 *            is the UID of the session to delete
-	 * @return true on success; false otherwise
-	 * @exception IOException
-	 *                is thrown on DB access or I/O error
-	 * @exception InvalidKeyException
-	 *                is thrown on client integrity error (user unknown, bad
-	 *                password...)
-	 * @exception AccessControlException
-	 *                is thrown if client does not have enough rights
-	 */
-	protected boolean removeSession(final UserInterface client, final UID sessionUid)
-			throws IOException, InvalidKeyException, AccessControlException {
+        final UserInterface theClient = checkClient(client, UserRightEnum.DELETEGROUP);
+        if (sessionUid == null) {
+            return false;
+        }
+        final SessionInterface session = session(theClient, sessionUid);
+        if (session == null) {
+            return false;
+        }
 
-		final UserInterface theClient = checkClient(client, UserRightEnum.DELETEGROUP);
-		if (sessionUid == null) {
-			return false;
-		}
-		final SessionInterface session = session(theClient, sessionUid);
-		if (session == null) {
-			return false;
-		}
+        if (deleteJobs(theClient, getSessionJobs(theClient, sessionUid))) {
+            return delete(theClient, session);
+        }
 
-		if (deleteJobs(theClient, getSessionJobs(theClient, sessionUid))) {
-			return delete(theClient, session);
-		}
+        return false;
+    }
+    /**
+     * This deletes a market order from DB
+     *
+     * @param command is the command to execute
+     * @return true on success; false otherwise
+     * @exception IOException
+     *                is thrown on DB access or I/O error
+     * @exception InvalidKeyException
+     *                is thrown on client integrity error (user unknown, bad
+     *                password...)
+     * @exception AccessControlException
+     *                is thrown if client does not have enough rights
+     * @since 13.0.5
+     */
+    protected boolean removeMarketOrder(final XMLRPCCommand command)
+            throws IOException, InvalidKeyException, AccessControlException {
 
-		return true;
-	}
+        final UserInterface theClient = checkClient(command, UserRightEnum.DELETEMARKETORDER);
+        final UID uid = command.getURI().getUID();
+        if (uid == null) {
+            return false;
+        }
+        final MarketOrderInterface marketOrder = marketOrder(theClient, uid);
+        if (marketOrder == null) {
+            return false;
+        }
 
-	/**
+        if (deleteJobs(theClient, getMarketOrderJobs(command))) {
+            return delete(theClient, marketOrder);
+        }
+
+        return false;
+    }
+    /**
+     * This deletes a session from DB and all its associated jobs
+     *
+     * @param client
+     *            describes the requesting client
+     * @param uid
+     *            is the UID of the session to delete
+     * @return true on success; false otherwise
+     * @exception IOException
+     *                is thrown on DB access or I/O error
+     * @exception InvalidKeyException
+     *                is thrown on client integrity error (user unknown, bad
+     *                password...)
+     * @exception AccessControlException
+     *                is thrown if client does not have enough rights
+     * @since 13.1.0
+     */
+    protected boolean removeMarketOrder(final UserInterface client, final UID uid)
+            throws IOException, InvalidKeyException, AccessControlException {
+
+        final UserInterface theClient = checkClient(client, UserRightEnum.DELETEMARKETORDER);
+        if (uid == null) {
+            return false;
+        }
+        final MarketOrderInterface session = marketOrder(theClient, uid);
+        if (session == null) {
+            return false;
+        }
+
+        if (deleteJobs(theClient, getMarketOrderJobs(theClient, uid))) {
+            return delete(theClient, session);
+        }
+
+        return false;
+    }
+
+    /**
 	 * This deletes a session from DB and all its associated jobs
 	 *
 	 * @param command is the command to execute
@@ -4498,29 +4569,28 @@ public final class DBInterface {
 				+ uid.toString() + "'");
 	}
 
-	/**
-	 * This retrieves jobs for a given session
-	 *
-	 * @param command is the command to execute
-	 * @return a Vector of UID
-	 * @see #worksUID(UserInterface, String)
-	 * @exception IOException
-	 *                is thrown on DB access or I/O error
-	 * @exception InvalidKeyException
-	 *                is thrown on client integrity error (user unknown, bad
-	 *                password...)
-	 * @exception AccessControlException
-	 *                is thrown if client does not have enough rights
-	 */
-	public Collection<UID> getSessionJobs(final XMLRPCCommand command)
-			throws IOException, InvalidKeyException, AccessControlException {
+    /**
+     * This retrieves jobs for a given session
+     *
+     * @param command is the command to execute
+     * @return a Vector of UID
+     * @see #worksUID(UserInterface, String)
+     * @exception IOException
+     *                is thrown on DB access or I/O error
+     * @exception InvalidKeyException
+     *                is thrown on client integrity error (user unknown, bad
+     *                password...)
+     * @exception AccessControlException
+     *                is thrown if client does not have enough rights
+     */
+    public Collection<UID> getSessionJobs(final XMLRPCCommand command)
+            throws IOException, InvalidKeyException, AccessControlException {
 
-		final UserInterface theClient = checkClient(command, UserRightEnum.LISTJOB);
-		final UID uid = command.getURI().getUID();
-		return worksUID(theClient, SQLRequest.MAINTABLEALIAS + "." + WorkInterface.Columns.SESSIONUID.toString() + "='"
-				+ uid.toString() + "'");
-	}
-
+        final UserInterface theClient = checkClient(command, UserRightEnum.LISTJOB);
+        final UID uid = command.getURI().getUID();
+        return worksUID(theClient, SQLRequest.MAINTABLEALIAS + "." + WorkInterface.Columns.SESSIONUID.toString() + "='"
+                + uid.toString() + "'");
+    }
 	/**
 	 * This retrieves jobs for a given session
 	 *
@@ -4545,6 +4615,54 @@ public final class DBInterface {
 		return worksUID(theClient, SQLRequest.MAINTABLEALIAS + "." + WorkInterface.Columns.SESSIONUID.toString() + "='"
 				+ sessionUid.toString() + "'");
 	}
+    /**
+     * This retrieves jobs for a given market order
+     *
+     * @param command is the command to execute
+     * @return a Vector of UID
+     * @see #worksUID(UserInterface, String)
+     * @exception IOException
+     *                is thrown on DB access or I/O error
+     * @exception InvalidKeyException
+     *                is thrown on client integrity error (user unknown, bad
+     *                password...)
+     * @exception AccessControlException
+     *                is thrown if client does not have enough rights
+     * @since 13.1.0
+     */
+    public Collection<UID> getMarketOrderJobs(final XMLRPCCommand command)
+            throws IOException, InvalidKeyException, AccessControlException {
+
+        final UserInterface theClient = checkClient(command, UserRightEnum.LISTJOB);
+        final UID uid = command.getURI().getUID();
+        return marketOrdersUID(theClient, SQLRequest.MAINTABLEALIAS + "." + WorkInterface.Columns.MARKETORDERUID.toString() + "='"
+                + uid.toString() + "'");
+    }
+    /**
+     * This retrieves jobs for a market order
+     *
+     * @param client
+     *            describes the requesting client
+     * @param uid
+     *            is the market order UID to retrieve jobs for
+     * @return a Vector of UID
+     * @see #worksUID(UserInterface, String)
+     * @exception IOException
+     *                is thrown on DB access or I/O error
+     * @exception InvalidKeyException
+     *                is thrown on client integrity error (user unknown, bad
+     *                password...)
+     * @exception AccessControlException
+     *                is thrown if client does not have enough rights
+     * @since 13.1.0
+     */
+    public Collection<UID> getMarketOrderJobs(final UserInterface client, final UID uid)
+            throws IOException, InvalidKeyException, AccessControlException {
+
+        final UserInterface theClient = checkClient(client, UserRightEnum.LISTJOB);
+        return marketOrdersUID(theClient, SQLRequest.MAINTABLEALIAS + "." + WorkInterface.Columns.MARKETORDERUID.toString() + "='"
+                + uid.toString() + "'");
+    }
 
 	/**
 	 * This adds/updates a session
@@ -4953,8 +5071,13 @@ public final class DBInterface {
             receivedJob.setCategoryId(0);
         }
 
-        final MarketOrderInterface receivedJobMarketOrder = select(new CategoryInterface(),
-                "maintable." + CategoryInterface.Columns.CATEGORYID.toString() + "='" + receivedJob.getCategoryId() + "'");
+        final UID receivedJobMarketOrderUid = receivedJob.getMarketOrderUid();
+        if (receivedJobMarketOrderUid != null) {
+            final MarketOrderInterface receivedJobMarketOrder = select(new MarketOrderInterface(), receivedJob.getMarketOrderUid());
+            if(receivedJobMarketOrder == null) {
+                throw new IOException("invalid job market order : " + receivedJobMarketOrderUid);
+            }
+        }
 
         final WorkInterface theWork = work(mandatingClient, jobUID);
 		if (theWork != null) {
@@ -5335,6 +5458,35 @@ public final class DBInterface {
         return true;
     }
     /**
+     * This retrieves market order UID
+     *
+     * @param command is the command to execute
+     * @return null on error; a Collection of UID otherwise
+     * @exception IOException
+     *                is thrown general error
+     * @exception InvalidKeyException
+     *                is thrown on credential error
+     * @exception AccessControlException
+     *                is thrown on access rights violation
+     * @since 13.0.5
+     */
+    public Collection<UID> getAllMarketOrders(final XMLRPCCommand command)
+            throws IOException, InvalidKeyException, AccessControlException {
+
+        final UserInterface theClient = checkClient(command, UserRightEnum.LISTMARKETORDER);
+        return marketOrdersUID(theClient);
+    }
+    /**
+     * This calls marketOrder(command)
+     *
+     * @see #marketOrder(XMLRPCCommand)
+     * @since 13.0.5
+     */
+    protected MarketOrderInterface getMarketOrder(final XMLRPCCommand command)
+            throws IOException, InvalidKeyException, AccessControlException {
+        return marketOrder(command);
+    }
+    /**
      * This adds/updates a market order
      *
      * @param u is the requestor
@@ -5368,9 +5520,6 @@ public final class DBInterface {
             moitf.setOwner(theClient.getUID());
         }
         insert(moitf);
-
-        // read from DB, in case some values are null (and set to default by insert db)
-        DBConnPoolThread.getInstance().putToCache(category(theClient, "maintable.uid='" + moitf.getUID() + "'"));
 
         return true;
     }

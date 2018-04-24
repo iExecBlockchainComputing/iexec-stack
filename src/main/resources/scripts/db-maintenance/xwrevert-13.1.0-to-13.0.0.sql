@@ -19,58 +19,14 @@
 
 --
 
-
-create table if not exists  categories  (
-  categoryId         bigint         not null  unique             comment 'catID referenced by smart contracts',
-  uid                char(36)       not null  primary key        comment 'Primary key',
-  ownerUID           char(36)       not null                     comment 'User UID',
-  accessRights       int(4)                   default 0x755      comment 'Please note that an category is always public',
-  errorMsg           varchar(254)                                comment 'Error message',
-  mtime              timestamp                                   comment 'Timestamp of last update',
-  name               varchar(254)   not null  default 'NONE'     comment 'Envelope name is a free text',
-  maxWallClockTime   int(10)        not null  default 300        comment 'Max amount of seconds a job can be computed; default 5mn',
-  maxFreeMassStorage bigint         not null  default 5368709120 comment 'Max mass storage usage in bytes; default 5Gb',
-  maxFileSize        bigint         not null  default 104857600  comment 'Max file length in bytes; default 100Mb',
-  maxMemory          bigint         not null  default 536870912  comment 'Max RAM usage in bytes; default 512Mb',
-  maxCpuSpeed        float          not null  default 0.5        comment 'Max CPU usage in percentage; default 50% (https://docs.docker.com/engine/reference/run/#cpu-period-constraint)',
-
-
-  index  name     (name),
-  index  categoryId    (categoryId),
-  index  ownerUID (ownerUID)
-  )
-engine  = InnoDB,
-comment = 'envs = categories defining resources usage limit';
-
-show warnings;
-
-create table if not exists  categories_history  like  categories;
-
-show warnings;
-
-
-
-ALTER TABLE  works ADD    COLUMN categoryId          bigint                   default 0        comment 'categoryId. See common/CategoryInterface.java';
-ALTER TABLE  works ADD    COLUMN marketOrderId       int unsigned             default 0            comment 'blockchain market order id';
-ALTER TABLE  works ADD    COLUMN maxFreeMassStorage  bigint         not null  default 5368709120   comment 'Max mass storage usage in bytes; default 5Gb';
-ALTER TABLE  works ADD    COLUMN maxFileSize         bigint         not null  default 104857600    comment 'Max file length in bytes; default 100Mb';
-ALTER TABLE  works ADD    COLUMN maxMemory           bigint         not null  default 536870912    comment 'Max RAM usage in bytes; default 512Mb';
-ALTER TABLE  works ADD    COLUMN maxCpuSpeed         float          not null  default 0.5          comment 'Max CPU usage in percentage; default 50% (https://docs.docker.com/engine/reference/run/#cpu-period-constraint)';
-ALTER TABLE  works ADD    COLUMN uploadbandwidth     float default 0.0      comment 'Upload bandwidth usage (in Mb/s)';
-ALTER TABLE  works ADD    COLUMN downloadbandwidth   float default 0.0      comment 'Download bandwidth usage (in Mb/s)';
-
-ALTER TABLE  works DROP   COLUMN wallclocktime;
-ALTER TABLE  works DROP   COLUMN diskSpace;
-
-ALTER TABLE datas         CHANGE COLUMN md5 shasum varchar(254) comment 'Shasum for datas';
-ALTER TABLE datas_history CHANGE COLUMN md5 shasum varchar(254) comment 'Shasum for datas';
-
-insert into statuses (statusId, statusName, statusObjects, statusComment, statusDeprecated) values (14, 'FAILED', 'works', 'The job does not fill its category requirements', null);
-
-
-insert into versions (version, installation) values ('13.0.0', now());
-
 SET FOREIGN_KEY_CHECKS=0;
+
+
+drop table if exists  marketorders;
+drop table if exists  marketorders_history;
+
+ALTER TABLE  works DROP   COLUMN marketOrderUID;
+ALTER TABLE  works ADD    COLUMN marketOrderId       int unsigned             default 0            comment 'blockchain market order id';
 
 
 drop table userRights;
@@ -127,6 +83,11 @@ insert into userRights (userRightId, userRightName, userRightDescription) values
 insert into userRights (userRightId, userRightName, userRightDescription) values (41, 'INSERTUSERGROUP', null);
 insert into userRights (userRightId, userRightName, userRightDescription) values (42, 'DELETEUSERGROUP', null);
 insert into userRights (userRightId, userRightName, userRightDescription) values (43, 'SUPER_USER',      'can do all');
+
+
+UPDATE users SET userRightId=(select userRightId from userRights where userRightName=users.rights);
+
+SET FOREIGN_KEY_CHECKS=1;
 
 
 UPDATE users SET userRightId=(select userRightId from userRights where userRightName=users.rights);
