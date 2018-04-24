@@ -39,6 +39,10 @@ import java.util.Iterator;
 import javax.mail.MessagingException;
 
 import com.iexec.common.contracts.generated.IexecHub;
+import com.iexec.common.ethereum.CommonConfiguration;
+import com.iexec.common.ethereum.CredentialsService;
+import com.iexec.common.ethereum.IexecConfigurationService;
+import com.iexec.common.workerpool.WorkerPoolConfig;
 import xtremweb.common.*;
 import xtremweb.communications.*;
 import xtremweb.database.ColumnSelection;
@@ -3487,6 +3491,10 @@ public final class DBInterface {
     public void insertCategory(final IexecHub.CreateCategoryEventResponse category)
             throws ClassNotFoundException, IOException, InvalidKeyException, AccessControlException, URISyntaxException {
 
+        if (!config.blockchainEnabled()) {
+            throw new IOException("blockchain access disabled");
+        }
+
         final UserInterface admin = user(SQLRequest.MAINTABLEALIAS + "." + UserInterface.Columns.LOGIN.toString() + "='"
                 + config.getProperty(XWPropertyDefs.ADMINLOGIN) + "'");
 
@@ -5503,6 +5511,26 @@ public final class DBInterface {
      */
     protected boolean addMarketOrder(final UserInterface u, final MarketOrderInterface moitf)
             throws IOException, InvalidKeyException, AccessControlException, URISyntaxException {
+
+        if (!config.blockchainEnabled()) {
+            throw new IOException("blockchain access disabled");
+        }
+        if ((moitf.getDirection() == null)
+                || (moitf.getCategoryId() == null)
+                || (moitf.getExpectedWorkers() == null)
+                || (moitf.getTrust() == null)
+                || (moitf.getPrice() == null) ) {
+            throw new IOException("add market order error : missing values");
+        }
+
+        try {
+            final CommonConfiguration commonConfiguration = IexecConfigurationService.getInstance().getCommonConfiguration();
+            WorkerPoolConfig workerPoolConfig = commonConfiguration.getContractConfig().getWorkerPoolConfig();
+            moitf.setWorkerPoolAddr(workerPoolConfig.getAddress());
+            moitf.setWorkerPoolOwnerAddr(CredentialsService.getInstance().getCredentials().getAddress());
+        } catch (final Exception e) {
+            throw new IOException("add market order error: ", e);
+        }
 
         final UserInterface theClient = checkClient(u, UserRightEnum.INSERTMARKETORDER);
         final MarketOrderInterface marketOrder = marketOrder(theClient, moitf.getUID());
