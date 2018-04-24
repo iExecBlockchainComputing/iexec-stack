@@ -517,9 +517,8 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 					result = new XMLHashtable(h);
 				} else {
 					final Hashtable h2 = ((XMLHashtable) command.getParameter()).getHashtable();
-					Hashtable ret = workAlive(command, h2);
+					final Hashtable ret = workAlive(command, h2);
 					result = new XMLHashtable(ret);
-					ret = null;
 				}
 				break;
 			case PING:
@@ -871,20 +870,17 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 
 			ret.put(XWPostParams.RESULTEXPECTEDS.toString(), resultsVector);
 
-			UID hostuid = theHost.getUID();
-			String newServer = DBInterface.getInstance().getServer(hostuid);
-			hostuid = null;
+			final UID hostuid = theHost.getUID();
+			final String newServer = DBInterface.getInstance().getServer(hostuid);
 
 			if (newServer != null) {
 				info(command, "workAlive (" + theHost.getName() + ") : new server = " + newServer);
 				ret.put(XWPostParams.NEWSERVER.toString(), newServer);
 			}
-			newServer = null;
 
-			Integer aliveperiod = new Integer(config.getProperty(XWPropertyDefs.ALIVEPERIOD));
+			final Integer aliveperiod = new Integer(config.getProperty(XWPropertyDefs.ALIVEPERIOD));
 			debug(command, "alivePeriod = " + aliveperiod);
 			ret.put(XWPostParams.ALIVEPERIOD.toString(), aliveperiod);
-			aliveperiod = null;
 		} catch (final IOException e) {
 			error(command, e);
 		} finally {

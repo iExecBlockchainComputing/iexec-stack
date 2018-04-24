@@ -571,21 +571,23 @@ public final class MarketOrderInterface extends Table {
      * @return true if value has changed, false otherwise
      */
     public boolean setNbWorkers(final Long n)  {
-        return setValue(Columns.NBWORKERS, n);
+
+        setValue(Columns.NBWORKERS, n);
+        return setVolume(getExpectedWorkers() / getNbWorkers());
     }
     /**
      * This increments the amount of booked workers to reach the trust
      * @return true if value has changed, false otherwise
      */
     public boolean incNbWorkers()  {
-        return setValue(Columns.NBWORKERS, getNbWorkers() + 1);
+        return setNbWorkers(getNbWorkers() + 1);
     }
     /**
      * This decrements the amount of booked workers to reach the trust
      * @return true if value has changed, false otherwise
      */
     public boolean decNbWorkers()  {
-        return setValue(Columns.NBWORKERS, getNbWorkers() - 1);
+        return setNbWorkers(getNbWorkers() - 1);
     }
 	/**
 	 * This sets the trust value

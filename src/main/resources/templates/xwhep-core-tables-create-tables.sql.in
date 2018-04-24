@@ -495,7 +495,11 @@ create table if not exists  hosts  (
   batchid              varchar(254)                             comment 'XWHEP 7.2.0 : this is a job group URI; this is for SpeQuLoS (EDGI/JRA2).  If this is set, the worker will receive a job from this group in priority,  If any, and according to the match making - CPU, OS...  This has a lower priority than jobid',
   userproxy            varchar(254)                             comment 'XWHEP 7.0.0 this is not used',
   errorMsg             varchar(254)                             comment 'Error message',
-  
+  ethwalletaddr        varchar(254)                             comment 'worker eth wallet address; optional',
+  marketorderUID       char(36)                                 comment 'Optional, UID of the market order',
+  waitmarketorder      char(5)                 default 'false'  comment 'This flag tells whether this host is waiting to participate to a market order',
+
+  index  idx_ethaddr  (ethaddr),
   index  osId         (osId),
   index  cputypeId    (cputypeId),
   index  usergroupUID (usergroupUID),

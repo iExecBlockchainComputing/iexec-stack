@@ -28,6 +28,10 @@ drop table if exists  marketorders_history;
 ALTER TABLE  works DROP   COLUMN marketOrderUID;
 ALTER TABLE  works ADD    COLUMN marketOrderId       int unsigned             default 0            comment 'blockchain market order id';
 
+ALTER TABLE  hosts DROP   COLUMN ethwalletaddr;
+ALTER TABLE  hosts DROP   COLUMN marketorderUID;
+ALTER TABLE  hosts DROP   COLUMN waitmarketorder;
+
 
 drop table userRights;
 create table if not exists  userRights  (

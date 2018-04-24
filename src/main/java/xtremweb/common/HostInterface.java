@@ -69,6 +69,36 @@ public final class HostInterface extends Table {
 	 */
 	public enum Columns implements XWBaseColumn {
 
+        /**
+         * This is the worker pool addr
+         * @since 13.1.0
+         */
+            ETHWALLETADDR {
+            @Override
+            public String fromString(final String v) {
+                return v;
+            }
+        },
+        /**
+         * This is the market order for this worker
+         * @since 13.1.0
+         */
+        MARKETORDERUID {
+            @Override
+            public UID fromString(final String v) {
+                return new UID(v);
+            }
+        },
+        /**
+         * This is true if this worker has subscribed but no market order found
+         * @since 13.1.0
+         */
+        WAITMARKETORDER {
+            @Override
+            public Boolean fromString(final String v) {
+                return Boolean.valueOf(v);
+            }
+        },
 		/**
 		 * This is a job URI; this is for SpeQuLoS (EDGI/JRA2). If this is set,
 		 * the worker will receive this job in priority, if available, and
@@ -78,16 +108,6 @@ public final class HostInterface extends Table {
 		 * @since 7.2.0
 		 */
 		JOBID {
-			/**
-			 * This creates an object from String representation for this column
-			 * value
-			 *
-			 * @param v
-			 *            the String representation
-			 * @return an URI representing the column value
-			 * @throws URISyntaxException
-			 *             is thrown on instantiation error
-			 */
 			@Override
 			public URI fromString(final String v) throws URISyntaxException {
 				return new URI(v);
@@ -102,16 +122,6 @@ public final class HostInterface extends Table {
 		 * @since 7.2.0
 		 */
 		BATCHID {
-			/**
-			 * This creates an object from String representation for this column
-			 * value
-			 *
-			 * @param v
-			 *            the String representation
-			 * @return an URI representing the column value
-			 * @throws URISyntaxException
-			 *             is thrown on instantiation error
-			 */
 			@Override
 			public URI fromString(final String v) throws URISyntaxException {
 				return new URI(v);
@@ -127,14 +137,6 @@ public final class HostInterface extends Table {
 		 * @since 8.0.0
 		 */
 		CPULOAD {
-			/**
-			 * This creates an object from String representation for this column
-			 * value
-			 *
-			 * @param v
-			 *            the String representation
-			 * @return an Integer representing the column value
-			 */
 			@Override
 			public Integer fromString(final String v) {
 				return Integer.valueOf(v);
@@ -144,14 +146,6 @@ public final class HostInterface extends Table {
 		 * This is the column index of the connections amount
 		 */
 		NBCONNECTIONS {
-			/**
-			 * This creates an object from String representation for this column
-			 * value
-			 *
-			 * @param v
-			 *            the String representation
-			 * @return an Integer representing the column value
-			 */
 			@Override
 			public Integer fromString(final String v) {
 				return Integer.valueOf(v);
@@ -183,14 +177,6 @@ public final class HostInterface extends Table {
 		 * @since 2.0.0
 		 */
 		AVGPING {
-			/**
-			 * This creates an object from String representation for this column
-			 * value
-			 *
-			 * @param v
-			 *            the String representation
-			 * @return an Integer representing the column value
-			 */
 			@Override
 			public Integer fromString(final String v) {
 				return Integer.valueOf(v);
@@ -202,14 +188,6 @@ public final class HostInterface extends Table {
 		 * @since 2.0.0
 		 */
 		NBPING {
-			/**
-			 * This creates an object from String representation for this column
-			 * value
-			 *
-			 * @param v
-			 *            the String representation
-			 * @return an Integer representing the column value
-			 */
 			@Override
 			public Integer fromString(final String v) {
 				return Integer.valueOf(v);
@@ -241,14 +219,6 @@ public final class HostInterface extends Table {
 		 * This is the column index of the OS name
 		 */
 		OS {
-			/**
-			 * This creates an object from String representation for this column
-			 * value
-			 *
-			 * @param v
-			 *            the String representation
-			 * @return an XWOses representing the column value
-			 */
 			@Override
 			public OSEnum fromString(final String v) {
 				return OSEnum.valueOf(v.trim());
@@ -272,14 +242,6 @@ public final class HostInterface extends Table {
 		 * @since XWHEP 6.0.0
 		 */
 		JAVADATAMODEL {
-			/**
-			 * This creates an object from String representation for this column
-			 * value
-			 *
-			 * @param v
-			 *            the String representation
-			 * @return an Integer representing the column value
-			 */
 			@Override
 			public Integer fromString(final String v) {
 				return Integer.valueOf(v);
@@ -291,14 +253,6 @@ public final class HostInterface extends Table {
 		 * @since 7.0.0
 		 */
 		POOLWORKSIZE {
-			/**
-			 * This creates an object from String representation for this column
-			 * value
-			 *
-			 * @param v
-			 *            the String representation
-			 * @return an Integer representing the column value
-			 */
 			@Override
 			public Integer fromString(final String v) {
 				return Integer.valueOf(v);
@@ -308,14 +262,6 @@ public final class HostInterface extends Table {
 		 * This is the column index of the cpu type
 		 */
 		CPUTYPE {
-			/**
-			 * This creates an object from String representation for this column
-			 * value
-			 *
-			 * @param v
-			 *            the String representation
-			 * @return an XWCPUs representing the column value
-			 */
 			@Override
 			public CPUEnum fromString(final String v) {
 				return CPUEnum.valueOf(v.trim());
@@ -325,14 +271,6 @@ public final class HostInterface extends Table {
 		 * This is the column index of the cpu amount
 		 */
 		CPUNB {
-			/**
-			 * This creates an object from String representation for this column
-			 * value
-			 *
-			 * @param v
-			 *            the String representation
-			 * @return an Integer representing the column value
-			 */
 			@Override
 			public Integer fromString(final String v) {
 				return Integer.valueOf(v);
@@ -346,14 +284,6 @@ public final class HostInterface extends Table {
 		 * This is the column index of the cpu speed. This is in Mhz
 		 */
 		CPUSPEED {
-			/**
-			 * This creates an object from String representation for this column
-			 * value
-			 *
-			 * @param v
-			 *            the String representation
-			 * @return an Integer representing the column value
-			 */
 			@Override
 			public Integer fromString(final String v) {
 				return new Integer(v);
@@ -363,14 +293,6 @@ public final class HostInterface extends Table {
 		 * This is the column index of the total memory. This is in Kb
 		 */
 		TOTALMEM {
-			/**
-			 * This creates an object from String representation for this column
-			 * value
-			 *
-			 * @param v
-			 *            the String representation
-			 * @return a Long representing the column value
-			 */
 			@Override
 			public Long fromString(final String v) {
 				return new Long(v);
@@ -383,14 +305,6 @@ public final class HostInterface extends Table {
 		 * @since 9.1.0
 		 */
 		AVAILABLEMEM {
-			/**
-			 * This creates an object from String representation for this column
-			 * value
-			 *
-			 * @param v
-			 *            the String representation
-			 * @return a Long representing the column value
-			 */
 			@Override
 			public Integer fromString(final String v) {
 				return new Integer(v);
@@ -400,14 +314,6 @@ public final class HostInterface extends Table {
 		 * This is the column index of the total swap. This is in Mb
 		 */
 		TOTALSWAP {
-			/**
-			 * This creates an object from String representation for this column
-			 * value
-			 *
-			 * @param v
-			 *            the String representation
-			 * @return a Long representing the column value
-			 */
 			@Override
 			public Long fromString(final String v) {
 				return new Long(v);
@@ -418,14 +324,6 @@ public final class HostInterface extends Table {
 		 * Mb
 		 */
 		TOTALTMP {
-			/**
-			 * This creates an object from String representation for this column
-			 * value
-			 *
-			 * @param v
-			 *            the String representation
-			 * @return a Long representing the column value
-			 */
 			@Override
 			public Long fromString(final String v) {
 				return new Long(v);
@@ -436,14 +334,6 @@ public final class HostInterface extends Table {
 		 * in Mb
 		 */
 		FREETMP {
-			/**
-			 * This creates an object from String representation for this column
-			 * value
-			 *
-			 * @param v
-			 *            the String representation
-			 * @return a Long representing the column value
-			 */
 			@Override
 			public Long fromString(final String v) {
 				return new Long(v);
@@ -459,14 +349,6 @@ public final class HostInterface extends Table {
 		 * This is the column index of the last alive date
 		 */
 		LASTALIVE {
-			/**
-			 * This creates an object from String representation for this column
-			 * value
-			 *
-			 * @param v
-			 *            the String representation
-			 * @return a Date representing the column value
-			 */
 			@Override
 			public Date fromString(final String v) {
 				return XWTools.getSQLDateTime(v);
@@ -477,14 +359,6 @@ public final class HostInterface extends Table {
 		 * Any erroneus worker is set inactive
 		 */
 		ACTIVE {
-			/**
-			 * This creates an object from String representation for this column
-			 * value
-			 *
-			 * @param v
-			 *            the String representation
-			 * @return a Boolean representing the column value
-			 */
 			@Override
 			public Boolean fromString(final String v) {
 				return Boolean.valueOf(v);
@@ -497,14 +371,6 @@ public final class HostInterface extends Table {
 		 * @since 8.0.0
 		 */
 		INCOMINGCONNECTIONS {
-			/**
-			 * This creates an object from String representation for this column
-			 * value
-			 *
-			 * @param v
-			 *            the String representation
-			 * @return a Boolean representing the column value
-			 */
 			@Override
 			public Boolean fromString(final String v) {
 				return Boolean.valueOf(v);
@@ -516,14 +382,6 @@ public final class HostInterface extends Table {
 		 * This is refreshed on <code>alive</code> signal
 		 */
 		AVAILABLE {
-			/**
-			 * This creates an object from String representation for this column
-			 * value
-			 *
-			 * @param v
-			 *            the String representation
-			 * @return a Boolean representing the column value
-			 */
 			@Override
 			public Boolean fromString(final String v) {
 				return Boolean.valueOf(v);
@@ -535,14 +393,6 @@ public final class HostInterface extends Table {
 		 * This is refreshed on <code>alive</code> signal
 		 */
 		PILOTJOB {
-			/**
-			 * This creates an object from String representation for this column
-			 * value
-			 *
-			 * @param v
-			 *            the String representation
-			 * @return a Boolean representing the column value
-			 */
 			@Override
 			public Boolean fromString(final String v) {
 				return Boolean.valueOf(v);
@@ -554,14 +404,6 @@ public final class HostInterface extends Table {
 		 * @since 7.0.0
 		 */
 		SGID {
-			/**
-			 * This creates an object from String representation for this column
-			 * value This cleans the parameter to ensure SQL compliance
-			 *
-			 * @param v
-			 *            the String representation
-			 * @return a Boolean representing the column value
-			 */
 			@Override
 			public String fromString(final String v) {
 				return v.replaceAll("[\\n\\s\'\"]+", "_");
@@ -571,14 +413,6 @@ public final class HostInterface extends Table {
 		 * This is the column index of the host timeout
 		 */
 		TIMEOUT {
-			/**
-			 * This creates an object from String representation for this column
-			 * value
-			 *
-			 * @param v
-			 *            the String representation
-			 * @return an Integer representing the column value
-			 */
 			@Override
 			public Integer fromString(final String v) {
 				return Integer.valueOf(v);
@@ -589,14 +423,6 @@ public final class HostInterface extends Table {
 		 * traces or not
 		 */
 		TRACES {
-			/**
-			 * This creates an object from String representation for this column
-			 * value
-			 *
-			 * @param v
-			 *            the String representation
-			 * @return a Boolean representing the column value
-			 */
 			@Override
 			public Boolean fromString(final String v) {
 				return Boolean.valueOf(v);
@@ -606,14 +432,6 @@ public final class HostInterface extends Table {
 		 * This is the column index of the average execution time
 		 */
 		AVGEXECTIME {
-			/**
-			 * This creates an object from String representation for this column
-			 * value
-			 *
-			 * @param v
-			 *            the String representation
-			 * @return an Integer representing the column value
-			 */
 			@Override
 			public Integer fromString(final String v) {
 				return Integer.valueOf(v);
@@ -623,14 +441,6 @@ public final class HostInterface extends Table {
 		 * This is the column index of the time shift
 		 */
 		TIMESHIFT {
-			/**
-			 * This creates an object from String representation for this column
-			 * value
-			 *
-			 * @param v
-			 *            the String representation
-			 * @return an Integer representing the column value
-			 */
 			@Override
 			public Integer fromString(final String v) {
 				return Integer.valueOf(v);
@@ -641,14 +451,6 @@ public final class HostInterface extends Table {
 		 * false worker accepts only services
 		 */
 		ACCEPTBIN {
-			/**
-			 * This creates an object from String representation for this column
-			 * value
-			 *
-			 * @param v
-			 *            the String representation
-			 * @return a Boolean representing the column value
-			 */
 			@Override
 			public Boolean fromString(final String v) {
 				return Boolean.valueOf(v);
@@ -684,14 +486,6 @@ public final class HostInterface extends Table {
 		 * @since 7.0.0
 		 */
 		PENDINGJOBS {
-			/**
-			 * This creates an object from String representation for this column
-			 * value
-			 *
-			 * @param v
-			 *            the String representation
-			 * @return an Integer representing the column value
-			 */
 			@Override
 			public Integer fromString(final String v) {
 				return Integer.valueOf(v);
@@ -704,14 +498,6 @@ public final class HostInterface extends Table {
 		 * @since 7.0.0
 		 */
 		RUNNINGJOBS {
-			/**
-			 * This creates an object from String representation for this column
-			 * value
-			 *
-			 * @param v
-			 *            the String representation
-			 * @return an Integer representing the column value
-			 */
 			@Override
 			public Integer fromString(final String v) {
 				return Integer.valueOf(v);
@@ -724,14 +510,6 @@ public final class HostInterface extends Table {
 		 * @since 7.0.0
 		 */
 		ERRORJOBS {
-			/**
-			 * This creates an object from String representation for this column
-			 * value
-			 *
-			 * @param v
-			 *            the String representation
-			 * @return an Integer representing the column value
-			 */
 			@Override
 			public Integer fromString(final String v) {
 				return Integer.valueOf(v);
@@ -741,14 +519,6 @@ public final class HostInterface extends Table {
 		 * This is the column index of the compued jobs amount
 		 */
 		NBJOBS {
-			/**
-			 * This creates an object from String representation for this column
-			 * value
-			 *
-			 * @param v
-			 *            the String representation
-			 * @return an Integer representing the column value
-			 */
 			@Override
 			public Integer fromString(final String v) {
 				return Integer.valueOf(v);
@@ -865,7 +635,8 @@ public final class HostInterface extends Table {
 
 		setAttributeLength(ENUMSIZE);
 
-		setAcceptBin(false);
+        setAcceptBin(false);
+        setWaitMarketOrder(false);
 		setActive(true);
 		setAvailable(true);
 		setIncomingConnections(false);
@@ -910,10 +681,19 @@ public final class HostInterface extends Table {
 				setNbConnections((Integer) Columns.NBCONNECTIONS.fromResultSet(rs));
 			} catch (final Exception e) {
 			}
-			try {
-				setCpuLoad((Integer) Columns.CPULOAD.fromResultSet(rs));
-			} catch (final Exception e) {
-			}
+            setEthWalletAddr((String) Columns.ETHWALLETADDR.fromResultSet(rs));
+            try {
+                setMarketOrderUid((UID) Columns.MARKETORDERUID.fromResultSet(rs));
+            } catch (final Exception e) {
+            }
+            try {
+                setWaitMarketOrder((Boolean) Columns.WAITMARKETORDER.fromResultSet(rs));
+            } catch (final Exception e) {
+            }
+            try {
+                setCpuLoad((Integer) Columns.CPULOAD.fromResultSet(rs));
+            } catch (final Exception e) {
+            }
 			try {
 				setNbPing((Integer) Columns.NBPING.fromResultSet(rs));
 			} catch (final Exception e) {
@@ -1188,6 +968,9 @@ public final class HostInterface extends Table {
 		if (itf.getOwner() != null) {
 			setOwner(itf.getOwner());
 		}
+        setEthWalletAddr(itf.getEthWalletAddr());
+        setMarketOrderUid(itf.getMarketOrderUid());
+        setWaitMarketOrder(itf.isMarketOrderWaited());
 		setAvgExecTime(itf.getAvgExecTime());
 		setNbJobs(itf.getNbJobs());
 		setPendingJobs(itf.getPendingJobs());
@@ -1299,7 +1082,45 @@ public final class HostInterface extends Table {
 		setUploadBandwidth(0);
 		return 0;
 	}
-
+    /**
+     * This retrieves the worker eth wallet addr
+     *
+     * @return this attribute, or null if not set
+     * @since 13.1.0
+     */
+    public String getEthWalletAddr() {
+        try {
+            return (String) getValue(Columns.ETHWALLETADDR);
+        } catch (final Exception e) {
+            return null;
+        }
+    }
+    /**
+     * This retrieves the market order for this worker
+     *
+     * @return this attribute, or null if not set
+     * @since 13.1.0
+     */
+    public UID getMarketOrderUid() {
+        try {
+            return (UID) getValue(Columns.MARKETORDERUID);
+        } catch (final Exception e) {
+            return null;
+        }
+    }
+    /**
+     * This retrieves if a market order is waited
+     *
+     * @return this attribute, or null if not set
+     * @since 13.1.0
+     */
+    public boolean isMarketOrderWaited() {
+        try {
+            return (Boolean) getValue(Columns.WAITMARKETORDER);
+        } catch (final Exception e) {
+            return false;
+        }
+    }
 	/**
 	 * This retrieves the download bandwidth usage
 	 *
@@ -2468,6 +2289,36 @@ public final class HostInterface extends Table {
 		return setValue(Columns.ACCEPTBIN, Boolean.valueOf(v));
 	}
 
+    /**
+     * This sets the eth wallet address
+     * @param addr is the eth wallet address
+     * @return true if value has changed, false otherwise
+     * @since 13.1.0
+     */
+    public boolean setEthWalletAddr(final String addr)  {
+        return setValue(Columns.ETHWALLETADDR, addr);
+    }
+    /**
+     * This sets the market order uid
+     * @param uid is the market order uid
+     * @return true if value has changed, false otherwise
+     * @since 13.1.0
+     */
+    public boolean setMarketOrderUid(final UID uid)  {
+        if(uid != null) {
+            setWaitMarketOrder(false);
+        }
+        return setValue(Columns.MARKETORDERUID, uid);
+    }
+    /**
+     * This sets the wish to market order
+     * @param b is the boolean denoting the wish
+     * @return true if value has changed, false otherwise
+     * @since 13.1.0
+     */
+    public boolean setWaitMarketOrder(final boolean b)  {
+        return setValue(Columns.WAITMARKETORDER, b);
+    }
 	/**
 	 * This sets this host as(un)available accordingly to its local policy This
 	 * is set on alive signal.

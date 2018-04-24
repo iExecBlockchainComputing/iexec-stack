@@ -1,7 +1,6 @@
 package xtremweb.dispatcher;
 
 import com.iexec.common.contracts.generated.WorkerPool;
-import com.iexec.common.contracts.generated.WorkOrder;
 import com.iexec.common.ethereum.IexecConfigurationService;
 import com.iexec.common.ethereum.Web3jService;
 import com.iexec.common.model.AppModel;
@@ -13,7 +12,9 @@ import com.iexec.scheduler.iexechub.IexecHubService;
 import com.iexec.scheduler.iexechub.IexecHubWatcher;
 import com.iexec.scheduler.workerpool.WorkerPoolService;
 import com.iexec.scheduler.workerpool.WorkerPoolWatcher;
+import xtremweb.common.HostInterface;
 import xtremweb.common.Logger;
+import xtremweb.common.MarketOrderInterface;
 
 import java.io.IOException;
 
@@ -39,8 +40,33 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
     }
 
     @Override
-    public void onSubscription(String worker) {
-        //   actuatorService.createMarketOrder(BigInteger.ONE, BigInteger.ZERO, BigInteger.valueOf(100), BigInteger.ONE); //on N worker alive
+    public void onSubscription(String workerWalletAddr) {
+        try {
+            final HostInterface host = DBInterface.getInstance().host(workerWalletAddr);
+            if(host == null) {
+                logger.warn("onSubscription(" + workerWalletAddr +") : host not found");
+                return;
+            }
+            logger.debug("onSubscription(" + workerWalletAddr + ") : " + host.toXml());
+            MarketOrderInterface marketOrder = DBInterface.getInstance().marketOrderUnsatisfied();
+            if(marketOrder == null) {
+                logger.info("onSubscription(" + workerWalletAddr +") : no unsatisfied market order");
+            }
+            marketOrder = DBInterface.getInstance().marketOrder();
+            if(marketOrder == null) {
+                host.setWaitMarketOrder(true);
+                host.update();
+                logger.warn("onSubscription(" + workerWalletAddr +") : no market order");
+                return;
+            }
+            host.setMarketOrderUid(marketOrder.getUID());
+            host.update();
+            marketOrder.incNbWorkers();
+            marketOrder.update();
+            //   actuatorService.createMarketOrder(BigInteger.ONE, BigInteger.ZERO, BigInteger.valueOf(100), BigInteger.ONE); //on N worker alive
+        } catch (final IOException e) {
+            logger.exception(e);
+        }
     }
 
     @Override

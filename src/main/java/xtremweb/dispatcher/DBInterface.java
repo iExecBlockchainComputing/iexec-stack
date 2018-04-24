@@ -379,8 +379,7 @@ public final class DBInterface {
 	}
 
     /**
-     * This retrieves an object independently of access rights from cache
-     * or from DB
+     * This retrieves an object from cache or from DB, bypassing access rights
      *
      * @param uid
      *            is the UID of the host to retrieve
@@ -681,8 +680,7 @@ public final class DBInterface {
         return readableObjectUID(new AppInterface(), u);
 	}
     /**
-     * This retrieves an application independently of access rights from cache
-     * or from DB
+     * This retrieves an application from cache or from DB, bypassing access rights
      *
      * @param uid
      *            is the UID of the host to retrieve
@@ -827,17 +825,17 @@ public final class DBInterface {
         return readableObjectUID(new DataInterface(), u);
 	}
 
-	/**
-	 * This retrieves a data; it first look in cache, then in DB. Access rights
-	 * are bypassed
-	 *
-	 * @param uid
-	 *            is the UID of the data to retrieve
-	 * @since 5.8.0
-	 */
-	protected DataInterface data(final UID uid) throws IOException, AccessControlException {
+    /**
+     * This retrieves a data; it first look in cache, then in DB. Access rights
+     * are bypassed
+     *
+     * @param uid
+     *            is the UID of the data to retrieve
+     * @since 5.8.0
+     */
+    protected DataInterface data(final UID uid) throws IOException, AccessControlException {
         return object(new DataInterface(), uid);
-	}
+    }
 
 	/**
 	 * This retrieves a data for the requesting user. It first look in cache,
@@ -1180,6 +1178,22 @@ public final class DBInterface {
 		return selectOne(row, conditions);
 	}
 
+    /**
+     * This retrieves a market order lacking computing resources, bypassing access rights
+     * @since 13.1.0
+     */
+    protected MarketOrderInterface marketOrderUnsatisfied() throws IOException {
+        return selectOne(new MarketOrderInterface(),
+                SQLRequest.MAINTABLEALIAS + MarketOrderInterface .Columns.NBWORKERS + "<"
+                        + MarketOrderInterface .Columns.EXPECTEDWORKERS );
+    }
+    /**
+     * This retrieves a market order, bypassing access rights
+     * @since 13.1.0
+     */
+    protected MarketOrderInterface marketOrder() throws IOException {
+        return selectOne(new MarketOrderInterface());
+    }
 	/**
 	 * This retrieves a market order from DB for the requesting user
 	 *
@@ -1234,7 +1248,6 @@ public final class DBInterface {
 		}
 		return 0;
 	}
-
 
 	/**
 	 * This creates a new readable group to retrieve from DB
@@ -1387,18 +1400,28 @@ public final class DBInterface {
         return readableObjectUID(new HostInterface(), u);
 	}
 
-	/**
-	 * This retrieves a host independently of access rights
-	 *
-	 * @param uid
-	 *            is the UID of the host to retrieve
-	 * @since 5.8.0
-	 */
-	protected HostInterface host(final UID uid) throws IOException {
+    /**
+     * This retrieves a host, bypassing access rights
+     *
+     * @param uid
+     *            is the UID of the host to retrieve
+     * @since 5.8.0
+     */
+    protected HostInterface host(final UID uid) throws IOException {
         return object(new HostInterface(), uid);
-	}
-
-	/**
+    }
+    /**
+     * This retrieves a host, bypassing access rights
+     *
+     * @param ethaddr
+     *            is the eth wallet of the host to retrieve
+     * @since 13.1.0
+     */
+    protected HostInterface host(final String ethaddr) throws IOException {
+        return selectOne(new HostInterface(),
+                SQLRequest.MAINTABLEALIAS + HostInterface.Columns.ETHWALLETADDR + "='" + ethaddr + "'");
+    }
+    /**
 	 * This retrieves a host for the requesting user. Host access rights are
 	 * checked.
 	 *
@@ -1453,7 +1476,7 @@ public final class DBInterface {
 	}
 
 	/**
-	 * This retrieves enumeration of Host from DB for the requesting suer. Host
+	 * This retrieves enumeration of Host from DB for the requesting user. Host
 	 * access rights are checked.
 	 *
 	 * @param u
@@ -1793,7 +1816,7 @@ public final class DBInterface {
 	}
 
 	/**
-	 * This retrieves a vector of tasks with the status, independently of access
+	 * This retrieves a vector of tasks with the status, bypassing access
 	 * rights
 	 *
 	 * @param criteria
@@ -1807,7 +1830,7 @@ public final class DBInterface {
 	}
 
 	/**
-	 * This retrieves a vector of tasks with the status, independently of access
+	 * This retrieves a vector of tasks with the status, bypassing access
 	 * rights
 	 *
 	 * @return a Collection of tasks or null
@@ -2203,7 +2226,7 @@ public final class DBInterface {
 	}
 
 	/**
-	 * This retrieves an UserInterface with the given criteria, independently of
+	 * This retrieves an UserInterface with the given criteria, bypassing
 	 * access rights
 	 *
 	 * @param criteria
@@ -2465,7 +2488,7 @@ public final class DBInterface {
 		}
 	}
 	/**
-	 * This retrieves a vector of tasks with the status, independently of access
+	 * This retrieves a vector of tasks with the status, bypassing access
 	 * rights
 	 *
 	 * @return a Collection of tasks or null
@@ -5651,6 +5674,29 @@ public final class DBInterface {
 				host.setCpuSpeed(_host.getCpuSpeed());
 				host.setFreeTmp(_host.getFreeTmp());
 				host.setTotalMem(_host.getTotalMem());
+
+				final String workerWalletAddr = host.getEthWalletAddr();
+				if (host.isMarketOrderWaited() && (workerWalletAddr != null)) {
+
+                    try {
+                        MarketOrderInterface marketOrder = marketOrderUnsatisfied();
+                        if(marketOrder == null) {
+                            logger.info("onSubscription(" + workerWalletAddr +") : no unsatisfied market order");
+                        }
+                        marketOrder = marketOrder();
+                        if(marketOrder == null) {
+                            host.setWaitMarketOrder(true);
+                            logger.warn("onSubscription(" + workerWalletAddr +") : no market order");
+                        } else {
+                            host.setMarketOrderUid(marketOrder.getUID());
+                            marketOrder.incNbWorkers();
+                            marketOrder.update();
+                        }
+                    } catch (final IOException e) {
+                        logger.exception(e);
+                    }
+
+                }
 
 				update(host);
 				return host;
