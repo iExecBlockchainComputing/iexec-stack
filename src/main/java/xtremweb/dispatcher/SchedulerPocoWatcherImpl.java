@@ -54,15 +54,16 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
             }
             marketOrder = DBInterface.getInstance().marketOrder();
             if(marketOrder == null) {
-                host.setWaitMarketOrder(true);
                 host.update();
                 logger.warn("onSubscription(" + workerWalletAddr +") : no market order");
                 return;
             }
-            host.setMarketOrderUid(marketOrder.getUID());
-            host.update();
-            marketOrder.incNbWorkers();
-            marketOrder.update();
+            if (host.wantToContribute()) {
+                host.setMarketOrderUid(marketOrder.getUID());
+                host.update();
+                marketOrder.incNbWorkers();
+                marketOrder.update();
+            }
             //   actuatorService.createMarketOrder(BigInteger.ONE, BigInteger.ZERO, BigInteger.valueOf(100), BigInteger.ONE); //on N worker alive
         } catch (final IOException e) {
             logger.exception(e);

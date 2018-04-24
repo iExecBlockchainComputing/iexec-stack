@@ -89,16 +89,6 @@ public final class HostInterface extends Table {
                 return new UID(v);
             }
         },
-        /**
-         * This is true if this worker has subscribed but no market order found
-         * @since 13.1.0
-         */
-        WAITMARKETORDER {
-            @Override
-            public Boolean fromString(final String v) {
-                return Boolean.valueOf(v);
-            }
-        },
 		/**
 		 * This is a job URI; this is for SpeQuLoS (EDGI/JRA2). If this is set,
 		 * the worker will receive this job in priority, if available, and
@@ -636,7 +626,6 @@ public final class HostInterface extends Table {
 		setAttributeLength(ENUMSIZE);
 
         setAcceptBin(false);
-        setWaitMarketOrder(false);
 		setActive(true);
 		setAvailable(true);
 		setIncomingConnections(false);
@@ -681,13 +670,12 @@ public final class HostInterface extends Table {
 				setNbConnections((Integer) Columns.NBCONNECTIONS.fromResultSet(rs));
 			} catch (final Exception e) {
 			}
-            setEthWalletAddr((String) Columns.ETHWALLETADDR.fromResultSet(rs));
             try {
-                setMarketOrderUid((UID) Columns.MARKETORDERUID.fromResultSet(rs));
+                setEthWalletAddr((String) Columns.ETHWALLETADDR.fromResultSet(rs));
             } catch (final Exception e) {
             }
             try {
-                setWaitMarketOrder((Boolean) Columns.WAITMARKETORDER.fromResultSet(rs));
+                setMarketOrderUid((UID) Columns.MARKETORDERUID.fromResultSet(rs));
             } catch (final Exception e) {
             }
             try {
@@ -970,7 +958,6 @@ public final class HostInterface extends Table {
 		}
         setEthWalletAddr(itf.getEthWalletAddr());
         setMarketOrderUid(itf.getMarketOrderUid());
-        setWaitMarketOrder(itf.isMarketOrderWaited());
 		setAvgExecTime(itf.getAvgExecTime());
 		setNbJobs(itf.getNbJobs());
 		setPendingJobs(itf.getPendingJobs());
@@ -1109,14 +1096,14 @@ public final class HostInterface extends Table {
         }
     }
     /**
-     * This retrieves if a market order is waited
+     * This checks if this worker wants to contribute to a market order
      *
-     * @return this attribute, or null if not set
+     * @return ((getMarketOrderUid() != null) && (getEthWalletAddr() != null))
      * @since 13.1.0
      */
-    public boolean isMarketOrderWaited() {
+    public boolean wantToContribute() {
         try {
-            return (Boolean) getValue(Columns.WAITMARKETORDER);
+            return ((getMarketOrderUid() != null) && (getEthWalletAddr() != null));
         } catch (final Exception e) {
             return false;
         }
@@ -2305,19 +2292,7 @@ public final class HostInterface extends Table {
      * @since 13.1.0
      */
     public boolean setMarketOrderUid(final UID uid)  {
-        if(uid != null) {
-            setWaitMarketOrder(false);
-        }
         return setValue(Columns.MARKETORDERUID, uid);
-    }
-    /**
-     * This sets the wish to market order
-     * @param b is the boolean denoting the wish
-     * @return true if value has changed, false otherwise
-     * @since 13.1.0
-     */
-    public boolean setWaitMarketOrder(final boolean b)  {
-        return setValue(Columns.WAITMARKETORDER, b);
     }
 	/**
 	 * This sets this host as(un)available accordingly to its local policy This

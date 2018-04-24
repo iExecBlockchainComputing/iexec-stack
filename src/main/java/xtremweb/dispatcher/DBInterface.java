@@ -5676,7 +5676,7 @@ public final class DBInterface {
 				host.setTotalMem(_host.getTotalMem());
 
 				final String workerWalletAddr = host.getEthWalletAddr();
-				if (host.isMarketOrderWaited() && (workerWalletAddr != null)) {
+				if (host.wantToContribute()) {
 
                     try {
                         MarketOrderInterface marketOrder = marketOrderUnsatisfied();
@@ -5685,7 +5685,6 @@ public final class DBInterface {
                         }
                         marketOrder = marketOrder();
                         if(marketOrder == null) {
-                            host.setWaitMarketOrder(true);
                             logger.warn("onSubscription(" + workerWalletAddr +") : no market order");
                         } else {
                             host.setMarketOrderUid(marketOrder.getUID());

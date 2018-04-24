@@ -23,8 +23,10 @@ SET FOREIGN_KEY_CHECKS=0;
 
 
 ALTER TABLE  hosts ADD    COLUMN ethwalletaddr varchar(254) comment 'worker eth wallet address; optional';
-ALTER TABLE  hosts ADD    COLUMN marketorderUID       char(36)                                 comment 'Optional, UID of the market order',
-ALTER TABLE  hosts ADD    COLUMN waitmarketorder      char(5)                 default 'false'  comment 'This flag tells whether this host is watiting for a market order',
+ALTER TABLE  hosts ADD    COLUMN marketorderUID       char(36)                                 comment 'Optional, UID of the market order';
+
+
+ALTER TABLE  works ADD    COLUMN marketorderUID       char(36)                                    comment 'Optional, UID of the market order';
 
 
   index  idx_ethaddr  (ethaddr),

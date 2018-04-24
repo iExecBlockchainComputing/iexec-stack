@@ -30,7 +30,8 @@ ALTER TABLE  works ADD    COLUMN marketOrderId       int unsigned             de
 
 ALTER TABLE  hosts DROP   COLUMN ethwalletaddr;
 ALTER TABLE  hosts DROP   COLUMN marketorderUID;
-ALTER TABLE  hosts DROP   COLUMN waitmarketorder;
+
+ALTER TABLE  works DROP   COLUMN marketorderUID;
 
 
 drop table userRights;
