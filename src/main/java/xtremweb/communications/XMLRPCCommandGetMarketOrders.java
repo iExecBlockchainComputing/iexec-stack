@@ -23,33 +23,27 @@
 
 package xtremweb.communications;
 
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
+import xtremweb.common.*;
+
 import java.io.IOException;
 import java.io.InputStream;
-import java.rmi.RemoteException;
 import java.security.AccessControlException;
 import java.security.InvalidKeyException;
 
-import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
-
-import xtremweb.common.Table;
-import xtremweb.common.UID;
-import xtremweb.common.UserInterface;
-import xtremweb.common.XMLReader;
-import xtremweb.common.XMLable;
-import xtremweb.common.XWConfigurator;
-
 /**
- * @author <a href="mailto:lodygens /a|t\ lal.in2p3.fr>Oleg Lodygensky</a>
- * @since 11.5.0
+ * This class defines the XMLRPCCommand to retrieve categories UID
+ *
+ * @author Oleg Lodygensky
+ * @since 13.0.5
  */
-
-public class XMLRPCCommandSendData extends XMLRPCCommandSend  {
+public class XMLRPCCommandGetMarketOrders extends XMLRPCCommand {
 
 	/**
 	 * This is the RPC id
 	 */
-	public static final IdRpc IDRPC = IdRpc.SENDDATA;
+	public static final IdRpc IDRPC = IdRpc.GETMARKETORDERS;
 	/**
 	 * This is the XML tag
 	 */
@@ -58,36 +52,20 @@ public class XMLRPCCommandSendData extends XMLRPCCommandSend  {
 	/**
 	 * This constructs a new command
 	 */
-	public XMLRPCCommandSendData() throws IOException {
+	protected XMLRPCCommandGetMarketOrders() throws IOException {
 		super(null, IDRPC);
 	}
 
 	/**
-	 * This constructs a new command
-	 *
-	 * @param uri
-	 *            contains the URI to connect to
-	 * @param p
-	 *            defines the object to send
-	 */
-	public XMLRPCCommandSendData(final URI uri, final Table p) throws IOException {
-		super(uri, IDRPC);
-		setParameter(p);
-	}
-
-	/**
-	 * This constructs a new command
+	 * This constructs a new command to retrieve works for the given user
 	 *
 	 * @param uri
 	 *            contains the URI to connect to
 	 * @param u
-	 *            defines the user who executes this command
-	 * @param p
-	 *            defines the object to send
+	 *            define the user who executes this command
 	 */
-	public XMLRPCCommandSendData(final URI uri, final UserInterface u, final Table p) throws IOException {
-
-		this(uri, p);
+	public XMLRPCCommandGetMarketOrders(final URI uri, final UserInterface u) throws IOException {
+		super(uri, IDRPC);
 		setUser(u);
 	}
 
@@ -98,9 +76,9 @@ public class XMLRPCCommandSendData extends XMLRPCCommandSend  {
 	 * @param input
 	 *            is the input stream
 	 * @throws InvalidKeyException
-	 * @see xtremweb.common.XMLReader#read(InputStream)
+	 * @see XMLReader#read(InputStream)
 	 */
-	public XMLRPCCommandSendData(final InputStream input) throws IOException, SAXException, InvalidKeyException {
+	public XMLRPCCommandGetMarketOrders(final InputStream input) throws IOException, SAXException, InvalidKeyException {
 		this();
 		final XMLReader reader = new XMLReader(this);
 		reader.read(input);
@@ -111,33 +89,59 @@ public class XMLRPCCommandSendData extends XMLRPCCommandSend  {
 	 *
 	 * @param comm
 	 *            is the communication channel
-	 * @return always null
+	 * @return always null since this expect no answer
 	 * @throws AccessControlException
 	 * @throws InvalidKeyException
-	 * @exception RemoteException
-	 *                is thrown on comm error
 	 */
 	@Override
 	public XMLable exec(final CommClient comm)
-			throws IOException, ClassNotFoundException, SAXException, InvalidKeyException, AccessControlException {
-		comm.send(this);
-		return null;
+			throws IOException, SAXException, InvalidKeyException, AccessControlException {
+		return comm.getMarketOrders(this);
+	}
+
+	/**
+	 * This is called by XML parser This retrieves URI, hostUID and activation
+	 * params
+	 *
+	 * @param attrs
+	 *            contains attributes XML representation
+	 */
+	@Override
+	public void fromXml(final Attributes attrs) {
+
+		if (attrs == null) {
+			return;
+		}
+
+		for (int a = 0; a < attrs.getLength(); a++) {
+			final String attribute = attrs.getQName(a);
+			final String value = attrs.getValue(a);
+			if (attribute.compareToIgnoreCase(getColumnLabel(URI)) == 0) {
+				try {
+					setURI(new URI(value));
+				} catch (final Exception e) {
+					getLogger().error("not a valid URI " + value);
+					setURI(null);
+				}
+			}
+		}
 	}
 
 	/**
 	 * This is for testing only. The first argument must be a valid client
 	 * configuration file. Without a second argument, this dumps an
-	 * XMLRPCCommandSend object. If the second argument is an XML file
-	 * containing a description of an XMLRPCCommandSend this creates an object
-	 * from XML description and dumps it. <br />
-	 * Usage : java -cp xtremweb.jar xtremweb.communications.XMLRPCCommandSend
-	 * aConfigFile [anXMLDescriptionFile]
+	 * XMLRPCCommandGetWorks object. If the second argument is an XML file
+	 * containing a description of an XMLRPCCommandGetWorks this creates an
+	 * object from XML description and dumps it. <br />
+	 * Usage : java -cp xtremweb.jar
+	 * xtremweb.communications.XMLRPCCommandGetWorks aConfigFile
+	 * [anXMLDescriptionFile]
 	 */
 	public static void main(final String[] argv) {
 		try {
 			final XWConfigurator config = new XWConfigurator(argv[0], false);
-			final XMLRPCCommandSend cmd = new XMLRPCCommandSendData(new URI(config.getCurrentDispatcher(), new UID()),
-					config.getUser());
+			final XMLRPCCommandGetMarketOrders cmd = new XMLRPCCommandGetMarketOrders(
+					new URI(config.getCurrentDispatcher(), new UID()), config.getUser());
 			cmd.test(argv);
 		} catch (final Exception e) {
 			e.printStackTrace();

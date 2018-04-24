@@ -44,9 +44,6 @@ import xtremweb.common.XWConfigurator;
  * @since 11.5.0
  */
 
-/**
- * This class defines the XMLRPCCommand to send application definition
- */
 public class XMLRPCCommandSendApp extends XMLRPCCommandSend  {
 
 	/**

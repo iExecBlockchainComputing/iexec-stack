@@ -84,6 +84,11 @@ public enum UserRightEnum {
 	 */
 	GETCATEGORY,
 	/**
+	 * retrieve market order
+	 * @since 13.0.5
+	 */
+	GETMARKETORDER,
+	/**
 	 * This allows user rights delegation to workers e.g. workers must be able
 	 * to update works and change works status (among others)
 	 */
@@ -178,6 +183,11 @@ public enum UserRightEnum {
 	 */
 	LISTCATEGORY,
 	/**
+	 * retrieve market orders list
+	 * @since 13.0.5
+	 */
+	LISTMARKETORDER,
+	/**
 	 * this is the default user right
 	 */
 	STANDARD_USER,
@@ -204,9 +214,14 @@ public enum UserRightEnum {
 	INSERTHOST,
 	/**
 	 * this is a privileged right : send/update category
-	 * @sonce 13.0.0
+	 * @since 13.0.0
 	 */
 	INSERTCATEGORY,
+	/**
+	 * this is a privileged right : send/update market order
+	 * @since 13.0.5
+	 */
+	INSERTMARKETORDER,
 	/**
 	 * this is a privileged right : delete host
 	 */

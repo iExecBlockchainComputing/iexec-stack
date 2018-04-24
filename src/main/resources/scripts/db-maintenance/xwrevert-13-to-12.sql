@@ -25,6 +25,8 @@ SET FOREIGN_KEY_CHECKS=0;
 drop table if exists  categories;
 drop table if exists  categories_history;
 
+drop table if exists  marketorders;
+drop table if exists  marketorders_history;
 
 
 
