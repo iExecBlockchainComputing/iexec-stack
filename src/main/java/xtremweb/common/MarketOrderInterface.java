@@ -220,6 +220,8 @@ public final class MarketOrderInterface extends Table {
 
 		setAccessRights(XWAccessRights.USERALL);
 		setTrust(0.7f);
+        setVolume(1L);
+        setExpectedWorkers(4L);
 		setShortIndexes(new int[] { TableColumns.UID.getOrdinal(), Columns.CATEGORYID.getOrdinal(), Columns.DIRECTION.getOrdinal() });
 	}
 
@@ -563,7 +565,9 @@ public final class MarketOrderInterface extends Table {
      * @return true if value has changed, false otherwise
      */
     public boolean setExpectedWorkers(final Long e)  {
-        return setValue(Columns.EXPECTEDWORKERS, e);
+        getLogger().warn("setExpectedWorkers is forced to 4");
+//        return setValue(Columns.EXPECTEDWORKERS, e);
+        return setValue(Columns.EXPECTEDWORKERS, 4);
     }
     /**
      * This sets the amount of booked workers to reach the trust
@@ -571,9 +575,7 @@ public final class MarketOrderInterface extends Table {
      * @return true if value has changed, false otherwise
      */
     public boolean setNbWorkers(final Long n)  {
-
-        setValue(Columns.NBWORKERS, n);
-        return setVolume(getExpectedWorkers() / getNbWorkers());
+        return setValue(Columns.NBWORKERS, n);
     }
     /**
      * This increments the amount of booked workers to reach the trust
@@ -581,6 +583,24 @@ public final class MarketOrderInterface extends Table {
      */
     public boolean incNbWorkers()  {
         return setNbWorkers(getNbWorkers() + 1);
+    }
+    /**
+     * This marks the provided host as participating in this market order
+     * and increments the amount of booked workers to reach the trust
+     * @param h is the participating host
+     * @return true if value has changed, false otherwise
+     */
+    public boolean addWorker(final HostInterface h)  {
+        h.setMarketOrderUid(getUID());
+        return setNbWorkers(getNbWorkers() + 1);
+    }
+    /**
+     * This marks the provided host as participating in this market order
+     * and increments the amount of booked workers to reach the trust
+     * @return true if value has changed, false otherwise
+     */
+    public boolean canStart()  {
+        return getExpectedWorkers() == getNbWorkers();
     }
     /**
      * This decrements the amount of booked workers to reach the trust
@@ -595,7 +615,10 @@ public final class MarketOrderInterface extends Table {
      * @return true if value has changed, false otherwise
 	 */
 	public boolean setTrust(final Float t)  {
-		return setValue(Columns.TRUST, t);
+
+        getLogger().warn("setTrust is forced to 0.7");
+//        return setValue(Columns.TRUST, t);
+        return setValue(Columns.TRUST, 0.7);
 	}
 	/**
 	 * This sets the price value
@@ -611,7 +634,9 @@ public final class MarketOrderInterface extends Table {
      * @return true if value has changed, false otherwise
 	 */
 	public boolean setVolume(final Long v)  {
-		return setValue(Columns.VOLUME, v);
+	    getLogger().warn("setVolume is forced to 1");
+//		return setValue(Columns.VOLUME, v);
+		return setValue(Columns.VOLUME, 1);
 	}
 	/**
 	 * This sets the remaining
