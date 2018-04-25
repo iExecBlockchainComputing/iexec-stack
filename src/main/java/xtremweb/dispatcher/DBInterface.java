@@ -1419,7 +1419,7 @@ public final class DBInterface {
      */
     protected HostInterface host(final String ethaddr) throws IOException {
         return selectOne(new HostInterface(),
-                SQLRequest.MAINTABLEALIAS + HostInterface.Columns.ETHWALLETADDR + "='" + ethaddr + "'");
+                SQLRequest.MAINTABLEALIAS + "." + HostInterface.Columns.ETHWALLETADDR + "='" + ethaddr + "'");
     }
     /**
 	 * This retrieves a host for the requesting user. Host access rights are
@@ -5685,10 +5685,11 @@ public final class DBInterface {
                         }
                         marketOrder = marketOrder();
                         if(marketOrder == null) {
-                            logger.warn("onSubscription(" + workerWalletAddr +") : no market order");
+                            logger.info("onSubscription(" + workerWalletAddr +") : no market order");
                         } else {
-                            host.setMarketOrderUid(marketOrder.getUID());
-                            marketOrder.incNbWorkers();
+                            logger.debug("onSubscription(" + workerWalletAddr +") joins market order "
+                                    + marketOrder.getUID());
+                            marketOrder.addWorker(host);
                             marketOrder.update();
                         }
                     } catch (final IOException e) {
