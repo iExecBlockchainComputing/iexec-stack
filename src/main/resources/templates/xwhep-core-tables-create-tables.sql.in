@@ -498,7 +498,7 @@ create table if not exists  hosts  (
   ethwalletaddr        varchar(254)                             comment 'worker eth wallet address; optional',
   marketorderUID       char(36)                                 comment 'Optional, UID of the market order',
 
-  index  idx_ethaddr  (ethaddr),
+  index  idx_ethwalletaddr  (ethwalletaddr),
   index  osId         (osId),
   index  cputypeId    (cputypeId),
   index  usergroupUID (usergroupUID),
@@ -947,7 +947,6 @@ create table if not exists  works  (
   isdeleted           char(5)                     default 'false'  comment 'True if row has been deleted ',
   envvars             varchar(254)                                 comment 'Opional,  Since 8.0.0',
   errorMsg            varchar(254)                                 comment 'Error message',
-  marketorderUID       char(36)                                    comment 'Optional, UID of the market order',
 
   index  works_status_active (status, active),
   index  appUID              (appUID),
