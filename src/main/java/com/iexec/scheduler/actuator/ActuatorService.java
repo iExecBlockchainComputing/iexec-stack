@@ -10,7 +10,9 @@ import com.iexec.scheduler.workerpool.WorkerPoolService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
+import org.web3j.tuples.generated.Tuple2;
 import org.web3j.tuples.generated.Tuple4;
+import org.web3j.tuples.generated.Tuple8;
 import org.web3j.utils.Numeric;
 
 import java.math.BigInteger;
@@ -43,6 +45,7 @@ public class ActuatorService implements Actuator {
         //TODO - createMarketOrder if n workers are alive (not subscribed, means nothing)
         try {
             TransactionReceipt approveReceipt = rlcService.getRlc().approve(iexecHubService.getIexecHub().getContractAddress(), value).send();
+            //TODO ADD RATIO on approval value
             log.info("Approve for createMarketOrder [approveAmount:{}, transactionStatus:{}] ",
                     value, getStatus(approveReceipt));
             TransactionReceipt depositReceipt = iexecHubService.getIexecHub().deposit(value).send();
@@ -66,6 +69,8 @@ public class ActuatorService implements Actuator {
         }
         return null;
     }
+
+    //TODO add closeMarketOrder function
 
 
     @Override
@@ -133,6 +138,108 @@ public class ActuatorService implements Actuator {
             e.printStackTrace();
         }
         return categoryEvents;
+    }
+
+
+    //IexecHub getters
+
+    @Override
+    public BigInteger getWorkerScore(String worker) {
+        try {
+            return iexecHubService.getIexecHub().getWorkerScore(worker).send();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return new BigInteger("-1");
+    }
+
+
+    @Override
+    public Tuple2<BigInteger, BigInteger> getContributionHistory() {
+        try {
+            return iexecHubService.getIexecHub().m_contributionHistory().send();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return new Tuple2(new BigInteger("-1"), new BigInteger("-1"));
+    }
+
+
+    @Override
+    public BigInteger getSuccessContributionHistory() {
+        Tuple2 result = getContributionHistory();
+        return (BigInteger)result.getValue1();
+    }
+
+    @Override
+    public BigInteger getFailledContributionHistory() {
+        Tuple2 result = getContributionHistory();
+        return (BigInteger)result.getValue2();
+    }
+    
+
+    //Marketplace getters
+
+    @Override
+    public BigInteger getMarketOrdersCount() {
+        try {
+            return marketplaceService.getMarketplace().m_orderCount().send();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return new BigInteger("-1");
+    }
+
+    @Override
+    public Tuple8<BigInteger, BigInteger, BigInteger, BigInteger, BigInteger, BigInteger, String, String> getMarketOrder(BigInteger marketorderIdx) {
+        try {
+            return marketplaceService.getMarketplace().getMarketOrder(marketorderIdx).send();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
+    @Override
+    public Boolean existingMarketOrder(BigInteger marketorderIdx) {
+        try {
+            return marketplaceService.getMarketplace().existingMarketOrder(marketorderIdx).send();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    @Override
+    public BigInteger getMarketOrderValue(BigInteger marketorderIdx) {
+        try {
+            return marketplaceService.getMarketplace().getMarketOrderValue(marketorderIdx).send();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return new BigInteger("-1");
+    }
+
+    @Override
+    public BigInteger getMarketOrderCategory(BigInteger marketorderIdx) {
+        try {
+            return marketplaceService.getMarketplace().getMarketOrderCategory(marketorderIdx).send();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return new BigInteger("-1");
+    }
+
+
+    @Override
+    public BigInteger getMarketOrderTrust(BigInteger marketorderIdx) {
+        try {
+            return marketplaceService.getMarketplace().getMarketOrderTrust(marketorderIdx).send();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return new BigInteger("-1");
     }
 
 
