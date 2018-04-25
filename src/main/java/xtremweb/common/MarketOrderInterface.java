@@ -58,6 +58,15 @@ public final class MarketOrderInterface extends Table {
 			}
 		},
         /**
+         * The index as returned by actuatorService.createMarketOrder
+         */
+        MARKETORDERIDX {
+            @Override
+            public Long fromString(final String v) {
+                return Long.valueOf(v);
+            }
+        },
+        /**
          * The category for this order
          */
         CATEGORYID {
@@ -89,8 +98,8 @@ public final class MarketOrderInterface extends Table {
          */
 		TRUST {
 			@Override
-			public Float fromString(final String v) {
-				return Float.valueOf(v);
+			public Long fromString(final String v) {
+				return Long.valueOf(v);
 			}
 		},
         /**
@@ -209,7 +218,7 @@ public final class MarketOrderInterface extends Table {
 
 	/**
 	 * This is the default constructor
-     * TRUST is forced to 0.5
+     * TRUST is forced to 70
      * EXPECTEDWORKERS is forced to 10
 	 */
 	public MarketOrderInterface() {
@@ -219,10 +228,10 @@ public final class MarketOrderInterface extends Table {
 		setAttributeLength(ENUMSIZE);
 
 		setAccessRights(XWAccessRights.USERALL);
-		setTrust(0.7f);
+		setTrust(70L);
         setVolume(1L);
         setExpectedWorkers(4L);
-		setShortIndexes(new int[] { TableColumns.UID.getOrdinal(), Columns.CATEGORYID.getOrdinal(), Columns.DIRECTION.getOrdinal() });
+		setShortIndexes(new int[] { TableColumns.UID.getOrdinal(), Columns.MARKETORDERIDX.getOrdinal(), Columns.DIRECTION.getOrdinal() });
 	}
 
 	/**
@@ -280,11 +289,12 @@ public final class MarketOrderInterface extends Table {
 			setOwner((UID) TableColumns.OWNERUID.fromResultSet(rs));
 			setAccessRights((XWAccessRights) TableColumns.ACCESSRIGHTS.fromResultSet(rs));
             setCategoryId((Long) Columns.CATEGORYID.fromResultSet(rs));
+            setMarketOrderIdx((Long) Columns.MARKETORDERIDX.fromResultSet(rs));
             setExpectedWorkers((Long) Columns.EXPECTEDWORKERS.fromResultSet(rs));
             setNbWorkers((Long) Columns.NBWORKERS.fromResultSet(rs));
 			setDirection((MarketOrderDirectionEnum) Columns.DIRECTION.fromResultSet(rs));
 			setPrice((Long) Columns.PRICE.fromResultSet(rs));
-			setTrust((Float) Columns.TRUST.fromResultSet(rs));
+			setTrust((Long) Columns.TRUST.fromResultSet(rs));
 			setVolume((Long) Columns.VOLUME.fromResultSet(rs));
 			setRemaining((Long) Columns.REMAINING.fromResultSet(rs));
 			setWorkerPoolAddr((String) Columns.WORKERPOOLADDR.fromResultSet(rs));
@@ -376,6 +386,9 @@ public final class MarketOrderInterface extends Table {
         if (marketOrderInterface.getCategoryId() != null) {
             setCategoryId(marketOrderInterface.getCategoryId());
         }
+        if (marketOrderInterface.getMarketOrderIdx() != null) {
+            setMarketOrderIdx(marketOrderInterface.getMarketOrderIdx());
+        }
         if (marketOrderInterface.getExpectedWorkers() != null) {
             setExpectedWorkers(marketOrderInterface.getExpectedWorkers());
         }
@@ -426,6 +439,20 @@ public final class MarketOrderInterface extends Table {
         }
     }
     /**
+     * This retrieves the market order index
+     *
+     * @return this attribute, or null if not set
+     * @exception IOException
+     *                is thrown is attribute is nor well formed
+     */
+    public Long getMarketOrderIdx() throws IOException {
+        try {
+            return (Long) getValue(Columns.MARKETORDERIDX);
+        } catch (final NullPointerException e) {
+            return null;
+        }
+    }
+    /**
      * This retrieves the amount of needed worker to safely reach the trust
      *
      * @return this attribute, or null if not set
@@ -454,9 +481,9 @@ public final class MarketOrderInterface extends Table {
 	 *
 	 * @return this attribute, or null if not set
 	 */
-	public Float getTrust()  {
+	public Long getTrust()  {
 		try {
-			return (Float) getValue(Columns.TRUST);
+			return (Long) getValue(Columns.TRUST);
 		} catch (final Exception e) {
 			return null;
 		}
@@ -560,6 +587,14 @@ public final class MarketOrderInterface extends Table {
         return setValue(Columns.CATEGORYID, c);
     }
     /**
+     * This sets the market order index
+     * @param c is the category id
+     * @return true if value has changed, false otherwise
+     */
+    public boolean setMarketOrderIdx(final Long c)  {
+        return setValue(Columns.MARKETORDERIDX, c);
+    }
+    /**
      * This sets the amount of needed workers to safely reach the trust
      * @param e is the amount of needed workers
      * @return true if value has changed, false otherwise
@@ -614,11 +649,11 @@ public final class MarketOrderInterface extends Table {
 	 * @param t is the trust
      * @return true if value has changed, false otherwise
 	 */
-	public boolean setTrust(final Float t)  {
+	public boolean setTrust(final Long t)  {
 
-        getLogger().warn("setTrust is forced to 0.7");
+        getLogger().warn("setTrust is forced to 70");
 //        return setValue(Columns.TRUST, t);
-        return setValue(Columns.TRUST, 0.7);
+        return setValue(Columns.TRUST, 70);
 	}
 	/**
 	 * This sets the price value

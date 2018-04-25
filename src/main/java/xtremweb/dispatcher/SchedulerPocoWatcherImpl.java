@@ -17,6 +17,7 @@ import xtremweb.common.Logger;
 import xtremweb.common.MarketOrderInterface;
 
 import java.io.IOException;
+import java.math.BigInteger;
 
 public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatcher {
 
@@ -41,6 +42,7 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
 
     @Override
     public void onSubscription(String workerWalletAddr) {
+        System.out.println("********* ugo in the subscription");
         try {
             final HostInterface host = DBInterface.getInstance().host(workerWalletAddr);
             if(host == null) {
@@ -59,12 +61,18 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
                 return;
             }
             if (host.wantToContribute()) {
-                host.setMarketOrderUid(marketOrder.getUID());
+                marketOrder.addWorker(host);
                 host.update();
-                marketOrder.incNbWorkers();
                 marketOrder.update();
             }
-            //   actuatorService.createMarketOrder(BigInteger.ONE, BigInteger.ZERO, BigInteger.valueOf(100), BigInteger.ONE); //on N worker alive
+            if(marketOrder.canStart()) {
+               final BigInteger marketOrderIdx = actuatorService.createMarketOrder(BigInteger.valueOf(marketOrder.getCategoryId()),
+                       BigInteger.valueOf(marketOrder.getTrust()),
+                       BigInteger.valueOf(marketOrder.getPrice()),
+                       BigInteger.valueOf(marketOrder.getVolume()));
+               marketOrder.setMarketOrderIdx(marketOrderIdx.longValue());
+               marketOrder.update();
+            }
         } catch (final IOException e) {
             logger.exception(e);
         }

@@ -26,6 +26,7 @@ package xtremweb.dispatcher;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.net.URISyntaxException;
 import java.security.AccessControlException;
 import java.security.InvalidKeyException;
@@ -43,6 +44,7 @@ import com.iexec.common.ethereum.CommonConfiguration;
 import com.iexec.common.ethereum.CredentialsService;
 import com.iexec.common.ethereum.IexecConfigurationService;
 import com.iexec.common.workerpool.WorkerPoolConfig;
+import com.iexec.scheduler.actuator.ActuatorService;
 import xtremweb.common.*;
 import xtremweb.communications.*;
 import xtremweb.database.ColumnSelection;
@@ -5690,6 +5692,15 @@ public final class DBInterface {
                             logger.debug("onSubscription(" + workerWalletAddr +") joins market order "
                                     + marketOrder.getUID());
                             marketOrder.addWorker(host);
+                            marketOrder.update();
+                        }
+                        if(marketOrder.canStart()) {
+                            final ActuatorService actuatorService = ActuatorService.getInstance();
+                            final BigInteger marketOrderIdx = actuatorService.createMarketOrder(BigInteger.valueOf(marketOrder.getCategoryId()),
+                                    BigInteger.valueOf(marketOrder.getTrust()),
+                                    BigInteger.valueOf(marketOrder.getPrice()),
+                                    BigInteger.valueOf(marketOrder.getVolume()));
+                            marketOrder.setMarketOrderIdx(marketOrderIdx.longValue());
                             marketOrder.update();
                         }
                     } catch (final IOException e) {
