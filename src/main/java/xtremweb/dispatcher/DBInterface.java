@@ -5683,13 +5683,13 @@ public final class DBInterface {
                     try {
                         MarketOrderInterface marketOrder = marketOrderUnsatisfied();
                         if(marketOrder == null) {
-                            logger.info("onSubscription(" + workerWalletAddr +") : no unsatisfied market order");
+                            logger.info("hostRegister() - " + workerWalletAddr +" : no unsatisfied market order");
                         }
                         marketOrder = marketOrder();
                         if(marketOrder == null) {
-                            logger.info("onSubscription(" + workerWalletAddr +") : no market order");
+                            logger.info("hostRegister() - " + workerWalletAddr +" : no market order");
                         } else {
-                            logger.debug("onSubscription(" + workerWalletAddr +") joins market order "
+                            logger.debug("hostRegister() - " + workerWalletAddr +" joins market order "
                                     + marketOrder.getUID());
                             marketOrder.addWorker(host);
                             marketOrder.update();
