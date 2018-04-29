@@ -68,7 +68,6 @@ public final class AppInterface extends Table {
 	 * This the application name length as defined in DB
 	 */
 	public static final int APPNAMELENGTH = 100;
-
 	/**
 	 * This is the XML tag
 	 */
@@ -79,6 +78,17 @@ public final class AppInterface extends Table {
 	 * in TableColumns.
 	 */
 	public enum Columns implements XWBaseColumn {
+		/**
+		 * This is the price is the author expects a remuneration for its application
+		 * This is typically used through Blockchain
+		 * @since 13.1.0
+		 */
+		PRICE {
+			@Override
+			public Long fromString(final String v) {
+				return Long.valueOf(v);
+			}
+		},
 		/**
 		 * This is the column index of the application name, this is a unique
 		 * index in the DB so that client can refer application with its name
@@ -1331,10 +1341,14 @@ public final class AppInterface extends Table {
 			setMinCpuSpeed((Integer) Columns.MINCPUSPEED.fromResultSet(rs));
 		} catch (final Exception e) {
 		}
-		try {
-			setMinFreeMassStorage((Long) Columns.MINFREEMASSSTORAGE.fromResultSet(rs));
-		} catch (final Exception e) {
-		}
+        try {
+            setMinFreeMassStorage((Long) Columns.MINFREEMASSSTORAGE.fromResultSet(rs));
+        } catch (final Exception e) {
+        }
+        try {
+            setPrice((Long) Columns.PRICE.fromResultSet(rs));
+        } catch (final Exception e) {
+        }
 		try {
 			setEnvVars((String) Columns.ENVVARS.fromResultSet(rs));
 		} catch (final Exception e) {
@@ -1424,7 +1438,6 @@ public final class AppInterface extends Table {
 			setName(itf.getName());
 		}
 		setService(itf.isService());
-
 		if (itf.getAccessRights() != null) {
 			setAccessRights(itf.getAccessRights());
 		}
@@ -1434,9 +1447,12 @@ public final class AppInterface extends Table {
 		if (itf.getMinCpuSpeed() != 0) {
 			setMinCpuSpeed(itf.getMinCpuSpeed());
 		}
-		if (itf.getMinFreeMassStorage() != 0) {
-			setMinFreeMassStorage(itf.getMinFreeMassStorage());
-		}
+        if (itf.getMinFreeMassStorage() != 0) {
+            setMinFreeMassStorage(itf.getMinFreeMassStorage());
+        }
+        if (itf.getPrice() != 0) {
+            setPrice(itf.getPrice());
+        }
 		setEnvVars(itf.getEnvVars());
 		setNeededPackages(itf.getNeededPackages());
 		if (itf.getType() != null) {
@@ -2091,21 +2107,34 @@ public final class AppInterface extends Table {
 		return 0;
 	}
 
-	/**
-	 * This retrieves the minimum RAM for this application. If not set it is
-	 * forced to 0
-	 *
-	 * @return the minimal disk space needed for this application in Mb
-	 * @since 9.0.5
-	 */
-	public Long getMinFreeMassStorage() {
-		final Long ret = (Long) getValue(Columns.MINFREEMASSSTORAGE);
-		if (ret != null) {
-			return ret.longValue();
-		}
-		setMinFreeMassStorage(0);
-		return 0L;
-	}
+    /**
+     * This retrieves the minimum RAM for this application. If not set it is
+     * forced to 0
+     *
+     * @return the minimal disk space needed for this application in Mb
+     * @since 9.0.5
+     */
+    public Long getMinFreeMassStorage() {
+        final Long ret = (Long) getValue(Columns.MINFREEMASSSTORAGE);
+        if (ret != null) {
+            return ret.longValue();
+        }
+        setMinFreeMassStorage(0);
+        return 0L;
+    }
+    /**
+     * This retrieves the price for this application
+     *
+     * @return the price
+     * @since 13.1.0
+     */
+    public Long getPrice() {
+        final Long ret = (Long) getValue(Columns.PRICE);
+        if (ret != null) {
+            return ret.longValue();
+        }
+        return 0L;
+    }
 
 	/**
 	 * This gets an attribute
@@ -2134,11 +2163,10 @@ public final class AppInterface extends Table {
 		}
 		return null;
 	}
-
 	/**
-	 * This gets an attribute
+	 * This gets this application name
 	 *
-	 * @return this attribute, or null if not set
+	 * @return this application name
 	 */
 	public String getName() {
 		try {
@@ -2147,7 +2175,6 @@ public final class AppInterface extends Table {
 		}
 		return null;
 	}
-
 	/**
 	 * This gets an attribute
 	 *
@@ -2832,23 +2859,38 @@ public final class AppInterface extends Table {
 		return setValue(Columns.MINCPUSPEED, Integer.valueOf(v < 0 ? 0 : v));
 	}
 
-	/**
-	 * This sets the minimal disk space for this application
-	 *
-	 * @param v
-	 *            is the minimal amount of disk space this work needs in Mb.
-	 * @return true if value has changed, false otherwise
-	 * @since 9.0.5
-	 */
-	public boolean setMinFreeMassStorage(final long v) {
-		try {
-			return setValue(Columns.MINFREEMASSSTORAGE, Long.valueOf(v < 0L ? 0L : v));
-		} catch (final Exception e) {
-			return setValue(Columns.MINFREEMASSSTORAGE, 0L);
-		}
-	}
+    /**
+     * This sets the minimal disk space for this application
+     *
+     * @param v
+     *            is the minimal amount of disk space this work needs in Mb.
+     * @return true if value has changed, false otherwise
+     * @since 9.0.5
+     */
+    public boolean setMinFreeMassStorage(final long v) {
+        try {
+            return setValue(Columns.MINFREEMASSSTORAGE, Long.valueOf(v < 0L ? 0L : v));
+        } catch (final Exception e) {
+            return setValue(Columns.MINFREEMASSSTORAGE, 0L);
+        }
+    }
+    /**
+     * This sets the price
+     *
+     * @param v is the price
+     * @return true if value has changed, false otherwise
+     * @since 13.1.0
+     */
+    public boolean setPrice(final long v) {
+        try {
+            return setValue(Columns.PRICE, Long.valueOf(v < 0L ? 0L : v));
+        } catch (final Exception e) {
+            return setValue(Columns.PRICE, 0L);
+        }
+    }
 
 	/**
+	 * This sets this application name
 	 * @return true if value has changed, false otherwise
 	 */
 	public boolean setName(final String v) {
@@ -2859,7 +2901,6 @@ public final class AppInterface extends Table {
 		}
 		return setValue(Columns.NAME, value == null ? null : value);
 	}
-
 	/**
 	 * @return true if value has changed, false otherwise
 	 * @since 8.0.0 (FG)

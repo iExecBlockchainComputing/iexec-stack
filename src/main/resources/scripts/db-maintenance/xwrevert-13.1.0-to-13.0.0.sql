@@ -25,13 +25,22 @@ SET FOREIGN_KEY_CHECKS=0;
 drop table if exists  marketorders;
 drop table if exists  marketorders_history;
 
-ALTER TABLE  works DROP   COLUMN marketOrderUID;
-ALTER TABLE  works ADD    COLUMN marketOrderId       int unsigned             default 0            comment 'blockchain market order id';
+ALTER TABLE  works DROP   COLUMN marketOrderIdx;
+ALTER TABLE  works DROP   COLUMN requester;
+ALTER TABLE  works DROP   COLUMN dataset;
+ALTER TABLE  works DROP   COLUMN workerPool;
+ALTER TABLE  works DROP   COLUMN emitcost;
+ALTER TABLE  works DROP   COLUMN callback;
+ALTER TABLE  works DROP   COLUMN beneficiary;
+
+ALTER TABLE  works CHANGE COLUMN replications  replications int(3) default 0        comment 'Optionnal. Amount of expected replications. No replication, if <= 0';
+ALTER TABLE  works CHANGE COLUMN sizer         sizer        int(3) default 0        comment 'Optionnal. This is the size of the replica set';
+ALTER TABLE  works CHANGE COLUMN totalr        totalr       int(3) default 0        comment 'Optionnal. Current amount of replicas';
 
 ALTER TABLE  hosts DROP   COLUMN ethwalletaddr;
 ALTER TABLE  hosts DROP   COLUMN marketorderUID;
 
-ALTER TABLE  works DROP   COLUMN marketorderUID;
+ALTER TABLE  apps  DROP   COLUMN price;
 
 
 drop table userRights;

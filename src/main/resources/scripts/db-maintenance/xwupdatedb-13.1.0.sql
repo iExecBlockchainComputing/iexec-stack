@@ -22,11 +22,23 @@
 SET FOREIGN_KEY_CHECKS=0;
 
 
-ALTER TABLE  hosts ADD    COLUMN ethwalletaddr varchar(254) comment 'worker eth wallet address; optional';
-ALTER TABLE  hosts ADD    COLUMN marketorderUID       char(36)                                 comment 'Optional, UID of the market order';
+ALTER TABLE  hosts ADD    COLUMN ethwalletaddr     varchar(254)                comment 'worker eth wallet address; optional';
+ALTER TABLE  hosts ADD    COLUMN marketorderUID    char(36)                    comment 'Optional, UID of the market order';
+
+ALTER TABLE  apps  ADD    COLUMN price             bigint          default 0  comment 'price since 13.1.0',
+
+ALTER TABLE  works ADD    COLUMN marketorderIdx    bigint                     comment 'Optional, ID of the market order to sell CPU';
+ALTER TABLE  works ADD    COLUMN requester         varchar(50)                comment 'requester is a public key of a blockchain wallet; since 13.1.0',
+ALTER TABLE  works ADD    COLUMN dataset           varchar(50)                comment 'dataset is a blockchain smart contract address; since 13.1.0',
+ALTER TABLE  works ADD    COLUMN workerPool        varchar(50)                comment 'worker pool is blockchain smart contract address; since 13.1.0',
+ALTER TABLE  works ADD    COLUMN emitcost          bigint                     comment 'blockchain cost; since 13.1.0'
+ALTER TABLE  works ADD    COLUMN callback          varchar(50)                comment 'since 13.1.0',
+ALTER TABLE  works ADD    COLUMN beneficiary       varchar(50)                comment 'since 13.1.0',
 
 
-ALTER TABLE  works ADD    COLUMN marketorderUID       char(36)                                    comment 'Optional, UID of the market order';
+ALTER TABLE  works CHANGE COLUMN replications  replications bigint  default 0        comment 'Optionnal. Amount of expected replications. No replication, if <= 0';
+ALTER TABLE  works CHANGE COLUMN sizer         sizer        bigint  default 0        comment 'Optionnal. This is the size of the replica set';
+ALTER TABLE  works CHANGE COLUMN totalr        totalr       bigint  default 0        comment 'Optionnal. Current amount of replicas';
 
 
   index  idx_ethaddr  (ethaddr),

@@ -33,6 +33,7 @@ import java.security.InvalidKeyException;
 import java.sql.ResultSet;
 import java.util.Date;
 
+import com.iexec.common.model.WorkOrderModel;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
@@ -333,54 +334,89 @@ public class WorkInterface extends Table {
 		 */
 		CATEGORYID {
 			@Override
-			public Integer fromString(final String v) throws URISyntaxException {
-				return Integer.valueOf(v);
+			public Long fromString(final String v) throws URISyntaxException {
+				return Long.valueOf(v);
 			}
 		},
 		/**
-		 * This is the column index of market order uid; this is optional
+		 * This is the column index of market order id; this is optional
 		 *
 		 * @since 13.1.0
 		 */
-		MARKETORDERUID {
+		MARKETORDERIDX {
 			@Override
-			public UID fromString(final String v) throws URISyntaxException {
-				return new UID(v);
-			}
+            public Long fromString(final String v) {
+                return Long.valueOf(v);
+            }
 		},
-		/**
+        /**
+         * This is the column index of the emit cost
+         * @since 13.1.0
+         */
+        EMITCOST {
+            @Override
+            public Long fromString(final String v) {
+                return Long.valueOf(v);
+            }
+        },
+        /**
+         * This is the column index of the requester; a public key of a blockchain wallet
+         * @since 13.1.0
+         */
+        REQUESTER,
+        /**
+         * This is the column index of the dataset; a blockchain smart contract address
+         * @since 13.1.0
+         */
+        DATASET,
+        /**
+         * This is the column index of the workerpool; a blockchain smart contract address
+         * @since 13.1.0
+         */
+        WORKERPOOL,
+        /**
+         * This is the column index of the callback
+         * @since 13.1.0
+         */
+        CALLBACK,
+        /**
+         * This is the column index of the callback
+         * @since 13.1.0
+         */
+        BENEFICIARY,
+        /**
 		 * This is the column index of the amount of expected replicas This job
 		 * is replicated forever, if < 0
-		 *
+		 * Since 13.1.0 this changed from int to long
 		 * @since 10.0.0
 		 */
 		REPLICATIONS {
 			@Override
-			public Integer fromString(final String v) throws URISyntaxException {
-				return Integer.valueOf(v);
+			public Long fromString(final String v) throws URISyntaxException {
+				return Long.valueOf(v);
 			}
 		},
 		/**
 		 * This is the current amount of submitted replica
-		 *
-		 * @since 10.0.0
+		 * Since 13.1.0 this changed from int to long
+         * @since 10.0.0
 		 */
 		TOTALR {
 			@Override
-			public Integer fromString(final String v) throws URISyntaxException {
-				return Integer.valueOf(v);
+			public Long fromString(final String v) throws URISyntaxException {
+				return Long.valueOf(v);
 			}
 		},
 		/**
 		 * This is the size of the replica set (how many replica can be computed
 		 * simultaneously)
-		 *
+         * Since 13.1.0 this changed from int to long
 		 * @since 10.0.0
 		 */
 		SIZER {
 			@Override
-			public Integer fromString(final String v) throws URISyntaxException {
-				return Integer.valueOf(v);
+			public Long fromString(final String v) throws URISyntaxException {
+				return Long.valueOf(v);
 			}
 		},
 		/**
@@ -732,27 +768,26 @@ public class WorkInterface extends Table {
 				Columns.COMPLETEDDATE.getOrdinal(), Columns.LABEL.getOrdinal() });
 
 		setReplicatedUid(null);
-		setExpectedReplications(0);
-		setTotalReplica(0);
-		setReplicaSetSize(0);
-        setCategoryId(0);
-        setMarketOrderUid(null);
+		setExpectedReplications(0L);
+		setTotalReplica(0L);
+		setReplicaSetSize(0L);
+        setCategoryId(0L);
+        setMarketOrderIdx(0L);
 	}
 
-	/**
-	 * This is a copy constructor
-	 *
-	 * @param src
-	 *            is the WorkInterface to clone
-	 */
-	public WorkInterface(final WorkInterface src) throws IOException {
+    /**
+     * This is a copy constructor
+     *
+     * @param src
+     *            is the WorkInterface to clone
+     */
+    public WorkInterface(final WorkInterface src) throws IOException {
 
-		this();
-		this.setUID(src.getUID());
-		updateInterface(src);
-	}
-
-	/**
+        this();
+        this.setUID(src.getUID());
+        updateInterface(src);
+    }
+    /**
 	 * This constructs an object from DB
 	 *
 	 * @param rs
@@ -821,7 +856,27 @@ public class WorkInterface extends Table {
             setMinFreeMassStorage((Long) Columns.MINFREEMASSSTORAGE.fromResultSet(rs));
         } catch (final Exception e) {
         }
-		try {
+        try {
+            setEmitCost((Long) Columns.EMITCOST.fromResultSet(rs));
+        } catch (final Exception e) {
+        }
+        try {
+            setDataset((String) Columns.DATASET.fromResultSet(rs));
+        } catch (final Exception e) {
+        }
+        try {
+            setWorkerPool((String) Columns.WORKERPOOL.fromResultSet(rs));
+        } catch (final Exception e) {
+        }
+        try {
+            setCallback((String) Columns.WORKERPOOL.fromResultSet(rs));
+        } catch (final Exception e) {
+        }
+        try {
+            setBeneficiary((String) Columns.WORKERPOOL.fromResultSet(rs));
+        } catch (final Exception e) {
+        }
+        try {
 			setMaxFreeMassStorage((Long) Columns.MAXFREEMASSSTORAGE.fromResultSet(rs));
 		} catch (final Exception e) {
 		}
@@ -922,23 +977,23 @@ public class WorkInterface extends Table {
 		} catch (final Exception e) {
 		}
 		try {
-			setExpectedReplications((Integer) Columns.REPLICATIONS.fromResultSet(rs));
+			setExpectedReplications((Long) Columns.REPLICATIONS.fromResultSet(rs));
 		} catch (final Exception e) {
 		}
         try {
-            setCategoryId((Integer) Columns.CATEGORYID.fromResultSet(rs));
+            setCategoryId((Long) Columns.CATEGORYID.fromResultSet(rs));
         } catch (final Exception e) {
         }
         try {
-            setMarketOrderUid((UID) Columns.MARKETORDERUID.fromResultSet(rs));
+            setMarketOrderIdx((Long) Columns.MARKETORDERIDX.fromResultSet(rs));
         } catch (final Exception e) {
         }
 		try {
-			setTotalReplica((Integer) Columns.TOTALR.fromResultSet(rs));
+			setTotalReplica((Long) Columns.TOTALR.fromResultSet(rs));
 		} catch (final Exception e) {
 		}
 		try {
-			setReplicaSetSize((Integer) Columns.SIZER.fromResultSet(rs));
+			setReplicaSetSize((Long) Columns.SIZER.fromResultSet(rs));
 		} catch (final Exception e) {
 		}
 		try {
@@ -1059,7 +1114,7 @@ public class WorkInterface extends Table {
 		setReplicaSetSize(itf.getReplicaSetSize());
 		setExpectedReplications(itf.getExpectedReplications());
         setCategoryId(itf.getCategoryId());
-        setMarketOrderUid(itf.getMarketOrderUid());
+        setMarketOrderIdx(itf.getMarketOrderIdx());
 		setReplicatedUid(itf.getReplicatedUid());
 		setDataDriven(itf.getDataDriven());
 		setExpectedHost(itf.getExpectedHost());
@@ -1088,6 +1143,12 @@ public class WorkInterface extends Table {
         setMaxMemory(itf.getMaxMemory());
         setMaxCpuSpeed(itf.getMaxCpuSpeed());
         setMinFreeMassStorage(itf.getMinFreeMassStorage());
+        setEmitCost(itf.getEmitCost());
+        setRequester(itf.getRequester());
+        setDataset(itf.getDataset());
+        setWorkerPool(itf.getWorkerPool());
+        setCallback(itf.getCallback());
+        setBeneficiary(itf.getBeneficiary());
 		setMaxFreeMassStorage(itf.getMaxFreeMassStorage());
 		setMaxFileSize(itf.getMaxFileSize());
 		setMinCpuSpeed(itf.getMinCpuSpeed());
@@ -1574,49 +1635,49 @@ public class WorkInterface extends Table {
 	/**
 	 * This retrieves the current amount of submitted replica. This forces the
 	 * total amount of replica to 0, if not set
-	 *
+     * Since 13.1.0 this changed from int to long
 	 * @since 10.0.0
 	 * @return this attribute
 	 */
-	public final int getTotalReplica() {
-		final Integer ret = (Integer) getValue(Columns.TOTALR);
+	public final long getTotalReplica() {
+		final Long ret = (Long) getValue(Columns.TOTALR);
 		if (ret != null) {
-			return ret.intValue();
+			return ret.longValue();
 		}
-		setTotalReplica(0);
-		return 0;
+		setTotalReplica(0L);
+		return 0L;
 	}
 
 	/**
 	 * This retrieves the replica set size (how many replica can be run
 	 * simultaneously). This forces the replica set size to 0, if not set
-	 *
+     * Since 13.1.0 this changed from int to long
 	 * @since 10.0.0
 	 * @return this attribute
 	 */
-	public final int getReplicaSetSize() {
-		final Integer ret = (Integer) getValue(Columns.SIZER);
+	public final long getReplicaSetSize() {
+		final Long ret = (Long) getValue(Columns.SIZER);
 		if (ret != null) {
-			return ret.intValue();
+			return ret.longValue();
 		}
-		setReplicaSetSize(0);
-		return 0;
+		setReplicaSetSize(0L);
+		return 0L;
 	}
 
 	/**
 	 * This retrieves the amount of expected replica. This forces the amount of
 	 * expected replica to 0, if not set
-	 *
+     * Since 13.1.0 this changed from int to long
 	 * @since 10.0.0
 	 * @return this attribute
 	 */
-	public final int getExpectedReplications() {
-		final Integer ret = (Integer) getValue(Columns.REPLICATIONS);
+	public final long getExpectedReplications() {
+		final Long ret = (Long) getValue(Columns.REPLICATIONS);
 		if (ret != null) {
-			return ret.intValue();
+			return ret.longValue();
 		}
-		setExpectedReplications(0);
-		return 0;
+		setExpectedReplications(0L);
+		return 0L;
 	}
     /**
      * This retrieves the min needed mass storage usage
@@ -1629,6 +1690,58 @@ public class WorkInterface extends Table {
             return ret.longValue();
         }
         return 0L;
+    }
+    /**
+     * This retrieves the emit cost
+     * @return this attribute, or 0 if not set
+     * @since 13.1.0
+     */
+    public final long getEmitCost() {
+        final Long ret = (Long) getValue(Columns.EMITCOST);
+        if (ret != null) {
+            return ret.longValue();
+        }
+        return 0L;
+    }
+    /**
+     * This retrieves the requester
+     * @return this attribute, or 0 if not set
+     * @since 13.1.0
+     */
+    public final String getRequester() {
+        return (String) getValue(Columns.REQUESTER);
+    }
+    /**
+     * This retrieves the dataset
+     * @return this attribute, or 0 if not set
+     * @since 13.1.0
+     */
+    public final String getDataset() {
+        return (String) getValue(Columns.DATASET);
+    }
+    /**
+     * This retrieves the workerpool
+     * @return this attribute, or 0 if not set
+     * @since 13.1.0
+     */
+    public final String getWorkerPool() {
+        return (String) getValue(Columns.WORKERPOOL);
+    }
+    /**
+     * This retrieves the callback
+     * @return this attribute, or 0 if not set
+     * @since 13.1.0
+     */
+    public final String getCallback() {
+        return (String) getValue(Columns.CALLBACK);
+    }
+    /**
+     * This retrieves the beneficiary
+     * @return this attribute, or 0 if not set
+     * @since 13.1.0
+     */
+    public final String getBeneficiary() {
+        return (String) getValue(Columns.BENEFICIARY);
     }
 	/**
 	 * This retrieves the max authorized mass storage usage, according to the category
@@ -1683,21 +1796,21 @@ public class WorkInterface extends Table {
      * @since 13.0.0
      * @return this attribute
      */
-    public final int getCategoryId() {
-        final Integer ret = (Integer) getValue(Columns.CATEGORYID);
+    public final long getCategoryId() {
+        final Long ret = (Long) getValue(Columns.CATEGORYID);
         if (ret != null) {
-            return ret.intValue();
+            return ret.longValue();
         }
-        setCategoryId(0);
-        return 0;
+        setCategoryId(0L);
+        return 0L;
     }
     /**
-     * This retrieves the market order UID
+     * This retrieves the market order ID
      * @since 13.1.0
      * @return this attribute, or null if not set
      */
-    public final UID getMarketOrderUid() {
-        return (UID) getValue(Columns.MARKETORDERUID);
+    public final Long getMarketOrderIdx() {
+        return (Long) getValue(Columns.MARKETORDERIDX);
     }
 
 	/**
@@ -1810,9 +1923,9 @@ public class WorkInterface extends Table {
 	 *         false otherwise
 	 */
 	public final boolean replicate(final UID v) {
-		setExpectedReplications(0);
-		setTotalReplica(0);
-		setReplicaSetSize(0);
+		setExpectedReplications(0L);
+		setTotalReplica(0L);
+		setReplicaSetSize(0L);
 		setError(null);
 		setReturnCode(0);
 		setPending();
@@ -2175,6 +2288,54 @@ public class WorkInterface extends Table {
     public final boolean setMinFreeMassStorage(final long v) {
         return setValue(Columns.MINFREEMASSSTORAGE, Long.valueOf(v < 0L ? 0L : v));
     }
+    /**
+     * This sets the emit cost
+     * @return true if value has changed, false otherwise
+     * @since 13.1.0
+     */
+    public final boolean setEmitCost(final long v) {
+        return setValue(Columns.EMITCOST, Long.valueOf(v < 0L ? 0L : v));
+    }
+    /**
+     * This sets the requester
+     * @return true if value has changed, false otherwise
+     * @since 13.1.0
+     */
+    public final boolean setRequester(final String v) {
+        return setValue(Columns.EMITCOST, v);
+    }
+    /**
+     * This sets the dataset
+     * @return true if value has changed, false otherwise
+     * @since 13.1.0
+     */
+    public final boolean setDataset(final String v) {
+        return setValue(Columns.DATASET, v);
+    }
+    /**
+     * This sets the workerpool
+     * @return true if value has changed, false otherwise
+     * @since 13.1.0
+     */
+    public final boolean setWorkerPool(final String v) {
+        return setValue(Columns.WORKERPOOL, v);
+    }
+    /**
+     * This sets the callback
+     * @return true if value has changed, false otherwise
+     * @since 13.1.0
+     */
+    public final boolean setCallback(final String v) {
+        return setValue(Columns.CALLBACK, v);
+    }
+    /**
+     * This sets the beneficiary
+     * @return true if value has changed, false otherwise
+     * @since 13.1.0
+     */
+    public final boolean setBeneficiary(final String v) {
+        return setValue(Columns.BENEFICIARY, v);
+    }
 	/**
 	 * This sets the max authorized mass storage usage
 	 * This is automatically set by the scheduler based on the category
@@ -2421,12 +2582,12 @@ public class WorkInterface extends Table {
 
 	/**
 	 * This sets the total amount of submitted replica
-	 *
+     * Since 13.1.0 this changed from int to long
 	 * @return true if value has changed, false otherwise
 	 * @since 10.0.0
 	 */
-	public final boolean setTotalReplica(final int v) {
-		final Integer b = new Integer(v);
+	public final boolean setTotalReplica(final long v) {
+		final Long b = new Long(v);
 		return setValue(Columns.TOTALR, b);
 	}
 
@@ -2442,24 +2603,24 @@ public class WorkInterface extends Table {
 
 	/**
 	 * This sets the amount of replica that can be computed simultaneously
-	 *
+     * Since 13.1.0 this changed from int to long
 	 * @return true if value has changed, false otherwise
 	 * @since 10.0.0
 	 */
-	public final boolean setReplicaSetSize(final int v) {
-		final Integer b = new Integer(v);
+	public final boolean setReplicaSetSize(final long v) {
+		final Long b = new Long(v);
 		return setValue(Columns.SIZER, b);
 	}
 
 	/**
 	 * This sets the expected amount of replica. This job is replicated for ever
 	 * if v < 0
-	 *
+     * Since 13.1.0 this changed from int to long
 	 * @since 10.0.0
 	 * @return true if value has changed, false otherwise
 	 */
-	public final boolean setExpectedReplications(final int v) {
-		final Integer b = new Integer(v);
+	public final boolean setExpectedReplications(final long v) {
+		final Long b = new Long(v);
 		return setValue(Columns.REPLICATIONS, b);
 	}
     /**
@@ -2468,8 +2629,8 @@ public class WorkInterface extends Table {
      * @since 13.0.0
      * @return true if value has changed, false otherwise
      */
-    public final boolean setCategoryId(final int cid) {
-        final Integer b = new Integer(cid);
+    public final boolean setCategoryId(final long cid) {
+        final Long cat = new Long(cid);
         if (cid == 0) {
             setMaxCpuSpeed(XWTools.DEFAULTCPUSPEED);
             setMaxFileSize(XWTools.MAXFILESIZE);
@@ -2478,16 +2639,16 @@ public class WorkInterface extends Table {
             setMaxMemory(XWTools.MAXRAMSIZE);
         }
 
-        return setValue(Columns.CATEGORYID, b);
+        return setValue(Columns.CATEGORYID, cat);
     }
     /**
      * This sets the market order ID
-     * @param uid is the market order uid
+     * @param id is the market order id
      * @since 13.0.0
      * @return true if value has changed, false otherwise
      */
-    public final boolean setMarketOrderUid(final UID uid) {
-        return setValue(Columns.MARKETORDERUID, uid);
+    public final boolean setMarketOrderIdx(final Long id) {
+        return setValue(Columns.MARKETORDERIDX, id);
     }
 
 	/**

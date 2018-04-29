@@ -102,9 +102,7 @@ public final class DBInterface {
 	 * This is the database connection
 	 */
 	private final DBConnPoolThread dbConnPool;
-// {
-//		dbConnPool.getInstance().putToCache(itf);
-//	}
+
 	/**
 	 * This inserts an object to both DB and cache
 	 *
@@ -1175,19 +1173,28 @@ public final class DBInterface {
 	 * @return the last loaded row
 	 * @since 13.1.0
 	 */
-	protected MarketOrderInterface marketOrder(final UserInterface u, final String conditions) throws IOException {
-		final MarketOrderInterface row = readableMarketOrder(u);
-		return selectOne(row, conditions);
-	}
-
+    protected MarketOrderInterface marketOrder(final UserInterface u, final String conditions) throws IOException {
+        final MarketOrderInterface row = readableMarketOrder(u);
+        return selectOne(row, conditions);
+    }
     /**
      * This retrieves a market order lacking computing resources, bypassing access rights
      * @since 13.1.0
      */
     protected MarketOrderInterface marketOrderUnsatisfied() throws IOException {
         return selectOne(new MarketOrderInterface(),
-                SQLRequest.MAINTABLEALIAS + MarketOrderInterface .Columns.NBWORKERS + "<"
+                SQLRequest.MAINTABLEALIAS + "." + MarketOrderInterface .Columns.NBWORKERS + "<"
                         + MarketOrderInterface .Columns.EXPECTEDWORKERS );
+    }
+    /**
+     * This retrieves a market order by its id, bypassing access rights
+     * @param idx is the market order
+     * @since 13.1.0
+     */
+    protected MarketOrderInterface marketOrderByIdx(final long idx) throws IOException {
+        return selectOne(new MarketOrderInterface(),
+                SQLRequest.MAINTABLEALIAS + "." + MarketOrderInterface .Columns.MARKETORDERIDX + "="
+                        + idx);
     }
     /**
      * This retrieves a market order, bypassing access rights
@@ -3589,7 +3596,7 @@ public final class DBInterface {
 	 * @exception AccessControlException
 	 *                is thrown if client does not have enough rights
 	 */
-	private void addApp(final UserInterface theClient, AppInterface appitf)
+	protected void addApp(final UserInterface theClient, AppInterface appitf)
 			throws IOException, InvalidKeyException, AccessControlException, URISyntaxException {
 
 		if (appitf == null) {
@@ -4668,8 +4675,9 @@ public final class DBInterface {
 
         final UserInterface theClient = checkClient(command, UserRightEnum.LISTJOB);
         final UID uid = command.getURI().getUID();
-        return marketOrdersUID(theClient, SQLRequest.MAINTABLEALIAS + "." + WorkInterface.Columns.MARKETORDERUID.toString() + "='"
-                + uid.toString() + "'");
+        final MarketOrderInterface marketOrder = marketOrder(command);
+        return marketOrdersUID(theClient, SQLRequest.MAINTABLEALIAS + "." + WorkInterface.Columns.MARKETORDERIDX
+                + "='" + marketOrder.getMarketOrderIdx() + "'");
     }
     /**
      * This retrieves jobs for a market order
@@ -4693,8 +4701,10 @@ public final class DBInterface {
             throws IOException, InvalidKeyException, AccessControlException {
 
         final UserInterface theClient = checkClient(client, UserRightEnum.LISTJOB);
-        return marketOrdersUID(theClient, SQLRequest.MAINTABLEALIAS + "." + WorkInterface.Columns.MARKETORDERUID.toString() + "='"
-                + uid.toString() + "'");
+        final MarketOrderInterface marketOrder = marketOrder(client, uid);
+
+        return marketOrdersUID(theClient, SQLRequest.MAINTABLEALIAS + "." + WorkInterface.Columns.MARKETORDERIDX
+                + "='" + marketOrder.getMarketOrderIdx() + "'");
     }
 
 	/**
@@ -5104,12 +5114,10 @@ public final class DBInterface {
             receivedJob.setCategoryId(0);
         }
 
-        final UID receivedJobMarketOrderUid = receivedJob.getMarketOrderUid();
-        if (receivedJobMarketOrderUid != null) {
-            final MarketOrderInterface receivedJobMarketOrder = select(new MarketOrderInterface(), receivedJob.getMarketOrderUid());
-            if(receivedJobMarketOrder == null) {
-                throw new IOException("invalid job market order : " + receivedJobMarketOrderUid);
-            }
+        final Long receivedJobMarketOrderIdx = receivedJob.getMarketOrderIdx();
+        final MarketOrderInterface receivedJobMarketOrder = marketOrderByIdx(receivedJob.getMarketOrderIdx());
+        if(receivedJobMarketOrder == null) {
+            throw new IOException("invalid job market order : " + receivedJobMarketOrderIdx);
         }
 
         final WorkInterface theWork = work(mandatingClient, jobUID);
@@ -5221,8 +5229,8 @@ public final class DBInterface {
 					if (originalUid != null) {
 						synchronized (this) {
 							final WorkInterface replicatedWork = work(originalUid);
-							final int expectedReplications = replicatedWork.getExpectedReplications();
-							final int currentReplications = replicatedWork.getTotalReplica();
+							final long expectedReplications = replicatedWork.getExpectedReplications();
+							final long currentReplications = replicatedWork.getTotalReplica();
 							if ((currentReplications < expectedReplications) || (expectedReplications < 0)) {
 								logger.debug(realClient.getLogin() + " " + originalUid
 										+ " still has replications ; currently " + currentReplications + " ; expected "
@@ -5251,8 +5259,8 @@ public final class DBInterface {
 							rows.add(replicatedWork);
 						}
 					} else {
-						final int expectedReplications = theWork.getExpectedReplications();
-						final int currentReplications = theWork.getTotalReplica();
+						final long expectedReplications = theWork.getExpectedReplications();
+						final long currentReplications = theWork.getTotalReplica();
 						if ((currentReplications < expectedReplications) || (expectedReplications < 0)) {
 							theWork.setReplicating();
 						}
@@ -5318,9 +5326,9 @@ public final class DBInterface {
 			+ " by " + receivedJob.getReplicaSetSize());
 
 			// if job.getExpectedReplications() < 0, we replicate for ever
-			int replica = receivedJob.getExpectedReplications() < 0
+			long replica = receivedJob.getExpectedReplications() < 0
 					? receivedJob.getExpectedReplications() - receivedJob.getReplicaSetSize()
-					: 0;
+					: 0L;
 			boolean firstJob = true;
 
 			for (; (replica <= receivedJob.getReplicaSetSize()) && (replica <= receivedJob.getExpectedReplications()); replica++) {
