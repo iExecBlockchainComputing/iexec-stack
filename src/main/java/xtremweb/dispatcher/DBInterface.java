@@ -778,7 +778,7 @@ public final class DBInterface {
 	}
 
 	/**
-	 * This retrieves all applications without any confitions
+	 * This retrieves all applications without any conditions
 	 *
 	 * @return a Collection of applications
 	 * @since 5.8.0
@@ -1265,6 +1265,17 @@ public final class DBInterface {
 		}
 		return 0;
 	}
+    /**
+     * This retrieves all works the the given market order, bypassing access rights
+     * @param marketOrder is the market order
+     * @since 13.1.0
+     */
+    protected Collection<WorkInterface> marketOrderWorks(final MarketOrderInterface marketOrder) throws IOException {
+        if(marketOrder == null || marketOrder.getUID() == null){
+            return null;
+        }
+        return selectAll(new WorkInterface(), "maintable.MARKETORDERUID='" + marketOrder.getUID() + "'");
+    }
 
 	/**
 	 * This creates a new readable group to retrieve from DB
@@ -2388,8 +2399,8 @@ public final class DBInterface {
 	}
 
 	/**
-	 * This retrieves a work. This first looks in cache, then in DB. Access
-	 * rights are not checked.
+	 * This retrieves a work. This first looks in cache, then in DB.
+     * Access rights are bypassed.
 	 *
 	 * @param uid
 	 *            is the UID of the task to retrieve
@@ -2517,7 +2528,7 @@ public final class DBInterface {
 	}
 
 	/**
-	 * This retrieves all works with the given status. This is used by scheduler
+	 * This retrieves all works with the given status. Access rights are bypassed
 	 *
 	 * @see Scheduler#retrieve()
 	 * @param s
@@ -2636,7 +2647,6 @@ public final class DBInterface {
 		final WorkInterface row = readableWorkUID(u, s);
 		return selectUID(row, "maintable.owneruid='" + u.getUID() + "'");
 	}
-
 	/**
 	 * An user can be mandated: it can act in name of someone else.
 	 * Mandate is an XMLRPCCommand attribute (MANDATINGLOGIN).
@@ -4871,12 +4881,15 @@ public final class DBInterface {
 				if (delete(theClient, theTask)) {
 					if (theHost != null) {
 						switch (theWork.getStatus()) {
-						case RESULTREQUEST:
-						case DATAREQUEST:
-						case RUNNING:
-							theHost.decRunningJobs();
-							updateRows.add(theHost);
-							break;
+                            case CONTRIBUTED:
+                            case REVEALING:
+                                theHost.leaveMarketOrder();
+    						case RESULTREQUEST:
+                            case DATAREQUEST:
+		    				case RUNNING:
+			    				theHost.decRunningJobs();
+				    			updateRows.add(theHost);
+				    			break;
 						}
 					}
 				}
@@ -4900,12 +4913,15 @@ public final class DBInterface {
 			break;
 		case RESULTREQUEST:
 		case DATAREQUEST:
+        case CONTRIBUTED:
+        case REVEALING:
 		case RUNNING:
 			theClient.decRunningJobs();
 			if (theApp != null) {
 				theApp.decRunningJobs();
 			}
 			if (theExpectedHost != null) {
+                theExpectedHost.leaveMarketOrder();
 				theExpectedHost.decRunningJobs();
 			}
 			break;
@@ -5212,6 +5228,39 @@ public final class DBInterface {
 						}
 					}
 					break;
+				case CONTRIBUTED:
+				    final MarketOrderInterface marketOrder = marketOrder(theWork.getMarketOrderUid());
+				    if(marketOrder == null) {
+				        break;
+                    }
+                    if(theTask != null) {
+                        theTask.setContributed();
+                    }
+				    marketOrder.getTrust();
+                    final Collection<WorkInterface> works = marketOrderWorks(marketOrder);
+                    final long expectedWorkers = marketOrder.getExpectedWorkers();
+                    final long trust = marketOrder.getTrust();
+                    final long expectedContributions = (expectedWorkers * trust / 100);
+                    long totalContributions = 0L;
+                    for(final WorkInterface work : works ) {
+                        if(work.hasContributed()) {
+                            totalContributions++;
+                        }
+                    }
+                    if (totalContributions >= expectedContributions) {
+                        for(final WorkInterface contributingWork : works ) {
+
+                            contributingWork.setRevealing();
+                            rows.add(contributingWork);
+
+                            final TaskInterface contributingTask = task(contributingWork);
+                            if(contributingTask != null) {
+                                contributingTask.setRevealing();
+                                rows.add(contributingTask);
+                            }
+                        }
+                    }
+                    break;
 				case COMPLETED:
 
 					theApp.decRunningJobs();
@@ -5226,6 +5275,7 @@ public final class DBInterface {
 						if (startdate != null) {
 							final int exectime = (int) (System.currentTimeMillis() - startdate.getTime());
 							if (theHost != null) {
+								theHost.leaveMarketOrder();
 								theHost.incAvgExecTime(exectime);
 							}
 							jobOwner.incUsedcputime(exectime);
@@ -5276,6 +5326,7 @@ public final class DBInterface {
 					break;
 					case ERROR:
 						if (theHost != null) {
+							theHost.leaveMarketOrder();
 							theHost.incErrorJobs();
 							theHost.decRunningJobs();
 						}
@@ -5558,8 +5609,8 @@ public final class DBInterface {
         }
         if ((moitf.getDirection() == null)
                 || (moitf.getCategoryId() == null)
-                || (moitf.getExpectedWorkers() == null)
-                || (moitf.getTrust() == null)
+                || (moitf.getExpectedWorkers() == 0)
+                || (moitf.getTrust() == 0)
                 || (moitf.getPrice() == null) ) {
             throw new IOException("add market order error : missing values");
         }

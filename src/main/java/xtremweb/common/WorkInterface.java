@@ -360,6 +360,16 @@ public class WorkInterface extends Table {
             }
         },
         /**
+         * This is the column index of the contribution proposal -aka h(R)-, if this work belongs to a market order
+         * @since 13.1.0
+         */
+        H2R,
+        /**
+         * This is the column index of the contribution proof -aka h(R+S)-, if this work belongs to a market order
+         * @since 13.1.0
+         */
+        H2RPS,
+        /**
          * This is the column index of the emit cost
          * @since 13.1.0
          */
@@ -784,6 +794,8 @@ public class WorkInterface extends Table {
         setCategoryId(0L);
         setMarketOrderIdx(0L);
         setMarketOrderUid(null);
+        setH2r(null);
+        setH2rps(null);
 	}
 
     /**
@@ -1003,6 +1015,14 @@ public class WorkInterface extends Table {
             setMarketOrderUid((UID) Columns.MARKETORDERUID.fromResultSet(rs));
         } catch (final Exception e) {
         }
+        try {
+            setH2r((String) Columns.H2R.fromResultSet(rs));
+        } catch (final Exception e) {
+        }
+        try {
+            setH2rps((String) Columns.H2RPS.fromResultSet(rs));
+        } catch (final Exception e) {
+        }
 		try {
 			setTotalReplica((Long) Columns.TOTALR.fromResultSet(rs));
 		} catch (final Exception e) {
@@ -1131,6 +1151,8 @@ public class WorkInterface extends Table {
         setCategoryId(itf.getCategoryId());
         setMarketOrderIdx(itf.getMarketOrderIdx());
         setMarketOrderUid(itf.getMarketOrderUid());
+        setH2r(itf.getH2r());
+        setH2rps(itf.getH2rps());
 		setReplicatedUid(itf.getReplicatedUid());
 		setDataDriven(itf.getDataDriven());
 		setExpectedHost(itf.getExpectedHost());
@@ -1836,6 +1858,22 @@ public class WorkInterface extends Table {
     public final UID getMarketOrderUid() {
         return (UID) getValue(Columns.MARKETORDERUID);
     }
+    /**
+     * This retrieves the contribution proposal -aka h(R)-
+     * @since 13.1.0
+     * @return this attribute, or null if not set
+     */
+    public final String getH2r() {
+        return (String) getValue(Columns.H2R);
+    }
+    /**
+     * This retrieves the contribution proof -aka h(R+S)-
+     * @since 13.1.0
+     * @return this attribute, or null if not set
+     */
+    public final String getH2rps() {
+        return (String) getValue(Columns.H2RPS);
+    }
 
 	/**
 	 * This marks this work as not managed by server yet
@@ -2153,15 +2191,39 @@ public class WorkInterface extends Table {
 		setPending();
 	}
 
-	/**
-	 * This marks this work result as not available yet
-	 */
-	public void setPending() {
-		setStatus(StatusEnum.PENDING);
-		setActive(true);
-		setLocal(true);
-		setSendToClient(false);
-	}
+    /**
+     * This marks this work result as ready to be scheduled
+     */
+    public void setPending() {
+        setStatus(StatusEnum.PENDING);
+        setActive(true);
+        setLocal(true);
+        setSendToClient(false);
+    }
+    /**
+     * This marks this as contribution
+     * i.eg: the worker sent the contribution proposal
+     * @since 13.1.0
+     */
+    public void setContributed() {
+        setStatus(StatusEnum.CONTRIBUTED);
+    }
+    /**
+     * This checks if this has contributed
+     * i.eg: the worker sent the contribution proposal
+     * @since 13.1.0
+     */
+    public boolean hasContributed() {
+        return getStatus() == StatusEnum.CONTRIBUTED;
+    }
+    /**
+     * This marks this work as ready to reveal contribution
+     * i.eg: the worker will send the contribution proof
+     * @since 13.1.0
+     */
+    public void setRevealing() {
+        setStatus(StatusEnum.REVEALING);
+    }
 
 	public boolean isPending() {
         return getStatus() == StatusEnum.PENDING;
@@ -2682,6 +2744,24 @@ public class WorkInterface extends Table {
      */
     public final boolean setMarketOrderUid(final UID uid) {
         return setValue(Columns.MARKETORDERUID, uid);
+    }
+    /**
+     * This sets the contribution proposal -aka h(R).
+     * @param h2r is the contribution proposal
+     * @since 13.0.0
+     * @return true if value has changed, false otherwise
+     */
+    public final boolean setH2r(final String h2r) {
+        return setValue(Columns.H2R, h2r);
+    }
+    /**
+     * This sets the contribution proof -aka h(R+S).
+     * @param h2rps is the contribution proof
+     * @since 13.0.0
+     * @return true if value has changed, false otherwise
+     */
+    public final boolean setH2rps(final String h2rps) {
+        return setValue(Columns.H2RPS, h2rps);
     }
 
 	/**

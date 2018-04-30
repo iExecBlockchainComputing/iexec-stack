@@ -33,6 +33,8 @@ ALTER TABLE  works DROP   COLUMN emitcost;
 ALTER TABLE  works DROP   COLUMN callback;
 ALTER TABLE  works DROP   COLUMN beneficiary;
 ALTER TABLE  works DROP   COLUMN marketorderUID;
+ALTER TABLE  works DROP   COLUMN h2r;
+ALTER TABLE  works DROP   COLUMN h2rps;
 
 ALTER TABLE  works CHANGE COLUMN replications  replications int(3) default 0        comment 'Optionnal. Amount of expected replications. No replication, if <= 0';
 ALTER TABLE  works CHANGE COLUMN sizer         sizer        int(3) default 0        comment 'Optionnal. This is the size of the replica set';
@@ -40,8 +42,14 @@ ALTER TABLE  works CHANGE COLUMN totalr        totalr       int(3) default 0    
 
 ALTER TABLE  hosts DROP   COLUMN ethwalletaddr;
 ALTER TABLE  hosts DROP   COLUMN marketorderUID;
+ALTER TABLE  hosts DROP   COLUMN hascontributed;
 
 ALTER TABLE  apps  DROP   COLUMN price;
+
+
+delete from statuses where statusId='15';
+delete from statuses where statusId='16';
+update works set statusId='5', status='ERROR' where statusId='15' or statusId='16';
 
 
 drop table userRights;

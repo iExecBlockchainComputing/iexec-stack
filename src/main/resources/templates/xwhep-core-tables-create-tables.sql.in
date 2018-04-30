@@ -269,6 +269,8 @@ insert into statuses (statusId, statusName, statusObjects, statusComment, status
 insert into statuses (statusId, statusName, statusObjects, statusComment, statusDeprecated) values (12, 'UNAVAILABLE',   'datas',               'The data is not available and can not be downloaded on demand',                     null);
 insert into statuses (statusId, statusName, statusObjects, statusComment, statusDeprecated) values (13, 'REPLICATING',   'works',               'The object is being replicated',                                                    null);
 insert into statuses (statusId, statusName, statusObjects, statusComment, statusDeprecated) values (14, 'FAILED',        'works',               'The job does not fill its category requirements',                                   null);
+insert into statuses (statusId, statusName, statusObjects, statusComment, statusDeprecated) values (15, 'CONTRIBUTED',   'works',               'The job does not fill its category requirements',                                   null);
+insert into statuses (statusId, statusName, statusObjects, statusComment, statusDeprecated) values (16, 'REVEALING',     'works',               'The job does not fill its category requirements',                                   null);
 
 -- ---------------------------------------------------------------------------
 -- Data for table "dataTypes"
@@ -497,6 +499,7 @@ create table if not exists  hosts  (
   errorMsg             varchar(254)                             comment 'Error message',
   ethwalletaddr        varchar(254)                             comment 'worker eth wallet address; optional',
   marketorderUID       char(36)                                 comment 'Optional, UID of the market order',
+  hascontributed       char(5)                 default 'false'  comment 'This flag tells whether this host ahs already contributed to its current market order',
 
   index  idx_ethwalletaddr  (ethwalletaddr),
   index  osId         (osId),
@@ -955,6 +958,8 @@ create table if not exists  works  (
   callback            varchar(50)                                  comment 'since 13.1.0',
   beneficiary         varchar(50)                                  comment 'since 13.1.0',
   marketorderUID      char(36)                                     comment 'Optional, UID of the market order',
+  h2r                 char(36)                                     comment 'this is the contribution proposal, if this work belongs a market order',
+  h2rps               char(36)                                     comment 'this is the contribution proof, if this work belongs a market order',
 
   index  works_status_active (status, active),
   index  appUID              (appUID),

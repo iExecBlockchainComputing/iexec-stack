@@ -67,7 +67,7 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
                 logger.warn("onSubscription(" + workerWalletAddr +") : no market order");
                 return;
             }
-            if (host.wantToContribute()) {
+            if (host.canContribute()) {
                 marketOrder.addWorker(host);
                 host.update();
                 marketOrder.update();

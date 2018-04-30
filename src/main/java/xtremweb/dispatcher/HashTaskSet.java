@@ -141,9 +141,11 @@ public class HashTaskSet extends TaskSet {
 				theWork.lost(XWTools.getLocalHostName());
 
 				switch (theTask.getStatus()) {
-				case RUNNING:
-				case DATAREQUEST:
-				case RESULTREQUEST:
+					case RUNNING:
+					case DATAREQUEST:
+					case CONTRIBUTED:
+					case REVEALING:
+					case RESULTREQUEST:
 					theWork.setErrorMsg("rescheduled : worker lost");
 					break;
 				}
@@ -158,6 +160,7 @@ public class HashTaskSet extends TaskSet {
 					final HostInterface theHost = db.host(hostUID);
 					if (theHost != null) {
 						theHost.decRunningJobs();
+						theHost.leaveMarketOrder();
 						rows.add(theHost);
 					}
 				}

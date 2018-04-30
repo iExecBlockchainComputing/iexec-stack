@@ -158,13 +158,20 @@ public enum XWPostParams {
 	CURRENTVERSION,
 	/**
 	 * This is used to pass parameter through the alive signal This param is
-	 * sent from server to workers and contains a vector of UID of completed job
+	 * sent from server to workers and contains a vector of UID of completed jobs
 	 * the worker can then erase the local copy of the result it still have in
 	 * its local FS.
 	 *
 	 * @since 5.8.0
 	 */
 	FINISHEDTASKS,
+	/**
+	 * This is used to pass parameter through the alive signal. This param is
+	 * sent from server to workers and contains a vector of UID of jobs to reveal.
+	 *
+	 * @since 13.1.0
+	 */
+	REVEALINGTASKS,
 	/**
 	 * This is used to pass parameter through the alive signal This param is
 	 * sent from server to workers and contains a vector of UID of job that the

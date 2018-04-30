@@ -701,6 +701,30 @@ public final class TaskInterface extends xtremweb.common.Table {
 	public void setPending() {
 		setStatus(StatusEnum.PENDING);
 	}
+	/**
+	 * This marks this as ready to reveal contribution
+	 * i.eg: the worker will send the contribution proof
+	 * @since 13.1.0
+	 */
+	public void setRevealing() {
+		setStatus(StatusEnum.REVEALING);
+	}
+	/**
+	 * This checks if this has contributed
+	 * i.eg: the worker sent the contribution proposal
+	 * @since 13.1.0
+	 */
+	public boolean hasContributed() {
+		return getStatus() == StatusEnum.CONTRIBUTED;
+	}
+	/**
+	 * This marks this as contribution
+	 * i.eg: the worker sent the contribution proposal
+	 * @since 13.1.0
+	 */
+	public void setContributed() {
+		setStatus(StatusEnum.CONTRIBUTED);
+	}
 
 	/**
 	 * This tests whether task is pending for a worker.

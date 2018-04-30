@@ -795,8 +795,9 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 		ret.put(XWPostParams.TRACESRESULTDELAY.toString(), new Integer(tracesResultDelay));
 		ret.put(XWPostParams.CURRENTVERSION.toString(), CURRENTVERSIONSTRING);
 
-		logger.finest("retrieve saved tasks so that the worker cleans its local copy");
+		logger.debug("retrieve saved tasks so that the worker can reveal and/or clean its local copy");
 		final Vector<UID> finishedTasks = new Vector<>();
+		final Vector<UID> revealingTasks = new Vector<>();
 		final Vector<UID> resultsVector = new Vector<>();
 
 		try {
@@ -859,6 +860,10 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 							case COMPLETED:
 								debug(command, "workAlive (" + _host.getName() + ") : worker can delete " + resultURI);
 								finishedTasks.add(workUID);
+								break;
+							case REVEALING:
+								debug(command, "workAlive (" + _host.getName() + ") : worker can reveal " + resultURI);
+								revealingTasks.add(workUID);
 								break;
 							}
 						}

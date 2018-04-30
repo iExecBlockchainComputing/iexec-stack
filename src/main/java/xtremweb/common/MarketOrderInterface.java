@@ -389,15 +389,11 @@ public final class MarketOrderInterface extends Table {
         if (marketOrderInterface.getMarketOrderIdx() != null) {
             setMarketOrderIdx(marketOrderInterface.getMarketOrderIdx());
         }
-        if (marketOrderInterface.getExpectedWorkers() != null) {
-            setExpectedWorkers(marketOrderInterface.getExpectedWorkers());
-        }
+		setExpectedWorkers(marketOrderInterface.getExpectedWorkers());
         if (marketOrderInterface.getNbWorkers() != null) {
             setNbWorkers(marketOrderInterface.getNbWorkers());
         }
-		if (marketOrderInterface.getTrust() != null) {
-			setTrust(marketOrderInterface.getTrust());
-		}
+		setTrust(marketOrderInterface.getTrust());
 		if (marketOrderInterface.getPrice() != null) {
 			setPrice(marketOrderInterface.getPrice());
 		}
@@ -457,11 +453,11 @@ public final class MarketOrderInterface extends Table {
      *
      * @return this attribute, or null if not set
      */
-    public Long getExpectedWorkers() {
+    public long getExpectedWorkers() {
         try {
-            return (Long) getValue(Columns.EXPECTEDWORKERS);
+            return ((Long) getValue(Columns.EXPECTEDWORKERS)).longValue();
         } catch (final Exception e) {
-            return null;
+            return 0L;
         }
     }
     /**
@@ -479,13 +475,13 @@ public final class MarketOrderInterface extends Table {
 	/**
 	 * This retrieves the trust value
 	 *
-	 * @return this attribute, or null if not set
+	 * @return this attribute, or 100 if not set
 	 */
-	public Long getTrust()  {
+	public long getTrust()  {
 		try {
-			return (Long) getValue(Columns.TRUST);
+			return ((Long) getValue(Columns.TRUST)).longValue();
 		} catch (final Exception e) {
-			return null;
+			return 100L;
 		}
 	}
 	/**
@@ -649,10 +645,10 @@ public final class MarketOrderInterface extends Table {
 	 * @param t is the trust
      * @return true if value has changed, false otherwise
 	 */
-	public boolean setTrust(final Long t)  {
+	public boolean setTrust(final long t)  {
 
         getLogger().warn("setTrust is forced to 70");
-//        return setValue(Columns.TRUST, t);
+//        return setValue(Columns.TRUST, t <= 100 ? t : 100);
         return setValue(Columns.TRUST, 70);
 	}
 	/**

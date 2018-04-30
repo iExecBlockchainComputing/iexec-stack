@@ -125,12 +125,24 @@ public enum StatusEnum {
 	REPLICATING,
 	/**
 	 * This denotes an user error
-     * e.g. : the work does not comply to its category parameters
+	 * e.g. : the work does not comply to its category parameters
 	 * @since 13.0.0
 	 */
-	FAILED;
+	FAILED,
+	/**
+	 * This denotes a work for which a contribution proposal has been received
+	 * i.e.: the worker sent h(R)
+	 * @since 13.1.0
+	 */
+	CONTRIBUTED,
+	/**
+	 * This denotes a work for which a contribution proof is expected
+	 * i.e.: the worker must send h(R+S)
+	 * @since 13.1.0
+	 */
+	REVEALING;
 
-	public static final StatusEnum LAST = REPLICATING;
+	public static final StatusEnum LAST = REVEALING;
 	public static final int SIZE = LAST.ordinal() + 1;
 
 	/**

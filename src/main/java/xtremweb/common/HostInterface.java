@@ -89,6 +89,17 @@ public final class HostInterface extends Table {
                 return new UID(v);
             }
         },
+        /**
+         * This is the column index of the contribution flag
+         * which tells if this worker has already contributed to the current marketorder
+         * @sine 13.1.0
+         */
+        HASCONTRIBUTED {
+            @Override
+            public Boolean fromString(final String v) {
+                return Boolean.valueOf(v);
+            }
+        },
 		/**
 		 * This is a job URI; this is for SpeQuLoS (EDGI/JRA2). If this is set,
 		 * the worker will receive this job in priority, if available, and
@@ -679,6 +690,10 @@ public final class HostInterface extends Table {
             } catch (final Exception e) {
             }
             try {
+                setContribution((Boolean) Columns.HASCONTRIBUTED.fromResultSet(rs));
+            } catch (final Exception e) {
+            }
+            try {
                 setCpuLoad((Integer) Columns.CPULOAD.fromResultSet(rs));
             } catch (final Exception e) {
             }
@@ -958,6 +973,7 @@ public final class HostInterface extends Table {
 		}
         setEthWalletAddr(itf.getEthWalletAddr());
         setMarketOrderUid(itf.getMarketOrderUid());
+        setContribution(itf.hasContributed());
 		setAvgExecTime(itf.getAvgExecTime());
 		setNbJobs(itf.getNbJobs());
 		setPendingJobs(itf.getPendingJobs());
@@ -1083,6 +1099,19 @@ public final class HostInterface extends Table {
         }
     }
     /**
+     * This checks if this worker has already contributed to the current market order
+     *
+     * @return this attribute, or true if not set
+     * @since 13.1.0
+     */
+    public boolean hasContributed() {
+        try {
+            return ((Boolean) getValue(Columns.HASCONTRIBUTED)).booleanValue();
+        } catch (final Exception e) {
+            return true;
+        }
+    }
+    /**
      * This retrieves the market order for this worker
      *
      * @return this attribute, or null if not set
@@ -1104,6 +1133,19 @@ public final class HostInterface extends Table {
     public boolean wantToContribute() {
         try {
             return ((getMarketOrderUid() != null) && (getEthWalletAddr() != null));
+        } catch (final Exception e) {
+            return false;
+        }
+    }
+    /**
+     * This checks if this worker can contribute to a market order
+     *
+     * @return ((getMarketOrderUid() == null) && (getEthWalletAddr() != null))
+     * @since 13.1.0
+     */
+    public boolean canContribute() {
+        try {
+            return ((getMarketOrderUid() == null) && (getEthWalletAddr() != null));
         } catch (final Exception e) {
             return false;
         }
@@ -2286,13 +2328,32 @@ public final class HostInterface extends Table {
         return setValue(Columns.ETHWALLETADDR, addr);
     }
     /**
+     * This leaves the current market order
+     * @since 13.1.0
+     */
+    public void leaveMarketOrder()  {
+        setValue(Columns.MARKETORDERUID, null);
+    }
+    /**
      * This sets the market order uid
      * @param uid is the market order uid
      * @return true if value has changed, false otherwise
      * @since 13.1.0
      */
     public boolean setMarketOrderUid(final UID uid)  {
+        if(uid == null) {
+            setContribution(false);
+        }
         return setValue(Columns.MARKETORDERUID, uid);
+    }
+    /**
+     * This sets the contribution flag
+     * @param c is the contribution flag
+     * @return true if value has changed, false otherwise
+     * @since 13.1.0
+     */
+    public boolean setContribution(final boolean c)  {
+        return setValue(Columns.HASCONTRIBUTED, c);
     }
 	/**
 	 * This sets this host as(un)available accordingly to its local policy This

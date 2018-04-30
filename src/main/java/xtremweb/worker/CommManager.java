@@ -48,6 +48,9 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
 
+import com.iexec.common.ethereum.IexecConfigurationService;
+import com.iexec.common.ethereum.Utils;
+import com.sun.prism.shader.Solid_TextureRGB_AlphaTest_Loader;
 import org.xml.sax.SAXException;
 
 import xtremweb.common.*;
@@ -1227,22 +1230,25 @@ public final class CommManager extends Thread {
 			return;
 		}
 
-		Exception except = null;
 		try {
-			final DataInterface data = getData(resultURI, false);
-			final CommClient commClient = commClient(resultURI);
-			final File content = commClient.getContentFile(resultURI);
-			logger.debug("CommManager#uploadResults " + content);
-			if (content.exists()) {
-				commClient.send(data);
-				logger.debug("CommManager#uploadResults " + data.toXml());
-				final float updloadBandwidth = uploadData(resultURI, theWork.getMaxFileSize());
-                theWork.setStatus(StatusEnum.COMPLETED);
-                theWork.setUploadBandwidth(updloadBandwidth);
-			}
+		    if(theWork.getMarketOrderUid() == null) {
+                final DataInterface data = getData(resultURI, false);
+                final CommClient commClient = commClient(resultURI);
+                final File content = commClient.getContentFile(resultURI);
+                logger.debug("CommManager#uploadResults " + content);
+                if (content.exists()) {
+                    commClient.send(data);
+                    logger.debug("CommManager#uploadResults " + data.toXml());
+                    final float updloadBandwidth = uploadData(resultURI, theWork.getMaxFileSize());
+                    theWork.setStatus(StatusEnum.COMPLETED);
+                    theWork.setUploadBandwidth(updloadBandwidth);
+                }
 
-            message(false);
-
+                message(false);
+            } else {
+		    	theWork.setH2r(Utils.signByteResult("pouet", IexecConfigurationService.getInstance().getWalletConfig().toString()));
+		        theWork.setContributed();
+            }
         } catch (final XWCommException e) {
             logger.exception("CommManager#uploadResults", e);
             theWork.setFailed(e.getMessage());

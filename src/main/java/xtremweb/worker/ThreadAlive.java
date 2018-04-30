@@ -131,8 +131,7 @@ public class ThreadAlive extends Thread {
 
 			try {
 				synchronize();
-			} catch (InvalidKeyException | AccessControlException | ClassNotFoundException | IOException
-					| URISyntaxException | SAXException | NoSuchAlgorithmException e) {
+			} catch (final Exception e) {
 				logger.exception(e);
 			}
 			try {
@@ -250,8 +249,6 @@ public class ThreadAlive extends Thread {
 	private void synchronize() throws IOException, URISyntaxException, InvalidKeyException, AccessControlException,
 			ClassNotFoundException, SAXException, NoSuchAlgorithmException {
 
-		Hashtable rmiResults = null;
-
 		ping();
 		//
 		// retrieve stored job results
@@ -279,6 +276,7 @@ public class ThreadAlive extends Thread {
 		//
 		// send them to the server and retrieve some informations
 		//
+		Hashtable rmiResults;
 		try {
 			rmiResults = workAlive(rmiParams);
 		} catch (final Exception e) {
