@@ -954,6 +954,7 @@ create table if not exists  works  (
   emitcost            bigint                                       comment 'blockchain cost; since 13.1.0'
   callback            varchar(50)                                  comment 'since 13.1.0',
   beneficiary         varchar(50)                                  comment 'since 13.1.0',
+  marketorderUID      char(36)                                     comment 'Optional, UID of the market order',
 
   index  works_status_active (status, active),
   index  appUID              (appUID),

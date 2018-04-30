@@ -233,6 +233,7 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
             final WorkInterface work = new WorkInterface();
             work.setUID(new UID());
             work.setMarketOrderIdx(model.getMarketorderIdx().longValue());
+            work.setMarketOrderUid(marketOrder.getUID());
             work.setOwner(requester.getUID());
             work.setApplication(app.getUID());
             work.setDataset(model.getDataset());

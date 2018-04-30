@@ -34,6 +34,7 @@ ALTER TABLE  works ADD    COLUMN workerPool        varchar(50)                co
 ALTER TABLE  works ADD    COLUMN emitcost          bigint                     comment 'blockchain cost; since 13.1.0'
 ALTER TABLE  works ADD    COLUMN callback          varchar(50)                comment 'since 13.1.0',
 ALTER TABLE  works ADD    COLUMN beneficiary       varchar(50)                comment 'since 13.1.0',
+ALTER TABLE  works ADD    COLUMN   marketorderUID  char(36)                   comment 'Optional, UID of the market order';
 
 
 ALTER TABLE  works CHANGE COLUMN replications  replications bigint  default 0        comment 'Optionnal. Amount of expected replications. No replication, if <= 0';

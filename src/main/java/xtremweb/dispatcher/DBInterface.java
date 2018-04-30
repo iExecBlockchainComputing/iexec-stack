@@ -1203,6 +1203,14 @@ public final class DBInterface {
     protected MarketOrderInterface marketOrder() throws IOException {
         return selectOne(new MarketOrderInterface());
     }
+    /**
+     * This retrieves a market order by its uid, bypassing access rights
+     * @param uid is the market order uid
+     * @since 13.1.0
+     */
+    protected MarketOrderInterface marketOrder(final UID uid) throws IOException {
+        return select(new MarketOrderInterface(), uid);
+    }
 	/**
 	 * This retrieves a market order from DB for the requesting user
 	 *

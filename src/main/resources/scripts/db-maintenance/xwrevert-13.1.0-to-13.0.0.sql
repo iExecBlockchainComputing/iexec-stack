@@ -32,6 +32,7 @@ ALTER TABLE  works DROP   COLUMN workerPool;
 ALTER TABLE  works DROP   COLUMN emitcost;
 ALTER TABLE  works DROP   COLUMN callback;
 ALTER TABLE  works DROP   COLUMN beneficiary;
+ALTER TABLE  works DROP   COLUMN marketorderUID;
 
 ALTER TABLE  works CHANGE COLUMN replications  replications int(3) default 0        comment 'Optionnal. Amount of expected replications. No replication, if <= 0';
 ALTER TABLE  works CHANGE COLUMN sizer         sizer        int(3) default 0        comment 'Optionnal. This is the size of the replica set';

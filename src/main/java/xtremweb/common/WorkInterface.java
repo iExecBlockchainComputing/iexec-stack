@@ -339,7 +339,7 @@ public class WorkInterface extends Table {
 			}
 		},
 		/**
-		 * This is the column index of market order id; this is optional
+		 * This is the column index of market order index; this is optional
 		 *
 		 * @since 13.1.0
 		 */
@@ -349,6 +349,16 @@ public class WorkInterface extends Table {
                 return Long.valueOf(v);
             }
 		},
+        /**
+         * This is the column index of the session UID, if any
+         * @since 13.1.0
+         */
+        MARKETORDERUID {
+            @Override
+            public UID fromString(final String v) {
+                return new UID(v);
+            }
+        },
         /**
          * This is the column index of the emit cost
          * @since 13.1.0
@@ -773,6 +783,7 @@ public class WorkInterface extends Table {
 		setReplicaSetSize(0L);
         setCategoryId(0L);
         setMarketOrderIdx(0L);
+        setMarketOrderUid(null);
 	}
 
     /**
@@ -988,6 +999,10 @@ public class WorkInterface extends Table {
             setMarketOrderIdx((Long) Columns.MARKETORDERIDX.fromResultSet(rs));
         } catch (final Exception e) {
         }
+        try {
+            setMarketOrderUid((UID) Columns.MARKETORDERUID.fromResultSet(rs));
+        } catch (final Exception e) {
+        }
 		try {
 			setTotalReplica((Long) Columns.TOTALR.fromResultSet(rs));
 		} catch (final Exception e) {
@@ -1115,6 +1130,7 @@ public class WorkInterface extends Table {
 		setExpectedReplications(itf.getExpectedReplications());
         setCategoryId(itf.getCategoryId());
         setMarketOrderIdx(itf.getMarketOrderIdx());
+        setMarketOrderUid(itf.getMarketOrderUid());
 		setReplicatedUid(itf.getReplicatedUid());
 		setDataDriven(itf.getDataDriven());
 		setExpectedHost(itf.getExpectedHost());
@@ -1805,12 +1821,20 @@ public class WorkInterface extends Table {
         return 0L;
     }
     /**
-     * This retrieves the market order ID
+     * This retrieves the market order index
      * @since 13.1.0
      * @return this attribute, or null if not set
      */
     public final Long getMarketOrderIdx() {
         return (Long) getValue(Columns.MARKETORDERIDX);
+    }
+    /**
+     * This retrieves the market order UID
+     * @since 13.1.0
+     * @return this attribute, or null if not set
+     */
+    public final UID getMarketOrderUid() {
+        return (UID) getValue(Columns.MARKETORDERUID);
     }
 
 	/**
@@ -2642,13 +2666,22 @@ public class WorkInterface extends Table {
         return setValue(Columns.CATEGORYID, cat);
     }
     /**
-     * This sets the market order ID
-     * @param id is the market order id
+     * This sets the market order index
+     * @param idx is the market order index
      * @since 13.0.0
      * @return true if value has changed, false otherwise
      */
-    public final boolean setMarketOrderIdx(final Long id) {
-        return setValue(Columns.MARKETORDERIDX, id);
+    public final boolean setMarketOrderIdx(final Long idx) {
+        return setValue(Columns.MARKETORDERIDX, idx);
+    }
+    /**
+     * This sets the market order UID
+     * @param uid is the market order uid
+     * @since 13.0.0
+     * @return true if value has changed, false otherwise
+     */
+    public final boolean setMarketOrderUid(final UID uid) {
+        return setValue(Columns.MARKETORDERUID, uid);
     }
 
 	/**

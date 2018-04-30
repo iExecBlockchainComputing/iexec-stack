@@ -69,6 +69,7 @@ public class SQLRequestWorkRequest extends SQLRequest {
 			+ " AND ( ISNULL(maintable.MINFREEMASSSTORAGE)   OR (maintable.MINFREEMASSSTORAGE   <= %d))"
 			+ " AND ((NOT (ISNULL(apps.%s) AND ISNULL(apps.JAVAURI)) AND apps.TYPE='DEPLOYABLE') OR apps.TYPE IN (%s) )"
 			+ " AND (ISNULL(apps.NEEDEDPACKAGES)             OR  (apps.NEEDEDPACKAGES='')   OR  (apps.NEEDEDPACKAGES IN (%s)))"
+			+ " AND (ISNULL(maintable.MARKETORDERUID)        OR  (maintable.MARKETORDERUID = hosts.MARKETORDERUID))"
 			+ " AND (maintable.appuid=apps.uid)";
 
 	/**

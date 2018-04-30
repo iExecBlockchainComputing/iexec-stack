@@ -28,14 +28,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Vector;
 
-import xtremweb.common.AppInterface;
-import xtremweb.common.HostInterface;
-import xtremweb.common.Table;
-import xtremweb.common.TableColumns;
-import xtremweb.common.TaskInterface;
-import xtremweb.common.UID;
-import xtremweb.common.UserInterface;
-import xtremweb.common.WorkInterface;
+import xtremweb.common.*;
 import xtremweb.communications.URI;
 import xtremweb.communications.XMLRPCCommandWorkRequest;
 import xtremweb.database.DBConnPoolThread;
@@ -100,8 +93,11 @@ public class MatchingScheduler extends SimpleScheduler {
 		final DBInterface db = DBInterface.getInstance();
 
 		try {
-			String moreCriterias = null;
-			final SQLRequestWorkRequest workRequest = new SQLRequestWorkRequest(host, user);
+			final StringBuilder moreCriterias = new StringBuilder();
+			final SQLRequestWorkRequest workRequest = host.getSharedDatas() == null ?
+					new SQLRequestWorkRequest(host, user) :
+					new SQLRequestWorkRequestDataDriven(host, user);
+
 			final WorkInterface workSelection = new WorkInterface(workRequest);
 
 			final URI jobId = host.getJobId();
@@ -110,25 +106,33 @@ public class MatchingScheduler extends SimpleScheduler {
 			if (jobId != null) {
 				final UID uid = jobId.getUID();
 				if (uid != null) {
-                    moreCriterias = SQLRequest.MAINTABLEALIAS + "." + TableColumns.UID + "='" + uid + "'";
+                    moreCriterias.append(SQLRequest.MAINTABLEALIAS + "." + TableColumns.UID + "='" + uid + "'");
 				}
 			} else if (batchId != null) {
 				final UID uid = batchId.getUID();
 				if (uid != null) {
-                    moreCriterias = SQLRequest.MAINTABLEALIAS + "." + WorkInterface.Columns.GROUPUID + "='" + uid + "'";
+                    moreCriterias.append(SQLRequest.MAINTABLEALIAS + "." + WorkInterface.Columns.GROUPUID + "='" + uid + "'");
 				}
 			}
-
+/*
+			final UID hostMarketOrderUid = host.getMarketOrderUid();
+			if(hostMarketOrderUid != null) {
+                if(moreCriterias.length() > 0)
+                    moreCriterias.append(" AND ");
+                moreCriterias.append(SQLRequest.MAINTABLEALIAS + "." + WorkInterface.Columns.MARKETORDERUID + "='" + hostMarketOrderUid + "'");
+            }
+*/
 			getLogger().debug("host      = " + host.toXml());
 			getLogger().debug("criterias = " + moreCriterias);
-			theWork = db.selectOne(workSelection, moreCriterias);
+			theWork = db.selectOne(workSelection, moreCriterias.toString());
 
+/*
 			if(theWork == null) {
 				final SQLRequestWorkRequestDataDriven dataDrivenWorkRequest = new SQLRequestWorkRequestDataDriven(host, user);
 				final WorkInterface dataDrivenWorkSelection = new WorkInterface(dataDrivenWorkRequest);
 				theWork = db.selectOne(dataDrivenWorkSelection, moreCriterias);
 			}
-
+*/
 			if (theWork != null) {
                 final Collection<Table> rows = new Vector<>();
                 final UID theAppUID = theWork.getApplication();
