@@ -392,6 +392,8 @@ public class ThreadAlive extends Thread {
 					}
 				}
 				if (theWork != null) {
+					theWork.setCompleted();
+					CommManager.getInstance().sendWork(theWork);
 					CommManager.getInstance().sendResult(theWork);
 				}
 			}
