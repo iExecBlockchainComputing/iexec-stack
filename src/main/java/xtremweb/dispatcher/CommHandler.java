@@ -872,7 +872,7 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 			}
 
 			ret.put(XWPostParams.FINISHEDTASKS.toString(), finishedTasks);
-
+            ret.put(XWPostParams.REVEALINGTASKS.toString(), revealingTasks);
 			ret.put(XWPostParams.RESULTEXPECTEDS.toString(), resultsVector);
 
 			final UID hostuid = theHost.getUID();

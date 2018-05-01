@@ -40,6 +40,7 @@ import java.util.Iterator;
 import javax.mail.MessagingException;
 
 import com.iexec.common.contracts.generated.IexecHub;
+import com.iexec.common.contracts.generated.WorkerPool;
 import com.iexec.common.ethereum.CommonConfiguration;
 import com.iexec.common.ethereum.CredentialsService;
 import com.iexec.common.ethereum.IexecConfigurationService;
@@ -2474,6 +2475,19 @@ public final class DBInterface {
 		final WorkInterface readableRow = readableWork(u, uid);
 		return select(readableRow);
 	}
+    /**
+     * This retrieves a work given the contribution, bypassing access rights
+     * @since 13.1.0
+     */
+    protected WorkInterface work(final WorkerPool.ContributeEventResponse contribution) {
+        try {
+            return selectOne(new WorkInterface(),
+                    SQLRequest.MAINTABLEALIAS + "." + WorkInterface.Columns.WORKORDERID + "='"
+                            + contribution.woid + "'");
+        } catch (IOException e) {
+            return null;
+        }
+    }
 
 	/**
 	 * This retrieves readable works for the given user
@@ -2528,7 +2542,7 @@ public final class DBInterface {
 	}
 
 	/**
-	 * This retrieves all works with the given status. Access rights are bypassed
+	 * This retrieves all works with the given status, bypassing access rights
 	 *
 	 * @see Scheduler#retrieve()
 	 * @param s
@@ -5231,11 +5245,26 @@ public final class DBInterface {
 				case CONTRIBUTED:
 				    final MarketOrderInterface marketOrder = marketOrder(theWork.getMarketOrderUid());
 				    if(marketOrder == null) {
-				        break;
+				        final String msg = "work cannot be a contribution without market order";
+				        theWork.setError(msg);
+                        if(theTask != null) {
+                            theTask.setErrorMsg(msg);
+                        }
+						if (theHost != null) {
+							theHost.leaveMarketOrder();
+							theHost.incErrorJobs();
+							theHost.decRunningJobs();
+						}
+                        theApp.decRunningJobs();
+                        theApp.incErrorJobs();
+						jobOwner.incErrorJobs();
+						jobOwner.decRunningJobs();
+                        break;
                     }
                     if(theTask != null) {
                         theTask.setContributed();
                     }
+/*
 				    marketOrder.getTrust();
                     final Collection<WorkInterface> works = marketOrderWorks(marketOrder);
                     final long expectedWorkers = marketOrder.getExpectedWorkers();
@@ -5260,6 +5289,7 @@ public final class DBInterface {
                             }
                         }
                     }
+*/
                     break;
 				case COMPLETED:
 

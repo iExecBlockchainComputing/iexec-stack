@@ -960,6 +960,7 @@ create table if not exists  works  (
   marketorderUID      char(36)                                     comment 'Optional, UID of the market order',
   h2r                 char(36)                                     comment 'this is the contribution proposal, if this work belongs a market order',
   h2rps               char(36)                                     comment 'this is the contribution proof, if this work belongs a market order',
+  workOrderId         char(36)                                     comment 'this is the blockchain work order id',
 
   index  works_status_active (status, active),
   index  appUID              (appUID),
@@ -968,7 +969,8 @@ create table if not exists  works  (
   index  groupUID            (groupUID),
   index  expectedhostUID     (expectedhostUID),
   index  ownerUID            (ownerUID),
-  index  idx_categoryId          (categoryId),
+  index  idx_categoryId      (categoryId),
+  index  idx_workorderId     (workOrderId),
   index  sgId                (sgId),
   index  completedDate       (completedDate)
 

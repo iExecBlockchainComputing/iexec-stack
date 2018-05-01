@@ -40,6 +40,7 @@ ALTER TABLE  works ADD    COLUMN beneficiary       varchar(50)                co
 ALTER TABLE  works ADD    COLUMN marketorderUID    char(36)                   comment 'Optional, UID of the market order';
 ALTER TABLE  works ADD    COLUMN h2r               char(36)                   comment 'this is the contribution proposal, if this work belongs a market order';
 ALTER TABLE  works ADD    COLUMN h2rps             char(36)                   comment 'this is the contribution proof, if this work belongs a market order';
+ALTER TABLE  works ADD    COLUMN workOrderId        char(36)                  comment 'this is the blockchain work order id';
 
 
 ALTER TABLE  works CHANGE COLUMN replications  replications bigint  default 0        comment 'Optionnal. Amount of expected replications. No replication, if <= 0';

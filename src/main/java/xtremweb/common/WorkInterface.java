@@ -33,7 +33,6 @@ import java.security.InvalidKeyException;
 import java.sql.ResultSet;
 import java.util.Date;
 
-import com.iexec.common.model.WorkOrderModel;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
@@ -338,6 +337,12 @@ public class WorkInterface extends Table {
 				return Long.valueOf(v);
 			}
 		},
+		/**
+		 * This is the column index of the blockchain work order
+		 *
+		 * @since 13.1.0
+		 */
+		WORKORDERID,
 		/**
 		 * This is the column index of market order index; this is optional
 		 *
@@ -771,7 +776,7 @@ public class WorkInterface extends Table {
 
 	/**
 	 * This is the default constructor. There is no replication by default.
-     * categoryId is set to 0
+     * categoryId is set to 0; workorderid is set to null
 	 */
 	public WorkInterface() {
 
@@ -795,7 +800,8 @@ public class WorkInterface extends Table {
         setMarketOrderIdx(0L);
         setMarketOrderUid(null);
         setH2r(null);
-        setH2rps(null);
+		setH2rps(null);
+		setWorkOrderId(null);
 	}
 
     /**
@@ -1003,10 +1009,14 @@ public class WorkInterface extends Table {
 			setExpectedReplications((Long) Columns.REPLICATIONS.fromResultSet(rs));
 		} catch (final Exception e) {
 		}
-        try {
-            setCategoryId((Long) Columns.CATEGORYID.fromResultSet(rs));
-        } catch (final Exception e) {
-        }
+		try {
+			setCategoryId((Long) Columns.CATEGORYID.fromResultSet(rs));
+		} catch (final Exception e) {
+		}
+		try {
+			setWorkOrderId((String) Columns.WORKORDERID.fromResultSet(rs));
+		} catch (final Exception e) {
+		}
         try {
             setMarketOrderIdx((Long) Columns.MARKETORDERIDX.fromResultSet(rs));
         } catch (final Exception e) {
@@ -1148,7 +1158,8 @@ public class WorkInterface extends Table {
 		setTotalReplica(itf.getTotalReplica());
 		setReplicaSetSize(itf.getReplicaSetSize());
 		setExpectedReplications(itf.getExpectedReplications());
-        setCategoryId(itf.getCategoryId());
+		setCategoryId(itf.getCategoryId());
+		setWorkOrderId(itf.getWorkOrderId());
         setMarketOrderIdx(itf.getMarketOrderIdx());
         setMarketOrderUid(itf.getMarketOrderUid());
         setH2r(itf.getH2r());
@@ -1829,19 +1840,27 @@ public class WorkInterface extends Table {
         }
         return 0.5f;
     }
-    /**
-     * This retrieves the category ID, if not set  this call setCategoryId(0) and returns 0
-     * @since 13.0.0
-     * @return this attribute
-     */
-    public final long getCategoryId() {
-        final Long ret = (Long) getValue(Columns.CATEGORYID);
-        if (ret != null) {
-            return ret.longValue();
-        }
-        setCategoryId(0L);
-        return 0L;
-    }
+	/**
+	 * This retrieves the category ID, if not set  this call setCategoryId(0) and returns 0
+	 * @since 13.0.0
+	 * @return this attribute
+	 */
+	public final long getCategoryId() {
+		final Long ret = (Long) getValue(Columns.CATEGORYID);
+		if (ret != null) {
+			return ret.longValue();
+		}
+		setCategoryId(0L);
+		return 0L;
+	}
+	/**
+	 * This retrieves the work order id
+	 * @since 13.1.0
+	 * @return this attribute
+	 */
+	public final String getWorkOrderId() {
+		return (String)getValue(Columns.WORKORDERID);
+	}
     /**
      * This retrieves the market order index
      * @since 13.1.0
@@ -2709,24 +2728,33 @@ public class WorkInterface extends Table {
 		final Long b = new Long(v);
 		return setValue(Columns.REPLICATIONS, b);
 	}
-    /**
-     * This sets the category ID
-     * @param cid is the categoryId
-     * @since 13.0.0
-     * @return true if value has changed, false otherwise
-     */
-    public final boolean setCategoryId(final long cid) {
-        final Long cat = new Long(cid);
-        if (cid == 0) {
-            setMaxCpuSpeed(XWTools.DEFAULTCPUSPEED);
-            setMaxFileSize(XWTools.MAXFILESIZE);
-            setMaxFreeMassStorage(XWTools.MAXDISKSIZE);
-            setMaxWallClockTime(XWTools.DEFAULTWALLCLOCKTIME);
-            setMaxMemory(XWTools.MAXRAMSIZE);
-        }
+	/**
+	 * This sets the category ID
+	 * @param cid is the categoryId
+	 * @since 13.0.0
+	 * @return true if value has changed, false otherwise
+	 */
+	public final boolean setCategoryId(final long cid) {
+		final Long cat = new Long(cid);
+		if (cid == 0) {
+			setMaxCpuSpeed(XWTools.DEFAULTCPUSPEED);
+			setMaxFileSize(XWTools.MAXFILESIZE);
+			setMaxFreeMassStorage(XWTools.MAXDISKSIZE);
+			setMaxWallClockTime(XWTools.DEFAULTWALLCLOCKTIME);
+			setMaxMemory(XWTools.MAXRAMSIZE);
+		}
 
-        return setValue(Columns.CATEGORYID, cat);
-    }
+		return setValue(Columns.CATEGORYID, cat);
+	}
+	/**
+	 * This sets the work order id
+	 * @param woid is the workorderid
+	 * @since 13.1.0
+	 * @return true if value has changed, false otherwise
+	 */
+	public final boolean setWorkOrderId(final String woid) {
+		return setValue(Columns.WORKORDERID, woid);
+	}
     /**
      * This sets the market order index
      * @param idx is the market order index

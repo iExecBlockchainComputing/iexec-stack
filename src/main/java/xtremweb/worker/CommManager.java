@@ -1246,8 +1246,9 @@ public final class CommManager extends Thread {
 
                 message(false);
             } else {
-		    	theWork.setH2r(Utils.signByteResult("pouet", IexecConfigurationService.getInstance().getWalletConfig().toString()));
-		        theWork.setContributed();
+ici il faut contribuer
+		    	theWork.setH2r(Utils.signByteResult("pouet", IexecConfigurationService.getInstance().getWalletConfig().toString()))
+		        theWork.setContributed()
             }
         } catch (final XWCommException e) {
             logger.exception("CommManager#uploadResults", e);

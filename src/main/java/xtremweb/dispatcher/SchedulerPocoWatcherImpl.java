@@ -12,12 +12,14 @@ import com.iexec.scheduler.iexechub.IexecHubService;
 import com.iexec.scheduler.iexechub.IexecHubWatcher;
 import com.iexec.scheduler.workerpool.WorkerPoolService;
 import com.iexec.scheduler.workerpool.WorkerPoolWatcher;
+import sun.jvm.hotspot.oops.Mark;
 import xtremweb.common.*;
 import xtremweb.database.SQLRequest;
 import xtremweb.security.XWAccessRights;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.util.Collection;
 
 public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatcher {
 
@@ -179,12 +181,31 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
 
     /**
      * This retrieves a market order from DB
-     * @param idx is the market order id
+     * @param idx is the market order index
      * @return the market order; null on error, or if not found
      */
     private MarketOrderInterface getMarketOrder(final  long idx) {
         try {
             return DBInterface.getInstance().marketOrderByIdx(idx);
+        } catch(final Exception e) {
+            logger.exception(e);
+            return null;
+        }
+    }
+    /**
+     * This retrieves all works of a market order from DB
+     * @param idx is the market order index
+     * @return the market order; null on error, or if not found
+     */
+    private Collection<WorkInterface> getMarketOrderWorks(final  long idx) {
+        try {
+            final MarketOrderInterface marketOrder = getMarketOrder(idx);
+            if(marketOrder == null) {
+                throw new IOException("can't retrieve market order : " + idx);
+            }
+
+            return DBInterface.getInstance().marketOrderWorks(marketOrder);
+
         } catch(final Exception e) {
             logger.exception(e);
             return null;
@@ -196,7 +217,7 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
      * This new work has as many replicat as expected by the market order
      * @param model is the work order model
      */
-    private void createWork(WorkOrderModel model) {
+    private void createWork(final String workOrderId, final WorkOrderModel model) {
 
         final MarketOrderInterface marketOrder = getMarketOrder(model.getMarketorderIdx().longValue());
         if(marketOrder == null) {
@@ -245,7 +266,7 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
             work.setBeneficiary(model.getBeneficiary());
             work.setExpectedReplications(marketOrder.getExpectedWorkers());
             work.setCategoryId(marketOrder.getCategoryId());
-
+            work.setWorkOrderId(workOrderId);
             work.insert();
 
             return;
@@ -271,14 +292,74 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
             return;
         }
 
-        createWork(workOrderModel);
+        createWork(workOrderId, workOrderModel);
 
         //        DatasetModel datasetModel = ModelService.getInstance().getDatasetModel(workOrderModel.getDataset());
         //actuatorService.allowWorkersToContribute(workOrderId, Arrays.asList("0x70a1bebd73aef241154ea353d6c8c52d420d4f5b"), "O");
     }
 
+    /**
+     * This is a blockchain event watcher automatically called on worker contribution.
+     * The scheduler must ask to reveal to all workers as soon as the consensus us reached
+     * @param contributeEventResponse is the blockchain worker contribution
+     */
     @Override
     public void onContributeEvent(WorkerPool.ContributeEventResponse contributeEventResponse) {
+
+        final WorkOrderModel workOrderModel = ModelService.getInstance().getWorkOrderModel(contributeEventResponse.woid);
+        final WorkInterface theWork = DBInterface.getInstance().work(contributeEventResponse);
+        if(theWork == null)
+            return;
+
+        final String contribution = XWTools.byteArrayToHexString(contributeEventResponse.resultHash);
+        theWork.setH2r(contribution);
+        logger.debug("onContributeEvent() : " + theWork.toXml());
+
+        final MarketOrderInterface marketOrder = getMarketOrder(workOrderModel.getMarketorderIdx().longValue());
+        final Collection<WorkInterface> works = getMarketOrderWorks(workOrderModel.getMarketorderIdx().longValue());
+
+        if(works == null) {
+            logger.error("createWork() : can't retrieve any work for market order : "
+                    + workOrderModel.getMarketorderIdx().longValue());
+            return;
+        }
+
+        marketOrder.getTrust();
+        final long expectedWorkers = marketOrder.getExpectedWorkers();
+        final long trust = marketOrder.getTrust();
+        final long expectedContributions = (expectedWorkers * trust / 100);
+        long totalContributions = 0L;
+        for(final WorkInterface work : works ) {
+            if(work.hasContributed()
+                    && (work.getH2r().compareTo(contribution) == 0)) {
+                totalContributions++;
+            }
+        }
+        if (totalContributions >= expectedContributions) {
+            theWork.setRevealing();
+            try {
+                theWork.update();
+            } catch(final IOException e) {
+                logger.exception(e);
+            }
+
+            for(final WorkInterface contributingWork : works ) {
+
+                try {
+                    contributingWork.setRevealing();
+                    contributingWork.update();
+
+                    final TaskInterface contributingTask = DBInterface.getInstance().task(contributingWork);
+                    if(contributingTask != null) {
+                        contributingTask.setRevealing();
+                        contributingTask.update();
+                    }
+                } catch(final IOException e) {
+                    logger.exception(e);
+                }
+            }
+        }
+
         //actuatorService.revealConsensus(contributeEventResponse.woid, Utils.hashResult("iExec the wanderer"));
     }
 
