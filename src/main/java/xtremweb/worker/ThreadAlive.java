@@ -359,6 +359,45 @@ public class ThreadAlive extends Thread {
 		}
 
 		//
+		// 13.1.0 : retrieve tasks which must be revealed
+		//
+		final Vector revealsExpected = (Vector) rmiResults.get(XWPostParams.REVEALINGTASKS.toString());
+
+		if (revealsExpected != null) {
+			logger.debug("ThreadAlive() : revealsExpected.size() = " + revealsExpected.size());
+
+			final Iterator<XMLValue> li = revealsExpected.iterator();
+
+			while (li.hasNext()) {
+				final UID uid = (UID) li.next().getValue();
+				if (uid == null) {
+					continue;
+				}
+
+				ici il faut revealer
+
+				Work theWork = CommManager.getInstance().getPoolWork().getSavingWork(uid);
+				if (theWork == null) {
+					final ThreadWork threadWork = ThreadLaunch.getInstance().getThreadByWorkUid(uid);
+					if (threadWork == null) {
+						logger.error("ThreadAlive() : can't retreive running work = " + uid);
+						continue;
+					}
+					try {
+						threadWork.zipResult();
+						theWork = threadWork.getCurrentWork();
+					} catch (final Exception e) {
+						logger.exception(e);
+						theWork = null;
+					}
+				}
+				if (theWork != null) {
+					CommManager.getInstance().sendResult(theWork);
+				}
+			}
+		}
+
+		//
 		// Retrieve new server key
 		//
 		final String keystoreUriStr = (String) rmiResults.get(XWPostParams.KEYSTOREURI.toString());
