@@ -1281,6 +1281,18 @@ public class ThreadWork extends Thread {
 			final File out = new File(currentWork.getScratchDir(), XWTools.STDOUT);
 			final File err = new File(currentWork.getScratchDir(), XWTools.STDERR);
 
+			//
+			// since 13.1.0 the consensus is calculated on XWTools.CONSENSUSFILENAME
+			//
+			final File consensusFile = new File (XWTools.CONSENSUSFILENAME);
+			if (consensusFile.exists() && (consensusFile.length() == 0)) {
+				try {
+					currentWork.setH2r(XWTools.sha256CheckSum(consensusFile));
+				} catch (final Exception e) {
+                    currentWork.setH2r(null);
+					logger.exception(e);
+				}
+			}
 			logger.debug("ThreadWork#zipResult : resultFile " + resultFilePath);
 
 			if (out.exists() && (out.length() == 0)) {

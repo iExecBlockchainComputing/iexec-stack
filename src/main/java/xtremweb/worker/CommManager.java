@@ -1249,7 +1249,6 @@ public final class CommManager extends Thread {
 
                 message(false);
             } else {
-		    	theWork.setH2r(Utils.signByteResult("pouet", IexecConfigurationService.getInstance().getWalletConfig().toString()));
 		        theWork.setContributed();
             }
         } catch (final XWCommException e) {
@@ -1269,7 +1268,10 @@ public final class CommManager extends Thread {
             } catch (final Exception e) {
                 logger.exception(e);
             }
-            ActuatorService.getInstance().contribute(theWork.getWorkOrderId(), data.getShasum(), BigInteger.ZERO, "0","0");
+            if(theWork.getH2r() != null)
+ 	           ActuatorService.getInstance().contribute(theWork.getWorkOrderId(), theWork.getH2r(), BigInteger.ZERO, "0","0");
+			else
+				ActuatorService.getInstance().contribute(theWork.getWorkOrderId(), data.getShasum(), BigInteger.ZERO, "0","0");
 
             getPoolWork().saveWork(theWork);
 

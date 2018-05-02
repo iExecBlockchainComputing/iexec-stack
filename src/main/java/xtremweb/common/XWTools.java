@@ -109,6 +109,11 @@ public class XWTools {
 	 * This defines the name of the stderr file
 	 */
 	public static final String STDERR = "stderr" + DataTypeEnum.TEXT.getFileExtension();
+	/**
+	 * This is the name of the file used for the consensus
+	 * @since 13.1.0
+	 */
+	public static final String CONSENSUSFILENAME = "consensus.iexec";
     /**
      * This is the launchscript header name
      * @since 13.0.0

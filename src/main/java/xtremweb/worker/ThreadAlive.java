@@ -27,6 +27,7 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.net.ConnectException;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
@@ -39,6 +40,7 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Vector;
 
+import com.iexec.worker.actuator.ActuatorService;
 import org.xml.sax.SAXException;
 
 import xtremweb.common.DataInterface;
@@ -374,10 +376,13 @@ public class ThreadAlive extends Thread {
 					continue;
 				}
 
-				ici il faut revealer
-
 				Work theWork = CommManager.getInstance().getPoolWork().getSavingWork(uid);
 				if (theWork == null) {
+					if(theWork.getH2r() != null)
+						ActuatorService.getInstance().reveal(theWork.getWorkOrderId(), theWork.getH2r());
+					else
+						ActuatorService.getInstance().reveal(theWork.getWorkOrderId(), "i don't know");
+
 					final ThreadWork threadWork = ThreadLaunch.getInstance().getThreadByWorkUid(uid);
 					if (threadWork == null) {
 						logger.error("ThreadAlive() : can't retreive running work = " + uid);
