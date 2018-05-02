@@ -38,6 +38,7 @@ import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.net.*;
 import java.security.AccessControlException;
 import java.security.InvalidKeyException;
@@ -50,6 +51,8 @@ import java.util.Iterator;
 
 import com.iexec.common.ethereum.IexecConfigurationService;
 import com.iexec.common.ethereum.Utils;
+import com.iexec.worker.actuator.Actuator;
+import com.iexec.worker.actuator.ActuatorService;
 import com.sun.prism.shader.Solid_TextureRGB_AlphaTest_Loader;
 import org.xml.sax.SAXException;
 
@@ -1230,9 +1233,9 @@ public final class CommManager extends Thread {
 			return;
 		}
 
+        final DataInterface data = getData(resultURI, false);
 		try {
 		    if(theWork.getMarketOrderUid() == null) {
-                final DataInterface data = getData(resultURI, false);
                 final CommClient commClient = commClient(resultURI);
                 final File content = commClient.getContentFile(resultURI);
                 logger.debug("CommManager#uploadResults " + content);
@@ -1246,9 +1249,8 @@ public final class CommManager extends Thread {
 
                 message(false);
             } else {
-ici il faut contribuer
-		    	theWork.setH2r(Utils.signByteResult("pouet", IexecConfigurationService.getInstance().getWalletConfig().toString()))
-		        theWork.setContributed()
+		    	theWork.setH2r(Utils.signByteResult("pouet", IexecConfigurationService.getInstance().getWalletConfig().toString()));
+		        theWork.setContributed();
             }
         } catch (final XWCommException e) {
             logger.exception("CommManager#uploadResults", e);
@@ -1267,6 +1269,7 @@ ici il faut contribuer
             } catch (final Exception e) {
                 logger.exception(e);
             }
+            ActuatorService.getInstance().contribute(theWork.getWorkOrderId(), data.getShasum(), BigInteger.ZERO, "0","0");
 
             getPoolWork().saveWork(theWork);
 
