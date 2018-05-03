@@ -57,8 +57,8 @@ public final class Utils {
         return TransactionStatus.FAILURE;
     }
 
-    public static TransactionStatus getStatus(List event) {
-        if (event != null && event.size() > 0) {
+    public static TransactionStatus getStatus(List events) {
+        if (events != null && events.size() > 0) {
             return TransactionStatus.SUCCESS;
         }
         return TransactionStatus.FAILURE;
