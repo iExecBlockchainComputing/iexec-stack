@@ -864,7 +864,7 @@ create table if not exists  marketorders (
   mtime                timestamp                                   comment 'Timestamp of last update',
   direction            char(25)       not null  default 'UNSET'    comment 'Please see MarketOrderDirectionEnum',
   marketOrderIdx       bigint         not null                     comment 'market order index',
-  categoryId           bigint         not null                     comment 'catID reference',
+  categoryId           bigint                                      comment 'catID reference',
   expectedWorkers      bigint         not null                     comment 'how many workers to safely reach the trust',
   nbWorkers            bigint                                      comment 'how many workers alredy booked',
   trust                bigint         not null  default 70         comment 'expected trust',

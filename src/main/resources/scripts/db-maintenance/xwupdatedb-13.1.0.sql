@@ -40,7 +40,7 @@ ALTER TABLE  works ADD    COLUMN beneficiary       varchar(50)                co
 ALTER TABLE  works ADD    COLUMN marketorderUID    char(36)                   comment 'Optional, UID of the market order';
 ALTER TABLE  works ADD    COLUMN h2r               char(36)                   comment 'this is the contribution proposal, if this work belongs a market order';
 ALTER TABLE  works ADD    COLUMN h2rps             char(36)                   comment 'this is the contribution proof, if this work belongs a market order';
-ALTER TABLE  works ADD    COLUMN workOrderId        char(36)                  comment 'this is the blockchain work order id';
+ALTER TABLE  works ADD    COLUMN workOrderId       char(36)                   comment 'this is the blockchain work order id';
 
 
 ALTER TABLE  works CHANGE COLUMN replications  replications bigint  default 0        comment 'Optionnal. Amount of expected replications. No replication, if <= 0';
@@ -60,7 +60,7 @@ create table if not exists  marketorders (
   errorMsg             varchar(254)                                comment 'Error message',
   mtime                timestamp                                   comment 'Timestamp of last update',
   direction            char(25)       not null  default 'UNSET'    comment 'Please see MarketOrderDirectionEnum',
-  marketOrderIdx       bigint         not null                     comment 'market order index',
+  marketOrderIdx       bigint                                      comment 'market order index',
   categoryId           bigint         not null                     comment 'catID reference',
   expectedWorkers      bigint         not null                     comment 'how many workers to safely reach the trust',
   nbWorkers            bigint                                      comment 'how many workers alredy booked',
