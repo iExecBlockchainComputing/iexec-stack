@@ -49,11 +49,7 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
 
-import com.iexec.common.ethereum.IexecConfigurationService;
-import com.iexec.common.ethereum.Utils;
-import com.iexec.worker.actuator.Actuator;
 import com.iexec.worker.actuator.ActuatorService;
-import com.sun.prism.shader.Solid_TextureRGB_AlphaTest_Loader;
 import org.xml.sax.SAXException;
 
 import xtremweb.common.*;
