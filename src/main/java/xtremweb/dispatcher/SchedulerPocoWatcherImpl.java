@@ -51,7 +51,6 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
      */
     @Override
     public void onSubscription(String workerWalletAddr) {
-        System.out.println("********* ugo in the subscription");
         try {
             final HostInterface host = DBInterface.getInstance().host(workerWalletAddr);
             if(host == null) {

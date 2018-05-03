@@ -53,7 +53,7 @@ public class SQLRequestWorkRequest extends SQLRequest {
 	 * must not be a space after the comma
 	 */
 	protected static final String TABLENAMES = WorkInterface.TABLENAME + " as " + MAINTABLEALIAS + ","
-			+ AppInterface.APPTABLENAME + "," + UserInterface.TABLENAME;
+			+ AppInterface.APPTABLENAME + "," + UserInterface.TABLENAME + "," + HostInterface.TABLENAME;
 
 	/**
 	 * This is used if host.acceptBin == true. This helps to retrieve any
@@ -69,7 +69,7 @@ public class SQLRequestWorkRequest extends SQLRequest {
 			+ " AND ( ISNULL(maintable.MINFREEMASSSTORAGE)   OR (maintable.MINFREEMASSSTORAGE   <= %d))"
 			+ " AND ((NOT (ISNULL(apps.%s) AND ISNULL(apps.JAVAURI)) AND apps.TYPE='DEPLOYABLE') OR apps.TYPE IN (%s) )"
 			+ " AND (ISNULL(apps.NEEDEDPACKAGES)             OR  (apps.NEEDEDPACKAGES='')   OR  (apps.NEEDEDPACKAGES IN (%s)))"
-			+ " AND (ISNULL(maintable.MARKETORDERUID)        OR  ((host.HASCONTRIBUTED='false') AND (maintable.MARKETORDERUID = hosts.MARKETORDERUID)))"
+			+ " AND (ISNULL(maintable.MARKETORDERUID)        OR  ((hosts.HASCONTRIBUTED='false') AND (maintable.MARKETORDERUID = hosts.MARKETORDERUID)))"
 			+ " AND (maintable.appuid=apps.uid)";
 
 	/**
