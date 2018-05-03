@@ -69,6 +69,10 @@ drop table if exists memberships_history;
 drop table if exists usergroups_history;
 drop table if exists users_history;
 
+drop table if exists marketorders;
+drop table if exists marketorders_history;
+drop table if exists categories_history;
+drop table if exists categories;
 drop table if exists tasks;
 drop table if exists works;
 drop table if exists groups;
