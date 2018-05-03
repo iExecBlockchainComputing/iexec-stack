@@ -18,6 +18,7 @@ import xtremweb.security.XWAccessRights;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.util.Arrays;
 import java.util.Collection;
 
 public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatcher {
