@@ -603,7 +603,7 @@ public class DBConnPoolThread extends Thread {
 				conditions += " AND " + criterias;
 			}
 		} else {
-			if (criterias != null) {
+			if ((criterias != null) && (criterias.length() > 0)) {
 				conditions = criterias;
 			}
 		}
