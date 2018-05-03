@@ -3,9 +3,9 @@
 --  Authors        : Oleg Lodygensky, Etienne Urbah
 --  Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
 --  Web            : http://www.xtremweb-hep.org
---  
+--
 --       This file is part of XtremWeb-HEP.
--- 
+--
 -- Licensed under the Apache License, Version 2.0 (the "License");
 -- you may not use this file except in compliance with the License.
 -- You may obtain a copy of the License at
@@ -18,26 +18,26 @@
 -- ===========================================================================
 
 -- ===========================================================================
--- 
+--
 -- Version : 13.0.0
--- 
+--
 -- File    : xwsetupdb.sql
--- 
+--
 -- Purpose : This file is a template for a SQL script containing commands to :
 --           - Create the XtremWeb-HEP database
 --           - Create the tables
 --           - Insert the first users
 --           - Grant access to the database
--- 
+--
 --           Attention :  Only the 'InnoDB' engine is able to manage foreign
 --                        keys.  But @DBENGINE@ may be replaced by something
 --                        else than 'InnoDB'.  Therefore, this file does NOT
 --                        contain the creation of FOREIGN KEYS.
--- 
+--
 --           Note :  Creation of triggers and views are in separate scripts
--- 
+--
 -- Usage   : this is used by xtremweb.database
--- 
+--
 -- ===========================================================================
 
 -- ---------------------------------------------------------------------------
@@ -54,9 +54,9 @@ use @DBNAME@;
 
 
 -- ===========================================================================
--- 
+--
 -- Tables containing constant data
--- 
+--
 -- ===========================================================================
 
 -- ---------------------------------------------------------------------------
@@ -188,9 +188,9 @@ show warnings;
 
 
 -- ===========================================================================
--- 
+--
 -- Initial data for tables containing constant data
--- 
+--
 -- ===========================================================================
 
 start transaction;
@@ -336,11 +336,11 @@ commit;
 
 
 -- ===========================================================================
--- 
+--
 -- Tables referencing :
 --        - Tables containing constant data
 --        - Other tables
--- 
+--
 -- ===========================================================================
 
 
@@ -371,11 +371,11 @@ create table if not exists  users  (
   challenging   char(5)                     default 'false'  comment 'True if this user connect using private/public keys pair',
   isdeleted     char(5)                     default 'false'  comment 'True if this row has been deleted',
   errorMsg      varchar(254)                                 comment 'Error message',
-  
+
   index  userRightId  (userRightId),
   index  usergroupUID (usergroupUID),
   index  ownerUID     (ownerUID)
-  ) 
+  )
 engine  = @DBENGINE@,
 comment = 'users = Owners of objects.  Most users may submit works';
 
@@ -400,7 +400,7 @@ create table if not exists  usergroups  (
   project       char(5)                 default 'true'   comment 'True if this can be a "project"  This is always true, except for worker and administrator user groups',
   isdeleted     char(5)                 default 'false'  comment 'True if this row has been deleted',
   errorMsg      varchar(254)                             comment 'Error message',
-  
+
   index  ownerUID (ownerUID)
   )
 engine  = @DBENGINE@,
@@ -421,7 +421,7 @@ create table if not exists  memberships  (
   userUID       char(36)   not null,
   usergroupUID  char(36)   not null,
   mtime         timestamp,
-  
+
   index  userUID      (userUID),
   index  usergroupUID (usergroupUID)
   )
@@ -513,7 +513,7 @@ engine  = @DBENGINE@,
 comment = 'hosts = Computing resources where an XWHEP worker may run';
 
 show warnings;
- 
+
 create table if not exists  hosts_history  like  hosts;
 
 show warnings;
@@ -536,7 +536,7 @@ create table if not exists  traces  (
   accessRights  int(4)                  default 0x700    comment 'Since 5.8.0  This defines access rights "a la" linux FS  See xtremweb.common.XWAccessRights.java',
   data          varchar(254)  not null  default ''       comment 'Data URI',
   isdeleted     char(5)                 default 'false'  comment 'True if this row has been deleted',
-  
+
   index  hostUID  (hostUID),
   index  ownerUID (ownerUID)
   )
@@ -544,7 +544,7 @@ engine  = @DBENGINE@,
 comment = 'traces from workers (to trace CPU, RAM, Disk etc. activities';
 
 show warnings;
- 
+
 create table if not exists  traces_history  like  traces;
 
 show warnings;
@@ -559,7 +559,7 @@ create table if not exists  sharedAppTypes  (
   appTypeId  tinyint   unsigned  not null,
   mtime      timestamp,
   primary key (hostUID, appTypeId),
-  
+
   index  hostUID   (hostUID),
   index  appTypeId (appTypeId)
   )
@@ -582,7 +582,7 @@ create table if not exists  sharedPackageTypes  (
   packageTypeId  tinyint    unsigned not null,
   mtime          timestamp,
   primary key (hostUID, packageTypeId),
-  
+
   index  hostUID       (hostUID),
   index  packageTypeId (packageTypeId)
   )
@@ -627,7 +627,7 @@ create table if not exists  datas  (
   replicated     char(5)                     default 'false'  comment 'Optionnal. used by replication',
   isdeleted      char(5)                     default 'false'  comment 'True if row has been deleted ',
   errorMsg       varchar(254)                                 comment 'Error message',
-  
+
   index  statusId   (statusId),
   index  dataTypeId (dataTypeId),
   index  osId       (osId),
@@ -638,7 +638,7 @@ engine  = @DBENGINE@,
 comment = 'datas = Files (binaries, input files, results)';
 
 show warnings;
- 
+
 create table if not exists  datas_history  like  datas;
 
 show warnings;
@@ -714,7 +714,7 @@ create table if not exists  apps  (
   ldosf1_sparcURI     varchar(254)                                 comment 'Optionnal. this is the osf1     sparc library, if any. this is an URI',
   ldsolaris_alphaURI  varchar(254)                                 comment 'Optionnal. this is the solaris  alpha library, if any. this is an URI',
   ldsolaris_sparcURI  varchar(254)                                 comment 'Optionnal. this is the solaris  sparc library, if any. this is an URI',
-  
+
   index  appTypeId     (appTypeId),
   index  packageTypeId (packageTypeId),
   index  ownerUID      (ownerUID)
@@ -730,7 +730,7 @@ show warnings;
 
 
 -- ---------------------------------------------------------------------------
--- Table "executables" (Binary files) : 
+-- Table "executables" (Binary files) :
 -- Pure n-n relationship between data, application, OS and cpuType
 -- ---------------------------------------------------------------------------
 create table if not exists  executables  (
@@ -743,7 +743,7 @@ create table if not exists  executables  (
   dataUID       char(36)              null  comment 'May be NULL if data is external',
   dataURI       varchar(254)      not null,
   mtime         timestamp,
-  
+
   index         appUID      (appUID),
   index         dataTypeId  (dataTypeId),
   index         osId        (osId),
@@ -774,14 +774,14 @@ create table if not exists  sessions  (
   accessRights  int(4)                  default 0x700    comment 'Since 5.8.0  This defines access rights "a la" linux FS  See xtremweb.common.XWAccessRights.java',
   isdeleted     char(5)                 default 'false'  comment 'True if this row has been deleted',
   errorMsg      varchar(254)                             comment 'Error message',
-  
+
   index  ownerUID (ownerUID)
   )
 engine  = @DBENGINE@,
 comment = 'work-sessions = Sessions for transient grouping of works';
 
 show warnings;
- 
+
 create table if not exists  sessions_history  like  sessions;
 
 show warnings;
@@ -801,7 +801,7 @@ create table if not exists  groups  (
   accessRights  int(4)                  default 0x700    comment 'Since 5.8.0  This defines access rights "a la" linux FS  See xtremweb.common.XWAccessRights.java',
   isdeleted     char(5)                 default 'false'  comment 'True if this row has been deleted',
   errorMsg      varchar(254)                             comment 'Error message',
-  
+
   index  sessionUID (sessionUID),
   index  ownerUID   (ownerUID)
   )
@@ -809,7 +809,7 @@ engine  = @DBENGINE@,
 comment = 'work-groups = Persistent groups of works';
 
 show warnings;
- 
+
 create table if not exists  groups_history  like  groups;
 
 show warnings;
@@ -863,8 +863,8 @@ create table if not exists  marketorders (
   errorMsg             varchar(254)                                comment 'Error message',
   mtime                timestamp                                   comment 'Timestamp of last update',
   direction            char(25)       not null  default 'UNSET'    comment 'Please see MarketOrderDirectionEnum',
-  marketOrderIdx       bigint         not null                     comment 'market order index',
-  categoryId           bigint                                      comment 'catID reference',
+  marketOrderIdx       bigint                                      comment 'market order index',
+  categoryId           bigint         not null                     comment 'catID reference',
   expectedWorkers      bigint         not null                     comment 'how many workers to safely reach the trust',
   nbWorkers            bigint                                      comment 'how many workers alredy booked',
   trust                bigint         not null  default 70         comment 'expected trust',
@@ -988,7 +988,7 @@ show warnings;
 -- ---------------------------------------------------------------------------
 -- Table "tasks" :
 -- Work sent to a host with the adequate app binary.
--- 
+--
 -- a task is a work associated to a worker
 -- tasks can not be submitted by users : they must submit jobs
 -- tasks are automatically created by server
@@ -1014,7 +1014,7 @@ create table if not exists  tasks  (
   duration       bigint                      default 0        comment 'Last instanciation duration',
   isdeleted      char(5)                     default 'false'  comment 'True if row has been deleted ',
   errorMsg       varchar(254)                                 comment 'Error message',
-  
+
   index  workUID  (workUID),
   index  hostUID  (hostUID),
   index  statusId (statusId),
@@ -1024,16 +1024,16 @@ engine  = @DBENGINE@,
 comment = 'tasks = Work sent to a host with the adequate app binary';
 
 show warnings;
- 
+
 create table if not exists  tasks_history  like  tasks;
 
 show warnings;
 
 
 -- ===========================================================================
--- 
+--
 -- Insertion of first users  -  Grant access to the database
--- 
+--
 -- ===========================================================================
 
 -- ---------------------------------------------------------------------------
