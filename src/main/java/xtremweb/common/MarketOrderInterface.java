@@ -231,6 +231,7 @@ public final class MarketOrderInterface extends Table {
 		setTrust(70L);
         setVolume(1L);
         setExpectedWorkers(4L);
+        setMarketOrderIdx(0);
 		setShortIndexes(new int[] { TableColumns.UID.getOrdinal(), Columns.MARKETORDERIDX.getOrdinal(), Columns.DIRECTION.getOrdinal() });
 	}
 
@@ -284,25 +285,38 @@ public final class MarketOrderInterface extends Table {
 	 */
 	@Override
 	public void fill(final ResultSet rs) throws IOException {
-		try {
-			setUID((UID) TableColumns.UID.fromResultSet(rs));
-			setOwner((UID) TableColumns.OWNERUID.fromResultSet(rs));
-			setAccessRights((XWAccessRights) TableColumns.ACCESSRIGHTS.fromResultSet(rs));
-            setCategoryId((Long) Columns.CATEGORYID.fromResultSet(rs));
+        try {
             setMarketOrderIdx((Long) Columns.MARKETORDERIDX.fromResultSet(rs));
-            setExpectedWorkers((Long) Columns.EXPECTEDWORKERS.fromResultSet(rs));
+        } catch (final Exception e) {
+        }
+        try {
             setNbWorkers((Long) Columns.NBWORKERS.fromResultSet(rs));
-			setDirection((MarketOrderDirectionEnum) Columns.DIRECTION.fromResultSet(rs));
-			setPrice((Long) Columns.PRICE.fromResultSet(rs));
-			setTrust((Long) Columns.TRUST.fromResultSet(rs));
-			setVolume((Long) Columns.VOLUME.fromResultSet(rs));
-			setRemaining((Long) Columns.REMAINING.fromResultSet(rs));
-			setWorkerPoolAddr((String) Columns.WORKERPOOLADDR.fromResultSet(rs));
-			setWorkerPoolOwnerAddr((String) Columns.WORKERPOOLOWNERADDR.fromResultSet(rs));
-			setDirty(false);
-		} catch (final Exception e) {
-			throw new IOException(e.toString());
-		}
+        } catch (final Exception e) {
+        }
+        try {
+            setVolume((Long) Columns.VOLUME.fromResultSet(rs));
+        } catch (final Exception e) {
+        }
+        try {
+            setRemaining((Long) Columns.REMAINING.fromResultSet(rs));
+        } catch (final Exception e) {
+        }
+        try {
+            setUID((UID) TableColumns.UID.fromResultSet(rs));
+            setOwner((UID) TableColumns.OWNERUID.fromResultSet(rs));
+            setAccessRights((XWAccessRights) TableColumns.ACCESSRIGHTS.fromResultSet(rs));
+            setCategoryId((Long) Columns.CATEGORYID.fromResultSet(rs));
+            setExpectedWorkers((Long) Columns.EXPECTEDWORKERS.fromResultSet(rs));
+            setDirection((MarketOrderDirectionEnum) Columns.DIRECTION.fromResultSet(rs));
+            setPrice((Long) Columns.PRICE.fromResultSet(rs));
+            setTrust((Long) Columns.TRUST.fromResultSet(rs));
+            setWorkerPoolAddr((String) Columns.WORKERPOOLADDR.fromResultSet(rs));
+            setWorkerPoolOwnerAddr((String) Columns.WORKERPOOLOWNERADDR.fromResultSet(rs));
+            setDirty(false);
+        } catch (final Exception e) {
+            getLogger().exception(e);
+            throw new IOException(e.toString());
+        }
 	}
 
 	/**
@@ -390,19 +404,11 @@ public final class MarketOrderInterface extends Table {
             setMarketOrderIdx(marketOrderInterface.getMarketOrderIdx());
         }
 		setExpectedWorkers(marketOrderInterface.getExpectedWorkers());
-        if (marketOrderInterface.getNbWorkers() != null) {
-            setNbWorkers(marketOrderInterface.getNbWorkers());
-        }
+ 		setNbWorkers(marketOrderInterface.getNbWorkers());
 		setTrust(marketOrderInterface.getTrust());
-		if (marketOrderInterface.getPrice() != null) {
-			setPrice(marketOrderInterface.getPrice());
-		}
-		if (marketOrderInterface.getVolume() != null) {
-			setVolume(marketOrderInterface.getVolume());
-		}
-		if (marketOrderInterface.getRemaining() != null) {
-			setRemaining(marketOrderInterface.getRemaining());
-		}
+        setPrice(marketOrderInterface.getPrice());
+        setVolume(marketOrderInterface.getVolume());
+        setRemaining(marketOrderInterface.getRemaining());
 		if (marketOrderInterface.getWorkerPoolAddr() != null) {
 			setWorkerPoolAddr(marketOrderInterface.getWorkerPoolAddr());
 		}
@@ -463,62 +469,62 @@ public final class MarketOrderInterface extends Table {
     /**
      * This retrieves the amount of booked worker to reach the trust
      *
-     * @return this attribute, or null if not set
+     * @return this attribute, or 0 if not set
      */
-    public Long getNbWorkers()  {
+    public long getNbWorkers()  {
         try {
-            return (Long) getValue(Columns.NBWORKERS);
+            return ((Long) getValue(Columns.NBWORKERS)).longValue();
         } catch (final Exception e) {
-            return null;
+            return 0;
         }
     }
 	/**
 	 * This retrieves the trust value
 	 *
-	 * @return this attribute, or 100 if not set
+	 * @return this attribute, or 0 if not set
 	 */
 	public long getTrust()  {
 		try {
 			return ((Long) getValue(Columns.TRUST)).longValue();
 		} catch (final Exception e) {
-			return 100L;
+			return 0;
 		}
 	}
 	/**
 	 * This retrieves the price value
 	 * This is named "value" in smart contract
 	 *
-	 * @return this attribute, or null if not set
+	 * @return this attribute, or 0 if not set
 	 */
-	public Long getPrice()  {
+	public long getPrice()  {
 		try {
-			return (Long) getValue(Columns.PRICE);
+			return ((Long) getValue(Columns.PRICE)).longValue();
 		} catch (final Exception e) {
-			return null;
+			return 0;
 		}
 	}
 	/**
 	 * This retrieves the volume
 	 *
-	 * @return this attribute, or null if not set
+	 * @return this attribute, or 0 if not set
 	 */
-	public Long getVolume()  {
+	public long getVolume()  {
 		try {
-			return (Long) getValue(Columns.VOLUME);
+			return ((Long) getValue(Columns.VOLUME)).longValue();
 		} catch (final Exception e) {
-			return null;
+			return 0;
 		}
 	}
 	/**
 	 * This retrieves the remaining
 	 *
-	 * @return this attribute, or null if not set
+	 * @return this attribute, or 0 if not set
 	 */
-	public Long getRemaining()  {
+	public long getRemaining()  {
 		try {
-			return (Long) getValue(Columns.REMAINING);
+			return ((Long) getValue(Columns.REMAINING)).longValue();
 		} catch (final Exception e) {
-			return null;
+			return 0;
 		}
 	}
 	/**
@@ -579,34 +585,34 @@ public final class MarketOrderInterface extends Table {
      * @param c is the category id
      * @return true if value has changed, false otherwise
      */
-    public boolean setCategoryId(final Long c)  {
-        return setValue(Columns.CATEGORYID, c);
+    public boolean setCategoryId(final long c)  {
+        return setValue(Columns.CATEGORYID, Long.valueOf(c));
     }
     /**
      * This sets the market order index
      * @param c is the category id
      * @return true if value has changed, false otherwise
      */
-    public boolean setMarketOrderIdx(final Long c)  {
-        return setValue(Columns.MARKETORDERIDX, c);
+    public boolean setMarketOrderIdx(final long c)  {
+        return setValue(Columns.MARKETORDERIDX, Long.valueOf(c));
     }
     /**
      * This sets the amount of needed workers to safely reach the trust
      * @param e is the amount of needed workers
      * @return true if value has changed, false otherwise
      */
-    public boolean setExpectedWorkers(final Long e)  {
+    public boolean setExpectedWorkers(final long e)  {
         getLogger().warn("setExpectedWorkers is forced to 4");
-//        return setValue(Columns.EXPECTEDWORKERS, e);
-        return setValue(Columns.EXPECTEDWORKERS, 4);
+//        return setValue(Columns.EXPECTEDWORKERS, Long.valueOf(e));
+        return setValue(Columns.EXPECTEDWORKERS, Long.valueOf(4));
     }
     /**
      * This sets the amount of booked workers to reach the trust
      * @param n is the amount of booked workers
      * @return true if value has changed, false otherwise
      */
-    public boolean setNbWorkers(final Long n)  {
-        return setValue(Columns.NBWORKERS, n);
+    public boolean setNbWorkers(final long n)  {
+        return setValue(Columns.NBWORKERS, Long.valueOf(n));
     }
     /**
      * This increments the amount of booked workers to reach the trust

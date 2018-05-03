@@ -433,6 +433,9 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 				dbc.setDBInterface(DBInterface.getInstance());
 				dbc.exec(command);
 				break;
+			case GETMARKETORDERS:
+				result = getMarketOrders(command);
+				break;
 			case GETDATAS:
 				result = getDatas(command);
 				break;
@@ -1048,11 +1051,22 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 
 	/**
 	 * This retrieves a data from server
+	 * @since 13.1.0
+	 */
+	public XMLable getMarketOrders(final XMLRPCCommand command)
+			throws IOException, InvalidKeyException, AccessControlException {
+
+		final DBCommandGetMarketOrders dbc = new DBCommandGetMarketOrders(DBInterface.getInstance());
+		return dbc.exec(command);
+	}
+
+	/**
+	 * This retrieves a data from server
 	 */
 	public XMLable getDatas(final XMLRPCCommand command)
 			throws IOException, InvalidKeyException, AccessControlException {
 
-		final DBCommandGetDatas dbc = new DBCommandGetDatas(DBInterface.getInstance()); 
+		final DBCommandGetDatas dbc = new DBCommandGetDatas(DBInterface.getInstance());
 		return dbc.exec(command);
 	}
 

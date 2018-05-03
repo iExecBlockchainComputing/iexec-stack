@@ -5641,7 +5641,7 @@ public final class DBInterface {
                 || (moitf.getCategoryId() == null)
                 || (moitf.getExpectedWorkers() == 0)
                 || (moitf.getTrust() == 0)
-                || (moitf.getPrice() == null) ) {
+                || (moitf.getPrice() == 0) ) {
             throw new IOException("add market order error : missing values");
         }
 
