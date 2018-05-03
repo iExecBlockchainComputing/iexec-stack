@@ -599,7 +599,7 @@ public class DBConnPoolThread extends Thread {
 		String conditions = null;
 		if (rowcriteria != null) {
 			conditions = rowcriteria;
-			if (criterias != null) {
+			if ((criterias != null) && (criterias.length() > 0)) {
 				conditions += " AND " + criterias;
 			}
 		} else {
