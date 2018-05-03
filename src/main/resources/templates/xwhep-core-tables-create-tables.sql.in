@@ -954,7 +954,7 @@ create table if not exists  works  (
   requester           varchar(50)                                  comment 'requester is a public key of a blockchain wallet; since 13.1.0',
   dataset             varchar(50)                                  comment 'dataset is a blockchain smart contract address; since 13.1.0',
   workerPool          varchar(50)                                  comment 'worker pool is blockchain smart contract address; since 13.1.0',
-  emitcost            bigint                                       comment 'blockchain cost; since 13.1.0'
+  emitcost            bigint                                       comment 'blockchain cost; since 13.1.0',
   callback            varchar(50)                                  comment 'since 13.1.0',
   beneficiary         varchar(50)                                  comment 'since 13.1.0',
   marketorderUID      char(36)                                     comment 'Optional, UID of the market order',
