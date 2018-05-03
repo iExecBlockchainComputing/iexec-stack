@@ -12,7 +12,6 @@ import com.iexec.scheduler.iexechub.IexecHubService;
 import com.iexec.scheduler.iexechub.IexecHubWatcher;
 import com.iexec.scheduler.workerpool.WorkerPoolService;
 import com.iexec.scheduler.workerpool.WorkerPoolWatcher;
-import sun.jvm.hotspot.oops.Mark;
 import xtremweb.common.*;
 import xtremweb.database.SQLRequest;
 import xtremweb.security.XWAccessRights;
