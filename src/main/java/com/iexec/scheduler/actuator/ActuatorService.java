@@ -1,6 +1,9 @@
 package com.iexec.scheduler.actuator;
 
 import com.iexec.common.contracts.generated.IexecHub;
+import com.iexec.common.contracts.generated.Marketplace;
+import com.iexec.common.contracts.generated.RLC;
+import com.iexec.common.contracts.generated.WorkerPool;
 import com.iexec.common.ethereum.RlcService;
 import com.iexec.common.ethereum.TransactionStatus;
 import com.iexec.common.marketplace.MarketOrderDirectionEnum;
@@ -46,12 +49,13 @@ public class ActuatorService implements Actuator {
         try {
             TransactionReceipt approveReceipt = rlcService.getRlc().approve(iexecHubService.getIexecHub().getContractAddress(), value).send();
             //TODO ADD RATIO on approval value
+            List<RLC.ApprovalEventResponse> approvalEvents = rlcService.getRlc().getApprovalEvents(approveReceipt);
             log.info("Approve for createMarketOrder [approveAmount:{}, transactionStatus:{}] ",
-                    value, getStatus(approveReceipt));
+                    value, getStatus(approvalEvents));
             TransactionReceipt depositReceipt = iexecHubService.getIexecHub().deposit(value).send();
+            List<IexecHub.DepositEventResponse> depositEvents = iexecHubService.getIexecHub().getDepositEvents(depositReceipt);
             log.info("Deposit for createMarketOrder [depositAmount:{}, transactionStatus:{}] ",
-                    value, getStatus(depositReceipt));
-
+                    value, getStatus(depositEvents));
             TransactionReceipt createMarketOrderReceipt = marketplaceService.getMarketplace().createMarketOrder(
                     MarketOrderDirectionEnum.ASK,
                     category,
@@ -60,10 +64,10 @@ public class ActuatorService implements Actuator {
                     workerPoolService.getWorkerPoolConfig().getAddress(),
                     volume
             ).send();
+            List<Marketplace.MarketOrderCreatedEventResponse> marketOrderCreatedEvents = marketplaceService.getMarketplace().getMarketOrderCreatedEvents(createMarketOrderReceipt);
             log.info("CreateMarketOrder [category:{}, trust:{}, value:{}, volume:{}, transactionStatus:{}] ",
-                    category, trust, value, volume, getStatus(createMarketOrderReceipt));
-
-            return marketplaceService.getMarketplace().getMarketOrderCreatedEvents(createMarketOrderReceipt).get(0).marketorderIdx;
+                    category, trust, value, volume, getStatus(marketOrderCreatedEvents));
+            return marketOrderCreatedEvents.get(0).marketorderIdx;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -80,9 +84,10 @@ public class ActuatorService implements Actuator {
         try {
             TransactionReceipt allowWorkersToContributeReceipt = workerPoolService.getWorkerPool()
                     .allowWorkersToContribute(workOrderId, workers, enclaveChallenge).send();
+            List<WorkerPool.AllowWorkerToContributeEventResponse> allowWorkerToContributeEvents = workerPoolService.getWorkerPool().getAllowWorkerToContributeEvents(allowWorkersToContributeReceipt);
             log.info("AllowWorkersToContribute [workOrderId:{}, workers:{}, enclaveChallenge:{}, transactionStatus:{}] ",
-                    workOrderId, workers.toString(), enclaveChallenge, getStatus(allowWorkersToContributeReceipt));
-            return getStatus(allowWorkersToContributeReceipt);
+                    workOrderId, workers.toString(), enclaveChallenge, getStatus(allowWorkerToContributeEvents));
+            return getStatus(allowWorkerToContributeEvents);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -96,9 +101,10 @@ public class ActuatorService implements Actuator {
         try {
             TransactionReceipt revealConsensusReceipt = workerPoolService.getWorkerPool()
                     .revealConsensus(workOrderId, consensus).send();
+            List<WorkerPool.RevealConsensusEventResponse> revealConsensusEvents = workerPoolService.getWorkerPool().getRevealConsensusEvents(revealConsensusReceipt);
             log.info("RevealConsensus [hashResult:{}, transactionStatus:{}] ",
-                    hashResult, getStatus(revealConsensusReceipt));
-            return getStatus(revealConsensusReceipt);
+                    hashResult, getStatus(revealConsensusEvents));
+            return getStatus(revealConsensusEvents);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -112,9 +118,10 @@ public class ActuatorService implements Actuator {
                     stdout,
                     stderr,
                     uri).send();
+            List<WorkerPool.FinalizeWorkEventResponse> finalizeWorkEvents = workerPoolService.getWorkerPool().getFinalizeWorkEvents(finalizeWorkReceipt);
             log.info("FinalizeWork [stdout:{}, stderr:{}, uri:{}, transactionStatus:{}] ",
-                    stdout, stderr, uri, getStatus(finalizeWorkReceipt));
-            return getStatus(finalizeWorkReceipt);
+                    stdout, stderr, uri, getStatus(finalizeWorkEvents));
+            return getStatus(finalizeWorkEvents);
         } catch (Exception e) {
             e.printStackTrace();
         }
