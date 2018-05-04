@@ -1,6 +1,5 @@
 package com.iexec.scheduler.workerpool;
 
-import com.iexec.common.contracts.generated.IexecHub;
 import com.iexec.common.contracts.generated.WorkerPool;
 import com.iexec.common.ethereum.*;
 import com.iexec.common.workerpool.WorkerPoolConfig;
@@ -58,7 +57,7 @@ public class WorkerPoolService {
                         workerpookAddress, web3jService.getWeb3j(), credentialsService.getCredentials(), ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT);
                 //if (!workerPool.isValid()){ throw exceptionInInitializerError;}
                 log.info("Load contract WorkerPool [address:{}] ", workerpookAddress);
-            } catch (EnsResolutionException e){
+            } catch (EnsResolutionException e) {
                 throw exceptionInInitializerError;
             }
         } else {
@@ -105,6 +104,12 @@ public class WorkerPoolService {
                 .subscribe(this::onContributeEvent);
         this.workerPool.revealEventObservable(nodeConfig.getStartBlockParameter(), END)
                 .subscribe(this::onReveal);
+        this.workerPool.workOrderClaimedEventObservable(nodeConfig.getStartBlockParameter(), END)
+                .subscribe(this::onWorkOrderClaimed);
+        this.workerPool.reopenEventObservable(nodeConfig.getStartBlockParameter(), END)
+                .subscribe(this::onReopenEvent);
+        this.workerPool.workerEvictionEventObservable(nodeConfig.getStartBlockParameter(), END)
+                .subscribe(this::onWorkerEvictionEvent);
     }
 
     private void onContributeEvent(WorkerPool.ContributeEventResponse contributeEvent) {
@@ -115,11 +120,31 @@ public class WorkerPoolService {
         }
     }
 
-
     private void onReveal(WorkerPool.RevealEventResponse revealEvent) {
         log.info("Received RevealEvent [result:{}]", Numeric.toHexString(revealEvent.result));
         if (workerPoolWatcher != null) {
             workerPoolWatcher.onReveal(revealEvent);
+        }
+    }
+
+    private void onWorkOrderClaimed(WorkerPool.WorkOrderClaimedEventResponse workOrderClaimedEvent) {
+        log.info("Received WorkOrderClaimedEvent [woid:{}]", workOrderClaimedEvent.woid);
+        if (workerPoolWatcher != null) {
+            workerPoolWatcher.onWorkOrderClaimed(workOrderClaimedEvent);
+        }
+    }
+
+    private void onReopenEvent(WorkerPool.ReopenEventResponse reopenEvent) {
+        log.info("Received ReopenEvent [woid:{}]", reopenEvent.woid);
+        if (workerPoolWatcher != null) {
+            workerPoolWatcher.onReopenEvent(reopenEvent);
+        }
+    }
+
+    private void onWorkerEvictionEvent(WorkerPool.WorkerEvictionEventResponse workerEvictionEvent) {
+        log.info("Received WorkerEvictionEvent [worker:{}]", workerEvictionEvent.worker);
+        if (workerPoolWatcher != null) {
+            workerPoolWatcher.onWorkerEvictionEvent(workerEvictionEvent);
         }
     }
 
