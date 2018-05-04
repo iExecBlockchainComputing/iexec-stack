@@ -30,11 +30,9 @@ import java.util.Properties;
 import javax.naming.ConfigurationException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.iexec.common.ethereum.CommonConfiguration;
-import com.iexec.common.ethereum.ContractConfig;
-import com.iexec.common.ethereum.IexecConfigurationService;
-import com.iexec.common.ethereum.NodeConfig;
+import com.iexec.common.ethereum.*;
 import com.iexec.common.workerpool.WorkerPoolConfig;
+import com.iexec.worker.actuator.ActuatorService;
 import com.iexec.worker.ethereum.CommonConfigurationGetter;
 import com.iexec.worker.ethereum.IexecWorkerLibrary;
 import org.apache.commons.io.IOUtils;

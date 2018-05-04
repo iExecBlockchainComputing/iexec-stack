@@ -2426,8 +2426,9 @@ public final class XWConfigurator extends Properties {
 				&& (IexecConfigurationService.getInstance() != null)
 				&& (IexecConfigurationService.getInstance().getCommonConfiguration() != null)) {
 
+			_host.setEthWalletAddr(CredentialsService.getInstance().getCredentials().getAddress());
 			final CommonConfiguration commonConfiguration = IexecConfigurationService.getInstance().getCommonConfiguration();
-			out.println("Wallet     addr     : " + CredentialsService.getInstance().getCredentials().getAddress());
+			out.println("Wallet     addr     : " + _host.getEthWalletAddr());
 			out.println("Eth client addr     : " + commonConfiguration.getNodeConfig().getClientAddress());
 			out.println("iExec Hub  addr     : " + commonConfiguration.getContractConfig().getIexecHubAddress());
 			out.println("iExec RLC  addr     : " + commonConfiguration.getContractConfig().getRlcAddress());

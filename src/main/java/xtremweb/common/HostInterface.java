@@ -1127,12 +1127,12 @@ public final class HostInterface extends Table {
     /**
      * This checks if this worker wants to contribute to a market order
      *
-     * @return ((getMarketOrderUid() != null) && (getEthWalletAddr() != null))
+     * @return ((getMarketOrderUid() == null) && (getEthWalletAddr() != null))
      * @since 13.1.0
      */
     public boolean wantToContribute() {
         try {
-            return ((getMarketOrderUid() != null) && (getEthWalletAddr() != null));
+            return ((getMarketOrderUid() == null) && (getEthWalletAddr() != null));
         } catch (final Exception e) {
             return false;
         }

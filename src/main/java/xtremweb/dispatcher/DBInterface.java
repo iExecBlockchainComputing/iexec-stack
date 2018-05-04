@@ -5791,7 +5791,7 @@ public final class DBInterface {
                             marketOrder.addWorker(host);
                             marketOrder.update();
                         }
-                        if(marketOrder.canStart()) {
+                        if((marketOrder != null) && (marketOrder.canStart())) {
                             final ActuatorService actuatorService = ActuatorService.getInstance();
                             final BigInteger marketOrderIdx = actuatorService.createMarketOrder(BigInteger.valueOf(marketOrder.getCategoryId()),
                                     BigInteger.valueOf(marketOrder.getTrust()),
@@ -5804,7 +5804,9 @@ public final class DBInterface {
                         logger.exception(e);
                     }
 
-                }
+                } else {
+					logger.info("hostRegister() - " + workerWalletAddr +" : don't want to contribute");
+				}
 
 				update(host);
 				return host;
