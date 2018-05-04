@@ -602,9 +602,7 @@ public final class MarketOrderInterface extends Table {
      * @return true if value has changed, false otherwise
      */
     public boolean setExpectedWorkers(final long e)  {
-        getLogger().warn("setExpectedWorkers is forced to 4");
-//        return setValue(Columns.EXPECTEDWORKERS, Long.valueOf(e));
-        return setValue(Columns.EXPECTEDWORKERS, Long.valueOf(4));
+        return setValue(Columns.EXPECTEDWORKERS, Long.valueOf(e));
     }
     /**
      * This sets the amount of booked workers to reach the trust
@@ -652,10 +650,7 @@ public final class MarketOrderInterface extends Table {
      * @return true if value has changed, false otherwise
 	 */
 	public boolean setTrust(final long t)  {
-
-        getLogger().warn("setTrust is forced to 70");
-//        return setValue(Columns.TRUST, t <= 100 ? t : 100);
-        return setValue(Columns.TRUST, 70);
+	    return setValue(Columns.TRUST, t <= 100 ? t : 100);
 	}
 	/**
 	 * This sets the price value
@@ -671,9 +666,7 @@ public final class MarketOrderInterface extends Table {
      * @return true if value has changed, false otherwise
 	 */
 	public boolean setVolume(final Long v)  {
-	    getLogger().warn("setVolume is forced to 1");
-//		return setValue(Columns.VOLUME, v);
-		return setValue(Columns.VOLUME, 1);
+		return setValue(Columns.VOLUME, v);
 	}
 	/**
 	 * This sets the remaining
