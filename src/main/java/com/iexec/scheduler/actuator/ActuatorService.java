@@ -22,7 +22,7 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.iexec.common.ethereum.Utils.getStatus;
+import static com.iexec.common.ethereum.Utils.getTransactionStatusFromEvents;
 
 public class ActuatorService implements Actuator {
 
@@ -51,11 +51,11 @@ public class ActuatorService implements Actuator {
             //TODO ADD RATIO on approval value
             List<RLC.ApprovalEventResponse> approvalEvents = rlcService.getRlc().getApprovalEvents(approveReceipt);
             log.info("Approve for createMarketOrder [approveAmount:{}, transactionStatus:{}] ",
-                    value, getStatus(approvalEvents));
+                    value, getTransactionStatusFromEvents(approvalEvents));
             TransactionReceipt depositReceipt = iexecHubService.getIexecHub().deposit(value).send();
             List<IexecHub.DepositEventResponse> depositEvents = iexecHubService.getIexecHub().getDepositEvents(depositReceipt);
             log.info("Deposit for createMarketOrder [depositAmount:{}, transactionStatus:{}] ",
-                    value, getStatus(depositEvents));
+                    value, getTransactionStatusFromEvents(depositEvents));
             TransactionReceipt createMarketOrderReceipt = marketplaceService.getMarketplace().createMarketOrder(
                     MarketOrderDirectionEnum.ASK,
                     category,
@@ -66,7 +66,7 @@ public class ActuatorService implements Actuator {
             ).send();
             List<Marketplace.MarketOrderCreatedEventResponse> marketOrderCreatedEvents = marketplaceService.getMarketplace().getMarketOrderCreatedEvents(createMarketOrderReceipt);
             log.info("CreateMarketOrder [category:{}, trust:{}, value:{}, volume:{}, transactionStatus:{}] ",
-                    category, trust, value, volume, getStatus(marketOrderCreatedEvents));
+                    category, trust, value, volume, getTransactionStatusFromEvents(marketOrderCreatedEvents));
             return marketOrderCreatedEvents.get(0).marketorderIdx;
         } catch (Exception e) {
             e.printStackTrace();
@@ -86,8 +86,8 @@ public class ActuatorService implements Actuator {
                     .allowWorkersToContribute(workOrderId, workers, enclaveChallenge).send();
             List<WorkerPool.AllowWorkerToContributeEventResponse> allowWorkerToContributeEvents = workerPoolService.getWorkerPool().getAllowWorkerToContributeEvents(allowWorkersToContributeReceipt);
             log.info("AllowWorkersToContribute [workOrderId:{}, workers:{}, enclaveChallenge:{}, transactionStatus:{}] ",
-                    workOrderId, workers.toString(), enclaveChallenge, getStatus(allowWorkerToContributeEvents));
-            return getStatus(allowWorkerToContributeEvents);
+                    workOrderId, workers.toString(), enclaveChallenge, getTransactionStatusFromEvents(allowWorkerToContributeEvents));
+            return getTransactionStatusFromEvents(allowWorkerToContributeEvents);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -103,8 +103,8 @@ public class ActuatorService implements Actuator {
                     .revealConsensus(workOrderId, consensus).send();
             List<WorkerPool.RevealConsensusEventResponse> revealConsensusEvents = workerPoolService.getWorkerPool().getRevealConsensusEvents(revealConsensusReceipt);
             log.info("RevealConsensus [hashResult:{}, transactionStatus:{}] ",
-                    hashResult, getStatus(revealConsensusEvents));
-            return getStatus(revealConsensusEvents);
+                    hashResult, getTransactionStatusFromEvents(revealConsensusEvents));
+            return getTransactionStatusFromEvents(revealConsensusEvents);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -120,8 +120,8 @@ public class ActuatorService implements Actuator {
                     uri).send();
             List<WorkerPool.FinalizeWorkEventResponse> finalizeWorkEvents = workerPoolService.getWorkerPool().getFinalizeWorkEvents(finalizeWorkReceipt);
             log.info("FinalizeWork [stdout:{}, stderr:{}, uri:{}, transactionStatus:{}] ",
-                    stdout, stderr, uri, getStatus(finalizeWorkEvents));
-            return getStatus(finalizeWorkEvents);
+                    stdout, stderr, uri, getTransactionStatusFromEvents(finalizeWorkEvents));
+            return getTransactionStatusFromEvents(finalizeWorkEvents);
         } catch (Exception e) {
             e.printStackTrace();
         }
