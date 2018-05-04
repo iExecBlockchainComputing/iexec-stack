@@ -8,6 +8,7 @@ import org.web3j.tx.Contract;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.List;
 
 public final class Utils {
 
@@ -49,11 +50,18 @@ public final class Utils {
         return hex.toString() + "".join("", Collections.nCopies(32 - (hex.length() / 2), "00"));
     }
 
-    public static TransactionStatus getStatus(TransactionReceipt transactionReceipt){
-        if (transactionReceipt.getGasUsed().compareTo(Contract.GAS_LIMIT) < 0){
+    public static TransactionStatus isMined(TransactionReceipt transactionReceipt) {
+        if (transactionReceipt.getGasUsed().compareTo(Contract.GAS_LIMIT) < 0) {
             return TransactionStatus.SUCCESS;
         }
         return TransactionStatus.FAILURE;
     }
-    
+
+    public static TransactionStatus getTransactionStatusFromEvents(List<?> events) {
+        if (events != null && events.size() > 0) {
+            return TransactionStatus.SUCCESS;
+        }
+        return TransactionStatus.FAILURE;
+    }
+
 }

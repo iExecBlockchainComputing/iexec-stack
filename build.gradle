@@ -52,6 +52,7 @@ def pocoJsonFiles = [
         'PoCo/build/contracts/WorkOrder.json',
         'PoCo/build/contracts/App.json',
         'PoCo/build/contracts/Dataset.json',
+        'PoCo/build/contracts/WorkerPoolHub.json',
         'rlc-faucet-contract/build/contracts/RLC.json',
 ]
 
