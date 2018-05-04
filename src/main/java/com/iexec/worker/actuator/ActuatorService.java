@@ -1,7 +1,6 @@
 package com.iexec.worker.actuator;
 
-import com.iexec.common.contracts.generated.Marketplace;
-import com.iexec.common.contracts.generated.WorkOrder;
+import com.iexec.common.contracts.generated.*;
 import com.iexec.common.ethereum.*;
 import com.iexec.common.workerpool.WorkerPoolConfig;
 import com.iexec.worker.iexechub.IexecHubService;
@@ -16,6 +15,7 @@ import org.web3j.utils.Numeric;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.List;
 
 import static com.iexec.common.ethereum.Utils.*;
 
@@ -49,14 +49,18 @@ public class ActuatorService implements Actuator {
         try {
             BigInteger depositAmount = workerPoolConfig.getSubscriptionMinimumStakePolicy();
             TransactionReceipt approveReceipt = rlcService.getRlc().approve(iexecHubService.getIexecHub().getContractAddress(), depositAmount).send();
+            List<RLC.ApprovalEventResponse> approvalEvents = rlcService.getRlc().getApprovalEvents(approveReceipt);
             log.info("Approve for subscribeToPool [approveAmount:{}, transactionStatus:{}] ",
-                    depositAmount, getStatus(approveReceipt));
+                    depositAmount, getTransactionStatusFromEvents(approvalEvents));
             TransactionReceipt depositReceipt = iexecHubService.getIexecHub().deposit(depositAmount).send();
+            List<IexecHub.DepositEventResponse> depositEvents = iexecHubService.getIexecHub().getDepositEvents(depositReceipt);
             log.info("Deposit for subscribeToPool [depositAmount:{}, transactionStatus:{}] ",
-                    depositAmount, getStatus(depositReceipt));
+                    depositAmount, getTransactionStatusFromEvents(depositEvents));
             TransactionReceipt subscribeToPoolReceipt = workerPoolService.getWorkerPool().subscribeToPool().send();
-            log.info("SubscribeToPool [transactionStatus:{}] ", getStatus(subscribeToPoolReceipt));
-            return getStatus(subscribeToPoolReceipt);
+            List<IexecHub.WorkerPoolSubscriptionEventResponse> workerPoolSubscriptionEvents = iexecHubService.getIexecHub().getWorkerPoolSubscriptionEvents(subscribeToPoolReceipt);
+            log.info("SubscribeToPool [transactionStatus:{}] ", getTransactionStatusFromEvents(workerPoolSubscriptionEvents));
+
+            return getTransactionStatusFromEvents(workerPoolSubscriptionEvents);//return full event ? workerPoolSubscriptionEvents.get(0);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -66,9 +70,16 @@ public class ActuatorService implements Actuator {
     @Override
     public TransactionStatus unsubscribeFromPool() {
         try {
-            TransactionReceipt unsubscribeFromPoolReceipt = workerPoolService.getWorkerPool().unsubscribeFromPool().send();
-            log.info("UnsubscribeFromPool [transactionStatus:{}] ", getStatus(unsubscribeFromPoolReceipt));
-            return getStatus(unsubscribeFromPoolReceipt);
+            String workerPoolHubAddress = IexecHubService.getInstance().getIexecHub().workerPoolHub().send();
+            WorkerPoolHub workerPoolHub = WorkerPoolHub.load(
+                    workerPoolHubAddress, web3jService.getWeb3j(), credentialsService.getCredentials(), ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT);
+            String workerAffectation = workerPoolHub.getWorkerAffectation(credentialsService.getCredentials().getAddress()).send();
+            WorkerPool workerPool = WorkerPool.load(
+                    workerAffectation, web3jService.getWeb3j(), credentialsService.getCredentials(), ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT);
+            TransactionReceipt unsubscribeFromPoolReceipt = workerPool.unsubscribeFromPool().send();
+            List<WorkerPool.WorkerUnsubscribeEventResponse> workerUnsubscribeEvents = workerPool.getWorkerUnsubscribeEvents(unsubscribeFromPoolReceipt);
+            log.info("UnsubscribeFromPool [transactionStatus:{}] ", getTransactionStatusFromEvents(workerUnsubscribeEvents));
+            return getTransactionStatusFromEvents(workerUnsubscribeEvents);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -96,14 +107,17 @@ public class ActuatorService implements Actuator {
             Float deposit = (workerPoolConfig.getStakeRatioPolicy().floatValue() / 100) * marketOrderValue.floatValue();//(30/100)*100
             BigInteger depositBig = BigDecimal.valueOf(deposit).toBigInteger();
             TransactionReceipt approveReceipt = rlcService.getRlc().approve(iexecHubService.getIexecHub().getContractAddress(), depositBig).send();
+            List<RLC.ApprovalEventResponse> approvalEvents = rlcService.getRlc().getApprovalEvents(approveReceipt);
             log.info("Approve for contribute [approveAmount:{}, transactionStatus:{}] ",
-                    depositBig, getStatus(approveReceipt));
+                    depositBig, getTransactionStatusFromEvents(approvalEvents));
             TransactionReceipt contributeDepositReceipt = iexecHubService.getIexecHub().deposit(depositBig).send();
+            List<IexecHub.DepositEventResponse> depositEvents = iexecHubService.getIexecHub().getDepositEvents(contributeDepositReceipt);
             log.info("Deposit for contribute [depositAmount:{}, transactionStatus:{}] ",
-                    depositBig, getStatus(contributeDepositReceipt));
+                    depositBig, getTransactionStatusFromEvents(depositEvents));
             TransactionReceipt contributeReceipt = workerPoolService.getWorkerPool().contribute(workOrderId, hashResultBytes, hashSignBytes, contributeV, r, s).send();
-            log.info("Contribute [hashResult:{}, signResult:{}, transactionStatus:{}]", hashResult, signResult, getStatus(contributeReceipt));
-            return getStatus(contributeReceipt);
+            List<WorkerPool.ContributeEventResponse> contributeEvents = workerPoolService.getWorkerPool().getContributeEvents(contributeReceipt);
+            log.info("Contribute [hashResult:{}, signResult:{}, transactionStatus:{}]", hashResult, signResult, getTransactionStatusFromEvents(contributeEvents));
+            return getTransactionStatusFromEvents(contributeEvents);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -117,7 +131,8 @@ public class ActuatorService implements Actuator {
         TransactionReceipt revealReceipt = null;
         try {
             revealReceipt = workerPoolService.getWorkerPool().reveal(workOrderId, result).send();
-            log.info("Reveal [hashResult:{}, transactionStatus:{}]", shaResult, getStatus(revealReceipt));
+            List<WorkerPool.RevealEventResponse> revealEvents = workerPoolService.getWorkerPool().getRevealEvents(revealReceipt);
+            log.info("Reveal [hashResult:{}, transactionStatus:{}]", shaResult, getTransactionStatusFromEvents(revealEvents));
         } catch (Exception e) {
             e.printStackTrace();
         }
