@@ -87,7 +87,44 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
     }
 
     /**
+     * This creates and inserts into DB a new user
+     * @param userAddr is the user ethereum wallet public addr
+     * @return
+     */
+    private UserInterface newUser(String userAddr) {
+        if ( ! Dispatcher.getConfig().getBoolean(XWPropertyDefs.DELEGATEDREGISTRATION)) {
+            logger.error("DELEGATEDREGISTRATION is not allowed");
+            return null;
+        }
+        try {
+            final UserInterface admin = Dispatcher.getConfig().getProperty(XWPropertyDefs.ADMINLOGIN) == null ? null
+                    : DBInterface.getInstance()
+                    .user(SQLRequest.MAINTABLEALIAS + "." + UserInterface.Columns.LOGIN.toString() + "='"
+                            + Dispatcher.getConfig().getProperty(XWPropertyDefs.ADMINLOGIN) + "'");
+            if (admin == null) {
+                throw new IOException("can't insert find admin");
+            }
+
+            final String random = "" + System.currentTimeMillis() + Math.random();
+            final String shastr = XWTools.sha256(random);
+            final UserInterface client = new UserInterface();
+            client.setUID(new UID());
+            client.setOwner(Dispatcher.getConfig().getAdminUid());
+            client.setLogin(userAddr);
+            client.setPassword(shastr);
+            client.setRights(UserRightEnum.STANDARD_USER);
+            client.setEMail("");
+            DBInterface.getInstance().addUser(admin, client);
+
+            return client;
+        } catch (final Exception e) {
+            logger.exception(e);
+            return null;
+        }
+    }
+    /**
      * This retrieves user from DB
+     * If user does not exist in DB, a new user is created and inserted in DB
      * @param userAddr
      * @return
      */
@@ -96,9 +133,16 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
             return null;
         }
         try {
-            return DBInterface.getInstance().selectOne(new UserInterface(),
+            final UserInterface user = DBInterface.getInstance().selectOne(new UserInterface(),
                     SQLRequest.MAINTABLEALIAS + "." + UserInterface.Columns.LOGIN +
                             "='" + userAddr + "'");
+
+            if(user != null) {
+                return user;
+            }
+
+            return newUser(userAddr);
+
         } catch(final IOException e) {
             return null;
         }
