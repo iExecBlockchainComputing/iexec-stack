@@ -58,14 +58,13 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
                 return;
             }
             logger.debug("onSubscription(" + workerWalletAddr + ") : " + host.toXml());
-            MarketOrderInterface marketOrder = DBInterface.getInstance().marketOrderUnsatisfied();
+            MarketOrderInterface marketOrder = DBInterface.getInstance().marketOrderUnsatisfied(host.getWorkerPoolAddr());
             if(marketOrder == null) {
                 logger.info("onSubscription(" + workerWalletAddr +") : no unsatisfied market order");
-            }
-            marketOrder = DBInterface.getInstance().marketOrder();
-            if(marketOrder == null) {
-                host.update();
-                logger.warn("onSubscription(" + workerWalletAddr +") : no market order");
+//            }
+//            marketOrder = DBInterface.getInstance().marketOrder();
+//            if(marketOrder == null) {
+//                logger.warn("onSubscription(" + workerWalletAddr +") : no market order");
                 return;
             }
             if (host.canContribute()) {
@@ -144,6 +143,7 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
             return newUser(userAddr);
 
         } catch(final IOException e) {
+            logger.exception(e);
             return null;
         }
 
@@ -262,6 +262,8 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
      */
     private void createWork(final String workOrderId, final WorkOrderModel model) {
 
+        logger.debug("createWork(" + model.getMarketorderIdx().longValue() + ")");
+
         final MarketOrderInterface marketOrder = getMarketOrder(model.getMarketorderIdx().longValue());
         if(marketOrder == null) {
             logger.error("createWork() : can't retrieve market order : "
@@ -270,7 +272,7 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
         }
         if(marketOrder.getWorkerPoolAddr().compareTo(model.getWorkerpool()) != 0) {
             logger.error("createWork() : worker pool mismatch : "
-                    + marketOrder.getWorkerPoolAddr()
+                    + marketOrder.getWorkerPoolAddr() + " != "
                     + model.getWorkerpool());
             return;
         }
@@ -296,7 +298,6 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
         try {
             final WorkInterface work = new WorkInterface();
             work.setUID(new UID());
-            work.setMarketOrderIdx(model.getMarketorderIdx().longValue());
             work.setMarketOrderUid(marketOrder.getUID());
             work.setOwner(requester.getUID());
             work.setApplication(app.getUID());
@@ -329,6 +330,7 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
     @Override
     public void onWorkOrderActivated(String workOrderId) {
         final WorkOrderModel workOrderModel = ModelService.getInstance().getWorkOrderModel(workOrderId);
+        logger.debug("onWorkOrderActivated(" + workOrderId + ")");
         if(workOrderModel == null) {
             logger.error("onWorkOrderActivated() : can't retrieve work model "
                     + ModelService.getInstance().getWorkOrderModel(workOrderId));

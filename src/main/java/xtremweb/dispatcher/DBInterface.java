@@ -1180,12 +1180,20 @@ public final class DBInterface {
     }
     /**
      * This retrieves a market order lacking computing resources, bypassing access rights
+	 * @param workerPoolAddr is the address of the worker pool
      * @since 13.1.0
      */
-    protected MarketOrderInterface marketOrderUnsatisfied() throws IOException {
+    protected MarketOrderInterface marketOrderUnsatisfied(final String workerPoolAddr) throws IOException {
+
+        if(workerPoolAddr == null) {
+            return null;
+        }
+
         return selectOne(new MarketOrderInterface(),
                 SQLRequest.MAINTABLEALIAS + "." + MarketOrderInterface .Columns.NBWORKERS + "<"
-                        + MarketOrderInterface .Columns.EXPECTEDWORKERS );
+                        + MarketOrderInterface .Columns.EXPECTEDWORKERS
+						+ " AND " + MarketOrderInterface .Columns.WORKERPOOLADDR + "='"
+						+ workerPoolAddr + "'");
     }
     /**
      * This retrieves a market order by its id, bypassing access rights
@@ -4708,8 +4716,8 @@ public final class DBInterface {
         final UserInterface theClient = checkClient(command, UserRightEnum.LISTJOB);
         final UID uid = command.getURI().getUID();
         final MarketOrderInterface marketOrder = marketOrder(command);
-        return marketOrdersUID(theClient, SQLRequest.MAINTABLEALIAS + "." + WorkInterface.Columns.MARKETORDERIDX
-                + "='" + marketOrder.getMarketOrderIdx() + "'");
+        return marketOrdersUID(theClient, SQLRequest.MAINTABLEALIAS + "." + WorkInterface.Columns.MARKETORDERUID
+                + "='" + marketOrder.getUID() + "'");
     }
     /**
      * This retrieves jobs for a market order
@@ -4735,8 +4743,8 @@ public final class DBInterface {
         final UserInterface theClient = checkClient(client, UserRightEnum.LISTJOB);
         final MarketOrderInterface marketOrder = marketOrder(client, uid);
 
-        return marketOrdersUID(theClient, SQLRequest.MAINTABLEALIAS + "." + WorkInterface.Columns.MARKETORDERIDX
-                + "='" + marketOrder.getMarketOrderIdx() + "'");
+        return marketOrdersUID(theClient, SQLRequest.MAINTABLEALIAS + "." + WorkInterface.Columns.MARKETORDERUID
+                + "='" + marketOrder.getUID() + "'");
     }
 
 	/**
@@ -5152,10 +5160,10 @@ public final class DBInterface {
             receivedJob.setCategoryId(0);
         }
 
-        final Long receivedJobMarketOrderIdx = receivedJob.getMarketOrderIdx();
-        final MarketOrderInterface receivedJobMarketOrder = marketOrderByIdx(receivedJob.getMarketOrderIdx());
+        final UID receivedJobMarketOrderUid = receivedJob.getMarketOrderUid();
+        final MarketOrderInterface receivedJobMarketOrder = marketOrder(receivedJob.getMarketOrderUid());
         if(receivedJobMarketOrder == null) {
-            throw new IOException("invalid job market order : " + receivedJobMarketOrderIdx);
+            throw new IOException("invalid job market order : " + receivedJobMarketOrderUid);
         }
 
         final WorkInterface theWork = work(mandatingClient, jobUID);
@@ -5778,28 +5786,37 @@ public final class DBInterface {
 				if (host.wantToContribute()) {
 
                     try {
-                        MarketOrderInterface marketOrder = marketOrderUnsatisfied();
+                        MarketOrderInterface marketOrder = marketOrderUnsatisfied(host.getWorkerPoolAddr());
+//                        if(marketOrder == null) {
+//                            logger.info("hostRegister() - " + workerWalletAddr +" : no unsatisfied market order");
+//                        }
+//                        marketOrder = marketOrder();
                         if(marketOrder == null) {
                             logger.info("hostRegister() - " + workerWalletAddr +" : no unsatisfied market order");
-                        }
-                        marketOrder = marketOrder();
-                        if(marketOrder == null) {
-                            logger.info("hostRegister() - " + workerWalletAddr +" : no market order");
                         } else {
-                            logger.debug("hostRegister() - " + workerWalletAddr +" joins market order "
-                                    + marketOrder.getUID());
-                            marketOrder.addWorker(host);
-                            marketOrder.update();
-                        }
-                        if((marketOrder != null) && (marketOrder.canStart())) {
-                            final ActuatorService actuatorService = ActuatorService.getInstance();
-                            final BigInteger marketOrderIdx = actuatorService.createMarketOrder(BigInteger.valueOf(marketOrder.getCategoryId()),
-                                    BigInteger.valueOf(marketOrder.getTrust()),
-                                    BigInteger.valueOf(marketOrder.getPrice()),
-                                    BigInteger.valueOf(marketOrder.getVolume()));
-                            marketOrder.setMarketOrderIdx(marketOrderIdx.longValue());
-                            marketOrder.update();
-                        }
+							if(marketOrder.getWorkerPoolAddr().compareTo(host.getWorkerPoolAddr()) != 0) {
+								logger.error("hostRegister() : worker pool mismatch : "
+										+ marketOrder.getWorkerPoolAddr() + " != "
+										+ host.getWorkerPoolAddr());
+							}
+							else {
+
+								logger.debug("hostRegister() - " + workerWalletAddr +" joins market order "
+										+ marketOrder.getUID());
+								marketOrder.addWorker(host);
+								marketOrder.update();
+
+								if(marketOrder.canStart()) {
+									final ActuatorService actuatorService = ActuatorService.getInstance();
+									final BigInteger marketOrderIdx = actuatorService.createMarketOrder(BigInteger.valueOf(marketOrder.getCategoryId()),
+											BigInteger.valueOf(marketOrder.getTrust()),
+											BigInteger.valueOf(marketOrder.getPrice()),
+											BigInteger.valueOf(marketOrder.getVolume()));
+									marketOrder.setMarketOrderIdx(marketOrderIdx.longValue());
+									marketOrder.update();
+								}
+							}
+						}
                     } catch (final IOException e) {
                         logger.exception(e);
                     }
