@@ -867,7 +867,7 @@ create table if not exists  marketorders (
   marketOrderIdx       bigint                                      comment 'market order index',
   categoryId           bigint         not null                     comment 'catID reference',
   expectedWorkers      bigint         not null                     comment 'how many workers to safely reach the trust',
-  nbWorkers            bigint                   default 0          comment 'how many workers alredy booked',
+  nbWorkers            bigint         not null  default 0          comment 'how many workers alredy booked',
   trust                bigint         not null  default 70         comment 'expected trust',
   price                bigint         not null  default 0          comment 'this is the cost or the price, depending on direction; this is named value in smart contract',
   volume               bigint                   default 0          comment 'how many such orders the scheduler can propose',
