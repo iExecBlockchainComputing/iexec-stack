@@ -657,6 +657,8 @@ public final class HostInterface extends Table {
 		setJavaVersion(XWPropertyDefs.JAVAVERSION.defaultValue());
 		setJavaDataModel(Integer.parseInt(XWPropertyDefs.JAVADATAMODEL.defaultValue()));
 		setShortIndexes(new int[] { TableColumns.UID.getOrdinal(), Columns.NAME.getOrdinal() });
+		setContribution(false);
+		setDirty(true);
 	}
 
 	/**

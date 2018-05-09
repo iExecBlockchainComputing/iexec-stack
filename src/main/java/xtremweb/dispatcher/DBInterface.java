@@ -1448,6 +1448,18 @@ public final class DBInterface {
         return object(new HostInterface(), uid);
     }
     /**
+     * This retrieves hosts that participate to the given market order, bypassing access rights
+     *
+     * @param marketOrder is the market order we want to retrieve participating hosts
+     * @return a collection of host interfaces
+     * @since 13.1.0
+     */
+    protected Collection<HostInterface> hosts(final MarketOrderInterface marketOrder) throws IOException {
+        return selectAll(new HostInterface(), HostInterface.Columns.MARKETORDERUID + "='"
+                + marketOrder.getUID() + "'");
+    }
+//    protected <T extends Table> Collection<T> selectAll(final T row, final String conditions) throws IOException
+    /**
      * This retrieves a host, bypassing access rights
      *
      * @param ethaddr
@@ -5219,8 +5231,6 @@ public final class DBInterface {
 				logger.debug(realClient.getLogin() + " is updating " + theWork.getUID() + " status = "
 						+ receivedJob.getStatus());
 
-				System.out.println("DBInterface#addWork theWork = " + theWork.toXml());
-
 				switch (theWork.getStatus()) {
 				case RESULTREQUEST:
 					theWork.setResultRequest();
@@ -5272,32 +5282,6 @@ public final class DBInterface {
                     if(theTask != null) {
                         theTask.setContributed();
                     }
-/*
-				    marketOrder.getTrust();
-                    final Collection<WorkInterface> works = marketOrderWorks(marketOrder);
-                    final long expectedWorkers = marketOrder.getExpectedWorkers();
-                    final long trust = marketOrder.getTrust();
-                    final long expectedContributions = (expectedWorkers * trust / 100);
-                    long totalContributions = 0L;
-                    for(final WorkInterface work : works ) {
-                        if(work.hasContributed()) {
-                            totalContributions++;
-                        }
-                    }
-                    if (totalContributions >= expectedContributions) {
-                        for(final WorkInterface contributingWork : works ) {
-
-                            contributingWork.setRevealing();
-                            rows.add(contributingWork);
-
-                            final TaskInterface contributingTask = task(contributingWork);
-                            if(contributingTask != null) {
-                                contributingTask.setRevealing();
-                                rows.add(contributingTask);
-                            }
-                        }
-                    }
-*/
                     break;
 				case COMPLETED:
 
@@ -5786,11 +5770,7 @@ public final class DBInterface {
 				if (host.wantToContribute()) {
 
                     try {
-                        MarketOrderInterface marketOrder = marketOrderUnsatisfied(host.getWorkerPoolAddr());
-//                        if(marketOrder == null) {
-//                            logger.info("hostRegister() - " + workerWalletAddr +" : no unsatisfied market order");
-//                        }
-//                        marketOrder = marketOrder();
+                        final MarketOrderInterface marketOrder = marketOrderUnsatisfied(host.getWorkerPoolAddr());
                         if(marketOrder == null) {
                             logger.info("hostRegister() - " + workerWalletAddr +" : no unsatisfied market order");
                         } else {
@@ -5804,6 +5784,12 @@ public final class DBInterface {
 								logger.debug("hostRegister() - " + workerWalletAddr +" joins market order "
 										+ marketOrder.getUID());
 								marketOrder.addWorker(host);
+
+                                // following host.update() is not really necessary but helps comprehension
+                                // since createMarketOrder is long to execute on the blockchain
+                                // and update(host) below will not waste any time to write to DB
+                                // since it would have already been written here
+								host.update();
 								marketOrder.update();
 
 								if(marketOrder.canStart()) {
