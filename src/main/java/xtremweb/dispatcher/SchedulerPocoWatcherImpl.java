@@ -205,7 +205,7 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
             newApp.setOwner(appOwner.getUID());
             newApp.setName(appModel.getName());
             newApp.setPrice(appModel.getPrice().longValue());
-            newApp.setAccessRights(new XWAccessRights(XWAccessRights.USERALL.value() & XWAccessRights.STICKYBIT_INT));
+            newApp.setAccessRights(new XWAccessRights(XWAccessRights.USERALL.value() | XWAccessRights.STICKYBIT_INT));
 
             final String appParams = appModel.getParams();
             if(appParams != null) {
@@ -338,7 +338,7 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
             work.setStatus(StatusEnum.PENDING);
             work.setExpectedReplications(marketOrder.getExpectedWorkers());
             work.setReplicaSetSize(marketOrder.getNbWorkers());
-            work.setAccessRights(new XWAccessRights(XWAccessRights.USERALL.value() & XWAccessRights.STICKYBIT_INT));
+            work.setAccessRights(new XWAccessRights(XWAccessRights.USERALL.value() | XWAccessRights.STICKYBIT_INT));
 
             final XMLRPCCommandSendWork cmd =
                     new XMLRPCCommandSendWork(XWTools.newURI(work.getUID()),

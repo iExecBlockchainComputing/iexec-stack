@@ -2699,7 +2699,6 @@ public final class DBInterface {
 			throws IOException, InvalidKeyException, AccessControlException {
 
 		if(!command.isMandated()) {
-			Thread.currentThread().dumpStack();
 			throw new AccessControlException ("not mandated");
 		}
 		return checkClient(command.getUser(), UserRightEnum.MANDATED_USER);
@@ -3620,7 +3619,6 @@ public final class DBInterface {
 	 */
 	public void addApp(final XMLRPCCommand command)
 			throws IOException, InvalidKeyException, AccessControlException, URISyntaxException {
-
 		final UserInterface theClient = checkClient(command, UserRightEnum.INSERTAPP);
 		final AppInterface appitf = (AppInterface) command.getParameter();
 		addApp(theClient, appitf);
@@ -3763,7 +3761,7 @@ public final class DBInterface {
 
 			return;
 		}
-    
+
 		try {
 			if (appitf.getUID() == null) {
 				appitf.setUID(new UID());
