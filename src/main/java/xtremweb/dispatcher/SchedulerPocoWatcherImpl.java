@@ -13,6 +13,7 @@ import com.iexec.scheduler.iexechub.IexecHubWatcher;
 import com.iexec.scheduler.workerpool.WorkerPoolService;
 import com.iexec.scheduler.workerpool.WorkerPoolWatcher;
 import xtremweb.common.*;
+import xtremweb.communications.XMLRPCCommandSendApp;
 import xtremweb.communications.XMLRPCCommandSendWork;
 import xtremweb.database.SQLRequest;
 import xtremweb.security.XWAccessRights;
@@ -20,7 +21,6 @@ import xtremweb.security.XWAccessRights;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 
 public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatcher {
@@ -31,7 +31,7 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
     private final static ActuatorService actuatorService = ActuatorService.getInstance();
     private final Logger logger;
 
-    private UserInterface admin = null;
+    private UserInterface administrator = null;
 
 
     public SchedulerPocoWatcherImpl() {
@@ -45,13 +45,13 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
         iexecHubService.registerIexecHubWatcher(this);
         workerPoolService.registerWorkerPoolWatcher(this);
         try {
-            admin = Dispatcher.getConfig().getProperty(XWPropertyDefs.ADMINLOGIN) == null ? null
+            administrator = Dispatcher.getConfig().getProperty(XWPropertyDefs.ADMINLOGIN) == null ? null
                     : DBInterface.getInstance()
                     .user(SQLRequest.MAINTABLEALIAS + "." + UserInterface.Columns.LOGIN.toString() + "='"
                             + Dispatcher.getConfig().getProperty(XWPropertyDefs.ADMINLOGIN) + "'");
         } catch (final Exception e) {
             logger.exception(e);
-            admin = null;
+            administrator = null;
         }
     }
 
@@ -104,8 +104,8 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
             logger.error("DELEGATEDREGISTRATION is not allowed");
             return null;
         }
-        if (admin == null) {
-            logger.error("newUser() : user admin not defined");
+        if (administrator == null) {
+            logger.error("newUser() : user administrator not defined");
             return null;
         }
 
@@ -119,7 +119,7 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
             client.setPassword(shastr);
             client.setRights(UserRightEnum.STANDARD_USER);
             client.setEMail("");
-            DBInterface.getInstance().addUser(admin, client);
+            DBInterface.getInstance().addUser(administrator, client);
 
             return client;
         } catch (final Exception e) {
@@ -168,6 +168,7 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
                     SQLRequest.MAINTABLEALIAS + "." + AppInterface.Columns.NAME.toString() +
                             "='" + appName + "'");
         } catch(final IOException e) {
+            logger.exception(e);
             return null;
         }
 
@@ -179,6 +180,11 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
      * @return the found or created app; null on error
      */
     private AppInterface getApp(final AppModel appModel) {
+
+        if (administrator == null) {
+            logger.error("getApp() : user administrator not defined");
+            return null;
+        }
 
         try {
             if(appModel == null) {
@@ -218,7 +224,13 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
                 }
             }
 
-            DBInterface.getInstance().addApp(appOwner, newApp);
+            final XMLRPCCommandSendApp cmd =
+                    new XMLRPCCommandSendApp(XWTools.newURI(newApp.getUID()),
+                            administrator,
+                            newApp);
+
+            cmd.setMandatingLogin(appOwner.getLogin());
+            DBInterface.getInstance().addApp(cmd);
 
             return newApp;
 
@@ -269,8 +281,8 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
      */
     private MarketOrderInterface createWork(final String workOrderId, final WorkOrderModel model) {
 
-        if (admin == null) {
-            logger.error("createWork() : user admin not defined");
+        if (administrator == null) {
+            logger.error("createWork() : user administrator not defined");
             return null;
         }
 
@@ -326,11 +338,11 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
             work.setStatus(StatusEnum.PENDING);
             work.setExpectedReplications(marketOrder.getExpectedWorkers());
             work.setReplicaSetSize(marketOrder.getNbWorkers());
-            work.setAccessRights(new XWAccessRights(XWAccessRights.USERALL.value()));
+            work.setAccessRights(new XWAccessRights(XWAccessRights.USERALL.value() & XWAccessRights.STICKYBIT_INT));
 
             final XMLRPCCommandSendWork cmd =
                     new XMLRPCCommandSendWork(XWTools.newURI(work.getUID()),
-                            admin,
+                            administrator,
                             work);
 
             cmd.setMandatingLogin(requester.getLogin());

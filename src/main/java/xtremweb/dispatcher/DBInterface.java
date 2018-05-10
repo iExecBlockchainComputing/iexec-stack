@@ -3763,7 +3763,7 @@ public final class DBInterface {
 
 			return;
 		}
-
+    
 		try {
 			if (appitf.getUID() == null) {
 				appitf.setUID(new UID());
