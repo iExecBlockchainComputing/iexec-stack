@@ -55,8 +55,7 @@ public class MarketplaceService {
     public MarketOrderModel getMarketOrderModel(BigInteger marketOrderIdx){
         MarketOrderModel marketOrderModel = null;
         try {
-            Tuple8<BigInteger, BigInteger, BigInteger, BigInteger, BigInteger, BigInteger, String, String> marketOrderTuple = marketplace.getMarketOrder(marketOrderIdx).send();
-            marketOrderModel = tuple2MarketOrderModel(marketOrderTuple);
+            marketOrderModel = tuple2MarketOrderModel(marketplace.getMarketOrder(marketOrderIdx).send());
         } catch (Exception e) {
             e.printStackTrace();
         }
