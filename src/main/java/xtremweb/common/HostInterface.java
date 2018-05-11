@@ -1155,19 +1155,6 @@ public final class HostInterface extends Table {
         }
     }
     /**
-     * This checks if this worker wants to contribute to a market order
-     *
-     * @return (getMarketOrderUid() == null) && (getEthWalletAddr() != null)) && (getWorkerPoolAddr() != null)
-     * @since 13.1.0
-     */
-    public boolean wantToContribute() {
-        try {
-            return ((getMarketOrderUid() == null) && (getEthWalletAddr() != null) && (getWorkerPoolAddr() != null));
-        } catch (final Exception e) {
-            return false;
-        }
-    }
-    /**
      * This checks if this worker can contribute to a market order
      *
      * @return (getMarketOrderUid() == null) && (getEthWalletAddr() != null) && (getWorkerPoolAddr() != null)
@@ -1175,7 +1162,10 @@ public final class HostInterface extends Table {
      */
     public boolean canContribute() {
         try {
-            return ((getMarketOrderUid() == null) && (getEthWalletAddr() != null) && (getWorkerPoolAddr() != null));
+            return (!hasContributed() &&
+					(getMarketOrderUid() == null) &&
+					(getEthWalletAddr() != null)
+					&& (getWorkerPoolAddr() != null));
         } catch (final Exception e) {
             return false;
         }

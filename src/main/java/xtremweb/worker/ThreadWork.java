@@ -563,6 +563,8 @@ public class ThreadWork extends Thread {
 		}
 		smartSocketsProxies.clear();
 		smartSocketsProxies = null;
+		logger.config("stopProxy done");
+
 	}
 
 	/**
@@ -582,15 +584,20 @@ public class ThreadWork extends Thread {
 			return;
 		}
 		final StringBuilder command = new StringBuilder(unloadpath);
-		command.append(" " + currentWork.getCmdLine());
 
 		logger.config("unload");
 
-        try {
+        final File outf = new File(Worker.getConfig().getPath(XWPropertyDefs.TMPDIR), "unlaod" + currentWork.getUID() + ".out");
+        final File errf = new File(Worker.getConfig().getPath(XWPropertyDefs.TMPDIR), "unlaod" + currentWork.getUID() + ".err");
+        try (final FileOutputStream out = new FileOutputStream(outf);
+             final FileOutputStream err = new FileOutputStream(errf) ) {
 
 			final String[] envVars = getEnvVars();
-			final Executor unloader = new Executor(command.toString(), envVars);
-			unloader.setDelay(Long.parseLong(Worker.getConfig().getProperty(XWPropertyDefs.TIMEOUT)));
+            final Executor unloader = new Executor(command.toString(), envVars, currentWork.getScratchDirName(),
+                    null, out, err,
+                    Long.parseLong(Worker.getConfig().getProperty(XWPropertyDefs.TIMEOUT)));
+            unloader.setMaxWallClockTime(60);
+
 			try {
 				unloader.startAndWait();
 			} catch (final ExecutorLaunchException | ExecutorWallClockTimeException e) {
@@ -598,6 +605,9 @@ public class ThreadWork extends Thread {
 			}
 
 		} finally {
+			logger.config("unload done");
+			if(outf.exists()) outf.delete();
+            if(errf.exists()) errf.delete();
 		}
 	}
 
@@ -701,10 +711,15 @@ public class ThreadWork extends Thread {
 
         ret = currentWork.getStatus();
 
+		logger.debug("job killed " + currentWork.getUID() +" : " + killed);
+
 		if (!killed) {
 			try {
-				if (currentWork.isService() == false) {
-					if (currentWork.hasPackage() == false) {
+				logger.debug("job isService " + currentWork.getUID() +" : " + currentWork.isService());
+				if (!currentWork.isService()) {
+					logger.debug("job hasPackage " + currentWork.getUID() +" : " + currentWork.hasPackage());
+					if (!currentWork.hasPackage()) {
+						logger.debug("zipping result for job " + currentWork.getUID());
 						zipResult();
     					} else {
 						currentWork.setResult(null);
@@ -1231,7 +1246,6 @@ public class ThreadWork extends Thread {
 		DataInterface data = null;
 		URI resulturi = currentWork.getResult();
 		if (resulturi == null) {
-
 			final UID uid = new UID();
 			resulturi = CommManager.getInstance().commClient().newURI(uid);
 			logger.debug("work setting new result URI : " + resulturi);

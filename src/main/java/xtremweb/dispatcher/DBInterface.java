@@ -256,9 +256,13 @@ public final class DBInterface {
 			return;
 		}
 		try {
-			emailSender.send("XtremWeb-HEP@" + XWTools.getLocalHostName() + " : " + row.getUID(), theClient.getEMail(),
-					msg + "\n" + row.toString(false, true) + "\n\n" + "https://" + XWTools.getLocalHostName() + ":"
-							+ System.getProperty(XWPropertyDefs.HTTPSPORT.toString()) + "/get/" + row.getUID());
+			final String to = theClient.getEMail();
+			if ((to != null) || (to.length() > 1)) {
+				emailSender.send("XtremWeb-HEP@" + XWTools.getLocalHostName() + " : " + row.getUID(),
+						theClient.getEMail(),
+						msg + "\n" + row.toString(false, true) + "\n\n" + "https://" + XWTools.getLocalHostName() + ":"
+								+ System.getProperty(XWPropertyDefs.HTTPSPORT.toString()) + "/get/" + row.getUID());
+			}
 		} catch (MessagingException e) {
 			logger.exception(e);
 		}
@@ -5410,7 +5414,7 @@ public final class DBInterface {
 					: 0L;
 			boolean firstJob = true;
 
-			for (; (replica <= receivedJob.getReplicaSetSize()) && (replica <= receivedJob.getExpectedReplications()); replica++) {
+			for (; (replica <= receivedJob.getReplicaSetSize()) && (replica <= receivedJob.getExpectedReplications() - 1); replica++) {
 				final WorkInterface newWork = new WorkInterface(receivedJob);
 				newWork.setUID(jobUID); // we insert the original work (to
 				// eventually be replicated)
@@ -5765,7 +5769,7 @@ public final class DBInterface {
 				host.setTotalMem(_host.getTotalMem());
 
 				final String workerWalletAddr = host.getEthWalletAddr();
-				if (host.wantToContribute()) {
+				if (host.canContribute()) {
 
                     try {
                         final MarketOrderInterface marketOrder = marketOrderUnsatisfied(host.getWorkerPoolAddr());

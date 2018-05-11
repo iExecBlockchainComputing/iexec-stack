@@ -152,17 +152,17 @@ CONTAINERNAME="xwcontainer_${XWJOBUID}"
 
 
 # clean all: if the docker container still exists, it will be stop and removed as well as the image
-docker ps --all -f name=${CONTAINERNAME} | grep ${CONTAINERNAME}
+docker ps --all -f name=${CONTAINERNAME} | grep ${CONTAINERNAME} > /dev/null 2>&1
 if [ $?  -eq 0 ] ; then
-  docker stop ${CONTAINERNAME}
+  docker stop ${CONTAINERNAME} > /dev/null 2>&1
 fi
-docker ps --all -f name=${CONTAINERNAME} | grep ${CONTAINERNAME}
+docker ps --all -f name=${CONTAINERNAME} | grep ${CONTAINERNAME} > /dev/null 2>&1
 if [ $?  -eq 0 ] ; then
-  docker rm ${CONTAINERNAME}
+  docker rm ${CONTAINERNAME} > /dev/null 2>&1
 fi
-docker images ${IMAGENAME} | grep ${IMAGENAME}
+docker images ${IMAGENAME} | grep ${IMAGENAME} > /dev/null 2>&1
 if [ $?  -eq 0 ] ; then
-  docker rmi ${IMAGENAME}
+  docker rmi ${IMAGENAME} > /dev/null 2>&1
 fi
 
 

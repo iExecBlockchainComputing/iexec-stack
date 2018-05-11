@@ -1245,8 +1245,9 @@ public final class CommManager extends Thread {
 
                 message(false);
             } else {
-		        theWork.setContributed();
-            }
+				theWork.setContributed();
+				Worker.getConfig().getHost().setContribution(true);
+			}
         } catch (final XWCommException e) {
             logger.exception("CommManager#uploadResults", e);
             theWork.setFailed(e.getMessage());
