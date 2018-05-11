@@ -388,7 +388,7 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
 
             actuatorService.allowWorkersToContribute(workOrderId,
                     wallets,
-                    "O");
+                    "0");
 
         } catch(final Exception e) {
             logger.exception(e);
@@ -434,31 +434,36 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
             }
         }
         if (totalContributions >= expectedContributions) {
+            logger.debug("onContributeEvent() : enough contributions");
             theWork.setRevealing();
             try {
                 theWork.update();
-            } catch(final IOException e) {
+            } catch (final IOException e) {
                 logger.exception(e);
             }
+            logger.debug("onContributeEvent() : work must be revealed " + theWork.toXml());
 
-            for(final WorkInterface contributingWork : works ) {
+            for (final WorkInterface contributingWork : works) {
 
+                logger.debug("onContributeEvent() : work must be revealed " + contributingWork.toXml());
                 try {
                     contributingWork.setRevealing();
                     contributingWork.update();
 
                     final TaskInterface contributingTask = DBInterface.getInstance().task(contributingWork);
-                    if(contributingTask != null) {
+                    if (contributingTask != null) {
                         contributingTask.setRevealing();
                         contributingTask.update();
                     }
-                } catch(final IOException e) {
+                } catch (final IOException e) {
                     logger.exception(e);
                 }
             }
-        }
 
-        //actuatorService.revealConsensus(contributeEventResponse.woid, Utils.hashResult("iExec the wanderer"));
+            actuatorService.revealConsensus(theWork.getWorkOrderId(), theWork.getH2r());
+        } else {
+            logger.debug("onContributeEvent() : not enough contributions");
+        }
     }
 
     @Override
