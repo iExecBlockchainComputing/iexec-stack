@@ -111,7 +111,7 @@ DISPATCHERS=@XWSERVER@
 # Do we try to connect to Ethereum blockchain
 # @since 13.0.0
 #
-BLOCKCHAINETHENABLED=false
+BLOCKCHAINETHENABLED=true
 
 #
 # All : ethereum wallet path
@@ -381,7 +381,7 @@ COMMHANDLERS=attic:xtremweb.communications.HTTPClient
 #
 # Default is null
 #
-#SHAREDAPPS=VirtualBox
+SHAREDAPPS=docker
 
 #
 # sharedpackages is a String determining local packages
@@ -557,7 +557,7 @@ ACTIVATIONDATE=* 20-7
 # Note : please use full path; don't use ~ or any variable (e.g. $HOME)
 #        they are not correctly interpreted
 #
-# TMPDIR=/tmp
+TMPDIR=/tmp
 ####
 
 
@@ -677,7 +677,7 @@ SYSTEMTRAY=true
 #  INFO
 #  WARN
 #  ERROR
-LOGGERLEVEL=INFO
+LOGGERLEVEL=DEBUG
 
 
 #####
