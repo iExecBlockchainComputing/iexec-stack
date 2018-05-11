@@ -1301,13 +1301,20 @@ public class ThreadWork extends Thread {
 			final File consensusFile = new File (XWTools.CONSENSUSFILENAME);
 			if (consensusFile.exists() && (consensusFile.length() == 0)) {
 				try {
-					currentWork.setH2r(XWTools.sha256CheckSum(consensusFile));
+                    final String shasum = XWTools.sha256CheckSum(consensusFile);
+				    logger.debug("currentWork.setH2r(shaSum(" + XWTools.CONSENSUSFILENAME + ")) = "
+                            + shasum);
+					currentWork.setH2r(shasum);
+                    logger.debug("currentWork = " + currentWork.toXml());
 				} catch (final Exception e) {
                     currentWork.setH2r(null);
 					logger.exception(e);
 				}
-			}
-			logger.debug("ThreadWork#zipResult : resultFile " + resultFilePath);
+			} else {
+                logger.info("no consensus file found");
+            }
+
+            logger.debug("ThreadWork#zipResult : resultFile " + resultFilePath);
 
 			if (out.exists() && (out.length() == 0)) {
 				out.delete();
@@ -1324,8 +1331,10 @@ public class ThreadWork extends Thread {
 			data = (DataInterface) CommManager.getInstance().commClient().get(resulturi, false);
 
 			if (zipper.zip(resultDirName, Worker.getConfig().getBoolean(XWPropertyDefs.OPTIMIZEZIP))) {
+                logger.debug("data zipped");
 				data.setType(DataTypeEnum.ZIP);
 			} else {
+			    logger.debug("data not zipped");
 				data.setType(DataTypeEnum.NONE);
 
 				if (zipper.getFileName() != null) {
@@ -1345,8 +1354,17 @@ public class ThreadWork extends Thread {
 			}
 			if (resultFile.exists()) {
 				try {
-					data.setShasum(XWTools.sha256CheckSum(resultFile));
-				} catch (NoSuchAlgorithmException e) {
+                    final String shasum = XWTools.sha256CheckSum(resultFile);
+                    logger.warn("ThreadWork#zipResult() shasum (" + resultFile + ") = " + shasum);
+					data.setShasum(shasum);
+                    if(currentWork.getH2r() == null) {
+                        logger.debug("currentWork.setH2r(shasum(" + data.getName() + ")) ="
+                                + shasum);
+                        currentWork.setH2r(shasum);
+                        logger.debug("currentWork = " + currentWork.toXml());
+
+                    }
+                } catch (Exception e) {
 					logger.exception(e);
 				}
 				data.setSize(resultFile.length());
