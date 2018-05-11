@@ -1,12 +1,15 @@
 package com.iexec.common.ethereum;
 
+import com.iexec.common.model.MarketOrderModel;
 import org.web3j.crypto.Hash;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.core.DefaultBlockParameterName;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
+import org.web3j.tuples.generated.Tuple8;
 import org.web3j.tx.Contract;
 
 import java.io.IOException;
+import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
 
@@ -62,6 +65,13 @@ public final class Utils {
             return TransactionStatus.SUCCESS;
         }
         return TransactionStatus.FAILURE;
+    }
+
+    public static MarketOrderModel tuple2MarketOrderModel(Tuple8<BigInteger, BigInteger, BigInteger, BigInteger, BigInteger, BigInteger, String, String> marketOrder) {
+        if (marketOrder != null) {
+            return new MarketOrderModel(marketOrder.getValue1(), marketOrder.getValue2(), marketOrder.getValue3(), marketOrder.getValue4(), marketOrder.getValue5(), marketOrder.getValue6(), marketOrder.getValue7(), marketOrder.getValue8());
+        }
+        return null;
     }
 
 }
