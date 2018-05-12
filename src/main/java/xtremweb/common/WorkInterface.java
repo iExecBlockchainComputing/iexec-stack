@@ -354,15 +354,15 @@ public class WorkInterface extends Table {
             }
         },
         /**
-         * This is the column index of the contribution proposal -aka h(R)-, if this work belongs to a market order
+         * This is the column index of the contribution proposal -aka h(h(R))-, if this work belongs to a market order
+         * @since 13.1.0
+         */
+        H2H2R,
+        /**
+         * This is the column index of the contribution proof -aka h(R)-, if this work belongs to a market order
          * @since 13.1.0
          */
         H2R,
-        /**
-         * This is the column index of the contribution proof -aka h(R+S)-, if this work belongs to a market order
-         * @since 13.1.0
-         */
-        H2RPS,
         /**
          * This is the column index of the emit cost
          * @since 13.1.0
@@ -787,8 +787,8 @@ public class WorkInterface extends Table {
 		setReplicaSetSize(0L);
         setCategoryId(0L);
         setMarketOrderUid(null);
-        setH2r(null);
-		setH2rps(null);
+        setH2h2r(null);
+		setH2r(null);
 		setWorkOrderId(null);
 	}
 
@@ -1014,7 +1014,7 @@ public class WorkInterface extends Table {
         } catch (final Exception e) {
         }
         try {
-            setH2rps((String) Columns.H2RPS.fromResultSet(rs));
+            setH2h2r((String) Columns.H2H2R.fromResultSet(rs));
         } catch (final Exception e) {
         }
 		try {
@@ -1145,8 +1145,8 @@ public class WorkInterface extends Table {
 		setCategoryId(itf.getCategoryId());
 		setWorkOrderId(itf.getWorkOrderId());
         setMarketOrderUid(itf.getMarketOrderUid());
+        setH2h2r(itf.getH2h2r());
         setH2r(itf.getH2r());
-        setH2rps(itf.getH2rps());
 		setReplicatedUid(itf.getReplicatedUid());
 		setDataDriven(itf.getDataDriven());
 		setExpectedHost(itf.getExpectedHost());
@@ -1853,20 +1853,20 @@ public class WorkInterface extends Table {
         return (UID) getValue(Columns.MARKETORDERUID);
     }
     /**
-     * This retrieves the contribution proposal -aka h(R)-
+     * This retrieves the contribution proposal -aka h(h(R))-
+     * @since 13.1.0
+     * @return this attribute, or null if not set
+     */
+    public final String getH2h2r() {
+        return (String) getValue(Columns.H2H2R);
+    }
+    /**
+     * This retrieves the contribution proof -aka h(R)-
      * @since 13.1.0
      * @return this attribute, or null if not set
      */
     public final String getH2r() {
         return (String) getValue(Columns.H2R);
-    }
-    /**
-     * This retrieves the contribution proof -aka h(R+S)-
-     * @since 13.1.0
-     * @return this attribute, or null if not set
-     */
-    public final String getH2rps() {
-        return (String) getValue(Columns.H2RPS);
     }
 
 	/**
@@ -2740,22 +2740,22 @@ public class WorkInterface extends Table {
         return setValue(Columns.MARKETORDERUID, uid);
     }
     /**
-     * This sets the contribution proposal -aka h(R).
-     * @param h2r is the contribution proposal
+     * This sets the contribution proposal -aka h(h(R))
+     * @param h2h2r is the contribution proposal
+     * @since 13.0.0
+     * @return true if value has changed, false otherwise
+     */
+    public final boolean setH2h2r(final String h2h2r) {
+        return setValue(Columns.H2H2R, h2h2r);
+    }
+    /**
+     * This sets the contribution proof -aka h(R)
+     * @param h2r is the contribution proof
      * @since 13.0.0
      * @return true if value has changed, false otherwise
      */
     public final boolean setH2r(final String h2r) {
         return setValue(Columns.H2R, h2r);
-    }
-    /**
-     * This sets the contribution proof -aka h(R+S).
-     * @param h2rps is the contribution proof
-     * @since 13.0.0
-     * @return true if value has changed, false otherwise
-     */
-    public final boolean setH2rps(final String h2rps) {
-        return setValue(Columns.H2RPS, h2rps);
     }
 
 	/**

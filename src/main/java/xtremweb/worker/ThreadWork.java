@@ -1233,9 +1233,8 @@ public class ThreadWork extends Thread {
 	 * @throws InvalidKeyException
 	 * @exception Exception
 	 *                is thrown on I/O error
-	 * @return the file containing the job result
 	 */
-	public synchronized File zipResult()
+	protected synchronized void zipResult()
 			throws IOException, ClassNotFoundException, SAXException, URISyntaxException, InvalidKeyException {
 
 		boolean islocked = false;
@@ -1301,13 +1300,15 @@ public class ThreadWork extends Thread {
 			final File consensusFile = new File (XWTools.CONSENSUSFILENAME);
 			if (consensusFile.exists() && (consensusFile.length() == 0)) {
 				try {
-                    final String shasum = XWTools.sha256CheckSum(consensusFile);
-				    logger.debug("currentWork.setH2r(shaSum(" + XWTools.CONSENSUSFILENAME + ")) = "
-                            + shasum);
-					currentWork.setH2r(shasum);
-                    logger.debug("currentWork = " + currentWork.toXml());
+                    final String h2r = XWTools.sha256CheckSum(consensusFile);
+					final String h2h2r = XWTools.sha256(h2r);
+					logger.debug("ThreadWork#zipResult() shasum (" + XWTools.CONSENSUSFILENAME + ") = " + h2r);
+                    logger.debug("ThreadWork#zipResult() currentWork.setH2h2r(" + h2h2r + ")");
+                    logger.debug("ThreadWork#zipResult() currentWork.setHiddenH2r(" + h2r + ")");
+                    currentWork.setH2h2r(h2h2r);
+                    currentWork.setHiddenH2r(h2r);
 				} catch (final Exception e) {
-                    currentWork.setH2r(null);
+                    currentWork.setH2h2r(null);
 					logger.exception(e);
 				}
 			} else {
@@ -1354,15 +1355,18 @@ public class ThreadWork extends Thread {
 			}
 			if (resultFile.exists()) {
 				try {
-                    final String shasum = XWTools.sha256CheckSum(resultFile);
-                    logger.warn("ThreadWork#zipResult() shasum (" + resultFile + ") = " + shasum);
-					data.setShasum(shasum);
-                    if(currentWork.getH2r() == null) {
-                        logger.debug("currentWork.setH2r(shasum(" + data.getName() + ")) ="
-                                + shasum);
-                        currentWork.setH2r(shasum);
-                        logger.debug("currentWork = " + currentWork.toXml());
+					final String h2r = XWTools.sha256CheckSum(resultFile);
+					final String h2h2r = XWTools.sha256(h2r);
+                    logger.debug("ThreadWork#zipResult() shasum (" + resultFile + ") = " + h2r);
+					data.setShasum(h2r);
 
+                    if(currentWork.getH2h2r() == null) {
+                        logger.debug("ThreadWork#zipResult() currentWork.setH2h2r(" + h2h2r + ")");
+                        currentWork.setH2h2r(h2h2r);
+                    }
+                    if(currentWork.getHiddenH2r() == null) {
+                        logger.debug("ThreadWork#zipResult() currentWork.setHiddenH2r(" + h2r + ")");
+                        currentWork.setHiddenH2r(h2r);
                     }
                 } catch (Exception e) {
 					logger.exception(e);
@@ -1377,9 +1381,8 @@ public class ThreadWork extends Thread {
 				CommManager.getInstance().commClient().unlock(currentWork.getResult());
 			}
 		}
+        logger.debug("ThreadWork#zipResult() currentWork = " + currentWork.toXml());
 		mileStone.println("</zipresult>");
-
-		return resultFile;
 	}
 
 	/**

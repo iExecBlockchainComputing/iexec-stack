@@ -865,7 +865,7 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 								finishedTasks.add(workUID);
 								break;
 							case REVEALING:
-								debug(command, "workAlive (" + _host.getName() + ") : worker can reveal " + resultURI);
+								debug(command, "workAlive (" + _host.getName() + ") : worker must reveal " + resultURI);
 								revealingTasks.add(workUID);
 								break;
 							}

@@ -378,14 +378,14 @@ public class ThreadAlive extends Thread {
 
 				Work theWork = CommManager.getInstance().getPoolWork().getSavingWork(uid);
 				if (theWork == null) {
-					if(theWork.getH2r() != null)
-						ActuatorService.getInstance().reveal(theWork.getWorkOrderId(), theWork.getH2r());
-					else
-						ActuatorService.getInstance().reveal(theWork.getWorkOrderId(), "i don't know");
+                    if(theWork.getH2r() != null)
+                        ActuatorService.getInstance().reveal(theWork.getWorkOrderId(), theWork.getH2r());
+                    else
+                        ActuatorService.getInstance().reveal(theWork.getWorkOrderId(), "i don't know");
 
-					final ThreadWork threadWork = ThreadLaunch.getInstance().getThreadByWorkUid(uid);
+                    final ThreadWork threadWork = ThreadLaunch.getInstance().getThreadByWorkUid(uid);
 					if (threadWork == null) {
-						logger.error("ThreadAlive() : can't retreive running work = " + uid);
+						logger.error("ThreadAlive() : can't retreive revealing work = " + uid);
 						continue;
 					}
 					try {
@@ -397,6 +397,7 @@ public class ThreadAlive extends Thread {
 					}
 				}
 				if (theWork != null) {
+					theWork.setH2r(theWork.getHiddenH2r());
 					theWork.setCompleted();
 					CommManager.getInstance().sendWork(theWork);
 					CommManager.getInstance().sendResult(theWork);

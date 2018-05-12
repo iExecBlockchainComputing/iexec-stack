@@ -1265,11 +1265,21 @@ public final class CommManager extends Thread {
             } catch (final Exception e) {
                 logger.exception(e);
             }
-            if(theWork.getH2r() != null)
- 	           ActuatorService.getInstance().contribute(theWork.getWorkOrderId(), theWork.getH2r(), BigInteger.ZERO, "0","0");
-			else
-				ActuatorService.getInstance().contribute(theWork.getWorkOrderId(), data.getShasum(), BigInteger.ZERO, "0","0");
+            if(theWork.getH2h2r() != null)
+ 	           ActuatorService.getInstance().contribute(theWork.getWorkOrderId(), theWork.getH2h2r(), BigInteger.ZERO, "0","0");
+			else {
+				String h2h2r = data.getShasum();
+				try {
+					h2h2r = XWTools.sha256(data.getShasum());
+				} catch(final Exception e) {
+				}
+				ActuatorService.getInstance().contribute(theWork.getWorkOrderId(),
+						h2h2r,
+						BigInteger.ZERO,
+						"0",
+						"0");
 
+			}
             getPoolWork().saveWork(theWork);
 
             if (Worker.getConfig().stopComputing()) {

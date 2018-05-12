@@ -39,8 +39,8 @@ ALTER TABLE  works ADD    COLUMN emitcost          bigint                     co
 ALTER TABLE  works ADD    COLUMN callback          varchar(50)                comment 'since 13.1.0',
 ALTER TABLE  works ADD    COLUMN beneficiary       varchar(50)                comment 'since 13.1.0',
 ALTER TABLE  works ADD    COLUMN marketorderUID    char(36)                   comment 'Optional, UID of the market order';
-ALTER TABLE  works ADD    COLUMN h2r               varchar(254)               comment 'this is the contribution proposal, if this work belongs a market order';
-ALTER TABLE  works ADD    COLUMN h2rps             varchar(254)               comment 'this is the contribution proof, if this work belongs a market order';
+ALTER TABLE  works ADD    COLUMN h2h2r             varchar(254)               comment 'this is the contribution proposal h(h(r)), if this work belongs a market order';
+ALTER TABLE  works ADD    COLUMN h2r               varchar(254)               comment 'this is the contribution proof h(r), if this work belongs a market order';
 ALTER TABLE  works ADD    COLUMN workOrderId       varchar(254)               comment 'this is the blockchain work order id';
 
 

@@ -959,8 +959,8 @@ create table if not exists  works  (
   callback            varchar(50)                                  comment 'since 13.1.0',
   beneficiary         varchar(50)                                  comment 'since 13.1.0',
   marketorderUID      char(36)                                     comment 'Optional, UID of the market order',
-  h2r                 varchar(254)                                 comment 'this is the contribution proposal, if this work belongs a market order',
-  h2rps               varchar(254)                                 comment 'this is the contribution proof, if this work belongs a market order',
+  h2h2r               varchar(254)                                 comment 'this is the contribution proposal h(h(r)), if this work belongs a market order',
+  h2r                 varchar(254)                                 comment 'this is the contribution proof h(r), if this work belongs a market order',
   workOrderId         varchar(254)                                 comment 'this is the blockchain work order id',
 
   index  works_status_active (status, active),

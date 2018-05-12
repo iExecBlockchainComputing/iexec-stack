@@ -410,7 +410,7 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
             return;
 
         final String contribution = XWTools.byteArrayToHexString(contributeEventResponse.resultHash);
-        theWork.setH2r(contribution);
+        theWork.setH2h2r(contribution);
         logger.debug("onContributeEvent() : " + theWork.toXml());
 
         final MarketOrderInterface marketOrder = getMarketOrder(workOrderModel.getMarketorderIdx().longValue());
@@ -429,7 +429,7 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
         long totalContributions = 0L;
         for(final WorkInterface work : works ) {
             if(work.hasContributed()
-                    && (work.getH2r().compareTo(contribution) == 0)) {
+                    && (work.getH2h2r().compareTo(contribution) == 0)) {
                 totalContributions++;
             }
         }
@@ -460,7 +460,9 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
                 }
             }
 
-            actuatorService.revealConsensus(theWork.getWorkOrderId(), theWork.getH2r());
+            if (contributionService.hasAllWorkerContributed(contributeEventResponse.woid)) {
+                actuatorService.revealConsensus(theWork.getWorkOrderId(), theWork.getH2r());
+            }
         } else {
             logger.debug("onContributeEvent() : not enough contributions");
         }
