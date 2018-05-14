@@ -7,6 +7,7 @@ import com.iexec.common.model.AppModel;
 import com.iexec.common.model.ModelService;
 import com.iexec.common.model.WorkOrderModel;
 import com.iexec.scheduler.actuator.ActuatorService;
+import com.iexec.scheduler.database.Contribution;
 import com.iexec.scheduler.database.ContributionService;
 import com.iexec.scheduler.iexechub.IexecHubService;
 import com.iexec.scheduler.iexechub.IexecHubWatcher;
@@ -386,6 +387,8 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
                     wallets.add(worker.getEthWalletAddr());
             }
 
+            contributionService.setCalledWorker(workOrderId, wallets);
+
             actuatorService.allowWorkersToContribute(workOrderId,
                     wallets,
                     "0");
@@ -409,8 +412,8 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
         if(theWork == null)
             return;
 
-        final String contribution = XWTools.byteArrayToHexString(contributeEventResponse.resultHash);
-        theWork.setH2h2r(contribution);
+        final String contributionStr = XWTools.byteArrayToHexString(contributeEventResponse.resultHash);
+        theWork.setH2h2r(contributionStr);
         logger.debug("onContributeEvent() : " + theWork.toXml());
 
         final MarketOrderInterface marketOrder = getMarketOrder(workOrderModel.getMarketorderIdx().longValue());
@@ -422,6 +425,19 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
             return;
         }
 
+        try {
+            final TaskInterface theWorkTask = DBInterface.getInstance().task(theWork);
+            final HostInterface theHost = DBInterface.getInstance().host(theWorkTask.getHost());
+            Contribution contribution = new Contribution(contributeEventResponse.woid,
+                    theHost.getEthWalletAddr(),
+                    contributionStr.getBytes());
+
+            contributionService.addContribution(contribution);
+
+        } catch (final IOException e) {
+            logger.exception(e);
+        }
+
         marketOrder.getTrust();
         final long expectedWorkers = marketOrder.getExpectedWorkers();
         final long trust = marketOrder.getTrust();
@@ -429,7 +445,7 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
         long totalContributions = 0L;
         for(final WorkInterface work : works ) {
             if(work.hasContributed()
-                    && (work.getH2h2r().compareTo(contribution) == 0)) {
+                    && (work.getH2h2r().compareTo(contributionStr) == 0)) {
                 totalContributions++;
             }
         }
