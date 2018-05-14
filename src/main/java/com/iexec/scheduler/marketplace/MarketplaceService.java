@@ -2,6 +2,7 @@ package com.iexec.scheduler.marketplace;
 
 import com.iexec.common.contracts.generated.Marketplace;
 import com.iexec.common.ethereum.CredentialsService;
+import com.iexec.common.ethereum.TransactionStatus;
 import com.iexec.common.ethereum.Utils;
 import com.iexec.common.ethereum.Web3jService;
 import com.iexec.common.model.MarketOrderModel;
@@ -54,11 +55,14 @@ public class MarketplaceService {
 
     public MarketOrderModel getMarketOrderModel(BigInteger marketOrderIdx){
         MarketOrderModel marketOrderModel = null;
+        TransactionStatus transactionStatus = TransactionStatus.SUCCESS;
         try {
             marketOrderModel = tuple2MarketOrderModel(marketplace.getMarketOrder(marketOrderIdx).send());
         } catch (Exception e) {
-            e.printStackTrace();
+            transactionStatus = TransactionStatus.FAILURE;
         }
+        log.info("GetMarketOrder [marketOrderIdx:{}, transactionStatus:{}] ",
+                marketOrderIdx, transactionStatus);
         return marketOrderModel;
     }
 
