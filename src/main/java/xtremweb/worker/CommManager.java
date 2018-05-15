@@ -49,6 +49,7 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
 
+import com.iexec.common.ethereum.Utils;
 import com.iexec.worker.actuator.ActuatorService;
 import org.xml.sax.SAXException;
 
@@ -261,6 +262,12 @@ public final class CommManager extends Thread {
 	 * This inserts a send result event on event queue
 	 */
 	protected void sendResult(final Work w) {
+	    if (w == null) {
+	        logger.debug("sendResult : uid is null");
+            return;
+        }
+        logger.debug("CommManager#sendResult : " + w.toXml());
+
 		commQueue.sendResult(w);
 		resetTimeouts();
 		this.interrupt();
@@ -272,7 +279,13 @@ public final class CommManager extends Thread {
 	 * @since 8.3.0
 	 */
 	protected void sendWork(final Work w) {
-		commQueue.sendWork(w);
+        if (w == null) {
+            logger.debug("sendWork : uid is null");
+            return;
+        }
+
+        logger.debug("CommManager#sendWork : " + w.toXml());
+        commQueue.sendWork(w);
 		resetTimeouts();
 		this.interrupt();
 	}
@@ -1229,6 +1242,8 @@ public final class CommManager extends Thread {
 			return;
 		}
 
+        mileStone.println("<uploadResults>");
+
         final DataInterface data = getData(resultURI, false);
 		try {
 		    if(theWork.getMarketOrderUid() == null) {
@@ -1245,9 +1260,17 @@ public final class CommManager extends Thread {
 
                 message(false);
             } else {
-				theWork.setContributed();
-				Worker.getConfig().getHost().setContribution(true);
-			}
+                if(theWork.mustContribute()) {
+                    if (theWork.getH2h2r() != null) {
+                        ActuatorService.getInstance().contribute(theWork.getWorkOrderId(), theWork.getH2h2r(), BigInteger.ZERO, "0", "0");
+                        theWork.setContributed();
+                        Worker.getConfig().getHost().setContribution(true);
+                    } else {
+                        theWork.setError("can't contribute " + theWork.toXml());
+                    }
+                }
+            }
+
         } catch (final XWCommException e) {
             logger.exception("CommManager#uploadResults", e);
             theWork.setFailed(e.getMessage());
@@ -1265,21 +1288,7 @@ public final class CommManager extends Thread {
             } catch (final Exception e) {
                 logger.exception(e);
             }
-            if(theWork.getH2h2r() != null)
- 	           ActuatorService.getInstance().contribute(theWork.getWorkOrderId(), theWork.getH2h2r(), BigInteger.ZERO, "0","0");
-			else {
-				String h2h2r = data.getShasum();
-				try {
-					h2h2r = XWTools.sha256(data.getShasum());
-				} catch(final Exception e) {
-				}
-				ActuatorService.getInstance().contribute(theWork.getWorkOrderId(),
-						h2h2r,
-						BigInteger.ZERO,
-						"0",
-						"0");
 
-			}
             getPoolWork().saveWork(theWork);
 
             if (Worker.getConfig().stopComputing()) {
@@ -1290,8 +1299,8 @@ public final class CommManager extends Thread {
                 System.exit(0);
             }
 
-            mileStone.println("results sent");
         }
+        mileStone.println("</uploadResults>");
 	}
 
 	/**

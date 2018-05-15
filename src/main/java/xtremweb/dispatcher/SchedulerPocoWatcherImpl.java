@@ -2,6 +2,7 @@ package xtremweb.dispatcher;
 
 import com.iexec.common.contracts.generated.WorkerPool;
 import com.iexec.common.ethereum.IexecConfigurationService;
+import com.iexec.common.ethereum.Utils;
 import com.iexec.common.ethereum.Web3jService;
 import com.iexec.common.model.AppModel;
 import com.iexec.common.model.ModelService;
@@ -13,6 +14,7 @@ import com.iexec.scheduler.iexechub.IexecHubService;
 import com.iexec.scheduler.iexechub.IexecHubWatcher;
 import com.iexec.scheduler.workerpool.WorkerPoolService;
 import com.iexec.scheduler.workerpool.WorkerPoolWatcher;
+import org.web3j.utils.Numeric;
 import xtremweb.common.*;
 import xtremweb.communications.XMLRPCCommandSendApp;
 import xtremweb.communications.XMLRPCCommandSendWork;
@@ -476,9 +478,11 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
                 }
             }
 
-            if (contributionService.hasAllWorkerContributed(contributeEventResponse.woid)) {
-                actuatorService.revealConsensus(theWork.getWorkOrderId(), theWork.getH2r());
-            }
+//            actuatorService.revealConsensus(theWork.getWorkOrderId(), Utils.hashResult(theWork.getH2h2r());
+//            actuatorService.revealConsensus(theWork.getWorkOrderId(), theWork.getH2h2r());
+
+            actuatorService.revealConsensus(contributeEventResponse.woid, Numeric.toHexString(contributeEventResponse.resultHash));
+
         } else {
             logger.debug("onContributeEvent() : not enough contributions");
         }

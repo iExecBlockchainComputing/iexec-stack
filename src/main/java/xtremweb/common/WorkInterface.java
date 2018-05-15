@@ -2195,32 +2195,49 @@ public class WorkInterface extends Table {
         setSendToClient(false);
     }
     /**
-     * This marks this as contribution
-     * i.eg: the worker sent the contribution proposal
+     * This marks this work as a contribution proposal sent, if this.getWorkOrderId() != null
      * @since 13.1.0
      */
     public void setContributed() {
-        setStatus(StatusEnum.CONTRIBUTED);
+        if (getWorkOrderId() != null)
+            setStatus(StatusEnum.CONTRIBUTED);
     }
     /**
-     * This checks if this has contributed
-     * i.eg: the worker sent the contribution proposal
+     * This marks this work as a contribution proposal that must be sent, if this.getWorkOrderId() != null
+     * @since 13.1.0
+     */
+    public void setContributing() {
+        if (getWorkOrderId() != null)
+            setStatus(StatusEnum.CONTRIBUTING);
+    }
+    /**
+     * This checks if this work contribution has been sent
      * @since 13.1.0
      */
     public boolean hasContributed() {
         return getStatus() == StatusEnum.CONTRIBUTED;
     }
     /**
-     * This marks this work as ready to reveal contribution
-     * i.eg: the worker will send the contribution proof
+     * This checks if this work contribution must be sent
+     * @since 13.1.0
+     */
+    public boolean mustContribute() {
+        return getStatus() == StatusEnum.CONTRIBUTING;
+    }
+    /**
+     * This marks this work as ready to reveal contribution, if this.getWorkOrderId() != null
      * @since 13.1.0
      */
     public void setRevealing() {
-        setStatus(StatusEnum.REVEALING);
+        if (getWorkOrderId() != null)
+            setStatus(StatusEnum.REVEALING);
     }
 
-	public boolean isPending() {
+    public boolean isPending() {
         return getStatus() == StatusEnum.PENDING;
+    }
+    public boolean isCompleted() {
+        return getStatus() == StatusEnum.COMPLETED;
     }
 
 	/**

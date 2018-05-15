@@ -40,6 +40,7 @@ import java.util.Vector;
 
 import javax.net.SocketFactory;
 
+import com.iexec.common.ethereum.Utils;
 import org.xml.sax.SAXException;
 
 import xtremweb.common.*;
@@ -720,8 +721,8 @@ public class ThreadWork extends Thread {
 					logger.debug("job hasPackage " + currentWork.getUID() +" : " + currentWork.hasPackage());
 					if (!currentWork.hasPackage()) {
 						logger.debug("zipping result for job " + currentWork.getUID());
-						zipResult();
-    					} else {
+                        ret = zipResult();
+                    } else {
 						currentWork.setResult(null);
 					}
 				}
@@ -1234,11 +1235,11 @@ public class ThreadWork extends Thread {
 	 * @exception Exception
 	 *                is thrown on I/O error
 	 */
-	protected synchronized void zipResult()
+	protected synchronized StatusEnum zipResult()
 			throws IOException, ClassNotFoundException, SAXException, URISyntaxException, InvalidKeyException {
 
 		boolean islocked = false;
-
+        StatusEnum ret = currentWork.getStatus();
 		final UID workUID = currentWork.getUID();
 		mileStone.println("<zipresult uid='" + workUID + "'>");
 
@@ -1307,9 +1308,10 @@ public class ThreadWork extends Thread {
                     logger.debug("ThreadWork#zipResult() currentWork.setHiddenH2r(" + h2r + ")");
                     currentWork.setH2h2r(h2h2r);
                     currentWork.setHiddenH2r(h2r);
+                    ret = StatusEnum.CONTRIBUTING;
+                    currentWork.setContributing();
 				} catch (final Exception e) {
-                    currentWork.setH2h2r(null);
-					logger.exception(e);
+                    throw new IOException("contribution error " + e.getMessage());
 				}
 			} else {
                 logger.info("no consensus file found");
@@ -1356,7 +1358,7 @@ public class ThreadWork extends Thread {
 			if (resultFile.exists()) {
 				try {
 					final String h2r = XWTools.sha256CheckSum(resultFile);
-					final String h2h2r = XWTools.sha256(h2r);
+					final String h2h2r = Utils.hashResult(h2r);
                     logger.debug("ThreadWork#zipResult() shasum (" + resultFile + ") = " + h2r);
 					data.setShasum(h2r);
 
@@ -1368,8 +1370,10 @@ public class ThreadWork extends Thread {
                         logger.debug("ThreadWork#zipResult() currentWork.setHiddenH2r(" + h2r + ")");
                         currentWork.setHiddenH2r(h2r);
                     }
+                    ret = StatusEnum.CONTRIBUTING;
+                    currentWork.setContributing();
                 } catch (Exception e) {
-					logger.exception(e);
+					throw new IOException("contribution error " + e.getMessage());
 				}
 				data.setSize(resultFile.length());
 			} else {
@@ -1383,6 +1387,8 @@ public class ThreadWork extends Thread {
 		}
         logger.debug("ThreadWork#zipResult() currentWork = " + currentWork.toXml());
 		mileStone.println("</zipresult>");
+
+		return ret;
 	}
 
 	/**
