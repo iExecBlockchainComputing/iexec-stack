@@ -57,7 +57,26 @@ public final class MarketOrderInterface extends Table {
 				return MarketOrderDirectionEnum.valueOf(v.toUpperCase());
 			}
 		},
-        /**
+		/**
+		 * This is the column index of the status
+		 *
+		 * @see StatusEnum
+		 */
+		STATUS {
+			/**
+			 * This creates an object from String representation for this column
+			 * value
+			 *
+			 * @param v
+			 *            the String representation
+			 * @return an XWStatus representing the column value
+			 */
+			@Override
+			public StatusEnum fromString(final String v) {
+				return StatusEnum.valueOf(v.toUpperCase());
+			}
+		},
+		/**
          * The index as returned by actuatorService.createMarketOrder
          */
         MARKETORDERIDX {
@@ -230,9 +249,10 @@ public final class MarketOrderInterface extends Table {
 		setAccessRights(XWAccessRights.USERALL);
 		setTrust(70L);
         setVolume(1L);
+        setStatus(StatusEnum.UNAVAILABLE);
         setExpectedWorkers(4L);
         setMarketOrderIdx(0);
-		setShortIndexes(new int[] { TableColumns.UID.getOrdinal(), Columns.MARKETORDERIDX.getOrdinal(), Columns.DIRECTION.getOrdinal() });
+		setShortIndexes(new int[] { TableColumns.UID.getOrdinal(), Columns.MARKETORDERIDX.getOrdinal(), Columns.DIRECTION.getOrdinal(), Columns.STATUS.getOrdinal() });
 	}
 
 	/**
@@ -307,7 +327,8 @@ public final class MarketOrderInterface extends Table {
             setAccessRights((XWAccessRights) TableColumns.ACCESSRIGHTS.fromResultSet(rs));
             setCategoryId((Long) Columns.CATEGORYID.fromResultSet(rs));
             setExpectedWorkers((Long) Columns.EXPECTEDWORKERS.fromResultSet(rs));
-            setDirection((MarketOrderDirectionEnum) Columns.DIRECTION.fromResultSet(rs));
+			setDirection((MarketOrderDirectionEnum) Columns.DIRECTION.fromResultSet(rs));
+			setStatus((StatusEnum) Columns.STATUS.fromResultSet(rs));
             setPrice((Long) Columns.PRICE.fromResultSet(rs));
             setTrust((Long) Columns.TRUST.fromResultSet(rs));
             setWorkerPoolAddr((String) Columns.WORKERPOOLADDR.fromResultSet(rs));
@@ -397,6 +418,9 @@ public final class MarketOrderInterface extends Table {
 		if (marketOrderInterface.getDirection() != null) {
 			setDirection(marketOrderInterface.getDirection());
 		}
+		if (marketOrderInterface.getStatus() != null) {
+			setStatus(marketOrderInterface.getStatus());
+		}
         if (marketOrderInterface.getCategoryId() != null) {
             setCategoryId(marketOrderInterface.getCategoryId());
         }
@@ -426,20 +450,28 @@ public final class MarketOrderInterface extends Table {
 	public MarketOrderDirectionEnum getDirection() {
 		return (MarketOrderDirectionEnum) getValue(Columns.DIRECTION);
 	}
-    /**
-     * This retrieves the category id
-     *
-     * @return this attribute, or null if not set
-     * @exception IOException
-     *                is thrown is attribute is nor well formed
-     */
-    public Long getCategoryId() throws IOException {
-        try {
-            return (Long) getValue(Columns.CATEGORYID);
-        } catch (final NullPointerException e) {
-            return null;
-        }
-    }
+	/**
+	 * This retrieves the category id
+	 *
+	 * @return this attribute, or null if not set
+	 * @exception IOException
+	 *                is thrown is attribute is nor well formed
+	 */
+	public Long getCategoryId() throws IOException {
+		try {
+			return (Long) getValue(Columns.CATEGORYID);
+		} catch (final NullPointerException e) {
+			return null;
+		}
+	}
+	/**
+	 * This retrieves market status
+	 *
+	 * @return the market status
+	 */
+	public StatusEnum getStatus() {
+		return (StatusEnum) getValue(Columns.STATUS);
+	}
     /**
      * This retrieves the market order index
      *
@@ -575,11 +607,75 @@ public final class MarketOrderInterface extends Table {
 	/**
 	 * This sets market order direction
 	 * @param d is the market order direction
-     * @return true if value has changed, false otherwise
+	 * @return true if value has changed, false otherwise
 	 */
 	public boolean setDirection(final MarketOrderDirectionEnum d) {
 		return setValue(Columns.DIRECTION, d);
 	}
+    /**
+     * This sets market status
+     * @param s is the market order status
+     * @return true if value has changed, false otherwise
+     */
+    public boolean setStatus(final StatusEnum s) {
+        return setValue(Columns.STATUS, s);
+    }
+    /**
+     * This sets this market order status to running
+     * @return true if value has changed, false otherwise
+     */
+    public boolean setRunning() {
+        return setValue(Columns.STATUS, StatusEnum.RUNNING);
+    }
+    /**
+     * This sets this market order status to contributing
+     * @return true if value has changed, false otherwise
+     */
+    public boolean setContributing() {
+        return setValue(Columns.STATUS, StatusEnum.CONTRIBUTING);
+    }
+    /**
+     * This sets this market order status to contributed
+     * @return true if value has changed, false otherwise
+     */
+    public boolean setContributed() {
+        return setValue(Columns.STATUS, StatusEnum.CONTRIBUTED);
+    }
+    /**
+     * This sets this market order status to revealing
+     * @return true if value has changed, false otherwise
+     */
+    public boolean setRevealing() {
+        return setValue(Columns.STATUS, StatusEnum.REVEALING);
+    }
+    /**
+     * This sets this market order status to completed
+     * @return true if value has changed, false otherwise
+     */
+    public boolean setCompleted() {
+        return setValue(Columns.STATUS, StatusEnum.COMPLETED);
+    }
+    /**
+     * This sets this market order status to pending (ready to be bought)
+     * @return true if value has changed, false otherwise
+     */
+    public boolean setPending() {
+        return setValue(Columns.STATUS, StatusEnum.PENDING);
+    }
+    /**
+     * This sets this market order status to waiting (still missing workers)
+     * @return true if value has changed, false otherwise
+     */
+    public boolean setWaiting() {
+        return setValue(Columns.STATUS, StatusEnum.WAITING);
+    }
+    /**
+     * This sets this market order status to error
+     * @return true if value has changed, false otherwise
+     */
+    public boolean setError() {
+        return setValue(Columns.STATUS, StatusEnum.ERROR);
+    }
     /**
      * This sets the category id
      * @param c is the category id
@@ -589,11 +685,13 @@ public final class MarketOrderInterface extends Table {
         return setValue(Columns.CATEGORYID, Long.valueOf(c));
     }
     /**
-     * This sets the market order index
+     * This sets the market order index and marks this as PENDING
      * @param c is the category id
      * @return true if value has changed, false otherwise
      */
     public boolean setMarketOrderIdx(final long c)  {
+        if (c != 0L)
+            setPending();
         return setValue(Columns.MARKETORDERIDX, Long.valueOf(c));
     }
     /**
@@ -622,12 +720,13 @@ public final class MarketOrderInterface extends Table {
     /**
      * This marks the provided host as participating in this market order
      * and increments the amount of booked workers to reach the trust
-     * @param h is the participating host
-     * @return true if value has changed, false otherwise
+     * @param host is the participating host
+     * @return true
      */
-    public boolean addWorker(final HostInterface h)  {
-        h.setMarketOrderUid(getUID());
-        return setNbWorkers(getNbWorkers() + 1);
+    public boolean addWorker(final HostInterface host)  {
+        host.setMarketOrderUid(getUID());
+        incNbWorkers();
+        return true;
     }
     /**
      * This marks the provided host as participating in this market order
@@ -635,7 +734,7 @@ public final class MarketOrderInterface extends Table {
      * @return true if value has changed, false otherwise
      */
     public boolean canStart()  {
-        return getExpectedWorkers() == getNbWorkers();
+        return getExpectedWorkers() <= getNbWorkers();
     }
     /**
      * This decrements the amount of booked workers to reach the trust
