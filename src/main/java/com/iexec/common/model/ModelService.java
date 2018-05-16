@@ -30,7 +30,7 @@ public class ModelService {
         try {
             App app = App.load(
                     appId, web3jService.getWeb3j(), credentialsService.getCredentials(), ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT);
-            return new AppModel(app.m_owner().send(), app.m_appName().send(), app.m_appPrice().send(), app.m_appParams().send());
+            return new AppModel(appId, app.m_owner().send(), app.m_appName().send(), app.m_appPrice().send(), app.m_appParams().send());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -41,7 +41,7 @@ public class ModelService {
         try {
             Dataset dataset = Dataset.load(
                     datasetId, web3jService.getWeb3j(), credentialsService.getCredentials(), ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT);
-            return new DatasetModel(dataset.m_owner().send(), dataset.m_datasetName().send(), dataset.m_datasetPrice().send(), dataset.m_datasetParams().send());
+            return new DatasetModel(datasetId, dataset.m_owner().send(), dataset.m_datasetName().send(), dataset.m_datasetPrice().send(), dataset.m_datasetParams().send());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -52,7 +52,7 @@ public class ModelService {
         try {
             WorkOrder workOrder = WorkOrder.load(
                     workOrderId, web3jService.getWeb3j(), credentialsService.getCredentials(), ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT);
-            return new WorkOrderModel(workOrder.m_marketorderIdx().send(), workOrder.m_requester().send(), workOrder.m_app().send(), workOrder.m_dataset().send(), workOrder.m_workerpool().send(), workOrder.m_emitcost().send(), workOrder.m_params().send(), workOrder.m_callback().send(), workOrder.m_beneficiary().send());
+            return new WorkOrderModel(workOrderId, workOrder.m_marketorderIdx().send(), workOrder.m_requester().send(), workOrder.m_app().send(), workOrder.m_dataset().send(), workOrder.m_workerpool().send(), workOrder.m_emitcost().send(), workOrder.m_params().send(), workOrder.m_callback().send(), workOrder.m_beneficiary().send());
         } catch (Exception e) {
             e.printStackTrace();
         }
