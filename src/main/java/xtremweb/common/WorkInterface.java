@@ -2221,7 +2221,7 @@ public class WorkInterface extends Table {
      * This checks if this work contribution must be sent
      * @since 13.1.0
      */
-    public boolean mustContribute() {
+    public boolean isContributing() {
         return getStatus() == StatusEnum.CONTRIBUTING;
     }
     /**
@@ -2231,6 +2231,22 @@ public class WorkInterface extends Table {
     public void setRevealing() {
         if (getWorkOrderId() != null)
             setStatus(StatusEnum.REVEALING);
+    }
+    /**
+     * This marks this work as ready to reveal contribution, if this.getWorkOrderId() != null
+     * @since 13.1.0
+     */
+    public boolean isRevealing() {
+        return getStatus() == StatusEnum.REVEALING;
+    }
+    /**
+     * This returns true if result can be sent to data repository
+     * Result can be sent if this does not belong to any marker order
+     * or if status == REVEALING
+     * @since 13.1.0
+     */
+    public boolean canReveal() {
+        return (getMarketOrderUid() == null) || isRevealing();
     }
 
     public boolean isPending() {
