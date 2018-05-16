@@ -96,7 +96,7 @@ public class WorkInterface extends Table {
 			@Override
 			public String fromString(final String v) {
 				String val = v;
-				val = val.replaceAll("[\\n\\s\'\"]+", "_");
+				val = val.replaceAll("[\\n\\s\'\"]+", "");
 				val = val.replaceAll("&amp;", "&");
 				val = val.replaceAll("&", "&amp;");
 				return val;
@@ -190,7 +190,7 @@ public class WorkInterface extends Table {
 			@Override
 			public String fromString(final String v) {
 				String val = v;
-				val = val.replaceAll("[\\n\'\"]+", "_");
+				val = val.replaceAll("[\\n\'\"]+", "");
 				val = val.replaceAll("&amp;", "&");
 				val = val.replaceAll("&", "&amp;");
 				return val;

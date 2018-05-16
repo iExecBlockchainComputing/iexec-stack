@@ -213,19 +213,11 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
 
             final String appParams = appModel.getParams();
             if(appParams != null) {
-                try {
-                    final String envvars = XWTools.jsonValueFromString(appModel.getParams(), "envvars");
-                    newApp.setEnvVars(envvars);
-                } catch (final Exception e) {
-                    logger.warn("can't extract newApp envvars from " + appParams);
-                }
-                try {
-                    final String appTypeStr = XWTools.jsonValueFromString(appModel.getParams(), "type");
-                    final AppTypeEnum appType = AppTypeEnum.valueOf(appTypeStr);
-                    newApp.setType(appType);
-                } catch (final Exception e) {
-                    logger.warn("can't extract newApp type from " + appParams);
-                }
+                 final String envvars = XWTools.jsonValueFromString(appModel.getParams(), "envvars");
+                newApp.setEnvVars(envvars);
+                final String appTypeStr = XWTools.jsonValueFromString(appModel.getParams(), "type");
+                final AppTypeEnum appType = AppTypeEnum.valueOf(appTypeStr);
+                newApp.setType(appType);
             }
 
             final XMLRPCCommandSendApp cmd =
@@ -333,7 +325,13 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
             work.setBeneficiary(model.getBeneficiary());
             work.setWorkerPool(model.getWorkerpool());
             work.setEmitCost(model.getEmitcost().longValue());
-            work.setCmdLine(model.getParams());
+
+            final String cmdline = XWTools.jsonValueFromString(appModel.getParams(), "cmdline");
+            work.setCmdLine(cmdline);
+
+            final String dirinuri = XWTools.jsonValueFromString(appModel.getParams(), "dirinuri");
+            work.setCmdLine(dirinuri);
+
             work.setCallback(model.getCallback());
             work.setBeneficiary(model.getBeneficiary());
             work.setExpectedReplications(marketOrder.getExpectedWorkers());
