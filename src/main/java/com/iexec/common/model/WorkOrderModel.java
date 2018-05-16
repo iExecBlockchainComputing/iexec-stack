@@ -4,6 +4,7 @@ import java.math.BigInteger;
 
 public class WorkOrderModel {
 
+    private String id;
     private BigInteger marketorderIdx;
     private String requester;
     private String app;
@@ -14,7 +15,8 @@ public class WorkOrderModel {
     private String callback;
     private String beneficiary;
 
-    public WorkOrderModel(BigInteger marketorderIdx, String requester, String app, String dataset, String workerpool, BigInteger emitcost, String params, String callback, String beneficiary) {
+    public WorkOrderModel(String id, BigInteger marketorderIdx, String requester, String app, String dataset, String workerpool, BigInteger emitcost, String params, String callback, String beneficiary) {
+        this.id = id;
         this.marketorderIdx = marketorderIdx;
         this.requester = requester;
         this.app = app;
@@ -24,6 +26,14 @@ public class WorkOrderModel {
         this.params = params;
         this.callback = callback;
         this.beneficiary = beneficiary;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public BigInteger getMarketorderIdx() {
@@ -101,7 +111,8 @@ public class WorkOrderModel {
     @Override
     public String toString() {
         return "WorkOrderModel{" +
-                "marketorderIdx=" + marketorderIdx +
+                "id='" + id + '\'' +
+                ", marketorderIdx=" + marketorderIdx +
                 ", requester='" + requester + '\'' +
                 ", app='" + app + '\'' +
                 ", dataset='" + dataset + '\'' +
