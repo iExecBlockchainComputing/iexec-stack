@@ -14,6 +14,7 @@ import com.iexec.scheduler.iexechub.IexecHubService;
 import com.iexec.scheduler.iexechub.IexecHubWatcher;
 import com.iexec.scheduler.workerpool.WorkerPoolService;
 import com.iexec.scheduler.workerpool.WorkerPoolWatcher;
+import org.json.JSONException;
 import org.web3j.utils.Numeric;
 import xtremweb.common.*;
 import xtremweb.communications.XMLRPCCommandSendApp;
@@ -213,11 +214,20 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
 
             final String appParams = appModel.getParams();
             if(appParams != null) {
-                 final String envvars = XWTools.jsonValueFromString(appModel.getParams(), "envvars");
-                newApp.setEnvVars(envvars);
-                final String appTypeStr = XWTools.jsonValueFromString(appModel.getParams(), "type");
-                final AppTypeEnum appType = AppTypeEnum.valueOf(appTypeStr);
-                newApp.setType(appType);
+
+                try {
+                    final String envvars = XWTools.jsonValueFromString(appModel.getParams(), "envvars");
+                    newApp.setEnvVars(envvars);
+                } catch (final JSONException e) {
+                    logger.exception(e);
+                }
+                try {
+                    final String appTypeStr = XWTools.jsonValueFromString(appModel.getParams(), "type");
+                    final AppTypeEnum appType = AppTypeEnum.valueOf(appTypeStr);
+                    newApp.setType(appType);
+                } catch(final JSONException e) {
+                    logger.exception(e);
+                }
             }
 
             final XMLRPCCommandSendApp cmd =
@@ -272,35 +282,35 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
     /**
      * This creates a new WorkInterface in DB from the provided WorkOrderModel.
      * This new work has as many replica as expected by the market order
-     * @param model is the work order model
+     * @param workModel is the work order model
      * @return the market order of the provided work order model
      */
-    private MarketOrderInterface createWork(final String workOrderId, final WorkOrderModel model) {
+    private MarketOrderInterface createWork(final String workOrderId, final WorkOrderModel workModel) {
 
         if (administrator == null) {
             logger.error("createWork() : user administrator not defined");
             return null;
         }
 
-        logger.debug("createWork(" + model.getMarketorderIdx().longValue() + ")");
+        logger.debug("createWork(" + workModel.getMarketorderIdx().longValue() + ")");
 
-        final MarketOrderInterface marketOrder = getMarketOrder(model.getMarketorderIdx().longValue());
+        final MarketOrderInterface marketOrder = getMarketOrder(workModel.getMarketorderIdx().longValue());
         if(marketOrder == null) {
             logger.error("createWork() : can't retrieve market order : "
-                    + model.getMarketorderIdx().longValue());
+                    + workModel.getMarketorderIdx().longValue());
             return null;
         }
-        if(marketOrder.getWorkerPoolAddr().compareTo(model.getWorkerpool()) != 0) {
+        if(marketOrder.getWorkerPoolAddr().compareTo(workModel.getWorkerpool()) != 0) {
             logger.error("createWork() : worker pool mismatch : "
                     + marketOrder.getWorkerPoolAddr() + " != "
-                    + model.getWorkerpool());
+                    + workModel.getWorkerpool());
             return null;
         }
 
-        final AppModel appModel = ModelService.getInstance().getAppModel(model.getApp());
+        final AppModel appModel = ModelService.getInstance().getAppModel(workModel.getApp());
         if(appModel == null) {
-            logger.error("createWork() : can't retrieve app model "
-                    + model.getApp());
+            logger.error("createWork() : can't retrieve app workModel "
+                    + workModel.getApp());
             return null;
         }
         final AppInterface app = getApp(appModel);
@@ -309,9 +319,9 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
             return null;
         }
 
-        final UserInterface requester = getUser(model.getRequester());
+        final UserInterface requester = getUser(workModel.getRequester());
         if (requester == null) {
-            logger.error("createWork() : unkown requester " + model.getRequester());
+            logger.error("createWork() : unkown requester " + workModel.getRequester());
             return null;
         }
 
@@ -321,19 +331,26 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
             work.setMarketOrderUid(marketOrder.getUID());
             work.setOwner(requester.getUID());
             work.setApplication(app.getUID());
-            work.setDataset(model.getDataset());
-            work.setBeneficiary(model.getBeneficiary());
-            work.setWorkerPool(model.getWorkerpool());
-            work.setEmitCost(model.getEmitcost().longValue());
+            work.setDataset(workModel.getDataset());
+            work.setBeneficiary(workModel.getBeneficiary());
+            work.setWorkerPool(workModel.getWorkerpool());
+            work.setEmitCost(workModel.getEmitcost().longValue());
 
-            final String cmdline = XWTools.jsonValueFromString(appModel.getParams(), "cmdline");
-            work.setCmdLine(cmdline);
+            try {
+                final String cmdline = XWTools.jsonValueFromString(workModel.getParams(), "cmdline");
+                work.setCmdLine(cmdline);
+            } catch(final JSONException e) {
+                logger.exception(e);
+            }
+            try {
+                final String dirinuri = XWTools.jsonValueFromString(workModel.getParams(), "dirinuri");
+                work.setCmdLine(dirinuri);
+            } catch(final JSONException e) {
+                logger.exception(e);
+            }
 
-            final String dirinuri = XWTools.jsonValueFromString(appModel.getParams(), "dirinuri");
-            work.setCmdLine(dirinuri);
-
-            work.setCallback(model.getCallback());
-            work.setBeneficiary(model.getBeneficiary());
+            work.setCallback(workModel.getCallback());
+            work.setBeneficiary(workModel.getBeneficiary());
             work.setExpectedReplications(marketOrder.getExpectedWorkers());
             work.setCategoryId(marketOrder.getCategoryId());
             work.setWorkOrderId(workOrderId);
