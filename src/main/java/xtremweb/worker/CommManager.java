@@ -49,7 +49,6 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
 
-import com.iexec.common.ethereum.Utils;
 import com.iexec.worker.actuator.ActuatorService;
 import org.xml.sax.SAXException;
 
@@ -1246,7 +1245,8 @@ public final class CommManager extends Thread {
 
         final DataInterface data = getData(resultURI, false);
 		try {
-		    if(theWork.getMarketOrderUid() == null) {
+		    if(theWork.canReveal()) {
+		        logger.debug("the work can reveal " + theWork.toXml());
                 final CommClient commClient = commClient(resultURI);
                 final File content = commClient.getContentFile(resultURI);
                 logger.debug("CommManager#uploadResults " + content);
@@ -1260,8 +1260,10 @@ public final class CommManager extends Thread {
 
                 message(false);
             } else {
-                if(theWork.mustContribute()) {
+                logger.debug("the work can not reveal " + theWork.toXml());
+                if(theWork.isContributing()) {
                     if (theWork.getH2h2r() != null) {
+                        logger.debug("the work can contribute " + theWork.toXml());
                         ActuatorService.getInstance().contribute(theWork.getWorkOrderId(), theWork.getH2h2r(), BigInteger.ZERO, "0", "0");
                         theWork.setContributed();
                         Worker.getConfig().getHost().setContribution(true);

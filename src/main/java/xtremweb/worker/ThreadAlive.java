@@ -360,17 +360,16 @@ public class ThreadAlive extends Thread {
 
                     if (theWork.getH2r() != null) {
                         ActuatorService.getInstance().reveal(theWork.getWorkOrderId(), theWork.getH2r());
-                        theWork.setCompleted();
 						logger.debug("revealed " + theWork.getUID());
 					} else {
                         theWork.setError("can't reveal : h2r is null");
 						logger.debug("can't reveal " + theWork.getUID());
                     }
 
+                    theWork.setRevealing();
                     CommManager.getInstance().getPoolWork().saveRevealedWork(theWork);
                     CommManager.getInstance().sendWork(theWork);
                     CommManager.getInstance().sendResult(theWork);
-
                 }
 			}
 		}

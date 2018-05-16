@@ -121,10 +121,9 @@ public class MatchingScheduler extends SimpleScheduler {
 
 			if (theWork != null) {
                 final Collection<Table> rows = new Vector<>();
-                final UID theAppUID = theWork.getApplication();
-				final UID theWorkOwnerUID = theWork.getOwner();
-				final AppInterface theApp = db.app(user, theAppUID);
-				final UserInterface theWorkOwner = db.user(theWorkOwnerUID);
+				final AppInterface theApp = db.app(user, theWork.getApplication());
+				final UserInterface theWorkOwner = db.user(theWork.getOwner());
+				final MarketOrderInterface marketOrder = db.marketOrder(theWork.getMarketOrderUid());
 				theApp.decPendingJobs();
 				theApp.incRunningJobs();
 				theWorkOwner.decPendingJobs();
@@ -134,7 +133,9 @@ public class MatchingScheduler extends SimpleScheduler {
 				theTask = new TaskInterface(theWork);
 				theWork.setRunning();
 				theTask.setRunningBy(host.getUID());
-
+				if(marketOrder != null) {
+					marketOrder.setRunning();
+				}
 				//
 				// 20 juin 2011
 				// We must first update work, otherwise scheduler may return

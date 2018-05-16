@@ -574,6 +574,7 @@ public final class DBInterface {
 		try {
 			if (row.getLinks() <= 0) {
 				logger.debug("deleting " + row.toXml());
+				Thread.currentThread().dumpStack();
 				return this.delete(theClient, (Table) row);
 			}
 		} catch (final AccessControlException e) {
@@ -830,6 +831,19 @@ public final class DBInterface {
         return readableObjectUID(new DataInterface(), u);
 	}
 
+    /**
+     * This retrieves a data; it first look in cache, then in DB. Access rights
+     * are bypassed
+     *
+     * @param uri
+     *            is the URI of the data to retrieve
+     * @since 5.8.0
+     */
+    protected DataInterface data(final URI uri) throws IOException, AccessControlException {
+        if(uri == null) return null;
+
+        return object(new DataInterface(), uri.getUID());
+    }
     /**
      * This retrieves a data; it first look in cache, then in DB. Access rights
      * are bypassed
@@ -4917,6 +4931,7 @@ public final class DBInterface {
 				if (delete(theClient, theTask)) {
 					if (theHost != null) {
 						switch (theWork.getStatus()) {
+                            case CONTRIBUTING:
                             case CONTRIBUTED:
                             case REVEALING:
                                 theHost.leaveMarketOrder();
@@ -4950,6 +4965,7 @@ public final class DBInterface {
 		case RESULTREQUEST:
 		case DATAREQUEST:
         case CONTRIBUTED:
+        case CONTRIBUTING:
         case REVEALING:
 		case RUNNING:
 			theClient.decRunningJobs();
@@ -5175,222 +5191,227 @@ public final class DBInterface {
         }
 
         final UID receivedJobMarketOrderUid = receivedJob.getMarketOrderUid();
-        final MarketOrderInterface receivedJobMarketOrder = marketOrder(receivedJob.getMarketOrderUid());
-        if(receivedJobMarketOrder == null) {
+        final MarketOrderInterface marketOrder = marketOrder(receivedJobMarketOrderUid);
+        if((receivedJobMarketOrderUid != null) && (marketOrder == null)) {
             throw new IOException("invalid job market order : " + receivedJobMarketOrderUid);
         }
 
+
         final WorkInterface theWork = work(mandatingClient, jobUID);
 		if (theWork != null) {
-			if (theWork.canWrite(mandatingClient, appOwnerGroup) || clientRights.higherOrEquals(UserRightEnum.WORKER_USER)) {
 
-				final UID hostUID = (_host == null ? null : _host.getUID());
-				final HostInterface theHost = (hostUID == null ? null : host(hostUID));
-				TaskInterface theTask = null;
-				if (theHost != null) {
-					if (clientRights.isWorker()) {
-						if (theHost != null) {
-							theTask = task(theWork, theHost);
-						}
-					} else {
-						theTask = task(theWork);
-					}
-					if (theTask == null) {
-						throw new IOException(
-								mandatingClient.getLogin() + " work " + jobUID + " has no task run by " + _host.getUID());
-					}
-				}
+			if (!theWork.canWrite(mandatingClient, appOwnerGroup)
+                    && !clientRights.doesEqual(UserRightEnum.WORKER_USER)) {
 
-				final UserInterface jobOwner = user(theWork.getOwner());
-				final UserInterface realClient = (mandatingClient.getRights().isWorker() ? jobOwner : mandatingClient);
+                    throw new AccessControlException("addWork() : " + mandatingClient.getLogin() + " can't update " + jobUID);
+            }
 
-				useData(realClient, receivedJob.getResult());
-				removeData(realClient, theWork.getResult());
-				//theWork.setResult(job.getResult());
-
-				useData(realClient, receivedJob.getStdin());
-				removeData(realClient, theWork.getStdin());
-				//theWork.setStdin(job.getStdin());
-
-				useData(realClient, receivedJob.getDirin());
-				removeData(realClient, theWork.getDirin());
-				//theWork.setDirin(job.getDirin());
-				try {
-					useData(realClient, receivedJob.getUserProxy());
-				} catch (final AccessControlException e) {
-					logger.warn(e.getMessage());
-				}
-				try {
-					removeData(realClient, theWork.getUserProxy());
-				} catch (final AccessControlException e) {
-					logger.warn(e.getMessage());
-				}
-
-				theWork.updateInterface(receivedJob);
-
-				final Vector<Table> rows = new Vector<>();
-
-				logger.debug(realClient.getLogin() + " is updating " + theWork.getUID() + " status = "
-						+ receivedJob.getStatus());
-
-				switch (theWork.getStatus()) {
-				case RESULTREQUEST:
-					theWork.setResultRequest();
-					if (theTask != null) {
-						theTask.setResultRequest();
-					}
-					break;
-				case DATAREQUEST:
-					theWork.setDataRequest();
-					if (theTask != null) {
-						theTask.setDataRequest();
-					}
-					break;
-				case ABORTED:
-					theWork.setPending();
-					if (theTask != null) {
-						theTask.setPending();
-					}
-					theApp.decRunningJobs();
-					theApp.incPendingJobs();
-					jobOwner.decRunningJobs();
-					jobOwner.incPendingJobs();
-					if (theHost != null) {
-						theHost.decRunningJobs();
-						if (hostUID.equals(theWork.getExpectedHost())) {
-							theHost.incPendingJobs();
-						}
-					}
-					break;
-				case CONTRIBUTED:
-				    final MarketOrderInterface marketOrder = marketOrder(theWork.getMarketOrderUid());
-				    if(marketOrder == null) {
-				        final String msg = "work cannot be a contribution without market order";
-				        theWork.setError(msg);
-                        if(theTask != null) {
-                            theTask.setErrorMsg(msg);
-                        }
-						if (theHost != null) {
-							theHost.leaveMarketOrder();
-							theHost.incErrorJobs();
-							theHost.decRunningJobs();
-						}
-                        theApp.decRunningJobs();
-                        theApp.incErrorJobs();
-						jobOwner.incErrorJobs();
-						jobOwner.decRunningJobs();
-                        break;
+            final UID hostUID = (_host == null ? null : _host.getUID());
+            final HostInterface theHost = (hostUID == null ? null : host(hostUID));
+            TaskInterface theTask = null;
+            if (theHost != null) {
+                if (clientRights.isWorker()) {
+                    if (theHost != null) {
+                        theTask = task(theWork, theHost);
                     }
+                } else {
+                    theTask = task(theWork);
+                }
+                if (theTask == null) {
+                    throw new IOException(
+                            mandatingClient.getLogin() + " work " + jobUID + " has no task run by " + _host.getUID());
+                }
+            }
+
+            final UserInterface jobOwner = user(theWork.getOwner());
+            final UserInterface realClient = (mandatingClient.getRights().isWorker() ? jobOwner : mandatingClient);
+
+            final DataInterface theData = data(receivedJob.getResult());
+            logger.debug("data is " + theData.toXml());
+            useData(realClient, receivedJob.getResult());
+            final DataInterface theData2 = data(receivedJob.getResult());
+            logger.debug("data2 is " + theData2.toXml());
+
+            removeData(realClient, theWork.getResult());
+
+            useData(realClient, receivedJob.getStdin());
+            removeData(realClient, theWork.getStdin());
+
+            useData(realClient, receivedJob.getDirin());
+            removeData(realClient, theWork.getDirin());
+            try {
+                useData(realClient, receivedJob.getUserProxy());
+            } catch (final AccessControlException e) {
+                logger.warn(e.getMessage());
+            }
+            try {
+                removeData(realClient, theWork.getUserProxy());
+            } catch (final AccessControlException e) {
+                logger.warn(e.getMessage());
+            }
+
+            theWork.updateInterface(receivedJob);
+
+            final Vector<Table> rows = new Vector<>();
+
+            logger.debug(realClient.getLogin() + " is updating " + theWork.getUID() + " status = "
+                    + receivedJob.getStatus());
+
+            switch (theWork.getStatus()) {
+            case RESULTREQUEST:
+                theWork.setResultRequest();
+                if (theTask != null) {
+                    theTask.setResultRequest();
+                }
+                break;
+            case DATAREQUEST:
+                theWork.setDataRequest();
+                if (theTask != null) {
+                    theTask.setDataRequest();
+                }
+                break;
+            case ABORTED:
+                theWork.setPending();
+                if (theTask != null) {
+                    theTask.setPending();
+                }
+                theApp.decRunningJobs();
+                theApp.incPendingJobs();
+                jobOwner.decRunningJobs();
+                jobOwner.incPendingJobs();
+                if (theHost != null) {
+                    theHost.decRunningJobs();
+                    if (hostUID.equals(theWork.getExpectedHost())) {
+                        theHost.incPendingJobs();
+                    }
+                }
+                break;
+            case CONTRIBUTED:
+                if(marketOrder == null) {
+                    final String msg = "work cannot be a contribution without market order";
+                    theWork.setError(msg);
                     if(theTask != null) {
-                        theTask.setContributed();
+                        theTask.setErrorMsg(msg);
+                    }
+                    if (theHost != null) {
+                        theHost.leaveMarketOrder();
+                        theHost.incErrorJobs();
+                        theHost.decRunningJobs();
+                    }
+                    theApp.decRunningJobs();
+                    theApp.incErrorJobs();
+                    jobOwner.incErrorJobs();
+                    jobOwner.decRunningJobs();
+                    break;
+                }
+                if(theTask != null) {
+                    theTask.setContributed();
+                }
+                break;
+            case COMPLETED:
+
+                theApp.decRunningJobs();
+                jobOwner.decRunningJobs();
+                if (theHost != null) {
+                    theHost.decRunningJobs();
+                }
+                theWork.setResult(receivedJob.getResult());
+                theWork.setCompleted();
+                if (theTask != null) {
+                    final Date startdate = theTask.getLastStartDate();
+                    if (startdate != null) {
+                        final int exectime = (int) (System.currentTimeMillis() - startdate.getTime());
+                        if (theHost != null) {
+                            theHost.leaveMarketOrder();
+                            theHost.incAvgExecTime(exectime);
+                        }
+                        jobOwner.incUsedcputime(exectime);
+                        theApp.incAvgExecTime(exectime);
+                    }
+                    theTask.setCompleted();
+                }
+                final UID originalUid = theWork.getReplicatedUid();
+                if (originalUid != null) {
+                    synchronized (this) {
+                        final WorkInterface replicatedWork = work(originalUid);
+                        final long expectedReplications = replicatedWork.getExpectedReplications();
+                        final long currentReplications = replicatedWork.getTotalReplica();
+                        if ((currentReplications < expectedReplications) || (expectedReplications < 0)) {
+                            logger.debug(realClient.getLogin() + " " + originalUid
+                                    + " still has replications ; currently " + currentReplications + " ; expected "
+                                    + expectedReplications);
+                            final WorkInterface newWork = new WorkInterface(replicatedWork);
+                            newWork.setUID(new UID());
+                            newWork.replicate(originalUid);
+                            newWork.setTotalReplica(0);
+                            newWork.setReplicaSetSize(0);
+                            newWork.setExpectedReplications(0);
+
+                            theApp.incPendingJobs();
+                            jobOwner.incPendingJobs();
+                            if (hostUID.equals(theWork.getExpectedHost())) {
+                                theHost.incPendingJobs();
+                            }
+
+                            insert(newWork);
+                            rows.add(newWork);
+                            replicatedWork.incTotalReplica();
+                        }
+                        replicatedWork.setReplicating();
+                        if (currentReplications >= replicatedWork.getTotalReplica()) {
+                            replicatedWork.setCompleted();
+                        }
+                        rows.add(replicatedWork);
+                    }
+                } else {
+                    final long expectedReplications = theWork.getExpectedReplications();
+                    final long currentReplications = theWork.getTotalReplica();
+                    if ((currentReplications < expectedReplications) || (expectedReplications < 0)) {
+                        theWork.setReplicating();
+                    }
+                }
+                break;
+                case ERROR:
+                    if (theHost != null) {
+                        theHost.leaveMarketOrder();
+                        theHost.incErrorJobs();
+                        theHost.decRunningJobs();
+                    }
+                    theApp.decRunningJobs();
+                    theApp.incErrorJobs();
+                    jobOwner.incErrorJobs();
+                    jobOwner.decRunningJobs();
+                    theWork.setError(receivedJob.getErrorMsg());
+                    if (theTask != null) {
+                        theTask.setError();
                     }
                     break;
-				case COMPLETED:
+                case FAILED:
+                    if (theHost != null) {
+                        theHost.decRunningJobs();
+                    }
+                    theApp.decRunningJobs();
+                    jobOwner.incErrorJobs();
+                    jobOwner.decRunningJobs();
+                    theWork.setFailed(receivedJob.getErrorMsg());
+                    if (theTask != null) {
+                        theTask.setFailed();
+                    }
+                    break;
+            }
 
-					theApp.decRunningJobs();
-					jobOwner.decRunningJobs();
-					if (theHost != null) {
-						theHost.decRunningJobs();
-					}
-					theWork.setResult(receivedJob.getResult());
-					theWork.setCompleted();
-					if (theTask != null) {
-						final Date startdate = theTask.getLastStartDate();
-						if (startdate != null) {
-							final int exectime = (int) (System.currentTimeMillis() - startdate.getTime());
-							if (theHost != null) {
-								theHost.leaveMarketOrder();
-								theHost.incAvgExecTime(exectime);
-							}
-							jobOwner.incUsedcputime(exectime);
-							theApp.incAvgExecTime(exectime);
-						}
-						theTask.setCompleted();
-					}
-					final UID originalUid = theWork.getReplicatedUid();
-					if (originalUid != null) {
-						synchronized (this) {
-							final WorkInterface replicatedWork = work(originalUid);
-							final long expectedReplications = replicatedWork.getExpectedReplications();
-							final long currentReplications = replicatedWork.getTotalReplica();
-							if ((currentReplications < expectedReplications) || (expectedReplications < 0)) {
-								logger.debug(realClient.getLogin() + " " + originalUid
-										+ " still has replications ; currently " + currentReplications + " ; expected "
-										+ expectedReplications);
-								final WorkInterface newWork = new WorkInterface(replicatedWork);
-								newWork.setUID(new UID());
-								newWork.replicate(originalUid);
-								newWork.setTotalReplica(0);
-								newWork.setReplicaSetSize(0);
-								newWork.setExpectedReplications(0);
+            if (theTask != null) {
+                rows.add(theTask);
+            }
+            rows.add(theWork);
+            rows.add(theApp);
+            rows.add(jobOwner);
+            if (theHost != null) {
+                rows.add(theHost);
+            }
+            sendMail(jobOwner, theWork, realClient.getLogin() + " has updated ");
+            update(rows);
 
-								theApp.incPendingJobs();
-								jobOwner.incPendingJobs();
-								if (hostUID.equals(theWork.getExpectedHost())) {
-									theHost.incPendingJobs();
-								}
-
-								insert(newWork);
-								rows.add(newWork);
-								replicatedWork.incTotalReplica();
-							}
-							replicatedWork.setReplicating();
-							if (currentReplications >= replicatedWork.getTotalReplica()) {
-								replicatedWork.setCompleted();
-							}
-							rows.add(replicatedWork);
-						}
-					} else {
-						final long expectedReplications = theWork.getExpectedReplications();
-						final long currentReplications = theWork.getTotalReplica();
-						if ((currentReplications < expectedReplications) || (expectedReplications < 0)) {
-							theWork.setReplicating();
-						}
-					}
-					break;
-					case ERROR:
-						if (theHost != null) {
-							theHost.leaveMarketOrder();
-							theHost.incErrorJobs();
-							theHost.decRunningJobs();
-						}
-						theApp.decRunningJobs();
-						theApp.incErrorJobs();
-						jobOwner.incErrorJobs();
-						jobOwner.decRunningJobs();
-						theWork.setError(receivedJob.getErrorMsg());
-						if (theTask != null) {
-							theTask.setError();
-						}
-						break;
-					case FAILED:
-						if (theHost != null) {
-							theHost.decRunningJobs();
-						}
-						theApp.decRunningJobs();
-						jobOwner.incErrorJobs();
-						jobOwner.decRunningJobs();
-						theWork.setFailed(receivedJob.getErrorMsg());
-						if (theTask != null) {
-							theTask.setFailed();
-						}
-						break;
-				}
-
-				if (theTask != null) {
-					rows.add(theTask);
-				}
-				rows.add(theWork);
-				rows.add(theApp);
-				rows.add(jobOwner);
-				if (theHost != null) {
-					rows.add(theHost);
-				}
-				sendMail(jobOwner, theWork, realClient.getLogin() + " has updated ");
-				update(rows);
-			} else {
-				throw new AccessControlException("addWork() : " + mandatingClient.getLogin() + " can't update " + jobUID);
-			}
 		} else {
 			if (mandatingClient.getRights().isWorker()) {
 				throw new AccessControlException("a worker can not insert a new work");

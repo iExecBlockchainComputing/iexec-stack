@@ -81,6 +81,7 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
             }
             if (host.canContribute()) {
                 marketOrder.addWorker(host);
+                marketOrder.setWaiting();
                 host.update();
                 marketOrder.update();
             }
@@ -391,6 +392,9 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
 
             contributionService.setCalledWorker(workOrderId, wallets);
 
+            marketOrder.setContributing();
+            marketOrder.update();
+
             actuatorService.allowWorkersToContribute(workOrderId,
                     wallets,
                     "0");
@@ -478,8 +482,13 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
                 }
             }
 
-//            actuatorService.revealConsensus(theWork.getWorkOrderId(), Utils.hashResult(theWork.getH2h2r());
-//            actuatorService.revealConsensus(theWork.getWorkOrderId(), theWork.getH2h2r());
+            marketOrder.setRevealing();
+            try {
+                marketOrder.update();
+            } catch(final IOException e) {
+                logger.exception(e);
+            }
+
 
             actuatorService.revealConsensus(contributeEventResponse.woid, Numeric.toHexString(contributeEventResponse.resultHash));
 
@@ -490,6 +499,9 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
 
     @Override
     public void onReveal(WorkerPool.RevealEventResponse revealEventResponse) {
+        final WorkOrderModel workOrderModel = ModelService.getInstance().getWorkOrderModel(revealEventResponse.woid);
+        final MarketOrderInterface marketOrder = getMarketOrder(workOrderModel.getMarketorderIdx().longValue());
+        marketOrder.setCompleted();
         //actuatorService.finalizeWork(revealEventResponse.woid,"aStdout", "aStderr", "anUri");
     }
 
