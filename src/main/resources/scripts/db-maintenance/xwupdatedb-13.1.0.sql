@@ -72,8 +72,10 @@ create table if not exists  marketorders (
   remaining            bigint                   default 0          comment 'how many such orders left; this is calculated by the scheduler',
   workerpooladdr       varchar(254)   not null                     comment 'workerpool smart contract address',
   workerpoolowneraddr  varchar(254)   not null                     comment 'workerpool owner address',
-  statusId             tinyint unsigned  not null  default 255        comment 'Status Id. See common/XWStatus.java',
-  status               varchar(36)       not null  default 'NONE'     comment 'Status. see common/XWStatus.java',
+  statusId             tinyint unsigned  not null  default 255     comment 'Status Id. See common/XWStatus.java',
+  status               varchar(36)       not null  default 'NONE'  comment 'Status. see common/XWStatus.java',
+  arrivalDate          datetime                                    comment 'When the server received this work',
+  completedDate        datetime                                    comment 'When this work has been completed',
 
   index  idx_catgoryid         (categoryid),
   index  idx_workerpooladdr    (workerpooladdr),

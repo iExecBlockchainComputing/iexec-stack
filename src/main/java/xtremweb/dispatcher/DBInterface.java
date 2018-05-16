@@ -5370,6 +5370,7 @@ public final class DBInterface {
                         theWork.setReplicating();
                     }
                 }
+
                 break;
                 case ERROR:
                     if (theHost != null) {
@@ -5388,6 +5389,8 @@ public final class DBInterface {
                     break;
                 case FAILED:
                     if (theHost != null) {
+						theHost.leaveMarketOrder();
+						theHost.incErrorJobs();
                         theHost.decRunningJobs();
                     }
                     theApp.decRunningJobs();
@@ -5399,6 +5402,30 @@ public final class DBInterface {
                     }
                     break;
             }
+            final Collection<WorkInterface> works = marketOrderWorks(marketOrder);
+            final long expectedWorkers = marketOrder.getExpectedWorkers();
+            final long trust = marketOrder.getTrust();
+            final long expectedContributions = (expectedWorkers * trust / 100);
+            long totalContributions = 0L;
+            for(final WorkInterface work : works ) {
+                if(work.hasContributed()
+                        && (work.getH2h2r().compareTo(theWork.getH2h2r()) == 0)
+                        && (work.getStatus() == theWork.getStatus())) {
+                    totalContributions++;
+                }
+            }
+            if (totalContributions >= expectedContributions) {
+                switch(theWork.getStatus()) {
+                    case COMPLETED:
+                        marketOrder.setCompleted();
+                        break;
+                    case ERROR:
+                    case FAILED:
+                        marketOrder.setError();
+                        break;
+                }
+            }
+
 
             if (theTask != null) {
                 rows.add(theTask);

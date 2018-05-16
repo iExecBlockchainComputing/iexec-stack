@@ -32,6 +32,7 @@ import java.io.*;
 import java.net.URISyntaxException;
 import java.security.InvalidKeyException;
 import java.sql.ResultSet;
+import java.util.Date;
 
 /**
  * @author Oleg Lodygensky
@@ -167,6 +168,24 @@ public final class MarketOrderInterface extends Table {
 			public String fromString(final String v) {
 				return v;
 			}
+		},
+		/**
+		 * This is the column index of the arrival date
+		 */
+		ARRIVALDATE {
+			@Override
+			public Date fromString(final String v) {
+				return XWTools.getSQLDateTime(v);
+			}
+		},
+		/**
+		 * This is the column index of the completed date
+		 */
+		COMPLETEDDATE {
+			@Override
+			public Date fromString(final String v) {
+				return XWTools.getSQLDateTime(v);
+			}
 		};
 
 		/**
@@ -245,7 +264,7 @@ public final class MarketOrderInterface extends Table {
 		super(THISTAG, TABLENAME);
 
 		setAttributeLength(ENUMSIZE);
-
+		setArrivalDate();
 		setAccessRights(XWAccessRights.USERALL);
 		setTrust(70L);
         setVolume(1L);
@@ -321,6 +340,14 @@ public final class MarketOrderInterface extends Table {
             setRemaining((Long) Columns.REMAINING.fromResultSet(rs));
         } catch (final Exception e) {
         }
+		try {
+			setArrivalDate((Date) Columns.ARRIVALDATE.fromResultSet(rs));
+		} catch (final Exception e) {
+		}
+		try {
+			setCompletedDate((Date) Columns.COMPLETEDDATE.fromResultSet(rs));
+		} catch (final Exception e) {
+		}
         try {
             setUID((UID) TableColumns.UID.fromResultSet(rs));
             setOwner((UID) TableColumns.OWNERUID.fromResultSet(rs));
@@ -427,6 +454,8 @@ public final class MarketOrderInterface extends Table {
         if (marketOrderInterface.getMarketOrderIdx() != null) {
             setMarketOrderIdx(marketOrderInterface.getMarketOrderIdx());
         }
+		setArrivalDate(marketOrderInterface.getArrivalDate());
+		setCompletedDate(marketOrderInterface.getCompletedDate());
 		setExpectedWorkers(marketOrderInterface.getExpectedWorkers());
  		setNbWorkers(marketOrderInterface.getNbWorkers());
 		setTrust(marketOrderInterface.getTrust());
@@ -582,6 +611,22 @@ public final class MarketOrderInterface extends Table {
 		} catch (final Exception e) {
 			return null;
 		}
+	}
+	/**
+	 * This retrieves the submission date
+	 *
+	 * @return this attribute, or null if not set
+	 */
+	public Date getArrivalDate() {
+		return (Date) getValue(Columns.ARRIVALDATE);
+	}
+	/**
+	 * This retrieves the submission date
+	 *
+	 * @return this attribute, or null if not set
+	 */
+	public Date getCompletedDate() {
+		return (Date) getValue(Columns.COMPLETEDDATE);
 	}
 	/**
 	 * This sets parameter value; this is called from
@@ -790,6 +835,38 @@ public final class MarketOrderInterface extends Table {
 	 */
 	public boolean setWorkerPoolOwnerAddr(final String addr)  {
 		return setValue(Columns.WORKERPOOLOWNERADDR, addr);
+	}
+	/**
+	 * This set the submission date
+	 *
+	 * @return true if value has changed, false otherwise
+	 */
+	public final boolean setArrivalDate() {
+		return setArrivalDate(new java.util.Date());
+	}
+	/**
+	 * This set the submission date
+	 *
+	 * @return true if value has changed, false otherwise
+	 */
+	public final boolean setArrivalDate(final Date v) {
+		return setValue(Columns.ARRIVALDATE, v);
+	}
+	/**
+	 * This set the submission date
+	 *
+	 * @return true if value has changed, false otherwise
+	 */
+	public final boolean setCompletedDate() {
+		return setCompletedDate(new java.util.Date());
+	}
+	/**
+	 * This set the submission date
+	 *
+	 * @return true if value has changed, false otherwise
+	 */
+	public final boolean setCompletedDate(final Date v) {
+		return setValue(Columns.COMPLETEDDATE, v);
 	}
 
 	/**

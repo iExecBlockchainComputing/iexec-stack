@@ -1875,7 +1875,6 @@ public class WorkInterface extends Table {
 	 * @since 9.0.0
 	 */
 	public final void setWaiting() {
-		setArrivalDate(new java.util.Date());
 		setStatus(StatusEnum.WAITING);
 		setActive(true);
 		setLocal(true);
@@ -1968,17 +1967,17 @@ public class WorkInterface extends Table {
 	}
 
 	/**
-	 * This marks this work as a replication of the given work UID. If (v !=
+	 * This marks this work as a replication of the given work UID. If (originalUid !=
 	 * null), this work is marked as non replica-t-able (because we don't want
 	 * to replicate a replica).
 	 *
 	 * @since 10.0.0
-	 * @param v
+	 * @param originalUid
 	 *            is the original work UID
 	 * @return true if job name modified (and thus this work should be updated),
 	 *         false otherwise
 	 */
-	public final boolean replicate(final UID v) {
+	public final boolean replicate(final UID originalUid) {
 		setExpectedReplications(0L);
 		setTotalReplica(0L);
 		setReplicaSetSize(0L);
@@ -1988,7 +1987,7 @@ public class WorkInterface extends Table {
 		setArrivalDate(new java.util.Date());
 		setResult(null);
 
-		return setReplicatedUid(v);
+		return setReplicatedUid(originalUid);
 	}
 
 	/**

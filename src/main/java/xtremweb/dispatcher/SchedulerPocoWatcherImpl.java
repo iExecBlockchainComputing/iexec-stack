@@ -17,6 +17,7 @@ import com.iexec.scheduler.workerpool.WorkerPoolWatcher;
 import org.json.JSONException;
 import org.web3j.utils.Numeric;
 import xtremweb.common.*;
+import xtremweb.communications.URI;
 import xtremweb.communications.XMLRPCCommandSendApp;
 import xtremweb.communications.XMLRPCCommandSendWork;
 import xtremweb.database.SQLRequest;
@@ -195,7 +196,7 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
             if(appModel == null) {
                 return null;
             }
-            final AppInterface existingApp = getApp(appModel.getName());
+            final AppInterface existingApp = getApp(appModel.getId());
             if (existingApp != null) {
                 return existingApp;
             }
@@ -208,7 +209,7 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
             }
 
             newApp.setOwner(appOwner.getUID());
-            newApp.setName(appModel.getName());
+            newApp.setName(appModel.getId());
             newApp.setPrice(appModel.getPrice().longValue());
             newApp.setAccessRights(new XWAccessRights(XWAccessRights.USERALL.value() | XWAccessRights.STICKYBIT_INT));
 
@@ -344,7 +345,7 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
             }
             try {
                 final String dirinuri = XWTools.jsonValueFromString(workModel.getParams(), "dirinuri");
-                work.setCmdLine(dirinuri);
+                work.setDirin(new URI(dirinuri));
             } catch(final JSONException e) {
                 logger.exception(e);
             }
@@ -459,7 +460,6 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
             logger.exception(e);
         }
 
-        marketOrder.getTrust();
         final long expectedWorkers = marketOrder.getExpectedWorkers();
         final long trust = marketOrder.getTrust();
         final long expectedContributions = (expectedWorkers * trust / 100);

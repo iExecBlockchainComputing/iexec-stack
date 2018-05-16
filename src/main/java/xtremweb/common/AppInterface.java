@@ -105,7 +105,7 @@ public final class AppInterface extends Table {
 			 */
 			@Override
 			public String fromString(final String v) {
-				return v.replaceAll("[\\n\\s\'\"]+", "_");
+				return v.replaceAll("[\\n\\s\'\"]+", "");
 			}
 		},
 		/**
