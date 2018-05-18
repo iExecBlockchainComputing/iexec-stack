@@ -178,6 +178,33 @@ public final class MarketOrderInterface extends Table {
 				return XWTools.getSQLDateTime(v);
 			}
 		},
+        /**
+         * This is the column index of the start date
+         */
+        STARTDATE {
+            @Override
+            public Date fromString(final String v) {
+                return XWTools.getSQLDateTime(v);
+            }
+        },
+        /**
+         * This is the column index of the contributing date
+         */
+        CONTRIBUTINGDATE {
+            @Override
+            public Date fromString(final String v) {
+                return XWTools.getSQLDateTime(v);
+            }
+        },
+		/**
+		 * This is the column index of the revealing date
+		 */
+		REVEALINGDATE {
+			@Override
+			public Date fromString(final String v) {
+				return XWTools.getSQLDateTime(v);
+			}
+		},
 		/**
 		 * This is the column index of the completed date
 		 */
@@ -348,6 +375,18 @@ public final class MarketOrderInterface extends Table {
 			setCompletedDate((Date) Columns.COMPLETEDDATE.fromResultSet(rs));
 		} catch (final Exception e) {
 		}
+		try {
+			setRevealingDate((Date) Columns.REVEALINGDATE.fromResultSet(rs));
+		} catch (final Exception e) {
+		}
+        try {
+            setContributingDate((Date) Columns.CONTRIBUTINGDATE.fromResultSet(rs));
+        } catch (final Exception e) {
+        }
+        try {
+            setStartDate((Date) Columns.STARTDATE.fromResultSet(rs));
+        } catch (final Exception e) {
+        }
         try {
             setUID((UID) TableColumns.UID.fromResultSet(rs));
             setOwner((UID) TableColumns.OWNERUID.fromResultSet(rs));
@@ -456,6 +495,9 @@ public final class MarketOrderInterface extends Table {
         }
 		setArrivalDate(marketOrderInterface.getArrivalDate());
 		setCompletedDate(marketOrderInterface.getCompletedDate());
+		setRevealingDate(marketOrderInterface.getRevealingDate());
+        setContributingDate(marketOrderInterface.getContributingDate());
+        setStartDate(marketOrderInterface.getStartDate());
 		setExpectedWorkers(marketOrderInterface.getExpectedWorkers());
  		setNbWorkers(marketOrderInterface.getNbWorkers());
 		setTrust(marketOrderInterface.getTrust());
@@ -621,12 +663,36 @@ public final class MarketOrderInterface extends Table {
 		return (Date) getValue(Columns.ARRIVALDATE);
 	}
 	/**
-	 * This retrieves the submission date
+	 * This retrieves the completion date
 	 *
 	 * @return this attribute, or null if not set
 	 */
 	public Date getCompletedDate() {
 		return (Date) getValue(Columns.COMPLETEDDATE);
+	}
+    /**
+     * This retrieves the contributing date
+     *
+     * @return this attribute, or null if not set
+     */
+    public Date getContributingDate() {
+        return (Date) getValue(Columns.CONTRIBUTINGDATE);
+    }
+    /**
+     * This retrieves the start date
+     *
+     * @return this attribute, or null if not set
+     */
+    public Date getStartDate() {
+        return (Date) getValue(Columns.STARTDATE);
+    }
+	/**
+	 * This retrieves the revealing date
+	 *
+	 * @return this attribute, or null if not set
+	 */
+	public Date getRevealingDate() {
+		return (Date) getValue(Columns.REVEALINGDATE);
 	}
 	/**
 	 * This sets parameter value; this is called from
@@ -670,6 +736,7 @@ public final class MarketOrderInterface extends Table {
      * @return true if value has changed, false otherwise
      */
     public boolean setRunning() {
+        setStartDate();
         return setValue(Columns.STATUS, StatusEnum.RUNNING);
     }
     /**
@@ -677,6 +744,7 @@ public final class MarketOrderInterface extends Table {
      * @return true if value has changed, false otherwise
      */
     public boolean setContributing() {
+    	setContributingDate();
         return setValue(Columns.STATUS, StatusEnum.CONTRIBUTING);
     }
     /**
@@ -691,13 +759,15 @@ public final class MarketOrderInterface extends Table {
      * @return true if value has changed, false otherwise
      */
     public boolean setRevealing() {
-        return setValue(Columns.STATUS, StatusEnum.REVEALING);
+        setRevealingDate();
+    	return setValue(Columns.STATUS, StatusEnum.REVEALING);
     }
     /**
      * This sets this market order status to completed
      * @return true if value has changed, false otherwise
      */
     public boolean setCompleted() {
+    	setCompletedDate();
         return setValue(Columns.STATUS, StatusEnum.COMPLETED);
     }
     /**
@@ -853,7 +923,7 @@ public final class MarketOrderInterface extends Table {
 		return setValue(Columns.ARRIVALDATE, v);
 	}
 	/**
-	 * This set the submission date
+	 * This set the completion date
 	 *
 	 * @return true if value has changed, false otherwise
 	 */
@@ -861,12 +931,60 @@ public final class MarketOrderInterface extends Table {
 		return setCompletedDate(new java.util.Date());
 	}
 	/**
-	 * This set the submission date
+	 * This set the completion date
 	 *
 	 * @return true if value has changed, false otherwise
 	 */
 	public final boolean setCompletedDate(final Date v) {
 		return setValue(Columns.COMPLETEDDATE, v);
+	}
+    /**
+     * This set the start date
+     *
+     * @return true if value has changed, false otherwise
+     */
+    public final boolean setStartDate() {
+        return setStartDate(new java.util.Date());
+    }
+    /**
+     * This set the start date
+     *
+     * @return true if value has changed, false otherwise
+     */
+    public final boolean setStartDate(final Date v) {
+        return setValue(Columns.STARTDATE, v);
+    }
+    /**
+     * This set the contributing date
+     *
+     * @return true if value has changed, false otherwise
+     */
+    public final boolean setContributingDate() {
+        return setContributingDate(new java.util.Date());
+    }
+    /**
+     * This set the contributing date
+     *
+     * @return true if value has changed, false otherwise
+     */
+    public final boolean setContributingDate(final Date v) {
+        return setValue(Columns.CONTRIBUTINGDATE, v);
+    }
+	/**
+	 * This set the revealing date
+	 *
+	 * @return true if value has changed, false otherwise
+	 */
+	public final boolean setRevealingDate() {
+		return setRevealingDate(new java.util.Date());
+	}
+	/**
+	 * This set the revealing date
+	 *
+	 * @return true if value has changed, false otherwise
+	 */
+	public final boolean setRevealingDate(final Date v) {
+		return setValue(Columns.REVEALINGDATE, v);
 	}
 
 	/**

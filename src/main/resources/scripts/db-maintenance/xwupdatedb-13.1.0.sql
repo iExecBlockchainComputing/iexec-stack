@@ -49,6 +49,7 @@ ALTER TABLE  works CHANGE COLUMN replications  replications bigint  default 0   
 ALTER TABLE  works CHANGE COLUMN sizer         sizer        bigint  default 0        comment 'Optionnal. This is the size of the replica set';
 ALTER TABLE  works CHANGE COLUMN totalr        totalr       bigint  default 0        comment 'Optionnal. Current amount of replicas';
 
+ALTER TABLE  tasks CHANGE COLUMN price         bigint               default 0        comment 'since 13.1.0';
 
 -- ---------------------------------------------------------------------------
 -- Table "marketorders" :
@@ -74,8 +75,11 @@ create table if not exists  marketorders (
   workerpoolowneraddr  varchar(254)   not null                     comment 'workerpool owner address',
   statusId             tinyint unsigned  not null  default 255     comment 'Status Id. See common/XWStatus.java',
   status               varchar(36)       not null  default 'NONE'  comment 'Status. see common/XWStatus.java',
-  arrivalDate          datetime                                    comment 'When the server received this work',
-  completedDate        datetime                                    comment 'When this work has been completed',
+  arrivalDate          datetime                                    comment 'insertion date',
+  startDate            datetime                                    comment 'ready for computation date',
+  completedDate        datetime                                    comment 'completion date',
+  contributingDate     datetime                                    comment 'contributing date',
+  revealingDate        datetime                                    comment 'revealing date',
 
   index  idx_catgoryid         (categoryid),
   index  idx_workerpooladdr    (workerpooladdr),

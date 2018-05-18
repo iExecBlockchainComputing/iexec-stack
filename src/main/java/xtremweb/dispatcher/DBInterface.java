@@ -574,7 +574,6 @@ public final class DBInterface {
 		try {
 			if (row.getLinks() <= 0) {
 				logger.debug("deleting " + row.toXml());
-				Thread.currentThread().dumpStack();
 				return this.delete(theClient, (Table) row);
 			}
 		} catch (final AccessControlException e) {
@@ -2792,7 +2791,6 @@ public final class DBInterface {
 
 		logger.debug("checkClient(" + client + ", " + actionLevel + ")");
 		if ((client == null) || (actionLevel == null)) {
-			Thread.currentThread().dumpStack();
 			throw new IOException("Can't check client");
 		}
 
@@ -4190,17 +4188,9 @@ public final class DBInterface {
 	 */
 	private boolean removeData(final UserInterface theClient, final URI uri)
 			throws IOException, InvalidKeyException, AccessControlException {
-		if (uri == null) {
-			return false;
-		}
-		try {
-			uri.getUID();
-		}
-		catch(final Exception e) {
-			return false;
-		}
-		final UID uid = uri.getUID();
-		return removeData(theClient, uid);
+	    if(uri == null)
+	        return false;
+		return removeData(theClient, uri.getUID());
 	}
 
 	/**
@@ -5201,8 +5191,9 @@ public final class DBInterface {
 		if (theWork != null) {
 
 			if (!theWork.canWrite(mandatingClient, appOwnerGroup)
-                    && !clientRights.doesEqual(UserRightEnum.WORKER_USER)) {
-
+                    && !clientRights.doesEqual(UserRightEnum.WORKER_USER)
+                    && !clientRights.doesEqual(UserRightEnum.VWORKER_USER)) {
+//		final int isStickyBit = appitf.getAccessRights().value() & XWAccessRights.STICKYBIT_INT;
                     throw new AccessControlException("addWork() : " + mandatingClient.getLogin() + " can't update " + jobUID);
             }
 
@@ -5227,10 +5218,10 @@ public final class DBInterface {
             final UserInterface realClient = (mandatingClient.getRights().isWorker() ? jobOwner : mandatingClient);
 
             final DataInterface theData = data(receivedJob.getResult());
-            logger.debug("data is " + theData.toXml());
+            logger.debug("data is " + ((theData == null) ? "null" : theData.toXml()));
             useData(realClient, receivedJob.getResult());
             final DataInterface theData2 = data(receivedJob.getResult());
-            logger.debug("data2 is " + theData2.toXml());
+            logger.debug("data2 is " + ((theData == null) ? "null" : theData.toXml()));
 
             removeData(realClient, theWork.getResult());
 
@@ -5250,9 +5241,10 @@ public final class DBInterface {
                 logger.warn(e.getMessage());
             }
 
+            // due to communication delays, it may happen that the scheduler
+            // has already marked this job as revealing
+            final boolean mustReveal = theWork.isRevealing();
             theWork.updateInterface(receivedJob);
-
-            final Vector<Table> rows = new Vector<>();
 
             logger.debug(realClient.getLogin() + " is updating " + theWork.getUID() + " status = "
                     + receivedJob.getStatus());
@@ -5307,6 +5299,10 @@ public final class DBInterface {
                 if(theTask != null) {
                     theTask.setContributed();
                 }
+                if (mustReveal) {
+                    theWork.setRevealing();
+                    theTask.setRevealing();
+                }
                 break;
             case COMPLETED:
 
@@ -5354,14 +5350,13 @@ public final class DBInterface {
                             }
 
                             insert(newWork);
-                            rows.add(newWork);
                             replicatedWork.incTotalReplica();
                         }
                         replicatedWork.setReplicating();
                         if (currentReplications >= replicatedWork.getTotalReplica()) {
                             replicatedWork.setCompleted();
                         }
-                        rows.add(replicatedWork);
+                        replicatedWork.update();
                     }
                 } else {
                     final long expectedReplications = theWork.getExpectedReplications();
@@ -5402,42 +5397,51 @@ public final class DBInterface {
                     }
                     break;
             }
-            final Collection<WorkInterface> works = marketOrderWorks(marketOrder);
-            final long expectedWorkers = marketOrder.getExpectedWorkers();
-            final long trust = marketOrder.getTrust();
-            final long expectedContributions = (expectedWorkers * trust / 100);
-            long totalContributions = 0L;
-            for(final WorkInterface work : works ) {
-                if(work.hasContributed()
-                        && (work.getH2h2r().compareTo(theWork.getH2h2r()) == 0)
-                        && (work.getStatus() == theWork.getStatus())) {
-                    totalContributions++;
+            if(marketOrder != null) {
+                final Collection<WorkInterface> works = marketOrderWorks(marketOrder);
+                final long expectedWorkers = marketOrder.getExpectedWorkers();
+                final long trust = marketOrder.getTrust();
+                final long expectedContributions = (expectedWorkers * trust / 100);
+                long totalContributions = 0L;
+                for (final WorkInterface work : works) {
+                    if (work.hasContributed()
+                            && (work.getH2h2r().compareTo(theWork.getH2h2r()) == 0)
+                            && (work.getStatus() == theWork.getStatus())) {
+                        totalContributions++;
+                    }
                 }
-            }
-            if (totalContributions >= expectedContributions) {
-                switch(theWork.getStatus()) {
-                    case COMPLETED:
-                        marketOrder.setCompleted();
-                        break;
-                    case ERROR:
-                    case FAILED:
-                        marketOrder.setError();
-                        break;
-                }
-            }
 
+                logger.debug("status = " + theWork.getStatus());
+                logger.debug("trust = " + trust);
+                logger.debug("expectedWorkers = " + expectedWorkers);
+                logger.debug("expectedContributions = " + expectedContributions);
+                logger.debug("totalContributions = " + totalContributions);
+
+                if (totalContributions >= expectedContributions) {
+                    switch (theWork.getStatus()) {
+                        case COMPLETED:
+                            marketOrder.setCompleted();
+                            break;
+                        case ERROR:
+                        case FAILED:
+                            marketOrder.setError();
+                            break;
+                    }
+                }
+
+                marketOrder.update();
+            }
 
             if (theTask != null) {
-                rows.add(theTask);
+                theTask.update();
             }
-            rows.add(theWork);
-            rows.add(theApp);
-            rows.add(jobOwner);
+            theWork.update();
+            theApp.update();
+            jobOwner.update();
             if (theHost != null) {
-                rows.add(theHost);
+                theHost.update();
             }
             sendMail(jobOwner, theWork, realClient.getLogin() + " has updated ");
-            update(rows);
 
 		} else {
 			if (mandatingClient.getRights().isWorker()) {
@@ -5450,8 +5454,6 @@ public final class DBInterface {
 				receivedJob.setStatus(StatusEnum.UNAVAILABLE);
 			}
 
-			final Vector<Table> rows = new Vector<>();
-
 			receivedJob.setReplicatedUid(null);
 			logger.debug(mandatingClient.getLogin() + " " + jobUID + " replications = " + receivedJob.getExpectedReplications()
 			+ " by " + receivedJob.getReplicaSetSize());
@@ -5462,7 +5464,9 @@ public final class DBInterface {
 					: 0L;
 			boolean firstJob = true;
 
-			for (; (replica <= receivedJob.getReplicaSetSize()) && (replica <= receivedJob.getExpectedReplications() - 1); replica++) {
+			for (; (replica <= receivedJob.getReplicaSetSize()) && (replica <= receivedJob.getExpectedReplications() - 1);
+                 replica++) {
+
 				final WorkInterface newWork = new WorkInterface(receivedJob);
 				newWork.setUID(jobUID); // we insert the original work (to
 				// eventually be replicated)
@@ -5482,16 +5486,15 @@ public final class DBInterface {
 				useData(mandatingClient, newWork.getStdin());
 				useData(mandatingClient, newWork.getDirin());
 
-				rows.add(newWork);
-				System.out.println("DBInterface#addWork receivedJob = " + receivedJob.toXml());
-				System.out.println("DBInterface#addWork newWork = " + newWork.toXml());
+				newWork.update();
+				logger.debug("DBInterface#addWork receivedJob = " + receivedJob.toXml());
+                logger.debug("DBInterface#addWork newWork = " + newWork.toXml());
 				mandatingClient.incPendingJobs();
 			}
 
-			rows.add(mandatingClient);
+			mandatingClient.update();
 			theApp.incPendingJobs();
-			rows.add(theApp);
-			update(rows);
+			theApp.update();
 		}
 
 		return theWork;

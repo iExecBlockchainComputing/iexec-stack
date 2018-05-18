@@ -136,7 +136,6 @@ public class Worker {
 		}
 
         if (config.getBoolean(BLOCKCHAINETHENABLED) == true) {
-
             String schedulerApiUrl = "https://" + config.getDispatcher() + ":"+ config.getHttpsPort();
 
 			WalletConfig walletConfig = new WalletConfig();
