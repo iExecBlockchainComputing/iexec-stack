@@ -104,7 +104,7 @@ public class ActuatorService implements Actuator {
                     iexecHubService.getIexecHub().marketplaceAddress().send(), web3jService.getWeb3j(), credentialsService.getCredentials(), ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT);
             BigInteger marketOrderValue = marketplace.getMarketOrderValue(workOrder.m_marketorderIdx().send()).send();
             log.info("[marketOrderValue:{}]", marketOrderValue);
-            Float deposit = (workerPoolConfig.getStakeRatioPolicy().floatValue() / 100) * marketOrderValue.floatValue();//(30/100)*100
+            Float deposit = (workerPoolConfig.getStakeRatioPolicy().floatValue() / 100) * marketOrderValue.floatValue() + 1f;//(30/100)*100 + 1     Why?
             BigInteger depositBig = BigDecimal.valueOf(deposit).toBigInteger();
             TransactionReceipt approveReceipt = rlcService.getRlc().approve(iexecHubService.getIexecHub().getContractAddress(), depositBig).send();
             List<RLC.ApprovalEventResponse> approvalEvents = rlcService.getRlc().getApprovalEvents(approveReceipt);
