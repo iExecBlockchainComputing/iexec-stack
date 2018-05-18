@@ -782,7 +782,7 @@ public class WorkInterface extends Table {
 				Columns.COMPLETEDDATE.getOrdinal(), Columns.LABEL.getOrdinal() });
 
 		setReplicatedUid(null);
-		setExpectedReplications(0L);
+		setExpectedReplications(1L);
 		setTotalReplica(0L);
 		setReplicaSetSize(0L);
         setCategoryId(0L);

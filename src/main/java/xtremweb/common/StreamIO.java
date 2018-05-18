@@ -166,7 +166,7 @@ public class StreamIO implements AutoCloseable {
 				output.close();
 			}
 		} catch (final IOException ioe) {
-			logger.exception(ioe);
+			logger.warn(ioe.getMessage());
 		}
 	}
 

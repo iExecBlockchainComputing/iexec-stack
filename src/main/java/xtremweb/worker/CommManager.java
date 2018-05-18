@@ -770,7 +770,6 @@ public final class CommManager extends Thread {
 			if (islocked && (commClient != null)) {
 				commClient.unlock(uri);
 			}
-			commClient = null;
 		}
 	}
 
@@ -1264,8 +1263,8 @@ public final class CommManager extends Thread {
                 if(theWork.isContributing()) {
                     if (theWork.getH2h2r() != null) {
                         logger.debug("the work can contribute " + theWork.toXml());
+						theWork.setContributed();
                         ActuatorService.getInstance().contribute(theWork.getWorkOrderId(), theWork.getH2h2r(), BigInteger.ZERO, "0", "0");
-                        theWork.setContributed();
                         Worker.getConfig().getHost().setContribution(true);
                     } else {
                         theWork.setError("can't contribute " + theWork.toXml());

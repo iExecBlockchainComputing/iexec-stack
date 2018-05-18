@@ -220,14 +220,15 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
                     final String envvars = XWTools.jsonValueFromString(appModel.getParams(), "envvars");
                     newApp.setEnvVars(envvars);
                 } catch (final JSONException e) {
-                    logger.exception(e);
+                    logger.warn(e.getMessage());
                 }
                 try {
                     final String appTypeStr = XWTools.jsonValueFromString(appModel.getParams(), "type");
                     final AppTypeEnum appType = AppTypeEnum.valueOf(appTypeStr);
                     newApp.setType(appType);
                 } catch(final JSONException e) {
-                    logger.exception(e);
+                    logger.warn(e.getMessage());
+                    return null;
                 }
             }
 
@@ -341,13 +342,13 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
                 final String cmdline = XWTools.jsonValueFromString(workModel.getParams(), "cmdline");
                 work.setCmdLine(cmdline);
             } catch(final JSONException e) {
-                logger.exception(e);
+                logger.warn(e.getMessage());
             }
             try {
                 final String dirinuri = XWTools.jsonValueFromString(workModel.getParams(), "dirinuri");
                 work.setDirin(new URI(dirinuri));
             } catch(final JSONException e) {
-                logger.exception(e);
+                logger.warn(e.getMessage());
             }
 
             work.setCallback(workModel.getCallback());

@@ -137,27 +137,28 @@ public class Worker {
 		}
 
         if (config.getBoolean(BLOCKCHAINETHENABLED) == true) {
+			try {
+	            IexecWorkerLibrary.initialize(config.getConfigFile().getParentFile().getAbsolutePath() + "/iexec-worker.yml", new CommonConfigurationGetter() {
+	            	@Override
+					public CommonConfiguration getCommonConfiguration(String schedulerApiUrl) {
+	            		try {
+	            			final URL url = new URL(schedulerApiUrl + XWTools.IEXECETHCONFPATH);
+	            			final String message = IOUtils.toString(url.openStream());
+							final ObjectMapper mapper = new ObjectMapper();
+							CommonConfiguration commonConfiguration = mapper.readValue(message, CommonConfiguration.class);
+                        	return commonConfiguration;
 
-            IexecWorkerLibrary.initialize(config.getConfigFile().getParentFile().getAbsolutePath() + "/iexec-worker.yml", new CommonConfigurationGetter() {
-                @Override
-                public CommonConfiguration getCommonConfiguration(String schedulerApiUrl) {
-                    try {
+	                    } catch (final Exception e) {
+    	                    logger.exception("Can't get iExec config from " + schedulerApiUrl + XWTools.IEXECETHCONFPATH, e);
+        	            }
 
-                        final URL url = new URL(schedulerApiUrl + XWTools.IEXECETHCONFPATH);
-
-						String message = IOUtils.toString(url.openStream());
-						ObjectMapper mapper = new ObjectMapper();
-						CommonConfiguration commonConfiguration = mapper.readValue(message, CommonConfiguration.class);
-                        return commonConfiguration;
-
-                    } catch (final Exception e) {
-                        logger.exception("Can't get iExec config from " + schedulerApiUrl + XWTools.IEXECETHCONFPATH, e);
-                    }
-
-                    return null;
-                }
-            });
-            WorkerPocoWatcherImpl workerPocoWatcher = new WorkerPocoWatcherImpl();
+            	        return null;
+                	}
+            	});
+            	WorkerPocoWatcherImpl workerPocoWatcher = new WorkerPocoWatcherImpl();
+			} catch (final Exception e) {
+				logger.exception(e);
+			}
         }
 
 		config.dump(System.out, "XWHEP Worker started ");

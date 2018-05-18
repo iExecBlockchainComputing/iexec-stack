@@ -864,8 +864,6 @@ public class ThreadWork extends Thread {
 	protected String getUnloadScriptPath()
 			throws IOException, ClassNotFoundException, SAXException, URISyntaxException, InvalidKeyException {
 
-		String ret = null;
-
 		final UID workApp = currentWork.getApplication();
 
 		if (workApp == null) {
@@ -884,15 +882,12 @@ public class ThreadWork extends Thread {
 
 		final File scriptPath = new File(unloadScriptName);
 
-		if (scriptPath != null) {
-			if (!scriptPath.exists()) {
-				throw new IOException("can find script " + scriptPath);
-			}
+		if ((scriptPath != null) && scriptPath.exists()) {
 			scriptPath.setExecutable(true);
-			ret = scriptPath.getAbsolutePath();
+			return scriptPath.getAbsolutePath();
 		}
 
-		return ret;
+		return null;
 	}
 
 	/**
@@ -1278,6 +1273,7 @@ public class ThreadWork extends Thread {
 			}
 		}
 		data.setOwner(currentWork.getOwner());
+		data.incLinks();
 
 		File resultFile = null;
 		try {
