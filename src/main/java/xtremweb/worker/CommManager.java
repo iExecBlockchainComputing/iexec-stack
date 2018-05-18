@@ -49,6 +49,7 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
 
+import com.iexec.common.ethereum.TransactionStatus;
 import com.iexec.worker.actuator.ActuatorService;
 import org.xml.sax.SAXException;
 
@@ -1269,9 +1270,13 @@ public final class CommManager extends Thread {
 
                     if (theWork.getH2h2r() != null) {
                         logger.debug("the work can contribute " + theWork.toXml());
-						theWork.setContributed();
-                        ActuatorService.getInstance().contribute(theWork.getWorkOrderId(), theWork.getH2h2r(), BigInteger.ZERO, "0", "0");
-                        Worker.getConfig().getHost().setContribution(true);
+                        if(ActuatorService.getInstance().contribute(theWork.getWorkOrderId(), theWork.getH2h2r(), BigInteger.ZERO, "0", "0") == TransactionStatus.SUCCESS) {
+                            theWork.setContributed();
+                            Worker.getConfig().getHost().setContribution(true);
+                        } else {
+                            logger.error("contribute transaction error; will retry later");
+                        }
+
                     } else {
                         theWork.setError("can't contribute " + theWork.toXml());
                     }
