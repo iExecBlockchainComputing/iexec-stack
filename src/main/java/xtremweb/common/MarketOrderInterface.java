@@ -844,6 +844,18 @@ public final class MarketOrderInterface extends Table {
         return true;
     }
     /**
+     * This removes the provided host from this market order
+     * and decrements the amount of booked workers to reach the trust
+     * @param host is the participating host
+     * @return true
+     */
+    public boolean removeWorker(final HostInterface host)  {
+        if(host != null)
+            host.leaveMarketOrder();
+        decNbWorkers();
+        return true;
+    }
+    /**
      * This marks the provided host as participating in this market order
      * and increments the amount of booked workers to reach the trust
      * @return true if value has changed, false otherwise

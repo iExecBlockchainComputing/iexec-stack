@@ -1475,17 +1475,52 @@ public final class DBInterface {
         return selectAll(new HostInterface(), HostInterface.Columns.MARKETORDERUID + "='"
                 + marketOrder.getUID() + "'");
     }
-//    protected <T extends Table> Collection<T> selectAll(final T row, final String conditions) throws IOException
     /**
      * This retrieves a host, bypassing access rights
      *
-     * @param ethaddr
-     *            is the eth wallet of the host to retrieve
+     * @param wallet is the eth wallet of the host to retrieve
      * @since 13.1.0
      */
-    protected HostInterface host(final String ethaddr) throws IOException {
+    protected HostInterface host(final EthereumWallet wallet) throws IOException {
+        if ((wallet == null) || (wallet.getAddress() == null)) {
+            return null;
+        }
         return selectOne(new HostInterface(),
-                SQLRequest.MAINTABLEALIAS + "." + HostInterface.Columns.ETHWALLETADDR + "='" + ethaddr + "'");
+                SQLRequest.MAINTABLEALIAS + "." + HostInterface.Columns.ETHWALLETADDR + "='" + wallet.getAddress() + "'");
+    }
+    /**
+     * This retrieves a list of hosts, given its eth wallet, bypassing access rights
+     *
+     * @param wallet is the eth wallet of the hosts to retrieve
+     * @since 13.1.0
+     */
+    protected Collection<HostInterface> hosts(final EthereumWallet wallet) throws IOException {
+        if((wallet == null) || (wallet.getAddress() == null)) {
+            return null;
+        }
+        return selectAll(new HostInterface(),
+                SQLRequest.MAINTABLEALIAS + "." + HostInterface.Columns.ETHWALLETADDR + "='" + wallet.getAddress() + "'");
+    }
+    /**
+     * This retrieves a list of hosts, given its eth wallet, for the given market orderbypassing access rights
+     *
+     * @param wallet is the eth wallet of the hosts to retrieve
+     * @param marketOrder is the PoCo market order
+     * @since 13.1.0
+     */
+    protected Collection<HostInterface> hosts(final EthereumWallet wallet, final MarketOrderInterface marketOrder) throws IOException {
+        System.out.println("DBInterface#hosts() " + (wallet == null ? "null wallet" : wallet.getAddress()));
+        System.out.println("DBInterface#hosts() " + (marketOrder == null ? "null marketOrder" : marketOrder.getMarketOrderIdx()));
+        if((wallet == null)
+                || (wallet.getAddress() == null)
+                || (marketOrder == null)) {
+            return null;
+        }
+        return selectAll(new HostInterface(),
+                SQLRequest.MAINTABLEALIAS + "." + HostInterface.Columns.ETHWALLETADDR +
+                        "='" + wallet.getAddress() +
+                        "' AND " + SQLRequest.MAINTABLEALIAS + "." + HostInterface.Columns.MARKETORDERUID +
+                        "='" + marketOrder.getUID() + "'");
     }
     /**
 	 * This retrieves a host for the requesting user. Host access rights are
@@ -2525,7 +2560,6 @@ public final class DBInterface {
             return null;
         }
     }
-
 	/**
 	 * This retrieves readable works for the given user
 	 *
@@ -4917,14 +4951,15 @@ public final class DBInterface {
 
 				final TaskInterface theTask = thetaskEnum.nextElement();
 				final UID hostUID = theTask.getHost();
-				final HostInterface theHost = host(hostUID);
+                final HostInterface theHost = host(hostUID);
+                final MarketOrderInterface marketOrder = marketOrder(theHost.getMarketOrderUid());
 				if (delete(theClient, theTask)) {
 					if (theHost != null) {
 						switch (theWork.getStatus()) {
                             case CONTRIBUTING:
                             case CONTRIBUTED:
                             case REVEALING:
-                                theHost.leaveMarketOrder();
+                                theHost.leaveMarketOrder(marketOrder);
     						case RESULTREQUEST:
                             case DATAREQUEST:
 		    				case RUNNING:
@@ -4963,7 +4998,8 @@ public final class DBInterface {
 				theApp.decRunningJobs();
 			}
 			if (theExpectedHost != null) {
-                theExpectedHost.leaveMarketOrder();
+                final MarketOrderInterface marketOrder = marketOrder(theExpectedHost.getMarketOrderUid());
+                theExpectedHost.leaveMarketOrder(marketOrder);
 				theExpectedHost.decRunningJobs();
 			}
 			break;
@@ -5244,6 +5280,7 @@ public final class DBInterface {
             // due to communication delays, it may happen that the scheduler
             // has already marked this job as revealing
             final boolean mustReveal = theWork.isRevealing();
+
             theWork.updateInterface(receivedJob);
 
             logger.debug(realClient.getLogin() + " is updating " + theWork.getUID() + " status = "
@@ -5286,7 +5323,6 @@ public final class DBInterface {
                         theTask.setErrorMsg(msg);
                     }
                     if (theHost != null) {
-                        theHost.leaveMarketOrder();
                         theHost.incErrorJobs();
                         theHost.decRunningJobs();
                     }
@@ -5318,7 +5354,7 @@ public final class DBInterface {
                     if (startdate != null) {
                         final int exectime = (int) (System.currentTimeMillis() - startdate.getTime());
                         if (theHost != null) {
-                            theHost.leaveMarketOrder();
+                            theHost.leaveMarketOrder(marketOrder);
                             theHost.incAvgExecTime(exectime);
                         }
                         jobOwner.incUsedcputime(exectime);
@@ -5369,7 +5405,7 @@ public final class DBInterface {
                 break;
                 case ERROR:
                     if (theHost != null) {
-                        theHost.leaveMarketOrder();
+                        theHost.leaveMarketOrder(marketOrder);
                         theHost.incErrorJobs();
                         theHost.decRunningJobs();
                     }
@@ -5384,7 +5420,7 @@ public final class DBInterface {
                     break;
                 case FAILED:
                     if (theHost != null) {
-						theHost.leaveMarketOrder();
+						theHost.leaveMarketOrder(marketOrder);
 						theHost.incErrorJobs();
                         theHost.decRunningJobs();
                     }
@@ -5775,106 +5811,123 @@ public final class DBInterface {
 		}
 
 		try {
-			final HostInterface host = host(user, _host.getUID());
+			HostInterface theHost = host(user, _host.getUID());
 
-			if (host != null) {
+			if (theHost == null) {
+                try {
+                    logger.info(hostName + " not in DB; inserting " + _host.getUID().toString());
+                    insert(_host);
+                    theHost = _host;
+                } catch (final Exception e) {
+                    logger.exception(hostName + " can't create new host", e);
+                    return null;
+                }
+            }
 
-				if (_host.getUploadBandwidth() != 0) {
-					host.setUploadBandwidth(_host.getUploadBandwidth());
-				}
-				if (_host.getDownloadBandwidth() != 0) {
-					host.setDownloadBandwidth(_host.getDownloadBandwidth());
-				}
-				if (_host.getNbPing() != 0) {
-					host.setNbPing(_host.getNbPing());
-				}
-				if (_host.getAvgPing() != 0) {
-					host.setAvgPing(_host.getAvgPing());
-				}
-				host.setSharedApps(_host.getSharedApps());
-				host.setSharedDatas(_host.getSharedDatas());
-				host.setSharedPackages(_host.getSharedPackages());
-				host.setIncomingConnections(_host.incomingConnections());
+            // we can't use theHost.updateInterface()
+            // because we want to update data aggregated by the worker itself only
+            theHost.setUploadBandwidth(_host.getUploadBandwidth());
+            theHost.setDownloadBandwidth(_host.getDownloadBandwidth());
+            theHost.setNbPing(_host.getNbPing());
+            theHost.setAvgPing(_host.getAvgPing());
+            theHost.setSharedApps(_host.getSharedApps());
+            theHost.setSharedDatas(_host.getSharedDatas());
+            theHost.setSharedPackages(_host.getSharedPackages());
+            theHost.setIncomingConnections(_host.incomingConnections());
+            theHost.setProject(_host.getProject());
+            theHost.setIPAddr(_host.getIPAddr());
+            theHost.setNatedIPAddr(_host.getNatedIPAddr());
+            theHost.setJobId(_host.getJobId());
+            theHost.setBatchId(_host.getBatchId());
+            theHost.setAccessRights(_host.getAccessRights());
+            theHost.setVersion(_host.getVersion());
+            theHost.setOs(_host.getOs());
+            theHost.setOsVersion(_host.getOsVersion());
+            theHost.setJavaVersion(_host.getJavaVersion());
+            theHost.setJavaDataModel(_host.getJavaDataModel());
+            theHost.setCpu(_host.getCpu());
+            theHost.setCpuModel(_host.getCpuModel());
+            theHost.setCpuSpeed(_host.getCpuSpeed());
+            theHost.setLastAlive(_host.getLastAlive());
+            theHost.setAvailable(_host.isAvailable());
+            theHost.setSgId(_host.getSgId());
+            theHost.setPoolWorkSize(_host.getPoolWorkSize());
+            theHost.setFreeTmp(_host.getFreeTmp());
+            theHost.setTotalMem(_host.getTotalMem());
+            theHost.setEthWalletAddr(_host.getEthWalletAddr());
+            theHost.update();
 
-				host.setProject(_host.getProject());
-				host.setIPAddr(_host.getIPAddr());
-				host.setNatedIPAddr(_host.getNatedIPAddr());
+            final String workerWalletAddr = theHost.getEthWalletAddr();
+            if (!theHost.canContribute()) {
+                logger.info("hostRegister() - " + workerWalletAddr +" : don't want to contribute");
+                return theHost;
+            }
 
-				host.setJobId(_host.getJobId());
-				host.setBatchId(_host.getBatchId());
+            try {
+                final MarketOrderInterface marketOrder = marketOrderUnsatisfied(theHost.getWorkerPoolAddr());
+                if(marketOrder == null) {
+                    logger.info("hostRegister() - " + workerWalletAddr +" : no unsatisfied market order");
+                    return theHost;
+                }
 
-				host.setAccessRights(_host.getAccessRights());
-				host.setVersion(_host.getVersion());
-				host.setOs(_host.getOs());
-				host.setOsVersion(_host.getOsVersion());
-				host.setJavaVersion(_host.getJavaVersion());
-				host.setJavaDataModel(_host.getJavaDataModel());
-				host.setCpu(_host.getCpu());
-				host.setCpuModel(_host.getCpuModel());
-				host.setLastAlive(_host.getLastAlive());
-				host.setAvailable(_host.isAvailable());
-				host.setSgId(_host.getSgId());
-				host.setPoolWorkSize(_host.getPoolWorkSize());
-				host.setCpuSpeed(_host.getCpuSpeed());
-				host.setFreeTmp(_host.getFreeTmp());
-				host.setTotalMem(_host.getTotalMem());
+                if(marketOrder.getWorkerPoolAddr().compareTo(theHost.getWorkerPoolAddr()) != 0) {
+                    logger.error("hostRegister() : worker pool mismatch : "
+                            + marketOrder.getWorkerPoolAddr() + " != "
+                            + theHost.getWorkerPoolAddr());
+                    return theHost;
+                }
 
-				final String workerWalletAddr = host.getEthWalletAddr();
-				if (host.canContribute()) {
+                final Collection<HostInterface> hosts = hosts(new EthereumWallet(workerWalletAddr), marketOrder);
+                logger.debug("hostRegister() : " + workerWalletAddr + " : duplicated wallet " + (hosts == null ? 0 : hosts.size()));
 
-                    try {
-                        final MarketOrderInterface marketOrder = marketOrderUnsatisfied(host.getWorkerPoolAddr());
-                        if(marketOrder == null) {
-                            logger.info("hostRegister() - " + workerWalletAddr +" : no unsatisfied market order");
-                        } else {
-							if(marketOrder.getWorkerPoolAddr().compareTo(host.getWorkerPoolAddr()) != 0) {
-								logger.error("hostRegister() : worker pool mismatch : "
-										+ marketOrder.getWorkerPoolAddr() + " != "
-										+ host.getWorkerPoolAddr());
-							}
-							else {
-
-								logger.debug("hostRegister() - " + workerWalletAddr +" joins market order "
-										+ marketOrder.getUID());
-								marketOrder.addWorker(host);
-
-                                // following host.update() is not really necessary but helps comprehension
-                                // since createMarketOrder is long to execute on the blockchain
-                                // and update(host) below will not waste any time to write to DB
-                                // since it would have already been written here
-								host.update();
-								marketOrder.update();
-
-								if(marketOrder.canStart()) {
-									final ActuatorService actuatorService = ActuatorService.getInstance();
-									final BigInteger marketOrderIdx = actuatorService.createMarketOrder(BigInteger.valueOf(marketOrder.getCategoryId()),
-											BigInteger.valueOf(marketOrder.getTrust()),
-											BigInteger.valueOf(marketOrder.getPrice()),
-											BigInteger.valueOf(marketOrder.getVolume()));
-									marketOrder.setMarketOrderIdx(marketOrderIdx.longValue());
-									marketOrder.update();
-								}
-							}
-						}
-                    } catch (final IOException e) {
-                        logger.exception(e);
+                if (hosts != null) {
+                    boolean error = false;
+                    for (HostInterface ahost : hosts) {
+                        if (ahost.getUID().equals(theHost.getUID()))
+                            continue;
+                        error = true;
+                        logger.error("hostRegister() : " + workerWalletAddr + " : more than one wallet owner " + ahost.getUID());
+                        ahost.leaveMarketOrder(marketOrder);
+                        ahost.setActive(false);
+                        ahost.update();
                     }
+                    if (error) {
+                        logger.error("hostRegister() : " + workerWalletAddr + " : more than one wallet owner " + theHost.getUID());
+                        theHost.leaveMarketOrder(marketOrder);
+                        theHost.setActive(false);
+                        theHost.update();
+                        return theHost;
+                    }
+                }
 
-                } else {
-					logger.info("hostRegister() - " + workerWalletAddr +" : don't want to contribute");
-				}
+                logger.debug("hostRegister() - " + workerWalletAddr +" joins market order "
+                        + marketOrder.getUID());
+                marketOrder.addWorker(theHost);
 
-				update(host);
-				return host;
-			} else {
-				try {
-					logger.info(hostName + " not in DB; inserting " + _host.getUID().toString());
-					insert(_host);
-					return _host;
-				} catch (final Exception e) {
-					logger.exception(hostName + " can't create new host", e);
-				}
-			}
+                // following host.update() is not really necessary but helps comprehension
+                // since createMarketOrder is long to execute on the blockchain
+                // and update(host) below will not waste any time to write to DB
+                // since it would have already been written here
+                theHost.update();
+                marketOrder.update();
+
+                if(marketOrder.canStart()) {
+                    final ActuatorService actuatorService = ActuatorService.getInstance();
+                    final BigInteger marketOrderIdx = actuatorService.createMarketOrder(BigInteger.valueOf(marketOrder.getCategoryId()),
+                            BigInteger.valueOf(marketOrder.getTrust()),
+                            BigInteger.valueOf(marketOrder.getPrice()),
+                            BigInteger.valueOf(marketOrder.getVolume()));
+                    marketOrder.setMarketOrderIdx(marketOrderIdx.longValue());
+                    marketOrder.update();
+                }
+
+            } catch (final IOException e) {
+                logger.exception(e);
+            }
+
+            update(theHost);
+            return theHost;
+
 		} catch (final Exception e) {
 			logger.exception(e);
 			logger.debug("new connection");

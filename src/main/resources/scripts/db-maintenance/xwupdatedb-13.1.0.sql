@@ -24,10 +24,10 @@ SET FOREIGN_KEY_CHECKS=0;
 insert into statuses (statusId, statusName, statusObjects, statusComment, statusDeprecated) values (15, 'CONTRIBUTED',   'works',               'The job does not fill its category requirements',                                   null);
 insert into statuses (statusId, statusName, statusObjects, statusComment, statusDeprecated) values (16, 'REVEALING',     'works',               'The job does not fill its category requirements',                                   null);
 
-ALTER TABLE  hosts ADD    COLUMN ethwalletaddr     varchar(254)                comment 'worker eth wallet address; optional';
-ALTER TABLE  hosts ADD    COLUMN marketorderUID    char(36)                    comment 'Optional, UID of the market order';
-ALTER TABLE  hosts ADD    COLUMN hascontributed    char(5)    default 'false'  comment 'This flag tells whether this host ahs already contributed to its current market order';
-ALTER TABLE  hosts ADD    COLUMN workerpooladdr    varchar(254)                comment 'workerpool addr this host is registered to';
+ALTER TABLE  hosts ADD    COLUMN ethwalletaddr     varchar(254)                  comment 'worker eth wallet address; optional';
+ALTER TABLE  hosts ADD    COLUMN marketorderUID    char(36)                      comment 'Optional, UID of the market order';
+ALTER TABLE  hosts ADD    COLUMN hascontributed    char(5)      default 'false'  comment 'This flag tells whether this host ahs already contributed to its current market order';
+ALTER TABLE  hosts ADD    COLUMN workerpooladdr    varchar(254)                  comment 'workerpool addr this host is registered to';
 
 ALTER TABLE  apps  ADD    COLUMN price             bigint          default 0  comment 'price since 13.1.0',
 

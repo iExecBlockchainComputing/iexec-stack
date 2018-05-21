@@ -65,26 +65,55 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
      * This retrieves a market order still starving computing resources,
      * and registers the worker as volunteer; if no such market order, this returns.
      * Finally, the market order is created on the blockchain if it has enough volunteers.
+     *
+     * If it is found that, for a given market order, a wallet has been presented by two or more different workers,
+     * all these workers using the same wallet are banned
+     *
      * @param workerWalletAddr is the worker wallet address
      */
     @Override
     public void onSubscription(String workerWalletAddr) {
         try {
-            final HostInterface host = DBInterface.getInstance().host(workerWalletAddr);
-            if(host == null) {
+            final HostInterface theHost = DBInterface.getInstance().host(new EthereumWallet(workerWalletAddr));
+            if(theHost == null) {
                 logger.warn("onSubscription(" + workerWalletAddr +") : host not found");
                 return;
             }
-            logger.debug("onSubscription(" + workerWalletAddr + ") : " + host.toXml());
-            final MarketOrderInterface marketOrder = DBInterface.getInstance().marketOrderUnsatisfied(host.getWorkerPoolAddr());
+            logger.debug("onSubscription(" + workerWalletAddr + ") : " + theHost.toXml());
+            final MarketOrderInterface marketOrder = DBInterface.getInstance().marketOrderUnsatisfied(theHost.getWorkerPoolAddr());
             if(marketOrder == null) {
                 logger.info("onSubscription(" + workerWalletAddr +") : no unsatisfied market order");
                 return;
             }
-            if (host.canContribute()) {
-                marketOrder.addWorker(host);
+
+            final Collection<HostInterface> hosts = DBInterface.getInstance().hosts(new EthereumWallet(workerWalletAddr),
+                    marketOrder);
+            logger.debug("onSubscription(" + workerWalletAddr + ") : duplicated wallet " + (hosts == null ? 0 : hosts.size()));
+
+            if (hosts != null) {
+                boolean error = false;
+                for (HostInterface host : hosts) {
+                    if(host.getUID().equals(theHost.getUID()))
+                        continue;
+                    error = true;
+                    logger.error("onSubscription(" + workerWalletAddr +") : more than one wallet owner " + host.getUID());
+                    host.leaveMarketOrder(marketOrder);
+                    host.setActive(false);
+                    host.update();
+                }
+                if(error) {
+                    logger.error("onSubscription(" + workerWalletAddr +") : more than one wallet owner " + theHost.getUID());
+                    theHost.leaveMarketOrder(marketOrder);
+                    theHost.setActive(false);
+                    theHost.update();
+                    return;
+                }
+            }
+
+            if (theHost.canContribute()) {
+                marketOrder.addWorker(theHost);
                 marketOrder.setWaiting();
-                host.update();
+                theHost.update();
                 marketOrder.update();
             }
             if(marketOrder.canStart()) {
