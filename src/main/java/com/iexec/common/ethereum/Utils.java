@@ -2,13 +2,17 @@ package com.iexec.common.ethereum;
 
 import com.iexec.common.contracts.generated.IexecHub;
 import com.iexec.common.contracts.generated.RLC;
+import com.iexec.common.model.ConsensusModel;
+import com.iexec.common.model.ContributionModel;
 import com.iexec.common.model.MarketOrderModel;
+import com.iexec.common.model.StateHistoryModel;
 import org.slf4j.Logger;
 import org.web3j.crypto.Hash;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.core.DefaultBlockParameterName;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.tuples.generated.Tuple2;
+import org.web3j.tuples.generated.Tuple6;
 import org.web3j.tuples.generated.Tuple8;
 import org.web3j.tx.Contract;
 
@@ -74,6 +78,27 @@ public final class Utils {
     public static MarketOrderModel tuple2MarketOrderModel(Tuple8<BigInteger, BigInteger, BigInteger, BigInteger, BigInteger, BigInteger, String, String> marketOrder) {
         if (marketOrder != null) {
             return new MarketOrderModel(marketOrder.getValue1(), marketOrder.getValue2(), marketOrder.getValue3(), marketOrder.getValue4(), marketOrder.getValue5(), marketOrder.getValue6(), marketOrder.getValue7(), marketOrder.getValue8());
+        }
+        return null;
+    }
+
+    public static ConsensusModel tuple2ConsensusModel(Tuple8<BigInteger, BigInteger, byte[], BigInteger, BigInteger, BigInteger, BigInteger, String> consensusDetail) {
+        if (consensusDetail != null) {
+            return new ConsensusModel(consensusDetail.getValue1(), consensusDetail.getValue2(), consensusDetail.getValue3(), consensusDetail.getValue4(), consensusDetail.getValue5(), consensusDetail.getValue6(), consensusDetail.getValue7(), consensusDetail.getValue8());
+        }
+        return null;
+    }
+
+    public static ContributionModel tuple2ContributionModel(Tuple6<BigInteger, byte[], byte[], String, BigInteger, BigInteger> contribution) {
+        if (contribution != null) {
+            return new ContributionModel(contribution.getValue1(), contribution.getValue2(), contribution.getValue3(), contribution.getValue4(), contribution.getValue5(), contribution.getValue6());
+        }
+        return null;
+    }
+
+    public static StateHistoryModel tuple2StateHistoryModel(Tuple2<BigInteger, BigInteger> stateHistoryModel) {
+        if (stateHistoryModel != null) {
+            return new StateHistoryModel(stateHistoryModel.getValue1(), stateHistoryModel.getValue2());
         }
         return null;
     }
