@@ -110,6 +110,15 @@ public enum XWPropertyDefs {
 	 */
 	BLOCKCHAINETHENABLED,
 	/**
+	 * Server, Worker : do we connect to Ethereum blockchain ?
+	 * <p>
+	 * Property type : boolean
+	 * </p>
+	 *
+	 * @since 13.1.0
+	 */
+	SUBSCRIBEDTOPOOL,
+	/**
 	 * Server : the facebook application ID for
 	 * <p>
 	 * Property type : string
