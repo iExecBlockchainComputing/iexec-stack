@@ -14,6 +14,10 @@ public interface Actuator {
                                                List<String> workers,
                                                String enclaveChallenge);
 
+    TransactionStatus depositRlc(BigInteger rlcToDeposit);
+
+    TransactionStatus depositRlc();
+
     BigInteger createMarketOrder(BigInteger category, BigInteger trust, BigInteger value, BigInteger volume);
 
     TransactionStatus revealConsensus(String workOrderId, String hashResult);

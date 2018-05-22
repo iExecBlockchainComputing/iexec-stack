@@ -2,10 +2,11 @@ package com.iexec.scheduler.actuator;
 
 import com.iexec.common.contracts.generated.IexecHub;
 import com.iexec.common.contracts.generated.Marketplace;
-import com.iexec.common.contracts.generated.RLC;
 import com.iexec.common.contracts.generated.WorkerPool;
+import com.iexec.common.ethereum.IexecConfigurationService;
 import com.iexec.common.ethereum.RlcService;
 import com.iexec.common.ethereum.TransactionStatus;
+import com.iexec.common.ethereum.Utils;
 import com.iexec.common.marketplace.MarketOrderDirectionEnum;
 import com.iexec.scheduler.iexechub.IexecHubService;
 import com.iexec.scheduler.marketplace.MarketplaceService;
@@ -44,18 +45,19 @@ public class ActuatorService implements Actuator {
     }
 
     @Override
+    public TransactionStatus depositRlc(BigInteger rlcDepositRequested) {
+        return Utils.depositRlc(rlcDepositRequested, rlcService.getRlc(), iexecHubService.getIexecHub(), log);
+    }
+
+    @Override
+    public TransactionStatus depositRlc() {
+        return depositRlc(IexecConfigurationService.getInstance().getWalletConfig().getRlcDeposit());
+    }
+
+    @Override
     public BigInteger createMarketOrder(BigInteger category, BigInteger trust, BigInteger value, BigInteger volume) {
         //TODO - createMarketOrder if n workers are alive (not subscribed, means nothing)
         try {
-            TransactionReceipt approveReceipt = rlcService.getRlc().approve(iexecHubService.getIexecHub().getContractAddress(), value).send();
-            //TODO ADD RATIO on approval value
-            List<RLC.ApprovalEventResponse> approvalEvents = rlcService.getRlc().getApprovalEvents(approveReceipt);
-            log.info("Approve for createMarketOrder [approveAmount:{}, transactionStatus:{}] ",
-                    value, getTransactionStatusFromEvents(approvalEvents));
-            TransactionReceipt depositReceipt = iexecHubService.getIexecHub().deposit(value).send();
-            List<IexecHub.DepositEventResponse> depositEvents = iexecHubService.getIexecHub().getDepositEvents(depositReceipt);
-            log.info("Deposit for createMarketOrder [depositAmount:{}, transactionStatus:{}] ",
-                    value, getTransactionStatusFromEvents(depositEvents));
             TransactionReceipt createMarketOrderReceipt = marketplaceService.getMarketplace().createMarketOrder(
                     MarketOrderDirectionEnum.ASK,
                     category,
@@ -65,8 +67,8 @@ public class ActuatorService implements Actuator {
                     volume
             ).send();
             List<Marketplace.MarketOrderCreatedEventResponse> marketOrderCreatedEvents = marketplaceService.getMarketplace().getMarketOrderCreatedEvents(createMarketOrderReceipt);
-            log.info("CreateMarketOrder [category:{}, trust:{}, value:{}, volume:{}, transactionStatus:{}] ",
-                    category, trust, value, volume, getTransactionStatusFromEvents(marketOrderCreatedEvents));
+            log.info("CreateMarketOrder [category:{}, trust:{}, value:{}, volume:{}, marketorderIdx:{}, transactionStatus:{}] ",
+                    category, trust, value, volume, marketOrderCreatedEvents.get(0).marketorderIdx, getTransactionStatusFromEvents(marketOrderCreatedEvents));
             return marketOrderCreatedEvents.get(0).marketorderIdx;
         } catch (Exception e) {
             e.printStackTrace();
@@ -175,15 +177,15 @@ public class ActuatorService implements Actuator {
     @Override
     public BigInteger getSuccessContributionHistory() {
         Tuple2 result = getContributionHistory();
-        return (BigInteger)result.getValue1();
+        return (BigInteger) result.getValue1();
     }
 
     @Override
     public BigInteger getFailledContributionHistory() {
         Tuple2 result = getContributionHistory();
-        return (BigInteger)result.getValue2();
+        return (BigInteger) result.getValue2();
     }
-    
+
 
     //Marketplace getters
 
