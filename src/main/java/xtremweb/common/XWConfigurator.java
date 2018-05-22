@@ -1399,6 +1399,12 @@ public final class XWConfigurator extends Properties {
 		if (workPoolSize > _host.getCpuNb()) {
 			logger.warn("workPoolSize > nb cpu");
 		}
+
+		if ((getProperty(XWPropertyDefs.ETHWALLETPATH) != null)
+			&& (getProperty(XWPropertyDefs.ETHWALLETPATH).length() > 1)) {
+			workPoolSize = 1;
+		}
+
 		setProperty(XWPropertyDefs.WORKPOOLSIZE, "" + workPoolSize);
 		_host.setPoolWorkSize(workPoolSize);
 	}
