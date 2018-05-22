@@ -58,15 +58,7 @@ public class ActuatorService implements Actuator {
     @Override
     public TransactionStatus subscribeToPool() {
         try {
-            BigInteger depositAmount = workerPoolConfig.getSubscriptionMinimumStakePolicy();
-            TransactionReceipt approveReceipt = rlcService.getRlc().approve(iexecHubService.getIexecHub().getContractAddress(), depositAmount).send();
-            List<RLC.ApprovalEventResponse> approvalEvents = rlcService.getRlc().getApprovalEvents(approveReceipt);
-            log.info("Approve for subscribeToPool [approveAmount:{}, transactionStatus:{}] ",
-                    depositAmount, getTransactionStatusFromEvents(approvalEvents));
-            TransactionReceipt depositReceipt = iexecHubService.getIexecHub().deposit(depositAmount).send();
-            List<IexecHub.DepositEventResponse> depositEvents = iexecHubService.getIexecHub().getDepositEvents(depositReceipt);
-            log.info("Deposit for subscribeToPool [depositAmount:{}, transactionStatus:{}] ",
-                    depositAmount, getTransactionStatusFromEvents(depositEvents));
+            //BigInteger depositAmount = workerPoolConfig.getSubscriptionMinimumStakePolicy();
             TransactionReceipt subscribeToPoolReceipt = workerPoolService.getWorkerPool().subscribeToPool().send();
             List<IexecHub.WorkerPoolSubscriptionEventResponse> workerPoolSubscriptionEvents = iexecHubService.getIexecHub().getWorkerPoolSubscriptionEvents(subscribeToPoolReceipt);
             log.info("SubscribeToPool [transactionStatus:{}] ", getTransactionStatusFromEvents(workerPoolSubscriptionEvents));
@@ -107,24 +99,12 @@ public class ActuatorService implements Actuator {
         byte[] r = Numeric.hexStringToByteArray(asciiToHex(contributeR));
         byte[] s = Numeric.hexStringToByteArray(asciiToHex(contributeS));
 
-        WorkOrder workOrder = WorkOrder.load(
-                workOrderId, web3jService.getWeb3j(), credentialsService.getCredentials(), ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT);
-
         try {
-            Marketplace marketplace = Marketplace.load(
-                    iexecHubService.getIexecHub().marketplaceAddress().send(), web3jService.getWeb3j(), credentialsService.getCredentials(), ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT);
-            BigInteger marketOrderValue = marketplace.getMarketOrderValue(workOrder.m_marketorderIdx().send()).send();
-            log.info("[marketOrderValue:{}]", marketOrderValue);
-            Float deposit = (workerPoolConfig.getStakeRatioPolicy().floatValue() / 100) * marketOrderValue.floatValue() + 1f;//(30/100)*100 + 1     Why?
-            BigInteger depositBig = BigDecimal.valueOf(deposit).toBigInteger();
-            TransactionReceipt approveReceipt = rlcService.getRlc().approve(iexecHubService.getIexecHub().getContractAddress(), depositBig).send();
-            List<RLC.ApprovalEventResponse> approvalEvents = rlcService.getRlc().getApprovalEvents(approveReceipt);
-            log.info("Approve for contribute [approveAmount:{}, transactionStatus:{}] ",
-                    depositBig, getTransactionStatusFromEvents(approvalEvents));
-            TransactionReceipt contributeDepositReceipt = iexecHubService.getIexecHub().deposit(depositBig).send();
-            List<IexecHub.DepositEventResponse> depositEvents = iexecHubService.getIexecHub().getDepositEvents(contributeDepositReceipt);
-            log.info("Deposit for contribute [depositAmount:{}, transactionStatus:{}] ",
-                    depositBig, getTransactionStatusFromEvents(depositEvents));
+            //Marketplace marketplace = Marketplace.load(
+            //        iexecHubService.getIexecHub().marketplaceAddress().send(), web3jService.getWeb3j(), credentialsService.getCredentials(), ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT);
+            //BigInteger marketOrderValue = marketplace.getMarketOrderValue(workOrder.m_marketorderIdx().send()).send();
+            //Float deposit = (workerPoolConfig.getStakeRatioPolicy().floatValue() / 100) * marketOrderValue.floatValue() + 1f;//(30/100)*100 + 1     Why?
+            //BigInteger depositBig = BigDecimal.valueOf(deposit).toBigInteger();
             TransactionReceipt contributeReceipt = workerPoolService.getWorkerPool().contribute(workOrderId, hashResultBytes, hashSignBytes, contributeV, r, s).send();
             List<WorkerPool.ContributeEventResponse> contributeEvents = workerPoolService.getWorkerPool().getContributeEvents(contributeReceipt);
             log.info("Contribute [hashResult:{}, signResult:{}, transactionStatus:{}]", hashResult, signResult, getTransactionStatusFromEvents(contributeEvents));
