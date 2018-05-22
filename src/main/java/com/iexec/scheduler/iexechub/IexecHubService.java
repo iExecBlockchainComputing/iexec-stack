@@ -3,6 +3,8 @@ package com.iexec.scheduler.iexechub;
 
 import com.iexec.common.contracts.generated.IexecHub;
 import com.iexec.common.ethereum.*;
+import com.iexec.common.model.ContributionModel;
+import com.iexec.common.model.StateHistoryModel;
 import com.iexec.common.workerpool.WorkerPoolConfig;
 import com.iexec.scheduler.workerpool.WorkerPoolService;
 import org.slf4j.Logger;
@@ -15,6 +17,8 @@ import org.web3j.tx.ManagedTransaction;
 import java.io.IOException;
 
 import static com.iexec.common.ethereum.Utils.END;
+import static com.iexec.common.ethereum.Utils.tuple2ContributionModel;
+import static com.iexec.common.ethereum.Utils.tuple2StateHistoryModel;
 
 
 public class IexecHubService {
@@ -118,6 +122,18 @@ public class IexecHubService {
 
     public IexecHub getIexecHub() {
         return iexecHub;
+    }
+
+    public StateHistoryModel getContributionHistory() {
+        StateHistoryModel stateHistoryModel = null;
+        TransactionStatus transactionStatus = TransactionStatus.SUCCESS;
+        try {
+            stateHistoryModel = tuple2StateHistoryModel(iexecHub.m_contributionHistory().send());
+        } catch (Exception e) {
+            transactionStatus = TransactionStatus.FAILURE;
+        }
+        log.info("GetStateHistoryModel [transactionStatus:{}] ", transactionStatus);
+        return stateHistoryModel;
     }
 
 }
