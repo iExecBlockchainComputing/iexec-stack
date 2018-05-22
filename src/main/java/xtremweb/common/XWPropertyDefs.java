@@ -101,6 +101,15 @@ public enum XWPropertyDefs {
 	 */
 	ETHWALLETPASSWORD,
 	/**
+	 * Server : Deposit value for the server
+	 * <p>
+	 * Property type : integer
+	 * </p>
+	 *
+	 * @since 13.1.0
+	 */
+	RLCDEPOSIT,
+	/**
 	 * Server, Worker : do we connect to Ethereum blockchain ?
 	 * <p>
 	 * Property type : boolean
