@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.web3j.crypto.Hash;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
+import org.web3j.tuples.generated.Tuple2;
 import org.web3j.tx.Contract;
 import org.web3j.tx.ManagedTransaction;
 import org.web3j.utils.Numeric;
@@ -42,6 +43,16 @@ public class ActuatorService implements Actuator {
             instance = new ActuatorService();
         }
         return instance;
+    }
+
+    @Override
+    public TransactionStatus depositRlc(BigInteger rlcDepositRequested) {
+        return Utils.depositRlc(rlcDepositRequested, rlcService.getRlc(),iexecHubService.getIexecHub(), log);
+    }
+
+    @Override
+    public TransactionStatus depositRlc() {
+        return depositRlc(IexecConfigurationService.getInstance().getWalletConfig().getRlcDeposit());
     }
 
     @Override

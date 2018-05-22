@@ -6,6 +6,10 @@ import java.math.BigInteger;
 
 public interface Actuator {
 
+    TransactionStatus depositRlc(BigInteger rlcDepositRequested);
+
+    TransactionStatus depositRlc();
+
     TransactionStatus subscribeToPool();
 
     TransactionStatus unsubscribeFromPool();
