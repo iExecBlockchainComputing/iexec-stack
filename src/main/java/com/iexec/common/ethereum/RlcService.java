@@ -21,12 +21,12 @@ public class RlcService {
     private RlcService() {
         String rlcAddress = configuration.getContractConfig().getRlcAddress();
         ExceptionInInitializerError exceptionInInitializerError = new ExceptionInInitializerError("Failed to load RLC contract from address " + rlcAddress);
-        if (rlcAddress!=null && !rlcAddress.isEmpty()){
+        if (rlcAddress != null && !rlcAddress.isEmpty()) {
             try {
                 rlc = RLC.load(
                         rlcAddress, web3jService.getWeb3j(), credentialsService.getCredentials(), ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT);
                 //if (!rlc.isValid()){ throw exceptionInInitializerError;}
-            } catch (EnsResolutionException e){
+            } catch (EnsResolutionException e) {
                 throw exceptionInInitializerError;
             }
         } else {

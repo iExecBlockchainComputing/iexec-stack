@@ -1,10 +1,14 @@
 package com.iexec.common.ethereum;
 
+import com.iexec.common.contracts.generated.IexecHub;
+import com.iexec.common.contracts.generated.RLC;
 import com.iexec.common.model.MarketOrderModel;
+import org.slf4j.Logger;
 import org.web3j.crypto.Hash;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.core.DefaultBlockParameterName;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
+import org.web3j.tuples.generated.Tuple2;
 import org.web3j.tuples.generated.Tuple8;
 import org.web3j.tx.Contract;
 
@@ -72,6 +76,38 @@ public final class Utils {
             return new MarketOrderModel(marketOrder.getValue1(), marketOrder.getValue2(), marketOrder.getValue3(), marketOrder.getValue4(), marketOrder.getValue5(), marketOrder.getValue6(), marketOrder.getValue7(), marketOrder.getValue8());
         }
         return null;
+    }
+
+    public static TransactionStatus depositRlc(BigInteger rlcDepositRequested, RLC rlc ,IexecHub iexecHub, Logger log) {
+        try {
+            Tuple2<BigInteger, BigInteger> lastStakeAndLocked = iexecHub.checkBalance(CredentialsService.getInstance().getCredentials().getAddress()).send();
+            BigInteger lastStake = lastStakeAndLocked.getValue1();
+            log.info("Get last RLC stake [stakeAmount:{}, rlcDepositRequested:{}, transactionStatus:{}] ",
+                    lastStake, rlcDepositRequested, TransactionStatus.SUCCESS);
+            if (lastStake.compareTo(rlcDepositRequested) < 0) {
+                BigInteger rlcDeposit = rlcDepositRequested.subtract(lastStake);
+                TransactionReceipt approveReceipt = rlc.approve(iexecHub.getContractAddress(), rlcDeposit).send();
+                List<RLC.ApprovalEventResponse> approvalEvents = rlc.getApprovalEvents(approveReceipt);
+                log.info("Approve RLC amount [approveAmount:{}, transactionStatus:{}] ",
+                        rlcDeposit, getTransactionStatusFromEvents(approvalEvents));
+                TransactionReceipt depositReceipt = iexecHub.deposit(rlcDeposit).send();
+                List<IexecHub.DepositEventResponse> depositEvents = iexecHub.getDepositEvents(depositReceipt);
+                log.info("Deposit RLC amount [depositAmount:{}, transactionStatus:{}] ",
+                        rlcDeposit, getTransactionStatusFromEvents(depositEvents));
+                Tuple2<BigInteger, BigInteger> currentStakeAndLocked = iexecHub.checkBalance(CredentialsService.getInstance().getCredentials().getAddress()).send();
+                BigInteger currentStake = currentStakeAndLocked.getValue1();
+                log.info("Get current RLC stake [stakeAmount:{}, rlcDepositRequested:{}, transactionStatus:{}] ",
+                        currentStake, rlcDepositRequested, TransactionStatus.SUCCESS);
+                if (currentStake.equals(rlcDepositRequested)) {
+                    return TransactionStatus.SUCCESS;
+                }
+            } else {
+                return TransactionStatus.SUCCESS;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return TransactionStatus.FAILURE;
     }
 
 }
