@@ -32,25 +32,28 @@ package xtremweb.common;
  * @author Samuel Heriard, Oleg Lodygensky
  */
 
-import java.awt.AWTException;
-import java.awt.Image;
-import java.awt.MenuItem;
-import java.awt.PopupMenu;
-import java.awt.SystemTray;
-import java.awt.Toolkit;
-import java.awt.TrayIcon;
+import com.iexec.common.ethereum.CommonConfiguration;
+import com.iexec.common.ethereum.CredentialsService;
+import com.iexec.common.ethereum.IexecConfigurationService;
+import com.iexec.common.workerpool.WorkerPoolConfig;
+import org.web3j.crypto.Credentials;
+import org.web3j.protocol.Web3j;
+import xtremweb.archdep.ArchDepFactory;
+import xtremweb.communications.CommClient;
+import xtremweb.communications.Connection;
+import xtremweb.communications.URI;
+import xtremweb.security.PEMPrivateKey;
+import xtremweb.security.PEMPublicKey;
+import xtremweb.security.X509Proxy;
+import xtremweb.worker.Worker;
+
+import javax.net.ssl.KeyManagerFactory;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintStream;
-import java.io.PrintWriter;
+import java.io.*;
+import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -60,38 +63,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateExpiredException;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-import java.util.TimeZone;
-import java.util.Vector;
-
-import javax.net.ssl.KeyManagerFactory;
-import javax.swing.JMenuItem;
-
-import com.iexec.common.ethereum.CommonConfiguration;
-import com.iexec.common.ethereum.CredentialsService;
-import com.iexec.common.ethereum.IexecConfigurationService;
-import com.iexec.common.ethereum.WalletConfig;
-import com.iexec.common.workerpool.WorkerPoolConfig;
-import org.web3j.crypto.CipherException;
-import org.web3j.crypto.Credentials;
-import org.web3j.crypto.WalletUtils;
-import org.web3j.protocol.Web3j;
-import org.web3j.protocol.core.methods.response.Web3ClientVersion;
-import org.web3j.protocol.http.HttpService;
-import xtremweb.archdep.ArchDepFactory;
-import xtremweb.communications.CommClient;
-import xtremweb.communications.Connection;
-import xtremweb.communications.URI;
-import xtremweb.security.PEMPrivateKey;
-import xtremweb.security.PEMPublicKey;
-import xtremweb.security.X509Proxy;
-import xtremweb.worker.Worker;
+import java.util.*;
 
 import static xtremweb.common.XWPropertyDefs.BLOCKCHAINETHENABLED;
 
@@ -247,6 +219,10 @@ public final class XWConfigurator extends Properties {
 
 	public String getWalletPassword() {
 		return getProperty(XWPropertyDefs.ETHWALLETPASSWORD);
+	}
+
+	public BigInteger getRLCDeposit() {
+		return new BigInteger(getProperty(XWPropertyDefs.RLCDEPOSIT));
 	}
 
 	public String getDispatcher() {

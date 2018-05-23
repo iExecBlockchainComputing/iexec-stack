@@ -24,6 +24,9 @@ public class WorkerPocoWatcherImpl implements WorkerPoolWatcher, IexecHubWatcher
     public WorkerPocoWatcherImpl() {
         iexecHubService.registerIexecHubWatcher(this);
         workerPoolService.registerWorkerPoolWatcher(this);
+
+        actuatorService.depositRlc();
+
         TransactionStatus status = TransactionStatus.FAILURE;
         while (status == TransactionStatus.FAILURE ) {
             status = actuatorService.subscribeToPool();

@@ -2,7 +2,6 @@ FROM ubuntu:16.04
 EXPOSE 4321 4322 4323 4324 4327 4328 443
 
 ADD conf/xtremweb.worker.conf /iexec/conf/
-ADD conf/iexec-worker.yml /iexec/conf/
 RUN mkdir -p /iexec/bin
 RUN mkdir -p /iexec/certificate
 ADD bin/xtremweb.worker /iexec/bin

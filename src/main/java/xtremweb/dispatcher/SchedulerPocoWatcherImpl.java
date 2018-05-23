@@ -47,8 +47,10 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
         } catch (IOException e) {
             e.printStackTrace();
         }
+        actuatorService.depositRlc();
         iexecHubService.registerIexecHubWatcher(this);
         workerPoolService.registerWorkerPoolWatcher(this);
+
         try {
             administrator = Dispatcher.getConfig().getProperty(XWPropertyDefs.ADMINLOGIN) == null ? null
                     : DBInterface.getInstance()

@@ -128,6 +128,10 @@ ETHWALLETPATH=../wallet/UTC--2018-02-14T11-15-48.411000000Z--70a1bebd73aef241154
 #
 ETHWALLETPASSWORD=whatever
 
+#
+# Initial deposit of RLC
+#
+RLCDEPOSIT=100
 
 #
 # Internode communications needs a running SmartSockets hub; this may also denote a hub network<br />
