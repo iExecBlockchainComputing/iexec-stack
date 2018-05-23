@@ -31,7 +31,7 @@ public class MarketplaceService {
         ExceptionInInitializerError exceptionInInitializerError = new ExceptionInInitializerError("Failed to load Marketplace contract");
         if (iexecHubService!=null){
             try {
-                String marketplaceAddress = iexecHubService.getIexecHub().marketplaceAddress().send();
+                String marketplaceAddress = iexecHubService.getIexecHub().marketplace().send();
                 this.marketplace = Marketplace.load(
                         marketplaceAddress, web3jService.getWeb3j(), credentialsService.getCredentials(), ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT);
             } catch (Exception e) {
