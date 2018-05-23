@@ -52,7 +52,7 @@ public class ModelService {
         try {
             WorkOrder workOrder = WorkOrder.load(
                     workOrderId, web3jService.getWeb3j(), credentialsService.getCredentials(), ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT);
-            return new WorkOrderModel(workOrderId, workOrder.m_marketorderIdx().send(), workOrder.m_requester().send(), workOrder.m_app().send(), workOrder.m_dataset().send(), workOrder.m_workerpool().send(), workOrder.m_emitcost().send(), workOrder.m_params().send(), workOrder.m_callback().send(), workOrder.m_beneficiary().send());
+            return new WorkOrderModel(workOrderId, workOrder.m_status().send(),workOrder.m_marketorderIdx().send(), workOrder.m_requester().send(), workOrder.m_app().send(), workOrder.m_dataset().send(), workOrder.m_workerpool().send(), workOrder.m_emitcost().send(), workOrder.m_params().send(), workOrder.m_callback().send(), workOrder.m_beneficiary().send());
         } catch (Exception e) {
             e.printStackTrace();
         }
