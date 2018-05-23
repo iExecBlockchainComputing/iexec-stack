@@ -8,8 +8,6 @@ import com.iexec.common.model.AppModel;
 import com.iexec.common.model.ModelService;
 import com.iexec.common.model.WorkOrderModel;
 import com.iexec.scheduler.actuator.ActuatorService;
-import com.iexec.scheduler.database.Contribution;
-import com.iexec.scheduler.database.ContributionService;
 import com.iexec.scheduler.iexechub.IexecHubService;
 import com.iexec.scheduler.iexechub.IexecHubWatcher;
 import com.iexec.scheduler.workerpool.WorkerPoolService;

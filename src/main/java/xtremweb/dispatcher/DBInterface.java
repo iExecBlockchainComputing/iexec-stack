@@ -1209,8 +1209,8 @@ public final class DBInterface {
         return selectOne(new MarketOrderInterface(),
                 SQLRequest.MAINTABLEALIAS + "." + MarketOrderInterface .Columns.NBWORKERS + "<"
                         + MarketOrderInterface .Columns.EXPECTEDWORKERS
-						+ " AND " + MarketOrderInterface .Columns.WORKERPOOLADDR + "='"
-						+ workerPoolAddr + "'");
+						+ " AND " + MarketOrderInterface .Columns.WORKERPOOLADDR + "='" + workerPoolAddr + "'"
+						+ " AND " + MarketOrderInterface .Columns.REMAINING + " > 0");
     }
     /**
      * This retrieves a market order by its id, bypassing access rights
