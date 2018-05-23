@@ -1,5 +1,5 @@
-# iExec Pools Listing DB
+# iExec Pools Registry
 
-## How to be listed on the iExec Worker Pools listing?
+## How to be listed on the iExec Worker Pools registry?
 
-1.  Submit a [pull request](https://github.com/iExecBlockchainComputing/iexec-pools-listing-db/pulls) to the [DB file](./pools-db.js) of this repository.
+1.  Submit a [pull request](https://github.com/iExecBlockchainComputing/iexec-pools-registry/pulls) to the [DB file](./registry.json) of this repository.
