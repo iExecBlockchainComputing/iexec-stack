@@ -66,4 +66,17 @@ public class MarketplaceService {
         return marketOrderModel;
     }
 
+    public BigInteger getMarketOrderCount(){
+        BigInteger marketOrderCount = null;
+        TransactionStatus transactionStatus = TransactionStatus.SUCCESS;
+        try {
+            marketOrderCount = marketplace.m_orderCount().send();
+        } catch (Exception e) {
+            transactionStatus = TransactionStatus.FAILURE;
+        }
+        log.info("GetMarketOrderCount [marketOrderCount:{}, transactionStatus:{}] ",
+                marketOrderCount, transactionStatus);
+        return marketOrderCount;
+    }
+
 }

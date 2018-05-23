@@ -2,6 +2,8 @@ package com.iexec.scheduler.workerpool;
 
 import com.iexec.common.contracts.generated.WorkerPool;
 import com.iexec.common.ethereum.*;
+import com.iexec.common.model.ConsensusModel;
+import com.iexec.common.model.ContributionModel;
 import com.iexec.common.workerpool.WorkerPoolConfig;
 import com.iexec.scheduler.iexechub.IexecHubService;
 import org.slf4j.Logger;
@@ -13,6 +15,8 @@ import org.web3j.tx.ManagedTransaction;
 import org.web3j.utils.Numeric;
 
 import static com.iexec.common.ethereum.Utils.END;
+import static com.iexec.common.ethereum.Utils.tuple2ConsensusModel;
+import static com.iexec.common.ethereum.Utils.tuple2ContributionModel;
 
 
 public class WorkerPoolService {
@@ -160,4 +164,31 @@ public class WorkerPoolService {
     public WorkerPoolConfig getWorkerPoolConfig() {
         return workerPoolConfig;
     }
+
+    public ConsensusModel getConsensusModelByWorkOrderId(String workOrderId) {
+        ConsensusModel consensusModel = null;
+        TransactionStatus transactionStatus = TransactionStatus.SUCCESS;
+        try {
+            consensusModel = tuple2ConsensusModel(workerPool.getConsensusDetails(workOrderId).send());
+        } catch (Exception e) {
+            transactionStatus = TransactionStatus.FAILURE;
+        }
+        log.info("GetConsensusModel [workOrderId:{}, transactionStatus:{}] ",
+                workOrderId, transactionStatus);
+        return consensusModel;
+    }
+
+    public ContributionModel getWorkerContributionModelByWorkOrderId(String workOrderId, String worker) {
+        ContributionModel contributionModel = null;
+        TransactionStatus transactionStatus = TransactionStatus.SUCCESS;
+        try {
+            contributionModel = tuple2ContributionModel(workerPool.getContribution(workOrderId, worker).send());
+        } catch (Exception e) {
+            transactionStatus = TransactionStatus.FAILURE;
+        }
+        log.info("GetContributionModel [worker:{}, workOrderId:{}, transactionStatus:{}] ",
+                worker, workOrderId, transactionStatus);
+        return contributionModel;
+    }
+
 }

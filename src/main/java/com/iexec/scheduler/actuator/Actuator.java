@@ -27,23 +27,4 @@ public interface Actuator {
     List<IexecHub.CreateCategoryEventResponse> getCategories();
 
     BigInteger getWorkerScore(String worker);
-
-    Tuple2<BigInteger, BigInteger> getContributionHistory();
-
-    BigInteger getSuccessContributionHistory();
-
-    BigInteger getFailledContributionHistory();
-
-    BigInteger getMarketOrdersCount();
-
-    Tuple8<BigInteger, BigInteger, BigInteger, BigInteger, BigInteger, BigInteger, String, String> getMarketOrder(BigInteger marketorderIdx);
-
-    Boolean existingMarketOrder(BigInteger marketorderIdx);
-
-    BigInteger getMarketOrderValue(BigInteger marketorderIdx);
-
-    BigInteger getMarketOrderCategory(BigInteger marketorderIdx);
-
-    BigInteger getMarketOrderTrust(BigInteger marketorderIdx);
-
 }
