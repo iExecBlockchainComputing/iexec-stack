@@ -5,6 +5,7 @@ import java.math.BigInteger;
 public class WorkOrderModel {
 
     private String id;
+    private BigInteger status;
     private BigInteger marketorderIdx;
     private String requester;
     private String app;
@@ -15,8 +16,9 @@ public class WorkOrderModel {
     private String callback;
     private String beneficiary;
 
-    public WorkOrderModel(String id, BigInteger marketorderIdx, String requester, String app, String dataset, String workerpool, BigInteger emitcost, String params, String callback, String beneficiary) {
+    public WorkOrderModel(String id, BigInteger status, BigInteger marketorderIdx, String requester, String app, String dataset, String workerpool, BigInteger emitcost, String params, String callback, String beneficiary) {
         this.id = id;
+        this.status = status;
         this.marketorderIdx = marketorderIdx;
         this.requester = requester;
         this.app = app;
@@ -34,6 +36,14 @@ public class WorkOrderModel {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public BigInteger getStatus() {
+        return status;
+    }
+
+    public void setStatus(BigInteger status) {
+        this.status = status;
     }
 
     public BigInteger getMarketorderIdx() {
