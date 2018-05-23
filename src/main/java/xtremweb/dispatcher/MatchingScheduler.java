@@ -136,12 +136,18 @@ public class MatchingScheduler extends SimpleScheduler {
 				theWork.setRunning();
 				theTask.setRunningBy(host.getUID());
 				if(marketOrder != null) {
-					marketOrder.setRunning();
-                    marketOrder.update();
+					marketOrder.setRunning(host);
                     final MarketOrderModel marketOrderModel = MarketplaceService.getInstance().getMarketOrderModel(BigInteger.valueOf(marketOrder.getMarketOrderIdx()));
 					if(marketOrderModel != null) {
 						theTask.setPrice(marketOrderModel.getValue().longValue());
 					} else {
+					    marketOrder.setStatus(StatusEnum.ERROR);
+					    theWork.setError("can't find market order model from idx " + marketOrder.getMarketOrderIdx());
+					    theTask.setError();
+					    theApp.decRunningJobs();
+					    theWorkOwner.decRunningJobs();
+					    host.decRunningJobs();
+					    host.leaveMarketOrder(marketOrder);
 					    logger.warn("can't find market order model from idx " + marketOrder.getMarketOrderIdx());
                     }
 				}
@@ -153,6 +159,7 @@ public class MatchingScheduler extends SimpleScheduler {
 				//
 				DBConnPoolThread.getInstance().update(theWork, null, false);
 
+                marketOrder.update();
                 host.update();
 				theTask.update();
 				theApp.update();

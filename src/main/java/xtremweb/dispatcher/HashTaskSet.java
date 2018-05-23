@@ -28,16 +28,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.Vector;
 
-import xtremweb.common.AppInterface;
-import xtremweb.common.HostInterface;
-import xtremweb.common.StatusEnum;
-import xtremweb.common.Table;
-import xtremweb.common.TaskInterface;
-import xtremweb.common.UID;
-import xtremweb.common.UserInterface;
-import xtremweb.common.WorkInterface;
-import xtremweb.common.XWPropertyDefs;
-import xtremweb.common.XWTools;
+import xtremweb.common.*;
 
 /**
  * HashTaskSet.java
@@ -154,15 +145,15 @@ public class HashTaskSet extends TaskSet {
 				theTask.setError();
 				theTask.setRemovalDate(now);
 
-				final Vector<Table> rows = new Vector<>();
-
 				final UID hostUID = theTask.getHost();
 				if (hostUID != null) {
 					final HostInterface theHost = db.host(hostUID);
 					if (theHost != null) {
-						theHost.decRunningJobs();
-						theHost.leaveMarketOrder();
-						rows.add(theHost);
+                        theHost.decRunningJobs();
+                        theHost.incErrorJobs();
+						final MarketOrderInterface marketOrder = DBInterface.getInstance().marketOrder(theHost.getMarketOrderUid());
+                        theHost.leaveMarketOrder(marketOrder);
+						theHost.update();
 					}
 				}
 				final UID ownerUID = theWork.getOwner();
@@ -170,7 +161,7 @@ public class HashTaskSet extends TaskSet {
 					final UserInterface theUser = db.user(ownerUID);
 					if (theUser != null) {
 						theUser.decRunningJobs();
-						rows.add(theUser);
+						theUser.update();
 					}
 				}
 				final UID appUID = theWork.getApplication();
@@ -178,13 +169,12 @@ public class HashTaskSet extends TaskSet {
 					final AppInterface theApp = db.app(appUID);
 					if (theApp != null) {
 						theApp.decRunningJobs();
-						rows.add(theApp);
+						theApp.update();
 					}
 				}
 
-				rows.add(theWork);
-				rows.add(theTask);
-				db.update(rows);
+				theWork.update();
+				theTask.update();
 			}
 		} catch (final Exception e) {
 			getLogger().exception("detecAbortedTasks_unitary : can't set tasks lost", e);

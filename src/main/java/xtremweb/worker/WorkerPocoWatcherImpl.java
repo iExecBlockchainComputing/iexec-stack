@@ -31,6 +31,13 @@ public class WorkerPocoWatcherImpl implements WorkerPoolWatcher, IexecHubWatcher
         while (status == TransactionStatus.FAILURE ) {
             status = actuatorService.subscribeToPool();
             log.info("Subscribing to pool " + status);
+            if (status==TransactionStatus.FAILURE) {
+                try {
+                    log.info("Subscribing to pool will retry in 10s");
+                    Thread.sleep(10000);
+                } catch(final InterruptedException e) {
+                }
+            }
         }
         Worker.getConfig().setProperty(XWPropertyDefs.SUBSCRIBEDTOPOOL, "true");
     }

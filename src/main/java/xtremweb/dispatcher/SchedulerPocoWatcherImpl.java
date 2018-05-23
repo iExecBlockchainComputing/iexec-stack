@@ -32,7 +32,6 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
 
     private final static IexecHubService iexecHubService = IexecHubService.getInstance();
     private final static WorkerPoolService workerPoolService = WorkerPoolService.getInstance();
-    private final static ContributionService contributionService = ContributionService.getInstance();
     private final static ActuatorService actuatorService = ActuatorService.getInstance();
     private final Logger logger;
 
@@ -115,17 +114,21 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
             if (theHost.canContribute()) {
                 marketOrder.addWorker(theHost);
                 marketOrder.setWaiting();
-                theHost.update();
-                marketOrder.update();
+                theHost.setWaiting();
             }
             if(marketOrder.canStart()) {
                final BigInteger marketOrderIdx = actuatorService.createMarketOrder(BigInteger.valueOf(marketOrder.getCategoryId()),
                        BigInteger.valueOf(marketOrder.getTrust()),
                        BigInteger.valueOf(marketOrder.getPrice()),
                        BigInteger.valueOf(marketOrder.getVolume()));
+
+               theHost.setPending();
                marketOrder.setMarketOrderIdx(marketOrderIdx.longValue());
-               marketOrder.update();
             }
+
+            theHost.update();
+            marketOrder.update();
+
         } catch (final IOException e) {
             logger.exception(e);
         }
@@ -424,8 +427,8 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
             return;
         }
 
-        final MarketOrderInterface marketOrder = createWork(workOrderId, workOrderModel);
         try {
+            final MarketOrderInterface marketOrder = createWork(workOrderId, workOrderModel);
             final Collection<HostInterface> workers = DBInterface.getInstance().hosts(marketOrder);
             if(workers == null) {
                 logger.error("onWorkOrderActivated(" + workOrderId +") : can't find any host" );
@@ -434,13 +437,12 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
 
             final ArrayList<String> wallets = new ArrayList();
             for(final HostInterface worker : workers ) {
-                if(worker.getEthWalletAddr() != null)
+                if (worker.getEthWalletAddr() != null) {
                     wallets.add(worker.getEthWalletAddr());
+                    logger.error("onWorkOrderActivated(" + workOrderId +") : allowing " + worker.getEthWalletAddr());
+                }
             }
-
-            contributionService.setCalledWorker(workOrderId, wallets);
-
-            marketOrder.setContributing();
+            marketOrder.setPending();
             marketOrder.update();
 
             actuatorService.allowWorkersToContribute(workOrderId,
@@ -482,12 +484,8 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
         try {
             final TaskInterface theWorkTask = DBInterface.getInstance().task(theWork);
             final HostInterface theHost = DBInterface.getInstance().host(theWorkTask.getHost());
-            Contribution contribution = new Contribution(contributeEventResponse.woid,
-                    theHost.getEthWalletAddr(),
-                    contributionStr.getBytes());
-
-            contributionService.addContribution(contribution);
-
+            theHost.setContributed();
+            theHost.update();
         } catch (final IOException e) {
             logger.exception(e);
         }
@@ -548,8 +546,32 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
     public void onReveal(WorkerPool.RevealEventResponse revealEventResponse) {
         final WorkOrderModel workOrderModel = ModelService.getInstance().getWorkOrderModel(revealEventResponse.woid);
         final MarketOrderInterface marketOrder = getMarketOrder(workOrderModel.getMarketorderIdx().longValue());
+        final Collection<WorkInterface> works = getMarketOrderWorks(workOrderModel.getMarketorderIdx().longValue());
+        if(works == null) {
+            logger.error("can't find any work fot work order " + revealEventResponse.woid);
+            return;
+        }
+
+        for(final WorkInterface work : works ) {
+
+            try {
+                final TaskInterface theWorkTask = DBInterface.getInstance().task(work);
+                final HostInterface theHost = DBInterface.getInstance().host(theWorkTask.getHost());
+                if(theHost == null) {
+                    logger.error ("can't the host for the work " + work.getUID());
+                    continue;
+                }
+
+                marketOrder.removeWorker(theHost);
+                logger.debug("onReval " + theHost.toXml());
+                theHost.update();
+
+            } catch (final IOException e) {
+                logger.exception(e);
+            }
+        }
         marketOrder.setCompleted();
-        //actuatorService.finalizeWork(revealEventResponse.woid,"aStdout", "aStderr", "anUri");
+        actuatorService.finalizeWork(revealEventResponse.woid,"aStdout", "aStderr", "anUri");
     }
 
     @Override

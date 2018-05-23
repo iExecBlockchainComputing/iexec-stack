@@ -135,7 +135,6 @@ public abstract class HTTPJWTHandler extends HTTPHandler {
 		getLogger().debug("JWT issuer = " + jwtethissuer);
 		algorithm = Algorithm.HMAC256(jwtethsecret);
 		verifier = JWT.require(algorithm)
-				.withIssuer(jwtethissuer)
 				.build();
 		instance = this;
 	}

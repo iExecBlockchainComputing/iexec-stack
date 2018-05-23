@@ -5335,9 +5335,18 @@ public final class DBInterface {
                 if(theTask != null) {
                     theTask.setContributed();
                 }
+                if (theHost != null) {
+                    theHost.setContributed();
+                }
                 if (mustReveal) {
+                    if (theHost != null) {
+                        theHost.setContributing();
+                    }
                     theWork.setRevealing();
                     theTask.setRevealing();
+                    if (theHost != null) {
+                        theHost.setRevealing();
+                    }
                 }
                 break;
             case COMPLETED:
@@ -5354,7 +5363,7 @@ public final class DBInterface {
                     if (startdate != null) {
                         final int exectime = (int) (System.currentTimeMillis() - startdate.getTime());
                         if (theHost != null) {
-                            theHost.leaveMarketOrder(marketOrder);
+                            //theHost.leaveMarketOrder(marketOrder);
                             theHost.incAvgExecTime(exectime);
                         }
                         jobOwner.incUsedcputime(exectime);
@@ -5421,7 +5430,6 @@ public final class DBInterface {
                 case FAILED:
                     if (theHost != null) {
 						theHost.leaveMarketOrder(marketOrder);
-						theHost.incErrorJobs();
                         theHost.decRunningJobs();
                     }
                     theApp.decRunningJobs();
@@ -5441,7 +5449,8 @@ public final class DBInterface {
                 long totalContributions = 0L;
                 for (final WorkInterface work : works) {
                     if (work.hasContributed()
-                            && (work.getH2h2r().compareTo(theWork.getH2h2r()) == 0)
+                            && (work.getH2r().compareTo(theWork.getH2r()) == 0)
+//                            && (work.getH2h2r().compareTo(theWork.getH2h2r()) == 0)
                             && (work.getStatus() == theWork.getStatus())) {
                         totalContributions++;
                     }
