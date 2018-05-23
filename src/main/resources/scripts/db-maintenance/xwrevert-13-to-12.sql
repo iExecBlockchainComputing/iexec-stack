@@ -25,7 +25,16 @@ SET FOREIGN_KEY_CHECKS=0;
 drop table if exists  categories;
 drop table if exists  categories_history;
 
+ALTER TABLE  apps  DROP   COLUMN price;
 
+ALTER TABLE  hosts DROP   COLUMN ethwalletaddr;
+ALTER TABLE  hosts DROP   COLUMN marketorderUID;
+ALTER TABLE  hosts DROP   COLUMN hascontributed;
+ALTER TABLE  hosts DROP   COLUMN workerpooladdr;
+ALTER TABLE  hosts DROP   COLUMN contributionstatusId;
+ALTER TABLE  hosts DROP   COLUMN contributionstatus;
+
+ALTER TABLE  tasks DROP COLUMN price;
 
 
 ALTER TABLE  works DROP   COLUMN categoryId;
