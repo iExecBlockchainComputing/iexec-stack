@@ -27,6 +27,7 @@ sed -i "s/^DISPATCHERS=.*/DISPATCHERS=$SCHEDULER_DOMAIN/g" /iexec/conf/xtremweb.
 
 # import the server certificate into the container keystore
 keytool -import -alias localhost -file /iexec/certificate/xwscheduler.pem -trustcacerts -keystore /etc/ssl/certs/java/cacerts -storepass changeit -v -noprompt
+keytool -import -alias $SCHEDULER_DOMAIN -file /iexec/certificate/xwscheduler.pem -trustcacerts -keystore /etc/ssl/certs/java/cacerts -storepass changeit -v -noprompt
 
 # update the SSLKEYSTORE to point to the container's keystore
 sed -i "s/^SSLKEYSTORE=.*/SSLKEYSTORE=\/etc\/ssl\/certs\/java\/cacerts/g" /iexec/conf/xtremweb.worker.conf

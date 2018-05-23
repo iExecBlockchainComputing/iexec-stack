@@ -4,6 +4,7 @@ EXPOSE 4321 4322 4323 443
 COPY conf/xtremweb.server.conf /iexec/conf/
 COPY conf/xwconfigure.values /iexec/conf/
 COPY conf/iexec-scheduler.yml /iexec/conf/
+COPY wallet /iexec/wallet/
 COPY lib /iexec/lib
 COPY bin /iexec/bin/
 
