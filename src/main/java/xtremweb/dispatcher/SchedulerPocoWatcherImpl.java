@@ -21,6 +21,7 @@ import xtremweb.communications.XMLRPCCommandSendWork;
 import xtremweb.database.SQLRequest;
 import xtremweb.security.XWAccessRights;
 
+import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -72,60 +73,9 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
      */
     @Override
     public void onSubscription(String workerWalletAddr) {
+
         try {
-            final HostInterface theHost = DBInterface.getInstance().host(new EthereumWallet(workerWalletAddr));
-            if(theHost == null) {
-                logger.warn("onSubscription(" + workerWalletAddr +") : host not found");
-                return;
-            }
-            logger.debug("onSubscription(" + workerWalletAddr + ") : " + theHost.toXml());
-            final MarketOrderInterface marketOrder = DBInterface.getInstance().marketOrderUnsatisfied(theHost.getWorkerPoolAddr());
-            if(marketOrder == null) {
-                logger.info("onSubscription(" + workerWalletAddr +") : no unsatisfied market order");
-                return;
-            }
-
-            final Collection<HostInterface> hosts = DBInterface.getInstance().hosts(new EthereumWallet(workerWalletAddr),
-                    marketOrder);
-            logger.debug("onSubscription(" + workerWalletAddr + ") : duplicated wallet " + (hosts == null ? 0 : hosts.size()));
-
-            if (hosts != null) {
-                boolean error = false;
-                for (HostInterface host : hosts) {
-                    if(host.getUID().equals(theHost.getUID()))
-                        continue;
-                    error = true;
-                    logger.error("onSubscription(" + workerWalletAddr +") : more than one wallet owner " + host.getUID());
-                    host.leaveMarketOrder(marketOrder);
-                    host.setActive(false);
-                    host.update();
-                }
-                if(error) {
-                    logger.error("onSubscription(" + workerWalletAddr +") : more than one wallet owner " + theHost.getUID());
-                    theHost.leaveMarketOrder(marketOrder);
-                    theHost.setActive(false);
-                    theHost.update();
-                    return;
-                }
-            }
-
-            if (theHost.canContribute()) {
-                marketOrder.addWorker(theHost);
-                marketOrder.setWaiting();
-                theHost.setWaiting();
-            }
-            if(marketOrder.canStart()) {
-               final BigInteger marketOrderIdx = actuatorService.createMarketOrder(BigInteger.valueOf(marketOrder.getCategoryId()),
-                       BigInteger.valueOf(marketOrder.getTrust()),
-                       BigInteger.valueOf(marketOrder.getPrice()),
-                       BigInteger.valueOf(marketOrder.getVolume()));
-
-               theHost.setPending();
-               marketOrder.setMarketOrderIdx(marketOrderIdx.longValue());
-            }
-
-            theHost.update();
-            marketOrder.update();
+            DBInterface.getInstance().hostContribution(new EthereumWallet(workerWalletAddr));
 
         } catch (final IOException e) {
             logger.exception(e);
@@ -435,6 +385,8 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
 
             final ArrayList<String> wallets = new ArrayList();
             for(final HostInterface worker : workers ) {
+                worker.setPending();
+                worker.update();
                 if (worker.getEthWalletAddr() != null) {
                     wallets.add(worker.getEthWalletAddr());
                     logger.error("onWorkOrderActivated(" + workOrderId +") : allowing " + worker.getEthWalletAddr());
@@ -550,10 +502,13 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
             return;
         }
 
+        URI result = null;
+
         for(final WorkInterface work : works ) {
 
             try {
                 final TaskInterface theWorkTask = DBInterface.getInstance().task(work);
+                result = work.getResult();
                 final HostInterface theHost = DBInterface.getInstance().host(theWorkTask.getHost());
                 if(theHost == null) {
                     logger.error ("can't the host for the work " + work.getUID());
@@ -569,7 +524,11 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
             }
         }
         marketOrder.setCompleted();
-        actuatorService.finalizeWork(revealEventResponse.woid,"aStdout", "aStderr", "anUri");
+
+        actuatorService.finalizeWork(revealEventResponse.woid,
+                "",
+                "",
+                result == null ? "" : result.toString());
     }
 
     @Override

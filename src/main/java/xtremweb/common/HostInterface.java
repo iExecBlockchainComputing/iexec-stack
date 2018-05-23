@@ -2372,7 +2372,7 @@ public final class HostInterface extends Table {
         return setContributionStatus(StatusEnum.CONTRIBUTING);
     }
     /**
-     * This set this worker contribution to WAITING
+     * This set this worker contribution to WAITING (the work order has not enough workers)
      * @return true if value has changed, false otherwise
      * @since 13.1.0
      */
@@ -2380,7 +2380,7 @@ public final class HostInterface extends Table {
         return setContributionStatus(StatusEnum.WAITING);
     }
     /**
-     * This set this worker contribution to PENDING
+     * This set this worker contribution to PENDING (the work order has been bought)
      * @return true if value has changed, false otherwise
      * @since 13.1.0
      */
@@ -2423,7 +2423,7 @@ public final class HostInterface extends Table {
             leaveMarketOrder();
     }
     /**
-     * This sets the market order uid; this sets contribution status to PENDING
+     * This sets the market order uid; this sets contribution status to WAITING (the work order has not enough worker)
      * @param uid is the market order uid
      * @return true if value has changed, false otherwise
      * @since 13.1.0
@@ -2432,7 +2432,7 @@ public final class HostInterface extends Table {
         if(uid == null) {
             return false;
         }
-        setContributionStatus(StatusEnum.PENDING);
+        setContributionStatus(StatusEnum.WAITING);
         return setValue(Columns.MARKETORDERUID, uid);
     }
 	/**

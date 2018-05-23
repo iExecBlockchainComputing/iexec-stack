@@ -763,16 +763,25 @@ public final class MarketOrderInterface extends Table {
         return setValue(Columns.STATUS, StatusEnum.COMPLETED);
     }
     /**
-     * This sets this market order status to pending (it has been bought and needs workers).
-	 * This decrements the volume by one
+     * This sets this market order status to pending (it has not been bought).
+     * This decrements the volume by one
      * @return true if value has changed, false otherwise
      */
     public boolean setPending() {
-    	decRemaining();
+        decRemaining();
         return setValue(Columns.STATUS, StatusEnum.PENDING);
     }
     /**
-     * This sets this market order status to waiting (still missing workers)
+     * This sets this market order status to pending (it has been bought).
+     * This decrements the volume by one
+     * @return true if value has changed, false otherwise
+     */
+    public boolean setAvailable() {
+        decRemaining();
+        return setValue(Columns.STATUS, StatusEnum.AVAILABLE);
+    }
+    /**
+     * This sets this market order status to waiting (not enough workers)
      * @return true if value has changed, false otherwise
      */
     public boolean setWaiting() {
@@ -794,13 +803,13 @@ public final class MarketOrderInterface extends Table {
         return setValue(Columns.CATEGORYID, Long.valueOf(c));
     }
     /**
-     * This sets the market order index and marks this as PENDING
+     * This sets the market order index and marks this as PENDING (the work order has been bought)
      * @param c is the category id
      * @return true if value has changed, false otherwise
      */
     public boolean setMarketOrderIdx(final long c)  {
         if (c != 0L)
-            setPending();
+            setAvailable();
         return setValue(Columns.MARKETORDERIDX, Long.valueOf(c));
     }
     /**
@@ -886,7 +895,7 @@ public final class MarketOrderInterface extends Table {
 	 * This decrements the remaining by one
      * @return true if value has changed, false otherwise
 	 */
-	public boolean decRemaining()  {
+	private boolean decRemaining()  {
 		return setRemaining(getRemaining() - 1);
 	}
 	/**
@@ -904,7 +913,7 @@ public final class MarketOrderInterface extends Table {
      * @return true if value has changed, false otherwise
 	 */
 	public boolean setRemaining(final Long r)  {
-		return setValue(Columns.REMAINING, r);
+		return setValue(Columns.REMAINING, r < 0 ? 0 : r);
 	}
 	/**
 	 * This sets the worker pool address

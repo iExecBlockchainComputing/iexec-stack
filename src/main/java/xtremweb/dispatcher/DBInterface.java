@@ -5864,87 +5864,112 @@ public final class DBInterface {
             theHost.setFreeTmp(_host.getFreeTmp());
             theHost.setTotalMem(_host.getTotalMem());
             theHost.setEthWalletAddr(_host.getEthWalletAddr());
-            theHost.update();
 
-            final String workerWalletAddr = theHost.getEthWalletAddr();
-            if (!theHost.canContribute()) {
-                logger.info("hostRegister() - " + workerWalletAddr +" : don't want to contribute");
-                return theHost;
-            }
-
-            try {
-                final MarketOrderInterface marketOrder = marketOrderUnsatisfied(theHost.getWorkerPoolAddr());
-                if(marketOrder == null) {
-                    logger.info("hostRegister() - " + workerWalletAddr +" : no unsatisfied market order");
-                    return theHost;
-                }
-
-                if(marketOrder.getWorkerPoolAddr().compareTo(theHost.getWorkerPoolAddr()) != 0) {
-                    logger.error("hostRegister() : worker pool mismatch : "
-                            + marketOrder.getWorkerPoolAddr() + " != "
-                            + theHost.getWorkerPoolAddr());
-                    return theHost;
-                }
-
-                final Collection<HostInterface> hosts = hosts(new EthereumWallet(workerWalletAddr), marketOrder);
-                logger.debug("hostRegister() : " + workerWalletAddr + " : duplicated wallet " + (hosts == null ? 0 : hosts.size()));
-
-                if (hosts != null) {
-                    boolean error = false;
-                    for (HostInterface ahost : hosts) {
-                        if (ahost.getUID().equals(theHost.getUID()))
-                            continue;
-                        error = true;
-                        logger.error("hostRegister() : " + workerWalletAddr + " : more than one wallet owner " + ahost.getUID());
-                        ahost.leaveMarketOrder(marketOrder);
-                        ahost.setActive(false);
-                        ahost.update();
-                    }
-                    if (error) {
-                        logger.error("hostRegister() : " + workerWalletAddr + " : more than one wallet owner " + theHost.getUID());
-                        theHost.leaveMarketOrder(marketOrder);
-                        theHost.setActive(false);
-                        theHost.update();
-                        return theHost;
-                    }
-                }
-
-                logger.debug("hostRegister() - " + workerWalletAddr +" joins market order "
-                        + marketOrder.getUID());
-                marketOrder.addWorker(theHost);
-
-                // following host.update() is not really necessary but helps comprehension
-                // since createMarketOrder is long to execute on the blockchain
-                // and update(host) below will not waste any time to write to DB
-                // since it would have already been written here
-                theHost.update();
-                marketOrder.update();
-
-                if(marketOrder.canStart()) {
-                    final ActuatorService actuatorService = ActuatorService.getInstance();
-                    final BigInteger marketOrderIdx = actuatorService.createMarketOrder(BigInteger.valueOf(marketOrder.getCategoryId()),
-                            BigInteger.valueOf(marketOrder.getTrust()),
-                            BigInteger.valueOf(marketOrder.getPrice()),
-                            BigInteger.valueOf(marketOrder.getVolume()));
-                    marketOrder.setMarketOrderIdx(marketOrderIdx.longValue());
-                    marketOrder.update();
-                }
-
-            } catch (final IOException e) {
-                logger.exception(e);
-            }
-
-            update(theHost);
-            return theHost;
+            return hostContribution(theHost);
 
 		} catch (final Exception e) {
 			logger.exception(e);
-			logger.debug("new connection");
 		}
-
 		return null;
-
 	}
+
+    protected void hostContribution(EthereumWallet workerWalletAddr) throws IOException {
+        if (workerWalletAddr == null) {
+            logger.info("hostContribution() : no wallet");
+            return;
+        }
+
+        final HostInterface theHost = DBInterface.getInstance().host(workerWalletAddr);
+        if(theHost == null) {
+            logger.warn("onSubscription(" + workerWalletAddr +") : host not found");
+            return;
+        }
+
+        hostContribution(theHost);
+	}
+    /**
+     * This inserts the host associated to the provided wallet to a market order, if applicable
+     * @param theHost
+     * @throws IOException
+     * @since 13.1.0
+     */
+	protected HostInterface hostContribution(final HostInterface theHost) throws IOException {
+        if (theHost == null) {
+            logger.info("hostContribution() : host is null");
+            return null;
+        }
+
+        if(theHost.getEthWalletAddr() == null) {
+            logger.warn("onSubscription(" + theHost.getUID() +") : has no wallet");
+            return theHost;
+        }
+
+        final EthereumWallet workerWalletAddr = new EthereumWallet(theHost.getEthWalletAddr());
+        if (!theHost.canContribute()) {
+            logger.info("hostContribution(" + workerWalletAddr + ") : don't want to contribute");
+            return theHost;
+        }
+        logger.debug("hostContribution(" + workerWalletAddr + ") : " + theHost.toXml());
+        final MarketOrderInterface marketOrder = marketOrderUnsatisfied(theHost.getWorkerPoolAddr());
+        if(marketOrder == null) {
+            logger.info("hostContribution(" + workerWalletAddr + ") : no unsatisfied market order");
+            return theHost;
+        }
+
+        if(marketOrder.getWorkerPoolAddr().compareTo(theHost.getWorkerPoolAddr()) != 0) {
+            logger.error("hostContribution(" + workerWalletAddr + ") : worker pool mismatch : "
+                    + marketOrder.getWorkerPoolAddr() + " != "
+                    + theHost.getWorkerPoolAddr());
+            return theHost;
+        }
+        final Collection<HostInterface> hosts = hosts(workerWalletAddr, marketOrder);
+        logger.debug("hostContribution(" + workerWalletAddr + ") : duplicated wallet " + (hosts == null ? 0 : hosts.size()));
+
+        boolean error = false;
+        if (hosts != null) {
+            for (HostInterface ahost : hosts) {
+                if (ahost.getUID().equals(theHost.getUID()))
+                    continue;
+                error = true;
+                logger.error("hostContribution(" + workerWalletAddr + ") : more than one wallet owner " + ahost.getUID());
+                ahost.leaveMarketOrder(marketOrder);
+                ahost.setActive(false);
+                ahost.update();
+            }
+        }
+        if (error) {
+            logger.error("hostContribution(" + workerWalletAddr + ") : others presented the same wallet " + theHost.getUID());
+            theHost.leaveMarketOrder(marketOrder);
+            theHost.setActive(false);
+        } else {
+            if (theHost.canContribute()) {
+                logger.debug("hostContribution(" + workerWalletAddr + ") : joins market order "
+                        + marketOrder.getUID());
+                marketOrder.addWorker(theHost);
+            } else {
+                logger.debug("hostContribution(" + workerWalletAddr + ") : don't want to contribute");
+            }
+        }
+
+        theHost.update();
+
+        if(marketOrder.canStart()) {
+            final ActuatorService actuatorService = ActuatorService.getInstance();
+            final BigInteger marketOrderIdx = actuatorService.createMarketOrder(BigInteger.valueOf(marketOrder.getCategoryId()),
+                    BigInteger.valueOf(marketOrder.getTrust()),
+                    BigInteger.valueOf(marketOrder.getPrice()),
+                    BigInteger.valueOf(marketOrder.getVolume()));
+            marketOrder.setMarketOrderIdx(marketOrderIdx.longValue());
+            logger.debug("hostContribution(" + workerWalletAddr + ") : marketorder started " + marketOrderIdx);
+        } else {
+            logger.debug("hostContribution(" + workerWalletAddr + ") : marketorder still waiting");
+            marketOrder.setWaiting();
+        }
+
+        marketOrder.update();
+
+        return theHost;
+    }
 
 	/**
 	 * Set worker attribute.

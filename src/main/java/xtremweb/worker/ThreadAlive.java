@@ -520,7 +520,8 @@ public class ThreadAlive extends Thread {
 		CommClient commClient = null;
 		Hashtable result = null;
 		try {
-			config.getHost().setAvailable(ThreadLaunch.getInstance().available());
+            logger.debug("available = " + ThreadLaunch.getInstance().available());
+            config.getHost().setAvailable(ThreadLaunch.getInstance().available());
 			commClient = commClient();
 			result = commClient.workAlive(rmiParams).getHashtable();
 		} catch (final RemoteException ce) {
