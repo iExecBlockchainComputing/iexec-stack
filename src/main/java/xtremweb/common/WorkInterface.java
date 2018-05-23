@@ -2055,7 +2055,7 @@ public class WorkInterface extends Table {
 	}
 
 	/**
-	 * This calls setStatusId(v.ordinal())
+	 * This sets the status
 	 *
 	 * @return true if value has changed, false otherwise
 	 */
@@ -2228,8 +2228,9 @@ public class WorkInterface extends Table {
      * @since 13.1.0
      */
     public void setRevealing() {
-        if (getWorkOrderId() != null)
-            setStatus(StatusEnum.REVEALING);
+        if (getWorkOrderId() != null) {
+			setStatus(StatusEnum.REVEALING);
+		}
     }
     /**
      * This marks this work as ready to reveal contribution, if this.getWorkOrderId() != null

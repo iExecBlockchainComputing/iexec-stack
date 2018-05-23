@@ -1028,10 +1028,10 @@ public class XWTools {
     }
 
     public static String sha256(final String data) throws NoSuchAlgorithmException {
-        MessageDigest md = MessageDigest.getInstance( "SHA-256" );
+        final MessageDigest md = MessageDigest.getInstance( "SHA-256" );
         // Change this to UTF-16 if needed
         md.update( data.getBytes( StandardCharsets.UTF_8 ) );
-        byte[] digest = md.digest();
+        final byte[] digest = md.digest();
         return String.format( "%064x", new BigInteger( 1, digest ) );
       }
     /**

@@ -735,7 +735,10 @@ public final class MarketOrderInterface extends Table {
      * This sets this market order status to running
      * @return true if value has changed, false otherwise
      */
-    public boolean setRunning() {
+    public boolean setRunning(final HostInterface host) {
+        if(host == null)
+            return false;
+        host.setRunning();
         setStartDate();
         return setValue(Columns.STATUS, StatusEnum.RUNNING);
     }
@@ -839,6 +842,8 @@ public final class MarketOrderInterface extends Table {
      * @return true
      */
     public boolean addWorker(final HostInterface host)  {
+        if(host == null)
+            return false;
         host.setMarketOrderUid(getUID());
         incNbWorkers();
         return true;
