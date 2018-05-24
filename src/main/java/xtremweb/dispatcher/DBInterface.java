@@ -5867,6 +5867,7 @@ public final class DBInterface {
             theHost.setFreeTmp(_host.getFreeTmp());
             theHost.setTotalMem(_host.getTotalMem());
             theHost.setEthWalletAddr(_host.getEthWalletAddr());
+            theHost.setWorkerPoolAddr(_host.getWorkerPoolAddr());
 
             return hostContribution(theHost);
 
