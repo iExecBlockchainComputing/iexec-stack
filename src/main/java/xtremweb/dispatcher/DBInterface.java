@@ -5737,7 +5737,12 @@ public final class DBInterface {
 
         try {
             final CommonConfiguration commonConfiguration = IexecConfigurationService.getInstance().getCommonConfiguration();
-            WorkerPoolConfig workerPoolConfig = commonConfiguration.getContractConfig().getWorkerPoolConfig();
+            final WorkerPoolConfig workerPoolConfig = commonConfiguration.getContractConfig().getWorkerPoolConfig();
+            if((workerPoolConfig == null)
+                    || (workerPoolConfig .getAddress() == null)
+                    || (workerPoolConfig .getAddress().length() < 1)) {
+                throw new IOException("worker pool addr is not available");
+            }
             moitf.setWorkerPoolAddr(workerPoolConfig.getAddress());
             moitf.setWorkerPoolOwnerAddr(CredentialsService.getInstance().getCredentials().getAddress());
         } catch (final Exception e) {
