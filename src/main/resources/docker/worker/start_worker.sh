@@ -75,6 +75,11 @@ if [ ! -z $SANDBOXENABLED ] ; then
 	sed -i "s/^SANDBOXENABLED=.*/SANDBOXENABLED=$SANDBOXENABLED/g" /iexec/conf/xtremweb.worker.conf
 fi
 
+# Change the wallet password
+if [ ! -z $WALLETPASSWORD ] ; then
+	sed -i "s/^ETHWALLETPASSWORD=.*/ETHWALLETPASSWORD=$WALLETPASSWORD/g" /iexec/conf/xtremweb.worker.conf
+fi
+
 # Change a flag in the docker start script to still be able to debug
 sed -i "s/TESTINGONLY=.*/TESTINGONLY=FALSE/g" /iexec/bin/xwstartdocker.sh
 
