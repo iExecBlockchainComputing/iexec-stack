@@ -54,8 +54,6 @@ public class HashTaskSet extends TaskSet {
 		final DBInterface db = DBInterface.getInstance();
 		final Date now = new Date();
 		try {
-			final Vector<Table> rows = new Vector<>();
-
 			final Collection<WorkInterface> works = Dispatcher.getScheduler().retrieve();
 			if (works == null) {
 				getLogger().debug("refill works is null");
@@ -83,12 +81,11 @@ public class HashTaskSet extends TaskSet {
 
 							theTask.setError();
 							theTask.setRemovalDate(now);
-							rows.add(theTask);
+							theTask.update();
 						}
 					}
 
-					rows.add(theWork);
-					db.update(rows);
+					theWork.update();
 				} catch (final Exception e) {
 					getLogger().exception(e);
 				}
