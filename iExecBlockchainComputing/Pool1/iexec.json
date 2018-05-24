@@ -1,0 +1,14 @@
+{
+  "description":
+    "Pool 1 description, min 150 letters, Pool 1 description, min 150 letters, Pool 1 description, min 150 letters, Pool 1 description, min 150 letters, Pool 1 description, min 150 letters",
+  "social": {
+    "website": "https://pool1.iex.ec"
+  },
+  "logo": "logo.png",
+  "workerPool": {
+    "description": "iexec-pool-1",
+    "subscriptionLockStakePolicy": 100,
+    "subscriptionMinimumStakePolicy": 100,
+    "subscriptionMinimumScorePolicy": 100
+  }
+}
