@@ -1262,35 +1262,9 @@ public enum XWPropertyDefs {
 	},
 	/**
 	 * All : SSL key directory Property name : JAVAKEYSTORE
-	 * <p>
 	 * Property type : string
-	 * </p>
-	 * <p>
-	 * Default: System.getProperty("javax.net.ssl.trustStore")
-	 * </p>
 	 */
-	JAVAKEYSTORE {
-		/**
-		 * This retrieves the String representation of the default value
-		 *
-		 * @return System.getProperty(JAVAKEYSTORESTRING)
-		 */
-		@Override
-		public String defaultValue() {
-			return System.getProperty(JAVAKEYSTORESTRING);
-		}
-
-		/**
-		 * This retrieves a property name as found in config file
-		 *
-		 * @since 8.2.0
-		 * @return "javax.net.ssl.trustStore"
-		 */
-		@Override
-		public String propertyName() {
-			return "javax.net.ssl.trustStore";
-		}
-	},
+	JAVAKEYSTORE,
 	/**
 	 * All : SSL key directory
 	 * Property type : string
@@ -2169,7 +2143,7 @@ public enum XWPropertyDefs {
 	};
 
 	/** This is the name of a Java property */
-	private static final String JAVAKEYSTORESTRING = "javax.net.ssl.trustStore";
+	private static final String JAVATRUSTSTORESTRING = "javax.net.ssl.trustStore";
 	/** This is the name of a Java property */
 	public static final String JAVATMPDIR = "java.io.tmpdir";
 
