@@ -50,6 +50,7 @@ services:
       - RLCCONTRACT=${RLCCONTRACT}
       - IEXECHUBCONTRACT=${IEXECHUBCONTRACT}
       - WALLETPASSWORD=${SCHEDULERWALLETPASSWORD}
+      - WORKERPOOLADDRESS=${WORKERPOOLADDRESS}
     networks:
       - iexec-net
     restart: unless-stopped

@@ -39,7 +39,7 @@ sed -i "s/password:.*/password: \"$WALLETPASSWORD\"/g"              $iexecSchedu
 sed -i "s/clientAddress:.*/clientAddress: $ETHNODE/g"               $iexecSchedulerYmlFile
 sed -i "s/rlcAddress:.*/rlcAddress: $RLCCONTRACT/g"                 $iexecSchedulerYmlFile
 sed -i "s/iexecHubAddress:.*/iexecHubAddress: $IEXECHUBCONTRACT/g"  $iexecSchedulerYmlFile
-
+sed -i "s/address:.*/address: $WORKERPOOLADDRESS/g"  				$iexecSchedulerYmlFile
 
 replace_commented_var_in_conf () {
   varName=$1;
