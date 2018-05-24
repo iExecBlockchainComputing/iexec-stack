@@ -118,7 +118,7 @@ public class WorkerPoolService {
 
     private void onContributeEvent(WorkerPool.ContributeEventResponse contributeEvent) {
         log.info("Received ContributeEvent [woid:{}, worker:{}, resultHash:{}]",
-                contributeEvent.woid, contributeEvent.worker, contributeEvent.resultHash);
+                contributeEvent.woid, contributeEvent.worker, Numeric.toHexString(contributeEvent.resultHash));
         if (workerPoolWatcher != null) {
             workerPoolWatcher.onContributeEvent(contributeEvent);
         }
