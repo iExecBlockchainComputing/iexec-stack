@@ -24,10 +24,12 @@ SET FOREIGN_KEY_CHECKS=0;
 insert into statuses (statusId, statusName, statusObjects, statusComment, statusDeprecated) values (15, 'CONTRIBUTED',   'works',               'The job does not fill its category requirements',                                   null);
 insert into statuses (statusId, statusName, statusObjects, statusComment, statusDeprecated) values (16, 'REVEALING',     'works',               'The job does not fill its category requirements',                                   null);
 
-ALTER TABLE  hosts ADD    COLUMN ethwalletaddr     varchar(254)                  comment 'worker eth wallet address; optional';
-ALTER TABLE  hosts ADD    COLUMN marketorderUID    char(36)                      comment 'Optional, UID of the market order';
-ALTER TABLE  hosts ADD    COLUMN hascontributed    char(5)      default 'false'  comment 'This flag tells whether this host ahs already contributed to its current market order';
-ALTER TABLE  hosts ADD    COLUMN workerpooladdr    varchar(254)                  comment 'workerpool addr this host is registered to';
+ALTER TABLE  hosts ADD    COLUMN ethwalletaddr        varchar(254)                                comment 'worker eth wallet address; optional';
+ALTER TABLE  hosts ADD    COLUMN marketorderUID       char(36)                                    comment 'Optional, UID of the market order';
+ALTER TABLE  hosts ADD    COLUMN hascontributed       char(5)                    default 'false'  comment 'This flag tells whether this host ahs already contributed to its current market order';
+ALTER TABLE  hosts ADD    COLUMN workerpooladdr       varchar(254)                                comment 'workerpool addr this host is registered to';
+ALTER TABLE  hosts ADD    COLUMN contributionstatusId tinyint unsigned  not null  default 255     comment 'Contribution Status Id. See common/XWStatus.java',
+ALTER TABLE  hosts ADD    COLUMN contributionstatus   varchar(36)       not null  default 'NONE'  comment 'Contribution Status. see common/XWStatus.java',
 
 ALTER TABLE  apps  ADD    COLUMN price             bigint          default 0  comment 'price since 13.1.0',
 
@@ -49,7 +51,7 @@ ALTER TABLE  works CHANGE COLUMN replications  replications bigint  default 0   
 ALTER TABLE  works CHANGE COLUMN sizer         sizer        bigint  default 0        comment 'Optionnal. This is the size of the replica set';
 ALTER TABLE  works CHANGE COLUMN totalr        totalr       bigint  default 0        comment 'Optionnal. Current amount of replicas';
 
-ALTER TABLE  tasks CHANGE COLUMN price         bigint               default 0        comment 'since 13.1.0';
+ALTER TABLE  tasks ADD    COLUMN price         bigint               default 0        comment 'since 13.1.0';
 
 -- ---------------------------------------------------------------------------
 -- Table "marketorders" :
@@ -162,6 +164,34 @@ insert into userRights (userRightId, userRightName, userRightDescription) values
 
 
 UPDATE users SET userRightId=(select userRightId from userRights where userRightName=users.rights);
+
+delete from statuses;
+
+insert into statuses (statusId, statusName, statusObjects, statusComment, statusDeprecated) values ( 0, 'NONE',          'none',                null,                                                                                null);
+insert into statuses (statusId, statusName, statusObjects, statusComment, statusDeprecated) values ( 1, 'ANY',           'any',                 null,                                                                                null);
+insert into statuses (statusId, statusName, statusObjects, statusComment, statusDeprecated) values ( 2, 'WAITING',       'works',               'The object is stored on server but not in the server queue yet',                    null);
+insert into statuses (statusId, statusName, statusObjects, statusComment, statusDeprecated) values ( 3, 'PENDING',       'works, tasks',        'The object is stored and inserted in the server queue',                             null);
+insert into statuses (statusId, statusName, statusObjects, statusComment, statusDeprecated) values ( 4, 'RUNNING',       'works, tasks',        'The object is being run by a worker',                                               null);
+insert into statuses (statusId, statusName, statusObjects, statusComment, statusDeprecated) values ( 5, 'ERROR',         'any',                 'The object is erroneous',                                                           null);
+insert into statuses (statusId, statusName, statusObjects, statusComment, statusDeprecated) values ( 6, 'COMPLETED',     'works, tasks',        'The job has been successfully computed',                                            null);
+insert into statuses (statusId, statusName, statusObjects, statusComment, statusDeprecated) values ( 7, 'ABORTED',       'works, tasks',        'NOT used anymore', 'Since XWHEP, aborted objects are set to PENDING');
+insert into statuses (statusId, statusName, statusObjects, statusComment, statusDeprecated) values ( 8, 'LOST',          'works, tasks',        'NOT used anymore', 'Since XWHEP, lost objects are set to PENDING');
+insert into statuses (statusId, statusName, statusObjects, statusComment, statusDeprecated) values ( 9, 'DATAREQUEST',   'datas, works, tasks', 'The server is unable to store the uploaded object. Waiting for another upload try', null);
+insert into statuses (statusId, statusName, statusObjects, statusComment, statusDeprecated) values (10, 'RESULTREQUEST', 'works',               'The worker should retry to upload the results',                                     null);
+insert into statuses (statusId, statusName, statusObjects, statusComment, statusDeprecated) values (11, 'AVAILABLE',     'datas',               'The data is available and can be downloaded on demand',                             null);
+insert into statuses (statusId, statusName, statusObjects, statusComment, statusDeprecated) values (12, 'UNAVAILABLE',   'datas',               'The data is not available and can not be downloaded on demand',                     null);
+insert into statuses (statusId, statusName, statusObjects, statusComment, statusDeprecated) values (13, 'REPLICATING',   'works',               'The object is being replicated',                                                    null);
+insert into statuses (statusId, statusName, statusObjects, statusComment, statusDeprecated) values (14, 'FAILED',        'works',               'The job does not fill its category requirements',                                   null);
+insert into statuses (statusId, statusName, statusObjects, statusComment, statusDeprecated) values (15, 'CONTRIBUTING',   'works',               'The job does not fill its category requirements',                                   null);
+insert into statuses (statusId, statusName, statusObjects, statusComment, statusDeprecated) values (16, 'CONTRIBUTED',   'works',               'The job does not fill its category requirements',                                   null);
+insert into statuses (statusId, statusName, statusObjects, statusComment, statusDeprecated) values (17, 'REVEALING',     'works',               'The job does not fill its category requirements',                                   null);
+
+UPDATE hosts        SET contributionstatusId=(select statusId from statuses where statusName=hosts.contributionstatus);
+UPDATE datas        SET statusId=(select statusId from statuses where statusName=datas.status);
+UPDATE marketorders SET statusId=(select statusId from statuses where statusName=marketorders.status);
+UPDATE works        SET statusId=(select statusId from statuses where statusName=works.status);
+UPDATE tasks        SET statusId=(select statusId from statuses where statusName=tasks.status);
+
 
 SET FOREIGN_KEY_CHECKS=1;
 

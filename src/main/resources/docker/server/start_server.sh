@@ -6,6 +6,7 @@
 #
 sed -i "s/^V_NICE=.*//g" /iexec/bin/xtremwebconf.sh
 sed -i "s/LAUNCHER.*//g" /iexec/conf/xtremweb.server.conf
+sed -i "s/SSLKEYSTORE.*/SSLKEYSTORE=\/iexec\/keystore\/xwhepserver.keys/g" /iexec/conf/xtremweb.server.conf
 
 
 # This will sed the value val given in parameter in the config file and set the value

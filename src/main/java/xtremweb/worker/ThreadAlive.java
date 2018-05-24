@@ -40,19 +40,11 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Vector;
 
+import com.iexec.common.ethereum.TransactionStatus;
 import com.iexec.worker.actuator.ActuatorService;
 import org.xml.sax.SAXException;
 
-import xtremweb.common.DataInterface;
-import xtremweb.common.Logger;
-import xtremweb.common.StreamIO;
-import xtremweb.common.UID;
-import xtremweb.common.Version;
-import xtremweb.common.XMLValue;
-import xtremweb.common.XWConfigurator;
-import xtremweb.common.XWPropertyDefs;
-import xtremweb.common.XWReturnCode;
-import xtremweb.common.XWTools;
+import xtremweb.common.*;
 import xtremweb.communications.*;
 
 /**
@@ -356,20 +348,26 @@ public class ThreadAlive extends Thread {
 
 				if (theWork != null) {
 
-                    theWork.setH2r(theWork.getHiddenH2r());
+//                    theWork.setH2r(theWork.getHiddenH2r());
 
-                    if (theWork.getH2r() != null) {
-                        ActuatorService.getInstance().reveal(theWork.getWorkOrderId(), theWork.getH2r());
-						logger.debug("revealed " + theWork.getUID());
+                    TransactionStatus status = TransactionStatus.FAILURE;
+                    if (theWork.getH2h2r() != null) {
+                        status = ActuatorService.getInstance().reveal(theWork.getWorkOrderId(), theWork.getH2h2r());
 					} else {
-                        theWork.setError("can't reveal : h2r is null");
-						logger.debug("can't reveal " + theWork.getUID());
+                        theWork.setError("can't reveal : h2h2r is null");
+						logger.debug("can't reveal " + theWork.toXml());
                     }
 
-                    theWork.setRevealing();
-                    CommManager.getInstance().getPoolWork().saveRevealedWork(theWork);
-                    CommManager.getInstance().sendWork(theWork);
-                    CommManager.getInstance().sendResult(theWork);
+                    if (status == TransactionStatus.SUCCESS) {
+                        logger.debug("revealed " + theWork.getUID());
+                        theWork.setRevealing();
+                        CommManager.getInstance().getPoolWork().saveRevealedWork(theWork);
+                        CommManager.getInstance().sendWork(theWork);
+                        CommManager.getInstance().sendResult(theWork);
+					} else {
+                        logger.error("reveal transaction error; will retry later " + theWork.getUID());
+                        CommManager.getInstance().getPoolWork().saveWork(theWork);
+                    }
                 }
 			}
 		}
@@ -382,7 +380,7 @@ public class ThreadAlive extends Thread {
 			logger.info("ThreadAlive() KEYSTOREURI : " + keystoreUriStr);
 			boolean newkeystore = false;
 			final URI keystoreUri = new URI(keystoreUriStr);
-			final File currentKeystoreFile = new File(System.getProperty(XWPropertyDefs.JAVAKEYSTORE.toString()));
+			final File currentKeystoreFile = new File(System.getProperty(XWPropertyDefs.JAVATRUSTSTORE.toString()));
 			logger.debug("currentKeystoreFile : " + currentKeystoreFile + " length = " + currentKeystoreFile.length());
 
 			final DataInterface newKeystoreData = CommManager.getInstance().getData(keystoreUri);
@@ -522,7 +520,8 @@ public class ThreadAlive extends Thread {
 		CommClient commClient = null;
 		Hashtable result = null;
 		try {
-			config.getHost().setAvailable(ThreadLaunch.getInstance().available());
+            logger.debug("available = " + ThreadLaunch.getInstance().available());
+            config.getHost().setAvailable(ThreadLaunch.getInstance().available());
 			commClient = commClient();
 			result = commClient.workAlive(rmiParams).getHashtable();
 		} catch (final RemoteException ce) {

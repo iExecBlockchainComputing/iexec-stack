@@ -40,7 +40,6 @@ import java.util.Vector;
 
 import javax.net.SocketFactory;
 
-import com.iexec.common.ethereum.Utils;
 import org.xml.sax.SAXException;
 
 import xtremweb.common.*;
@@ -1297,15 +1296,7 @@ public class ThreadWork extends Thread {
 			final File consensusFile = new File (XWTools.CONSENSUSFILENAME);
 			if (consensusFile.exists() && (consensusFile.length() == 0)) {
 				try {
-                    final String h2r = XWTools.sha256CheckSum(consensusFile);
-					final String h2h2r = XWTools.sha256(h2r);
-					logger.debug("ThreadWork#zipResult() shasum (" + XWTools.CONSENSUSFILENAME + ") = " + h2r);
-                    logger.debug("ThreadWork#zipResult() currentWork.setH2h2r(" + h2h2r + ")");
-                    logger.debug("ThreadWork#zipResult() currentWork.setHiddenH2r(" + h2r + ")");
-                    currentWork.setH2h2r(h2h2r);
-                    currentWork.setHiddenH2r(h2r);
-                    ret = StatusEnum.CONTRIBUTING;
-                    currentWork.setContributing();
+                    ret = contribute(consensusFile);
 				} catch (final Exception e) {
                     throw new IOException("contribution error " + e.getMessage());
 				}
@@ -1344,30 +1335,15 @@ public class ThreadWork extends Thread {
 						data.setType(DataTypeEnum.TEXT);
 					}
 
-					File sourceResult = new File(zipper.getFileName());
+					final File sourceResult = new File(zipper.getFileName());
 					if (sourceResult.exists()) {
 						XWTools.fileCopy(sourceResult, resultFile);
 					}
-					sourceResult = null;
 				}
 			}
 			if (resultFile.exists()) {
 				try {
-					final String h2r = XWTools.sha256CheckSum(resultFile);
-					final String h2h2r = Utils.hashResult(h2r);
-                    logger.debug("ThreadWork#zipResult() shasum (" + resultFile + ") = " + h2r);
-					data.setShasum(h2r);
-
-                    if(currentWork.getH2h2r() == null) {
-                        logger.debug("ThreadWork#zipResult() currentWork.setH2h2r(" + h2h2r + ")");
-                        currentWork.setH2h2r(h2h2r);
-                    }
-                    if(currentWork.getHiddenH2r() == null) {
-                        logger.debug("ThreadWork#zipResult() currentWork.setHiddenH2r(" + h2r + ")");
-                        currentWork.setHiddenH2r(h2r);
-                    }
-                    ret = StatusEnum.CONTRIBUTING;
-                    currentWork.setContributing();
+                    ret = contribute(resultFile);
                 } catch (Exception e) {
 					throw new IOException("contribution error " + e.getMessage());
 				}
@@ -1481,6 +1457,24 @@ public class ThreadWork extends Thread {
 		logger.debug("end of executeNativeJob() " + workUID);
 	}
 
+    /**
+     * This marks the current work as contributing and calculates h2h2r and h2r
+     * @param f is the result file
+     * @return StatusEnum.CONTRIBUTING
+     * @throws NoSuchAlgorithmException
+     * @throws IOException
+     */
+	private StatusEnum contribute(final File f) throws NoSuchAlgorithmException, IOException{
+        final String h2r = XWTools.sha256CheckSum(f);
+        final String h2h2r = XWTools.sha256(h2r);
+        logger.debug("ThreadWork#zipResult() shasum (" + f + ") = " + h2r);
+        logger.debug("ThreadWork#zipResult() currentWork.setH2h2r(" + h2h2r + ")");
+        logger.debug("ThreadWork#zipResult() currentWork.H2r(" + h2r + ")");
+        currentWork.setH2h2r(h2h2r);
+        currentWork.setHiddenH2r(h2r);
+        currentWork.setContributing();
+        return StatusEnum.CONTRIBUTING;
+    }
 	/**
 	 * This is not implemented
 	 *

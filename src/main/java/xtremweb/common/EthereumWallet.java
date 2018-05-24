@@ -6,4 +6,6 @@ public class EthereumWallet {
         address = addr;
     }
     public String getAddress() {return address; }
+    @Override
+    public String toString() { return address;}
 }

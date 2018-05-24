@@ -459,6 +459,10 @@ if [ "X$KEYSTORE" != "X" ]; then
     fi
 fi
 
+if [ "X$PROG" = "Xxtremweb.server" ] ; then
+    JAVATRUSTKEY=""
+fi
+
 echo "`date` [`uname -n` $PROG] INFO : JAVATRUSTKEY=$JAVATRUSTKEY" >> $LOGFILE
 
 

@@ -114,6 +114,29 @@ insert into userRights (userRightId, userRightName, userRightDescription) values
 
 UPDATE users SET userRightId=(select userRightId from userRights where userRightName=users.rights);
 
+
+delete from statuses;
+
+insert into statuses (statusId, statusName, statusObjects, statusComment, statusDeprecated) values ( 0, 'NONE',          'none',                null,                                                                                null);
+insert into statuses (statusId, statusName, statusObjects, statusComment, statusDeprecated) values ( 1, 'ANY',           'any',                 null,                                                                                null);
+insert into statuses (statusId, statusName, statusObjects, statusComment, statusDeprecated) values ( 2, 'WAITING',       'works',               'The object is stored on server but not in the server queue yet',                    null);
+insert into statuses (statusId, statusName, statusObjects, statusComment, statusDeprecated) values ( 3, 'PENDING',       'works, tasks',        'The object is stored and inserted in the server queue',                             null);
+insert into statuses (statusId, statusName, statusObjects, statusComment, statusDeprecated) values ( 4, 'RUNNING',       'works, tasks',        'The object is being run by a worker',                                               null);
+insert into statuses (statusId, statusName, statusObjects, statusComment, statusDeprecated) values ( 5, 'ERROR',         'any',                 'The object is erroneous',                                                           null);
+insert into statuses (statusId, statusName, statusObjects, statusComment, statusDeprecated) values ( 6, 'COMPLETED',     'works, tasks',        'The job has been successfully computed',                                            null);
+insert into statuses (statusId, statusName, statusObjects, statusComment, statusDeprecated) values ( 7, 'ABORTED',       'works, tasks',        'NOT used anymore', 'Since XWHEP, aborted objects are set to PENDING');
+insert into statuses (statusId, statusName, statusObjects, statusComment, statusDeprecated) values ( 8, 'LOST',          'works, tasks',        'NOT used anymore', 'Since XWHEP, lost objects are set to PENDING');
+insert into statuses (statusId, statusName, statusObjects, statusComment, statusDeprecated) values ( 9, 'DATAREQUEST',   'datas, works, tasks', 'The server is unable to store the uploaded object. Waiting for another upload try', null);
+insert into statuses (statusId, statusName, statusObjects, statusComment, statusDeprecated) values (10, 'RESULTREQUEST', 'works',               'The worker should retry to upload the results',                                     null);
+insert into statuses (statusId, statusName, statusObjects, statusComment, statusDeprecated) values (11, 'AVAILABLE',     'datas',               'The data is available and can be downloaded on demand',                             null);
+insert into statuses (statusId, statusName, statusObjects, statusComment, statusDeprecated) values (12, 'UNAVAILABLE',   'datas',               'The data is not available and can not be downloaded on demand',                     null);
+insert into statuses (statusId, statusName, statusObjects, statusComment, statusDeprecated) values (13, 'REPLICATING',   'works',               'The object is being replicated',                                                    null);
+insert into statuses (statusId, statusName, statusObjects, statusComment, statusDeprecated) values (14, 'FAILED',        'works',               'The job does not fill its category requirements',                                   null);
+insert into statuses (statusId, statusName, statusObjects, statusComment, statusDeprecated) values (15, 'CONTRIBUTED',   'works',               'The job does not fill its category requirements',                                   null);
+insert into statuses (statusId, statusName, statusObjects, statusComment, statusDeprecated) values (16, 'REVEALING',     'works',               'The job does not fill its category requirements',                                   null);
+
+
+
 SET FOREIGN_KEY_CHECKS=1;
 
 

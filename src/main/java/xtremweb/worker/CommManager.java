@@ -1247,7 +1247,7 @@ public final class CommManager extends Thread {
 					// we must send data now to reveal
 					// but we must not reveal now : set shasum to null
 					data.setSize(content.length());
-					data.setShasum(theWork.getHiddenH2r());
+                    data.setShasum(theWork.getHiddenH2r());
                     commClient.send(data);
                     logger.debug("CommManager#uploadResults revealing " + data.toXml());
                     final float updloadBandwidth = uploadData(resultURI, theWork.getMaxFileSize());
@@ -1268,17 +1268,22 @@ public final class CommManager extends Thread {
 					commClient.send(data);
 					logger.debug("CommManager#uploadResults contributing " + data.toXml());
 
-                    if (theWork.getH2h2r() != null) {
+                    if (theWork.getHiddenH2r() != null) {
                         logger.debug("the work can contribute " + theWork.toXml());
-                        if(ActuatorService.getInstance().contribute(theWork.getWorkOrderId(), theWork.getH2h2r(), BigInteger.ZERO, "0", "0") == TransactionStatus.SUCCESS) {
+                        if(ActuatorService.getInstance().contribute(theWork.getWorkOrderId(),
+                                theWork.getH2h2r(),
+                                BigInteger.ZERO,
+                                "0",
+                                "0") == TransactionStatus.SUCCESS) {
                             theWork.setContributed();
-                            Worker.getConfig().getHost().setContribution(true);
+                            Worker.getConfig().getHost().setContributed();
                         } else {
-                            logger.error("contribute transaction error; will retry later");
+                            logger.error("contribute transaction error; will retry later " + theWork.getUID());
+                            sendResult(theWork);
                         }
 
                     } else {
-                        theWork.setError("can't contribute " + theWork.toXml());
+                        theWork.setError("can't contribute");
                     }
                 }
             }

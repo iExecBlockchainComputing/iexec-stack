@@ -119,6 +119,15 @@ public enum XWPropertyDefs {
 	 */
 	BLOCKCHAINETHENABLED,
 	/**
+	 * Server, Worker : do we connect to Ethereum blockchain ?
+	 * <p>
+	 * Property type : boolean
+	 * </p>
+	 *
+	 * @since 13.1.0
+	 */
+	SUBSCRIBEDTOPOOL,
+	/**
 	 * Server : the facebook application ID for
 	 * <p>
 	 * Property type : string
@@ -1253,22 +1262,17 @@ public enum XWPropertyDefs {
 	},
 	/**
 	 * All : SSL key directory Property name : JAVAKEYSTORE
-	 * <p>
 	 * Property type : string
-	 * </p>
-	 * <p>
-	 * Default: System.getProperty("javax.net.ssl.trustStore")
-	 * </p>
 	 */
-	JAVAKEYSTORE {
+	JAVATRUSTSTORE {
 		/**
 		 * This retrieves the String representation of the default value
 		 *
-		 * @return System.getProperty(JAVAKEYSTORESTRING)
+		 * @return System.getProperty(JAVATRUSTSTORESTRING)
 		 */
 		@Override
 		public String defaultValue() {
-			return System.getProperty(JAVAKEYSTORESTRING);
+			return System.getProperty(JAVATRUSTSTORESTRING);
 		}
 
 		/**
@@ -2160,7 +2164,7 @@ public enum XWPropertyDefs {
 	};
 
 	/** This is the name of a Java property */
-	private static final String JAVAKEYSTORESTRING = "javax.net.ssl.trustStore";
+	private static final String JAVATRUSTSTORESTRING = "javax.net.ssl.trustStore";
 	/** This is the name of a Java property */
 	public static final String JAVATMPDIR = "java.io.tmpdir";
 

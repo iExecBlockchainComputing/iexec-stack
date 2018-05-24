@@ -3063,7 +3063,7 @@ public final class Client {
 				try {
 					final URI keystoreUri = new URI(keystoreUriStr);
 					final File currentKeystoreFile = new File(
-							System.getProperty(XWPropertyDefs.JAVAKEYSTORE.toString()));
+							System.getProperty(XWPropertyDefs.JAVATRUSTSTORE.toString()));
 
 					final DataInterface newKeystoreData = getData(keystoreUri);
 					if (newKeystoreData == null) {

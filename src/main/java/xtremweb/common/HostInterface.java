@@ -100,14 +100,14 @@ public final class HostInterface extends Table {
             }
         },
         /**
-         * This is the column index of the contribution flag
-         * which tells if this worker has already contributed to the current marketorder
-         * @sine 13.1.0
+         * This is the column index of the contribution status
+         * @see StatusEnum
+         * @since 13.1.0
          */
-        HASCONTRIBUTED {
+        CONTRIBUTIONSTATUS {
             @Override
-            public Boolean fromString(final String v) {
-                return Boolean.valueOf(v);
+            public StatusEnum fromString(final String v) {
+                return StatusEnum.valueOf(v.toUpperCase());
             }
         },
 		/**
@@ -657,7 +657,7 @@ public final class HostInterface extends Table {
 		setJavaVersion(XWPropertyDefs.JAVAVERSION.defaultValue());
 		setJavaDataModel(Integer.parseInt(XWPropertyDefs.JAVADATAMODEL.defaultValue()));
 		setShortIndexes(new int[] { TableColumns.UID.getOrdinal(), Columns.NAME.getOrdinal() });
-		setContribution(false);
+		setContributionStatus(StatusEnum.UNAVAILABLE);
 		setDirty(true);
 	}
 
@@ -706,8 +706,9 @@ public final class HostInterface extends Table {
             } catch (final Exception e) {
             }
             try {
-                setContribution((Boolean) Columns.HASCONTRIBUTED.fromResultSet(rs));
+                setContributionStatus((StatusEnum) Columns.CONTRIBUTIONSTATUS.fromResultSet(rs));
             } catch (final Exception e) {
+                setContributionStatus(StatusEnum.UNAVAILABLE);
             }
             try {
                 setCpuLoad((Integer) Columns.CPULOAD.fromResultSet(rs));
@@ -989,7 +990,6 @@ public final class HostInterface extends Table {
 		setEthWalletAddr(itf.getEthWalletAddr());
 		setWorkerPoolAddr(itf.getWorkerPoolAddr());
         setMarketOrderUid(itf.getMarketOrderUid());
-        setContribution(itf.hasContributed());
 		setAvgExecTime(itf.getAvgExecTime());
 		setNbJobs(itf.getNbJobs());
 		setPendingJobs(itf.getPendingJobs());
@@ -1034,7 +1034,8 @@ public final class HostInterface extends Table {
 		setBatchId(itf.getBatchId());
 		setUploadBandwidth(itf.getUploadBandwidth());
 		setDownloadBandwidth(itf.getDownloadBandwidth());
-	}
+        setContributionStatus(itf.getContributionStatus());
+    }
 
 	/**
 	 * This retrieves the job URI this worker expects, if any
@@ -1092,6 +1093,18 @@ public final class HostInterface extends Table {
 			return null;
 		}
 	}
+    /**
+     * This returns the contribution status
+     * @return the contribution status
+     */
+    public StatusEnum getContributionStatus() {
+        try {
+            return (StatusEnum) getValue(Columns.CONTRIBUTIONSTATUS);
+        } catch (final NullPointerException e) {
+            setContributionStatus(StatusEnum.UNAVAILABLE);
+            return StatusEnum.UNAVAILABLE;
+        }
+    }
 	/**
 	 * This retrieves the worker pool addr this host belongs to
 	 *
@@ -1113,7 +1126,7 @@ public final class HostInterface extends Table {
      */
     public boolean hasContributed() {
         try {
-            return ((Boolean) getValue(Columns.HASCONTRIBUTED)).booleanValue();
+            return getContributionStatus() == StatusEnum.CONTRIBUTED;
         } catch (final Exception e) {
             return true;
         }
@@ -1141,8 +1154,9 @@ public final class HostInterface extends Table {
         try {
             return (!hasContributed() &&
 					(getMarketOrderUid() == null) &&
-					(getEthWalletAddr() != null)
-					&& (getWorkerPoolAddr() != null));
+					(getEthWalletAddr() != null)  &&
+					(getWorkerPoolAddr() != null) &&
+                    (getContributionStatus() == StatusEnum.UNAVAILABLE));
         } catch (final Exception e) {
             return false;
         }
@@ -2324,6 +2338,63 @@ public final class HostInterface extends Table {
 	public boolean setEthWalletAddr(final String addr)  {
 		return setValue(Columns.ETHWALLETADDR, addr);
 	}
+    /**
+     * This sets the contribution status
+     * @return true if value has changed, false otherwise
+     * @since 13.1.0
+     */
+    private final boolean setContributionStatus(final StatusEnum v)  {
+        return setValue(Columns.CONTRIBUTIONSTATUS, v);
+    }
+
+    /**
+     * This set this worker contribution to REVEALING
+     * @return true if value has changed, false otherwise
+     * @since 13.1.0
+     */
+    public final boolean setRevealing() {
+        return setContributionStatus(StatusEnum.REVEALING);
+    }
+    /**
+     * This set this worker contribution to REVEALING
+     * @return true if value has changed, false otherwise
+     * @since 13.1.0
+     */
+    public final boolean setRunning() {
+        return setContributionStatus(StatusEnum.RUNNING);
+    }
+    /**
+     * This set this worker contribution to CONTRIBUTING
+     * @return true if value has changed, false otherwise
+     * @since 13.1.0
+     */
+    public final boolean setContributing() {
+        return setContributionStatus(StatusEnum.CONTRIBUTING);
+    }
+    /**
+     * This set this worker contribution to WAITING (the work order has not enough workers)
+     * @return true if value has changed, false otherwise
+     * @since 13.1.0
+     */
+    public final boolean setWaiting() {
+        return setContributionStatus(StatusEnum.WAITING);
+    }
+    /**
+     * This set this worker contribution to PENDING (the work order has been bought)
+     * @return true if value has changed, false otherwise
+     * @since 13.1.0
+     */
+    public final boolean setPending() {
+        return setContributionStatus(StatusEnum.PENDING);
+    }
+    /**
+     * This set this worker contribution to CONTRIBUTED
+     * @return true if value has changed, false otherwise
+     * @since 13.1.0
+     */
+    public final boolean setContributed() {
+        return setContributionStatus(StatusEnum.CONTRIBUTED);
+    }
 	/**
 	 * This sets the worker pool address this host belongs to
 	 * @param addr is the worker pool address
@@ -2338,6 +2409,7 @@ public final class HostInterface extends Table {
      * @since 13.1.0
      */
     public void leaveMarketOrder()  {
+        setContributionStatus(StatusEnum.UNAVAILABLE);
         setValue(Columns.MARKETORDERUID, null);
     }
     /**
@@ -2345,29 +2417,23 @@ public final class HostInterface extends Table {
      * @since 13.1.0
      */
     public void leaveMarketOrder(final MarketOrderInterface marketOrder)  {
-        if(marketOrder != null)
+        if(marketOrder != null) {
             marketOrder.removeWorker(this);
+        } else
+            leaveMarketOrder();
     }
     /**
-     * This sets the market order uid
+     * This sets the market order uid; this sets contribution status to WAITING (the work order has not enough worker)
      * @param uid is the market order uid
      * @return true if value has changed, false otherwise
      * @since 13.1.0
      */
     public boolean setMarketOrderUid(final UID uid)  {
         if(uid == null) {
-            setContribution(false);
+            return false;
         }
+        setContributionStatus(StatusEnum.WAITING);
         return setValue(Columns.MARKETORDERUID, uid);
-    }
-    /**
-     * This sets the contribution flag
-     * @param c is the contribution flag
-     * @return true if value has changed, false otherwise
-     * @since 13.1.0
-     */
-    public boolean setContribution(final boolean c)  {
-        return setValue(Columns.HASCONTRIBUTED, c);
     }
 	/**
 	 * This sets this host as(un)available accordingly to its local policy This

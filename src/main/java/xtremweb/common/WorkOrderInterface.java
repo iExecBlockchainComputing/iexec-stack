@@ -29,7 +29,6 @@ import xtremweb.database.SQLRequest;
 import xtremweb.security.XWAccessRights;
 
 import java.io.*;
-import java.net.URISyntaxException;
 import java.security.InvalidKeyException;
 import java.sql.ResultSet;
 import java.util.Date;
@@ -42,22 +41,12 @@ import java.util.Date;
 /**
  * This class describes a row of the works SQL table.
  */
-public final class MarketOrderInterface extends Table {
+public final class WorkOrderInterface extends Table {
 
 	public static final String TABLENAME = "marketorders";
 	public static final String THISTAG = "marketorder";
 
 	public enum Columns implements XWBaseColumn {
-        /**
-         * ADK/BID ?
-         * @see MarketOrderDirectionEnum
-         */
-		DIRECTION {
-			@Override
-			public MarketOrderDirectionEnum fromString(final String v) {
-				return MarketOrderDirectionEnum.valueOf(v.toUpperCase());
-			}
-		},
 		/**
 		 * This is the column index of the status
 		 *
@@ -128,24 +117,6 @@ public final class MarketOrderInterface extends Table {
          * in xtremweb.common.Table
          */
 		PRICE {
-			@Override
-			public Long fromString(final String v) {
-				return Long.valueOf(v);
-			}
-		},
-        /**
-         * How many of this order can be proposed
-         */
-		VOLUME {
-			@Override
-			public Long fromString(final String v) {
-				return Long.valueOf(v);
-			}
-		},
-        /**
-         * How many of this order still not sold
-         */
-		REMAINING {
 			@Override
 			public Long fromString(final String v) {
 				return Long.valueOf(v);
@@ -255,7 +226,7 @@ public final class MarketOrderInterface extends Table {
 				return TableColumns.fromInt(v);
 			} catch (final Exception e) {
 			}
-			for (final MarketOrderInterface.Columns c : MarketOrderInterface.Columns.values()) {
+			for (final WorkOrderInterface.Columns c : WorkOrderInterface.Columns.values()) {
 				if (c.getOrdinal() == v) {
 					return c;
 				}
@@ -286,7 +257,7 @@ public final class MarketOrderInterface extends Table {
      * TRUST is forced to 70
      * EXPECTEDWORKERS is forced to 10
 	 */
-	public MarketOrderInterface() {
+	public WorkOrderInterface() {
 
 		super(THISTAG, TABLENAME);
 
@@ -294,19 +265,17 @@ public final class MarketOrderInterface extends Table {
 		setArrivalDate();
 		setAccessRights(XWAccessRights.USERALL);
 		setTrust(70L);
-        setVolume(1L);
-        setRemaining(getVolume());
         setStatus(StatusEnum.UNAVAILABLE);
         setExpectedWorkers(4L);
         setMarketOrderIdx(0);
-		setShortIndexes(new int[] { TableColumns.UID.getOrdinal(), Columns.MARKETORDERIDX.getOrdinal(), Columns.DIRECTION.getOrdinal(), Columns.STATUS.getOrdinal() });
+		setShortIndexes(new int[] { TableColumns.UID.getOrdinal(), Columns.MARKETORDERIDX.getOrdinal(), Columns.STATUS.getOrdinal() });
 	}
 
 	/**
 	 * This creates a new object that will be retreived with a complex SQL
 	 * request
 	 */
-	public MarketOrderInterface(final SQLRequest r) {
+	public WorkOrderInterface(final SQLRequest r) {
 		this();
 		setRequest(r);
 	}
@@ -318,7 +287,7 @@ public final class MarketOrderInterface extends Table {
 	 *            is an SQL request result
 	 * @exception IOException
 	 */
-	public MarketOrderInterface(final ResultSet rs) throws IOException {
+	public WorkOrderInterface(final ResultSet rs) throws IOException {
 		this();
 		fill(rs);
 	}
@@ -360,14 +329,6 @@ public final class MarketOrderInterface extends Table {
             setNbWorkers((Long) Columns.NBWORKERS.fromResultSet(rs));
         } catch (final Exception e) {
         }
-        try {
-            setVolume((Long) Columns.VOLUME.fromResultSet(rs));
-        } catch (final Exception e) {
-        }
-        try {
-            setRemaining((Long) Columns.REMAINING.fromResultSet(rs));
-        } catch (final Exception e) {
-        }
 		try {
 			setArrivalDate((Date) Columns.ARRIVALDATE.fromResultSet(rs));
 		} catch (final Exception e) {
@@ -394,7 +355,6 @@ public final class MarketOrderInterface extends Table {
             setAccessRights((XWAccessRights) TableColumns.ACCESSRIGHTS.fromResultSet(rs));
             setCategoryId((Long) Columns.CATEGORYID.fromResultSet(rs));
             setExpectedWorkers((Long) Columns.EXPECTEDWORKERS.fromResultSet(rs));
-			setDirection((MarketOrderDirectionEnum) Columns.DIRECTION.fromResultSet(rs));
 			setStatus((StatusEnum) Columns.STATUS.fromResultSet(rs));
             setPrice((Long) Columns.PRICE.fromResultSet(rs));
             setTrust((Long) Columns.TRUST.fromResultSet(rs));
@@ -413,7 +373,7 @@ public final class MarketOrderInterface extends Table {
 	 * @param input
 	 *            is a String containing an XML representation
 	 */
-	public MarketOrderInterface(final String input) throws IOException, SAXException {
+	public WorkOrderInterface(final String input) throws IOException, SAXException {
 		this(StreamIO.stream(input));
 	}
 
@@ -423,7 +383,7 @@ public final class MarketOrderInterface extends Table {
 	 * @param f
 	 *            is the XML file
 	 */
-	public MarketOrderInterface(final File f) throws IOException, SAXException {
+	public WorkOrderInterface(final File f) throws IOException, SAXException {
 		this(new FileInputStream(f));
 	}
 
@@ -437,7 +397,7 @@ public final class MarketOrderInterface extends Table {
 	 * @throws IOException
 	 *             on XML error
 	 */
-	public MarketOrderInterface(final InputStream input) throws IOException, SAXException {
+	public WorkOrderInterface(final InputStream input) throws IOException, SAXException {
 		this();
 		final XMLReader reader = new XMLReader(this);
 		try {
@@ -457,7 +417,7 @@ public final class MarketOrderInterface extends Table {
 	 * @throws IOException
 	 *             on XML error
 	 */
-	public MarketOrderInterface(final Attributes attrs) {
+	public WorkOrderInterface(final Attributes attrs) {
 		this();
 		super.fromXml(attrs);
 	}
@@ -465,7 +425,7 @@ public final class MarketOrderInterface extends Table {
 	/**
 	 * This is the default constructor
 	 */
-	public MarketOrderInterface(final UID uid) {
+	public WorkOrderInterface(final UID uid) {
 		this();
 		setUID(uid);
 	}
@@ -475,13 +435,22 @@ public final class MarketOrderInterface extends Table {
 	 */
 	@Override
 	public void updateInterface(final Table itf) throws IOException {
-		final MarketOrderInterface marketOrderInterface = (MarketOrderInterface) itf;
-        setOwner(marketOrderInterface.getOwner());
-        setAccessRights(marketOrderInterface.getAccessRights());
-        setDirection(marketOrderInterface.getDirection());
-        setStatus(marketOrderInterface.getStatus());
-        setCategoryId(marketOrderInterface.getCategoryId());
-        setMarketOrderIdx(marketOrderInterface.getMarketOrderIdx());
+		final WorkOrderInterface marketOrderInterface = (WorkOrderInterface) itf;
+		if (marketOrderInterface.getOwner() != null) {
+			setOwner(marketOrderInterface.getOwner());
+		}
+		if (marketOrderInterface.getAccessRights() != null) {
+			setAccessRights(marketOrderInterface.getAccessRights());
+		}
+		if (marketOrderInterface.getStatus() != null) {
+			setStatus(marketOrderInterface.getStatus());
+		}
+        if (marketOrderInterface.getCategoryId() != null) {
+            setCategoryId(marketOrderInterface.getCategoryId());
+        }
+        if (marketOrderInterface.getMarketOrderIdx() != null) {
+            setMarketOrderIdx(marketOrderInterface.getMarketOrderIdx());
+        }
 		setArrivalDate(marketOrderInterface.getArrivalDate());
 		setCompletedDate(marketOrderInterface.getCompletedDate());
 		setRevealingDate(marketOrderInterface.getRevealingDate());
@@ -491,8 +460,6 @@ public final class MarketOrderInterface extends Table {
  		setNbWorkers(marketOrderInterface.getNbWorkers());
 		setTrust(marketOrderInterface.getTrust());
         setPrice(marketOrderInterface.getPrice());
-        setVolume(marketOrderInterface.getVolume());
-        setRemaining(marketOrderInterface.getRemaining());
 		if (marketOrderInterface.getWorkerPoolAddr() != null) {
 			setWorkerPoolAddr(marketOrderInterface.getWorkerPoolAddr());
 		}
@@ -502,14 +469,6 @@ public final class MarketOrderInterface extends Table {
 
 	}
 
-	/**
-	 * This retrieves market order direction
-	 *
-	 * @return the market order direction
-	 */
-	public MarketOrderDirectionEnum getDirection() {
-		return (MarketOrderDirectionEnum) getValue(Columns.DIRECTION);
-	}
 	/**
 	 * This retrieves the category id
 	 *
@@ -591,30 +550,6 @@ public final class MarketOrderInterface extends Table {
 	public long getPrice()  {
 		try {
 			return ((Long) getValue(Columns.PRICE)).longValue();
-		} catch (final Exception e) {
-			return 0;
-		}
-	}
-	/**
-	 * This retrieves the volume
-	 *
-	 * @return this attribute, or 0 if not set
-	 */
-	public long getVolume()  {
-		try {
-			return ((Long) getValue(Columns.VOLUME)).longValue();
-		} catch (final Exception e) {
-			return 0;
-		}
-	}
-	/**
-	 * This retrieves the remaining
-	 *
-	 * @return this attribute, or 0 if not set
-	 */
-	public long getRemaining()  {
-		try {
-			return ((Long) getValue(Columns.REMAINING)).longValue();
 		} catch (final Exception e) {
 			return 0;
 		}
@@ -703,15 +638,6 @@ public final class MarketOrderInterface extends Table {
 			return setValue(Columns.valueOf(uppercaseAttr), v);
 		}
 	}
-
-	/**
-	 * This sets market order direction
-	 * @param d is the market order direction
-	 * @return true if value has changed, false otherwise
-	 */
-	public boolean setDirection(final MarketOrderDirectionEnum d) {
-		return setValue(Columns.DIRECTION, d);
-	}
     /**
      * This sets market status
      * @param s is the market order status
@@ -763,25 +689,15 @@ public final class MarketOrderInterface extends Table {
         return setValue(Columns.STATUS, StatusEnum.COMPLETED);
     }
     /**
-     * This sets this market order status to pending (it has not been bought).
-     * This decrements the volume by one
+     * This sets this market order status to pending (it has been bought and needs workers).
+	 * This decrements the volume by one
      * @return true if value has changed, false otherwise
      */
     public boolean setPending() {
-        decRemaining();
         return setValue(Columns.STATUS, StatusEnum.PENDING);
     }
     /**
-     * This sets this market order status to pending (it has been bought).
-     * This decrements the volume by one
-     * @return true if value has changed, false otherwise
-     */
-    public boolean setAvailable() {
-        decRemaining();
-        return setValue(Columns.STATUS, StatusEnum.AVAILABLE);
-    }
-    /**
-     * This sets this market order status to waiting (not enough workers)
+     * This sets this market order status to waiting (still missing workers)
      * @return true if value has changed, false otherwise
      */
     public boolean setWaiting() {
@@ -803,13 +719,13 @@ public final class MarketOrderInterface extends Table {
         return setValue(Columns.CATEGORYID, Long.valueOf(c));
     }
     /**
-     * This sets the market order index and marks this as PENDING (the work order has been bought)
+     * This sets the market order index and marks this as PENDING
      * @param c is the category id
      * @return true if value has changed, false otherwise
      */
     public boolean setMarketOrderIdx(final long c)  {
         if (c != 0L)
-            setAvailable();
+            setPending();
         return setValue(Columns.MARKETORDERIDX, Long.valueOf(c));
     }
     /**
@@ -892,30 +808,6 @@ public final class MarketOrderInterface extends Table {
 		return setValue(Columns.PRICE, p);
 	}
 	/**
-	 * This decrements the remaining by one
-     * @return true if value has changed, false otherwise
-	 */
-	private boolean decRemaining()  {
-		return setRemaining(getRemaining() - 1);
-	}
-	/**
-	 * This sets the volume
-	 * @param v is the volume
-	 * @return true if value has changed, false otherwise
-	 */
-	public boolean setVolume(final Long v) {
-//		return setValue(Columns.VOLUME, v < 0 ? 0 : v);
-		return setValue(Columns.VOLUME, 1);
-	}
-	/**
-	 * This sets the remaining
-	 * @param r is the remaining
-     * @return true if value has changed, false otherwise
-	 */
-	public boolean setRemaining(final Long r)  {
-		return setValue(Columns.REMAINING, r < 0 ? 0 : r);
-	}
-	/**
 	 * This sets the worker pool address
 	 * @param addr is the worker pool address
      * @return true if value has changed, false otherwise
@@ -937,7 +829,7 @@ public final class MarketOrderInterface extends Table {
 	 * @return true if value has changed, false otherwise
 	 */
 	public final boolean setArrivalDate() {
-		return setArrivalDate(new java.util.Date());
+		return setArrivalDate(new Date());
 	}
 	/**
 	 * This set the submission date
@@ -953,7 +845,7 @@ public final class MarketOrderInterface extends Table {
 	 * @return true if value has changed, false otherwise
 	 */
 	public final boolean setCompletedDate() {
-		return setCompletedDate(new java.util.Date());
+		return setCompletedDate(new Date());
 	}
 	/**
 	 * This set the completion date
@@ -969,7 +861,7 @@ public final class MarketOrderInterface extends Table {
      * @return true if value has changed, false otherwise
      */
     public final boolean setStartDate() {
-        return setStartDate(new java.util.Date());
+        return setStartDate(new Date());
     }
     /**
      * This set the start date
@@ -985,7 +877,7 @@ public final class MarketOrderInterface extends Table {
      * @return true if value has changed, false otherwise
      */
     public final boolean setContributingDate() {
-        return setContributingDate(new java.util.Date());
+        return setContributingDate(new Date());
     }
     /**
      * This set the contributing date
@@ -1001,7 +893,7 @@ public final class MarketOrderInterface extends Table {
 	 * @return true if value has changed, false otherwise
 	 */
 	public final boolean setRevealingDate() {
-		return setRevealingDate(new java.util.Date());
+		return setRevealingDate(new Date());
 	}
 	/**
 	 * This set the revealing date
@@ -1021,7 +913,7 @@ public final class MarketOrderInterface extends Table {
 	 */
 	public static void main(final String[] argv) {
 		try {
-			final MarketOrderInterface itf = new MarketOrderInterface();
+			final WorkOrderInterface itf = new WorkOrderInterface();
 			itf.setUID(UID.getMyUid());
 			if (argv.length > 0) {
 				try {

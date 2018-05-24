@@ -157,7 +157,13 @@ public abstract class Table extends Type {
 	 * @since 9.0.0
 	 */
 	public final boolean setErrorMsg(final String v) {
-		return setValue(TableColumns.ERRORMSG, v);
+		String val = v;
+		if(val != null) {
+			val = val.replaceAll("[\\n\\s\'\"]+", "");
+			val = val.replaceAll("&amp;", "&");
+			val = val.replaceAll("&", "&amp;");
+		}
+		return setValue(TableColumns.ERRORMSG, val);
 	}
 
 	/**

@@ -55,23 +55,30 @@ public class SQLRequestWorkRequest extends SQLRequest {
 	protected static final String TABLENAMES = WorkInterface.TABLENAME + " as " + MAINTABLEALIAS + ","
 			+ AppInterface.APPTABLENAME + "," + UserInterface.TABLENAME + "," + HostInterface.TABLENAME;
 
-	/**
-	 * This is used if host.acceptBin == true. This helps to retrieve any
-	 * application for the worker, including apps to be deployed (the worker
-	 * will have to download binary) or shared apps (the ones the worker
-	 * declares as sharing)
-	 */
-	protected static final String WORKREQUESTCRITERIAS = " AND maintable.status='%s'"
-			+ " AND (ISNULL(maintable.LISTENPORT)      OR maintable.LISTENPORT='' OR %s)"
-			+ " AND (ISNULL(maintable.EXPECTEDHOSTUID) OR maintable.EXPECTEDHOSTUID='%s')"
-			+ " AND ( ISNULL(maintable.MINCPUSPEED)          OR (maintable.MINCPUSPEED          <= %d))"
-			+ " AND ( ISNULL(maintable.MINMEMORY)            OR (maintable.MINMEMORY            <= %d))"
-			+ " AND ( ISNULL(maintable.MINFREEMASSSTORAGE)   OR (maintable.MINFREEMASSSTORAGE   <= %d))"
-			+ " AND ((NOT (ISNULL(apps.%s) AND ISNULL(apps.JAVAURI)) AND apps.TYPE='DEPLOYABLE') OR apps.TYPE IN (%s) )"
-			+ " AND (ISNULL(apps.NEEDEDPACKAGES)             OR  (apps.NEEDEDPACKAGES='')   OR  (apps.NEEDEDPACKAGES IN (%s)))"
-			+ " AND (ISNULL(maintable.MARKETORDERUID)        OR  ((hosts.HASCONTRIBUTED='false') AND (maintable.MARKETORDERUID = hosts.MARKETORDERUID)))"
-			+ " AND hosts.available='true' and hosts.active='true'"
+    /**
+     * This is used if host.acceptBin == true. This helps to retrieve any
+     * application for the worker, including apps to be deployed (the worker
+     * will have to download binary) or shared apps (the ones the worker
+     * declares as sharing)
+     */
+    protected static final String WORKREQUESTBASECRITERIAS = " AND maintable.status='%s'"
+            + " AND (ISNULL(maintable.LISTENPORT)      OR maintable.LISTENPORT='' OR %s)"
+            + " AND (ISNULL(maintable.EXPECTEDHOSTUID) OR maintable.EXPECTEDHOSTUID='%s')"
+            + " AND ( ISNULL(maintable.MINCPUSPEED)          OR (maintable.MINCPUSPEED          <= %d))"
+            + " AND ( ISNULL(maintable.MINMEMORY)            OR (maintable.MINMEMORY            <= %d))"
+            + " AND ( ISNULL(maintable.MINFREEMASSSTORAGE)   OR (maintable.MINFREEMASSSTORAGE   <= %d))"
+            + " AND (ISNULL(apps.NEEDEDPACKAGES)             OR  (apps.NEEDEDPACKAGES='')   OR  (apps.NEEDEDPACKAGES IN (%s)))"
+            + " AND (ISNULL(maintable.MARKETORDERUID)        OR  ((hosts.CONTRIBUTIONSTATUS='PENDING') AND (maintable.MARKETORDERUID = hosts.MARKETORDERUID)))"
+            + " AND hosts.available='true' and hosts.active='true'"
             + " AND (maintable.appuid=apps.uid)";
+    /**
+     * This is used if host.acceptBin == true. This helps to retrieve any
+     * application for the worker, including apps to be deployed (the worker
+     * will have to download binary) or shared apps (the ones the worker
+     * declares as sharing)
+     */
+    protected static final String WORKREQUESTCRITERIAS = WORKREQUESTBASECRITERIAS
+            + " AND ((NOT (ISNULL(apps.%s) AND ISNULL(apps.JAVAURI)) AND apps.TYPE='DEPLOYABLE') OR apps.TYPE IN (%s) )";
 
 	/**
 	 * This is used if host.acceptBin == false. This retrieves job referring
@@ -79,15 +86,8 @@ public class SQLRequestWorkRequest extends SQLRequest {
 	 *
 	 * @since 8.0.0
 	 */
-	protected static final String WORKREQUESTCRITERIAS_NOBIN = " AND maintable.status='%s'"
-			+ " AND ((ISNULL(maintable.LISTENPORT))      OR maintable.LISTENPORT='' OR %s)"
-			+ " AND ((ISNULL(maintable.EXPECTEDHOSTUID)) OR maintable.EXPECTEDHOSTUID='%s')"
-			+ " AND ( (ISNULL(maintable.MINCPUSPEED))          OR (maintable.MINCPUSPEED          <= %d))"
-			+ " AND ( (ISNULL(maintable.MINMEMORY))            OR (maintable.MINMEMORY            <= %d))"
-			+ " AND ( (ISNULL(maintable.MINFREEMASSSTORAGE))   OR (maintable.MINFREEMASSSTORAGE   <= %d))"
-			+ " AND (apps.TYPE IN (%s))"
-            + " AND hosts.available='true' and hosts.active='true'"
-            + " AND (ISNULL(apps.NEEDEDPACKAGES)             OR  (apps.NEEDEDPACKAGES='')   OR  (apps.NEEDEDPACKAGES IN (%s)))";
+	protected static final String WORKREQUESTCRITERIAS_NOBIN = WORKREQUESTBASECRITERIAS
+            + " AND apps.TYPE IN (%s)";
 
 	/**
 	 * This concatenates SQLRequestAccessible.CRITERIAS and
@@ -339,38 +339,73 @@ public class SQLRequestWorkRequest extends SQLRequest {
 		logger.finest("projectLabel        = " + projectLabel);
 
 		String ret = null;
+
 		if ((projectLabel == null) || (projectLabel.length() <= 0)) {
 			if (host.acceptBin()) {
-				ret = String.format(getCriterias(), getUser().getUID().toString(), otherAccess, otherAccess,
-						groupAccess, groupAccess, status.toString(), incomingConnections, hostUid.toString(),
+				ret = String.format(getCriterias(),
+                        getUser().getUID().toString(),
+                        otherAccess, otherAccess,
+						groupAccess, groupAccess,
+                        status.toString(),
+                        incomingConnections,
+                        hostUid.toString(),
 						(host.getCpuSpeed() > 0 ? host.getCpuSpeed() : Long.MAX_VALUE),
 						(host.getAvailableMem() > 0 ? host.getAvailableMem() : Long.MAX_VALUE),
-						(host.getFreeTmp() > 0 ? host.getFreeTmp() : Long.MAX_VALUE), binaryFieldName,
-						hostSharedAppNames, hostSharedPkgNames, hostSharedData);
+						(host.getFreeTmp() > 0 ? host.getFreeTmp() : Long.MAX_VALUE),
+                        hostSharedPkgNames,
+                        binaryFieldName,
+						hostSharedAppNames,
+                        hostSharedData);
 			} else {
-				ret = String.format(getCriterias(), getUser().getUID().toString(), otherAccess, otherAccess,
-						groupAccess, groupAccess, status.toString(), incomingConnections, hostUid.toString(),
+				ret = String.format(getCriterias(),
+                        getUser().getUID().toString(),
+                        otherAccess, otherAccess,
+						groupAccess, groupAccess,
+                        status.toString(),
+                        incomingConnections,
+                        hostUid.toString(),
 						(host.getCpuSpeed() > 0 ? host.getCpuSpeed() : Long.MAX_VALUE),
 						(host.getAvailableMem() > 0 ? host.getAvailableMem() : Long.MAX_VALUE),
-						(host.getFreeTmp() > 0 ? host.getFreeTmp() : Long.MAX_VALUE), hostSharedAppNames,
-						hostSharedPkgNames, hostSharedData);
+						(host.getFreeTmp() > 0 ? host.getFreeTmp() : Long.MAX_VALUE),
+                        hostSharedPkgNames,
+                        hostSharedAppNames,
+                        hostSharedData);
 			}
 		} else {
 			logger.debug("projectLabel = " + projectLabel);
 			if (host.acceptBin()) {
-				ret = String.format(getCriterias(), getUser().getUID().toString(), otherAccess, otherAccess,
-						groupAccess, groupAccess, status.toString(), incomingConnections, hostUid.toString(),
+				ret = String.format(getCriterias(),
+                        getUser().getUID().toString(),
+                        otherAccess, otherAccess,
+						groupAccess, groupAccess,
+                        status.toString(),
+                        incomingConnections,
+                        hostUid.toString(),
 						(host.getCpuSpeed() > 0 ? host.getCpuSpeed() : Long.MAX_VALUE),
 						(host.getAvailableMem() > 0 ? host.getAvailableMem() : Long.MAX_VALUE),
-						(host.getFreeTmp() > 0 ? host.getFreeTmp() : Long.MAX_VALUE), binaryFieldName,
-						hostSharedAppNames, hostSharedPkgNames, hostSharedData, projectLabel, projectLabel);
+						(host.getFreeTmp() > 0 ? host.getFreeTmp() : Long.MAX_VALUE),
+                        hostSharedPkgNames,
+                        binaryFieldName,
+						hostSharedAppNames,
+                        hostSharedData,
+                        projectLabel,
+                        projectLabel);
 			} else {
-				ret = String.format(getCriterias(), getUser().getUID().toString(), otherAccess, otherAccess,
-						groupAccess, groupAccess, status.toString(), incomingConnections,
+				ret = String.format(getCriterias(),
+                        getUser().getUID().toString(),
+                        otherAccess, otherAccess,
+						groupAccess, groupAccess,
+                        status.toString(),
+                        incomingConnections,
 						(host.getCpuSpeed() > 0 ? host.getCpuSpeed() : Long.MAX_VALUE),
 						(host.getAvailableMem() > 0 ? host.getAvailableMem() : Long.MAX_VALUE),
-						(host.getFreeTmp() > 0 ? host.getFreeTmp() : Long.MAX_VALUE), hostUid.toString(),
-						hostSharedAppNames, hostSharedPkgNames, hostSharedData, projectLabel, projectLabel);
+						(host.getFreeTmp() > 0 ? host.getFreeTmp() : Long.MAX_VALUE),
+                        hostUid.toString(),
+                        hostSharedPkgNames,
+						hostSharedAppNames,
+                        hostSharedData,
+                        projectLabel,
+                        projectLabel);
 			}
 		}
 		hostSharedAppNames = null;

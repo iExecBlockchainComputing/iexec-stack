@@ -116,7 +116,7 @@ DELEGATEDREGISTRATION=true
 # Do we try to connect to Ethereum blockchain
 # @since 13.0.0
 #
-BLOCKCHAINETHENABLED=false
+BLOCKCHAINETHENABLED=true
 
 #
 # All : ethereum wallet path
