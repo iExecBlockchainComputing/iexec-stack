@@ -177,6 +177,7 @@ public class Worker {
 
                 if (commonConfiguration != null){
                     IexecWorkerLibrary.initialize(walletConfig, commonConfiguration);
+					WorkerPocoWatcherImpl workerPocoWatcher = new WorkerPocoWatcherImpl();
                 }
 
             } catch (final Exception e) {
