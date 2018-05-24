@@ -5964,6 +5964,7 @@ public final class DBInterface {
         }
 
         theHost.update();
+        marketOrder.update();
 
         if(marketOrder.canStart()) {
             final ActuatorService actuatorService = ActuatorService.getInstance();
