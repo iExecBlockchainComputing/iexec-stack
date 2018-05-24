@@ -75,7 +75,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ${RESULTS_FOLDER}:${RESULTS_FOLDER}
-      #- ${WORKERWALLETPATH}:/iexec/wallet
+      - ${WORKERWALLETPATH}:/iexec/wallet/wallet_worker.json
     networks:
       - iexec-net
     restart: unless-stopped
