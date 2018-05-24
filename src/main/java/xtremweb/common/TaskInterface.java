@@ -818,6 +818,7 @@ public final class TaskInterface extends xtremweb.common.Table {
 	 * This sets the task status as unable to run on worker.
 	 */
 	public void setError() {
+		Thread.currentThread().dumpStack();
 		setStatus(StatusEnum.ERROR);
 		setRemovalDate();
 	}
