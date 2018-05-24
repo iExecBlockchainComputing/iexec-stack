@@ -367,6 +367,7 @@ public class ThreadAlive extends Thread {
 					} else {
                         logger.error("reveal transaction error; will retry later " + theWork.getUID());
                         CommManager.getInstance().getPoolWork().saveWork(theWork);
+                        dumpMarketOrderStatus(theWork.getWorkOrderId());
                     }
                 }
 			}
@@ -480,7 +481,13 @@ public class ThreadAlive extends Thread {
 		}
 	}
 
-	/**
+    private void dumpMarketOrderStatus(final String workOrderId) {
+
+        final String urlStr = "http://localhost:3030/api/marketorders/" + workOrderId;
+        XWTools.dumpUrlContent(urlStr);
+    }
+
+    /**
 	 * This checks the provided job accordingly to the server status
 	 *
 	 * @param jobUID

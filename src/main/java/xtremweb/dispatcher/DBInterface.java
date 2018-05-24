@@ -1509,8 +1509,6 @@ public final class DBInterface {
      * @since 13.1.0
      */
     protected Collection<HostInterface> hosts(final EthereumWallet wallet, final MarketOrderInterface marketOrder) throws IOException {
-        System.out.println("DBInterface#hosts() " + (wallet == null ? "null wallet" : wallet.getAddress()));
-        System.out.println("DBInterface#hosts() " + (marketOrder == null ? "null marketOrder" : marketOrder.getMarketOrderIdx()));
         if((wallet == null)
                 || (wallet.getAddress() == null)
                 || (marketOrder == null)) {
@@ -5898,7 +5896,7 @@ public final class DBInterface {
      * @throws IOException
      * @since 13.1.0
      */
-	protected HostInterface hostContribution(final HostInterface theHost) throws IOException {
+	protected synchronized HostInterface hostContribution(final HostInterface theHost) throws IOException {
         if (theHost == null) {
             logger.info("hostContribution() : host is null");
             return null;
@@ -5920,6 +5918,8 @@ public final class DBInterface {
             logger.info("hostContribution(" + workerWalletAddr + ") : no unsatisfied market order");
             return theHost;
         }
+
+        logger.debug("hostContribution(" + workerWalletAddr + ") : " + marketOrder.toXml());
 
         if(marketOrder.getWorkerPoolAddr().compareTo(theHost.getWorkerPoolAddr()) != 0) {
             logger.error("hostContribution(" + workerWalletAddr + ") : worker pool mismatch : "

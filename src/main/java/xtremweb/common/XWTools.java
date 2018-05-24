@@ -23,13 +23,7 @@
 
 package xtremweb.common;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintStream;
+import java.io.*;
 import java.lang.reflect.Method;
 import java.math.BigInteger;
 import java.net.*;
@@ -1034,6 +1028,28 @@ public class XWTools {
         final byte[] digest = md.digest();
         return String.format( "%064x", new BigInteger( 1, digest ) );
       }
+
+      public static void dumpUrlContent(final String urlStr) {
+
+		  try {
+			  final URL url = new URL(urlStr);
+			  URLConnection conn = url.openConnection();
+
+			  // open the stream and put it into BufferedReader
+			  try (BufferedReader br = new BufferedReader(
+					  new InputStreamReader(conn.getInputStream()))) {
+
+				  String inputLine;
+				  while ((inputLine = br.readLine()) != null) {
+					  logger.debug(inputLine);
+				  }
+			  }
+
+		  } catch (Exception e) {
+			  logger.exception(e);
+		  }
+	  }
+
     /**
 	 * This is for testing only
 	 */

@@ -33,11 +33,7 @@ package xtremweb.worker;
  * @version %I% %G%
  */
 
-import java.io.BufferedReader;
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.math.BigInteger;
 import java.net.*;
 import java.security.AccessControlException;
@@ -1279,6 +1275,8 @@ public final class CommManager extends Thread {
                             Worker.getConfig().getHost().setContributed();
                         } else {
                             logger.error("contribute transaction error; will retry later " + theWork.getUID());
+                            dumpContributionStatus(Worker.getConfig().getHost().getEthWalletAddr(),
+                                    theWork.getWorkOrderId());
                             sendResult(theWork);
                         }
 
@@ -1318,6 +1316,13 @@ public final class CommManager extends Thread {
 
         }
         mileStone.println("</uploadResults>");
+	}
+
+	private void dumpContributionStatus(final String ethWalletAddr, final String workOrderId) {
+
+        final String urlStr = "http://localhost:3030/api/workorders/" +
+                workOrderId + "/contribution?worker=" + ethWalletAddr;
+        XWTools.dumpUrlContent(urlStr);
 	}
 
 	/**
