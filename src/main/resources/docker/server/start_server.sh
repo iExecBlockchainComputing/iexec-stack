@@ -64,4 +64,11 @@ if [ $? -eq 0 ] ; then echo "Keystores generated" ; else echo "ERROR: keystores 
 fi
 
 
-/iexec/bin/xtremweb.server console
+if [ ! -z $ALIVEPERIOD ] ; 
+  then
+    /iexec/bin/xtremweb.server console -DALIVEPERIOD=$ALIVEPERIOD
+  else
+    /iexec/bin/xtremweb.server console
+fi
+
+
