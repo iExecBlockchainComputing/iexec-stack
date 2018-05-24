@@ -5725,12 +5725,19 @@ public final class DBInterface {
         if (!config.blockchainEnabled()) {
             throw new IOException("blockchain access disabled");
         }
-        if ((moitf.getDirection() == null)
+        if ((moitf == null)
+                || (moitf.getDirection() == null)
                 || (moitf.getCategoryId() == null)
                 || (moitf.getExpectedWorkers() == 0)
                 || (moitf.getTrust() == 0)
                 || (moitf.getPrice() == 0) ) {
             throw new IOException("add market order error : missing values");
+        }
+
+        final UserInterface theClient = checkClient(u, UserRightEnum.INSERTMARKETORDER);
+
+        if (category(theClient, moitf.getCategoryId()) == null) {
+            throw new IOException("add market order error : unkown category " + moitf.getCategoryId());
         }
 
         try {
@@ -5747,7 +5754,6 @@ public final class DBInterface {
             throw new IOException("add market order error: ", e);
         }
 
-        final UserInterface theClient = checkClient(u, UserRightEnum.INSERTMARKETORDER);
         final MarketOrderInterface marketOrder = marketOrder(theClient, moitf.getUID());
         if (marketOrder != null) {
             marketOrder.updateInterface(moitf);
@@ -5867,6 +5873,7 @@ public final class DBInterface {
             theHost.setFreeTmp(_host.getFreeTmp());
             theHost.setTotalMem(_host.getTotalMem());
             theHost.setEthWalletAddr(_host.getEthWalletAddr());
+            theHost.setWorkerPoolAddr(_host.getWorkerPoolAddr());
 
             return hostContribution(theHost);
 
@@ -5876,7 +5883,7 @@ public final class DBInterface {
 		return null;
 	}
 
-    protected void hostContribution(EthereumWallet workerWalletAddr) throws IOException {
+    protected synchronized  void hostContribution(EthereumWallet workerWalletAddr) throws IOException {
         if (workerWalletAddr == null) {
             logger.info("hostContribution() : no wallet");
             return;
@@ -5957,6 +5964,7 @@ public final class DBInterface {
         }
 
         theHost.update();
+        marketOrder.update();
 
         if(marketOrder.canStart()) {
             final ActuatorService actuatorService = ActuatorService.getInstance();

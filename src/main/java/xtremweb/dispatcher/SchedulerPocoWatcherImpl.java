@@ -2,6 +2,7 @@ package xtremweb.dispatcher;
 
 import com.iexec.common.contracts.generated.WorkerPool;
 import com.iexec.common.ethereum.IexecConfigurationService;
+import com.iexec.common.ethereum.TransactionStatus;
 import com.iexec.common.ethereum.Utils;
 import com.iexec.common.ethereum.Web3jService;
 import com.iexec.common.model.AppModel;
@@ -395,10 +396,17 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
             marketOrder.setPending();
             marketOrder.update();
 
-            actuatorService.allowWorkersToContribute(workOrderId,
+            if(actuatorService.allowWorkersToContribute(workOrderId,
                     wallets,
-                    "0");
-
+                    "0") == TransactionStatus.FAILURE) {
+                for (final HostInterface worker : workers) {
+                    marketOrder.removeWorker(worker);
+                    worker.update();
+                }
+                marketOrder.setErrorMsg("transaction error : allowWorkersToContribute");
+                marketOrder.setError();
+                marketOrder.update();
+            }
         } catch(final Exception e) {
             logger.exception(e);
         }
@@ -485,7 +493,15 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
             }
 
 
-            actuatorService.revealConsensus(contributeEventResponse.woid, Numeric.toHexString(contributeEventResponse.resultHash));
+            if(actuatorService.revealConsensus(contributeEventResponse.woid, Numeric.toHexString(contributeEventResponse.resultHash)) == TransactionStatus.FAILURE) {
+                marketOrder.setErrorMsg("transaction error : revealConsensus");
+                marketOrder.setError();
+                try {
+                    marketOrder.update();
+                } catch(final IOException e) {
+                    logger.exception(e);
+                }
+            }
 
         } else {
             logger.debug("onContributeEvent() : not enough contributions");
@@ -525,10 +541,19 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
         }
         marketOrder.setCompleted();
 
-        actuatorService.finalizeWork(revealEventResponse.woid,
+        if(actuatorService.finalizeWork(revealEventResponse.woid,
                 "",
                 "",
-                result == null ? "" : result.toString());
+                result == null ? "" : result.toString()) == TransactionStatus.FAILURE) {
+
+            marketOrder.setErrorMsg("transaction error : finalizeWork");
+            marketOrder.setError();
+            try {
+                marketOrder.update();
+            } catch(final IOException e) {
+                logger.exception(e);
+            }
+        }
     }
 
     @Override

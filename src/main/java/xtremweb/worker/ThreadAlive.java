@@ -529,6 +529,13 @@ public class ThreadAlive extends Thread {
 		try {
             logger.debug("available = " + ThreadLaunch.getInstance().available());
             config.getHost().setAvailable(ThreadLaunch.getInstance().available());
+
+            if((Worker.getConfig().getHost().getWorkerPoolAddr() == null) ||
+                    (Worker.getConfig().getHost().getWorkerPoolAddr().length() < 1)) {
+
+                config.getBlockchainEthConfig();
+            }
+
 			commClient = commClient();
 			result = commClient.workAlive(rmiParams).getHashtable();
 		} catch (final RemoteException ce) {

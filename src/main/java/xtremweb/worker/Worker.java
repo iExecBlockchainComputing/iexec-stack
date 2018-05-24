@@ -26,6 +26,7 @@ package xtremweb.worker;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.iexec.common.ethereum.CommonConfiguration;
 import com.iexec.common.ethereum.WalletConfig;
+import com.iexec.common.workerpool.WorkerPoolConfig;
 import com.iexec.worker.ethereum.IexecWorkerLibrary;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
@@ -144,46 +145,7 @@ public class Worker {
 		}
 
         if (config.getBoolean(BLOCKCHAINETHENABLED)) {
-            String schedulerApiUrl = "https://" + config.getDispatcher() + ":"+ config.getHttpsPort();
-
-			WalletConfig walletConfig = new WalletConfig();
-			walletConfig.setPath(config.getWalletPath());
-			walletConfig.setPassword(config.getWalletPassword());
-			walletConfig.setRlcDeposit(config.getRLCDeposit());
-
-			CommonConfiguration commonConfiguration = null;
-
-            try {
-
-                // WARNING: !!! the connection is unsecured on purpose !!!
-                // otherwise it will not work in docker
-                TrustStrategy acceptingTrustStrategy = (cert, authType) -> true;
-                SSLContext sslContext = new org.apache.http.ssl.SSLContextBuilder()
-                        .loadTrustMaterial(null, acceptingTrustStrategy).build();
-
-                CloseableHttpClient client = HttpClients.custom()
-                        .setSslcontext(sslContext)
-                        .setSSLHostnameVerifier(new NoopHostnameVerifier())
-                        .build();
-                HttpGet httpGet = new HttpGet(schedulerApiUrl + XWTools.IEXECETHCONFPATH);
-                httpGet.setHeader("Accept", "application/xml");
-
-                HttpResponse response = client.execute(httpGet);
-
-                String content = IOUtils.toString(response.getEntity().getContent());
-                logger.info("Get configuration from scheduler [content: " + content + "]");
-                ObjectMapper mapper = new ObjectMapper();
-                commonConfiguration = mapper.readValue(content, CommonConfiguration.class);
-
-                if (commonConfiguration != null){
-                    IexecWorkerLibrary.initialize(walletConfig, commonConfiguration);
-					WorkerPocoWatcherImpl workerPocoWatcher = new WorkerPocoWatcherImpl();
-                }
-
-            } catch (final Exception e) {
-                logger.exception("Can't get iExec config from " + schedulerApiUrl + XWTools.IEXECETHCONFPATH, e);
-            }
-
+            config.getBlockchainEthConfig();
         }
 
 		config.dump(System.out, "XWHEP Worker started ");
@@ -323,4 +285,5 @@ public class Worker {
 	public static void setConfig(final XWConfigurator config) {
 		Worker.config = config;
 	}
+
 }

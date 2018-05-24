@@ -29,6 +29,7 @@ public class WorkerPocoWatcherImpl implements WorkerPoolWatcher, IexecHubWatcher
 
         TransactionStatus status = TransactionStatus.FAILURE;
         while (status == TransactionStatus.FAILURE ) {
+            actuatorService.unsubscribeFromPool();
             status = actuatorService.subscribeToPool();
             log.info("Subscribing to pool " + status);
             if (status==TransactionStatus.FAILURE) {

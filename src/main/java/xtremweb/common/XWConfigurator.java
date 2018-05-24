@@ -32,10 +32,20 @@ package xtremweb.common;
  * @author Samuel Heriard, Oleg Lodygensky
  */
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.iexec.common.ethereum.CommonConfiguration;
 import com.iexec.common.ethereum.CredentialsService;
 import com.iexec.common.ethereum.IexecConfigurationService;
+import com.iexec.common.ethereum.WalletConfig;
 import com.iexec.common.workerpool.WorkerPoolConfig;
+import com.iexec.worker.ethereum.IexecWorkerLibrary;
+import org.apache.commons.io.IOUtils;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
+import org.apache.http.conn.ssl.TrustStrategy;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.web3j.crypto.Credentials;
 import org.web3j.protocol.Web3j;
 import xtremweb.archdep.ArchDepFactory;
@@ -46,8 +56,10 @@ import xtremweb.security.PEMPrivateKey;
 import xtremweb.security.PEMPublicKey;
 import xtremweb.security.X509Proxy;
 import xtremweb.worker.Worker;
+import xtremweb.worker.WorkerPocoWatcherImpl;
 
 import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -234,6 +246,52 @@ public final class XWConfigurator extends Properties {
 		return getProperty(XWPropertyDefs.HTTPSPORT);
 	}
 
+	public void getBlockchainEthConfig () {
+
+		final String schedulerApiUrl = "https://" + getDispatcher() + ":"+ getHttpsPort();
+		try {
+
+			// WARNING: !!! the connection is unsecured on purpose !!!
+			// otherwise it will not work in docker
+			TrustStrategy acceptingTrustStrategy = (cert, authType) -> true;
+			SSLContext sslContext = new org.apache.http.ssl.SSLContextBuilder()
+					.loadTrustMaterial(null, acceptingTrustStrategy).build();
+
+			CloseableHttpClient client = HttpClients.custom()
+					.setSslcontext(sslContext)
+					.setSSLHostnameVerifier(new NoopHostnameVerifier())
+					.build();
+			HttpGet httpGet = new HttpGet(schedulerApiUrl + XWTools.IEXECETHCONFPATH);
+			httpGet.setHeader("Accept", "application/xml");
+
+			HttpResponse response = client.execute(httpGet);
+
+			String content = IOUtils.toString(response.getEntity().getContent());
+			logger.info("Get configuration from scheduler [content: " + content + "]");
+			ObjectMapper mapper = new ObjectMapper();
+			final CommonConfiguration commonConfiguration = mapper.readValue(content, CommonConfiguration.class);
+
+			if (commonConfiguration != null){
+				final WalletConfig walletConfig = new WalletConfig();
+				walletConfig.setPath(getWalletPath());
+				walletConfig.setPassword(getWalletPassword());
+				walletConfig.setRlcDeposit(getRLCDeposit());
+
+				IexecWorkerLibrary.initialize(walletConfig, commonConfiguration);
+				WorkerPocoWatcherImpl workerPocoWatcher = new WorkerPocoWatcherImpl();
+
+				final WorkerPoolConfig workerPoolConfig = commonConfiguration.getContractConfig().getWorkerPoolConfig();
+				if (workerPoolConfig != null) {
+					_host.setWorkerPoolAddr(workerPoolConfig.getAddress());
+				}
+			}
+
+		} catch (final Exception e) {
+			logger.exception("Can't get iExec config from " + schedulerApiUrl + XWTools.IEXECETHCONFPATH, e);
+		}
+
+
+	}
     /**
 	 * This is the maximum jobs this worker will compute before dying This is
 	 * expecially usefull to deploy workers over Grids
@@ -2414,7 +2472,7 @@ public final class XWConfigurator extends Properties {
 			out.println("Eth client addr     : " + commonConfiguration.getNodeConfig().getClientAddress());
 			out.println("iExec Hub  addr     : " + commonConfiguration.getContractConfig().getIexecHubAddress());
 			out.println("iExec RLC  addr     : " + commonConfiguration.getContractConfig().getRlcAddress());
-			WorkerPoolConfig workerPoolConfig = commonConfiguration.getContractConfig().getWorkerPoolConfig();
+			final WorkerPoolConfig workerPoolConfig = commonConfiguration.getContractConfig().getWorkerPoolConfig();
 			if (workerPoolConfig != null) {
 				out.println("iExec WorkerPool name : " + workerPoolConfig.getName());
 				out.println("iExec WorkerPool addr : " + workerPoolConfig.getAddress());
