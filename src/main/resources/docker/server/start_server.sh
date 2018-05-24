@@ -34,12 +34,12 @@ replace_predefined_var_in_conf BLOCKCHAINETHENABLED
 
 iexecSchedulerYmlFile=/iexec/conf/iexec-scheduler.yml
 
-sed -i "s/path:.*/path: \/iexec\/wallet\/wallet.json/g"             $iexecSchedulerYmlFile
+sed -i "s/path:.*/path: \/iexec\/wallet\/wallet_scheduler.json/g"   $iexecSchedulerYmlFile
 sed -i "s/password:.*/password: \"$WALLETPASSWORD\"/g"              $iexecSchedulerYmlFile
 sed -i "s/clientAddress:.*/clientAddress: $ETHNODE/g"               $iexecSchedulerYmlFile
 sed -i "s/rlcAddress:.*/rlcAddress: $RLCCONTRACT/g"                 $iexecSchedulerYmlFile
 sed -i "s/iexecHubAddress:.*/iexecHubAddress: $IEXECHUBCONTRACT/g"  $iexecSchedulerYmlFile
-# sed -i 's/\\//g' $iexecSchedulerYmlFile
+
 
 replace_commented_var_in_conf () {
   varName=$1;
