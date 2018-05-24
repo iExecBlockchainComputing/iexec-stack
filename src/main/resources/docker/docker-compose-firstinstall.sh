@@ -64,7 +64,7 @@ rm -rf dbconf/
 
 # then start the scheduler and a little bit after all remaining services
 docker-compose -f $dockerComposeFile up -d scheduler
-sleep 10
+sleep 80
 docker-compose -f $dockerComposeFile up -d
 
 cd $currentFolder

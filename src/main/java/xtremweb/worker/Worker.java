@@ -26,21 +26,28 @@ package xtremweb.worker;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.iexec.common.ethereum.CommonConfiguration;
 import com.iexec.common.ethereum.WalletConfig;
-import com.iexec.worker.ethereum.CommonConfigurationGetter;
 import com.iexec.worker.ethereum.IexecWorkerLibrary;
 import org.apache.commons.io.IOUtils;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
+import org.apache.http.conn.ssl.TrustStrategy;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import xtremweb.common.*;
 import xtremweb.communications.HTTPServer;
 
 import javax.naming.ConfigurationException;
+import javax.net.ssl.SSLContext;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.math.BigInteger;
 import java.net.URL;
 import java.util.Properties;
 
 import static xtremweb.common.XWPropertyDefs.BLOCKCHAINETHENABLED;
+
 
 /**
  * This class describes the XtremWeb Worker. It has a single infinite loop,
@@ -136,7 +143,7 @@ public class Worker {
 			}
 		}
 
-        if (config.getBoolean(BLOCKCHAINETHENABLED) == true) {
+        if (config.getBoolean(BLOCKCHAINETHENABLED)) {
             String schedulerApiUrl = "https://" + config.getDispatcher() + ":"+ config.getHttpsPort();
 
 			WalletConfig walletConfig = new WalletConfig();
@@ -148,15 +155,28 @@ public class Worker {
 
             try {
 
-                final URL url = new URL(schedulerApiUrl + XWTools.IEXECETHCONFPATH);
+                // WARNING: !!! the connection is unsecured on purpose !!!
+                // otherwise it will not work in docker
+                TrustStrategy acceptingTrustStrategy = (cert, authType) -> true;
+                SSLContext sslContext = new org.apache.http.ssl.SSLContextBuilder()
+                        .loadTrustMaterial(null, acceptingTrustStrategy).build();
 
-                String message = IOUtils.toString(url.openStream());
+                CloseableHttpClient client = HttpClients.custom()
+                        .setSslcontext(sslContext)
+                        .setSSLHostnameVerifier(new NoopHostnameVerifier())
+                        .build();
+                HttpGet httpGet = new HttpGet(schedulerApiUrl + XWTools.IEXECETHCONFPATH);
+                httpGet.setHeader("Accept", "application/xml");
+
+                HttpResponse response = client.execute(httpGet);
+
+                String content = IOUtils.toString(response.getEntity().getContent());
+                logger.info("Get configuration from scheduler [content: " + content + "]");
                 ObjectMapper mapper = new ObjectMapper();
-                commonConfiguration = mapper.readValue(message, CommonConfiguration.class);
+                commonConfiguration = mapper.readValue(content, CommonConfiguration.class);
 
                 if (commonConfiguration != null){
                     IexecWorkerLibrary.initialize(walletConfig, commonConfiguration);
-                    WorkerPocoWatcherImpl workerPocoWatcher = new WorkerPocoWatcherImpl();
                 }
 
             } catch (final Exception e) {
