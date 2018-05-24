@@ -66,6 +66,7 @@ import java.security.cert.CertificateExpiredException;
 import java.util.*;
 
 import static xtremweb.common.XWPropertyDefs.BLOCKCHAINETHENABLED;
+import static xtremweb.common.XWPropertyDefs.XWCP;
 
 public final class XWConfigurator extends Properties {
 
@@ -373,6 +374,9 @@ public final class XWConfigurator extends Properties {
 
 	public File getKeyStoreFile() {
 		return keyStoreFile;
+	}
+	public File getTrustStoreFile() {
+		return new File(getProperty(XWPropertyDefs.JAVATRUSTSTORE));
 	}
 
 	public void setKeyStoreFile(final File keyStoreFile) {
@@ -884,7 +888,7 @@ public final class XWConfigurator extends Properties {
 
 		keyStoreFile = getFile(XWPropertyDefs.SSLKEYSTORE);
 		if ((keyStoreFile == null) || !keyStoreFile.exists()) {
-			keyStoreFile = getFile(XWPropertyDefs.JAVAKEYSTORE);
+			keyStoreFile = getFile(XWPropertyDefs.SSLKEYSTORE);
 		}
 
 		if ((keyStoreFile == null) || !keyStoreFile.exists()) {
@@ -924,7 +928,8 @@ public final class XWConfigurator extends Properties {
 		} else {
 			setProperty(XWPropertyDefs.SSLKEYSTORE, "");
 		}
-
+		logger.debug(XWPropertyDefs.SSLKEYSTORE.toString() + " = " + getProperty(XWPropertyDefs.SSLKEYSTORE));
+		logger.debug(XWPropertyDefs.JAVATRUSTSTORE.toString() + " = " + getProperty(XWPropertyDefs.JAVATRUSTSTORE));
 		// worker don't use certificates
 		if (!XWRole.isClient()) {
 			setProperty(XWPropertyDefs.X509USERPROXY, "");

@@ -167,7 +167,7 @@ public class TCPClient extends CommClient {
 			}
 			uri = uri2;
 
-			final File keyFile = config.getKeyStoreFile();
+			final File keyFile = config.getTrustStoreFile();
 
 			int nbopens = 0;
 			for (nbopens = 0; nbopens < getSocketRetries(); nbopens++) {

@@ -380,7 +380,7 @@ public class ThreadAlive extends Thread {
 			logger.info("ThreadAlive() KEYSTOREURI : " + keystoreUriStr);
 			boolean newkeystore = false;
 			final URI keystoreUri = new URI(keystoreUriStr);
-			final File currentKeystoreFile = new File(System.getProperty(XWPropertyDefs.JAVAKEYSTORE.toString()));
+			final File currentKeystoreFile = new File(System.getProperty(XWPropertyDefs.JAVATRUSTSTORE.toString()));
 			logger.debug("currentKeystoreFile : " + currentKeystoreFile + " length = " + currentKeystoreFile.length());
 
 			final DataInterface newKeystoreData = CommManager.getInstance().getData(keystoreUri);

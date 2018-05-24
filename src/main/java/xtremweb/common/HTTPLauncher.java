@@ -216,7 +216,7 @@ public final class HTTPLauncher {
                         + log4jconf + loglevel
                         + " -D" + XWPropertyDefs.JAVALIBPATH.propertyName() + "=" + tmpPath + hwmem
                         + " -D" + XWPropertyDefs.XWCP.propertyName() + "=" + xwcp
-                        + " -D" + XWPropertyDefs.JAVAKEYSTORE.propertyName() + "=" + keystorePath
+                        + " -D" + XWPropertyDefs.JAVATRUSTSTORE.propertyName() + "=" + keystorePath
                         + " -cp " + jarFilePath + File.pathSeparator + (javacp != null ? javacp : "")
                         + " xtremweb.worker.Worker "
                         + " --xwconfig " + configPath);
