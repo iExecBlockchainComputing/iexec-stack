@@ -56,6 +56,7 @@ import xtremweb.security.PEMPrivateKey;
 import xtremweb.security.PEMPublicKey;
 import xtremweb.security.X509Proxy;
 import xtremweb.worker.Worker;
+import xtremweb.worker.WorkerPocoWatcherImpl;
 
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
@@ -277,6 +278,7 @@ public final class XWConfigurator extends Properties {
 				walletConfig.setRlcDeposit(getRLCDeposit());
 
 				IexecWorkerLibrary.initialize(walletConfig, commonConfiguration);
+				WorkerPocoWatcherImpl workerPocoWatcher = new WorkerPocoWatcherImpl();
 
 				final WorkerPoolConfig workerPoolConfig = commonConfiguration.getContractConfig().getWorkerPoolConfig();
 				if (workerPoolConfig != null) {
