@@ -117,15 +117,15 @@ public class WorkerPoolService {
     }
 
     private void onContributeEvent(WorkerPool.ContributeEventResponse contributeEvent) {
-        log.info("Received ContributeEvent [woid:{}, worker:{}]",
-                contributeEvent.woid, contributeEvent.worker);
+        log.info("Received ContributeEvent [woid:{}, worker:{}, resultHash:{}]",
+                contributeEvent.woid, contributeEvent.worker, contributeEvent.resultHash);
         if (workerPoolWatcher != null) {
             workerPoolWatcher.onContributeEvent(contributeEvent);
         }
     }
 
     private void onReveal(WorkerPool.RevealEventResponse revealEvent) {
-        log.info("Received RevealEvent [result:{}]", Numeric.toHexString(revealEvent.result));
+        log.info("Received RevealEvent [woid:{}, worker:{}, result:{}]", revealEvent.woid, revealEvent.worker, Numeric.toHexString(revealEvent.result));
         if (workerPoolWatcher != null) {
             workerPoolWatcher.onReveal(revealEvent);
         }
