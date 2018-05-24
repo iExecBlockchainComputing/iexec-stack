@@ -1,7 +1,12 @@
 [
   {
-    "pool": "Pool-1",
-    "description": "Description 1, description 1, description ",
-    "logo": "https://image.ibb.co/nMuVjb/request.png"
+    "name": "Pool1",
+    "org": "iExecBlockchainComputing",
+    "created": "2018-01-15T16:05:05.120Z"
+  },
+  {
+    "name": "Pool2",
+    "org": "iExecBlockchainComputing",
+    "created": "2018-01-16T16:05:05.120Z"
   }
 ]
