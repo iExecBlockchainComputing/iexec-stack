@@ -1293,10 +1293,12 @@ public class ThreadWork extends Thread {
 			//
 			// since 13.1.0 the consensus is calculated on XWTools.CONSENSUSFILENAME
 			//
+			boolean contribution = false;
 			final File consensusFile = new File (XWTools.CONSENSUSFILENAME);
 			if (consensusFile.exists() && (consensusFile.length() == 0)) {
 				try {
                     ret = contribute(consensusFile);
+                    contribution = true;
 				} catch (final Exception e) {
                     throw new IOException("contribution error " + e.getMessage());
 				}
@@ -1343,7 +1345,8 @@ public class ThreadWork extends Thread {
 			}
 			if (resultFile.exists()) {
 				try {
-                    ret = contribute(resultFile);
+                    if (contribution == false)
+                    	ret = contribute(resultFile);
                 } catch (Exception e) {
 					throw new IOException("contribution error " + e.getMessage());
 				}
