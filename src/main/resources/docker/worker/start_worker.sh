@@ -34,7 +34,8 @@ sed -i "s/^SSLKEYPASSWORD=.*/SSLKEYPASSWORD=changeit/g" /iexec/conf/xtremweb.wor
 
 # add the TMPDIR variable if defined
 if [ ! -z $TMPDIR ] ; then
-	sed -i "s/^#TMPDIR=.*/TMPDIR=$TMPDIR/g" /iexec/conf/xtremweb.worker.conf
+	sed -i "s/^TMPDIR=.*//g" /iexec/conf/xtremweb.worker.conf
+	echo "TMPDIR=$TMPDIR" >> /iexec/conf/xtremweb.worker.conf
 fi
 
 # Add defined SHAREDAPPS variable if defined, otherwise use a default value
