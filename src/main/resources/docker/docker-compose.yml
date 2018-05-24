@@ -51,6 +51,7 @@ services:
       - IEXECHUBCONTRACT=${IEXECHUBCONTRACT}
       - WALLETPASSWORD=${SCHEDULERWALLETPASSWORD}
       - WORKERPOOLADDRESS=${WORKERPOOLADDRESS}
+      - ALIVEPERIOD=${ALIVEPERIOD}
     networks:
       - iexec-net
     restart: unless-stopped
