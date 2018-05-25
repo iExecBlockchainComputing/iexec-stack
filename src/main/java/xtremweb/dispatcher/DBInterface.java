@@ -5565,6 +5565,7 @@ public final class DBInterface {
      * The scheduler must ask to reveal to all workers as soon as the consensus us reached
      */
     public void checkContribution(final MarketOrderInterface marketOrder) {
+		logger.debug("checkContribution() : in the method with marketOrder: " + marketOrder);
         try {
             final WorkInterface theWork = work(marketOrder.getMarketOrderIdx());
 
@@ -5576,7 +5577,7 @@ public final class DBInterface {
             final Collection<WorkInterface> works = marketOrderWorks(marketOrder);
 
             if (works == null) {
-                logger.error("createWork() : can't retrieve any work for market order : "
+                logger.error("checkContribution() : can't retrieve any work for market order : "
                         + marketOrder.getUID());
                 return;
             }
@@ -5589,26 +5590,33 @@ public final class DBInterface {
             final long expectedWorkers = marketOrder.getExpectedWorkers();
             final long trust = marketOrder.getTrust();
             final long expectedContributions = (long)Math.ceil(expectedWorkers * trust / 100d);
+			logger.debug("checkContribution() : expected workers: " + expectedWorkers);
+			logger.debug("checkContribution() : trust: " + trust);
+			logger.debug("checkContribution() : expectedContributions: " + expectedContributions);
             long totalContributions = 0L;
+			logger.debug("checkContribution() : number of works: " + works.size());
             for (final WorkInterface work : works) {
+				logger.debug("checkContribution() : for work: " + work);
                 if (work.hasContributed()
                         && (work.getH2h2r().compareTo(theWork.getH2h2r()) == 0)) {
                     totalContributions++;
+					logger.debug("checkContribution() : add a contribution");
                 }
             }
+			logger.debug("checkContribution() : totalContributions: " + totalContributions);
             if (totalContributions >= expectedContributions) {
-                logger.debug("onContributeEvent() : enough contributions");
+                logger.debug("checkContribution() : enough contributions");
                 theWork.setRevealing();
                 try {
                     theWork.update();
                 } catch (final IOException e) {
                     logger.exception(e);
                 }
-                logger.debug("onContributeEvent() : work must be revealed " + theWork.toXml());
+                logger.debug("checkContribution() : work must be revealed " + theWork.toXml());
 
                 for (final WorkInterface contributingWork : works) {
 
-                    logger.debug("onContributeEvent() : work must be revealed " + contributingWork.toXml());
+                    logger.debug("checkContribution() : work must be revealed " + contributingWork.toXml());
                     try {
                         contributingWork.setRevealing();
                         contributingWork.update();
