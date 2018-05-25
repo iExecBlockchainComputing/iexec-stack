@@ -1,1 +1,5 @@
-# iExec Pool 2
+![dapp logo](./logo.jpg)
+
+## [Description](./package.json)
+
+## [Parameters](./iexec.json)
