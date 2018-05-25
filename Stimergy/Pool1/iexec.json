@@ -4,7 +4,7 @@
   "social": {
     "website": "https://stimergy.com/"
   },
-  "logo": "logo.png",
+  "logo": "logo.jpg",
   "workerPool": {
     "description": "stimergy-pool-1",
     "subscriptionLockStakePolicy": 100,
