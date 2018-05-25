@@ -41,10 +41,7 @@ import javax.mail.MessagingException;
 
 import com.iexec.common.contracts.generated.IexecHub;
 import com.iexec.common.contracts.generated.WorkerPool;
-import com.iexec.common.ethereum.CommonConfiguration;
-import com.iexec.common.ethereum.CredentialsService;
-import com.iexec.common.ethereum.IexecConfigurationService;
-import com.iexec.common.ethereum.TransactionStatus;
+import com.iexec.common.ethereum.*;
 import com.iexec.common.workerpool.WorkerPoolConfig;
 import com.iexec.scheduler.actuator.ActuatorService;
 import org.web3j.utils.Numeric;
@@ -5294,9 +5291,9 @@ public final class DBInterface {
             // has already marked this job as revealing
             final boolean mustReveal = theWork.isRevealing();
 
-            theWork.updateInterface(receivedJob);
+			theWork.updateInterface(receivedJob);
 
-            logger.debug(realClient.getLogin() + " is updating " + theWork.getUID() + " status = "
+			logger.debug(realClient.getLogin() + " is updating " + theWork.getUID() + " status = "
                     + receivedJob.getStatus());
 
             switch (theWork.getStatus()) {
@@ -5361,6 +5358,9 @@ public final class DBInterface {
                         theHost.setRevealing();
                     }
                 }
+
+				checkContribution(theWork, marketOrder);
+
                 break;
             case COMPLETED:
 
@@ -5454,7 +5454,6 @@ public final class DBInterface {
                     }
                     break;
             }
-            checkContribution(theWork, marketOrder);
 /*
             if(marketOrder != null) {
                 final Collection<WorkInterface> works = marketOrderWorks(marketOrder);
@@ -5565,6 +5564,8 @@ public final class DBInterface {
      * The scheduler must ask to reveal to all workers as soon as the consensus us reached
      */
     public void checkContribution(final WorkInterface theWork, MarketOrderInterface marketOrder) {
+		logger.debug("checkContribution() : in the method with marketOrder: " + marketOrder);
+		logger.debug("checkContribution() : in the method with work: " + theWork);
         try {
             if (theWork == null)
                 return;
@@ -5574,7 +5575,7 @@ public final class DBInterface {
             final Collection<WorkInterface> works = marketOrderWorks(marketOrder);
 
             if (works == null) {
-                logger.error("createWork() : can't retrieve any work for market order : "
+                logger.error("checkContribution() : can't retrieve any work for market order : "
                         + marketOrder.getUID());
                 return;
             }
@@ -5587,30 +5588,40 @@ public final class DBInterface {
             final long expectedWorkers = marketOrder.getExpectedWorkers();
             final long trust = marketOrder.getTrust();
             final long expectedContributions = (long)Math.ceil(expectedWorkers * trust / 100d);
+			logger.debug("checkContribution() : expected workers: " + expectedWorkers);
+			logger.debug("checkContribution() : trust: " + trust);
+			logger.debug("checkContribution() : expectedContributions: " + expectedContributions);
             long totalContributions = 0L;
+			logger.debug("checkContribution() : number of works: " + works.size());
             for (final WorkInterface work : works) {
+
+				logger.debug("checkContribution() : for work: " + work);
+
                 if(work.getUID().equals(theWork.getUID())) {
                     totalContributions++;
                     continue;
                 }
+
                 if (work.hasContributed()
                         && (work.getH2h2r().compareTo(theWork.getH2h2r()) == 0)) {
                     totalContributions++;
+					logger.debug("checkContribution() : add a contribution");
                 }
             }
+			logger.debug("checkContribution() : totalContributions: " + totalContributions);
             if (totalContributions >= expectedContributions) {
-                logger.debug("onContributeEvent() : enough contributions");
+                logger.debug("checkContribution() : enough contributions");
                 theWork.setRevealing();
                 try {
                     theWork.update();
                 } catch (final IOException e) {
                     logger.exception(e);
                 }
-                logger.debug("onContributeEvent() : work must be revealed " + theWork.toXml());
+                logger.debug("checkContribution() : work must be revealed " + theWork.toXml());
 
                 for (final WorkInterface contributingWork : works) {
 
-                    logger.debug("onContributeEvent() : work must be revealed " + contributingWork.toXml());
+                    logger.debug("checkContribution() : work must be revealed " + contributingWork.toXml());
                     try {
                         contributingWork.setRevealing();
                         contributingWork.update();
@@ -5626,15 +5637,16 @@ public final class DBInterface {
                 }
 
                 marketOrder.setRevealing();
+                logger.debug("checkContribution() : market order has been setRevealing: " + marketOrder);
                 try {
                     marketOrder.update();
                 } catch (final IOException e) {
                     logger.exception(e);
                 }
 
-
-                if (ActuatorService.getInstance().revealConsensus(theWork.getWorkOrderId(),
-                        Numeric.toHexString(theWork.getH2h2r().getBytes())) == TransactionStatus.FAILURE) {
+				TransactionStatus status = ActuatorService.getInstance().revealConsensus(theWork.getWorkOrderId(), Utils.hashResult(theWork.getH2h2r()));
+				logger.debug("checkContribution() : transaction status: " + status);
+                if (status == TransactionStatus.FAILURE) {
                     marketOrder.setErrorMsg("transaction error : revealConsensus");
                     marketOrder.setError();
                     try {
@@ -5645,7 +5657,7 @@ public final class DBInterface {
                 }
 
             } else {
-                logger.debug("onContributeEvent() : not enough contributions");
+                logger.debug("checkContribution() : not enough contributions");
             }
         } catch (final Exception e) {
             logger.exception(e);

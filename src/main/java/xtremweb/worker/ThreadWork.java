@@ -1294,16 +1294,20 @@ public class ThreadWork extends Thread {
 			// since 13.1.0 the consensus is calculated on XWTools.CONSENSUSFILENAME
 			//
 			boolean contribution = false;
-			final File consensusFile = new File (XWTools.CONSENSUSFILENAME);
-			if (consensusFile.exists() && (consensusFile.length() == 0)) {
+			String currentDir = currentWork.getScratchDirName();
+			logger.info("ThreadWork#zipResult : currentDir : " + currentDir );
+			final File consensusFile = new File (currentDir + "/" + XWTools.CONSENSUSFILENAME);
+			logger.info("ThreadWork#zipResult : consensusFile.getPath() : " + consensusFile.getPath() );
+			if (consensusFile.exists() && (consensusFile.length() != 0)) {
+				logger.info("ThreadWork#zipResult : consensus file found");
 				try {
                     ret = contribute(consensusFile);
-                    contribution = true;
+					contribution = true;
 				} catch (final Exception e) {
                     throw new IOException("contribution error " + e.getMessage());
 				}
 			} else {
-                logger.info("no consensus file found");
+                logger.info("ThreadWork#zipResult : no consensus file found");
             }
 
             logger.debug("ThreadWork#zipResult : resultFile " + resultFilePath);
