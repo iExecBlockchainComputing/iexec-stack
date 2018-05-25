@@ -1,42 +1,42 @@
 [
   {
-    "name": "Kovan",
     "org": "iExecBlockchainComputing",
+    "name": "Kovan",
     "created": "2018-01-15T16:05:05.120Z"
   },
   {
+    "org": "iExecBlockchainComputing",
     "name": "Bench",
-    "org": "iExecBlockchainComputing",
     "created": "2018-01-16T16:05:05.120Z"
   },
   {
+    "org": "iExecBlockchainComputing",
     "name": "Dev",
-    "org": "iExecBlockchainComputing",
     "created": "2018-01-16T16:05:05.120Z"
   },
   {
-    "name": "Pool1",
     "org": "Nerdalize",
+    "name": "Nerdalize",
     "created": "2018-01-16T16:05:05.120Z"
   },
   {
-    "name": "Pool1",
     "org": "Stimergy",
+    "name": "Stimergy",
     "created": "2018-01-16T16:05:05.120Z"
   },
   {
-    "name": "Pool1",
     "org": "Qarnot",
+    "name": "Qarnot",
     "created": "2018-01-16T16:05:05.120Z"
   },
   {
-    "name": "Pool1",
     "org": "CloudAndHeat",
+    "name": "CloudAndHeat",
     "created": "2018-01-16T16:05:05.120Z"
   },
   {
-    "name": "Pool1",
     "org": "TFCloud",
+    "name": "TFCloud",
     "created": "2018-01-16T16:05:05.120Z"
   }
 ]
