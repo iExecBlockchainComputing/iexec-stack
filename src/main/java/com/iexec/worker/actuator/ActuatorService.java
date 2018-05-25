@@ -107,7 +107,7 @@ public class ActuatorService implements Actuator {
             //BigInteger depositBig = BigDecimal.valueOf(deposit).toBigInteger();
             TransactionReceipt contributeReceipt = workerPoolService.getWorkerPool().contribute(workOrderId, hashResultBytes, hashSignBytes, contributeV, r, s).send();
             List<WorkerPool.ContributeEventResponse> contributeEvents = workerPoolService.getWorkerPool().getContributeEvents(contributeReceipt);
-            log.info("Contribute [hashResult:{}, signResult:{}, transactionStatus:{}]", hashResult, signResult, getTransactionStatusFromEvents(contributeEvents));
+            log.info("Contribute [workOrderId:{}, hashResult:{}, signResult:{}, transactionStatus:{}]", workOrderId, hashResult, signResult, getTransactionStatusFromEvents(contributeEvents));
             return getTransactionStatusFromEvents(contributeEvents);
         } catch (Exception e) {
             e.printStackTrace();
@@ -123,7 +123,7 @@ public class ActuatorService implements Actuator {
         try {
             revealReceipt = workerPoolService.getWorkerPool().reveal(workOrderId, result).send();
             List<WorkerPool.RevealEventResponse> revealEvents = workerPoolService.getWorkerPool().getRevealEvents(revealReceipt);
-            log.info("Reveal [hashResult:{}, transactionStatus:{}]", shaResult, getTransactionStatusFromEvents(revealEvents));
+            log.info("Reveal [workOrderId:{}, hashResult:{}, transactionStatus:{}]", workOrderId, shaResult, getTransactionStatusFromEvents(revealEvents));
             return getTransactionStatusFromEvents(revealEvents);
         } catch (Exception e) {
             e.printStackTrace();
