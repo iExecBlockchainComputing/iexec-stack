@@ -5589,6 +5589,10 @@ public final class DBInterface {
             final long expectedContributions = (long)Math.ceil(expectedWorkers * trust / 100d);
             long totalContributions = 0L;
             for (final WorkInterface work : works) {
+                if(work.getUID().equals(theWork.getUID())) {
+                    totalContributions++;
+                    continue;
+                }
                 if (work.hasContributed()
                         && (work.getH2h2r().compareTo(theWork.getH2h2r()) == 0)) {
                     totalContributions++;
