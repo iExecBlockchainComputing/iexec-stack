@@ -1,6 +1,10 @@
 {
   "description":
+<<<<<<< HEAD
     "TFCloud - chineese cloud provider NEED LONGER DESCRIPTION NEED LONGER DESCRIPTION NEED LONGER DESCRIPTION NEED LONGER DESCRIPTION  NEED LONGER DESCRIPTION  NEED LONGER DESCRIPTION",
+=======
+    "TFCloud - chineese cloud provider NEED LONGER DESCRIPTION NEED LONGER DESCRIPTION NEED LONGER DESCRIPTION NEED LONGER DESCRIPTION",
+>>>>>>> 2bdd73fc7f56057ff28b8d3674a292c1844fdd29
   "social": {
     "website": "https://www.tfcloud.com/"
   },
