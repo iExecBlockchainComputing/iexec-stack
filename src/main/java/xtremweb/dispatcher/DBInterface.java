@@ -41,10 +41,7 @@ import javax.mail.MessagingException;
 
 import com.iexec.common.contracts.generated.IexecHub;
 import com.iexec.common.contracts.generated.WorkerPool;
-import com.iexec.common.ethereum.CommonConfiguration;
-import com.iexec.common.ethereum.CredentialsService;
-import com.iexec.common.ethereum.IexecConfigurationService;
-import com.iexec.common.ethereum.TransactionStatus;
+import com.iexec.common.ethereum.*;
 import com.iexec.common.workerpool.WorkerPoolConfig;
 import com.iexec.scheduler.actuator.ActuatorService;
 import org.web3j.utils.Numeric;
@@ -5294,9 +5291,9 @@ public final class DBInterface {
             // has already marked this job as revealing
             final boolean mustReveal = theWork.isRevealing();
 
-            theWork.updateInterface(receivedJob);
+			theWork.updateInterface(receivedJob);
 
-            logger.debug(realClient.getLogin() + " is updating " + theWork.getUID() + " status = "
+			logger.debug(realClient.getLogin() + " is updating " + theWork.getUID() + " status = "
                     + receivedJob.getStatus());
 
             switch (theWork.getStatus()) {
@@ -5361,6 +5358,9 @@ public final class DBInterface {
                         theHost.setRevealing();
                     }
                 }
+
+				checkContribution(theWork, marketOrder);
+
                 break;
             case COMPLETED:
 
@@ -5454,7 +5454,6 @@ public final class DBInterface {
                     }
                     break;
             }
-            checkContribution(theWork, marketOrder);
 /*
             if(marketOrder != null) {
                 final Collection<WorkInterface> works = marketOrderWorks(marketOrder);
@@ -5638,15 +5637,16 @@ public final class DBInterface {
                 }
 
                 marketOrder.setRevealing();
+                logger.debug("checkContribution() : market order has been setRevealed: " + marketOrder);
                 try {
                     marketOrder.update();
                 } catch (final IOException e) {
                     logger.exception(e);
                 }
 
-
-                if (ActuatorService.getInstance().revealConsensus(theWork.getWorkOrderId(),
-                        Numeric.toHexString(theWork.getH2h2r().getBytes())) == TransactionStatus.FAILURE) {
+				TransactionStatus status = ActuatorService.getInstance().revealConsensus(theWork.getWorkOrderId(), Utils.hashResult(theWork.getH2h2r()));
+				logger.debug("checkContribution() : transaction status: " + status);
+                if (status == TransactionStatus.FAILURE) {
                     marketOrder.setErrorMsg("transaction error : revealConsensus");
                     marketOrder.setError();
                     try {

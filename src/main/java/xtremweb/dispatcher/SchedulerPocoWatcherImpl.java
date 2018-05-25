@@ -433,6 +433,7 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
      */
     @Override
     public void onContributeEvent(WorkerPool.ContributeEventResponse contributeEventResponse) {
+
 /*
         final WorkOrderModel workOrderModel = ModelService.getInstance().getWorkOrderModel(contributeEventResponse.woid);
         final WorkInterface theWork = DBInterface.getInstance().work(contributeEventResponse);
