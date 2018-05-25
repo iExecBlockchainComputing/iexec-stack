@@ -5454,7 +5454,7 @@ public final class DBInterface {
                     }
                     break;
             }
-            checkContribution(marketOrder);
+            checkContribution(theWork, marketOrder);
 /*
             if(marketOrder != null) {
                 final Collection<WorkInterface> works = marketOrderWorks(marketOrder);
@@ -5564,11 +5564,10 @@ public final class DBInterface {
      * This is replaces the blockchain event watcher automatically called on worker contribution.
      * The scheduler must ask to reveal to all workers as soon as the consensus us reached
      */
-    public void checkContribution(final MarketOrderInterface marketOrder) {
+    public void checkContribution(final WorkInterface theWork, MarketOrderInterface marketOrder) {
 		logger.debug("checkContribution() : in the method with marketOrder: " + marketOrder);
+		logger.debug("checkContribution() : in the method with work: " + theWork);
         try {
-            final WorkInterface theWork = work(marketOrder.getMarketOrderIdx());
-
             if (theWork == null)
                 return;
 
