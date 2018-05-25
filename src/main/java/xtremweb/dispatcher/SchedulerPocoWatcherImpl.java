@@ -462,8 +462,11 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
         }
 
         final long expectedWorkers = marketOrder.getExpectedWorkers();
+        logger.debug("onContributeEvent() : expected workers: " + expectedWorkers);
         final long trust = marketOrder.getTrust();
+        logger.debug("onContributeEvent() : trust: " + trust);
         final long expectedContributions = (expectedWorkers * trust / 100);
+        logger.debug("onContributeEvent() : expectedContributions: " + expectedContributions);
         long totalContributions = 0L;
         for(final WorkInterface work : works ) {
             if(work.hasContributed()
