@@ -1,16 +1,16 @@
 [
   {
-    "name": "Pool1",
+    "name": "Kovan",
     "org": "iExecBlockchainComputing",
     "created": "2018-01-15T16:05:05.120Z"
   },
   {
-    "name": "Pool2",
+    "name": "Bench",
     "org": "iExecBlockchainComputing",
     "created": "2018-01-16T16:05:05.120Z"
   },
   {
-    "name": "Pool3",
+    "name": "Dev",
     "org": "iExecBlockchainComputing",
     "created": "2018-01-16T16:05:05.120Z"
   },
