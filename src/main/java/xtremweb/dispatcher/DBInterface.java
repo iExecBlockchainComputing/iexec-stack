@@ -5650,7 +5650,7 @@ public final class DBInterface {
                 }
 
             } else {
-                logger.debug("onContributeEvent() : not enough contributions");
+                logger.debug("checkContribution() : not enough contributions");
             }
         } catch (final Exception e) {
             logger.exception(e);
