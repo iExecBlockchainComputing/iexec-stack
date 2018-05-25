@@ -5595,7 +5595,14 @@ public final class DBInterface {
             long totalContributions = 0L;
 			logger.debug("checkContribution() : number of works: " + works.size());
             for (final WorkInterface work : works) {
+
 				logger.debug("checkContribution() : for work: " + work);
+
+                if(work.getUID().equals(theWork.getUID())) {
+                    totalContributions++;
+                    continue;
+                }
+
                 if (work.hasContributed()
                         && (work.getH2h2r().compareTo(theWork.getH2h2r()) == 0)) {
                     totalContributions++;
