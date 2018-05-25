@@ -1,1 +1,1 @@
-# Pool 2
+# iExec Pool 2
