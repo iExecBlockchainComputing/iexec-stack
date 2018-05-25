@@ -124,6 +124,7 @@ public class ActuatorService implements Actuator {
             revealReceipt = workerPoolService.getWorkerPool().reveal(workOrderId, result).send();
             List<WorkerPool.RevealEventResponse> revealEvents = workerPoolService.getWorkerPool().getRevealEvents(revealReceipt);
             log.info("Reveal [workOrderId:{}, hashResult:{}, transactionStatus:{}]", workOrderId, shaResult, getTransactionStatusFromEvents(revealEvents));
+            return getTransactionStatusFromEvents(revealEvents);
         } catch (Exception e) {
             e.printStackTrace();
         }
