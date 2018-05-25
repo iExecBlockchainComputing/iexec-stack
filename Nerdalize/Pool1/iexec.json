@@ -1,0 +1,14 @@
+{
+  "description":
+    "Nerdalize is building a different cloud. Instead of constructing huge datacenters, we're distributing our servers over homes. Homeowners use the residual heat for hot showers and to warm their house, and we don't need to build new infrastructure. Enabling you to scale up your computations without wasting CO2 and money.",
+  "social": {
+    "website": "https://www.nerdalize.com/"
+  },
+  "logo": "logo.png",
+  "workerPool": {
+    "description": "nerdalize-pool-1",
+    "subscriptionLockStakePolicy": 100,
+    "subscriptionMinimumStakePolicy": 100,
+    "subscriptionMinimumScorePolicy": 100
+  }
+}

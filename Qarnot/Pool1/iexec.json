@@ -1,0 +1,14 @@
+{
+  "description":
+    "Qarnot designed and operates the Q.rad, the first computing heater using embedded microprocessors as heat source. Totally silent, it gets computing instructions through the Internet. The heat produced by computing provides then free and efficient heating for residential, office and public buildings. Qarnot offers a cloud computing service through a fully distributed infrastructure where computing power is deployed no longer in concentrated data centers, but split throughout the city in the form of Q.rads.",
+  "social": {
+    "website": "https://www.qarnot.com/"
+  },
+  "logo": "logo.png",
+  "workerPool": {
+    "description": "qarnot-pool-1",
+    "subscriptionLockStakePolicy": 100,
+    "subscriptionMinimumStakePolicy": 100,
+    "subscriptionMinimumScorePolicy": 100
+  }
+}

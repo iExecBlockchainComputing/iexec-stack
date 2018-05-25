@@ -1,0 +1,14 @@
+{
+  "description":
+    "TFCloud - chineese cloud provider",
+  "social": {
+    "website": "https://www.tfcloud.com/"
+  },
+  "logo": "logo.png",
+  "workerPool": {
+    "description": "tfcloud-pool-1",
+    "subscriptionLockStakePolicy": 100,
+    "subscriptionMinimumStakePolicy": 100,
+    "subscriptionMinimumScorePolicy": 100
+  }
+}

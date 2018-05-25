@@ -1,0 +1,14 @@
+{
+  "description":
+    "Stimergy redefines the datacentre as a distributed collection of computing units interconnected by optical networks. Each unit, denominated a “digital furnace”, integrates several high performance servers as its heat source. Our data furnaces are deployed within the secured technical rooms of buildings, where they deliver their heat to hot water distribution pipes. Our modular datafurnaces are installed in numbers that makes it possible to cover from 30 to 60% of the hot water energy needs of a residential building.",
+  "social": {
+    "website": "https://stimergy.com/"
+  },
+  "logo": "logo.png",
+  "workerPool": {
+    "description": "stimergy-pool-1",
+    "subscriptionLockStakePolicy": 100,
+    "subscriptionMinimumStakePolicy": 100,
+    "subscriptionMinimumScorePolicy": 100
+  }
+}
