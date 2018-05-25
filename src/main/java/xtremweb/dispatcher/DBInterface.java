@@ -44,8 +44,10 @@ import com.iexec.common.contracts.generated.WorkerPool;
 import com.iexec.common.ethereum.CommonConfiguration;
 import com.iexec.common.ethereum.CredentialsService;
 import com.iexec.common.ethereum.IexecConfigurationService;
+import com.iexec.common.ethereum.TransactionStatus;
 import com.iexec.common.workerpool.WorkerPoolConfig;
 import com.iexec.scheduler.actuator.ActuatorService;
+import org.web3j.utils.Numeric;
 import xtremweb.common.*;
 import xtremweb.communications.*;
 import xtremweb.database.ColumnSelection;
@@ -2554,6 +2556,19 @@ public final class DBInterface {
             return selectOne(new WorkInterface(),
                     SQLRequest.MAINTABLEALIAS + "." + WorkInterface.Columns.WORKORDERID + "='"
                             + contribution.woid + "'");
+        } catch (IOException e) {
+            return null;
+        }
+    }
+    /**
+     * This retrieves a work given work order id
+     * @since 13.1.0
+     */
+    protected WorkInterface work(final long workOrderId) {
+        try {
+            return selectOne(new WorkInterface(),
+                    SQLRequest.MAINTABLEALIAS + "." + WorkInterface.Columns.WORKORDERID + "='"
+                            + workOrderId + "'");
         } catch (IOException e) {
             return null;
         }
@@ -5439,6 +5454,8 @@ public final class DBInterface {
                     }
                     break;
             }
+            checkContribution(marketOrder);
+/*
             if(marketOrder != null) {
                 final Collection<WorkInterface> works = marketOrderWorks(marketOrder);
                 final long expectedWorkers = marketOrder.getExpectedWorkers();
@@ -5474,7 +5491,7 @@ public final class DBInterface {
 
                 marketOrder.update();
             }
-
+*/
             if (theTask != null) {
                 theTask.update();
             }
@@ -5543,7 +5560,97 @@ public final class DBInterface {
 		return theWork;
 	}
 
-	/**
+    /**
+     * This is replaces the blockchain event watcher automatically called on worker contribution.
+     * The scheduler must ask to reveal to all workers as soon as the consensus us reached
+     */
+    public void checkContribution(final MarketOrderInterface marketOrder) {
+        try {
+            final WorkInterface theWork = work(marketOrder.getMarketOrderIdx());
+
+            if (theWork == null)
+                return;
+
+            logger.debug("checkContribution() : " + theWork.toXml());
+
+            final Collection<WorkInterface> works = marketOrderWorks(marketOrder);
+
+            if (works == null) {
+                logger.error("createWork() : can't retrieve any work for market order : "
+                        + marketOrder.getUID());
+                return;
+            }
+
+            final TaskInterface theWorkTask = DBInterface.getInstance().task(theWork);
+            final HostInterface theHost = DBInterface.getInstance().host(theWorkTask.getHost());
+            theHost.setContributed();
+            theHost.update();
+
+            final long expectedWorkers = marketOrder.getExpectedWorkers();
+            final long trust = marketOrder.getTrust();
+            final long expectedContributions = (long)Math.ceil(expectedWorkers * trust / 100d);
+            long totalContributions = 0L;
+            for (final WorkInterface work : works) {
+                if (work.hasContributed()
+                        && (work.getH2h2r().compareTo(theWork.getH2h2r()) == 0)) {
+                    totalContributions++;
+                }
+            }
+            if (totalContributions >= expectedContributions) {
+                logger.debug("onContributeEvent() : enough contributions");
+                theWork.setRevealing();
+                try {
+                    theWork.update();
+                } catch (final IOException e) {
+                    logger.exception(e);
+                }
+                logger.debug("onContributeEvent() : work must be revealed " + theWork.toXml());
+
+                for (final WorkInterface contributingWork : works) {
+
+                    logger.debug("onContributeEvent() : work must be revealed " + contributingWork.toXml());
+                    try {
+                        contributingWork.setRevealing();
+                        contributingWork.update();
+
+                        final TaskInterface contributingTask = DBInterface.getInstance().task(contributingWork);
+                        if (contributingTask != null) {
+                            contributingTask.setRevealing();
+                            contributingTask.update();
+                        }
+                    } catch (final IOException e) {
+                        logger.exception(e);
+                    }
+                }
+
+                marketOrder.setRevealing();
+                try {
+                    marketOrder.update();
+                } catch (final IOException e) {
+                    logger.exception(e);
+                }
+
+
+                if (ActuatorService.getInstance().revealConsensus(theWork.getWorkOrderId(),
+                        Numeric.toHexString(theWork.getH2h2r().getBytes())) == TransactionStatus.FAILURE) {
+                    marketOrder.setErrorMsg("transaction error : revealConsensus");
+                    marketOrder.setError();
+                    try {
+                        marketOrder.update();
+                    } catch (final IOException e) {
+                        logger.exception(e);
+                    }
+                }
+
+            } else {
+                logger.debug("onContributeEvent() : not enough contributions");
+            }
+        } catch (final Exception e) {
+            logger.exception(e);
+        }
+    }
+
+    /**
 	 * This retrieves a job status
 	 *
 	 * @param command is the command to execute
@@ -5842,6 +5949,8 @@ public final class DBInterface {
                 }
             }
 
+            logger.debug("hostRegister " + theHost.toXml());
+
             // we can't use theHost.updateInterface()
             // because we want to update data aggregated by the worker itself only
             theHost.setUploadBandwidth(_host.getUploadBandwidth());
@@ -5908,6 +6017,8 @@ public final class DBInterface {
             logger.info("hostContribution() : host is null");
             return null;
         }
+
+        logger.debug("hostContribution " + theHost.toXml());
 
         if(theHost.getEthWalletAddr() == null) {
             logger.warn("onSubscription(" + theHost.getUID() +") : has no wallet");
@@ -6013,7 +6124,7 @@ public final class DBInterface {
 			break;
 		}
 
-		update(host);
+		host.update();
 		return true;
 	}
 

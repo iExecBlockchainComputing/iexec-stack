@@ -352,7 +352,16 @@ public class ThreadAlive extends Thread {
 
                     TransactionStatus status = TransactionStatus.FAILURE;
                     if (theWork.getH2h2r() != null) {
-                        status = ActuatorService.getInstance().reveal(theWork.getWorkOrderId(), theWork.getH2h2r());
+                        for(int tries = 0 ; tries < 2; tries++) {
+                            status = ActuatorService.getInstance().reveal(theWork.getWorkOrderId(), theWork.getH2h2r());
+                            if (status == TransactionStatus.SUCCESS)
+                                break;
+                            try {
+                                logger.debug("reveal failure ; sleeping 30s " + tries);
+                                Thread.sleep(30000);
+                            } catch(final Exception e) {
+                            }
+                        }
 					} else {
                         theWork.setError("can't reveal : h2h2r is null");
 						logger.debug("can't reveal " + theWork.toXml());

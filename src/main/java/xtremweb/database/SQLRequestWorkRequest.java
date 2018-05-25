@@ -69,8 +69,16 @@ public class SQLRequestWorkRequest extends SQLRequest {
             + " AND ( ISNULL(maintable.MINFREEMASSSTORAGE)   OR (maintable.MINFREEMASSSTORAGE   <= %d))"
             + " AND (ISNULL(apps.NEEDEDPACKAGES)             OR  (apps.NEEDEDPACKAGES='')   OR  (apps.NEEDEDPACKAGES IN (%s)))"
             + " AND (ISNULL(maintable.MARKETORDERUID)        OR  ((hosts.CONTRIBUTIONSTATUS='PENDING') AND (maintable.MARKETORDERUID = hosts.MARKETORDERUID)))"
-            + " AND hosts.available='true' and hosts.active='true'"
+			+ " AND hosts.available='true' and hosts.active='true'"
             + " AND (maintable.appuid=apps.uid)";
+/*
+            return (!hasContributed() &&
+					(getMarketOrderUid() == null) &&
+					(getEthWalletAddr() != null)  &&
+					(getWorkerPoolAddr() != null) &&
+                    (getContributionStatus() == StatusEnum.UNAVAILABLE));
+
+ */
     /**
      * This is used if host.acceptBin == true. This helps to retrieve any
      * application for the worker, including apps to be deployed (the worker

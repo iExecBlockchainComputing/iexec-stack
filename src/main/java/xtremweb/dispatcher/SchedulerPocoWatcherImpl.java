@@ -390,29 +390,42 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
                 worker.update();
                 if (worker.getEthWalletAddr() != null) {
                     wallets.add(worker.getEthWalletAddr());
-                    logger.error("onWorkOrderActivated(" + workOrderId +") : allowing " + worker.getEthWalletAddr());
+                    logger.debug("onWorkOrderActivated(" + workOrderId +") : allowing " + worker.getEthWalletAddr());
                 }
             }
             marketOrder.setPending();
             marketOrder.update();
 
-            if(actuatorService.allowWorkersToContribute(workOrderId,
-                    wallets,
-                    "0") == TransactionStatus.FAILURE) {
-                for (final HostInterface worker : workers) {
-                    marketOrder.removeWorker(worker);
-                    worker.update();
-                }
-                marketOrder.setErrorMsg("transaction error : allowWorkersToContribute");
-                marketOrder.setError();
-                marketOrder.update();
-            }
+            allowWorkersToContribute(workOrderId, marketOrder, wallets, workers);
+
         } catch(final Exception e) {
             logger.exception(e);
         }
         //        DatasetModel datasetModel = ModelService.getInstance().getDatasetModel(workOrderModel.getDataset());
     }
 
+    private synchronized void allowWorkersToContribute(final String workOrderId,
+                                           final MarketOrderInterface marketOrder,
+                                           final ArrayList<String> wallets,
+                                           final Collection<HostInterface> workers)
+                    throws IOException {
+
+        if (actuatorService.allowWorkersToContribute(workOrderId,
+                wallets,
+                "0") == TransactionStatus.FAILURE) {
+            for (final HostInterface worker : workers) {
+                marketOrder.removeWorker(worker);
+                worker.update();
+            }
+            marketOrder.setErrorMsg("transaction error : allowWorkersToContribute");
+            marketOrder.setError();
+            marketOrder.update();
+        }
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+        }
+    }
     /**
      * This is a blockchain event watcher automatically called on worker contribution.
      * The scheduler must ask to reveal to all workers as soon as the consensus us reached
@@ -420,7 +433,7 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
      */
     @Override
     public void onContributeEvent(WorkerPool.ContributeEventResponse contributeEventResponse) {
-
+/*
         final WorkOrderModel workOrderModel = ModelService.getInstance().getWorkOrderModel(contributeEventResponse.woid);
         final WorkInterface theWork = DBInterface.getInstance().work(contributeEventResponse);
         if(theWork == null)
@@ -506,6 +519,7 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
         } else {
             logger.debug("onContributeEvent() : not enough contributions");
         }
+ */
     }
 
     @Override
@@ -540,6 +554,11 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
             }
         }
         marketOrder.setCompleted();
+        try {
+            marketOrder.update();
+        } catch(final IOException e) {
+            logger.exception(e);
+        }
 
         if(actuatorService.finalizeWork(revealEventResponse.woid,
                 "",

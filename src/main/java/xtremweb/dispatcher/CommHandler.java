@@ -901,12 +901,11 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 			}
 		}
 
-		String newKeystoreUriStr = config.getProperty(XWPropertyDefs.KEYSTOREURI);
+		final String newKeystoreUriStr = config.getProperty(XWPropertyDefs.KEYSTOREURI);
 		debug(command, "\n\n\nnewKeystoreUriStr =  " + newKeystoreUriStr);
 		if (newKeystoreUriStr != null) {
 			ret.put(XWPostParams.KEYSTOREURI.toString(), newKeystoreUriStr);
 		}
-		newKeystoreUriStr = null;
 
 		mileStone(command, "</workAlive>");
 		return ret;

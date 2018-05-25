@@ -207,7 +207,6 @@ public final class CommManager extends Thread {
 			setSleeping(true);
 			Thread.sleep(d);
 		} catch (final Exception e) {
-			logger.exception("was sleeping " + d, e);
 			setSleeping(false);
 			resetTimeouts();
 		}
@@ -1266,18 +1265,34 @@ public final class CommManager extends Thread {
 
                     if (theWork.getHiddenH2r() != null) {
                         logger.debug("the work can contribute " + theWork.toXml());
-                        if(ActuatorService.getInstance().contribute(theWork.getWorkOrderId(),
+                        dumpContributionStatus(Worker.getConfig().getHost().getEthWalletAddr(),
+                                theWork.getWorkOrderId());
+
+                    TransactionStatus status = TransactionStatus.FAILURE;
+
+                     for(int tries = 0 ; tries < 2; tries++) {
+                            status = ActuatorService.getInstance().contribute(theWork.getWorkOrderId(),
                                 theWork.getH2h2r(),
                                 BigInteger.ZERO,
                                 "0",
-                                "0") == TransactionStatus.SUCCESS) {
-                            theWork.setContributed();
-                            Worker.getConfig().getHost().setContributed();
-                        } else {
-                            logger.error("contribute transaction error; will retry later " + theWork.getUID());
-                            dumpContributionStatus(Worker.getConfig().getHost().getEthWalletAddr(),
-                                    theWork.getWorkOrderId());
-                            sendResult(theWork);
+                                "0");
+                        if (status == TransactionStatus.SUCCESS)
+                            break;
+                        try {
+                            logger.debug("contribute failure ; sleeping 30s " + tries);
+                            Thread.sleep(30000);
+                        } catch(final Exception e) {
+                        }
+                    }
+
+                    if (status == TransactionStatus.SUCCESS) {
+                         theWork.setContributed();
+                         Worker.getConfig().getHost().setContributed();
+                     } else {
+                         logger.error("contribute transaction error; will retry later " + theWork.getUID());
+                         dumpContributionStatus(Worker.getConfig().getHost().getEthWalletAddr(),
+                                 theWork.getWorkOrderId());
+                         sendResult(theWork);
                         }
 
                     } else {

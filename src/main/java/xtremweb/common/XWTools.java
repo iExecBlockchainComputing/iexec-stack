@@ -1031,6 +1031,39 @@ public class XWTools {
 
       public static void dumpUrlContent(final String urlStr) {
 
+		  logger.debug("dumpUrlContent(" + urlStr + ")");
+
+		  BufferedReader reader = null;
+		  try {
+			  final URL url = new URL(urlStr);
+			  HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+			  connection.setRequestMethod("GET");
+			  connection.setReadTimeout(15 * 1000);
+			  connection.connect();
+
+			  reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+			  final StringBuilder stringBuilder = new StringBuilder();
+
+			  String line = null;
+			  while ((line = reader.readLine()) != null) {
+				  stringBuilder.append(line + "\n");
+			  }
+			  logger.debug("dumpUrlContent() " + stringBuilder.toString());
+		  } catch (Exception e) {
+			  e.printStackTrace();
+		  } finally {
+			  // close the reader; this can throw an exception too, so
+			  // wrap it in another try/catch block.
+			  if (reader != null) {
+				  try {
+					  reader.close();
+				  } catch (IOException ioe) {
+					  ioe.printStackTrace();
+				  }
+			  }
+		  }
+
+/*
 		  try {
 			  final URL url = new URL(urlStr);
 			  URLConnection conn = url.openConnection();
@@ -1041,13 +1074,14 @@ public class XWTools {
 
 				  String inputLine;
 				  while ((inputLine = br.readLine()) != null) {
-					  logger.debug(inputLine);
+					  logger.debug("dumpUrlContent() " + inputLine);
 				  }
 			  }
 
 		  } catch (Exception e) {
 			  logger.exception(e);
 		  }
+*/
 	  }
 
     /**
