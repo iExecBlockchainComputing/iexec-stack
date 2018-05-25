@@ -5637,7 +5637,7 @@ public final class DBInterface {
                 }
 
                 marketOrder.setRevealing();
-                logger.debug("checkContribution() : market order has been setRevealed: " + marketOrder);
+                logger.debug("checkContribution() : market order has been setRevealing: " + marketOrder);
                 try {
                     marketOrder.update();
                 } catch (final IOException e) {
