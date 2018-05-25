@@ -1,10 +1,10 @@
 {
   "description":
-    "Cloud&Heat is a provider of OpenStack-based public and private cloud solutions. Since 2012, we have been running our own distributed cloud infrastructure, on which classic cloud computing (IaaS) is offered. With the Datacenter in a Box we are completing our portfolio by designing, commissioning and maintaining customized cloud solutions for companies responding to the rapidly increasing demand for company-internal cloud infrastructures. We provide our know-how in form of classical consulting, tailor-made courses or the implementation of individual OpenStack projects. All our cloud solutions are based on our own server base, which is unique in energy efficiency worldwide thanks to innovative hot water cooling. The server waste heat is directly absorbed by the heat hotspots, such as CPU or RAM, and can be used to heat properties and to process the hot water. The energy- and cost-efficient concept has been awarded multiple times, e.g. by the German Datacenter Prize in 2015 & 2016.",
+    "Cloud&Heat is a German provider of OpenStack-based public and private cloud solutions. The server waste heat is directly absorbed by the heat hotspots, such as CPU or RAM, and can be used to heat properties and to process hot water. Cloud&Heat's energy- and cost-efficient concept has been awarded multiple times, e.g. by the German Datacenter Prize in 2015 & 2016.",
   "social": {
     "website": "https://www.cloudandheat.com/"
   },
-  "logo": "logo.png",
+  "logo": "logo.jpg",
   "workerPool": {
     "description": "cloudandheat-pool-1",
     "subscriptionLockStakePolicy": 100,

@@ -4,7 +4,7 @@
   "social": {
     "website": "https://pool2.iex.ec"
   },
-  "logo": "logo.png",
+  "logo": "logo.jpg",
   "workerPool": {
     "description": "iexec-pool-2",
     "subscriptionLockStakePolicy": 100,
