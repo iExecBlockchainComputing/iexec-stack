@@ -123,7 +123,7 @@ public class MatchingScheduler extends SimpleScheduler {
 			System.out.println("host      = " + theHost.toXml());
 			System.out.println("criterias = " + moreCriterias);
 			theWork = db.selectOne(workSelection, moreCriterias.toString());
-			System.out.println("found work = " + theWork == null ? "none" : theWork.toXml());
+			System.out.println("found work = " + (theWork == null ? "none" : theWork.toXml()));
 
 			if (theWork != null) {
 				final AppInterface theApp = db.app(user, theWork.getApplication());
