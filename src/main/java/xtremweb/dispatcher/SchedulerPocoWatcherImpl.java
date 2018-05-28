@@ -267,6 +267,7 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
     /**
      * This creates a new WorkInterface in DB from the provided WorkOrderModel.
      * This new work has as many replica as expected by the market order
+     * The work status is set to UNAVAILABLE so that the it is not scheduled yet
      * @param workModel is the work order model
      * @return the market order of the provided work order model
      */
@@ -380,7 +381,10 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
             final MarketOrderInterface marketOrder = createWork(workOrderId, workOrderModel);
             final Collection<HostInterface> workers = DBInterface.getInstance().hosts(marketOrder);
             if(workers == null) {
-                logger.error("onWorkOrderActivated(" + workOrderId +") : can't find any host" );
+                logger.warn("onWorkOrderActivated(" + workOrderId +") : can't find any host" );
+                marketOrder.setErrorMsg("onWorkOrderActivated(" + workOrderId +") : can't find any host" );
+                marketOrder.setError();
+                marketOrder.update();
                 return;
             }
 

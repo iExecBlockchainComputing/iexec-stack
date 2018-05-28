@@ -1271,7 +1271,9 @@ public final class CommManager extends Thread {
                     TransactionStatus status = TransactionStatus.FAILURE;
 
                      for(int tries = 0 ; tries < 2; tries++) {
-                            status = ActuatorService.getInstance().contribute(theWork.getWorkOrderId(),
+						 System.out.println("ActuatorService.getInstance().contribute(" + theWork.getWorkOrderId() + ", "
+								  + theWork.getH2h2r() + ")");
+						 status = ActuatorService.getInstance().contribute(theWork.getWorkOrderId(),
                                 theWork.getH2h2r(),
                                 BigInteger.ZERO,
                                 "0",

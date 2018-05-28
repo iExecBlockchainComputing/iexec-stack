@@ -353,6 +353,8 @@ public class ThreadAlive extends Thread {
                     TransactionStatus status = TransactionStatus.FAILURE;
                     if (theWork.getH2h2r() != null) {
                         for(int tries = 0 ; tries < 2; tries++) {
+							System.out.println("ActuatorService.getInstance().reveal(" + theWork.getWorkOrderId() + ", "
+									+ theWork.getH2h2r() + ")");
                             status = ActuatorService.getInstance().reveal(theWork.getWorkOrderId(), theWork.getH2h2r());
                             if (status == TransactionStatus.SUCCESS)
                                 break;

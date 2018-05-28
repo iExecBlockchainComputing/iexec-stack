@@ -31,11 +31,7 @@ import java.net.URISyntaxException;
 import java.security.AccessControlException;
 import java.security.InvalidKeyException;
 import java.text.ParseException;
-import java.util.Vector;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.Iterator;
+import java.util.*;
 
 import javax.mail.MessagingException;
 
@@ -1471,6 +1467,8 @@ public final class DBInterface {
      * @since 13.1.0
      */
     protected Collection<HostInterface> hosts(final MarketOrderInterface marketOrder) throws IOException {
+        if(marketOrder == null)
+            return null;
         return selectAll(new HostInterface(), HostInterface.Columns.MARKETORDERUID + "='"
                 + marketOrder.getUID() + "'");
     }
@@ -2561,7 +2559,7 @@ public final class DBInterface {
      * This retrieves a work given work order id
      * @since 13.1.0
      */
-    protected WorkInterface work(final long workOrderId) {
+    protected WorkInterface work(final String workOrderId) {
         try {
             return selectOne(new WorkInterface(),
                     SQLRequest.MAINTABLEALIAS + "." + WorkInterface.Columns.WORKORDERID + "='"
@@ -5509,6 +5507,7 @@ public final class DBInterface {
 			if (jobUID == null) {
 				receivedJob.setUID(new UID());
 			}
+
 			if (receivedJob.getStatus() == null) {
 				receivedJob.setStatus(StatusEnum.UNAVAILABLE);
 			}
@@ -5521,7 +5520,18 @@ public final class DBInterface {
 			long replica = receivedJob.getExpectedReplications() < 0
 					? receivedJob.getExpectedReplications() - receivedJob.getReplicaSetSize()
 					: 0L;
-			boolean firstJob = true;
+
+            final Stack<HostInterface> workers = new Stack<HostInterface>();
+            workers.addAll(DBInterface.getInstance().hosts(marketOrder));
+            if(receivedJob.getExpectedReplications() != workers.size()) {
+                logger.error("market order error: " + receivedJob.getExpectedReplications() + "!=" + workers.size());
+                marketOrder.setErrorMsg("market order error:" + receivedJob.getExpectedReplications() + "!=" + workers.size());
+                marketOrder.setError();
+                return null;
+            }
+
+            WorkInterface returningWork = null;
+            boolean firstJob = true;
 
 			for (; (replica <= receivedJob.getReplicaSetSize()) && (replica <= receivedJob.getExpectedReplications() - 1);
                  replica++) {
@@ -5537,6 +5547,7 @@ public final class DBInterface {
 					newWork.replicate(jobUID);
 				}
 				newWork.setPending();
+				newWork.setExpectedHost(workers.pop().getUID());
 				newWork.setArrivalDate(new java.util.Date());
 				newWork.setActive(true);
 				insert(newWork);
@@ -5549,11 +5560,14 @@ public final class DBInterface {
 				logger.debug("DBInterface#addWork receivedJob = " + receivedJob.toXml());
                 logger.debug("DBInterface#addWork newWork = " + newWork.toXml());
 				mandatingClient.incPendingJobs();
+				if(returningWork == null)
+				    returningWork = newWork;
 			}
 
 			mandatingClient.update();
 			theApp.incPendingJobs();
 			theApp.update();
+			return returningWork;
 		}
 
 		return theWork;

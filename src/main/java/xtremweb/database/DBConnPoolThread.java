@@ -317,7 +317,6 @@ public class DBConnPoolThread extends Thread {
 			Vector<T> ret = null;
 
 			logger.debug(query);
-			System.out.println(query);
 
 			if (stmt.execute(query)) {
 				rs = stmt.getResultSet();
@@ -329,7 +328,7 @@ public class DBConnPoolThread extends Thread {
 				throw new IOException("can't get SQL results");
 			}
 
-			ret = new Vector<>();
+			ret = new Vector<T>();
 			if (row != null) {
 				while (rs.next()) {
 					@SuppressWarnings("unchecked")
