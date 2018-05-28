@@ -2356,7 +2356,7 @@ public final class HostInterface extends Table {
         return setContributionStatus(StatusEnum.REVEALING);
     }
     /**
-     * This set  contribution to REVEALING
+     * This set  contribution to RUNNING
      * @return true if value has changed, false otherwise
      * @since 13.1.0
      */
