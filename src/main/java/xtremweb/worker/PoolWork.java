@@ -292,7 +292,7 @@ public class PoolWork {
 			final Work w = theEnumeration.nextElement();
 			logger.debug("PoolWork::getAliveWork() w.getResult() = " + w.getResult());
 			logger.debug("PoolWork::getAliveWork() " + w.getUID() + " is " + w.getStatus().toString());
-			if (w.isRunning()) {
+			if (w.isAlive()) {
 				worksAlive.addElement(w);
 			}
 		}

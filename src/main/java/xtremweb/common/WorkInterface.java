@@ -2283,6 +2283,12 @@ public class WorkInterface extends Table {
 	    return getStatus() == StatusEnum.RUNNING;
     }
 
+	public boolean isAlive() {
+		return isRunning()
+				|| isRevealing()
+				|| isContributing()
+				|| hasContributed();
+	}
 
     /**
 	 * This marks this work as being replicated
