@@ -6093,10 +6093,14 @@ public final class DBInterface {
 
         if(marketOrder.canStart()) {
             final ActuatorService actuatorService = ActuatorService.getInstance();
-            final BigInteger marketOrderIdx = actuatorService.createMarketOrder(BigInteger.valueOf(marketOrder.getCategoryId()),
+            marketOrder.decRemaining();
+			DBConnPoolThread.getInstance().update(marketOrder,null,false);
+
+			final BigInteger marketOrderIdx = actuatorService.createMarketOrder(BigInteger.valueOf(marketOrder.getCategoryId()),
                     BigInteger.valueOf(marketOrder.getTrust()),
                     BigInteger.valueOf(marketOrder.getPrice()),
                     BigInteger.valueOf(marketOrder.getVolume()));
+            theHost.setAvailable();
             marketOrder.setMarketOrderIdx(marketOrderIdx.longValue());
             logger.debug("hostContribution(" + workerWalletAddr + ") : marketorder started " + marketOrderIdx);
         } else {
@@ -6104,6 +6108,7 @@ public final class DBInterface {
             marketOrder.setWaiting();
         }
 
+        theHost.update();
         marketOrder.update();
 
         return theHost;

@@ -296,7 +296,7 @@ public final class MarketOrderInterface extends Table {
 		setTrust(70L);
         setVolume(1L);
         setRemaining(getVolume());
-        setStatus(StatusEnum.UNAVAILABLE);
+        setStatus(StatusEnum.WAITING);
         setExpectedWorkers(4L);
         setMarketOrderIdx(0);
 		setShortIndexes(new int[] { TableColumns.UID.getOrdinal(), Columns.MARKETORDERIDX.getOrdinal(), Columns.DIRECTION.getOrdinal(), Columns.STATUS.getOrdinal() });
@@ -763,21 +763,20 @@ public final class MarketOrderInterface extends Table {
         return setValue(Columns.STATUS, StatusEnum.COMPLETED);
     }
     /**
-     * This sets this market order status to pending (it has not been bought).
+     * This sets this market order status to pending  (it has been bought)
      * This decrements the volume by one
      * @return true if value has changed, false otherwise
      */
     public boolean setPending() {
-        decRemaining();
         return setValue(Columns.STATUS, StatusEnum.PENDING);
     }
     /**
-     * This sets this market order status to pending (it has been bought).
+     * This sets this market order status to available (it has been registered on the BC)
      * This decrements the volume by one
      * @return true if value has changed, false otherwise
+	 * @see #setMarketOrderIdx(long)
      */
     public boolean setAvailable() {
-        decRemaining();
         return setValue(Columns.STATUS, StatusEnum.AVAILABLE);
     }
     /**
@@ -895,7 +894,7 @@ public final class MarketOrderInterface extends Table {
 	 * This decrements the remaining by one
      * @return true if value has changed, false otherwise
 	 */
-	private boolean decRemaining()  {
+	public boolean decRemaining()  {
 		return setRemaining(getRemaining() - 1);
 	}
 	/**

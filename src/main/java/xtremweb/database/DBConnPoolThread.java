@@ -317,6 +317,7 @@ public class DBConnPoolThread extends Thread {
 			Vector<T> ret = null;
 
 			logger.debug(query);
+			System.out.println(query);
 
 			if (stmt.execute(query)) {
 				rs = stmt.getResultSet();

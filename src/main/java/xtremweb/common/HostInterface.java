@@ -2348,7 +2348,7 @@ public final class HostInterface extends Table {
     }
 
     /**
-     * This set this worker contribution to REVEALING
+     * This set  contribution to REVEALING
      * @return true if value has changed, false otherwise
      * @since 13.1.0
      */
@@ -2356,7 +2356,7 @@ public final class HostInterface extends Table {
         return setContributionStatus(StatusEnum.REVEALING);
     }
     /**
-     * This set this worker contribution to REVEALING
+     * This set  contribution to REVEALING
      * @return true if value has changed, false otherwise
      * @since 13.1.0
      */
@@ -2364,7 +2364,7 @@ public final class HostInterface extends Table {
         return setContributionStatus(StatusEnum.RUNNING);
     }
     /**
-     * This set this worker contribution to CONTRIBUTING
+     * This set  contribution to CONTRIBUTING
      * @return true if value has changed, false otherwise
      * @since 13.1.0
      */
@@ -2372,7 +2372,7 @@ public final class HostInterface extends Table {
         return setContributionStatus(StatusEnum.CONTRIBUTING);
     }
     /**
-     * This set this worker contribution to WAITING (the work order has not enough workers)
+     * This set  contribution to WAITING (work order not not bought yet)
      * @return true if value has changed, false otherwise
      * @since 13.1.0
      */
@@ -2380,7 +2380,7 @@ public final class HostInterface extends Table {
         return setContributionStatus(StatusEnum.WAITING);
     }
     /**
-     * This set this worker contribution to PENDING (the work order has been bought)
+     * This set contribution to PENDING (the work order has been bought)
      * @return true if value has changed, false otherwise
      * @since 13.1.0
      */
@@ -2388,7 +2388,15 @@ public final class HostInterface extends Table {
         return setContributionStatus(StatusEnum.PENDING);
     }
     /**
-     * This set this worker contribution to CONTRIBUTED
+     * This set  contribution to AVAILABLE (the market order has been registered on the BC)
+     * @return true if value has changed, false otherwise
+     * @since 13.1.0
+     */
+    public final boolean setAvailable() {
+        return setContributionStatus(StatusEnum.AVAILABLE);
+    }
+    /**
+     * This set  contribution to CONTRIBUTED
      * @return true if value has changed, false otherwise
      * @since 13.1.0
      */

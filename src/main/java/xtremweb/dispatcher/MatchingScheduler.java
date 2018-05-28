@@ -79,10 +79,10 @@ public class MatchingScheduler extends SimpleScheduler {
 	@Override
 	public synchronized WorkInterface select(final XMLRPCCommandWorkRequest command) throws IOException {
 
-		final HostInterface host = command.getHost();
+		final HostInterface theHost = command.getHost();
 		final UserInterface user = command.getUser();
 
-		if ((host == null) || (user == null)) {
+		if ((theHost == null) || (user == null)) {
 			notify();
 			throw new IOException("MatchingScheduler#select() param error");
 		}
@@ -97,14 +97,14 @@ public class MatchingScheduler extends SimpleScheduler {
 
 		try {
 			final StringBuilder moreCriterias = new StringBuilder();
-			final SQLRequestWorkRequest workRequest = host.getSharedDatas() == null ?
-					new SQLRequestWorkRequest(host, user) :
-					new SQLRequestWorkRequestDataDriven(host, user);
+			final SQLRequestWorkRequest workRequest = theHost.getSharedDatas() == null ?
+					new SQLRequestWorkRequest(theHost, user) :
+					new SQLRequestWorkRequestDataDriven(theHost, user);
 
 			final WorkInterface workSelection = new WorkInterface(workRequest);
 
-			final URI jobId = host.getJobId();
-			final URI batchId = host.getBatchId();
+			final URI jobId = theHost.getJobId();
+			final URI batchId = theHost.getBatchId();
 
 			if (jobId != null) {
 				final UID uid = jobId.getUID();
@@ -118,9 +118,12 @@ public class MatchingScheduler extends SimpleScheduler {
 				}
 			}
 
-			getLogger().debug("host      = " + host.toXml());
+			getLogger().debug("host      = " + theHost.toXml());
 			getLogger().debug("criterias = " + moreCriterias);
+			System.out.println("host      = " + theHost.toXml());
+			System.out.println("criterias = " + moreCriterias);
 			theWork = db.selectOne(workSelection, moreCriterias.toString());
+			System.out.println("found work = " + theWork == null ? "none" : theWork.toXml());
 
 			if (theWork != null) {
 				final AppInterface theApp = db.app(user, theWork.getApplication());
@@ -130,13 +133,13 @@ public class MatchingScheduler extends SimpleScheduler {
 				theApp.incRunningJobs();
 				theWorkOwner.decPendingJobs();
 				theWorkOwner.incRunningJobs();
-				host.incRunningJobs();
-				theWork.setRunning();
+				theHost.incRunningJobs();
+				theHost.setRunning();
 				theTask = new TaskInterface(theWork);
 				theWork.setRunning();
-				theTask.setRunningBy(host.getUID());
+				theTask.setRunningBy(theHost.getUID());
 				if(marketOrder != null) {
-					marketOrder.setRunning(host);
+					marketOrder.setRunning(theHost);
                     final MarketOrderModel marketOrderModel = MarketplaceService.getInstance().getMarketOrderModel(BigInteger.valueOf(marketOrder.getMarketOrderIdx()));
 					if(marketOrderModel != null) {
 						theTask.setPrice(marketOrderModel.getValue().longValue());
@@ -146,8 +149,8 @@ public class MatchingScheduler extends SimpleScheduler {
 					    theTask.setError();
 					    theApp.decRunningJobs();
 					    theWorkOwner.decRunningJobs();
-					    host.decRunningJobs();
-					    host.leaveMarketOrder(marketOrder);
+					    theHost.decRunningJobs();
+					    theHost.leaveMarketOrder(marketOrder);
 					    logger.warn("can't find market order model from idx " + marketOrder.getMarketOrderIdx());
                     }
 				}
@@ -160,7 +163,7 @@ public class MatchingScheduler extends SimpleScheduler {
 				DBConnPoolThread.getInstance().update(theWork, null, false);
 
                 marketOrder.update();
-                host.update();
+                theHost.update();
 				theTask.update();
 				theApp.update();
 				theWorkOwner.update();
