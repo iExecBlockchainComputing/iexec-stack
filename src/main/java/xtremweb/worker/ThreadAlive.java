@@ -369,14 +369,20 @@ public class ThreadAlive extends Thread {
 						logger.debug("can't reveal " + theWork.toXml());
                     }
 
-                    if (status == TransactionStatus.SUCCESS) {
-                        logger.debug("revealed " + theWork.getUID());
-                        theWork.setRevealing();
+                    if ((status == TransactionStatus.SUCCESS) || (theWork.getRevealCalls() > 3)){
+						if (theWork.getRevealCalls() > 3) {
+							logger.debug("reveal error ; giving up " + theWork.getUID());
+							theWork.setError("reveal error ; giving up");
+						} else {
+							logger.debug("revealed " + theWork.getUID());
+							theWork.setRevealing();
+						}
                         CommManager.getInstance().getPoolWork().saveRevealedWork(theWork);
                         CommManager.getInstance().sendWork(theWork);
                         CommManager.getInstance().sendResult(theWork);
 					} else {
                         logger.error("reveal transaction error; will retry later " + theWork.getUID());
+                        theWork.incRevealCalls();
                         CommManager.getInstance().getPoolWork().saveWork(theWork);
                         dumpMarketOrderStatus(theWork.getWorkOrderId());
                     }

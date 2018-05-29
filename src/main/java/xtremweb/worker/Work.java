@@ -105,6 +105,7 @@ public final class Work extends WorkInterface {
 		super(job);
 
 		dataPackageName = null;
+		revealCalls = 0;
 		if (dir) {
 			prepareDir();
 		} else {
@@ -266,4 +267,12 @@ public final class Work extends WorkInterface {
 	public String getHiddenH2r() {
 		return hiddenh2r;
 	}
+
+	private int revealCalls;
+    public void incRevealCalls() {
+        revealCalls++;
+    }
+    public int getRevealCalls() {
+        return revealCalls;
+    }
 }
