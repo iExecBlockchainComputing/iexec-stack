@@ -3,7 +3,6 @@ package xtremweb.dispatcher;
 import com.iexec.common.contracts.generated.WorkerPool;
 import com.iexec.common.ethereum.IexecConfigurationService;
 import com.iexec.common.ethereum.TransactionStatus;
-import com.iexec.common.ethereum.Utils;
 import com.iexec.common.ethereum.Web3jService;
 import com.iexec.common.model.AppModel;
 import com.iexec.common.model.ModelService;
@@ -14,7 +13,6 @@ import com.iexec.scheduler.iexechub.IexecHubWatcher;
 import com.iexec.scheduler.workerpool.WorkerPoolService;
 import com.iexec.scheduler.workerpool.WorkerPoolWatcher;
 import org.json.JSONException;
-import org.web3j.utils.Numeric;
 import xtremweb.common.*;
 import xtremweb.communications.URI;
 import xtremweb.communications.XMLRPCCommandSendApp;
@@ -22,9 +20,7 @@ import xtremweb.communications.XMLRPCCommandSendWork;
 import xtremweb.database.SQLRequest;
 import xtremweb.security.XWAccessRights;
 
-import java.io.File;
 import java.io.IOException;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -370,15 +366,15 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
     @Override
     public void onWorkOrderActivated(String workOrderId) {
         final WorkOrderModel workOrderModel = ModelService.getInstance().getWorkOrderModel(workOrderId);
-        logger.debug("onWorkOrderActivated(" + workOrderId + ")");
+        logger.debug("onWorkOrderActivated() : onWorkOrderActivated(" + workOrderId + "), workOrderModel: " + workOrderModel);
         if(workOrderModel == null) {
-            logger.error("onWorkOrderActivated() : can't retrieve work model "
-                    + ModelService.getInstance().getWorkOrderModel(workOrderId));
+            logger.error("onWorkOrderActivated() : can't retrieve work model " + workOrderId);
             return;
         }
 
         try {
             final MarketOrderInterface marketOrder = createWork(workOrderId, workOrderModel);
+            logger.error("onWorkOrderActivated() : marketOrder " + marketOrder);
             final Collection<HostInterface> workers = DBInterface.getInstance().hosts(marketOrder);
             if(workers == null) {
                 logger.warn("onWorkOrderActivated(" + workOrderId +") : can't find any host" );
@@ -390,6 +386,7 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
 
             final ArrayList<String> wallets = new ArrayList();
             for(final HostInterface worker : workers ) {
+                logger.error("onWorkOrderActivated() : worker: " + worker);
                 worker.setPending();
                 worker.update();
                 if (worker.getEthWalletAddr() != null) {
