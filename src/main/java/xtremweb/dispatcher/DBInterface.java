@@ -5452,43 +5452,6 @@ public final class DBInterface {
                     }
                     break;
             }
-/*
-            if(marketOrder != null) {
-                final Collection<WorkInterface> works = marketOrderWorks(marketOrder);
-                final long expectedWorkers = marketOrder.getExpectedWorkers();
-                final long trust = marketOrder.getTrust();
-                final long expectedContributions = (expectedWorkers * trust / 100);
-                long totalContributions = 0L;
-                for (final WorkInterface work : works) {
-                    if (work.hasContributed()
-                            && (work.getH2r().compareTo(theWork.getH2r()) == 0)
-//                            && (work.getH2h2r().compareTo(theWork.getH2h2r()) == 0)
-                            && (work.getStatus() == theWork.getStatus())) {
-                        totalContributions++;
-                    }
-                }
-
-                logger.debug("status = " + theWork.getStatus());
-                logger.debug("trust = " + trust);
-                logger.debug("expectedWorkers = " + expectedWorkers);
-                logger.debug("expectedContributions = " + expectedContributions);
-                logger.debug("totalContributions = " + totalContributions);
-
-                if (totalContributions >= expectedContributions) {
-                    switch (theWork.getStatus()) {
-                        case COMPLETED:
-                            marketOrder.setCompleted();
-                            break;
-                        case ERROR:
-                        case FAILED:
-                            marketOrder.setError();
-                            break;
-                    }
-                }
-
-                marketOrder.update();
-            }
-*/
             if (theTask != null) {
                 theTask.update();
             }
@@ -5527,6 +5490,11 @@ public final class DBInterface {
                 logger.error("market order error: " + receivedJob.getExpectedReplications() + "!=" + workers.size());
                 marketOrder.setErrorMsg("market order error:" + receivedJob.getExpectedReplications() + "!=" + workers.size());
                 marketOrder.setError();
+                for(HostInterface w : workers) {
+                    w.leaveMarketOrder(marketOrder);
+                    w.update();
+                }
+                marketOrder.update();
                 return null;
             }
 
@@ -5664,6 +5632,11 @@ public final class DBInterface {
                     marketOrder.setErrorMsg("transaction error : revealConsensus");
                     marketOrder.setError();
                     try {
+                        final Collection<HostInterface> workers = hosts(marketOrder);
+                        for (final HostInterface w : workers) {
+                            w.leaveMarketOrder(marketOrder);
+                            w.update();
+                        }
                         marketOrder.update();
                     } catch (final IOException e) {
                         logger.exception(e);
