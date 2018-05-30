@@ -548,9 +548,10 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
                 innerloop:
                 for(int count = 0; count < MAX_TRY; count++){
                     if (result == null){
+                        WorkInterface workval = DBInterface.getInstance().work(work.getUID());
                         logger.debug ("onReveal(): loop: " + count);
                         TimeUnit.SECONDS.sleep(2);
-                        result = work.getResult();
+                        result = workval.getResult();
                     } else {
                         logger.debug ("onReveal(): result: " + result);
                         break innerloop;
