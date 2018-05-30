@@ -566,7 +566,7 @@ public final class DBInterface {
 		logger.debug("DBInterface#delete dec links " + row.toXml());
 		row.decLinks();
 		update(theClient, UserRightEnum.DELETEDATA, row);
-		
+
 		return true;
 	}
 
@@ -5260,14 +5260,7 @@ public final class DBInterface {
             useData(realClient, receivedJob.getResult());
             final DataInterface theData2 = data(receivedJob.getResult());
             logger.debug("data2 is " + ((theData == null) ? "null" : theData.toXml()));
-
-            removeData(realClient, theWork.getResult());
-
-            useData(realClient, receivedJob.getStdin());
-            removeData(realClient, theWork.getStdin());
-
-            useData(realClient, receivedJob.getDirin());
-            removeData(realClient, theWork.getDirin());
+            
             try {
                 useData(realClient, receivedJob.getUserProxy());
             } catch (final AccessControlException e) {
