@@ -566,13 +566,7 @@ public final class DBInterface {
 		logger.debug("DBInterface#delete dec links " + row.toXml());
 		row.decLinks();
 		update(theClient, UserRightEnum.DELETEDATA, row);
-		try {
-			if (row.getLinks() <= 0) {
-				logger.debug("deleting " + row.toXml());
-				return this.delete(theClient, (Table) row);
-			}
-		} catch (final AccessControlException e) {
-		}
+		
 		return true;
 	}
 
