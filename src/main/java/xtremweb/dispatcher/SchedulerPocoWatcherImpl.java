@@ -542,15 +542,17 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
 
         int MAX_TRY = 30;
         for(final WorkInterface work : works ) {
-
+            logger.debug ("onReveal(): work: " + work);
             try {
                 final TaskInterface theWorkTask = DBInterface.getInstance().task(work);
                 innerloop:
                 for(int count = 0; count < MAX_TRY; count++){
                     if (result == null){
+                        logger.debug ("onReveal(): loop: " + count);
                         TimeUnit.SECONDS.sleep(2);
                         result = work.getResult();
                     } else {
+                        logger.debug ("onReveal(): result: " + result);
                         break innerloop;
                     }
                 }
