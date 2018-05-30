@@ -23,6 +23,7 @@ import xtremweb.security.XWAccessRights;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.concurrent.TimeUnit;
 
 public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatcher {
 
@@ -539,11 +540,22 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
 
         URI result = null;
 
+        int MAX_TRY = 30;
         for(final WorkInterface work : works ) {
 
             try {
                 final TaskInterface theWorkTask = DBInterface.getInstance().task(work);
-                result = work.getResult();
+                innerloop:
+                for(int count = 0; count < MAX_TRY; count++){
+                    if (result == null){
+                        TimeUnit.SECONDS.sleep(2);
+                        result = work.getResult();
+                    } else {
+                        break innerloop;
+                    }
+                }
+
+
                 final HostInterface theHost = DBInterface.getInstance().host(theWorkTask.getHost());
                 if(theHost == null) {
                     logger.error ("can't the host for the work " + work.getUID());
@@ -554,7 +566,7 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
                 logger.debug("onReval " + theHost.toXml());
                 theHost.update();
 
-            } catch (final IOException e) {
+            } catch (final IOException | InterruptedException e) {
                 logger.exception(e);
             }
         }
