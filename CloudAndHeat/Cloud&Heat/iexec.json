@@ -1,0 +1,14 @@
+{
+  "description":
+    "Cloud&Heat is a German provider of OpenStack-based public and private cloud solutions. The server waste heat is directly absorbed by the heat hotspots, such as CPU or RAM, and can be used to heat properties and to process hot water. Cloud&Heat's energy- and cost-efficient concept has been awarded multiple times, e.g. by the German Datacenter Prize in 2015 & 2016.",
+  "social": {
+    "website": "https://www.cloudandheat.com/"
+  },
+  "logo": "logo.jpg",
+  "workerPool": {
+    "description": "cloudandheat-pool-1",
+    "subscriptionLockStakePolicy": 100,
+    "subscriptionMinimumStakePolicy": 100,
+    "subscriptionMinimumScorePolicy": 100
+  }
+}

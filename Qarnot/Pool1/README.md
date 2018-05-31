@@ -1,1 +1,0 @@
-# Qarnot Pool 1

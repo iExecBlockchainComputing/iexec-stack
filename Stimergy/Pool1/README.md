@@ -1,1 +1,0 @@
-# Stimergy Pool 1

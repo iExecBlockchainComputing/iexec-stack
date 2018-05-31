@@ -1,0 +1,14 @@
+{
+  "description":
+    "Qarnot develops hardware and software solutions for smart buildings and distributed green computing. By locating companies’ computers in buildings where heat is needed instead of data centres that have to get rid of excess heat, Qarnot reduces the carbon footprint of computations by 75%.",
+  "social": {
+    "website": "https://www.qarnot.com/"
+  },
+  "logo": "logo.jpg",
+  "workerPool": {
+    "description": "qarnot-pool-1",
+    "subscriptionLockStakePolicy": 100,
+    "subscriptionMinimumStakePolicy": 100,
+    "subscriptionMinimumScorePolicy": 100
+  }
+}
