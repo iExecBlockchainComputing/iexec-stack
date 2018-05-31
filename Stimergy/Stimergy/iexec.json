@@ -4,7 +4,7 @@
   "social": {
     "website": "https://pool5.iex.ec/"
   },
-  "logo": "logo.png",
+  "logo": "logo.jpg",
   "workerPool": {
     "description": "stimergy-pool-1",
     "subscriptionLockStakePolicy": 100,
