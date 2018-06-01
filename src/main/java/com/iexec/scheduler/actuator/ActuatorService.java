@@ -102,8 +102,8 @@ public class ActuatorService implements Actuator {
             TransactionReceipt revealConsensusReceipt = workerPoolService.getWorkerPool()
                     .revealConsensus(workOrderId, consensus).send();
             List<WorkerPool.RevealConsensusEventResponse> revealConsensusEvents = workerPoolService.getWorkerPool().getRevealConsensusEvents(revealConsensusReceipt);
-            log.info("RevealConsensus [hashResult:{}, transactionStatus:{}] ",
-                    hashResult, getTransactionStatusFromEvents(revealConsensusEvents));
+            log.info("RevealConsensus [workOrderId:{}, hashResult:{}, transactionStatus:{}] ",
+                    workOrderId, hashResult, getTransactionStatusFromEvents(revealConsensusEvents));
             return getTransactionStatusFromEvents(revealConsensusEvents);
         } catch (Exception e) {
             e.printStackTrace();
@@ -119,8 +119,8 @@ public class ActuatorService implements Actuator {
                     stderr,
                     uri).send();
             List<WorkerPool.FinalizeWorkEventResponse> finalizeWorkEvents = workerPoolService.getWorkerPool().getFinalizeWorkEvents(finalizeWorkReceipt);
-            log.info("FinalizeWork [stdout:{}, stderr:{}, uri:{}, transactionStatus:{}] ",
-                    stdout, stderr, uri, getTransactionStatusFromEvents(finalizeWorkEvents));
+            log.info("FinalizeWork [workOrderId:{}, stdout:{}, stderr:{}, uri:{}, transactionStatus:{}] ",
+                    workOrderId, stdout, stderr, uri, getTransactionStatusFromEvents(finalizeWorkEvents));
             return getTransactionStatusFromEvents(finalizeWorkEvents);
         } catch (Exception e) {
             e.printStackTrace();
