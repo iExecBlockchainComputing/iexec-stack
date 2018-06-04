@@ -8,7 +8,10 @@ import java.math.BigInteger;
 public class NodeConfig {
 
     private String clientAddress;
-    private int startBlock;
+    private BigInteger startBlock;
+    private BigInteger gasPrice;
+    private BigInteger gasLimit;
+
 
     public String getClientAddress() {
         return clientAddress;
@@ -18,17 +21,33 @@ public class NodeConfig {
         this.clientAddress = clientAddress;
     }
 
-    public int getStartBlock() {
+    public BigInteger getStartBlock() {
         return startBlock;
     }
 
-    public void setStartBlock(int startBlock) {
+    public void setStartBlock(BigInteger startBlock) {
         this.startBlock = startBlock;
+    }
+
+    public BigInteger getGasPrice() {
+        return gasPrice;
+    }
+
+    public void setGasPrice(BigInteger gasPrice) {
+        this.gasPrice = gasPrice;
+    }
+
+    public BigInteger getGasLimit() {
+        return gasLimit;
+    }
+
+    public void setGasLimit(BigInteger gasLimit) {
+        this.gasLimit = gasLimit;
     }
 
     @JsonIgnore
     public DefaultBlockParameter getStartBlockParameter() {
-        return DefaultBlockParameter.valueOf(BigInteger.valueOf(startBlock));
+        return DefaultBlockParameter.valueOf(startBlock);
     }
 
 }
