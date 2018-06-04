@@ -75,10 +75,10 @@ public class ActuatorService implements Actuator {
         try {
             String workerPoolHubAddress = IexecHubService.getInstance().getIexecHub().workerPoolHub().send();
             WorkerPoolHub workerPoolHub = WorkerPoolHub.load(
-                    workerPoolHubAddress, web3jService.getWeb3j(), credentialsService.getCredentials(), ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT);
+                    workerPoolHubAddress, web3jService.getWeb3j(), credentialsService.getCredentials(), configuration.getNodeConfig().getGasPrice(), configuration.getNodeConfig().getGasLimit());
             String workerAffectation = workerPoolHub.getWorkerAffectation(credentialsService.getCredentials().getAddress()).send();
             WorkerPool workerPool = WorkerPool.load(
-                    workerAffectation, web3jService.getWeb3j(), credentialsService.getCredentials(), ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT);
+                    workerAffectation, web3jService.getWeb3j(), credentialsService.getCredentials(), configuration.getNodeConfig().getGasPrice(), configuration.getNodeConfig().getGasLimit());
             TransactionReceipt unsubscribeFromPoolReceipt = workerPool.unsubscribeFromPool().send();
             List<WorkerPool.WorkerUnsubscribeEventResponse> workerUnsubscribeEvents = workerPool.getWorkerUnsubscribeEvents(unsubscribeFromPoolReceipt);
             log.info("UnsubscribeFromPool [transactionStatus:{}] ", getTransactionStatusFromEvents(workerUnsubscribeEvents));
@@ -101,7 +101,7 @@ public class ActuatorService implements Actuator {
 
         try {
             //Marketplace marketplace = Marketplace.load(
-            //        iexecHubService.getIexecHub().marketplaceAddress().send(), web3jService.getWeb3j(), credentialsService.getCredentials(), ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT);
+            //        iexecHubService.getIexecHub().marketplaceAddress().send(), web3jService.getWeb3j(), credentialsService.getCredentials(), configuration.getNodeConfig().getGasPrice(), configuration.getNodeConfig().getGasLimit());
             //BigInteger marketOrderValue = marketplace.getMarketOrderValue(workOrder.m_marketorderIdx().send()).send();
             //Float deposit = (workerPoolConfig.getStakeRatioPolicy().floatValue() / 100) * marketOrderValue.floatValue() + 1f;//(30/100)*100 + 1     Why?
             //BigInteger depositBig = BigDecimal.valueOf(deposit).toBigInteger();
