@@ -1,10 +1,7 @@
 package com.iexec.scheduler.marketplace;
 
 import com.iexec.common.contracts.generated.Marketplace;
-import com.iexec.common.ethereum.CredentialsService;
-import com.iexec.common.ethereum.TransactionStatus;
-import com.iexec.common.ethereum.Utils;
-import com.iexec.common.ethereum.Web3jService;
+import com.iexec.common.ethereum.*;
 import com.iexec.common.model.MarketOrderModel;
 import com.iexec.scheduler.iexechub.IexecHubService;
 import org.slf4j.Logger;
@@ -21,6 +18,7 @@ import static com.iexec.common.ethereum.Utils.tuple2MarketOrderModel;
 public class MarketplaceService {
 
     private static final Logger log = LoggerFactory.getLogger(MarketplaceService.class);
+    private static final CommonConfiguration configuration = IexecConfigurationService.getInstance().getCommonConfiguration();
     private static MarketplaceService instance;
     private final IexecHubService iexecHubService = IexecHubService.getInstance();
     private final Web3jService web3jService = Web3jService.getInstance();
@@ -33,7 +31,7 @@ public class MarketplaceService {
             try {
                 String marketplaceAddress = iexecHubService.getIexecHub().marketplace().send();
                 this.marketplace = Marketplace.load(
-                        marketplaceAddress, web3jService.getWeb3j(), credentialsService.getCredentials(), ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT);
+                        marketplaceAddress, web3jService.getWeb3j(), credentialsService.getCredentials(), configuration.getNodeConfig().getGasPrice(), configuration.getNodeConfig().getGasLimit());
             } catch (Exception e) {
                 throw  exceptionInInitializerError;
             }
