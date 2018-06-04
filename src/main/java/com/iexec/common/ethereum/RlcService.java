@@ -24,7 +24,7 @@ public class RlcService {
         if (rlcAddress != null && !rlcAddress.isEmpty()) {
             try {
                 rlc = RLC.load(
-                        rlcAddress, web3jService.getWeb3j(), credentialsService.getCredentials(), ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT);
+                        rlcAddress, web3jService.getWeb3j(), credentialsService.getCredentials(), configuration.getNodeConfig().getGasPrice(), configuration.getNodeConfig().getGasLimit());
                 //if (!rlc.isValid()){ throw exceptionInInitializerError;}
             } catch (EnsResolutionException e) {
                 throw exceptionInInitializerError;
