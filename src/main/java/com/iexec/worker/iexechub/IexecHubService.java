@@ -42,7 +42,7 @@ public class IexecHubService {
         if (iexecHubAddress!=null && !iexecHubAddress.isEmpty()){
             try {
                 this.iexecHub = IexecHub.load(
-                        iexecHubAddress, web3jService.getWeb3j(), credentialsService.getCredentials(), ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT);
+                        iexecHubAddress, web3jService.getWeb3j(), credentialsService.getCredentials(), configuration.getNodeConfig().getGasPrice(), configuration.getNodeConfig().getGasLimit());
                 //if (!iexecHub.isValid()){ throw exceptionInInitializerError;}
             } catch (EnsResolutionException e){
                 throw exceptionInInitializerError;

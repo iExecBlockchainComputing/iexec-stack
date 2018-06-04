@@ -42,7 +42,7 @@ public class WorkerPoolService {
         if (workerPoolAddress != null && !workerPoolAddress.isEmpty()) {
             try {
                 workerPool = WorkerPool.load(
-                        workerPoolAddress, web3jService.getWeb3j(), credentialsService.getCredentials(), ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT);
+                        workerPoolAddress, web3jService.getWeb3j(), credentialsService.getCredentials(), configuration.getNodeConfig().getGasPrice(), configuration.getNodeConfig().getGasLimit());
                 //if (!workerPool.isValid()){ throw exceptionInInitializerError;}
                 log.info("Loading WorkerPool contract [address:{}]", workerPoolAddress);
             } catch (EnsResolutionException e){
