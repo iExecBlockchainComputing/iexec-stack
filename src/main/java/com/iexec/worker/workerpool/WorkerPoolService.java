@@ -2,6 +2,7 @@ package com.iexec.worker.workerpool;
 
 import com.iexec.common.contracts.generated.WorkerPool;
 import com.iexec.common.ethereum.*;
+import com.iexec.common.model.ContributionModel;
 import com.iexec.common.workerpool.WorkerPoolConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,6 +11,7 @@ import org.web3j.tx.Contract;
 import org.web3j.tx.ManagedTransaction;
 
 import static com.iexec.common.ethereum.Utils.END;
+import static com.iexec.common.ethereum.Utils.tuple2ContributionModel;
 
 
 public class WorkerPoolService {
@@ -77,6 +79,19 @@ public class WorkerPoolService {
 
     public WorkerPool getWorkerPool() {
         return workerPool;
+    }
+
+    public ContributionModel getWorkerContributionModelByWorkOrderId(String workOrderId) {
+        ContributionModel contributionModel = null;
+        TransactionStatus transactionStatus = TransactionStatus.SUCCESS;
+        try {
+            contributionModel = tuple2ContributionModel(workerPool.getContribution(workOrderId, CredentialsService.getInstance().getCredentials().getAddress()).send());
+        } catch (Exception e) {
+            transactionStatus = TransactionStatus.FAILURE;
+        }
+        log.info("GetContributionModel [workOrderId:{}, transactionStatus:{}] ",
+               workOrderId, transactionStatus);
+        return contributionModel;
     }
 
 }
