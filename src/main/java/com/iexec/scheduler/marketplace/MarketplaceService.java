@@ -6,12 +6,15 @@ import com.iexec.common.model.MarketOrderModel;
 import com.iexec.scheduler.iexechub.IexecHubService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.tuples.generated.Tuple8;
 import org.web3j.tx.Contract;
 import org.web3j.tx.ManagedTransaction;
 
 import java.math.BigInteger;
+import java.util.List;
 
+import static com.iexec.common.ethereum.Utils.getTransactionStatusFromEvents;
 import static com.iexec.common.ethereum.Utils.tuple2MarketOrderModel;
 
 
@@ -75,6 +78,19 @@ public class MarketplaceService {
         log.info("GetMarketOrderCount [marketOrderCount:{}, transactionStatus:{}] ",
                 marketOrderCount, transactionStatus);
         return marketOrderCount;
+    }
+
+    public TransactionStatus closeMarketOrder(BigInteger marketOrderIdx){
+        try {
+            TransactionReceipt closeMarketOrderReceipt = marketplace.closeMarketOrder(marketOrderIdx).send();
+            List<Marketplace.MarketOrderClosedEventResponse> marketOrderClosedEvents = marketplace.getMarketOrderClosedEvents(closeMarketOrderReceipt);
+            log.info("CloseMarketOrder [marketOrderIdx:{}, transactionStatus:{}] ",
+                    marketOrderIdx, getTransactionStatusFromEvents(marketOrderClosedEvents));
+            return getTransactionStatusFromEvents(marketOrderClosedEvents);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return TransactionStatus.FAILURE;
     }
 
 }
