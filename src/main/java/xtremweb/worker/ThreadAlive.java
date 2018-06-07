@@ -356,8 +356,12 @@ public class ThreadAlive extends Thread {
 							System.out.println("ActuatorService.getInstance().reveal(" + theWork.getWorkOrderId() + ", "
 									+ theWork.getH2h2r() + ")");
                             status = ActuatorService.getInstance().reveal(theWork.getWorkOrderId(), theWork.getH2h2r());
-                            if (status == TransactionStatus.SUCCESS)
+                            if (status == TransactionStatus.SUCCESS) {
                                 break;
+                            } else {
+                                CommManager.dumpContributionStatus(Worker.getConfig().getHost().getEthWalletAddr(),
+                                        theWork.getWorkOrderId());
+                            }
                             try {
                                 logger.debug("reveal failure ; sleeping 30s " + tries);
                                 Thread.sleep(30000);

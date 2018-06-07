@@ -2953,9 +2953,12 @@ public final class DBInterface {
 
 		final UserInterface theClient = checkClient(command, UserRightEnum.STANDARD_USER);
 
-		if (removeWork(command)) {
-			return true;
-		}
+        if (removeMarketOrder(command)) {
+            return true;
+        }
+        if (removeWork(command)) {
+            return true;
+        }
 		if (removeData(theClient, uid)) {
 			return true;
 		}
@@ -4363,24 +4366,12 @@ public final class DBInterface {
 
         final UserInterface theClient = checkClient(command, UserRightEnum.DELETEMARKETORDER);
         final UID uid = command.getURI().getUID();
-        if (uid == null) {
-            return false;
-        }
-        final MarketOrderInterface marketOrder = marketOrder(theClient, uid);
-        if (marketOrder == null) {
-            return false;
-        }
-
-        if (deleteJobs(theClient, getMarketOrderJobs(command))) {
-            return delete(theClient, marketOrder);
-        }
-
-        return false;
+        return removeMarketOrder(theClient, uid);
     }
     /**
      * This deletes a session from DB and all its associated jobs
      *
-     * @param client
+     * @param theClient
      *            describes the requesting client
      * @param uid
      *            is the UID of the session to delete
@@ -4394,20 +4385,27 @@ public final class DBInterface {
      *                is thrown if client does not have enough rights
      * @since 13.1.0
      */
-    protected boolean removeMarketOrder(final UserInterface client, final UID uid)
+    protected boolean removeMarketOrder(final UserInterface theClient, final UID uid)
             throws IOException, InvalidKeyException, AccessControlException {
 
-        final UserInterface theClient = checkClient(client, UserRightEnum.DELETEMARKETORDER);
         if (uid == null) {
             return false;
         }
-        final MarketOrderInterface session = marketOrder(theClient, uid);
-        if (session == null) {
+        final MarketOrderInterface marketOrder = marketOrder(theClient, uid);
+        if (marketOrder == null) {
             return false;
         }
 
+        logger.error("removeMarketOrder() : " + uid);
+
+        final Collection<HostInterface> workers = DBInterface.getInstance().hosts(marketOrder);
+        for(final HostInterface worker : workers ) {
+            logger.error("removeMarketOrder(); worker.leaveMarketOrder() : " + worker.getUID());
+            worker.leaveMarketOrder();
+        }
+
         if (deleteJobs(theClient, getMarketOrderJobs(theClient, uid))) {
-            return delete(theClient, session);
+            return delete(theClient, marketOrder);
         }
 
         return false;
@@ -4769,9 +4767,7 @@ public final class DBInterface {
 
         final UserInterface theClient = checkClient(command, UserRightEnum.LISTJOB);
         final UID uid = command.getURI().getUID();
-        final MarketOrderInterface marketOrder = marketOrder(command);
-        return marketOrdersUID(theClient, SQLRequest.MAINTABLEALIAS + "." + WorkInterface.Columns.MARKETORDERUID
-                + "='" + marketOrder.getUID() + "'");
+        return getMarketOrderJobs(theClient, uid);
     }
     /**
      * This retrieves jobs for a market order
@@ -5533,8 +5529,6 @@ public final class DBInterface {
      * The scheduler must ask to reveal to all workers as soon as the consensus us reached
      */
     public void checkContribution(final WorkInterface theWork, MarketOrderInterface marketOrder) {
-		logger.debug("checkContribution() : in the method with marketOrder: " + marketOrder);
-		logger.debug("checkContribution() : in the method with work: " + theWork);
         try {
             if (theWork == null)
                 return;
@@ -5554,22 +5548,12 @@ public final class DBInterface {
             theHost.setContributed();
             theHost.update();
 
-            final long expectedWorkers = marketOrder.getExpectedWorkers();
-            final long trust = marketOrder.getTrust();
-            final long expectedContributions = (long)Math.ceil(expectedWorkers * trust / 100d);
-			logger.debug("checkContribution() : expected workers: " + expectedWorkers);
-			logger.debug("checkContribution() : trust: " + trust);
-			logger.debug("checkContribution() : expectedContributions: " + expectedContributions);
+            final long expectedContributions = marketOrder.getExpectedWorkers();
+			logger.debug("checkContribution() : expectedContributions: " + expectedContributions + "/" + works.size());
             long totalContributions = 0L;
-			logger.debug("checkContribution() : number of works: " + works.size());
             for (final WorkInterface work : works) {
 
 				logger.debug("checkContribution() : for work: " + work);
-
-                if(work.getUID().equals(theWork.getUID())) {
-                    totalContributions++;
-                    continue;
-                }
 
                 if (work.hasContributed()
                         && (work.getH2h2r().compareTo(theWork.getH2h2r()) == 0)) {
@@ -6011,6 +5995,11 @@ public final class DBInterface {
         if(theHost.getEthWalletAddr() == null) {
             logger.warn("onSubscription(" + theHost.getUID() +") : has no wallet");
             return theHost;
+        }
+
+        if (marketOrder(theHost.getMarketOrderUid()) == null) {
+            theHost.leaveMarketOrder();
+            theHost.update();
         }
 
         final EthereumWallet workerWalletAddr = new EthereumWallet(theHost.getEthWalletAddr());

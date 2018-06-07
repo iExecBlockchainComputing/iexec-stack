@@ -114,7 +114,14 @@ public final class MarketOrderInterface extends Table {
             }
         },
         /**
-         * Trust level for this order
+         * Trust level for this order.
+         * This defines ExpectedWorkers as follow:
+         * trust >= 75 : 5 workers
+         * trust < 75  : 4 workers
+         * trust < 50  : 3 workers
+         * trust < 25  : 2 workers
+         * trust == 0  : 1 worker
+         * @see #setTrust(long)
          */
 		TRUST {
 			@Override
@@ -293,11 +300,10 @@ public final class MarketOrderInterface extends Table {
 		setAttributeLength(ENUMSIZE);
 		setArrivalDate();
 		setAccessRights(XWAccessRights.USERALL);
-		setTrust(70L);
         setVolume(1L);
         setRemaining(getVolume());
         setStatus(StatusEnum.WAITING);
-        setExpectedWorkers(4L);
+        setTrust(70L);
         setMarketOrderIdx(0);
 		setShortIndexes(new int[] { TableColumns.UID.getOrdinal(), Columns.MARKETORDERIDX.getOrdinal(), Columns.DIRECTION.getOrdinal(), Columns.STATUS.getOrdinal() });
 	}
@@ -816,8 +822,8 @@ public final class MarketOrderInterface extends Table {
      * @param e is the amount of needed workers
      * @return true if value has changed, false otherwise
      */
-    public boolean setExpectedWorkers(final long e)  {
-        return setValue(Columns.EXPECTEDWORKERS, Long.valueOf(e));
+    private boolean setExpectedWorkers(final long e)  {
+        return setValue(Columns.EXPECTEDWORKERS, Long.valueOf(e < 0 ? 0 : e));
     }
     /**
      * This sets the amount of booked workers to reach the trust
@@ -875,12 +881,21 @@ public final class MarketOrderInterface extends Table {
         return setNbWorkers(getNbWorkers() - 1);
     }
 	/**
-	 * This sets the trust value
+	 * This sets the trust value and expectedWortkers as well
 	 * @param t is the trust
      * @return true if value has changed, false otherwise
+     * @see Columns#TRUST
 	 */
 	public boolean setTrust(final long t)  {
-	    return setValue(Columns.TRUST, t <= 100 ? t : 100);
+	    long trust = t < 0 ? 0 : t;
+	    if (t > 100) trust = 100;
+        long workers = trust / 25 + 2;
+        if (trust == 0) workers = 1;
+        if (trust == 100) workers = 5;
+
+	    setExpectedWorkers(workers);
+
+        return setValue(Columns.TRUST, trust);
 	}
 	/**
 	 * This sets the price value

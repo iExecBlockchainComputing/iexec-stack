@@ -1271,15 +1271,19 @@ public final class CommManager extends Thread {
                     TransactionStatus status = TransactionStatus.FAILURE;
 
                      for(int tries = 0 ; tries < 2; tries++) {
-						 System.out.println("ActuatorService.getInstance().contribute(" + theWork.getWorkOrderId() + ", "
-								  + theWork.getH2h2r() + ")");
-						 status = ActuatorService.getInstance().contribute(theWork.getWorkOrderId(),
-                                theWork.getH2h2r(),
-                                BigInteger.ZERO,
-                                "0",
-                                "0");
-                        if (status == TransactionStatus.SUCCESS)
-                            break;
+                         System.out.println("ActuatorService.getInstance().contribute(" + theWork.getWorkOrderId() + ", "
+                                 + theWork.getH2h2r() + ")");
+                         status = ActuatorService.getInstance().contribute(theWork.getWorkOrderId(),
+                                 theWork.getH2h2r(),
+                                 BigInteger.ZERO,
+                                 "0",
+                                 "0");
+                         if (status == TransactionStatus.SUCCESS){
+                             break;
+                         } else {
+                             dumpContributionStatus(Worker.getConfig().getHost().getEthWalletAddr(),
+                                     theWork.getWorkOrderId());
+                         }
                         try {
                             logger.debug("contribute failure ; sleeping 30s " + tries);
                             Thread.sleep(30000);
@@ -1291,9 +1295,8 @@ public final class CommManager extends Thread {
                          theWork.setContributed();
                          Worker.getConfig().getHost().setContributed();
                      } else {
-                         logger.error("contribute transaction error; will retry later " + theWork.getUID());
-                         dumpContributionStatus(Worker.getConfig().getHost().getEthWalletAddr(),
-                                 theWork.getWorkOrderId());
+                         logger.error("contribute transaction error: " + theWork.getUID());
+                         theWork.setError("contribute transation error");
                          sendResult(theWork);
                         }
 
@@ -1335,7 +1338,7 @@ public final class CommManager extends Thread {
         mileStone.println("</uploadResults>");
 	}
 
-	private void dumpContributionStatus(final String ethWalletAddr, final String workOrderId) {
+	public static void dumpContributionStatus(final String ethWalletAddr, final String workOrderId) {
 
         final String urlStr = "http://localhost:3030/api/workorders/" +
                 workOrderId + "/contribution?worker=" + ethWalletAddr;

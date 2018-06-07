@@ -436,96 +436,95 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
     @Override
     public void onContributeEvent(WorkerPool.ContributeEventResponse contributeEventResponse) {
 
-/*
-        final WorkOrderModel workOrderModel = ModelService.getInstance().getWorkOrderModel(contributeEventResponse.woid);
-        final WorkInterface theWork = DBInterface.getInstance().work(contributeEventResponse);
-        if(theWork == null)
-            return;
+//        final WorkOrderModel workOrderModel = ModelService.getInstance().getWorkOrderModel(contributeEventResponse.woid);
+//        final WorkInterface theWork = DBInterface.getInstance().work(contributeEventResponse);
+//        if(theWork == null)
+//            return;
+//
+//        final String contributionStr = XWTools.byteArrayToHexString(contributeEventResponse.resultHash);
+//        theWork.setH2h2r(contributionStr);
+//        logger.debug("onContributeEvent() : " + theWork.toXml());
+//
+//        final MarketOrderInterface marketOrder = getMarketOrder(workOrderModel.getMarketorderIdx().longValue());
+//        final Collection<WorkInterface> works = getMarketOrderWorks(workOrderModel.getMarketorderIdx().longValue());
+//
+//        if(works == null) {
+//            logger.error("createWork() : can't retrieve any work for market order : "
+//                    + workOrderModel.getMarketorderIdx().longValue());
+//            return;
+//        }
+//
+//        try {
+//            final TaskInterface theWorkTask = DBInterface.getInstance().task(theWork);
+//            final HostInterface theHost = DBInterface.getInstance().host(theWorkTask.getHost());
+//            theHost.setContributed();
+//            theHost.update();
+//        } catch (final IOException e) {
+//            logger.exception(e);
+//        }
+//
+//        final long expectedWorkers = marketOrder.getExpectedWorkers();
+//        logger.debug("onContributeEvent() : expected workers: " + expectedWorkers);
+//        final long trust = marketOrder.getTrust();
+//        logger.debug("onContributeEvent() : trust: " + trust);
+//        final long expectedContributions = (expectedWorkers * trust / 100);
+//        logger.debug("onContributeEvent() : expectedContributions: " + expectedContributions);
+//        long totalContributions = 0L;
+//        for(final WorkInterface work : works ) {
+//            if(work.hasContributed()
+//                    && (work.getH2h2r().compareTo(contributionStr) == 0)) {
+//                totalContributions++;
+//            }
+//        }
+//        if (totalContributions >= expectedContributions) {
+//            logger.debug("onContributeEvent() : enough contributions");
+//            theWork.setRevealing();
+//            try {
+//                theWork.update();
+//            } catch (final IOException e) {
+//                logger.exception(e);
+//            }
+//            logger.debug("onContributeEvent() : work must be revealed " + theWork.toXml());
+//
+//            for (final WorkInterface contributingWork : works) {
+//
+//                logger.debug("onContributeEvent() : work must be revealed " + contributingWork.toXml());
+//                try {
+//                    contributingWork.setRevealing();
+//                    contributingWork.update();
+//
+//                    final TaskInterface contributingTask = DBInterface.getInstance().task(contributingWork);
+//                    if (contributingTask != null) {
+//                        contributingTask.setRevealing();
+//                        contributingTask.update();
+//                    }
+//                } catch (final IOException e) {
+//                    logger.exception(e);
+//                }
+//            }
+//
+//            marketOrder.setRevealing();
+//            try {
+//                marketOrder.update();
+//            } catch(final IOException e) {
+//                logger.exception(e);
+//            }
+//
+//
+//            if(actuatorService.revealConsensus(contributeEventResponse.woid, Numeric.toHexString(contributeEventResponse.resultHash)) == TransactionStatus.FAILURE) {
+//                marketOrder.setErrorMsg("transaction error : revealConsensus");
+//                marketOrder.setError();
+//                try {
+//                    marketOrder.update();
+//                } catch(final IOException e) {
+//                    logger.exception(e);
+//                }
+//            }
+//
+//        } else {
+//            logger.debug("onContributeEvent() : not enough contributions");
+//        }
 
-        final String contributionStr = XWTools.byteArrayToHexString(contributeEventResponse.resultHash);
-        theWork.setH2h2r(contributionStr);
-        logger.debug("onContributeEvent() : " + theWork.toXml());
-
-        final MarketOrderInterface marketOrder = getMarketOrder(workOrderModel.getMarketorderIdx().longValue());
-        final Collection<WorkInterface> works = getMarketOrderWorks(workOrderModel.getMarketorderIdx().longValue());
-
-        if(works == null) {
-            logger.error("createWork() : can't retrieve any work for market order : "
-                    + workOrderModel.getMarketorderIdx().longValue());
-            return;
-        }
-
-        try {
-            final TaskInterface theWorkTask = DBInterface.getInstance().task(theWork);
-            final HostInterface theHost = DBInterface.getInstance().host(theWorkTask.getHost());
-            theHost.setContributed();
-            theHost.update();
-        } catch (final IOException e) {
-            logger.exception(e);
-        }
-
-        final long expectedWorkers = marketOrder.getExpectedWorkers();
-        logger.debug("onContributeEvent() : expected workers: " + expectedWorkers);
-        final long trust = marketOrder.getTrust();
-        logger.debug("onContributeEvent() : trust: " + trust);
-        final long expectedContributions = (expectedWorkers * trust / 100);
-        logger.debug("onContributeEvent() : expectedContributions: " + expectedContributions);
-        long totalContributions = 0L;
-        for(final WorkInterface work : works ) {
-            if(work.hasContributed()
-                    && (work.getH2h2r().compareTo(contributionStr) == 0)) {
-                totalContributions++;
-            }
-        }
-        if (totalContributions >= expectedContributions) {
-            logger.debug("onContributeEvent() : enough contributions");
-            theWork.setRevealing();
-            try {
-                theWork.update();
-            } catch (final IOException e) {
-                logger.exception(e);
-            }
-            logger.debug("onContributeEvent() : work must be revealed " + theWork.toXml());
-
-            for (final WorkInterface contributingWork : works) {
-
-                logger.debug("onContributeEvent() : work must be revealed " + contributingWork.toXml());
-                try {
-                    contributingWork.setRevealing();
-                    contributingWork.update();
-
-                    final TaskInterface contributingTask = DBInterface.getInstance().task(contributingWork);
-                    if (contributingTask != null) {
-                        contributingTask.setRevealing();
-                        contributingTask.update();
-                    }
-                } catch (final IOException e) {
-                    logger.exception(e);
-                }
-            }
-
-            marketOrder.setRevealing();
-            try {
-                marketOrder.update();
-            } catch(final IOException e) {
-                logger.exception(e);
-            }
-
-
-            if(actuatorService.revealConsensus(contributeEventResponse.woid, Numeric.toHexString(contributeEventResponse.resultHash)) == TransactionStatus.FAILURE) {
-                marketOrder.setErrorMsg("transaction error : revealConsensus");
-                marketOrder.setError();
-                try {
-                    marketOrder.update();
-                } catch(final IOException e) {
-                    logger.exception(e);
-                }
-            }
-
-        } else {
-            logger.debug("onContributeEvent() : not enough contributions");
-        }
- */
     }
 
     @Override
