@@ -74,7 +74,6 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
 
         try {
             DBInterface.getInstance().hostContribution(new EthereumWallet(workerWalletAddr));
-
         } catch (final IOException e) {
             logger.exception(e);
         }
@@ -406,11 +405,23 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
         //        DatasetModel datasetModel = ModelService.getInstance().getDatasetModel(workOrderModel.getDataset());
     }
 
-    private synchronized void allowWorkersToContribute(final String workOrderId,
-                                           final MarketOrderInterface marketOrder,
-                                           final ArrayList<String> wallets,
-                                           final Collection<HostInterface> workers)
-                    throws IOException {
+    public static synchronized void allowWorkerToContribute(final String workOrderId,
+                                                            final MarketOrderInterface marketOrder,
+                                                            final EthereumWallet wallet,
+                                                            final HostInterface worker)
+            throws IOException {
+        final ArrayList<String> wallets = new ArrayList();
+        final Collection<HostInterface> workers = new ArrayList<>();
+        wallets.add(wallet.getAddress());
+        workers.add(worker);
+        allowWorkersToContribute(workOrderId, marketOrder, wallets, workers);
+    }
+
+    public static synchronized void allowWorkersToContribute(final String workOrderId,
+                                                             final MarketOrderInterface marketOrder,
+                                                             final ArrayList<String> wallets,
+                                                             final Collection<HostInterface> workers)
+            throws IOException {
 
         if (actuatorService.allowWorkersToContribute(workOrderId,
                 wallets,

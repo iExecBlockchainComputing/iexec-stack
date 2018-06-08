@@ -116,8 +116,7 @@ public class HashTaskSet extends TaskSet {
 					.parseInt(Dispatcher.getConfig().getProperty(XWPropertyDefs.ALIVETIMEOUT.toString()));
 			aliveTimeOut *= 1000;
 
-			if ((theTask.isRunning() || theTask.isDataRequest() || theTask.isResultRequest())
-					&& (delay > aliveTimeOut)) {
+			if (theTask.isUnderProcess() && (delay > aliveTimeOut)) {
 
 				final WorkInterface theWork = db.work(theTask.getWork());
 				if (theWork == null) {
@@ -127,18 +126,7 @@ public class HashTaskSet extends TaskSet {
 				}
 
 				theWork.lost(XWTools.getLocalHostName());
-
-				switch (theTask.getStatus()) {
-					case RUNNING:
-					case DATAREQUEST:
-					case CONTRIBUTED:
-					case CONTRIBUTING:
-					case REVEALING:
-					case RESULTREQUEST:
-					theWork.setErrorMsg("rescheduled : worker lost");
-					break;
-				}
-
+				theWork.setErrorMsg("rescheduled : worker lost");
 				theTask.setError();
 				theTask.setRemovalDate(now);
 

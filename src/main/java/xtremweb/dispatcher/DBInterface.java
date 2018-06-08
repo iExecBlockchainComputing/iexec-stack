@@ -6025,30 +6025,28 @@ public final class DBInterface {
         final Collection<HostInterface> hosts = hosts(workerWalletAddr, marketOrder);
         logger.debug("hostContribution(" + workerWalletAddr + ") : duplicated wallet " + (hosts == null ? 0 : hosts.size()));
 
-        boolean error = false;
         if (hosts != null) {
             for (HostInterface ahost : hosts) {
-                if (ahost.getUID().equals(theHost.getUID()))
-                    continue;
-                error = true;
                 logger.error("hostContribution(" + workerWalletAddr + ") : more than one wallet owner " + ahost.getUID());
                 ahost.leaveMarketOrder(marketOrder);
                 ahost.setActive(false);
                 ahost.update();
             }
         }
-        if (error) {
-            logger.error("hostContribution(" + workerWalletAddr + ") : others presented the same wallet " + theHost.getUID());
-            theHost.leaveMarketOrder(marketOrder);
-            theHost.setActive(false);
-        } else {
-            if (theHost.canContribute()) {
-                logger.debug("hostContribution(" + workerWalletAddr + ") : joins market order "
-                        + marketOrder.getUID());
-                marketOrder.addWorker(theHost);
-            } else {
-                logger.debug("hostContribution(" + workerWalletAddr + ") : don't want to contribute");
+        if (theHost.canContribute()) {
+            logger.debug("hostContribution(" + workerWalletAddr + ") : joins market order "
+                    + marketOrder.getUID());
+            marketOrder.addWorker(theHost);
+
+            final List<WorkInterface> worksList= (List)marketOrderWorks(marketOrder) ;
+            if((worksList !=  null) && worksList.size() > 0){
+                SchedulerPocoWatcherImpl.allowWorkerToContribute(worksList.get(0).getWorkOrderId(),
+                        marketOrder,
+                        new EthereumWallet(theHost.getEthWalletAddr()),
+                        theHost);
             }
+        } else {
+            logger.debug("hostContribution(" + workerWalletAddr + ") : don't want to contribute");
         }
 
         theHost.update();

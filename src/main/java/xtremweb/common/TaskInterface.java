@@ -722,6 +722,20 @@ public final class TaskInterface extends xtremweb.common.Table {
 	}
 
 	/**
+	 * This tests whether task is supposed to be processed by a worker
+	 *
+	 * @return a boolean.
+	 * @since 13.1.0
+	 */
+	public boolean isUnderProcess() {
+		return isRunning()
+				|| isDataRequest()
+				|| isResultRequest()
+				|| hasContributed()
+				|| isContributing()
+				|| isRevealing();
+	}
+	/**
 	 * This sets the task status as pending for a worker.
 	 */
 	public void setPending() {
@@ -742,6 +756,20 @@ public final class TaskInterface extends xtremweb.common.Table {
 	 */
 	public boolean hasContributed() {
 		return getStatus() == StatusEnum.CONTRIBUTED;
+	}
+	/**
+	 * This checks if this work contribution must be sent
+	 * @since 13.1.0
+	 */
+	public boolean isContributing() {
+		return getStatus() == StatusEnum.CONTRIBUTING;
+	}
+	/**
+	 * This marks this work as ready to reveal contribution, if this.getWorkOrderId() != null
+	 * @since 13.1.0
+	 */
+	public boolean isRevealing() {
+		return getStatus() == StatusEnum.REVEALING;
 	}
 	/**
 	 * This marks this as contribution
