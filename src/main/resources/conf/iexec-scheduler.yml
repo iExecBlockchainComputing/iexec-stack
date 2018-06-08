@@ -6,6 +6,8 @@ commonConfiguration:
   nodeConfig:
     clientAddress: http://localhost:8545 #default
     startBlock: 0
+    gasPrice: 22000000000
+    gasLimit: 4300000
   contractConfig:
     rlcAddress: 0x091233035dcb12ae5a4a4b7fb144d3c5189892e1 # this is for testing only with ; please see https://hub.docker.com/r/iexechub/geth-poco/
     iexecHubAddress: 0xc4e4a08bf4c6fd11028b714038846006e27d7be8 # this is for testing only with ; please see https://hub.docker.com/r/iexechub/geth-poco/
