@@ -40,6 +40,7 @@ import com.iexec.common.contracts.generated.WorkerPool;
 import com.iexec.common.ethereum.*;
 import com.iexec.common.workerpool.WorkerPoolConfig;
 import com.iexec.scheduler.actuator.ActuatorService;
+import com.iexec.scheduler.marketplace.MarketplaceService;
 import org.web3j.utils.Numeric;
 import xtremweb.common.*;
 import xtremweb.communications.*;
@@ -4404,11 +4405,15 @@ public final class DBInterface {
             worker.leaveMarketOrder();
         }
 
+        boolean ret = false;
         if (deleteJobs(theClient, getMarketOrderJobs(theClient, uid))) {
-            return delete(theClient, marketOrder);
+            ret = delete(theClient, marketOrder);
         }
 
-        return false;
+        if(ret == true) {
+            MarketplaceService.getInstance().closeMarketOrder(BigInteger.valueOf(marketOrder.getMarketOrderIdx()));
+        }
+        return ret;
     }
 
     /**
