@@ -2,7 +2,7 @@
   "description":
     "The iExec Dev Worker Pool is a worker pool managed by iExec. This worker pool is dedicated to the heavy testing of decentralized applications in early stages.",
   "social": {
-    "website": "https://pool3.iex.ec"
+    "website": "https://dev-pool.iex.ec"
   },
   "logo": "logo.jpg",
   "workerPool": {

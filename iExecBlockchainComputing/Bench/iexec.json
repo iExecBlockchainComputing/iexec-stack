@@ -2,7 +2,7 @@
   "description":
     "The iExec Bench Worker Pool is a worker pool managed by iExec. It's main goal is to allow developers to evaluate and compare their decentralized applications.",
   "social": {
-    "website": "https://pool2.iex.ec"
+    "website": "https://bench-pool.iex.ec"
   },
   "logo": "logo.jpg",
   "workerPool": {
