@@ -2467,6 +2467,10 @@ public final class XWConfigurator extends Properties {
 				&& (IexecConfigurationService.getInstance().getCommonConfiguration() != null)) {
 
 			_host.setEthWalletAddr(CredentialsService.getInstance().getCredentials().getAddress());
+
+// not sure this could work
+//			_host.setUID(new UID(UUID.nameUUIDFromBytes(CredentialsService.getInstance().getCredentials().getAddress().getBytes()).toString()));
+//
 			final CommonConfiguration commonConfiguration = IexecConfigurationService.getInstance().getCommonConfiguration();
 			out.println("Wallet     addr     : " + _host.getEthWalletAddr());
 			out.println("Eth client addr     : " + commonConfiguration.getNodeConfig().getClientAddress());

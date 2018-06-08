@@ -5908,7 +5908,7 @@ public final class DBInterface {
 		}
 
 		try {
-			HostInterface theHost = host(user, _host.getUID());
+            HostInterface theHost = host(user, _host.getUID());
 
 			if (theHost == null) {
                 try {
