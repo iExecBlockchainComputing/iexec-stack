@@ -121,3 +121,15 @@ services:
     networks:
       - iexec-net
     restart: unless-stopped
+
+  order-publisher:
+   image: iexechub/iexec-order-publisher
+   container_name: order-publisher
+   restart: always
+   networks:
+     - iexec-net
+   environment:
+     - DBUSER=${MYSQL_USER_LOGIN}
+     - DBPASS=${MYSQL_USER_PASSWORD}
+     - ADMINLOGIN=${ADMINLOGIN}
+     - ADMINPASSWORD=${ADMINPASSWORD}
