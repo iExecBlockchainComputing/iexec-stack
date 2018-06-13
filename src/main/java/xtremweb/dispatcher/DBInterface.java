@@ -4411,7 +4411,7 @@ public final class DBInterface {
         }
 
         if(ret == true) {
-            MarketplaceService.getInstance().closeMarketOrder(BigInteger.valueOf(marketOrder.getMarketOrderIdx()));
+           MarketplaceService.getInstance().getMarketplace().closeMarketOrder(BigInteger.valueOf(marketOrder.getMarketOrderIdx())).sendAsync();
         }
         return ret;
     }
@@ -4797,9 +4797,8 @@ public final class DBInterface {
 
         final UserInterface theClient = checkClient(client, UserRightEnum.LISTJOB);
         final MarketOrderInterface marketOrder = marketOrder(client, uid);
-
-        return marketOrdersUID(theClient, SQLRequest.MAINTABLEALIAS + "." + WorkInterface.Columns.MARKETORDERUID
-                + "='" + marketOrder.getUID() + "'");
+		return worksUID(theClient, SQLRequest.MAINTABLEALIAS + "." + WorkInterface.Columns.MARKETORDERUID + "='"
+                + marketOrder.getUID() + "'");
     }
 
 	/**
@@ -5813,7 +5812,6 @@ public final class DBInterface {
                 || (moitf.getDirection() == null)
                 || (moitf.getCategoryId() == null)
                 || (moitf.getExpectedWorkers() == 0)
-                || (moitf.getTrust() == 0)
                 || (moitf.getPrice() == 0) ) {
             throw new IOException("add market order error : missing values");
         }
@@ -5845,6 +5843,8 @@ public final class DBInterface {
             return true;
         }
 
+        // set set expected workers
+        moitf.setTrust(moitf.getTrust());
         if (moitf.getUID() == null) {
             final UID uid = new UID();
             moitf.setUID(uid);
