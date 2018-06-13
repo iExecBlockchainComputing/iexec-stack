@@ -333,12 +333,11 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
 
             work.setCallback(workModel.getCallback());
             work.setBeneficiary(workModel.getBeneficiary());
-            work.setExpectedReplications(marketOrder.getExpectedWorkers());
             work.setCategoryId(marketOrder.getCategoryId());
             work.setWorkOrderId(workOrderId);
             work.setStatus(StatusEnum.PENDING);
             work.setExpectedReplications(marketOrder.getExpectedWorkers());
-            work.setReplicaSetSize(marketOrder.getNbWorkers());
+            work.setReplicaSetSize(marketOrder.getExpectedWorkers());
             work.setAccessRights(new XWAccessRights(XWAccessRights.USERALL.value() | XWAccessRights.STICKYBIT_INT));
 
             final XMLRPCCommandSendWork cmd =

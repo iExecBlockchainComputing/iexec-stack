@@ -2276,6 +2276,7 @@ public class WorkInterface extends Table {
 	 * This marks this work as running
 	 */
 	public void setRunning() {
+		incRetry();
 		setStatus(StatusEnum.RUNNING);
 	}
 

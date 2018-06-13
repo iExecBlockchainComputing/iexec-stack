@@ -717,6 +717,23 @@ public final class MarketOrderInterface extends Table {
 	public boolean setDirection(final MarketOrderDirectionEnum d) {
 		return setValue(Columns.DIRECTION, d);
 	}
+
+	/**
+	 * This tests if this can be closed (aka removed)
+	 * @return true if status is WAITING, AVAILABLE, COMPLETED, ERROR; false otherwise
+	 */
+	public boolean canBeClosed() {
+		final StatusEnum status = getStatus();
+		switch (status) {
+			case WAITING:
+			case AVAILABLE:
+			case COMPLETED:
+			case ERROR:
+				return true;
+			default:
+			return false;
+		}
+	}
     /**
      * This sets market status
      * @param s is the market order status
@@ -807,7 +824,7 @@ public final class MarketOrderInterface extends Table {
         return setValue(Columns.CATEGORYID, Long.valueOf(c));
     }
     /**
-     * This sets the market order index and marks this as PENDING (the work order has been bought)
+     * This sets the market order index and marks this as AVAILABLE
      * @param c is the category id
      * @return true if value has changed, false otherwise
      */

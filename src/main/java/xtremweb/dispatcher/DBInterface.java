@@ -4396,8 +4396,11 @@ public final class DBInterface {
         if (marketOrder == null) {
             return false;
         }
-
-        logger.error("removeMarketOrder() : " + uid);
+		if(!marketOrder.canBeClosed()) {
+			logger.error("removeMarketOrder(" + uid +") : " + " can't be closed " + marketOrder.getStatus());
+        	return false;
+		}
+        logger.debug("removeMarketOrder(" + uid + ")");
 
         final Collection<HostInterface> workers = DBInterface.getInstance().hosts(marketOrder);
         if(workers != null) {
@@ -5346,6 +5349,7 @@ public final class DBInterface {
                     }
                 }
 
+                theWork.update(false);
 				checkContribution(theWork, marketOrder);
 
                 break;
