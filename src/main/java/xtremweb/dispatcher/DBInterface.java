@@ -4400,9 +4400,11 @@ public final class DBInterface {
         logger.error("removeMarketOrder() : " + uid);
 
         final Collection<HostInterface> workers = DBInterface.getInstance().hosts(marketOrder);
-        for(final HostInterface worker : workers ) {
-            logger.error("removeMarketOrder(); worker.leaveMarketOrder() : " + worker.getUID());
-            worker.leaveMarketOrder();
+        if(workers != null) {
+	        for(final HostInterface worker : workers ) {
+				logger.error("removeMarketOrder(); worker.leaveMarketOrder() : " + worker.getUID());
+				worker.leaveMarketOrder();
+			}
         }
 
         boolean ret = false;
