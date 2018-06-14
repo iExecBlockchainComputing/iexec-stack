@@ -1,7 +1,11 @@
 package com.iexec.common.ethereum;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class IexecConfigurationService {
 
+    private static final Logger log = LoggerFactory.getLogger(IexecConfigurationService.class);
     private static IexecConfigurationService instance;
     private WalletConfig walletConfig;
     private CommonConfiguration commonConfiguration;

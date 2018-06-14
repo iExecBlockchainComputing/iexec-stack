@@ -5,8 +5,6 @@ import com.iexec.common.contracts.generated.RLC;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.web3j.ens.EnsResolutionException;
-import org.web3j.tx.Contract;
-import org.web3j.tx.ManagedTransaction;
 
 
 public class RlcService {
