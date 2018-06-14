@@ -7,9 +7,6 @@ import com.iexec.scheduler.iexechub.IexecHubService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
-import org.web3j.tuples.generated.Tuple8;
-import org.web3j.tx.Contract;
-import org.web3j.tx.ManagedTransaction;
 
 import java.math.BigInteger;
 import java.util.List;
@@ -30,16 +27,16 @@ public class MarketplaceService {
 
     private MarketplaceService() {
         ExceptionInInitializerError exceptionInInitializerError = new ExceptionInInitializerError("Failed to load Marketplace contract");
-        if (iexecHubService!=null){
+        if (iexecHubService != null) {
             try {
                 String marketplaceAddress = iexecHubService.getIexecHub().marketplace().send();
                 this.marketplace = Marketplace.load(
                         marketplaceAddress, web3jService.getWeb3j(), credentialsService.getCredentials(), configuration.getNodeConfig().getGasPrice(), configuration.getNodeConfig().getGasLimit());
             } catch (Exception e) {
-                throw  exceptionInInitializerError;
+                throw exceptionInInitializerError;
             }
         } else {
-            throw  exceptionInInitializerError;
+            throw exceptionInInitializerError;
         }
     }
 
@@ -54,7 +51,7 @@ public class MarketplaceService {
         return marketplace;
     }
 
-    public MarketOrderModel getMarketOrderModel(BigInteger marketOrderIdx){
+    public MarketOrderModel getMarketOrderModel(BigInteger marketOrderIdx) {
         MarketOrderModel marketOrderModel = null;
         TransactionStatus transactionStatus = TransactionStatus.SUCCESS;
         try {
@@ -67,7 +64,7 @@ public class MarketplaceService {
         return marketOrderModel;
     }
 
-    public BigInteger getMarketOrderCount(){
+    public BigInteger getMarketOrderCount() {
         BigInteger marketOrderCount = null;
         TransactionStatus transactionStatus = TransactionStatus.SUCCESS;
         try {
@@ -80,12 +77,12 @@ public class MarketplaceService {
         return marketOrderCount;
     }
 
-    public TransactionStatus closeMarketOrder(BigInteger marketOrderIdx){
+    public TransactionStatus closeMarketOrder(BigInteger marketOrderIdx) {
         try {
             TransactionReceipt closeMarketOrderReceipt = marketplace.closeMarketOrder(marketOrderIdx).send();
             List<Marketplace.MarketOrderClosedEventResponse> marketOrderClosedEvents = marketplace.getMarketOrderClosedEvents(closeMarketOrderReceipt);
-            log.info("CloseMarketOrder [marketOrderIdx:{}, transactionStatus:{}] ",
-                    marketOrderIdx, getTransactionStatusFromEvents(marketOrderClosedEvents));
+            log.info("CloseMarketOrder [marketOrderIdx:{}, transactionHash:{}, transactionStatus:{}] ",
+                    marketOrderIdx, closeMarketOrderReceipt.getTransactionHash(), getTransactionStatusFromEvents(marketOrderClosedEvents));
             return getTransactionStatusFromEvents(marketOrderClosedEvents);
         } catch (Exception e) {
             e.printStackTrace();
