@@ -137,6 +137,12 @@ public class MatchingScheduler extends SimpleScheduler {
 				theHost.setRunning();
 				theTask = new TaskInterface(theWork);
 				theWork.setRunning();
+				if((theWork.getMarketOrderUid() != null)
+					&& (theWork.getExpectedHost() == null)) {
+					// to ensure we don't "crossrun" within the market order
+					// this may happen if work has been rescheduled
+					theWork.setExpectedHost(theHost.getUID());
+				}
 				theTask.setRunningBy(theHost.getUID());
 				if(marketOrder != null) {
 					marketOrder.setRunning(theHost);

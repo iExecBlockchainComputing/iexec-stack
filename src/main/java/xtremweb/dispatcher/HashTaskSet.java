@@ -128,6 +128,9 @@ public class HashTaskSet extends TaskSet {
 				theWork.lost(XWTools.getLocalHostName());
 				theWork.setErrorMsg("rescheduled : worker lost");
 				theTask.setError();
+				if(theWork.getMarketOrderUid() != null) {
+					theWork.setExpectedHost(null);
+				}
 				theTask.setRemovalDate(now);
 
 				final UID hostUID = theTask.getHost();
