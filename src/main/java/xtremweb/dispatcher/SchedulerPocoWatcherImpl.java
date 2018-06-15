@@ -21,6 +21,7 @@ import xtremweb.database.SQLRequest;
 import xtremweb.security.XWAccessRights;
 
 import java.io.IOException;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.TimeUnit;
@@ -409,6 +410,20 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
                                                             final EthereumWallet wallet,
                                                             final HostInterface worker)
             throws IOException {
+
+/**
+ * ```BigInteger contributionStatus = WorkerPoolService.getInstance().getWorkerContributionModelByWorkOrderId(workOrderId, worker).getStatus();
+ * if (contributionStatus.equals(BigInteger.ZERO)){//0:UNSET, 1:AUTHORIZED, 2:CONTRIBUTED, 3:PROVED, 4:REJECTED
+ *     status = ActuatorService.getInstance().allowWorkersToContribute(workOrderId, Arrays.asList(worker) , "0" );
+ * }```
+ */
+
+        if(WorkerPoolService.getInstance().getWorkerContributionModelByWorkOrderId(workOrderId,
+                wallet.getAddress()).getStatus() != BigInteger.ZERO) {
+            System.out.println(wallet.getAddress() + " already contributing to " + workOrderId);
+            return;
+        }
+
         final ArrayList<String> wallets = new ArrayList();
         final Collection<HostInterface> workers = new ArrayList<>();
         wallets.add(wallet.getAddress());
@@ -421,13 +436,6 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
                                                              final ArrayList<String> wallets,
                                                              final Collection<HostInterface> workers)
             throws IOException {
-/**
- * ```BigInteger contributionStatus = WorkerPoolService.getInstance().getWorkerContributionModelByWorkOrderId(workOrderId, worker).getStatus();
- * if (contributionStatus.equals(BigInteger.ZERO)){//0:UNSET, 1:AUTHORIZED, 2:CONTRIBUTED, 3:PROVED, 4:REJECTED
- *     status = ActuatorService.getInstance().allowWorkersToContribute(workOrderId, Arrays.asList(worker) , "0" );
- * }```
- */
-        /
         if (actuatorService.allowWorkersToContribute(workOrderId,
                 wallets,
                 "0") == TransactionStatus.FAILURE) {
