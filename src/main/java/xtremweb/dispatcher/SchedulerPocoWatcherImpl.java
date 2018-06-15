@@ -421,7 +421,13 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
                                                              final ArrayList<String> wallets,
                                                              final Collection<HostInterface> workers)
             throws IOException {
-
+/**
+ * ```BigInteger contributionStatus = WorkerPoolService.getInstance().getWorkerContributionModelByWorkOrderId(workOrderId, worker).getStatus();
+ * if (contributionStatus.equals(BigInteger.ZERO)){//0:UNSET, 1:AUTHORIZED, 2:CONTRIBUTED, 3:PROVED, 4:REJECTED
+ *     status = ActuatorService.getInstance().allowWorkersToContribute(workOrderId, Arrays.asList(worker) , "0" );
+ * }```
+ */
+        /
         if (actuatorService.allowWorkersToContribute(workOrderId,
                 wallets,
                 "0") == TransactionStatus.FAILURE) {

@@ -1152,8 +1152,7 @@ public final class HostInterface extends Table {
      */
     public boolean canContribute() {
         try {
-            return (!hasContributed() &&
-					(getMarketOrderUid() == null) &&
+            return ((getMarketOrderUid() == null) &&
 					(getEthWalletAddr() != null)  &&
 					(getWorkerPoolAddr() != null) &&
                     (getContributionStatus() == StatusEnum.UNAVAILABLE));

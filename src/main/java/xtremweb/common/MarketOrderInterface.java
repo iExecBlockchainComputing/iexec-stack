@@ -541,10 +541,8 @@ public final class MarketOrderInterface extends Table {
      * This retrieves the market order index
      *
      * @return this attribute, or null if not set
-     * @exception IOException
-     *                is thrown is attribute is nor well formed
      */
-    public Long getMarketOrderIdx() throws IOException {
+    public Long getMarketOrderIdx()  {
         try {
             return (Long) getValue(Columns.MARKETORDERIDX);
         } catch (final NullPointerException e) {
@@ -866,6 +864,10 @@ public final class MarketOrderInterface extends Table {
         if(host == null)
             return false;
         host.setMarketOrderUid(getUID());
+        if(getMarketOrderIdx() > 0) {
+            // this is necessary if need to rescheule a lost work
+            host.setPending();
+        }
         incNbWorkers();
         return true;
     }

@@ -1199,8 +1199,8 @@ public final class DBInterface {
         return selectOne(new MarketOrderInterface(),
                 SQLRequest.MAINTABLEALIAS + "." + MarketOrderInterface .Columns.NBWORKERS + "<"
                         + MarketOrderInterface .Columns.EXPECTEDWORKERS
-						+ " AND " + MarketOrderInterface .Columns.WORKERPOOLADDR + "='" + workerPoolAddr + "'"
-						+ " AND " + MarketOrderInterface .Columns.REMAINING + " > 0");
+						+ " AND " + MarketOrderInterface .Columns.WORKERPOOLADDR + "='" + workerPoolAddr + "'");
+//						+ " AND " + MarketOrderInterface .Columns.REMAINING + " > 0");
     }
     /**
      * This retrieves a market order by its id, bypassing access rights
@@ -6010,7 +6010,7 @@ public final class DBInterface {
 
         if (marketOrder(theHost.getMarketOrderUid()) == null) {
             theHost.leaveMarketOrder();
-            theHost.update();
+            theHost.update(false);
         }
 
         final EthereumWallet workerWalletAddr = new EthereumWallet(theHost.getEthWalletAddr());
@@ -6041,13 +6041,16 @@ public final class DBInterface {
                 logger.error("hostContribution(" + workerWalletAddr + ") : more than one wallet owner " + ahost.getUID());
                 ahost.leaveMarketOrder(marketOrder);
                 ahost.setActive(false);
-                ahost.update();
+                ahost.update(false);
             }
         }
         if (theHost.canContribute()) {
             logger.debug("hostContribution(" + workerWalletAddr + ") : joins market order "
                     + marketOrder.getUID());
             marketOrder.addWorker(theHost);
+
+            theHost.update(false);
+            marketOrder.update(false);
 
             final List<WorkInterface> worksList= (List)marketOrderWorks(marketOrder) ;
             if((worksList !=  null) && worksList.size() > 0){
@@ -6060,13 +6063,11 @@ public final class DBInterface {
             logger.debug("hostContribution(" + workerWalletAddr + ") : don't want to contribute");
         }
 
-        theHost.update();
-        marketOrder.update();
 
         if(marketOrder.canStart()) {
             final ActuatorService actuatorService = ActuatorService.getInstance();
             marketOrder.decRemaining();
-			DBConnPoolThread.getInstance().update(marketOrder,null,false);
+			marketOrder.update(false);
 
 			final BigInteger marketOrderIdx = actuatorService.createMarketOrder(BigInteger.valueOf(marketOrder.getCategoryId()),
                     BigInteger.valueOf(marketOrder.getTrust()),
@@ -6080,8 +6081,8 @@ public final class DBInterface {
             marketOrder.setWaiting();
         }
 
-        theHost.update();
-        marketOrder.update();
+        theHost.update(false);
+        marketOrder.update(false);
 
         return theHost;
     }
