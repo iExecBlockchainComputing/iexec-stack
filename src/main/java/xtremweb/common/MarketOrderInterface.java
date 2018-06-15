@@ -865,7 +865,7 @@ public final class MarketOrderInterface extends Table {
             return false;
         host.setMarketOrderUid(getUID());
         if(getMarketOrderIdx() > 0) {
-            // this is necessary if need to rescheule a lost work
+            // this is necessary if need to reschedule a lost work
             host.setPending();
         }
         incNbWorkers();
@@ -884,12 +884,12 @@ public final class MarketOrderInterface extends Table {
         return true;
     }
     /**
-     * This marks the provided host as participating in this market order
-     * and increments the amount of booked workers to reach the trust
-     * @return true if value has changed, false otherwise
+     * This checks is this market order can be created on the blockchain
+     * @return true if getExpectedWorkers() <= getNbWorkers() && getMarketOrderIdx() <= 0
      */
-    public boolean canStart()  {
-        return getExpectedWorkers() <= getNbWorkers();
+    public boolean canBeCreated()  {
+        return getExpectedWorkers() <= getNbWorkers()
+                && getMarketOrderIdx() <= 0;
     }
     /**
      * This decrements the amount of booked workers to reach the trust

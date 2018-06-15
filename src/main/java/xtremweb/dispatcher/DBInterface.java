@@ -41,7 +41,6 @@ import com.iexec.common.ethereum.*;
 import com.iexec.common.workerpool.WorkerPoolConfig;
 import com.iexec.scheduler.actuator.ActuatorService;
 import com.iexec.scheduler.marketplace.MarketplaceService;
-import org.web3j.utils.Numeric;
 import xtremweb.common.*;
 import xtremweb.communications.*;
 import xtremweb.database.ColumnSelection;
@@ -1199,8 +1198,9 @@ public final class DBInterface {
         return selectOne(new MarketOrderInterface(),
                 SQLRequest.MAINTABLEALIAS + "." + MarketOrderInterface .Columns.NBWORKERS + "<"
                         + MarketOrderInterface .Columns.EXPECTEDWORKERS
-						+ " AND " + MarketOrderInterface .Columns.WORKERPOOLADDR + "='" + workerPoolAddr + "'");
-//						+ " AND " + MarketOrderInterface .Columns.REMAINING + " > 0");
+						+ " AND " + MarketOrderInterface .Columns.WORKERPOOLADDR + "='" + workerPoolAddr + "'"
+						+ " AND " + MarketOrderInterface .Columns.STATUS + "!='" + StatusEnum.ERROR + "'"
+						+ " AND " + MarketOrderInterface .Columns.STATUS + "!='" + StatusEnum.COMPLETED + "'");
     }
     /**
      * This retrieves a market order by its id, bypassing access rights
@@ -6064,7 +6064,7 @@ public final class DBInterface {
         }
 
 
-        if(marketOrder.canStart()) {
+        if(marketOrder.canBeCreated()) {
             final ActuatorService actuatorService = ActuatorService.getInstance();
             marketOrder.decRemaining();
 			marketOrder.update(false);
