@@ -60,3 +60,4 @@ in xtremweb-hep/build/dist/xtremweb-X.Y.Z/docker/docker-compose-firstinstall.sh,
 docker-compose-simple-run.sh
 ```
 Some variables will be set by default but they can be modified in the file *.env* next to the docker-compose file.
+
