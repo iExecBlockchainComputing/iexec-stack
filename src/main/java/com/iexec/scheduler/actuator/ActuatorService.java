@@ -65,17 +65,14 @@ public class ActuatorService implements Actuator {
                     volume
             ).send();
             List<Marketplace.MarketOrderCreatedEventResponse> marketOrderCreatedEvents = marketplaceService.getMarketplace().getMarketOrderCreatedEvents(createMarketOrderReceipt);
-            log.info("CreateMarketOrder [category:{}, trust:{}, value:{}, volume:{}, marketorderIdx:{}, transactionStatus:{}] ",
-                    category, trust, value, volume, marketOrderCreatedEvents.get(0).marketorderIdx, getTransactionStatusFromEvents(marketOrderCreatedEvents));
+            log.info("CreateMarketOrder [category:{}, trust:{}, value:{}, volume:{}, marketorderIdx:{}, transactionHash:{}, transactionStatus:{}] ",
+                    category, trust, value, volume, marketOrderCreatedEvents.get(0).marketorderIdx, createMarketOrderReceipt.getTransactionHash(), getTransactionStatusFromEvents(marketOrderCreatedEvents));
             return marketOrderCreatedEvents.get(0).marketorderIdx;
         } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
     }
-
-    //TODO add closeMarketOrder function
-
 
     @Override
     public TransactionStatus allowWorkersToContribute(String workOrderId,
@@ -85,8 +82,8 @@ public class ActuatorService implements Actuator {
             TransactionReceipt allowWorkersToContributeReceipt = workerPoolService.getWorkerPool()
                     .allowWorkersToContribute(workOrderId, workers, enclaveChallenge).send();
             List<WorkerPool.AllowWorkerToContributeEventResponse> allowWorkerToContributeEvents = workerPoolService.getWorkerPool().getAllowWorkerToContributeEvents(allowWorkersToContributeReceipt);
-            log.info("AllowWorkersToContribute [workOrderId:{}, workers:{}, enclaveChallenge:{}, transactionStatus:{}] ",
-                    workOrderId, workers.toString(), enclaveChallenge, getTransactionStatusFromEvents(allowWorkerToContributeEvents));
+            log.info("AllowWorkersToContribute [workOrderId:{}, workers:{}, enclaveChallenge:{}, transactionHash:{}, transactionStatus:{}] ",
+                    workOrderId, workers.toString(), enclaveChallenge, allowWorkersToContributeReceipt.getTransactionHash(), getTransactionStatusFromEvents(allowWorkerToContributeEvents));
             return getTransactionStatusFromEvents(allowWorkerToContributeEvents);
         } catch (Exception e) {
             e.printStackTrace();
@@ -102,8 +99,8 @@ public class ActuatorService implements Actuator {
             TransactionReceipt revealConsensusReceipt = workerPoolService.getWorkerPool()
                     .revealConsensus(workOrderId, consensus).send();
             List<WorkerPool.RevealConsensusEventResponse> revealConsensusEvents = workerPoolService.getWorkerPool().getRevealConsensusEvents(revealConsensusReceipt);
-            log.info("RevealConsensus [workOrderId:{}, hashResult:{}, transactionStatus:{}] ",
-                    workOrderId, hashResult, getTransactionStatusFromEvents(revealConsensusEvents));
+            log.info("RevealConsensus [workOrderId:{}, hashResult:{}, transactionHash:{}, transactionStatus:{}] ",
+                    workOrderId, hashResult, revealConsensusReceipt.getTransactionHash(), getTransactionStatusFromEvents(revealConsensusEvents));
             return getTransactionStatusFromEvents(revealConsensusEvents);
         } catch (Exception e) {
             e.printStackTrace();
@@ -119,8 +116,8 @@ public class ActuatorService implements Actuator {
                     stderr,
                     uri).send();
             List<WorkerPool.FinalizeWorkEventResponse> finalizeWorkEvents = workerPoolService.getWorkerPool().getFinalizeWorkEvents(finalizeWorkReceipt);
-            log.info("FinalizeWork [workOrderId:{}, stdout:{}, stderr:{}, uri:{}, transactionStatus:{}] ",
-                    workOrderId, stdout, stderr, uri, getTransactionStatusFromEvents(finalizeWorkEvents));
+            log.info("FinalizeWork [workOrderId:{}, stdout:{}, stderr:{}, uri:{}, transactionHash:{}, transactionStatus:{}] ",
+                    workOrderId, stdout, stderr, uri, finalizeWorkReceipt.getTransactionHash(), getTransactionStatusFromEvents(finalizeWorkEvents));
             return getTransactionStatusFromEvents(finalizeWorkEvents);
         } catch (Exception e) {
             e.printStackTrace();
