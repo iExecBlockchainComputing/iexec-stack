@@ -1,20 +1,17 @@
 package com.iexec.worker.actuator;
 
-import com.iexec.common.contracts.generated.*;
+import com.iexec.common.contracts.generated.IexecHub;
+import com.iexec.common.contracts.generated.WorkerPool;
+import com.iexec.common.contracts.generated.WorkerPoolHub;
 import com.iexec.common.ethereum.*;
-import com.iexec.common.workerpool.WorkerPoolConfig;
 import com.iexec.worker.iexechub.IexecHubService;
 import com.iexec.worker.workerpool.WorkerPoolService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.web3j.crypto.Hash;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
-import org.web3j.tuples.generated.Tuple2;
-import org.web3j.tx.Contract;
-import org.web3j.tx.ManagedTransaction;
 import org.web3j.utils.Numeric;
 
-import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.List;
 
@@ -31,9 +28,7 @@ public class ActuatorService implements Actuator {
     private static ActuatorService instance;
     private final Web3jService web3jService = Web3jService.getInstance();
     private final CommonConfiguration configuration = IexecConfigurationService.getInstance().getCommonConfiguration();
-    private final NodeConfig nodeConfig = configuration.getNodeConfig();
     private final ContractConfig contractConfig = configuration.getContractConfig();
-    private final WorkerPoolConfig workerPoolConfig = contractConfig.getWorkerPoolConfig();
 
     private ActuatorService() {
     }
@@ -47,7 +42,7 @@ public class ActuatorService implements Actuator {
 
     @Override
     public TransactionStatus depositRlc(BigInteger rlcDepositRequested) {
-        return Utils.depositRlc(rlcDepositRequested, rlcService.getRlc(),iexecHubService.getIexecHub(), log);
+        return Utils.depositRlc(rlcDepositRequested, rlcService.getRlc(), iexecHubService.getIexecHub(), log);
     }
 
     @Override
@@ -58,10 +53,9 @@ public class ActuatorService implements Actuator {
     @Override
     public TransactionStatus subscribeToPool() {
         try {
-            //BigInteger depositAmount = workerPoolConfig.getSubscriptionMinimumStakePolicy();
             TransactionReceipt subscribeToPoolReceipt = workerPoolService.getWorkerPool().subscribeToPool().send();
             List<IexecHub.WorkerPoolSubscriptionEventResponse> workerPoolSubscriptionEvents = iexecHubService.getIexecHub().getWorkerPoolSubscriptionEvents(subscribeToPoolReceipt);
-            log.info("SubscribeToPool [transactionStatus:{}] ", getTransactionStatusFromEvents(workerPoolSubscriptionEvents));
+            log.info("SubscribeToPool [transactionHash:{}, transactionStatus:{}] ", subscribeToPoolReceipt.getTransactionHash(), getTransactionStatusFromEvents(workerPoolSubscriptionEvents));
 
             return getTransactionStatusFromEvents(workerPoolSubscriptionEvents);//return full event ? workerPoolSubscriptionEvents.get(0);
         } catch (Exception e) {
@@ -81,7 +75,7 @@ public class ActuatorService implements Actuator {
                     workerAffectation, web3jService.getWeb3j(), credentialsService.getCredentials(), configuration.getNodeConfig().getGasPrice(), configuration.getNodeConfig().getGasLimit());
             TransactionReceipt unsubscribeFromPoolReceipt = workerPool.unsubscribeFromPool().send();
             List<WorkerPool.WorkerUnsubscribeEventResponse> workerUnsubscribeEvents = workerPool.getWorkerUnsubscribeEvents(unsubscribeFromPoolReceipt);
-            log.info("UnsubscribeFromPool [transactionStatus:{}] ", getTransactionStatusFromEvents(workerUnsubscribeEvents));
+            log.info("UnsubscribeFromPool [transactionHash:{}, transactionStatus:{}] ", unsubscribeFromPoolReceipt.getTransactionHash(), getTransactionStatusFromEvents(workerUnsubscribeEvents));
             return getTransactionStatusFromEvents(workerUnsubscribeEvents);
         } catch (Exception e) {
             e.printStackTrace();
@@ -100,14 +94,9 @@ public class ActuatorService implements Actuator {
         byte[] s = Numeric.hexStringToByteArray(asciiToHex(contributeS));
 
         try {
-            //Marketplace marketplace = Marketplace.load(
-            //        iexecHubService.getIexecHub().marketplaceAddress().send(), web3jService.getWeb3j(), credentialsService.getCredentials(), configuration.getNodeConfig().getGasPrice(), configuration.getNodeConfig().getGasLimit());
-            //BigInteger marketOrderValue = marketplace.getMarketOrderValue(workOrder.m_marketorderIdx().send()).send();
-            //Float deposit = (workerPoolConfig.getStakeRatioPolicy().floatValue() / 100) * marketOrderValue.floatValue() + 1f;//(30/100)*100 + 1     Why?
-            //BigInteger depositBig = BigDecimal.valueOf(deposit).toBigInteger();
             TransactionReceipt contributeReceipt = workerPoolService.getWorkerPool().contribute(workOrderId, hashResultBytes, hashSignBytes, contributeV, r, s).send();
             List<WorkerPool.ContributeEventResponse> contributeEvents = workerPoolService.getWorkerPool().getContributeEvents(contributeReceipt);
-            log.info("Contribute [workOrderId:{}, hashResult:{}, signResult:{}, transactionStatus:{}]", workOrderId, hashResult, signResult, getTransactionStatusFromEvents(contributeEvents));
+            log.info("Contribute [workOrderId:{}, hashResult:{}, signResult:{}, transactionHash:{}, transactionStatus:{}]", workOrderId, hashResult, signResult, contributeReceipt.getTransactionHash(), getTransactionStatusFromEvents(contributeEvents));
             return getTransactionStatusFromEvents(contributeEvents);
         } catch (Exception e) {
             e.printStackTrace();
@@ -123,7 +112,7 @@ public class ActuatorService implements Actuator {
         try {
             revealReceipt = workerPoolService.getWorkerPool().reveal(workOrderId, result).send();
             List<WorkerPool.RevealEventResponse> revealEvents = workerPoolService.getWorkerPool().getRevealEvents(revealReceipt);
-            log.info("Reveal [workOrderId:{}, hashResult:{}, transactionStatus:{}]", workOrderId, shaResult, getTransactionStatusFromEvents(revealEvents));
+            log.info("Reveal [workOrderId:{}, hashResult:{}, transactionHash:{}, transactionStatus:{}]", workOrderId, shaResult, revealReceipt.getTransactionHash(), getTransactionStatusFromEvents(revealEvents));
             return getTransactionStatusFromEvents(revealEvents);
         } catch (Exception e) {
             e.printStackTrace();
