@@ -5,6 +5,7 @@ import com.iexec.common.ethereum.IexecConfigurationService;
 import com.iexec.common.ethereum.TransactionStatus;
 import com.iexec.common.ethereum.Web3jService;
 import com.iexec.common.model.AppModel;
+import com.iexec.common.model.ContributionModel;
 import com.iexec.common.model.ModelService;
 import com.iexec.common.model.WorkOrderModel;
 import com.iexec.scheduler.actuator.ActuatorService;
@@ -249,12 +250,7 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
     private Collection<WorkInterface> getMarketOrderWorks(final  long idx) {
         try {
             final MarketOrderInterface marketOrder = getMarketOrder(idx);
-            if(marketOrder == null) {
-                throw new IOException("can't retrieve market order : " + idx);
-            }
-
             return DBInterface.getInstance().marketOrderWorks(marketOrder);
-
         } catch(final Exception e) {
             logger.exception(e);
             return null;
@@ -417,9 +413,12 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
  *     status = ActuatorService.getInstance().allowWorkersToContribute(workOrderId, Arrays.asList(worker) , "0" );
  * }```
  */
-
-        if(WorkerPoolService.getInstance().getWorkerContributionModelByWorkOrderId(workOrderId,
-                wallet.getAddress()).getStatus() != BigInteger.ZERO) {
+        if((wallet == null) || (wallet.getAddress() == null)) {
+            return;
+        }
+        final ContributionModel contribution = WorkerPoolService.getInstance().getWorkerContributionModelByWorkOrderId(workOrderId,
+                wallet.getAddress());
+        if((contribution != null) && (contribution.getStatus() != BigInteger.ZERO)) {
             System.out.println(wallet.getAddress() + " already contributing to " + workOrderId);
             return;
         }
