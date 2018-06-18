@@ -1,0 +1,38 @@
+{
+  "categories": [{
+      "name": "1",
+      "description": {
+        "io": "10mo"
+      },
+      "workClockTimeRef": 300
+    },
+    {
+      "name": "2",
+      "description": {
+        "io": "100mo"
+      },
+      "workClockTimeRef": 900
+    },
+    {
+      "name": "3",
+      "description": {
+        "io": "250mo"
+      },
+      "workClockTimeRef": 1800
+    },
+    {
+      "name": "4",
+      "description": {
+        "io": "500mo"
+      },
+      "workClockTimeRef": 3600
+    },
+    {
+      "name": "5",
+      "description": {
+        "io": "1go"
+      },
+      "workClockTimeRef": 7200
+    }
+  ]
+}
