@@ -1,0 +1,71 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.3'
+    }
+}
+
+apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: 'java'
+apply plugin: 'maven'
+
+sourceCompatibility = 1.8
+
+def UNIQUE_ID='hostname -f'.execute().text.trim()
+def token='curl -XPOST --data name=${UNIQUE_ID} https://cc02acaa7954c9d63333b18e6d5decead7d457ac3cfddeeb:@packagecloud.io/install/repositories/iexec/common/tokens.text'.execute().text.trim()
+
+repositories {
+    mavenCentral()
+	maven {
+        url "https://packagecloud.io/priv/${token}/iexec/common/maven2"
+    }
+}
+
+configurations {
+    deployerJars
+}
+
+ext {
+    web3jVersion = '3.3.1'
+    web3jSpringBootVersion = '1.5.0'
+    logbackVersion = '1.2.3'
+    junitVersion = '4.12'
+}
+
+dependencies {
+	compile "com.iexec.common:iexec-common:$iexecCommonVersion"
+    //compile files('../iexec-common/build/libs/iexec-common-0.1.0-SNAPSHOT.jar')
+
+	// web3j dependencies
+    compile "org.web3j:core:$web3jVersion"
+
+    testCompile "junit:junit:$junitVersion"
+
+    deployerJars "io.packagecloud.maven.wagon:maven-packagecloud-wagon:0.0.6"
+}
+
+shadowJar {
+    baseName='iexec-scheduler'
+    classifier=null
+    version=version
+}
+
+build.dependsOn(shadowJar)
+
+def gitBranch = 'git name-rev --name-only HEAD'.execute().text.trim()
+def isMasterBranch = gitBranch == "remotes/origin/master"
+def canUploadArchives = isMasterBranch
+
+uploadArchives {
+    repositories.mavenDeployer {
+        configuration = configurations.deployerJars
+        repository(url: "packagecloud+https://packagecloud.io/iexec/scheduler") {
+            authentication(password: mavenPassword)
+        }
+    }
+}
+uploadArchives.enabled = canUploadArchives
