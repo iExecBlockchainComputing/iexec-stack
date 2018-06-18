@@ -22,6 +22,8 @@ public interface Actuator {
 
     TransactionStatus revealConsensus(String workOrderId, String hashResult);
 
+    TransactionStatus reopen(String workOrderId);
+
     TransactionStatus finalizeWork(String workOrderId, String stdout, String stderr, String uri);
 
     List<IexecHub.CreateCategoryEventResponse> getCategories();

@@ -109,6 +109,20 @@ public class ActuatorService implements Actuator {
     }
 
     @Override
+    public TransactionStatus reopen(String workOrderId) {
+        try {
+            TransactionReceipt reopenReceipt = workerPoolService.getWorkerPool().reopen(workOrderId).send();
+            List<WorkerPool.ReopenEventResponse> reopenEvents = workerPoolService.getWorkerPool().getReopenEvents(reopenReceipt);
+            log.info("Reopen [workOrderId:{}, transactionHash:{}, transactionStatus:{}] ",
+                    workOrderId, reopenReceipt.getTransactionHash(), getTransactionStatusFromEvents(reopenEvents));
+            return getTransactionStatusFromEvents(reopenEvents);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return TransactionStatus.FAILURE;
+    }
+
+    @Override
     public TransactionStatus finalizeWork(String workOrderId, String stdout, String stderr, String uri) {
         try {
             TransactionReceipt finalizeWorkReceipt = workerPoolService.getWorkerPool().finalizeWork(workOrderId,
