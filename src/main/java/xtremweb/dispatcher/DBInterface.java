@@ -6047,10 +6047,10 @@ public final class DBInterface {
         if (theHost.canContribute()) {
             logger.debug("hostContribution(" + workerWalletAddr + ") : joins market order "
                     + marketOrder.getUID());
-            marketOrder.addWorker(theHost);
 
-            theHost.update(false);
+            marketOrder.addWorker(theHost);
             marketOrder.update(false);
+            theHost.update(false);
 
             final List<WorkInterface> worksList= (List)marketOrderWorks(marketOrder) ;
             if((worksList !=  null) && worksList.size() > 0){

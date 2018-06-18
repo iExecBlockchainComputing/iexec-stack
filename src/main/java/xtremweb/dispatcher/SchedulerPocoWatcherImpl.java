@@ -72,13 +72,14 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
      * @param workerWalletAddr is the worker wallet address
      */
     @Override
-    public void onSubscription(String workerWalletAddr) {
+    public synchronized void onSubscription(String workerWalletAddr) {
 
         try {
             DBInterface.getInstance().hostContribution(new EthereumWallet(workerWalletAddr));
         } catch (final IOException e) {
             logger.exception(e);
         }
+        notifyAll();
     }
 
     /**
@@ -279,6 +280,9 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
                     + workModel.getMarketorderIdx().longValue());
             return null;
         }
+
+        logger.debug("createWork() : " + marketOrder.toXml());
+
         if(marketOrder.getWorkerPoolAddr().compareTo(workModel.getWorkerpool()) != 0) {
             logger.error("createWork() : worker pool mismatch : "
                     + marketOrder.getWorkerPoolAddr() + " != "
@@ -319,13 +323,13 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
                 final String cmdline = XWTools.jsonValueFromString(workModel.getParams(), "cmdline");
                 work.setCmdLine(cmdline);
             } catch(final JSONException e) {
-                logger.warn(e.getMessage());
+                logger.debug(e.getMessage());
             }
             try {
                 final String dirinuri = XWTools.jsonValueFromString(workModel.getParams(), "dirinuri");
                 work.setDirin(new URI(dirinuri));
             } catch(final JSONException e) {
-                logger.warn(e.getMessage());
+                logger.debug(e.getMessage());
             }
 
             work.setCallback(workModel.getCallback());
