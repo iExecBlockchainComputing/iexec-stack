@@ -278,15 +278,17 @@ public final class XWConfigurator extends Properties {
 				walletConfig.setRlcDeposit(getRLCDeposit());
 
 				IexecWorkerLibrary.initialize(walletConfig, commonConfiguration);
-				WorkerPocoWatcherImpl workerPocoWatcher = new WorkerPocoWatcherImpl();
 
 				final WorkerPoolConfig workerPoolConfig = commonConfiguration.getContractConfig().getWorkerPoolConfig();
 				if (workerPoolConfig != null) {
 					_host.setWorkerPoolAddr(workerPoolConfig.getAddress());
 				}
+				//WorkerPocoWatcherImpl workerPocoWatcher = new WorkerPocoWatcherImpl();
 			}
 
-		} catch (final Exception e) {
+            logger.info("getBlockchainEthConfig() : configuration retrieved");
+		} catch (final Throwable e) {
+            _host.setWorkerPoolAddr(null);
 			logger.exception("Can't get iExec config from " + schedulerApiUrl + XWTools.IEXECETHCONFPATH, e);
 		}
 

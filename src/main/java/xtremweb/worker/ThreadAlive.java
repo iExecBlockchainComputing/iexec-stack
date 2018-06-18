@@ -127,6 +127,11 @@ public class ThreadAlive extends Thread {
 
         while (canRun) {
 
+            final HostInterface workerHost = Worker.getConfig().getHost();
+            if((workerHost.getWorkerPoolAddr() == null) || (workerHost.getWorkerPoolAddr().trim().length() < 1)){
+                Worker.getConfig().getBlockchainEthConfig();
+            }
+
             try {
                 synchronize();
             } catch (final Exception e) {

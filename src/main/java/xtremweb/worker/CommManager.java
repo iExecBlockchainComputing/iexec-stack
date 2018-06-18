@@ -427,6 +427,9 @@ public final class CommManager extends Thread {
 		final HostInterface workerHost = Worker.getConfig().getHost();
 		final File d = Worker.getConfig().getTmpDir();
 		workerHost.setFreeTmp(d.getFreeSpace() / XWTools.ONEMEGABYTES);
+        if((workerHost.getWorkerPoolAddr() == null) || (workerHost.getWorkerPoolAddr().trim().length() < 1)){
+			Worker.getConfig().getBlockchainEthConfig();
+		}
 		final WorkInterface ret = commClient().workRequest(workerHost);
 		Worker.getConfig().getHost().setJobId(null);
 		return ret;
