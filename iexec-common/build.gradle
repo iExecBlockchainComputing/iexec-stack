@@ -1,0 +1,93 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.3'
+    }
+}
+
+apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: 'java'
+apply plugin: 'maven'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+configurations {
+    deployerJars
+}
+
+ext {
+    web3jVersion = '3.3.1'
+    logbackVersion = '1.2.3'
+    junitVersion = '4.12'
+    springBootVersion = '1.5.9.RELEASE'
+}
+
+dependencies {
+    // web3j dependencies
+    compile "org.web3j:core:$web3jVersion"
+
+    compile "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.3.0"
+    compile "com.fasterxml.jackson.core:jackson-databind:2.2.3"
+
+    compile 'org.apache.commons:commons-lang3:3.4'
+
+    testCompile "junit:junit:$junitVersion"
+
+    deployerJars "io.packagecloud.maven.wagon:maven-packagecloud-wagon:0.0.6"
+}
+
+
+def pocoJsonFiles = [
+        'PoCo/build/contracts/IexecHub.json',
+        'PoCo/build/contracts/WorkerPool.json',
+        'PoCo/build/contracts/Marketplace.json',
+        'PoCo/build/contracts/WorkOrder.json',
+        'PoCo/build/contracts/App.json',
+        'PoCo/build/contracts/Dataset.json',
+        'PoCo/build/contracts/WorkerPoolHub.json',
+        'rlc-faucet-contract/build/contracts/RLC.json',
+]
+
+task buildContracts() {
+    pocoJsonFiles.each{ pocoJsonFile ->
+        exec{
+            args pocoJsonFile
+            commandLine 'sh', '-c', './extlib/web3j-3.3.1/bin/web3j truffle generate '+ args.first() +' -p com.iexec.common.contracts.generated -o src/main/java/'
+        }
+    }
+}
+
+buildContracts.enabled = !project.hasProperty("skipContracts")
+
+// Force the rebuild of contracts before java build
+compileJava.dependsOn(buildContracts)
+
+shadowJar {
+    baseName = rootProject.name
+    classifier = null
+    version = version
+}
+
+build.dependsOn(shadowJar)
+
+def gitBranch = 'git name-rev --name-only HEAD'.execute().text.trim()
+def isMasterBranch = gitBranch == "remotes/origin/master"
+def canUploadArchives = isMasterBranch
+
+uploadArchives {
+    repositories.mavenDeployer {
+        configuration = configurations.deployerJars
+        repository(url: "packagecloud+https://packagecloud.io/iexec/common") {
+            authentication(password: mavenPassword)
+        }
+    }
+}
+uploadArchives.enabled = canUploadArchives
