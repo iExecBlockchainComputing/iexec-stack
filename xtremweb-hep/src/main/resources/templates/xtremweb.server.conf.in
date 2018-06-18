@@ -1,0 +1,626 @@
+#
+# Copyrights     : CNRS
+# Author         : Oleg Lodygensky
+# Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
+# Web            : http://www.xtremweb-hep.org
+# 
+#      This file is part of XtremWeb-HEP.
+#
+#    XtremWeb-HEP is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    XtremWeb-HEP is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with XtremWeb-HEP.  If not, see <http://www.gnu.org/licenses/>.
+#
+#
+
+
+#
+# Sept 16th, 2014
+#   Variable names must be in uppercase (it works in lowercase, but may introduce
+#   some missbehaviour under certain circumstances)
+# The script "xtremwebconf.sh" uses perl to force upper cases;
+# but it may happen that perl is not installed... 
+#
+
+
+# Configuration file for the server
+
+# Next defines the role as client
+ROLE=server
+
+# Configuring the database access
+# DBVENDOR= mysql(default); hsqldb:hsql or hsqldb:mem
+# DBHOST= Name on the running the database software
+# DBNAME= Name of the database
+# DBUSER= Name of the user granted to access the database
+# DBPASS= his Password
+#
+# mysql
+# DBVENDOR= mysql
+# hsqldb 
+# DBVENDOR= hsqldb
+#
+# USING ENGINE=mem is a very special case: the DB is not written
+# to disk. Hence if the server crashes, it will not be able to
+# recover jobs, installed applications etc.
+# ENGINE=mem is not to be used in production...
+#
+
+DBVENDOR=@DBVENDOR@
+DBENGINE=@DBENGINE@ 
+DBHOST=@DBHOST@ 
+DBNAME=@DBNAME@
+DBUSER=@DBUSERLOGIN@
+DBPASS=@DBUSERPASSWORD@
+
+#
+# XWdbRequestLimit defines the max rows amount a single SQL request may return
+#   DBREQUESTLIMIT= 1000
+#
+
+#
+# This contains the mail server address
+# Since 9.1.0
+# Default is NULL
+#
+#MAILSERVERADDRESS=mailserver.org
+
+#
+# This contains the mail protocol to use
+# Since 9.1.0
+# Default : smtp
+#
+#MAILPROTOCOL=pop3
+
+#
+# This contains the sender mail address
+# Since 9.1.0
+# Default is NULL
+#
+#MAILSENDERADDRESS=dummy@mailserver.org
+
+#
+# This is a boolean telling if "on the fly" registration is allowed or not
+# If a user tries to connect using its openid identity, this identity must have
+# been registered on server side to connect and use the platform.
+#
+# If this variable is set to true, users are automatically registered on the fly
+# and can start using the platform even if their openid identity had never been registered
+# by this server administrator.
+#
+# Default : false
+# since 8.2.0
+#
+DELEGATEDREGISTRATION=true
+
+#
+# Server : the JWT issuer
+# @since 11.0.0
+#
+#JWTETHISSUER=
+#
+# Server : the JWT secret key to decode
+# @since 11.0.0
+#
+#JWTETHSECRET=
+
+#
+# Do we try to connect to Ethereum blockchain
+# @since 13.0.0
+#
+BLOCKCHAINETHENABLED=true
+
+#
+# All : ethereum wallet path
+# Property type : string
+# Since 12.2.7
+#
+#ETHWALLETPATH=
+#
+#All : ethereum wallet password
+#
+# Property type : string
+#
+# Since 12.2.7
+#
+#ETHWALLETPASSWORD=
+
+
+#
+# This is necessary to delegate authentication via OAuth
+# The facebook application ID
+# @since 9.1.1
+#
+#FACEBOOKAPPID=
+
+#
+# This is necessary to delegate authentication via OAuth
+# The facebook application KEY
+# @since 9.1.1
+#
+#FACEBOOKAPPKEY=
+#
+# This is necessary to delegate authentication via OAuth
+# The facebook auth URI
+# @since 10.5.0
+#
+#FACEBOOKAUTHURI=
+#
+# Facebook OAuth discovery point to retrieve all services URI
+# This should not be changed !
+# You can try this in your browser
+# @since 10.5.0
+#
+#FACEBOOK_DISCOVERYURI=
+#
+# This is necessary to delegate authentication via OAuth
+# The facebook scope
+# @since 10.5.0
+#
+#FACEBOOKSCOPE=
+#
+# This is necessary to delegate authentication via OAuth
+# The facebook callback url
+# @since 10.5.0
+#
+#FACEBOOKCALLBACKURL=
+
+#
+# Google OAuth discovery point to retrieve all services URI
+# This should not be changed
+# You can try this in your browser
+# @since 10.5.0
+#
+GOOGLE_DISCOVERYURI=https://accounts.google.com/.well-known/openid-configuration
+#
+# This is necessary to delegate authentication via OAuth
+# The google application ID
+# @since 9.1.1
+#
+#GOOGLEAPPID=
+
+#
+# This is necessary to delegate authentication via OAuth
+# The google application KEY
+# @since 9.1.1
+#
+#GOOGLEAPPKEY=
+#
+# This is necessary to delegate authentication via OAuth
+# The google auth URI
+# This should not be changed
+# @since 10.5.0
+GOOGLEAUTHURI="https://www.googleapis.com/oauth2/v3/userinfo"
+#
+# This is necessary to delegate authentication via OAuth
+# The google scope
+# @since 10.5.0
+#
+#GOOGLESCOPE=
+#
+# This is necessary to delegate authentication via OAuth
+# The google callback url
+# @since 10.5.0
+#
+#GOOGLECALLBACKURL=
+
+#
+# This is necessary to delegate authentication via OAuth
+# The twitter application ID
+# @since 10.5.0
+#
+#TWITTERAPPID=
+
+#
+# This is necessary to delegate authentication via OAuth
+# The twitter application KEY
+# @since 10.5.0
+#
+#TWITTERAPPKEY=
+#
+# This is necessary to delegate authentication via OAuth
+# The twitter auth URI
+# @since 10.5.0
+#
+#TWITTERAUTHURI=
+#
+# Twitter OAuth discovery point to retrieve all services URI
+# This should not be changed !
+# You can try this in your browser
+# @since 10.5.0
+#
+#TWITTER_DISCOVERYURI=
+#
+# This is necessary to delegate authentication via OAuth
+# The twitter scope
+# @since 10.5.0
+#
+#TWITTERSCOPE=
+#
+# This is necessary to delegate authentication via OAuth
+# The twitter callback url
+# @since 10.5.0
+#
+#TWITTERCALLBACKURL=
+
+#
+# This is necessary to delegate authentication via OAuth
+# The yahoo application ID
+# @since 10.5.0
+#
+#YAHOOAPPID=
+
+#
+# This is necessary to delegate authentication via OAuth
+# The yahoo application KEY
+# @since 10.5.0
+#
+#YAHOOAPPKEY=
+#
+# This is necessary to delegate authentication via OAuth
+# The yahoo auth URI
+# @since 10.5.0
+#
+#YAHOOAUTHURI=
+#
+# Yahoo OAuth discovery point to retrieve all services URI
+# This should not be changed !
+# You can try this in your browser
+# @since 10.5.0
+#
+#YAHOO_DISCOVERYURI=
+#
+# This is necessary to delegate authentication via OAuth
+# The yahoo scope
+# @since 10.5.0
+#
+#YAHOOSCOPE=
+#
+# This is necessary to delegate authentication via OAuth
+# The yahoo callback url
+# @since 10.5.0
+#
+#YAHOOCALLBACKURL=
+
+#
+# This is an integer containing the amount of seconds a user can stay connected to the web interface
+#
+# Default : 3600
+# since 8.2.2
+#
+#LOGINTIMEOUT=3600
+
+#
+# Next define admin login
+# This is used to insert services at run time
+# This is also used to create hdsldb:mem database, if applicable
+ADMINLOGIN=@XWADMINLOGIN@
+ADMINPASSWORD=@XWADMINPASSWORD@
+ADMINUID=@ADMINUID@
+
+#
+# Next define worker login
+# This is used to create hdsldb:mem DB database, if applicable
+WORKERLOGIN=@XWWORKERLOGIN@
+WORKERPASSWORD=@XWWORKERPASSWORD@
+WORKERUID=@WORKERUID@
+
+# Next line shows how to set several servers (names must be delimited by space or tabulation
+# This is needed for replication
+#XWSERVER=host1 host2 host 3
+
+# next is TCP port
+# default value : 4321
+## TCPPORT=4321
+
+# next is ssl TCP port
+# default value : 4322
+## TCPSPORT=4322
+
+# next is UDP port
+# DEFAULT VALUE = 4323
+## UDPPORT=4323
+
+# next is the worker HTTP port
+# the worker may listen (See server.http property) to display its status
+# default value : 4324
+## HTTPWORKERPORT=4324
+
+# next is the server HTTP port
+# default value : 80
+## HTTPPORT=80
+
+# next is server HTTPS port
+# default value : 443
+## HTTPSPORT=443
+
+# next is XML RPC port listened by the client shell
+# default value : 4327
+## XMLRPCPORT=4327
+
+# next is Sun RPC port
+# default value : 4328
+## SUNRPCPORT=4328
+
+# next is the SmartSockets hub port
+# default value : 4329
+## SMARTSOCKETSPORT=4329
+
+# next is the SmartSockets hub external address
+# this may be needed if running inside an EC2 VM that don't know its public IP
+# default value : null
+## SMARTSOCKETSEXTERNALADDRESS=
+
+# next is proxy port
+# default value : -1 (means don't used)
+# since 7.3.0
+## PROXYPORT=-1
+
+#
+# Internode communications needs a running SmartSockets hub; this may also denote a hub network<br />
+# Property type : string
+# Default value : null
+# @since 8.0.0
+#
+#SMARTSOCKETSHUBADDR=
+
+# next defines whether to use NIO
+# default value : true
+# this is forced to false with HTTP layer
+## JAVANIO=true
+
+
+#
+# This starts or not the http server
+# This HTTP server is intended to enable HTTP connections
+# Default is true
+#
+#STARTSERVERHTTP=false
+
+
+# Path to the directory containing datas
+# the server needs read and write accesses
+# if you change this, you must ensure access rights
+# Note : please use full path; don't use ~ or any variable (e.g. $HOME)
+#        they are not correctly interpreted
+HOMEDIR= /var/xwhep/server
+
+#### Location of temporary directories
+# Where temporary files will go (log file)
+# Default is /tmp
+# Note : please use full path; don't use ~ or any variable (e.g. $HOME)
+#        they are not correctly interpreted
+#TMPDIR=/tmp
+####
+
+#
+# This contains the max amount of entries in local cache
+# Default : 10000
+#CACHESIZE=
+
+# SSL Configuration
+# Put here the name of file caontaining private key and Certificate
+# and the password needed to access that file
+# Note : please use full path; don't use ~ or any variable (e.g. $HOME)
+#        they are not correctly interpreted
+SSLKEYSTORE= ../keystore/xwhepserver.keys
+
+#If you change the following remember to regenerate the keys
+SSLKEYPASSPHRASE=@SSLKEYPASSPHRASE@
+#If you change the following remember to regenerate the keys
+SSLKEYPASSWORD=@SSLKEYSERVERPASSWORD@
+
+# Server        : the directory containing user public keys<br />
+# Property name : USERCERTDIR
+# Default       : null
+# @since 7.4.0
+# Note : please use full path; don't use ~ or any variable (e.g. $HOME)
+#        they are not correctly interpreted
+# Deprecated    : we don't allow self signed certificates
+#
+USERCERTDIR=
+
+# Next contains the directory where CA certificates (public keys) key are stored.
+# These CA certificates are used to create certificate paths 
+# that will be used to validate certificates.
+# Default $X509_CERT_DIR
+# since 7.0.0
+# You may want to check jLite by Oleg Sukhoroslov : http://code.google.com/p/jlite/
+# Note : please use full path; don't use ~ or any variable (e.g. $HOME)
+#        they are not correctly interpreted
+#X509CERTDIR=@X509CERTDIR@
+
+# Next defines server keystore URI
+# When to use : before your server keys exprire
+# How to use :
+# -1- generate new keystore containing both actual and next server public keys
+# -2- store the keystore in XWHEP data reposiroty using xwsenddata
+# -3- keep the data URI
+# -4- set next variable with the data URI
+#
+# This does not break security since
+# -a- workers and clients must have the current server public key to connect to server
+# -b- new keystore is then distributed through encrypted communication channel
+# -c- workers and clients must have valid credentials to connect to server
+# -d- workers and clients safely keep keystores
+# -e- distributed keystore contains server public keys only
+#
+#KEYSTOREURI=xw://blabla
+ 
+
+# This sets the alive period : the period between two 'alive' signal
+# from workers
+#
+# This value is sent to worker at connection time; workers conform to it
+#
+# This helps to determine whether the worker is still computing...
+# If the signal is not received after 3 times this period, workers are
+# considered lost and jobs running on this worker are reinserted in the
+# scheduler queue
+#
+# Don't use a two small value if you don't want to fullfill the server bandwidth
+# You should definitively keep the default value, or greater
+#
+# Default : 300 (5mn)
+#
+#aliveperiod:300
+
+#
+# This defines services to launch at startup time
+# This is a space separated string
+# Available services are :
+#         - xtremweb.services.nullservice.NullService
+#         - xtremweb.services.rpc.rpc
+#
+# Default is ""
+#
+#SERVICES=xtremweb.services.nullservice.NullService xtremweb.services.rpc.rpc
+
+
+# Logging facility
+# You can set here the list of modules you wish to have a log.
+# Existing modules are DBI, Comm, Task.
+# ModulesLogged: DBI Comm Task
+
+#
+# Following are two ACL variables
+# They must contains regular expression (regexp)
+#
+# Regexp examples
+#  - accept all incoming connection                : .*
+#  - accept incoming connection from '168.192.*.*' : 168\.192\..*
+#  - accept incoming connection from '*.in2P3.fr'  : .*\.in2p3\.fr
+#  - reject incoming connection from '168.192.*.*' : -168\.192\..*
+#  - reject incoming connection from '*.in2P3.fr'  : -.*\.in2p3\.fr
+#
+# Communication Access Control List (ACL)
+# By default you can only access the server from localhost.
+# This may contains several comma separated regexp
+# Example
+# SERVERCOMMACL=.*
+
+#
+# ACL to server status and administration
+# XWHEP parts accept incoming connection to display their status and allow
+# some configuration modification
+# By default you can only access the server from localhost.
+# Use this key to put several IP adresses separated by
+# This is a regular expression (regexp)
+#
+# SERVERSTATACL=168.192.*.*
+
+#
+# This is the timeout is in milliseconds to pool database
+#
+# Default is 1000
+#
+#TIMEOUT=1000
+
+#
+# This is the max simultaneous incoming connections
+# Default is 200
+#
+#MAXCONNECTIONS=200
+
+#
+# This is the max simultaneous connections to DB
+# Default is 60
+#
+#DBCONNECTIONS=60
+
+#
+# This is a very special case and should usually not be used
+# This tells the dispatcher to avoid writing on disk, if possible. 
+# Hence if server crashes, it will not be able to recover all informations
+# This is only for performance test purposes
+#
+# Default is false
+#
+#OPTIMIZEDISK=false
+
+#
+# This contains the maximum disk space a job can use
+# This is in megabytes
+# Here 30 kilobytes of megabytes is 30 gigabytes
+# Since 9.1.0
+# Default is 30 Gb
+#
+#MAXDISKSPACE=30720
+
+#
+# This contains the maximum RAM space a job can use
+# This is in kilobytes
+# Here one megabytes of kilobytes is one gigabytes
+# Since 9.1.0
+# Default is 1Gb
+#
+#MAXRAMSPACE=1048576
+
+#
+# optimizeNetwork to try to optimize network traffic
+#
+# Default is true
+#
+#OPTIMIZENETWORK=false
+
+#
+# This contains class names to get time stamps for
+# Note : this uses substrings
+# (*) "SimpleScheduler" matches "SimpleScheduler" only
+#     but "Scheduler" matches "SimpleScheduler", "MatchingScheduler" etc.
+# (*) "CommHandler" matches "CommHandler" only
+#     but "Handler" matches "TCPHandler", "UDPHandler", "CommHandler" etc.
+# (*) "xtremweb" matches all classes
+# (*) etc.
+#
+# Default is "" (turned off)
+#
+#MILESTONES=xtremweb
+
+#
+# Next defines URL where launcher can find XtremWeb binary
+# At startup the server checks validity: its binary and the one pointed by this URL
+# must be the same
+# The server cowardly refuses to start if binaries differ
+# To force server start, comment or remove this variable
+# Default : n/a
+# Since : 8.2.0 
+#LAUNCHERURL=@XWUPGRADEURL@
+
+
+#
+# This is the shceduler class name to use
+# Note that if you want to be able to choose the worker for a job
+# and to broadcast a job to all workers, you must use :
+#       SCHEDULER.CLASS=xtremweb.dispatcher.MatchingScheduler
+#
+# Default is xtremweb.dispatcher.MatchingScheduler
+#
+#SCHEDULERCLASS=xtremweb.dispatcher.MatchingScheduler
+
+##### Logging 
+
+#
+# 15 avril 2008 : we don't use log4j any more since we suspect memory leaks
+# we have developped our own little logger
+# Available logging levels :     
+#  FINEST
+#  DEBUG
+#  CONFIG
+#  INFO
+#  WARN
+#  ERROR
+LOGGERLEVEL=DEBUG
+
+
+#####
+##### End of File
+#####

@@ -1,0 +1,63 @@
+
+#-----#  curl  --data-binary XMLDESC=<xwhep> <data uid="0135803a-213b-11e3-8542-00145edd761d" name="Example of data: xwhep-curl-with-openid-string-upload-download-data.sh"/> </xwhep>  	     https://xwservpub.lal.in2p3.fr:4326/send  #-----#
+<?xml version='1.0' encoding='UTF-8'?><xwhep>
+<XMLVector SIZE="0"
+  ></XMLVector>
+</xwhep>
+
+#-----#  curl  https://xwservpub.lal.in2p3.fr:4326/get/0135803a-213b-11e3-8542-00145edd761d   #-----#
+<?xml version='1.0' encoding='UTF-8'?><xwhep>
+<data uid="0135803a-213b-11e3-8542-00145edd761d"
+  owneruid="6b1741db-3f95-4ad9-afa8-5b0446083f4e"
+  accessrights="0x755"
+  isdeleted="false"
+  name="Example_of_data:_xwhep-curl-with-openid-string-upload-download-data.sh"
+  links="0"
+  insertiondate="2013-09-19 16:51:46"
+  accessdate="2013-09-19 16:51:46"
+  status="UNAVAILABLE"
+  uri="xw://xwservpub.lal.in2p3.fr/0135803a-213b-11e3-8542-00145edd761d"
+  sendtoclient="false"
+  replicated="false"
+  />
+</xwhep>
+
+#-----#  curl -F DATAFILE=@xwhep-curl-with-openid-string-upload-download-data.sh  https://xwservpub.lal.in2p3.fr:4326/uploaddata/0135803a-213b-11e3-8542-00145edd761d?DATASIZE=6347&DATAMD5SUM=45b4015b00b2bfac32746e60ee55a656  #-----#
+<?xml version='1.0' encoding='UTF-8'?><xwhep>
+<XMLVector SIZE="0"
+  ></XMLVector>
+</xwhep>
+
+#-----#  curl  https://xwservpub.lal.in2p3.fr:4326/get/0135803a-213b-11e3-8542-00145edd761d   #-----#
+<?xml version='1.0' encoding='UTF-8'?><xwhep>
+<data uid="0135803a-213b-11e3-8542-00145edd761d"
+  owneruid="6b1741db-3f95-4ad9-afa8-5b0446083f4e"
+  accessrights="0x755"
+  isdeleted="false"
+  name="Example_of_data:_xwhep-curl-with-openid-string-upload-download-data.sh"
+  links="0"
+  insertiondate="2013-09-19 16:51:46"
+  accessdate="2013-09-19 16:51:46"
+  status="AVAILABLE"
+  size="6347"
+  md5="45b4015b00b2bfac32746e60ee55a656"
+  uri="xw://xwservpub.lal.in2p3.fr/0135803a-213b-11e3-8542-00145edd761d"
+  sendtoclient="false"
+  replicated="false"
+  />
+</xwhep>
+
+#-----#  curl  https://xwservpub.lal.in2p3.fr:4326/downloaddata/0135803a-213b-11e3-8542-00145edd761d  |  wc   #-----#
+    146     571    6347
+
+#-----#  curl  https://xwservpub.lal.in2p3.fr:4326/remove/0135803a-213b-11e3-8542-00145edd761d   #-----#
+<?xml version='1.0' encoding='UTF-8'?><xwhep>
+<XMLVector SIZE="0"
+  ></XMLVector>
+</xwhep>
+
+#-----#  curl  https://xwservpub.lal.in2p3.fr:4326/get/0135803a-213b-11e3-8542-00145edd761d   #-----#
+<?xml version='1.0' encoding='UTF-8'?><xwhep>
+<XMLVector SIZE="0"
+  ></XMLVector>
+</xwhep>

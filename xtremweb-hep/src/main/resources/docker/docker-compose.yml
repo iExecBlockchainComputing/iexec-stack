@@ -1,0 +1,135 @@
+version: '3.4'
+
+networks:
+  iexec-net:
+    driver: bridge
+
+volumes:
+  mysql-data:
+    name: iexec-data
+  grafana-data:
+    name: iexec-grafana
+  grafana-logs:
+    name: iexec-grafana-logs
+  grafana-etc:
+    name: iexec-grafana-etc
+
+services:
+  scheduler:
+    image: iexechub/server:${SCHEDULER_DOCKER_IMAGE_VERSION}
+    container_name: iexecscheduler
+    hostname: iexecscheduler
+    ports:
+      - 4321:4321
+      - 4322:4322
+      - 4323:4323
+      - 443:443
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ${CERTIFICATE_AND_PRIVATE_KEYS_REPO}:/iexec/keystore
+      - ${SCHEDULER_PERSISTING_FOLDER}:/var/xwhep
+      - ${SCHEDULERWALLETPATH}:/iexec/wallet/wallet_scheduler.json
+    environment:
+      - DBHOST=${DBHOST}
+      - DBNAME=${MYSQL_DB_NAME}
+      - DBUSER=${MYSQL_USER_LOGIN}
+      - DBPASS=${MYSQL_USER_PASSWORD}
+      - ADMINLOGIN=${ADMINLOGIN}
+      - ADMINPASSWORD=${ADMINPASSWORD}
+      - ADMINUID=${ADMINUID}
+      - WORKERLOGIN=${WORKERLOGIN}
+      - WORKERPASSWORD=${WORKERPASSWORD}
+      - WORKERUID=${WORKERUID}
+      - LOGGERLEVEL=${LOGGERLEVEL}
+      - JWTETHISSUER=${JWTETHISSUER}
+      - JWTETHSECRET=${JWTETHSECRET}
+      - DELEGATEDREGISTRATION=${DELEGATEDREGISTRATION}
+      - MAXFILESIZE=${MAXFILESIZE}
+      - BLOCKCHAINETHENABLED=${BLOCKCHAINETHENABLED}
+      - ETHNODE=${ETHNODE}
+      - RLCCONTRACT=${RLCCONTRACT}
+      - IEXECHUBCONTRACT=${IEXECHUBCONTRACT}
+      - WALLETPASSWORD=${SCHEDULERWALLETPASSWORD}
+      - WORKERPOOLADDRESS=${WORKERPOOLADDRESS}
+      - ALIVEPERIOD=${ALIVEPERIOD}
+    networks:
+      - iexec-net
+    restart: unless-stopped
+
+  worker:
+    image: iexechub/worker:${WORKER_DOCKER_IMAGE_VERSION}
+    container_name: iexecworker
+    environment:
+      - SCHEDULER_IP=scheduler
+      - SCHEDULER_DOMAIN=iexecscheduler
+      - TMPDIR=${RESULTS_FOLDER}
+      - SANDBOXENABLED=${WORKER_SANDBOX_ENABLED}
+      - LOGGERLEVEL=${LOGGERLEVEL}
+      - BLOCKCHAINETHENABLED=${BLOCKCHAINETHENABLED}
+      - WALLETPASSWORD=${WORKERWALLETPASSWORD}
+    ports:
+      - 4321
+      - 4322
+      - 4323
+      - 443
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ${RESULTS_FOLDER}:${RESULTS_FOLDER}
+      - ${WORKERWALLETPATH}:/iexec/wallet/wallet_worker.json
+    networks:
+      - iexec-net
+    restart: unless-stopped
+
+  db:
+    image: mysql:5.7
+    container_name: mysql
+    ports:
+      - 3307:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ADMIN_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DB_NAME}
+      MYSQL_USER: ${MYSQL_USER_LOGIN}
+      MYSQL_PASSWORD: ${MYSQL_USER_PASSWORD}
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - iexec-net
+
+  db-viewer:
+    image: adminer:4.6.2
+    restart: always
+    ports:
+      - 8080:8080
+    networks:
+      - iexec-net
+
+  grafana:
+    image: iexechub/grafana:${GRAFANA_DOCKER_IMAGE_VERSION}
+    container_name: iexecgrafana
+    ports:
+      - "3000:3000"
+    environment:
+      - DBHOST=db
+      - MYSQL_DB_NAME=${MYSQL_DB_NAME}
+      - MYSQL_USER=${MYSQL_ADMIN_USER}
+      - MYSQL_PASSWORD=${MYSQL_ADMIN_PASSWORD}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD}
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - grafana-logs:/var/log/grafana
+      - grafana-etc:/etc/grafana
+    networks:
+      - iexec-net
+    restart: unless-stopped
+
+  order-publisher:
+   image: iexechub/iexec-order-publisher
+   container_name: order-publisher
+   restart: always
+   networks:
+     - iexec-net
+   environment:
+     - DBUSER=${MYSQL_USER_LOGIN}
+     - DBPASS=${MYSQL_USER_PASSWORD}
+     - ADMINLOGIN=${ADMINLOGIN}
+     - ADMINPASSWORD=${ADMINPASSWORD}

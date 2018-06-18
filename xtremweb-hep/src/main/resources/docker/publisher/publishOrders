@@ -1,0 +1,54 @@
+#!/bin/bash
+# 
+# Usage :
+
+echo 'Starting publishing orders if necessary'
+while true
+do 
+	
+	echo 'Waiting 120 sec'
+	sleep 120
+
+    ordersToPublish=$(mysql -h db -u$DBUSER -p$DBPASS iexec -se "SELECT count(*) FROM hosts WHERE lastAlive >= (NOW() - INTERVAL 5 MINUTE) AND marketorderUID IS NULL AND contributionstatus='UNAVAILABLE';")
+
+	if ! [[ $ordersToPublish =~ ^[0-9]+$ ]]; then
+	    echo "mysql request failed"
+		continue
+	fi
+
+	if [ $ordersToPublish -le 0 ]; then
+		echo "No orders to publish"
+		continue
+	fi
+
+	echo "Need to pusblish "$ordersToPublish
+
+	######## TODO - REMOVE - But now needed
+	ordersToPublish=1
+	echo "But pusblish only "$ordersToPublish" - XW bug"
+	########
+
+	for i in $(seq 1 $ordersToPublish)
+	do
+		category=$(shuf -i 3-5 -n 1)
+		price=$(shuf -i 8-16 -n 1)
+		pool='scheduler'
+		echo 'POST /sendmarketorder?pool='$pool'&category='$category'&price='$price
+		curl --request GET --insecure --user $ADMINLOGIN':'$ADMINPASSWORD --url 'https://'$pool':443/sendmarketorder?XMLDESC=<marketorder><direction>ASK</direction><categoryid>'$category'</categoryid><expectedworkers>1</expectedworkers><nbworkers>0</nbworkers><trust>50</trust><price>'$price'</price><volume>1</volume></marketorder>'
+		echo
+		sleep 10
+	done
+    
+done
+
+
+
+
+
+
+
+
+
+
+
+

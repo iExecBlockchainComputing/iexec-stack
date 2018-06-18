@@ -1,0 +1,217 @@
+
+#=====#  usergroup  #=====#
+
+#-----#  curl  --data-binary XMLDESC=<xwhep> <usergroup uid="4bea5dc2-213a-11e3-8542-00145edd761d" name="Example of usergroup"/> </xwhep>                  https://xwservpub.lal.in2p3.fr:4326/send  #-----#
+<?xml version='1.0' encoding='UTF-8'?><xwhep>
+<xmlrpcresult MESSAGE="https://www.google.com/accounts/o8/id?id=AItOawmt7lqipy7f_pd-aVJ3dj4DwV_DpEjMjaQ : not enough rights to INSERTUSERGROUP"
+  RETURNCODE="AUTHORIZATION"
+  TIMESTAMP="1379602001723"
+  ></xmlrpcresult>
+</xwhep>
+
+
+#=====#  user  #=====#
+
+#-----#  curl  --data-binary XMLDESC=<xwhep> <user uid="4bf47af0-213a-11e3-8542-00145edd761d" name="Example of user"/> </xwhep>                  https://xwservpub.lal.in2p3.fr:4326/send  #-----#
+<?xml version='1.0' encoding='UTF-8'?><xwhep>
+<xmlrpcresult MESSAGE="https://www.google.com/accounts/o8/id?id=AItOawmt7lqipy7f_pd-aVJ3dj4DwV_DpEjMjaQ can't add users"
+  RETURNCODE="AUTHORIZATION"
+  TIMESTAMP="1379602001780"
+  ></xmlrpcresult>
+</xwhep>
+
+
+#=====#  group  #=====#
+
+#-----#  curl  --data-binary XMLDESC=<xwhep> <group uid="4bfd06fc-213a-11e3-8542-00145edd761d" name="Example of group"/> </xwhep>                  https://xwservpub.lal.in2p3.fr:4326/send  #-----#
+<?xml version='1.0' encoding='UTF-8'?><xwhep>
+<XMLVector SIZE="0"
+  ></XMLVector>
+</xwhep>
+
+#-----#  curl  https://xwservpub.lal.in2p3.fr:4326/get/4bfd06fc-213a-11e3-8542-00145edd761d   #-----#
+<?xml version='1.0' encoding='UTF-8'?><xwhep>
+<group uid="4bfd06fc-213a-11e3-8542-00145edd761d"
+  owneruid="6b1741db-3f95-4ad9-afa8-5b0446083f4e"
+  accessrights="0x700"
+  isdeleted="false"
+  name="Example_of_group"
+  sessionuid="00000000-0000-0000-0000-000000000000"
+  />
+</xwhep>
+
+#-----#  curl  https://xwservpub.lal.in2p3.fr:4326/remove/4bfd06fc-213a-11e3-8542-00145edd761d   #-----#
+<?xml version='1.0' encoding='UTF-8'?><xwhep>
+<XMLVector SIZE="0"
+  ></XMLVector>
+</xwhep>
+
+#-----#  curl  https://xwservpub.lal.in2p3.fr:4326/get/4bfd06fc-213a-11e3-8542-00145edd761d   #-----#
+<?xml version='1.0' encoding='UTF-8'?><xwhep>
+<XMLVector SIZE="0"
+  ></XMLVector>
+</xwhep>
+
+
+#=====#  app  #=====#
+
+#-----#  curl  --data-binary XMLDESC=<xwhep> <app uid="4e24170e-213a-11e3-8542-00145edd761d" name="Example of app"/> </xwhep>                  https://xwservpub.lal.in2p3.fr:4326/send  #-----#
+<?xml version='1.0' encoding='UTF-8'?><xwhep>
+<XMLVector SIZE="0"
+  ></XMLVector>
+</xwhep>
+
+#-----#  curl  https://xwservpub.lal.in2p3.fr:4326/get/4e24170e-213a-11e3-8542-00145edd761d   #-----#
+<?xml version='1.0' encoding='UTF-8'?><xwhep>
+<app uid="4e24170e-213a-11e3-8542-00145edd761d"
+  owneruid="6b1741db-3f95-4ad9-afa8-5b0446083f4e"
+  accessrights="0x700"
+  isdeleted="false"
+  name="Example_of_app"
+  isservice="false"
+  type="DEPLOYABLE"
+  minmemory="0"
+  mincpuspeed="0"
+  />
+</xwhep>
+
+#-----#  curl  https://xwservpub.lal.in2p3.fr:4326/remove/4e24170e-213a-11e3-8542-00145edd761d   #-----#
+<?xml version='1.0' encoding='UTF-8'?><xwhep>
+<XMLVector SIZE="0"
+  ></XMLVector>
+</xwhep>
+
+#-----#  curl  https://xwservpub.lal.in2p3.fr:4326/get/4e24170e-213a-11e3-8542-00145edd761d   #-----#
+<?xml version='1.0' encoding='UTF-8'?><xwhep>
+<XMLVector SIZE="0"
+  ></XMLVector>
+</xwhep>
+
+
+#=====#  host  #=====#
+
+#-----#  curl  --data-binary XMLDESC=<xwhep> <host uid="4f61ffa0-213a-11e3-8542-00145edd761d" name="Example of host"/> </xwhep>                  https://xwservpub.lal.in2p3.fr:4326/send  #-----#
+<?xml version='1.0' encoding='UTF-8'?><xwhep>
+<xmlrpcresult MESSAGE="Insertion error: bad object type"
+  RETURNCODE="DISK"
+  TIMESTAMP="1379602007528"
+  ></xmlrpcresult>
+</xwhep>
+
+
+#=====#  session  #=====#
+
+#-----#  curl  --data-binary XMLDESC=<xwhep> <session uid="4f6a2888-213a-11e3-8542-00145edd761d" name="Example of session"/> </xwhep>                  https://xwservpub.lal.in2p3.fr:4326/send  #-----#
+<?xml version='1.0' encoding='UTF-8'?><xwhep>
+<XMLVector SIZE="0"
+  ></XMLVector>
+</xwhep>
+
+#-----#  curl  https://xwservpub.lal.in2p3.fr:4326/get/4f6a2888-213a-11e3-8542-00145edd761d   #-----#
+<?xml version='1.0' encoding='UTF-8'?><xwhep>
+<session uid="4f6a2888-213a-11e3-8542-00145edd761d"
+  owneruid="6b1741db-3f95-4ad9-afa8-5b0446083f4e"
+  accessrights="0x700"
+  isdeleted="false"
+  name="Example_of_session"
+  />
+</xwhep>
+
+#-----#  curl  https://xwservpub.lal.in2p3.fr:4326/remove/4f6a2888-213a-11e3-8542-00145edd761d   #-----#
+<?xml version='1.0' encoding='UTF-8'?><xwhep>
+<XMLVector SIZE="0"
+  ></XMLVector>
+</xwhep>
+
+#-----#  curl  https://xwservpub.lal.in2p3.fr:4326/get/4f6a2888-213a-11e3-8542-00145edd761d   #-----#
+<?xml version='1.0' encoding='UTF-8'?><xwhep>
+<XMLVector SIZE="0"
+  ></XMLVector>
+</xwhep>
+
+
+#=====#  groupwork  #=====#
+
+#-----#  curl  --data-binary XMLDESC=<xwhep> <groupwork uid="518d6a26-213a-11e3-8542-00145edd761d" name="Example of groupwork"/> </xwhep>                  https://xwservpub.lal.in2p3.fr:4326/send  #-----#
+<?xml version='1.0' encoding='UTF-8'?><xwhep>
+</xwhep>
+
+#-----#  curl  https://xwservpub.lal.in2p3.fr:4326/get/518d6a26-213a-11e3-8542-00145edd761d   #-----#
+<?xml version='1.0' encoding='UTF-8'?><xwhep>
+<XMLVector SIZE="0"
+  ></XMLVector>
+</xwhep>
+
+
+#=====#  sessionwork  #=====#
+
+#-----#  curl  --data-binary XMLDESC=<xwhep> <sessionwork uid="520a5694-213a-11e3-8542-00145edd761d" name="Example of sessionwork"/> </xwhep>                  https://xwservpub.lal.in2p3.fr:4326/send  #-----#
+<?xml version='1.0' encoding='UTF-8'?><xwhep>
+</xwhep>
+
+#-----#  curl  https://xwservpub.lal.in2p3.fr:4326/get/520a5694-213a-11e3-8542-00145edd761d   #-----#
+<?xml version='1.0' encoding='UTF-8'?><xwhep>
+<XMLVector SIZE="0"
+  ></XMLVector>
+</xwhep>
+
+
+#=====#  work  #=====#
+
+#-----#  curl  --data-binary XMLDESC=<xwhep> <work uid="52830760-213a-11e3-8542-00145edd761d" name="Example of work"/> </xwhep>                  https://xwservpub.lal.in2p3.fr:4326/send  #-----#
+<?xml version='1.0' encoding='UTF-8'?><xwhep>
+<xmlrpcresult MESSAGE="insertWork() : job defines no app ?!?"
+  RETURNCODE="DISK"
+  TIMESTAMP="1379602012774"
+  ></xmlrpcresult>
+</xwhep>
+
+
+#=====#  task  #=====#
+
+#-----#  curl  --data-binary XMLDESC=<xwhep> <task uid="528a97c8-213a-11e3-8542-00145edd761d" name="Example of task"/> </xwhep>                  https://xwservpub.lal.in2p3.fr:4326/send  #-----#
+<?xml version='1.0' encoding='UTF-8'?><xwhep>
+<xmlrpcresult MESSAGE="Insertion error: bad object type"
+  RETURNCODE="DISK"
+  TIMESTAMP="1379602012823"
+  ></xmlrpcresult>
+</xwhep>
+
+
+#=====#  data  #=====#
+
+#-----#  curl  --data-binary XMLDESC=<xwhep> <data uid="52920b5c-213a-11e3-8542-00145edd761d" name="Example of data"/> </xwhep>                  https://xwservpub.lal.in2p3.fr:4326/send  #-----#
+<?xml version='1.0' encoding='UTF-8'?><xwhep>
+<XMLVector SIZE="0"
+  ></XMLVector>
+</xwhep>
+
+#-----#  curl  https://xwservpub.lal.in2p3.fr:4326/get/52920b5c-213a-11e3-8542-00145edd761d   #-----#
+<?xml version='1.0' encoding='UTF-8'?><xwhep>
+<data uid="52920b5c-213a-11e3-8542-00145edd761d"
+  owneruid="6b1741db-3f95-4ad9-afa8-5b0446083f4e"
+  accessrights="0x755"
+  isdeleted="false"
+  name="Example_of_data"
+  links="0"
+  insertiondate="2013-09-19 16:46:52"
+  accessdate="2013-09-19 16:46:52"
+  status="UNAVAILABLE"
+  uri="xw://xwservpub.lal.in2p3.fr/52920b5c-213a-11e3-8542-00145edd761d"
+  sendtoclient="false"
+  replicated="false"
+  />
+</xwhep>
+
+#-----#  curl  https://xwservpub.lal.in2p3.fr:4326/remove/52920b5c-213a-11e3-8542-00145edd761d   #-----#
+<?xml version='1.0' encoding='UTF-8'?><xwhep>
+<XMLVector SIZE="0"
+  ></XMLVector>
+</xwhep>
+
+#-----#  curl  https://xwservpub.lal.in2p3.fr:4326/get/52920b5c-213a-11e3-8542-00145edd761d   #-----#
+<?xml version='1.0' encoding='UTF-8'?><xwhep>
+<XMLVector SIZE="0"
+  ></XMLVector>
+</xwhep>
+

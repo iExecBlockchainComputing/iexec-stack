@@ -1,0 +1,384 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.3'
+    }
+}
+
+def UNIQUE_ID = 'hostname -f'.execute().text.trim()
+def tokencommon = 'curl -XPOST --data name=${UNIQUE_ID} https://cc02acaa7954c9d63333b18e6d5decead7d457ac3cfddeeb:@packagecloud.io/install/repositories/iexec/common/tokens.text'.execute().text.trim()
+def tokenscheduler = 'curl -XPOST --data name=${UNIQUE_ID} https://6f087db4a17b65a64d456e474a6b4b16b59a52d59690b70d:@packagecloud.io/install/repositories/iexec/scheduler/tokens.text'.execute().text.trim()
+def tokenworker = 'curl -XPOST --data name=${UNIQUE_ID} https://77715138d032c32e0d60769e5ae002b18837aa67da59f966:@packagecloud.io/install/repositories/iexec/worker/tokens.text'.execute().text.trim()
+
+apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: 'java-library'
+
+repositories {
+    mavenCentral()
+    maven {
+        url "https://packagecloud.io/priv/${tokencommon}/iexec/common/maven2"
+    }
+    maven {
+        url "https://packagecloud.io/priv/${tokenscheduler}/iexec/scheduler/maven2"
+    }
+    maven {
+        url "https://packagecloud.io/priv/${tokenworker}/iexec/worker/maven2"
+    }
+}
+
+dependencies {
+    compile "org.bouncycastle:bcprov-jdk15on:1.51"
+    compile "org.bouncycastle:bcpkix-jdk15on:1.51"
+    compile "org.eclipse.jetty:jetty-maven-plugin:9.3.8.v20160314"
+    compile "com.auth0:java-jwt:3.2.0"
+    compile "com.github.scribejava:scribejava-apis:3.3.0"
+    compile "commons-fileupload:commons-fileupload:1.2"
+    compile "commons-httpclient:commons-httpclient:3.0.1"
+    compile "org.expressme:JOpenId:1.08"
+    compile "javax.mail:mail:1.4.7"
+    compile "bouncycastle:bcprov-jdk16:140"
+    compile "antlr:antlr:2.7.2"// ? https://mvnrepository.com/artifact/antlr/antlr
+    compile "org.json:json:20160810" // ? https://mvnrepository.com/artifact/org.json/json
+    compile "org.web3j:core:3.2.0"
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.9.2'
+    compile group: 'org.apache.directory.studio', name: 'org.apache.commons.io', version: '2.4'
+
+    compile "org.apache.httpcomponents:httpclient:4.4"
+    compile "org.apache.httpcomponents:httpcore:4.4"
+
+    compile 'ch.qos.logback:logback-classic:1.0.13'
+
+    //compile files('../iexec-scheduler/build/libs/iexec-scheduler-0.1.0-SNAPSHOT.jar')
+    compile "com.iexec.scheduler:iexec-scheduler:0.1.0-SNAPSHOT"
+    compile "com.iexec.worker:iexec-worker:0.1.0-SNAPSHOT"
+
+
+    api 'org.apache.commons:commons-math3:3.6.1'
+
+    implementation 'com.google.guava:guava:23.0'
+
+    testImplementation "junit:junit:4.12"
+    testImplementation "org.assertj:assertj-core:3.8.0"
+
+    // external files
+    compile files('libXtremWeb/smartsockets-1.4.jar')
+}
+
+
+import org.apache.tools.ant.filters.ReplaceTokens
+
+import java.time.Instant
+
+ant.importBuild 'jni.xml'
+processResources.dependsOn jni
+
+task createVersion(type: Copy) {
+    // delete old one
+    delete 'src/main/java/xtremweb/common/CommonVersion.java'
+    // use and copy template to the new location
+    from 'src/main/java/xtremweb/common/CommonVersion.java.in'
+    into 'src/main/java/xtremweb/common'
+
+    // remove the '.in' extension
+    rename { String fileName ->
+        fileName.replace('.in', '')
+    }
+
+    // replace tokens in the template file
+    filter(ReplaceTokens, tokens: [BUILD_TIME: Instant.now().toString(),
+                                   XWVERSION : "${version}".toString()
+    ])
+}
+
+createVersion.dependsOn clean
+
+// the createVersion task should be called before compileJava
+compileJava.dependsOn createVersion
+
+jar {
+    exclude("doc/**")
+    manifest {
+
+        def manifest = attributes(
+                'Name': 'xtremweb-hep',
+                'Specification-Title': 'XtremWeb-HEP',
+                'Specification-Version': version,
+                'Implementation-Title': 'xtremweb-hep',
+                'Implementation-Version': version,
+                'Main-Class': 'xtremweb.dispatcher.Dispatcher xtremweb.common.HTTPLauncher xtremweb.client.Client'
+        )
+        manifest
+    }
+}
+
+shadowJar {
+    baseName = project.name
+    classifier = null
+    version = version
+}
+
+build.dependsOn(shadowJar)
+
+apply from: 'common.gradle'
+apply from: 'mac.gradle'
+apply from: 'windows.gradle'
+apply from: 'linuxDPKG.gradle'
+
+task copyMiscToDist(type: Copy) {
+    into dist
+
+    into("/doc") {
+        from doc
+        include('*.png')
+        include('xtremweb.html')
+    }
+
+    into("/docker") {
+        from docker
+        rename('.env.template', '.env')
+        filter(ReplaceTokens, tokens: getCustomProperties())
+    }
+
+    into("/resources") {
+        from project.res
+        include('log4j.xml')
+    }
+
+    into("/lib") {
+        from(libXtremWeb)
+        include('*.jar')
+
+    }
+
+    into("/benchmark/apptest") {
+        from(benchmark + '/apptest')
+    }
+
+    into(".") {
+        from root
+        include('AUTHORS')
+        include('ChangeLog')
+        include('COPYING')
+        include('INSTALL')
+        include('License**')
+    }
+
+    into("/wallet") {
+        from wallet
+    }
+
+    into("/lib") {
+        from(build + '/libs')
+        include('xtremweb-' + version + '.jar')
+        rename('xtremweb-' + version + '.jar', 'xtremweb.jar')
+    }
+
+    into("/conf") {
+        from(project.res + '/conf')
+    }
+
+    into("/platforms") {
+        from(project.res + '/platforms')
+    }
+}
+
+task mkdirKeystore(type: Exec) {
+    commandLine("sh", "-c",
+            "mkdir -p " + dist + "/keystore"
+    )
+}
+
+task copyScripts(type: Copy) {
+    from(scripts)
+    into(distBin)
+    exclude('*.template')
+    rename('xwsetversion.sql.in', 'xwsetversion.sql')
+    filter(ReplaceTokens, tokens: getCustomProperties())
+}
+
+task copyKeystoreGenerationScripts(type: Copy) {
+
+    into(dist + "/bin")
+
+    into(".") {
+        from(scripts)
+        include('xwhepgenkeys.template')
+        rename { fileName -> fileName.replace('.template', '') }
+
+        filter(ReplaceTokens, tokens: getCustomProperties())
+    }
+}
+
+task cleanKeystoreDir(type: Delete) {
+    delete fileTree(dir: dist + "/keystore")
+}
+
+task copyExistingKeyPair(type: Copy) {
+    into dist
+
+    into("/keystore") {
+        from root + "/keystore"
+        include("*.pem")
+        include("*.key")
+    }
+}
+
+task copyCacert(type: Copy) {
+    into dist
+
+    into("/keystore") {
+        from templates + "/cacerts.dev"
+        rename { fileName -> fileName.replace('.dev', '') }
+    }
+}
+
+task generateKeys(type: Exec) {
+    dependsOn(copyKeystoreGenerationScripts, copyCacert, copyExistingKeyPair)
+    commandLine("sh", "-c",
+            distBin + '/xwhepgenkeys' + " && " +
+                    "if [ \$? -eq 0 ] ; then echo \"Keystores generated\" ; else echo \"ERROR: keystores generation error\"; exit 1 ; fi"
+    )
+}
+
+task chmodBin(type: Exec) {
+    dependsOn(copyMiscToDist, copyScripts, copyKeystoreGenerationScripts, mkdirKeystore)
+    commandLine("sh", "-c",
+            "chmod -R 755 " + distBin + " && " +
+                    "find " + distBin + " -iname *.sql* -exec chmod -x {} +" + " && " +
+                    "find " + distBin + " -iname *.seds -exec chmod -x {} +" + " && " +
+                    "find " + distBin + " -iname *.bat -exec chmod -x {} +" + " && " +
+                    "find " + distBin + " -iname *.xmls -exec chmod -x {} +"
+    )
+}
+
+task copySQLCreateTables(type: Copy) {
+    from templates + "/xwhep-core-tables-create-tables.sql.in"
+    into(dist + "/bin/db-maintenance/")
+    rename { fileName -> fileName.replace('.in', '') }
+    filter(ReplaceTokens, tokens: getCustomProperties())
+}
+
+task copyConfFiles(type: Copy) {
+    into dist
+
+    // copy values to use in the conf
+    into("/conf") {
+        from conf + "/xwconfigure.values"
+    }
+
+    // copy server conf
+    into("/conf") {
+        from templates + "/xtremweb.server.conf.in"
+        rename { fileName -> fileName.replace('.in', '') }
+
+        from templates + '/xtremweb.worker.conf.in'
+        rename { fileName -> fileName.replace('.in', '') }
+
+        from templates + '/xtremweb.vworker.conf.in'
+        rename { fileName -> fileName.replace('.in', '') }
+
+        from(templates + '/xtremweb.client.conf.in')
+        rename { fileName -> fileName.replace('.in', '') }
+
+        filter(ReplaceTokens, tokens: getCustomProperties())
+    }
+}
+
+task copyLinuxInstallers(type: Copy) {
+    from linuxInstallers
+    into dist + '/installers/linux'
+    filter(ReplaceTokens, tokens: getCustomProperties())
+}
+
+
+def gitBranch = 'git name-rev --name-only HEAD'.execute().text.trim()
+def isMasterBranch = true//gitBranch == "remotes/origin/master"
+def canBuildDockerImages = isMasterBranch || project.getProperty("environment").toString().toLowerCase().equals("docker")
+def canPushDockerImages = isMasterBranch
+
+task copyWorkerLaunchScript(type: Copy) {
+    into dist
+
+    into("/docker") {
+        from templates + "/startWorkerInDocker.sh.template"
+        rename('.sh.template', '.sh')
+        filter(ReplaceTokens, tokens: getCustomProperties())
+    }
+}
+
+task buildAll {
+    dependsOn(chmodBin, copyWindowsInstaller, copyMacInstaller, copyLinuxInstallers, copySQLCreateTables, copyConfFiles,
+            generateKeys, copyWorkerLaunchScript)
+}
+
+buildAll.dependsOn getTasksByName('build', true)
+
+project.ext.getServerDockerImageName = {
+    return "iexechub/server:" + getDockerImageVersion()
+}
+
+project.ext.getWorkerDockerImageName = {
+    return "iexechub/worker:" + getDockerImageVersion()
+}
+
+project.ext.getClientDockerImageName = {
+    return "iexechub/client:" + getDockerImageVersion()
+}
+
+task buildServerDockerImage(type: Exec) {
+    description 'Build a docker image for the server'
+    commandLine("sh", "-c", "docker image build -f " + dist + "/docker/server/Dockerfile -t " + getServerDockerImageName() + " " + dist)
+}
+buildServerDockerImage.enabled = canBuildDockerImages
+
+task copyConfigDockerClient(type: Copy) {
+    into dist
+
+    into("/docker") {
+        from templates + "/xtremweb.client.conf.in"
+        rename('.conf.in', '.conf')
+
+        def anonymousProps = getCustomProperties()
+        anonymousProps.remove("XWADMINLOGIN")
+        anonymousProps.remove("XWADMINPASSWORD")
+        filter(ReplaceTokens, tokens: anonymousProps)
+    }
+}
+
+task buildClientDockerImage(type: Exec) {
+    dependsOn copyConfigDockerClient
+    description 'Build a docker image for the client'
+    commandLine("sh", "-c", "docker image build -f " + dist + "/docker/client/Dockerfile -t " + getClientDockerImageName() + " " + dist)
+}
+buildClientDockerImage.enabled = canBuildDockerImages
+
+task buildWorkerDockerImage(type: Exec) {
+    description 'Build a docker image for the worker'
+    commandLine("sh", "-c", "docker image build -f " + dist + "/docker/worker/Dockerfile -t " + getWorkerDockerImageName() + " " + dist)
+}
+buildWorkerDockerImage.enabled = canBuildDockerImages
+
+task buildImages() {
+    dependsOn(buildWorkerDockerImage, buildClientDockerImage, buildServerDockerImage)
+}
+
+buildImages.enabled = canBuildDockerImages
+
+task pushImages(type: Exec) {
+    dependsOn(buildImages)
+
+    if (project.hasProperty("dockerHubUser") && project.hasProperty("dockerHubPassword")) {
+        commandLine("sh", "-c", "docker login -u " + project.dockerHubUser + " -p " + project.dockerHubPassword + " && " +
+                "docker push " + getServerDockerImageName() + " && " +
+                "docker push " + getClientDockerImageName() + " && " +
+                "docker push " + getWorkerDockerImageName() + " && " +
+                "docker logout")
+    } else {
+        println "Credentials for DockerHub are missing, the images cannot be pushed"
+    }
+}
+pushImages.enabled = canPushDockerImages
