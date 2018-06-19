@@ -5973,7 +5973,7 @@ public final class DBInterface {
 		}
 		return null;
 	}
-/*
+
     protected synchronized  void hostContribution(EthereumWallet workerWalletAddr) throws IOException {
         if (workerWalletAddr == null) {
             logger.info("hostContribution() : no wallet");
@@ -5988,7 +5988,6 @@ public final class DBInterface {
 
         hostContribution(theHost);
 	}
-*/
 
     /**
      * This inserts the host associated to the provided wallet to a market order, if applicable
