@@ -300,6 +300,7 @@ public final class MarketOrderInterface extends Table {
 		setArrivalDate();
 		setAccessRights(XWAccessRights.USERALL);
         setVolume(1L);
+        setNbWorkers(0);
         setRemaining(getVolume());
         setStatus(StatusEnum.WAITING);
         setTrust(0L);
@@ -855,6 +856,13 @@ public final class MarketOrderInterface extends Table {
         return setNbWorkers(getNbWorkers() + 1);
     }
     /**
+     * This decrements the amount of booked workers to reach the trust
+     * @return true if value has changed, false otherwise
+     */
+    public boolean decNbWorkers()  {
+        return setNbWorkers(getNbWorkers() - 1);
+    }
+    /**
      * This marks the provided host as participating in this market order
      * and increments the amount of booked workers to reach the trust
      * @param host is the participating host
@@ -891,15 +899,8 @@ public final class MarketOrderInterface extends Table {
         return getExpectedWorkers() <= getNbWorkers()
                 && getMarketOrderIdx() <= 0;
     }
-    /**
-     * This decrements the amount of booked workers to reach the trust
-     * @return true if value has changed, false otherwise
-     */
-    public boolean decNbWorkers()  {
-        return setNbWorkers(getNbWorkers() - 1);
-    }
 	/**
-	 * This sets the trust value and expectedWortkers as well; this set nbworkers to 0.
+	 * This sets the trust value and expectedWortkers as well
 	 * @param t is the trust
      * @return true if value has changed, false otherwise
      * @see Columns#TRUST
@@ -911,7 +912,6 @@ public final class MarketOrderInterface extends Table {
         if (trust == 0) workers = 1;
         if (trust == 100) workers = 5;
 
-		setNbWorkers(0);
 		setExpectedWorkers(workers);
 
         return setValue(Columns.TRUST, trust);

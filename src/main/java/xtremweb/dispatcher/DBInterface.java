@@ -214,7 +214,6 @@ public final class DBInterface {
 	public DBInterface(final XWConfigurator c) throws IOException {
 		logger = new Logger(this);
 		mileStone = new MileStone(this.getClass());
-
 		config = c;
 		dbConnPool = new DBConnPoolThread(config);
 		dbConnPool.start();
@@ -5974,7 +5973,7 @@ public final class DBInterface {
 		}
 		return null;
 	}
-
+/*
     protected synchronized  void hostContribution(EthereumWallet workerWalletAddr) throws IOException {
         if (workerWalletAddr == null) {
             logger.info("hostContribution() : no wallet");
@@ -5989,13 +5988,16 @@ public final class DBInterface {
 
         hostContribution(theHost);
 	}
+*/
+
     /**
      * This inserts the host associated to the provided wallet to a market order, if applicable
      * @param theHost
      * @throws IOException
      * @since 13.1.0
      */
-	protected synchronized HostInterface hostContribution(final HostInterface theHost) throws IOException {
+	protected HostInterface hostContribution(final HostInterface theHost) throws IOException {
+
         if (theHost == null) {
             logger.info("hostContribution() : host is null");
             return null;
@@ -6020,19 +6022,20 @@ public final class DBInterface {
         }
         logger.debug("hostContribution(" + workerWalletAddr + ") : " + theHost.toXml());
         final MarketOrderInterface marketOrder = marketOrderUnsatisfied(theHost.getWorkerPoolAddr());
-        if(marketOrder == null) {
+        if (marketOrder == null) {
             logger.info("hostContribution(" + workerWalletAddr + ") : no unsatisfied market order");
             return theHost;
         }
 
         logger.debug("hostContribution(" + workerWalletAddr + ") : " + marketOrder.toXml());
 
-        if(marketOrder.getWorkerPoolAddr().compareTo(theHost.getWorkerPoolAddr()) != 0) {
+        if (marketOrder.getWorkerPoolAddr().compareTo(theHost.getWorkerPoolAddr()) != 0) {
             logger.error("hostContribution(" + workerWalletAddr + ") : worker pool mismatch : "
                     + marketOrder.getWorkerPoolAddr() + " != "
                     + theHost.getWorkerPoolAddr());
             return theHost;
         }
+
         final Collection<HostInterface> hosts = hosts(workerWalletAddr, marketOrder);
         logger.debug("hostContribution(" + workerWalletAddr + ") : duplicated wallet " + (hosts == null ? 0 : hosts.size()));
 
@@ -6052,8 +6055,8 @@ public final class DBInterface {
             marketOrder.update(false);
             theHost.update(false);
 
-            final List<WorkInterface> worksList= (List)marketOrderWorks(marketOrder) ;
-            if((worksList !=  null) && worksList.size() > 0){
+            final List<WorkInterface> worksList = (List) marketOrderWorks(marketOrder);
+            if ((worksList != null) && worksList.size() > 0) {
                 SchedulerPocoWatcherImpl.allowWorkerToContribute(worksList.get(0).getWorkOrderId(),
                         marketOrder,
                         new EthereumWallet(theHost.getEthWalletAddr()),
@@ -6064,12 +6067,12 @@ public final class DBInterface {
         }
 
 
-        if(marketOrder.canBeCreated()) {
+        if (marketOrder.canBeCreated()) {
             final ActuatorService actuatorService = ActuatorService.getInstance();
             marketOrder.decRemaining();
-			marketOrder.update(false);
+            marketOrder.update(false);
 
-			final BigInteger marketOrderIdx = actuatorService.createMarketOrder(BigInteger.valueOf(marketOrder.getCategoryId()),
+            final BigInteger marketOrderIdx = actuatorService.createMarketOrder(BigInteger.valueOf(marketOrder.getCategoryId()),
                     BigInteger.valueOf(marketOrder.getTrust()),
                     BigInteger.valueOf(marketOrder.getPrice()),
                     BigInteger.valueOf(marketOrder.getVolume()));
