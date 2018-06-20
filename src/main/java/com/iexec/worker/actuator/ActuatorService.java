@@ -53,10 +53,21 @@ public class ActuatorService implements Actuator {
     @Override
     public TransactionStatus subscribeToPool() {
         try {
+            String oldWorkerPool = getWorkerAffectation();
+            String newWorkerPool = WorkerPoolService.getInstance().getWorkerPool().getContractAddress();
+
+            if (oldWorkerPool != null && oldWorkerPool.equals(newWorkerPool)) {
+                log.info("No need to SubscribeToPool, already registered to pool [workerPool:{}]", newWorkerPool);
+                return TransactionStatus.SUCCESS;
+            } else if (oldWorkerPool != null && !oldWorkerPool.equals(newWorkerPool)) {
+                log.info("Need to UnsubscribeFromPool before SubscribeToPool [oldWorkerPool:{}, newWorkerPool:{}]", oldWorkerPool, newWorkerPool);
+                if (unsubscribeFromPool().equals(TransactionStatus.FAILURE)) {
+                    return TransactionStatus.FAILURE;
+                }
+            }
             TransactionReceipt subscribeToPoolReceipt = workerPoolService.getWorkerPool().subscribeToPool().send();
             List<IexecHub.WorkerPoolSubscriptionEventResponse> workerPoolSubscriptionEvents = iexecHubService.getIexecHub().getWorkerPoolSubscriptionEvents(subscribeToPoolReceipt);
-            log.info("SubscribeToPool [transactionHash:{}, transactionStatus:{}] ", subscribeToPoolReceipt.getTransactionHash(), getTransactionStatusFromEvents(workerPoolSubscriptionEvents));
-
+            log.info("SubscribeToPool [workerPool:{}, transactionHash:{}, transactionStatus:{}] ", newWorkerPool, subscribeToPoolReceipt.getTransactionHash(), getTransactionStatusFromEvents(workerPoolSubscriptionEvents));
             return getTransactionStatusFromEvents(workerPoolSubscriptionEvents);//return full event ? workerPoolSubscriptionEvents.get(0);
         } catch (Exception e) {
             e.printStackTrace();
@@ -67,20 +78,35 @@ public class ActuatorService implements Actuator {
     @Override
     public TransactionStatus unsubscribeFromPool() {
         try {
-            String workerPoolHubAddress = IexecHubService.getInstance().getIexecHub().workerPoolHub().send();
-            WorkerPoolHub workerPoolHub = WorkerPoolHub.load(
-                    workerPoolHubAddress, web3jService.getWeb3j(), credentialsService.getCredentials(), configuration.getNodeConfig().getGasPrice(), configuration.getNodeConfig().getGasLimit());
-            String workerAffectation = workerPoolHub.getWorkerAffectation(credentialsService.getCredentials().getAddress()).send();
-            WorkerPool workerPool = WorkerPool.load(
-                    workerAffectation, web3jService.getWeb3j(), credentialsService.getCredentials(), configuration.getNodeConfig().getGasPrice(), configuration.getNodeConfig().getGasLimit());
-            TransactionReceipt unsubscribeFromPoolReceipt = workerPool.unsubscribeFromPool().send();
-            List<WorkerPool.WorkerUnsubscribeEventResponse> workerUnsubscribeEvents = workerPool.getWorkerUnsubscribeEvents(unsubscribeFromPoolReceipt);
-            log.info("UnsubscribeFromPool [transactionHash:{}, transactionStatus:{}] ", unsubscribeFromPoolReceipt.getTransactionHash(), getTransactionStatusFromEvents(workerUnsubscribeEvents));
-            return getTransactionStatusFromEvents(workerUnsubscribeEvents);
+            String oldWorkerPool = getWorkerAffectation();
+            String newWorkerPool = WorkerPoolService.getInstance().getWorkerPool().getContractAddress();
+
+            if (oldWorkerPool != null && !oldWorkerPool.equals(newWorkerPool)) {
+                WorkerPool workerPool = WorkerPool.load(
+                        oldWorkerPool, web3jService.getWeb3j(), credentialsService.getCredentials(), configuration.getNodeConfig().getGasPrice(), configuration.getNodeConfig().getGasLimit());
+                TransactionReceipt unsubscribeFromPoolReceipt = workerPool.unsubscribeFromPool().send();
+                List<WorkerPool.WorkerUnsubscribeEventResponse> workerUnsubscribeEvents = workerPool.getWorkerUnsubscribeEvents(unsubscribeFromPoolReceipt);
+                log.info("UnsubscribeFromPool [workerPool:{}, transactionHash:{}, transactionStatus:{}] ", oldWorkerPool, unsubscribeFromPoolReceipt.getTransactionHash(), getTransactionStatusFromEvents(workerUnsubscribeEvents));
+                return getTransactionStatusFromEvents(workerUnsubscribeEvents);
+            } else {
+                log.info("No need to UnsubscribeFromPool");
+                return TransactionStatus.SUCCESS;
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
         return TransactionStatus.FAILURE;
+    }
+
+    private String getWorkerAffectation() throws Exception {
+        String workerPoolHubAddress = IexecHubService.getInstance().getIexecHub().workerPoolHub().send();
+        WorkerPoolHub workerPoolHub = WorkerPoolHub.load(
+                workerPoolHubAddress, web3jService.getWeb3j(), credentialsService.getCredentials(), configuration.getNodeConfig().getGasPrice(), configuration.getNodeConfig().getGasLimit());
+        String workerAffectation = workerPoolHub.getWorkerAffectation(credentialsService.getCredentials().getAddress()).send();
+        if (workerAffectation.equals("0x0000000000000000000000000000000000000000")) {
+            workerAffectation = null;
+        }
+        return workerAffectation;
     }
 
     @Override
