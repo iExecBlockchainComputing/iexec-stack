@@ -142,6 +142,7 @@ public class HashTaskSet extends TaskSet {
 						final MarketOrderInterface marketOrder = DBInterface.getInstance().marketOrder(theHost.getMarketOrderUid());
                         theHost.leaveMarketOrder(marketOrder);
 						theHost.update();
+						marketOrder.update();
 					}
 				}
 				final UID ownerUID = theWork.getOwner();
