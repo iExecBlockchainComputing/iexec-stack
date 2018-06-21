@@ -22,8 +22,8 @@ public class WorkerPocoWatcherImpl implements WorkerPoolWatcher, IexecHubWatcher
     private static final Logger log = LoggerFactory.getLogger(WorkerPocoWatcherImpl.class);
 
     public WorkerPocoWatcherImpl() {
-        iexecHubService.registerIexecHubWatcher(this);
-        workerPoolService.registerWorkerPoolWatcher(this);
+        //iexecHubService.registerIexecHubWatcher(this);
+        //workerPoolService.registerWorkerPoolWatcher(this);
 
         actuatorService.depositRlc();
 

@@ -283,7 +283,7 @@ public final class XWConfigurator extends Properties {
 				if (workerPoolConfig != null) {
 					_host.setWorkerPoolAddr(workerPoolConfig.getAddress());
 				}
-				//WorkerPocoWatcherImpl workerPocoWatcher = new WorkerPocoWatcherImpl();
+				WorkerPocoWatcherImpl workerPocoWatcher = new WorkerPocoWatcherImpl();
 			}
 
             logger.info("getBlockchainEthConfig() : configuration retrieved");

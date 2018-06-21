@@ -405,11 +405,18 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
         //        DatasetModel datasetModel = ModelService.getInstance().getDatasetModel(workOrderModel.getDataset());
     }
 
+    /**
+     * This allows one worker to contribute
+     * @param workOrderId
+     * @param marketOrder
+     * @param wallet
+     * @param worker
+     */
     public static synchronized void allowWorkerToContribute(final String workOrderId,
                                                             final MarketOrderInterface marketOrder,
                                                             final EthereumWallet wallet,
                                                             final HostInterface worker)
-            throws IOException {
+            throws IOException{
 
 /**
  * ```BigInteger contributionStatus = WorkerPoolService.getInstance().getWorkerContributionModelByWorkOrderId(workOrderId, worker).getStatus();
@@ -434,11 +441,19 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
         allowWorkersToContribute(workOrderId, marketOrder, wallets, workers);
     }
 
+    /**
+     * This allows a list of workers to contribute
+     * @param workOrderId
+     * @param marketOrder
+     * @param wallets
+     * @param workers
+     */
     public static synchronized void allowWorkersToContribute(final String workOrderId,
                                                              final MarketOrderInterface marketOrder,
                                                              final ArrayList<String> wallets,
                                                              final Collection<HostInterface> workers)
-            throws IOException {
+            throws IOException{
+
         if (actuatorService.allowWorkersToContribute(workOrderId,
                 wallets,
                 "0") == TransactionStatus.FAILURE) {
