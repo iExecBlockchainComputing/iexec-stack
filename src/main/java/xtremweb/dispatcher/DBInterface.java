@@ -5476,7 +5476,7 @@ public final class DBInterface {
 					? receivedJob.getExpectedReplications() - receivedJob.getReplicaSetSize()
 					: 0L;
 
-            final Stack<HostInterface> workers = new Stack<HostInterface>();
+			final Stack<HostInterface> workers =  new Stack<HostInterface>();
             workers.addAll(DBInterface.getInstance().hosts(marketOrder));
             if(receivedJob.getExpectedReplications() != workers.size()) {
                 logger.error("market order error: " + receivedJob.getExpectedReplications() + "!=" + workers.size());
@@ -6071,14 +6071,39 @@ public final class DBInterface {
             marketOrder.decRemaining();
             marketOrder.update(false);
 
-            final BigInteger marketOrderIdx = actuatorService.createMarketOrder(BigInteger.valueOf(marketOrder.getCategoryId()),
-                    BigInteger.valueOf(marketOrder.getTrust()),
-                    BigInteger.valueOf(marketOrder.getPrice()),
-                    BigInteger.valueOf(marketOrder.getVolume()));
-            theHost.setAvailable();
-            marketOrder.setMarketOrderIdx(marketOrderIdx.longValue());
-            logger.debug("hostContribution(" + workerWalletAddr + ") : marketorder started " + marketOrderIdx);
-        } else {
+            BigInteger marketOrderIdx = null;
+            for(int createTry = 0; createTry < 3 && marketOrderIdx == null; createTry++) {
+
+                logger.debug("hostContribution(" + workerWalletAddr + ") : trying to create marketorder " + createTry);
+                marketOrderIdx = actuatorService.createMarketOrder(BigInteger.valueOf(marketOrder.getCategoryId()),
+                        BigInteger.valueOf(marketOrder.getTrust()),
+                        BigInteger.valueOf(marketOrder.getPrice()),
+                        BigInteger.valueOf(marketOrder.getVolume()));
+                if (marketOrderIdx == null) {
+                    try {
+                        logger.debug("createMarketOrder; will retry in 10s");
+                        Thread.sleep(10000);
+                    } catch (final InterruptedException e) {
+                    }
+                }
+            }
+            if (marketOrderIdx != null) {
+                theHost.setAvailable();
+                marketOrder.setMarketOrderIdx(marketOrderIdx.longValue());
+                logger.debug("hostContribution(" + workerWalletAddr + ") : marketorder created " + marketOrderIdx);
+            } else {
+                logger.error("hostContribution(" + workerWalletAddr + ") : cant create marketorder " + marketOrder.getUID());
+                marketOrder.setErrorMsg("cant create marketorder");
+                marketOrder.setError();
+                theHost.leaveMarketOrder(marketOrder);
+                final List<HostInterface> workers = (List) hosts(marketOrder);
+                for (HostInterface w : workers) {
+                    w.leaveMarketOrder(marketOrder);
+                    w.update();
+                }
+            }
+        }
+        else {
             logger.debug("hostContribution(" + workerWalletAddr + ") : marketorder still waiting");
             marketOrder.setWaiting();
         }
