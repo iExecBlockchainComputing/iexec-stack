@@ -146,7 +146,6 @@ public class MatchingScheduler extends SimpleScheduler {
 					if(marketOrderModel != null) {
 						theTask.setPrice(marketOrderModel.getValue().longValue());
 					} else {
-					    marketOrder.setStatus(StatusEnum.ERROR);
 					    theWork.setError("can't find market order model from idx " + marketOrder.getMarketOrderIdx());
 					    theTask.setError();
 					    theApp.decRunningJobs();
@@ -166,6 +165,7 @@ public class MatchingScheduler extends SimpleScheduler {
 
                 marketOrder.update();
                 theHost.update();
+				theWork.update();
 				theTask.update();
 				theApp.update();
 				theWorkOwner.update();

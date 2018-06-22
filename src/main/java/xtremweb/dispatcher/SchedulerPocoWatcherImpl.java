@@ -454,9 +454,26 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
                                                              final Collection<HostInterface> workers)
             throws IOException{
 
-        if (actuatorService.allowWorkersToContribute(workOrderId,
-                wallets,
-                "0") == TransactionStatus.FAILURE) {
+        TransactionStatus txStatus = null;
+
+        for(int createTry = 0; createTry < 3 && txStatus == null; createTry++) {
+
+            txStatus = actuatorService.allowWorkersToContribute(workOrderId, wallets, "0");
+
+            if ((txStatus == null) || (txStatus == TransactionStatus.FAILURE)) {
+                try {
+                    System.out.println("allowWorkersToContribute; will retry in 10s " + txStatus);
+                    txStatus = null;
+                    Thread.sleep(10000);
+                } catch (final InterruptedException e) {
+                }
+            }
+            else {
+                break;
+            }
+        }
+
+        if (txStatus == TransactionStatus.FAILURE) {
             for (final HostInterface worker : workers) {
                 marketOrder.removeWorker(worker);
                 worker.update();
@@ -570,7 +587,7 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
     }
 
     @Override
-    public void onReveal(WorkerPool.RevealEventResponse revealEventResponse) {
+    public synchronized void onReveal(WorkerPool.RevealEventResponse revealEventResponse) {
         final WorkOrderModel workOrderModel = ModelService.getInstance().getWorkOrderModel(revealEventResponse.woid);
         final MarketOrderInterface marketOrder = getMarketOrder(workOrderModel.getMarketorderIdx().longValue());
         final Collection<WorkInterface> works = getMarketOrderWorks(workOrderModel.getMarketorderIdx().longValue());
@@ -583,9 +600,8 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
 
         int MAX_TRY = 30;
         for(final WorkInterface work : works ) {
-            logger.debug ("onReveal(): work: " + work);
+            logger.debug ("onReveal(): work: " + work.toXml());
             try {
-                final TaskInterface theWorkTask = DBInterface.getInstance().task(work);
                 innerloop:
                 for(int count = 0; count < MAX_TRY; count++){
                     if (result == null){
@@ -599,10 +615,10 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
                     }
                 }
 
-
+                final TaskInterface theWorkTask = DBInterface.getInstance().task(work);
                 final HostInterface theHost = DBInterface.getInstance().host(theWorkTask.getHost());
                 if(theHost == null) {
-                    logger.error ("can't the host for the work " + work.getUID());
+                    logger.error ("can't find the host for the work " + work.getUID());
                     continue;
                 }
 
@@ -621,10 +637,27 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
             logger.exception(e);
         }
 
-        if(actuatorService.finalizeWork(revealEventResponse.woid,
-                "",
-                "",
-                result == null ? "" : result.toString()) == TransactionStatus.FAILURE) {
+        TransactionStatus txStatus = null;
+        for(int createTry = 0; createTry < 3 && txStatus == null; createTry++) {
+
+            txStatus = actuatorService.finalizeWork(revealEventResponse.woid,
+                    "",
+                    "",
+                    result == null ? "" : result.toString());
+
+            if ((txStatus == null) || (txStatus == TransactionStatus.FAILURE)) {
+                try {
+                    logger.error("finalizeWork; will retry in 10s " + txStatus);
+                    txStatus = null;
+                    Thread.sleep(10000);
+                } catch (final InterruptedException e) {
+                }
+            }
+            else {
+                break;
+            }
+        }
+        if(txStatus == TransactionStatus.FAILURE) {
 
             marketOrder.setErrorMsg("transaction error : finalizeWork");
             marketOrder.setError();

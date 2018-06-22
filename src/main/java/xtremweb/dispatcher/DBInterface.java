@@ -4404,7 +4404,7 @@ public final class DBInterface {
         final Collection<HostInterface> workers = DBInterface.getInstance().hosts(marketOrder);
         if(workers != null) {
 	        for(final HostInterface worker : workers ) {
-				logger.error("removeMarketOrder(); worker.leaveMarketOrder() : " + worker.getUID());
+				logger.info("removeMarketOrder(); worker.leaveMarketOrder() : " + worker.getUID());
 				worker.leaveMarketOrder();
 			}
         }
@@ -4946,7 +4946,6 @@ public final class DBInterface {
 			logger.warn(e.getMessage());
 		}
 
-		final Vector<Table> updateRows = new Vector<>();
 		final Vector<TaskInterface> theTasks = (Vector<TaskInterface>) tasks(theWork);
 
 		if (theTasks != null) {
@@ -4961,18 +4960,18 @@ public final class DBInterface {
                 final MarketOrderInterface marketOrder = marketOrder(theHost.getMarketOrderUid());
 				if (delete(theClient, theTask)) {
 					if (theHost != null) {
+                        theHost.leaveMarketOrder(marketOrder);
 						switch (theWork.getStatus()) {
                             case CONTRIBUTING:
                             case CONTRIBUTED:
                             case REVEALING:
-                                theHost.leaveMarketOrder(marketOrder);
     						case RESULTREQUEST:
                             case DATAREQUEST:
 		    				case RUNNING:
 			    				theHost.decRunningJobs();
-				    			updateRows.add(theHost);
 				    			break;
 						}
+                        theHost.update();
 					}
 				}
 			}
@@ -5004,8 +5003,6 @@ public final class DBInterface {
 				theApp.decRunningJobs();
 			}
 			if (theExpectedHost != null) {
-                final MarketOrderInterface marketOrder = marketOrder(theExpectedHost.getMarketOrderUid());
-                theExpectedHost.leaveMarketOrder(marketOrder);
 				theExpectedHost.decRunningJobs();
 			}
 			break;
@@ -5014,11 +5011,13 @@ public final class DBInterface {
 		deleteJobs(theClient, replicasUID(theClient, theWork.getUID()));
 
 		delete(theClient, theWork);
-
-		updateRows.add(theExpectedHost);
-		updateRows.add(theClient);
-		updateRows.add(theApp);
-		update(updateRows);
+        if(theExpectedHost != null) {
+            final MarketOrderInterface marketOrder = marketOrder(theExpectedHost.getMarketOrderUid());
+            theExpectedHost.leaveMarketOrder(marketOrder);
+            theExpectedHost.update();
+        }
+		theClient.update();
+		theApp.update();
 
 		return true;
 	}
@@ -5450,6 +5449,7 @@ public final class DBInterface {
             theWork.update();
             theApp.update();
             jobOwner.update();
+            marketOrder.update();
             if (theHost != null) {
                 theHost.update();
             }
@@ -5476,7 +5476,7 @@ public final class DBInterface {
 					? receivedJob.getExpectedReplications() - receivedJob.getReplicaSetSize()
 					: 0L;
 
-			final Stack<HostInterface> workers =  new Stack<HostInterface>();
+			final Stack<HostInterface> workers = new Stack<HostInterface>();
             workers.addAll(DBInterface.getInstance().hosts(marketOrder));
             if(receivedJob.getExpectedReplications() != workers.size()) {
                 logger.error("market order error: " + receivedJob.getExpectedReplications() + "!=" + workers.size());
@@ -5537,7 +5537,7 @@ public final class DBInterface {
      * This is replaces the blockchain event watcher automatically called on worker contribution.
      * The scheduler must ask to reveal to all workers as soon as the consensus us reached
      */
-    public void checkContribution(final WorkInterface theWork, MarketOrderInterface marketOrder) {
+    public synchronized void checkContribution(final WorkInterface theWork, MarketOrderInterface marketOrder) {
         try {
             if (theWork == null)
                 return;
@@ -5606,9 +5606,23 @@ public final class DBInterface {
                     logger.exception(e);
                 }
 
-				TransactionStatus status = ActuatorService.getInstance().revealConsensus(theWork.getWorkOrderId(), Utils.hashResult(theWork.getH2h2r()));
-				logger.debug("checkContribution() : transaction status: " + status);
-                if (status == TransactionStatus.FAILURE) {
+				TransactionStatus txStatus = null;
+                for(int createTry = 0; createTry < 3 && txStatus == null; createTry++) {
+                    txStatus = ActuatorService.getInstance().revealConsensus(theWork.getWorkOrderId(), Utils.hashResult(theWork.getH2h2r()));
+                    if ((txStatus == null) || (txStatus == TransactionStatus.FAILURE)) {
+                        try {
+                            logger.debug("revealConsensus; will retry in 10s " + txStatus);
+                            txStatus = null;
+                            Thread.sleep(10000);
+                        } catch (final InterruptedException e) {
+                        }
+                    } else {
+                        break;
+                    }
+                }
+
+				logger.debug("checkContribution() : revealConsensus status: " + txStatus );
+                if ((txStatus == null) || (txStatus == TransactionStatus.FAILURE)) {
                     marketOrder.setErrorMsg("transaction error : revealConsensus");
                     marketOrder.setError();
                     try {
