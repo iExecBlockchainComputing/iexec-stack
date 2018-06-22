@@ -599,6 +599,9 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
         URI result = null;
 
         int MAX_TRY = 30;
+
+        boolean doFinalize = true;
+
         for(final WorkInterface work : works ) {
             logger.debug ("onReveal(): work: " + work.toXml());
             try {
@@ -615,10 +618,27 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
                     }
                 }
 
+                if(work.getStatus() != StatusEnum.COMPLETED) {
+                    doFinalize = false;
+                }
+
+            } catch (final IOException | InterruptedException e) {
+                logger.exception(e);
+            }
+        }
+
+        if (!doFinalize) {
+            logger.info("not finalizing " + marketOrder.getMarketOrderIdx() + " : missing contribution");
+            return;
+        }
+
+        for(final WorkInterface work : works ) {
+            try {
                 final TaskInterface theWorkTask = DBInterface.getInstance().task(work);
                 final HostInterface theHost = DBInterface.getInstance().host(theWorkTask.getHost());
+
                 if(theHost == null) {
-                    logger.error ("can't find the host for the work " + work.getUID());
+                    logger.error("can't find the host for the work " + work.getUID());
                     continue;
                 }
 
@@ -626,12 +646,13 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
                 logger.debug("onReval " + theHost.toXml());
                 theHost.update();
 
-            } catch (final IOException | InterruptedException e) {
+            } catch (final IOException e) {
                 logger.exception(e);
             }
         }
-        marketOrder.setCompleted();
+
         try {
+            marketOrder.setCompleted();
             marketOrder.update();
         } catch(final IOException e) {
             logger.exception(e);
@@ -659,7 +680,7 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
         }
         if(txStatus == TransactionStatus.FAILURE) {
 
-            marketOrder.setErrorMsg("transaction error : finalizeWork");
+            marketOrder.setErrorMsg("transaction error:finalizeWork");
             marketOrder.setError();
             try {
                 marketOrder.update();
