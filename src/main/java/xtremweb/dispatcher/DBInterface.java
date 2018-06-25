@@ -1251,21 +1251,50 @@ public final class DBInterface {
 		return marketOrdersUID(u, (String) null);
 	}
 
-	/**
-	 * This retrieves a market order from DB for the requesting user according to
-	 * criteria
-	 *
-	 * @param u
-	 *            is the requesting user
-	 * @return a Collection of UID
-	 * @since 13.1.0
-	 */
-	protected Collection<UID> marketOrdersUID(final UserInterface u, final String criterias) throws IOException {
-		final MarketOrderInterface row = readableMarketOrderUID(u);
-		return selectUID(row, criterias);
-	}
-
-	/**
+    /**
+     * This retrieves a market order from DB for the requesting user according to
+     * criteria
+     *
+     * @param u
+     *            is the requesting user
+     * @return a Collection of UID
+     * @since 13.1.0
+     */
+    protected Collection<UID> marketOrdersUID(final UserInterface u, final String criterias) throws IOException {
+        final MarketOrderInterface row = readableMarketOrderUID(u);
+        return selectUID(row, criterias);
+    }
+    /**
+     * This retrieves market order UIDs from DB for the requesting user according to
+     * criteria
+     *
+     * @return a Collection of UID
+     * @since 13.1.0
+     */
+    protected Collection<UID> marketOrdersUID() throws IOException {
+        final MarketOrderInterface row = new MarketOrderInterface();
+        return selectUID(row, null);
+    }
+    /**
+     * This retrieves market orders from DB, which status is REVEALING
+     *
+     * @return a Collection of UID
+     * @since 13.1.0
+     */
+    protected Collection<MarketOrderInterface> revealingMarketOrders() throws IOException {
+        final MarketOrderInterface row = new MarketOrderInterface();
+        return selectAll(row,
+                MarketOrderInterface .Columns.STATUS + "='" + StatusEnum.REVEALING + "'");
+    }
+/*
+*     protected Collection<HostInterface> hosts(final MarketOrderInterface marketOrder) throws IOException {
+        if(marketOrder == null)
+            return null;
+        return selectAll(new HostInterface(), HostInterface.Columns.MARKETORDERUID + "='"
+                + marketOrder.getUID() + "'");
+    }
+*/
+    /**
 	 * This retrieves the number of market order
 	 *
 	 * @param u
