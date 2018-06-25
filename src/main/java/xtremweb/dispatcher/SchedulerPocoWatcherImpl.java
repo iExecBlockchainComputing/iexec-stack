@@ -36,7 +36,6 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
 
     private UserInterface administrator = null;
 
-
     public SchedulerPocoWatcherImpl() {
         logger = new Logger(this);
         logger.info(IexecConfigurationService.getInstance().getCommonConfiguration().getContractConfig().getWorkerPoolConfig().getAddress());
@@ -587,11 +586,11 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
     }
 
     @Override
-    public synchronized void onReveal(WorkerPool.RevealEventResponse revealEventResponse) {
+    public synchronized void onReveal(final WorkerPool.RevealEventResponse revealEventResponse) {
         final WorkOrderModel workOrderModel = ModelService.getInstance().getWorkOrderModel(revealEventResponse.woid);
         final MarketOrderInterface marketOrder = getMarketOrder(workOrderModel.getMarketorderIdx().longValue());
         final Collection<WorkInterface> works = getMarketOrderWorks(workOrderModel.getMarketorderIdx().longValue());
-        if(works == null) {
+        if (works == null) {
             logger.error("can't find any work fot work order " + revealEventResponse.woid);
             return;
         }
@@ -602,23 +601,23 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
 
         boolean doFinalize = true;
 
-        for(final WorkInterface work : works ) {
-            logger.debug ("onReveal(): work: " + work.toXml());
+        for (final WorkInterface work : works) {
+            logger.debug("onReveal(): work: " + work.toXml());
             try {
                 innerloop:
-                for(int count = 0; count < MAX_TRY; count++){
-                    if (result == null){
+                for (int count = 0; count < MAX_TRY; count++) {
+                    if (result == null) {
                         WorkInterface workval = DBInterface.getInstance().work(work.getUID());
-                        logger.debug ("onReveal(): loop: " + count);
+                        logger.debug("onReveal(): loop: " + count);
                         TimeUnit.SECONDS.sleep(2);
                         result = workval.getResult();
                     } else {
-                        logger.debug ("onReveal(): result: " + result);
+                        logger.debug("onReveal(): result: " + result);
                         break innerloop;
                     }
                 }
 
-                if(work.getStatus() != StatusEnum.COMPLETED) {
+                if (work.getStatus() != StatusEnum.COMPLETED) {
                     doFinalize = false;
                 }
 
@@ -631,6 +630,16 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
             logger.info("not finalizing " + marketOrder.getMarketOrderIdx() + " : missing contribution");
             return;
         }
+        else {
+            doFinalize(revealEventResponse.woid, result, marketOrder, works, logger);
+        }
+    }
+
+    protected static void doFinalize(final String woid,
+                                     final URI result,
+                                     final MarketOrderInterface marketOrder,
+                                     final Collection<WorkInterface> works,
+                                     final Logger logger) {
 
         for(final WorkInterface work : works ) {
             try {
@@ -661,7 +670,7 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
         TransactionStatus txStatus = null;
         for(int createTry = 0; createTry < 3 && txStatus == null; createTry++) {
 
-            txStatus = actuatorService.finalizeWork(revealEventResponse.woid,
+            txStatus = actuatorService.finalizeWork(woid,
                     "",
                     "",
                     result == null ? "" : result.toString());

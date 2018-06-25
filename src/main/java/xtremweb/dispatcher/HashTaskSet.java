@@ -23,12 +23,14 @@
 
 package xtremweb.dispatcher;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Vector;
 
 import xtremweb.common.*;
+import xtremweb.communications.URI;
 
 /**
  * HashTaskSet.java
@@ -176,7 +178,12 @@ public class HashTaskSet extends TaskSet {
 	 * @since 8.2.0
 	 */
 	private enum abortedStatus {
-		RUNNING(StatusEnum.RUNNING), DATAREQUEST(StatusEnum.DATAREQUEST), RESULTREQUEST(StatusEnum.RESULTREQUEST);
+		RUNNING(StatusEnum.RUNNING),
+        DATAREQUEST(StatusEnum.DATAREQUEST),
+        REVEALING(StatusEnum.REVEALING),
+        CONTRIBUTING(StatusEnum.CONTRIBUTING),
+        CONTRIBUTED(StatusEnum.CONTRIBUTED),
+        RESULTREQUEST(StatusEnum.RESULTREQUEST);
 
 		private final StatusEnum status;
 
@@ -216,6 +223,57 @@ public class HashTaskSet extends TaskSet {
 				getLogger().exception(e);
 			}
 		}
+
+        getLogger().debug("detectAbortedTasks : checking market orders");
+		try {
+            final Collection<MarketOrderInterface> mos = db.revealingMarketOrders();
+            if ((mos == null) || (mos.size() == 0)) {
+                getLogger().debug("detectAbortedTasks : no market orders ");
+                return;
+            }
+
+            getLogger().debug("detectAbortedTasks : checking market orders " + mos.size());
+
+            URI result = null;
+            String woid = null;
+
+            for (final MarketOrderInterface mo : mos) {
+                getLogger().debug("detectAbortedTasks " + mo.toXml());
+
+                final Collection<WorkInterface> works = db.marketOrderWorks(mo);
+                getLogger().debug("detectAbortedTasks market orders has " + works.size());
+
+                boolean doComplete = works.size() > 0;
+
+                for (WorkInterface work : works) {
+
+                    getLogger().debug("detectAbortedTasks " + work.toXml());
+
+                    if (work.getStatus() == StatusEnum.ERROR) {
+                        //reopen?
+                    }
+
+                    if (work.getStatus() != StatusEnum.COMPLETED) {
+                        doComplete = false;
+                    } else {
+                        woid = work.getWorkOrderId();
+                        result = work.getResult();
+                    }
+                }
+
+                if (doComplete) {
+                    try {
+                        SchedulerPocoWatcherImpl.doFinalize(woid, result, mo, works, getLogger());
+                    } catch(Exception e) {
+                        getLogger().exception(e);
+                    }
+                }
+            }
+
+        }
+        catch (Exception e) {
+		    getLogger().exception(e);
+        }
 	}
 
 	/**
