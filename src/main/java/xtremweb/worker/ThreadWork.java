@@ -1457,9 +1457,6 @@ public class ThreadWork extends Thread {
 		}
 
         currentWork.setReturnCode(processReturnCode);
-//        if(killed){
-//            currentWork.clean();
-//        }
 
 		logger.debug("end of executeNativeJob() " + workUID);
 	}
