@@ -288,8 +288,7 @@ public final class XWConfigurator extends Properties {
 
             logger.info("getBlockchainEthConfig() : configuration retrieved");
 		} catch (final Throwable e) {
-            _host.setWorkerPoolAddr(null);
-			logger.exception("Can't get iExec config from " + schedulerApiUrl + XWTools.IEXECETHCONFPATH, e);
+			logger.fatal("Can't get iExec config from " + schedulerApiUrl + XWTools.IEXECETHCONFPATH + " : " + e);
 		}
 
 
