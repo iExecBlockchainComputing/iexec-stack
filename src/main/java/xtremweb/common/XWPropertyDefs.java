@@ -119,6 +119,13 @@ public enum XWPropertyDefs {
 	 */
 	BLOCKCHAINETHENABLED,
 	/**
+	 * Worker : send a false contribution to blockchain; this is for testing only
+	 * Property type : boolean
+	 *
+	 * @since 13.1.0
+	 */
+	FAKECONTRIBUTE,
+	/**
 	 * Server, Worker : do we connect to Ethereum blockchain ?
 	 * <p>
 	 * Property type : boolean
