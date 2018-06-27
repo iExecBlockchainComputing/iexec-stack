@@ -701,18 +701,19 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 		boolean keepWorking = false;
 		final UID jobUID = ((XMLRPCCommandWorkAliveByUID) command).getURI().getUID();
 
-		mileStone(command, "<workAlive host=" + (_host != null ? _host.getName() : "null") + ">");
+		mileStone(command, "<workAlivebyuid host='" + (_host != null ? _host.getName() : "null")
+				+ "' uid='" + jobUID + "'>");
 		final UserInterface theClient = DBInterface.getInstance().checkClient(command, UserRightEnum.GETJOB);
 
 		_host.setIPAddr(command.getRemoteIP());
 		final HostInterface theHost = DBInterface.getInstance().hostRegister(theClient, _host);
 
 		if (theHost == null) {
-			throw new IOException("workAlive : can't find host ");
+			throw new IOException("workAlivebyuid : can't find host ");
 		}
 		final boolean isActive = _host.isActive();
 
-		logger.debug("retrieving current computing job");
+		logger.debug("workAlivebyuid : retrieving current computing job " + jobUID);
 		// theHost = DBInterface.getInstance().host(_host.getUID());
 		final WorkInterface theWork = DBInterface.getInstance().work(theClient, jobUID);
 		final TaskInterface theTask = DBInterface.getInstance().task(theWork, theHost);
@@ -736,11 +737,11 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 		}
 
 		if (!keepWorking) {
-			warn(command, "workAlive(" + _host.getName() + "," + jobUID + ") stopping!");
+			warn(command, "workAlivebyuid(" + _host.getName() + "," + jobUID + ") stopping!");
 		}
 		final Hashtable result = new Hashtable();
 		result.put("keepWorking", new Boolean(keepWorking));
-		mileStone(command, "</workAlive>");
+		mileStone(command, "<keepworking>" + keepWorking + "</keepworking></workAlivebyuid>");
 		return result;
 
 	}
