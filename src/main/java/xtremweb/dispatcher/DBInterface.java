@@ -6038,7 +6038,7 @@ public final class DBInterface {
      * @throws IOException
      * @since 13.1.0
      */
-	protected HostInterface hostContribution(final HostInterface theHost) throws IOException {
+	protected synchronized HostInterface hostContribution(final HostInterface theHost) throws IOException {
 
         if (theHost == null) {
             logger.info("hostContribution() : host is null");

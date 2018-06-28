@@ -369,8 +369,8 @@ public class ThreadAlive extends Thread {
                                 }
                             }
                             try {
-                                logger.debug("reveal failure ; sleeping 30s " + tries);
-                                Thread.sleep(30000);
+                                logger.debug("reveal failure ; sleeping 1s " + tries);
+                                Thread.sleep(1000);
                             } catch (final Exception e) {
                             }
                         }

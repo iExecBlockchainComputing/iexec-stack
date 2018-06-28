@@ -118,6 +118,8 @@ public class HashTaskSet extends TaskSet {
 					.parseInt(Dispatcher.getConfig().getProperty(XWPropertyDefs.ALIVETIMEOUT.toString()));
 			aliveTimeOut *= 1000;
 
+			System.out.println("detectAbortedTask : " + theTask.toXml());
+
 			if (theTask.isUnderProcess() && (delay > aliveTimeOut)) {
 
 				final WorkInterface theWork = db.work(theTask.getWork());
@@ -130,6 +132,7 @@ public class HashTaskSet extends TaskSet {
 				theWork.lost(XWTools.getLocalHostName());
 				theWork.setErrorMsg("rescheduled : worker lost");
 				theTask.setError();
+                theTask.setErrorMsg("worker lost");
 				if(theWork.getMarketOrderUid() != null) {
 					theWork.setExpectedHost(null);
 				}
@@ -163,6 +166,8 @@ public class HashTaskSet extends TaskSet {
 						theApp.update();
 					}
 				}
+
+				System.out.println("detectAbortedTask aborted :     " + theTask.toXml());
 
 				theWork.update();
 				theTask.update();

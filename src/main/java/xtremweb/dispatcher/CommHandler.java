@@ -722,6 +722,7 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 			if (!isActive) {
 				theWork.unlockWork();
 				theTask.setError();
+				theTask.setErrorMsg("host is inactive");
 				keepWorking = false;
 			} else {
 				try {
@@ -833,18 +834,18 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 						if (workUID == null) {
 							continue;
 						}
-						final WorkInterface w = DBInterface.getInstance().work(theClient, workUID);
-						if (w == null) {
+						final WorkInterface theWork = DBInterface.getInstance().work(theClient, workUID);
+						if (theWork == null) {
 							// we don't know that job, remove result on worker
 							// side
 							// (maybe it has been removed by user)
 							debug(command, "workAlive (" + _host.getName() + ") : worker must stop " + workUID);
 							finishedTasks.add(workUID);
 						} else {
-							final URI resultURI = w.getResult();
-							final StatusEnum workStatus = w.getStatus();
+							final URI resultURI = theWork.getResult();
+							final StatusEnum workStatus = theWork.getStatus();
 
-							debug(command, "workAlive job = " + w.toXml());
+							debug(command, "workAlive job = " + theWork.toXml());
 							if ((resultURI != null) && (resultURI.isXtremWeb())) {
 								final UID resultUID = resultURI.getUID();
 								final DataInterface workResult = DBInterface.getInstance().data(resultUID);
@@ -860,6 +861,29 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 							}
 
 							switch (workStatus) {
+							case CONTRIBUTED:
+							case CONTRIBUTING:
+								final TaskInterface theTask = DBInterface.getInstance().task(theWork, theHost);
+
+								if (theTask == null) {
+									break;
+								}
+
+								if (!isActive) {
+									theWork.unlockWork();
+									theTask.setError();
+									theTask.setErrorMsg("host is inactive");
+								}
+
+								try {
+								    final StatusEnum status = theTask.getStatus();
+									theTask.setAlive(_host.getUID());
+									theTask.setStatus(status);
+									theTask.update();
+								} catch (final Exception e) {
+									error(command, e);
+								}
+								break;
 							case ERROR:
 							case COMPLETED:
 								debug(command, "workAlive (" + _host.getName() + ") : worker can delete " + resultURI);
