@@ -4989,7 +4989,7 @@ public final class DBInterface {
                 final MarketOrderInterface marketOrder = marketOrder(theHost.getMarketOrderUid());
 				if (delete(theClient, theTask)) {
 					if (theHost != null) {
-                        theHost.leaveMarketOrder(marketOrder);
+//                        theHost.leaveMarketOrder(marketOrder);
 						switch (theWork.getStatus()) {
                             case CONTRIBUTING:
                             case CONTRIBUTED:
@@ -5040,12 +5040,14 @@ public final class DBInterface {
 		deleteJobs(theClient, replicasUID(theClient, theWork.getUID()));
 
 		delete(theClient, theWork);
+/*
         if(theExpectedHost != null) {
             final MarketOrderInterface marketOrder = marketOrder(theExpectedHost.getMarketOrderUid());
             theExpectedHost.leaveMarketOrder(marketOrder);
             theExpectedHost.update();
         }
-		theClient.update();
+*/
+        theClient.update();
 		theApp.update();
 
 		return true;
@@ -5636,7 +5638,8 @@ public final class DBInterface {
                 }
 
 				TransactionStatus txStatus = null;
-                for(int createTry = 0; createTry < 3 && txStatus == null; createTry++) {
+                int revealTry;
+                for(revealTry = 0; revealTry < 3 && txStatus == null; revealTry++) {
                     txStatus = ActuatorService.getInstance().revealConsensus(theWork.getWorkOrderId(), Utils.hashResult(theWork.getH2h2r()));
                     if ((txStatus == null) || (txStatus == TransactionStatus.FAILURE)) {
                         try {
@@ -5651,7 +5654,7 @@ public final class DBInterface {
                 }
 
 				logger.debug("checkContribution() : revealConsensus status: " + txStatus );
-                if ((txStatus == null) || (txStatus == TransactionStatus.FAILURE)) {
+                if (revealTry >= 3) {
                     marketOrder.setErrorMsg("transaction error : revealConsensus");
                     marketOrder.setError();
                     try {
@@ -6108,6 +6111,24 @@ public final class DBInterface {
             logger.debug("hostContribution(" + workerWalletAddr + ") : don't want to contribute");
         }
 
+		final Collection<HostInterface> workersInOrder = DBInterface.getInstance().hosts(marketOrder);
+		final long workersInOrderSize = workersInOrder != null ? workersInOrder.size() : -1 ;
+
+		if(workersInOrderSize <= marketOrder.getNbWorkers()) {
+            logger.warn("hostContribution() resizing : marketOrder.getNbWorkers() = "
+                    + marketOrder.getNbWorkers() + "; workers.size = " + workersInOrderSize);
+            marketOrder.setNbWorkers(workersInOrderSize);
+        } else {
+		    final long diff =  workersInOrderSize - marketOrder.getNbWorkers();
+		    long counterWorker = 0;
+		    for(HostInterface worker : workersInOrder) {
+                worker.leaveMarketOrder(marketOrder);
+                counterWorker++;
+                if(counterWorker >= diff) {
+                    break;
+                }
+            }
+        }
 
         if (marketOrder.canBeCreated()) {
             final ActuatorService actuatorService = ActuatorService.getInstance();

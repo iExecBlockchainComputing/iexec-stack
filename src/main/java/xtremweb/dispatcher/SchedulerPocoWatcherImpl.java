@@ -454,8 +454,8 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
             throws IOException{
 
         TransactionStatus txStatus = null;
-
-        for(int createTry = 0; createTry < 3 && txStatus == null; createTry++) {
+        int contributeTry;
+        for(contributeTry = 0; contributeTry < 3 && txStatus == null; contributeTry++) {
 
             txStatus = actuatorService.allowWorkersToContribute(workOrderId, wallets, "0");
 
@@ -472,7 +472,7 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
             }
         }
 
-        if (txStatus == TransactionStatus.FAILURE) {
+        if (contributeTry >= 3) {
             for (final HostInterface worker : workers) {
                 marketOrder.removeWorker(worker);
                 worker.update();
@@ -668,7 +668,8 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
         }
 
         TransactionStatus txStatus = null;
-        for(int createTry = 0; createTry < 3 && txStatus == null; createTry++) {
+        int finalizeTry = 0;
+        for(finalizeTry = 0; finalizeTry < 3 && txStatus == null; finalizeTry++) {
 
             txStatus = actuatorService.finalizeWork(woid,
                     "",
@@ -687,7 +688,7 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
                 break;
             }
         }
-        if(txStatus == TransactionStatus.FAILURE) {
+        if(finalizeTry >= 3) {
 
             marketOrder.setErrorMsg("transaction error:finalizeWork");
             marketOrder.setError();
