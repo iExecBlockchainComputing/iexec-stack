@@ -635,7 +635,7 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
         }
     }
 
-    protected static void doFinalize(final String woid,
+    protected static synchronized void doFinalize(final String woid,
                                      final URI result,
                                      final MarketOrderInterface marketOrder,
                                      final Collection<WorkInterface> works,
@@ -653,7 +653,7 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
 
                 marketOrder.removeWorker(theHost);
                 logger.debug("onReval " + theHost.toXml());
-                theHost.update();
+                theHost.update(false);
 
             } catch (final IOException e) {
                 logger.exception(e);
@@ -662,7 +662,7 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
 
         try {
             marketOrder.setCompleted();
-            marketOrder.update();
+            marketOrder.update(false);
         } catch(final IOException e) {
             logger.exception(e);
         }
@@ -693,7 +693,7 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
             marketOrder.setErrorMsg("transaction error:finalizeWork");
             marketOrder.setError();
             try {
-                marketOrder.update();
+                marketOrder.update(false);
             } catch(final IOException e) {
                 logger.exception(e);
             }
