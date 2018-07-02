@@ -401,7 +401,7 @@ public abstract class Table extends Type {
 	 * @see #update(boolean)
 	 */
 	public void update() throws IOException {
-		update(true);
+		update(false);
 	}
 
 	/**
