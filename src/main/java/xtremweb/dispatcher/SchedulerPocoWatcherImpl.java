@@ -454,8 +454,8 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
             throws IOException{
 
         TransactionStatus txStatus = null;
-
-        for(int createTry = 0; createTry < 3 && txStatus == null; createTry++) {
+        int contributeTry;
+        for(contributeTry = 0; contributeTry < 3 && txStatus == null; contributeTry++) {
 
             txStatus = actuatorService.allowWorkersToContribute(workOrderId, wallets, "0");
 
@@ -472,7 +472,7 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
             }
         }
 
-        if (txStatus == TransactionStatus.FAILURE) {
+        if (contributeTry >= 3) {
             for (final HostInterface worker : workers) {
                 marketOrder.removeWorker(worker);
                 worker.update();
@@ -635,7 +635,7 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
         }
     }
 
-    protected static void doFinalize(final String woid,
+    protected static synchronized void doFinalize(final String woid,
                                      final URI result,
                                      final MarketOrderInterface marketOrder,
                                      final Collection<WorkInterface> works,
@@ -653,7 +653,7 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
 
                 marketOrder.removeWorker(theHost);
                 logger.debug("onReval " + theHost.toXml());
-                theHost.update();
+                theHost.update(false);
 
             } catch (final IOException e) {
                 logger.exception(e);
@@ -662,7 +662,7 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
 
         try {
             marketOrder.setCompleted();
-            marketOrder.update();
+            marketOrder.update(false);
         } catch(final IOException e) {
             logger.exception(e);
         }
@@ -694,10 +694,6 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
                 break;
             }
         }
-
-
-
-
 
     }
 

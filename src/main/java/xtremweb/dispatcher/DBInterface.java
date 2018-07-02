@@ -1184,22 +1184,67 @@ public final class DBInterface {
         return selectOne(row, conditions);
     }
     /**
-     * This retrieves a market order lacking computing resources, bypassing access rights
-	 * @param workerPoolAddr is the address of the worker pool
+     * This retrieves a market order without computing resource, bypassing access rights
+     * @param workerPoolAddr is the address of the worker pool
      * @since 13.1.0
+     * @see #marketOrderUnsatisfied(String)
      */
-    protected MarketOrderInterface marketOrderUnsatisfied(final String workerPoolAddr) throws IOException {
+    protected MarketOrderInterface marketOrderHavingNoResource(final String workerPoolAddr) throws IOException {
 
         if(workerPoolAddr == null) {
             return null;
         }
 
-        return selectOne(new MarketOrderInterface(),
-                SQLRequest.MAINTABLEALIAS + "." + MarketOrderInterface .Columns.NBWORKERS + "<"
+        return marketOrderUnsatisfied(SQLRequest.MAINTABLEALIAS + "." + MarketOrderInterface .Columns.NBWORKERS + "<"
                         + MarketOrderInterface .Columns.EXPECTEDWORKERS
-						+ " AND " + MarketOrderInterface .Columns.WORKERPOOLADDR + "='" + workerPoolAddr + "'"
-						+ " AND " + MarketOrderInterface .Columns.STATUS + "!='" + StatusEnum.ERROR + "'"
-						+ " AND " + MarketOrderInterface .Columns.STATUS + "!='" + StatusEnum.COMPLETED + "'");
+                        + " AND " + MarketOrderInterface .Columns.NBWORKERS + "=0"
+                        + " AND " + MarketOrderInterface .Columns.WORKERPOOLADDR + "='" + workerPoolAddr + "'"
+                        + " AND " + MarketOrderInterface .Columns.STATUS + "!='" + StatusEnum.ERROR + "'"
+                        + " AND " + MarketOrderInterface .Columns.STATUS + "!='" + StatusEnum.COMPLETED + "'");
+    }
+    /**
+     * This retrieves a market order already having but lacking computing resources, bypassing access rights
+     * @param workerPoolAddr is the address of the worker pool
+     * @since 13.1.0
+     * @see #marketOrderUnsatisfied(String)
+     */
+    protected MarketOrderInterface marketOrderLackingResources(final String workerPoolAddr) throws IOException {
+
+        if(workerPoolAddr == null) {
+            return null;
+        }
+
+        return marketOrderUnsatisfied(SQLRequest.MAINTABLEALIAS + "." + MarketOrderInterface .Columns.NBWORKERS + "<"
+                        + MarketOrderInterface .Columns.EXPECTEDWORKERS
+                        + " AND " + MarketOrderInterface .Columns.NBWORKERS + ">0"
+                        + " AND " + MarketOrderInterface .Columns.WORKERPOOLADDR + "='" + workerPoolAddr + "'"
+                        + " AND " + MarketOrderInterface .Columns.STATUS + "!='" + StatusEnum.ERROR + "'"
+                        + " AND " + MarketOrderInterface .Columns.STATUS + "!='" + StatusEnum.COMPLETED + "'");
+    }
+    /**
+     * This retrieves a market order from DB according to request, bypassing access rights
+     * @param request is the SQL request
+     * @since 13.1.0
+     */
+    protected MarketOrderInterface marketOrderUnsatisfied(final String request) throws IOException {
+        return selectOne(new MarketOrderInterface(), request);
+    }
+    /**
+     * This retrieves a market order starving computing resources, bypassing access rights
+     * This permits to avoid dead lock in computing resource reservation.
+     * @param workerPoolAddr is the address of the worker pool
+     * @since 13.1.0
+     * @see #marketOrderLackingResources(String)
+     * @see #marketOrderHavingNoResource(String)
+     */
+    protected MarketOrderInterface marketOrderStarvingResources(final String workerPoolAddr) throws IOException {
+        logger.debug("marketOrderStarvingResources(" + workerPoolAddr + ")");
+        MarketOrderInterface marketOrder = marketOrderLackingResources(workerPoolAddr);
+        if (marketOrder == null) {
+            logger.info("marketOrderStarvingResources(" + workerPoolAddr  + ") : no unsatisfied market order");
+            marketOrder = marketOrderHavingNoResource(workerPoolAddr);
+        }
+        return marketOrder;
     }
     /**
      * This retrieves a market order by its id, bypassing access rights
@@ -4989,7 +5034,7 @@ public final class DBInterface {
                 final MarketOrderInterface marketOrder = marketOrder(theHost.getMarketOrderUid());
 				if (delete(theClient, theTask)) {
 					if (theHost != null) {
-                        theHost.leaveMarketOrder(marketOrder);
+//                        theHost.leaveMarketOrder(marketOrder);
 						switch (theWork.getStatus()) {
                             case CONTRIBUTING:
                             case CONTRIBUTED:
@@ -5040,12 +5085,14 @@ public final class DBInterface {
 		deleteJobs(theClient, replicasUID(theClient, theWork.getUID()));
 
 		delete(theClient, theWork);
+/*
         if(theExpectedHost != null) {
             final MarketOrderInterface marketOrder = marketOrder(theExpectedHost.getMarketOrderUid());
             theExpectedHost.leaveMarketOrder(marketOrder);
             theExpectedHost.update();
         }
-		theClient.update();
+*/
+        theClient.update();
 		theApp.update();
 
 		return true;
@@ -5636,7 +5683,8 @@ public final class DBInterface {
                 }
 
 				TransactionStatus txStatus = null;
-                for(int createTry = 0; createTry < 3 && txStatus == null; createTry++) {
+                int revealTry;
+                for(revealTry = 0; revealTry < 3 && txStatus == null; revealTry++) {
                     txStatus = ActuatorService.getInstance().revealConsensus(theWork.getWorkOrderId(), Utils.hashResult(theWork.getH2h2r()));
                     if ((txStatus == null) || (txStatus == TransactionStatus.FAILURE)) {
                         try {
@@ -5651,7 +5699,7 @@ public final class DBInterface {
                 }
 
 				logger.debug("checkContribution() : revealConsensus status: " + txStatus );
-                if ((txStatus == null) || (txStatus == TransactionStatus.FAILURE)) {
+                if (revealTry >= 3) {
                     marketOrder.setErrorMsg("transaction error : revealConsensus");
                     marketOrder.setError();
                     try {
@@ -6063,9 +6111,9 @@ public final class DBInterface {
             return theHost;
         }
         logger.debug("hostContribution(" + workerWalletAddr + ") : " + theHost.toXml());
-        final MarketOrderInterface marketOrder = marketOrderUnsatisfied(theHost.getWorkerPoolAddr());
+        final MarketOrderInterface marketOrder = marketOrderStarvingResources(theHost.getWorkerPoolAddr());
         if (marketOrder == null) {
-            logger.info("hostContribution(" + workerWalletAddr + ") : no unsatisfied market order");
+            logger.info("hostContribution(" + workerWalletAddr + ") : no starving market order");
             return theHost;
         }
 
@@ -6108,6 +6156,24 @@ public final class DBInterface {
             logger.debug("hostContribution(" + workerWalletAddr + ") : don't want to contribute");
         }
 
+		final Collection<HostInterface> workersInOrder = DBInterface.getInstance().hosts(marketOrder);
+		final long workersInOrderSize = workersInOrder != null ? workersInOrder.size() : -1 ;
+
+		if(workersInOrderSize <= marketOrder.getNbWorkers()) {
+            logger.warn("hostContribution() resizing : marketOrder.getNbWorkers() = "
+                    + marketOrder.getNbWorkers() + "; workers.size = " + workersInOrderSize);
+            marketOrder.setNbWorkers(workersInOrderSize);
+        } else {
+		    final long diff =  workersInOrderSize - marketOrder.getNbWorkers();
+		    long counterWorker = 0;
+		    for(HostInterface worker : workersInOrder) {
+                worker.leaveMarketOrder(marketOrder);
+                counterWorker++;
+                if(counterWorker >= diff) {
+                    break;
+                }
+            }
+        }
 
         if (marketOrder.canBeCreated()) {
             final ActuatorService actuatorService = ActuatorService.getInstance();
