@@ -667,37 +667,34 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
             logger.exception(e);
         }
 
-        TransactionStatus txStatus = null;
-        int finalizeTry = 0;
-        for(finalizeTry = 0; finalizeTry < 3 && txStatus == null; finalizeTry++) {
-
-            txStatus = actuatorService.finalizeWork(woid,
+        int maxTry = 3;
+        for(int i = 0; i < maxTry; i++) {
+            if (actuatorService.finalizeWork(woid,
                     "",
                     "",
-                    result == null ? "" : result.toString());
+                    result == null ? "" : result.toString()) == TransactionStatus.FAILURE) {
 
-            if ((txStatus == null) || (txStatus == TransactionStatus.FAILURE)) {
+                if (i == maxTry-1){
+                    marketOrder.setErrorMsg("transaction error:finalizeWork");
+                    marketOrder.setError();
+                    try {
+                        marketOrder.update();
+                    } catch(final IOException e) {
+                        logger.exception(e);
+                    }
+                    break;
+                }
+
                 try {
-                    logger.error("finalizeWork; will retry in 10s " + txStatus);
-                    txStatus = null;
+                    logger.error("finalizeWork; will retry in 10s ");
                     Thread.sleep(10000);
                 } catch (final InterruptedException e) {
                 }
-            }
-            else {
+            } else {
                 break;
             }
         }
-        if(finalizeTry >= 3) {
 
-            marketOrder.setErrorMsg("transaction error:finalizeWork");
-            marketOrder.setError();
-            try {
-                marketOrder.update(false);
-            } catch(final IOException e) {
-                logger.exception(e);
-            }
-        }
     }
 
     @Override
