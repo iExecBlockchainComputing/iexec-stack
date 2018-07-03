@@ -23,11 +23,9 @@
 
 package xtremweb.dispatcher;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.Vector;
 
 import xtremweb.common.*;
 import xtremweb.communications.URI;
@@ -147,7 +145,10 @@ public class HashTaskSet extends TaskSet {
 						final MarketOrderInterface marketOrder = DBInterface.getInstance().marketOrder(theHost.getMarketOrderUid());
                         theHost.leaveMarketOrder(marketOrder);
 						theHost.update();
-						marketOrder.update();
+						if(marketOrder != null) {
+                            marketOrder.setErrorMsg("WARN:workerLost");
+                            marketOrder.update();
+                        }
 					}
 				}
 				final UID ownerUID = theWork.getOwner();
@@ -231,7 +232,7 @@ public class HashTaskSet extends TaskSet {
 
         getLogger().debug("detectAbortedTasks : checking market orders");
 		try {
-            final Collection<MarketOrderInterface> mos = db.revealingMarketOrders();
+            final Collection<MarketOrderInterface> mos = db.revealingOrFinalizingMarketOrders();
             if ((mos == null) || (mos.size() == 0)) {
                 getLogger().debug("detectAbortedTasks : no market orders ");
                 return;

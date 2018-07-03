@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatcher {
@@ -586,53 +587,53 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
     }
 
     @Override
-    public synchronized void onReveal(final WorkerPool.RevealEventResponse revealEventResponse) {
-        final WorkOrderModel workOrderModel = ModelService.getInstance().getWorkOrderModel(revealEventResponse.woid);
-        final MarketOrderInterface marketOrder = getMarketOrder(workOrderModel.getMarketorderIdx().longValue());
-        final Collection<WorkInterface> works = getMarketOrderWorks(workOrderModel.getMarketorderIdx().longValue());
-        if (works == null) {
-            logger.error("can't find any work fot work order " + revealEventResponse.woid);
-            return;
-        }
-
-        URI result = null;
-
-        int MAX_TRY = 30;
-
-        boolean doFinalize = true;
-
-        for (final WorkInterface work : works) {
-            logger.debug("onReveal(): work: " + work.toXml());
-            try {
-                innerloop:
-                for (int count = 0; count < MAX_TRY; count++) {
-                    if (result == null) {
-                        WorkInterface workval = DBInterface.getInstance().work(work.getUID());
-                        logger.debug("onReveal(): loop: " + count);
-                        TimeUnit.SECONDS.sleep(2);
-                        result = workval.getResult();
-                    } else {
-                        logger.debug("onReveal(): result: " + result);
-                        break innerloop;
-                    }
-                }
-
-                if (work.getStatus() != StatusEnum.COMPLETED) {
-                    doFinalize = false;
-                }
-
-            } catch (final IOException | InterruptedException e) {
-                logger.exception(e);
-            }
-        }
-
-        if (!doFinalize) {
-            logger.info("not finalizing " + marketOrder.getMarketOrderIdx() + " : missing contribution");
-            return;
-        }
-        else {
-            doFinalize(revealEventResponse.woid, result, marketOrder, works, logger);
-        }
+    public void onReveal(final WorkerPool.RevealEventResponse revealEventResponse) {
+//        final WorkOrderModel workOrderModel = ModelService.getInstance().getWorkOrderModel(revealEventResponse.woid);
+//        final MarketOrderInterface marketOrder = getMarketOrder(workOrderModel.getMarketorderIdx().longValue());
+//        final Collection<WorkInterface> works = getMarketOrderWorks(workOrderModel.getMarketorderIdx().longValue());
+//        if (works == null) {
+//            logger.error("can't find any work fot work order " + revealEventResponse.woid);
+//            return;
+//        }
+//
+//        URI result = null;
+//
+//        int MAX_TRY = 30;
+//
+//        boolean doFinalize = true;
+//
+//        for (final WorkInterface work : works) {
+//            logger.debug("onReveal(): work: " + work.toXml());
+//            try {
+//                innerloop:
+//                for (int count = 0; count < MAX_TRY; count++) {
+//                    if (result == null) {
+//                        WorkInterface workval = DBInterface.getInstance().work(work.getUID());
+//                        logger.debug("onReveal(): loop: " + count);
+//                        TimeUnit.SECONDS.sleep(2);
+//                        result = workval.getResult();
+//                    } else {
+//                        logger.debug("onReveal(): result: " + result);
+//                        break innerloop;
+//                    }
+//                }
+//
+//                if (work.getStatus() != StatusEnum.COMPLETED) {
+//                    doFinalize = false;
+//                }
+//
+//            } catch (final IOException | InterruptedException e) {
+//                logger.exception(e);
+//            }
+//        }
+//
+//        if (!doFinalize) {
+//            logger.info("not finalizing " + marketOrder.getMarketOrderIdx() + " : missing contribution");
+//            return;
+//        }
+//        else {
+//            doFinalize(revealEventResponse.woid, result, marketOrder, works, logger);
+//        }
     }
 
     protected static synchronized void doFinalize(final String woid,
@@ -647,12 +648,12 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
                 final HostInterface theHost = DBInterface.getInstance().host(theWorkTask.getHost());
 
                 if(theHost == null) {
-                    logger.error("can't find the host for the work " + work.getUID());
+                    logger.error("doFinalize() can't find the host for the work " + work.getUID());
                     continue;
                 }
 
                 marketOrder.removeWorker(theHost);
-                logger.debug("onReval " + theHost.toXml());
+                logger.debug("doFinalize() " + theHost.toXml());
                 theHost.update(false);
 
             } catch (final IOException e) {
@@ -667,34 +668,56 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
             logger.exception(e);
         }
 
-        int maxTry = 3;
-        for(int i = 0; i < maxTry; i++) {
-            if (actuatorService.finalizeWork(woid,
-                    "",
-                    "",
-                    result == null ? "" : result.toString()) == TransactionStatus.FAILURE) {
+//        int maxTry = 3;
+//        for(int i = 0; i < maxTry; i++) {
+//            if (actuatorService.finalizeWork(woid,
+//                    "",
+//                    "",
+//                    result == null ? "" : result.toString()) == TransactionStatus.FAILURE) {
+//
+//                if (i == maxTry-1){
+//                    marketOrder.setErrorMsg("transaction error:finalizeWork");
+//                    marketOrder.setError();
+//                    try {
+//                        marketOrder.update();
+//                    } catch(final IOException e) {
+//                        logger.exception(e);
+//                    }
+//                    break;
+//                }
+//
+//                try {
+//                    logger.error("finalizeWork; will retry in 10s ");
+//                    Thread.sleep(10000);
+//                } catch (final InterruptedException e) {
+//                }
+//            } else {
+//                break;
+//            }
+//        }
 
-                if (i == maxTry-1){
-                    marketOrder.setErrorMsg("transaction error:finalizeWork");
-                    marketOrder.setError();
-                    try {
-                        marketOrder.update();
-                    } catch(final IOException e) {
-                        logger.exception(e);
-                    }
-                    break;
-                }
+        if (actuatorService.finalizeWork(woid,
+                "",
+                "",
+                result == null ? "" : result.toString()) == TransactionStatus.FAILURE) {
 
-                try {
-                    logger.error("finalizeWork; will retry in 10s ");
-                    Thread.sleep(10000);
-                } catch (final InterruptedException e) {
-                }
-            } else {
-                break;
-            }
+            marketOrder.setErrorMsg("WARN:stillFinalizing");
+            marketOrder.setFinalizing();
         }
-
+        else {
+            marketOrder.setErrorMsg("INFO:finalized");
+        }
+        final long revealingDate = marketOrder.getRevealingDate().getTime();
+        final long now = new Date().getTime();
+        if(now - revealingDate > (10 * Dispatcher.getConfig().getTimeout())) {
+            marketOrder.setError();
+            marketOrder.setErrorMsg("ERROR:finalizationTimeOut");
+        }
+        try {
+            marketOrder.update();
+        } catch(final IOException e) {
+            logger.exception(e);
+        }
     }
 
     @Override

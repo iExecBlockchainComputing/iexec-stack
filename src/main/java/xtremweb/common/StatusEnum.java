@@ -146,7 +146,12 @@ public enum StatusEnum {
 	 * i.e.: the worker must send h(R)
 	 * @since 13.1.0
 	 */
-	REVEALING;
+	REVEALING,
+	/**
+	 * This denotes a MO to be finalized
+	 * @since 13.1.0
+	 */
+	FINALIZING;
 
 	public static final StatusEnum LAST = REVEALING;
 	public static final int SIZE = LAST.ordinal() + 1;

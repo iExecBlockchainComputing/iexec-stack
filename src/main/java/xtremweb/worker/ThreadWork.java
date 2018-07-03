@@ -313,6 +313,7 @@ public class ThreadWork extends Thread {
 					}
 					status = executeJob();
 				} catch (final Throwable e) {
+                    e.printStackTrace();
 					killed = true;
 					logger.exception("job launch error", e);
 					status = StatusEnum.ERROR;

@@ -767,14 +767,22 @@ public final class MarketOrderInterface extends Table {
     public boolean setContributed() {
         return setValue(Columns.STATUS, StatusEnum.CONTRIBUTED);
     }
-    /**
-     * This sets this market order status to revealing
-     * @return true if value has changed, false otherwise
-     */
-    public boolean setRevealing() {
-        setRevealingDate();
-    	return setValue(Columns.STATUS, StatusEnum.REVEALING);
-    }
+	/**
+	 * This sets this market order status to revealing
+	 * @return true if value has changed, false otherwise
+	 */
+	public boolean setRevealing() {
+		setRevealingDate();
+		return setValue(Columns.STATUS, StatusEnum.REVEALING);
+	}
+	/**
+	 * This sets this market order status to finalizing
+	 * @return true if value has changed, false otherwise
+	 */
+	public boolean setFinalizing() {
+		setRevealingDate();
+		return setValue(Columns.STATUS, StatusEnum.FINALIZING);
+	}
     /**
      * This sets this market order status to completed
      * @return true if value has changed, false otherwise

@@ -328,6 +328,17 @@ public final class XWConfigurator extends Properties {
 			return MAXTIMEOUT;
 		}
 	}
+	/**
+	 * @since 13.1.0
+	 */
+	public int getTimeout() {
+		try {
+			return Integer.parseInt(getProperty(XWPropertyDefs.TIMEOUT));
+		} catch (final Exception e) {
+			setProperty(XWPropertyDefs.TIMEOUT, "" + XWPropertyDefs.TIMEOUT.defaultValue());
+		}
+		return Integer.parseInt(getProperty(XWPropertyDefs.TIMEOUT));
+	}
 
 	/**
 	 * This test whether we try "real time"

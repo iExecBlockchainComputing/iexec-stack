@@ -1326,19 +1326,12 @@ public final class DBInterface {
      * @return a Collection of UID
      * @since 13.1.0
      */
-    protected Collection<MarketOrderInterface> revealingMarketOrders() throws IOException {
+    protected Collection<MarketOrderInterface> revealingOrFinalizingMarketOrders() throws IOException {
         final MarketOrderInterface row = new MarketOrderInterface();
         return selectAll(row,
-                MarketOrderInterface .Columns.STATUS + "='" + StatusEnum.REVEALING + "'");
+                MarketOrderInterface .Columns.STATUS + "='" + StatusEnum.REVEALING + "' OR " +
+                        MarketOrderInterface .Columns.STATUS + "='" + StatusEnum.FINALIZING + "'");
     }
-/*
-*     protected Collection<HostInterface> hosts(final MarketOrderInterface marketOrder) throws IOException {
-        if(marketOrder == null)
-            return null;
-        return selectAll(new HostInterface(), HostInterface.Columns.MARKETORDERUID + "='"
-                + marketOrder.getUID() + "'");
-    }
-*/
     /**
 	 * This retrieves the number of market order
 	 *
@@ -5704,15 +5697,19 @@ public final class DBInterface {
                     marketOrder.setError();
                     try {
                         final Collection<HostInterface> workers = hosts(marketOrder);
-                        for (final HostInterface w : workers) {
-                            w.leaveMarketOrder(marketOrder);
-                            w.update();
+                        for (final HostInterface worker : workers) {
+                            worker.leaveMarketOrder(marketOrder);
+                            worker.update();
                         }
-                        marketOrder.update();
                     } catch (final IOException e) {
                         logger.exception(e);
                     }
                 }
+                else {
+                    marketOrder.setRevealingDate();
+                }
+
+                marketOrder.update();
 
             } else {
                 logger.debug("checkContribution() : not enough contributions");
