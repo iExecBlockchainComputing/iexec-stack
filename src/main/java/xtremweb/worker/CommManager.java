@@ -1290,8 +1290,8 @@ public final class CommManager extends Thread {
                                      theWork.getWorkOrderId());
                          }
                         try {
-                            logger.debug("contribute failure ; sleeping 30s " + tries);
-                            Thread.sleep(30000);
+                            logger.debug("contribute failure ; sleeping 1s " + tries);
+                            Thread.sleep(1000);
                         } catch(final Exception e) {
                         }
                     }
