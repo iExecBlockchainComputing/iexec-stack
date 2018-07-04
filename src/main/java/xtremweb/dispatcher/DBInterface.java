@@ -1921,8 +1921,8 @@ public final class DBInterface {
 	}
 
 	/**
-	 * This retrieves the first task for a given work and a given worker Access
-	 * rights are not checked.
+	 * This retrieves the first task for a given work and a given worker, having status nor FAILED neither ERROR.
+     * Access rights are not checked.
 	 *
 	 * @param work
 	 *            is the work we look for
@@ -1931,12 +1931,14 @@ public final class DBInterface {
 	 * @return a task or null
 	 * @since 8.0.0
 	 */
-	protected TaskInterface task(final WorkInterface work, final HostInterface host) throws IOException {
+	protected TaskInterface computingTask(final WorkInterface work, final HostInterface host) throws IOException {
 		if ((work == null) || (work.getUID() == null) || (host == null)) {
 			return null;
 		}
-		return task(TaskInterface.Columns.WORKUID + "='" + work.getUID() + "' and " + TaskInterface.Columns.HOSTUID
-				+ "='" + host.getUID() + "'");
+		return task(TaskInterface.Columns.WORKUID + "='" + work.getUID() + "' and "
+                + TaskInterface.Columns.HOSTUID + "='" + host.getUID() + "' and "
+                + TaskInterface.Columns.STATUS + "!='" + StatusEnum.FAILED + "' and "
+                + TaskInterface.Columns.STATUS + "!='" + StatusEnum.ERROR + "'");
 	}
 
 	/**
@@ -1965,11 +1967,13 @@ public final class DBInterface {
 	 * @return a task or null
 	 * @since 8.0.0
 	 */
-	protected TaskInterface task(final WorkInterface work) throws IOException {
+	protected TaskInterface computingTask(final WorkInterface work) throws IOException {
 		if ((work == null) || (work.getUID() == null)) {
 			return null;
 		}
-		return task(TaskInterface.Columns.WORKUID + "='" + work.getUID() + "'");
+		return task(TaskInterface.Columns.WORKUID + "='" + work.getUID() + "' and "
+                + TaskInterface.Columns.STATUS + "!='" + StatusEnum.FAILED + "' and "
+                + TaskInterface.Columns.STATUS + "!='" + StatusEnum.ERROR + "'");
 	}
 
 	/**
@@ -5313,10 +5317,10 @@ public final class DBInterface {
             if (theHost != null) {
                 if (clientRights.isWorker()) {
                     if (theHost != null) {
-                        theTask = task(theWork, theHost);
+                        theTask = computingTask(theWork, theHost);
                     }
                 } else {
-                    theTask = task(theWork);
+                    theTask = computingTask(theWork);
                 }
                 if (theTask == null) {
                     throw new IOException(
@@ -5621,7 +5625,7 @@ public final class DBInterface {
                 return;
             }
 
-            final TaskInterface theWorkTask = DBInterface.getInstance().task(theWork);
+            final TaskInterface theWorkTask = DBInterface.getInstance().computingTask(theWork);
             final HostInterface theHost = DBInterface.getInstance().host(theWorkTask.getHost());
             theHost.setContributed();
             theHost.update();
@@ -5657,7 +5661,7 @@ public final class DBInterface {
                         contributingWork.setRevealing();
                         contributingWork.update();
 
-                        final TaskInterface contributingTask = DBInterface.getInstance().task(contributingWork);
+                        final TaskInterface contributingTask = DBInterface.getInstance().computingTask(contributingWork);
                         if (contributingTask != null) {
                             contributingTask.setRevealing();
                             contributingTask.update();

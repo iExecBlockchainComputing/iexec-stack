@@ -716,7 +716,7 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 		logger.debug("workAlivebyuid : retrieving current computing job " + jobUID);
 		// theHost = DBInterface.getInstance().host(_host.getUID());
 		final WorkInterface theWork = DBInterface.getInstance().work(theClient, jobUID);
-		final TaskInterface theTask = DBInterface.getInstance().task(theWork, theHost);
+		final TaskInterface theTask = DBInterface.getInstance().computingTask(theWork, theHost);
 
 		if (theTask != null) {
 			if (!isActive) {
@@ -864,7 +864,7 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 							switch (workStatus) {
 							case CONTRIBUTED:
 							case CONTRIBUTING:
-								final TaskInterface theTask = DBInterface.getInstance().task(theWork, theHost);
+								final TaskInterface theTask = DBInterface.getInstance().computingTask(theWork, theHost);
 
 								if (theTask == null) {
 									break;
