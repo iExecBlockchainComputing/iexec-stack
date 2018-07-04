@@ -373,8 +373,28 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
         }
 
         try {
-            final MarketOrderInterface marketOrder = createWork(workOrderId, workOrderModel);
-            logger.error("onWorkOrderActivated() : marketOrder " + marketOrder);
+            MarketOrderInterface marketOrder = null;
+
+            int createWorkTry;
+            for(createWorkTry = 0; createWorkTry < 3; createWorkTry++) {
+
+                marketOrder = createWork(workOrderId, workOrderModel);
+                if (marketOrder != null) {
+                    break;
+                }
+                try {
+                    logger.warn("onWorkOrderActivated; will retry in 3s");
+                    Thread.sleep(3000);
+                } catch (final InterruptedException e) {
+                }
+            }
+
+            if (createWorkTry >= 3) {
+                logger.error("onWorkOrderActivated() : can't create work for workOrderId " + workOrderId);
+                return;
+            }
+
+            logger.info("onWorkOrderActivated() : marketOrder " + marketOrder);
             final Collection<HostInterface> workers = DBInterface.getInstance().hosts(marketOrder);
             if(workers == null) {
                 logger.warn("onWorkOrderActivated(" + workOrderId +") : can't find any host" );
