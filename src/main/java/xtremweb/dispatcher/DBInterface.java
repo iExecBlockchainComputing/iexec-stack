@@ -1196,11 +1196,12 @@ public final class DBInterface {
         }
 
         return marketOrderUnsatisfied(SQLRequest.MAINTABLEALIAS + "." + MarketOrderInterface .Columns.NBWORKERS + "<"
-                        + MarketOrderInterface .Columns.EXPECTEDWORKERS
-                        + " AND " + MarketOrderInterface .Columns.NBWORKERS + "=0"
-                        + " AND " + MarketOrderInterface .Columns.WORKERPOOLADDR + "='" + workerPoolAddr + "'"
-                        + " AND " + MarketOrderInterface .Columns.STATUS + "!='" + StatusEnum.ERROR + "'"
-                        + " AND " + MarketOrderInterface .Columns.STATUS + "!='" + StatusEnum.COMPLETED + "'");
+                + MarketOrderInterface .Columns.EXPECTEDWORKERS
+                + " AND " + MarketOrderInterface .Columns.NBWORKERS + "=0"
+                + " AND " + MarketOrderInterface .Columns.WORKERPOOLADDR + "='" + workerPoolAddr + "'"
+                + " AND " + MarketOrderInterface .Columns.STATUS + "!='" + StatusEnum.FINALIZING + "'"
+                + " AND " + MarketOrderInterface .Columns.STATUS + "!='" + StatusEnum.ERROR + "'"
+                + " AND " + MarketOrderInterface .Columns.STATUS + "!='" + StatusEnum.COMPLETED + "'");
     }
     /**
      * This retrieves a market order already having but lacking computing resources, bypassing access rights
@@ -1215,11 +1216,12 @@ public final class DBInterface {
         }
 
         return marketOrderUnsatisfied(SQLRequest.MAINTABLEALIAS + "." + MarketOrderInterface .Columns.NBWORKERS + "<"
-                        + MarketOrderInterface .Columns.EXPECTEDWORKERS
-                        + " AND " + MarketOrderInterface .Columns.NBWORKERS + ">0"
-                        + " AND " + MarketOrderInterface .Columns.WORKERPOOLADDR + "='" + workerPoolAddr + "'"
-                        + " AND " + MarketOrderInterface .Columns.STATUS + "!='" + StatusEnum.ERROR + "'"
-                        + " AND " + MarketOrderInterface .Columns.STATUS + "!='" + StatusEnum.COMPLETED + "'");
+                + MarketOrderInterface .Columns.EXPECTEDWORKERS
+                + " AND " + MarketOrderInterface .Columns.NBWORKERS + ">0"
+                + " AND " + MarketOrderInterface .Columns.WORKERPOOLADDR + "='" + workerPoolAddr + "'"
+                + " AND " + MarketOrderInterface .Columns.STATUS + "!='" + StatusEnum.FINALIZING + "'"
+                + " AND " + MarketOrderInterface .Columns.STATUS + "!='" + StatusEnum.ERROR + "'"
+                + " AND " + MarketOrderInterface .Columns.STATUS + "!='" + StatusEnum.COMPLETED + "'");
     }
     /**
      * This retrieves a market order from DB according to request, bypassing access rights
