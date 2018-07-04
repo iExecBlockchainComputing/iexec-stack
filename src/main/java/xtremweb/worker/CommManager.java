@@ -1271,38 +1271,38 @@ public final class CommManager extends Thread {
                         dumpContributionStatus(Worker.getConfig().getHost().getEthWalletAddr(),
                                 theWork.getWorkOrderId());
 
-                    TransactionStatus status = TransactionStatus.FAILURE;
+    	                TransactionStatus status = TransactionStatus.FAILURE;
 
-                     for(int tries = 0 ; tries < 2; tries++) {
-                         System.out.println("ActuatorService.getInstance().contribute(" + theWork.getWorkOrderId() + ", "
-                                 + theWork.getH2h2r() + ")");
-                         status = ActuatorService.getInstance().contribute(theWork.getWorkOrderId(),
-                                 Worker.getConfig().getBoolean(XWPropertyDefs.FAKECONTRIBUTE)
-                                         ? XWTools.sha256("cheating for fun")
-                                         : theWork.getH2h2r(),
-                                 BigInteger.ZERO,
-                                 "0",
-                                 "0");
-                         if (status == TransactionStatus.SUCCESS){
-                             break;
-                         } else {
-                             dumpContributionStatus(Worker.getConfig().getHost().getEthWalletAddr(),
-                                     theWork.getWorkOrderId());
-                         }
-                        try {
-                            logger.debug("contribute failure ; sleeping 1s " + tries);
-                            Thread.sleep(1000);
-                        } catch(final Exception e) {
-                        }
-                    }
+        	             for(int tries = 0 ; tries < 2; tries++) {
+            	             System.out.println("ActuatorService.getInstance().contribute(" + theWork.getWorkOrderId() + ", "
+                	                 + theWork.getH2h2r() + ")");
+                    	     status = ActuatorService.getInstance().contribute(theWork.getWorkOrderId(),
+                        	         Worker.getConfig().getBoolean(XWPropertyDefs.FAKECONTRIBUTE)
+                            	             ? XWTools.sha256("cheating for fun")
+                                	         : theWork.getH2h2r(),
+                                 	BigInteger.ZERO,
+                                 	"0",
+                                 	"0");
+                         	if (status == TransactionStatus.SUCCESS){
+                            	 break;
+	                         } else {
+    	                         dumpContributionStatus(Worker.getConfig().getHost().getEthWalletAddr(),
+        	                             theWork.getWorkOrderId());
+            	             }
+                	        try {
+                    	        logger.debug("contribute failure ; sleeping 1s " + tries);
+                        	    Thread.sleep(1000);
+	                        } catch(final Exception e) {
+    	                    }
+        	            }
 
-                    if (status == TransactionStatus.SUCCESS) {
-                         theWork.setContributed();
-                         Worker.getConfig().getHost().setContributed();
-                     } else {
-                         logger.error("contribute transaction error: " + theWork.getUID());
-                         theWork.setError("contribute transation error");
-                         sendResult(theWork);
+	                    if (status == TransactionStatus.SUCCESS) {
+    	                     theWork.setContributed();
+        	                 Worker.getConfig().getHost().setContributed();
+            	         } else {
+                	         logger.error("contribute transaction error: " + theWork.getUID());
+                    	     theWork.setError("contribute transation error");
+                        	 sendResult(theWork);
                         }
 
                     } else {

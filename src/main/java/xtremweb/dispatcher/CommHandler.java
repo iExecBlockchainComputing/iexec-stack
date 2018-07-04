@@ -732,8 +732,9 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 				}
 			}
 			theTask.update();
-		} else {
-			logger.finest("work is not in the dispatcher pool. Send back 'abort'");
+		}
+		else {
+			logger.finest("workAlivebyuid: work is not in the dispatcher pool. Send back 'abort'");
 			keepWorking = false;
 		}
 
