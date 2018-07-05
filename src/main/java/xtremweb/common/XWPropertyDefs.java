@@ -126,6 +126,13 @@ public enum XWPropertyDefs {
 	 */
 	FAKECONTRIBUTE,
 	/**
+	 * Worker : send ERROR on reveal()
+	 * Property type : boolean
+	 *
+	 * @since 13.1.0
+	 */
+	FAKEREVEAL,
+	/**
 	 * Server, Worker : do we connect to Ethereum blockchain ?
 	 * <p>
 	 * Property type : boolean
