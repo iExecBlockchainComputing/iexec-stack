@@ -1224,6 +1224,22 @@ public final class DBInterface {
                 + " AND " + MarketOrderInterface .Columns.STATUS + "!='" + StatusEnum.COMPLETED + "'");
     }
     /**
+     * This retrieves a market order already having computing resources but not enough, bypassing access rights.
+     * The idea is to avoid dead lock on computing resources.
+     * @since 13.1.0
+     * @see HashTaskSet#detectAbortedTasks()
+     */
+    protected Collection<MarketOrderInterface> marketOrderLockingResources() throws IOException {
+        final MarketOrderInterface row = new MarketOrderInterface();
+        final int alivePeriod = Integer.parseInt(Dispatcher.getConfig().getProperty(XWPropertyDefs.ALIVEPERIOD.toString()));
+
+        return selectAll(row,SQLRequest.MAINTABLEALIAS + "." + MarketOrderInterface .Columns.NBWORKERS + "<"
+                + MarketOrderInterface .Columns.EXPECTEDWORKERS
+                + " AND " + MarketOrderInterface .Columns.NBWORKERS + ">0"
+                + " AND date_add(" + MarketOrderInterface.Columns.ARRIVALDATE + ", interval " + alivePeriod + " second) < now()"
+                + " AND " + MarketOrderInterface .Columns.STATUS + "='" + StatusEnum.WAITING + "'");
+    }
+    /**
      * This retrieves a market order from DB according to request, bypassing access rights
      * @param request is the SQL request
      * @since 13.1.0

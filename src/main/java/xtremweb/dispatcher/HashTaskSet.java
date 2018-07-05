@@ -230,23 +230,54 @@ public class HashTaskSet extends TaskSet {
 			}
 		}
 
+        getLogger().debug("detectAbortedTasks : checking computing resource dead locks between market orders");
+        try {
+            final Collection<MarketOrderInterface> marketOrders = db.marketOrderLockingResources();
+            if ((marketOrders != null) && (marketOrders.size() > 0)) {
+
+                getLogger().debug("detectAbortedTasks : market orders locking resources " + marketOrders.size());
+
+                for (final MarketOrderInterface marketOrder : marketOrders) {
+                    getLogger().debug("detectAbortedTasks market orders locking resources " + marketOrder.toXml());
+
+                    final Collection<HostInterface> workers = db.hosts(marketOrder);
+                    getLogger().debug("detectAbortedTasks market orders locking resources has " + workers.size());
+
+                    for (HostInterface worker : workers) {
+
+                        getLogger().debug("detectAbortedTasks market order unlocks resource " + worker.toXml());
+                        worker.leaveMarketOrder(marketOrder);
+                        worker.update();
+                    }
+                    marketOrder.update();
+                }
+            }
+            else {
+                getLogger().debug("detectAbortedTasks : no market order locking resource");
+            }
+
+        }
+        catch (Exception e) {
+            getLogger().exception(e);
+        }
+
         getLogger().debug("detectAbortedTasks : checking market orders");
 		try {
-            final Collection<MarketOrderInterface> mos = db.revealingOrFinalizingMarketOrders();
-            if ((mos == null) || (mos.size() == 0)) {
+            final Collection<MarketOrderInterface> marketOrders = db.revealingOrFinalizingMarketOrders();
+            if ((marketOrders == null) || (marketOrders.size() == 0)) {
                 getLogger().debug("detectAbortedTasks : no market orders ");
                 return;
             }
 
-            getLogger().debug("detectAbortedTasks : checking market orders " + mos.size());
+            getLogger().debug("detectAbortedTasks : checking market orders " + marketOrders.size());
 
             URI result = null;
             String woid = null;
 
-            for (final MarketOrderInterface mo : mos) {
-                getLogger().debug("detectAbortedTasks " + mo.toXml());
+            for (final MarketOrderInterface marketOrder : marketOrders) {
+                getLogger().debug("detectAbortedTasks checking market orders " + marketOrder.toXml());
 
-                final Collection<WorkInterface> works = db.marketOrderWorks(mo);
+                final Collection<WorkInterface> works = db.marketOrderWorks(marketOrder);
                 getLogger().debug("detectAbortedTasks market orders has " + works.size());
 
                 boolean doComplete = works.size() > 0;
@@ -269,7 +300,7 @@ public class HashTaskSet extends TaskSet {
 
                 if (doComplete) {
                     try {
-                        SchedulerPocoWatcherImpl.doFinalize(woid, result, mo, works, getLogger());
+                        SchedulerPocoWatcherImpl.doFinalize(woid, result, marketOrder, works, getLogger());
                     } catch(Exception e) {
                         getLogger().exception(e);
                     }
