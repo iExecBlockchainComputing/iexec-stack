@@ -2346,14 +2346,22 @@ public final class HostInterface extends Table {
         return setValue(Columns.CONTRIBUTIONSTATUS, v);
     }
 
-    /**
-     * This set  contribution to REVEALING
-     * @return true if value has changed, false otherwise
-     * @since 13.1.0
-     */
-    public final boolean setRevealing() {
-        return setContributionStatus(StatusEnum.REVEALING);
-    }
+	/**
+	 * This set  contribution to ERROR
+	 * @return true if value has changed, false otherwise
+	 * @since 13.1.0
+	 */
+	public final boolean setContributionError() {
+		return setContributionStatus(StatusEnum.ERROR);
+	}
+	/**
+	 * This set  contribution to REVEALING
+	 * @return true if value has changed, false otherwise
+	 * @since 13.1.0
+	 */
+	public final boolean setRevealing() {
+		return setContributionStatus(StatusEnum.REVEALING);
+	}
     /**
      * This set  contribution to RUNNING
      * @return true if value has changed, false otherwise
