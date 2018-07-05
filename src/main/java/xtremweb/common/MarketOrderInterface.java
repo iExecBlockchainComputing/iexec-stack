@@ -919,10 +919,9 @@ public final class MarketOrderInterface extends Table {
      * @see Columns#TRUST
 	 */
 	public boolean setTrust(final long t)  {
-	    long trust = t < 0 ? 0 : t;
+	    long trust = t < 10 ? 10 : t;
 	    if (t > 100) trust = 100;
 		long workers = trust / 10;
-        if (trust == 0) workers = 1;
 
 		setExpectedWorkers(workers);
 
