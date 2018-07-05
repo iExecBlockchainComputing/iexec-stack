@@ -5100,13 +5100,6 @@ public final class DBInterface {
 		deleteJobs(theClient, replicasUID(theClient, theWork.getUID()));
 
 		delete(theClient, theWork);
-/*
-        if(theExpectedHost != null) {
-            final MarketOrderInterface marketOrder = marketOrder(theExpectedHost.getMarketOrderUid());
-            theExpectedHost.leaveMarketOrder(marketOrder);
-            theExpectedHost.update();
-        }
-*/
         theClient.update();
 		theApp.update();
 
@@ -5477,9 +5470,7 @@ public final class DBInterface {
                             final WorkInterface newWork = new WorkInterface(replicatedWork);
                             newWork.setUID(new UID());
                             newWork.replicate(originalUid);
-                            newWork.setTotalReplica(0);
-                            newWork.setReplicaSetSize(0);
-                            newWork.setExpectedReplications(0);
+                            newWork.insert();
 
                             theApp.incPendingJobs();
                             jobOwner.incPendingJobs();
@@ -5487,7 +5478,6 @@ public final class DBInterface {
                                 theHost.incPendingJobs();
                             }
 
-                            insert(newWork);
                             replicatedWork.incTotalReplica();
                         }
                         replicatedWork.setReplicating();
@@ -5507,7 +5497,9 @@ public final class DBInterface {
                 break;
                 case ERROR:
                     if (theHost != null) {
-                        theHost.leaveMarketOrder(marketOrder);
+//                        theHost.leaveMarketOrder(marketOrder);
+                        theHost.setContributionError();
+                        theHost.setErrorMsg("contribution error");
                         theHost.incErrorJobs();
                         theHost.decRunningJobs();
                     }
@@ -5518,6 +5510,15 @@ public final class DBInterface {
                     theWork.setError(receivedJob.getErrorMsg());
                     if (theTask != null) {
                         theTask.setError();
+                    }
+                    if(theWork.getMarketOrderUid() != null) {
+                        final WorkInterface newWork = new WorkInterface(theWork);
+                        newWork.setUID(new UID());
+                        newWork.replicate(theWork.getReplicatedUid() != null ? theWork.getReplicatedUid() : theWork.getUID());
+                        newWork.setExpectedHost(null);
+                        newWork.insert();
+                        theApp.incPendingJobs();
+                        jobOwner.incPendingJobs();
                     }
                     break;
                 case FAILED:
@@ -5651,18 +5652,22 @@ public final class DBInterface {
             final long expectedContributions = marketOrder.getExpectedWorkers();
 			logger.debug("checkContribution() : expectedContributions: " + expectedContributions + "/" + works.size());
             long totalContributions = 0L;
+            long consensusCounter = 0;
             for (final WorkInterface work : works) {
 
 				logger.debug("checkContribution() : for work: " + work);
 
-                if (work.hasContributed()
-                        && (work.getH2h2r().compareTo(theWork.getH2h2r()) == 0)) {
+                if (work.hasContributed()) {
+
                     totalContributions++;
-					logger.debug("checkContribution() : add a contribution");
+
+                    if (work.getH2h2r().compareTo(theWork.getH2h2r()) == 0) {
+                        consensusCounter++;
+                    }
                 }
             }
 			logger.debug("checkContribution() : totalContributions: " + totalContributions);
-            if (totalContributions >= expectedContributions) {
+            if (consensusCounter >= expectedContributions) {
                 logger.debug("checkContribution() : enough contributions");
                 theWork.setRevealing();
                 try {
@@ -5733,8 +5738,13 @@ public final class DBInterface {
 
                 marketOrder.update();
 
-            } else {
-                logger.debug("checkContribution() : not enough contributions");
+            }
+            else {
+                if (totalContributions < expectedContributions) {
+                    logger.debug("checkContribution() : not enough contributions");
+                }
+                else {
+                }
             }
         } catch (final Exception e) {
             logger.exception(e);

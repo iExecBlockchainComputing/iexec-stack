@@ -286,9 +286,9 @@ public class HashTaskSet extends TaskSet {
 
                     getLogger().debug("detectAbortedTasks " + work.toXml());
 
-                    if (work.getStatus() == StatusEnum.ERROR) {
-                        //reopen?
-                    }
+//                    if (work.getStatus() == StatusEnum.ERROR) {
+//                       //reopen?
+//                    }
 
                     if (work.getStatus() != StatusEnum.COMPLETED) {
                         doComplete = false;
@@ -303,6 +303,10 @@ public class HashTaskSet extends TaskSet {
                         SchedulerPocoWatcherImpl.doFinalize(woid, result, marketOrder, works, getLogger());
                     } catch(Exception e) {
                         getLogger().exception(e);
+                    }
+                    final Collection<HostInterface> workers = db.hosts(marketOrder);
+                    for (HostInterface worker : workers) {
+                        worker.leaveMarketOrder(marketOrder);
                     }
                 }
             }

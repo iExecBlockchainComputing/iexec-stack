@@ -1285,10 +1285,10 @@ public final class CommManager extends Thread {
                                  	"0");
                          	if (status == TransactionStatus.SUCCESS){
                             	 break;
-	                         } else {
-    	                         dumpContributionStatus(Worker.getConfig().getHost().getEthWalletAddr(),
-        	                             theWork.getWorkOrderId());
-            	             }
+	                         }
+
+							 dumpContributionStatus(Worker.getConfig().getHost().getEthWalletAddr(),
+									 theWork.getWorkOrderId());
                 	        try {
                     	        logger.debug("contribute failure ; sleeping 1s " + tries);
                         	    Thread.sleep(1000);

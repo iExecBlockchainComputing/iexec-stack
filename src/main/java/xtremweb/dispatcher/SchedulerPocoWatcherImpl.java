@@ -340,14 +340,14 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
             work.setExpectedReplications(marketOrder.getExpectedWorkers());
             work.setReplicaSetSize(marketOrder.getExpectedWorkers());
             work.setAccessRights(new XWAccessRights(XWAccessRights.USERALL.value() | XWAccessRights.STICKYBIT_INT));
-
-            final XMLRPCCommandSendWork cmd =
-                    new XMLRPCCommandSendWork(XWTools.newURI(work.getUID()),
-                            administrator,
-                            work);
-
-            cmd.setMandatingLogin(requester.getLogin());
-            DBInterface.getInstance().addWork(cmd);
+            work.insert();
+//            final XMLRPCCommandSendWork cmd =
+//                    new XMLRPCCommandSendWork(XWTools.newURI(work.getUID()),
+//                            administrator,
+//                            work);
+//
+//            cmd.setMandatingLogin(requester.getLogin());
+//            DBInterface.getInstance().addWork(cmd);
 
             return marketOrder;
 

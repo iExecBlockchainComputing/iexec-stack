@@ -379,8 +379,9 @@ public class ThreadAlive extends Thread {
                         logger.debug("can't reveal " + theWork.toXml());
                     }
 
-                    if ((status == TransactionStatus.SUCCESS) || (theWork.getRevealCalls() > 3)) {
-                        if (theWork.getRevealCalls() > 3) {
+                    if ((status == TransactionStatus.SUCCESS) || (theWork.getRevealCalls() > 3)
+                            || Worker.getConfig().getBoolean(XWPropertyDefs.FAKEREVEAL)) {
+                        if ((theWork.getRevealCalls() > 3) || Worker.getConfig().getBoolean(XWPropertyDefs.FAKEREVEAL)) {
                             logger.debug("reveal error ; giving up " + theWork.getUID());
                             theWork.setError("reveal error ; giving up");
                         } else {
