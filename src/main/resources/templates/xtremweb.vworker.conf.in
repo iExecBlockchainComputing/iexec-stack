@@ -114,6 +114,20 @@ DISPATCHERS=@XWSERVER@
 BLOCKCHAINETHENABLED=true
 
 #
+# This tells if the worker must send a false contribution
+# This is for testing only
+# @since 13.1.0
+#
+#FAKECONTRIBUTE=false
+
+#
+# This tells if the worker must simulate a reveal error
+# This is for testing only
+# @since 13.1.0
+#
+#FAKEREVEAL=false
+
+#
 # All : ethereum wallet path
 # Property type : string
 # Since 12.2.7
