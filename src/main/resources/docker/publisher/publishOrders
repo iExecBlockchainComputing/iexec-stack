@@ -2,39 +2,58 @@
 # 
 # Usage :
 
-echo 'Starting publishing orders if necessary'
+#TRUST=50;
+
+echo 'Starting publishing orders if necessary with trust='$TRUST
 while true
 do 
 	
 	echo 'Waiting 120 sec'
 	sleep 120
 
-    ordersToPublish=$(mysql -h db -u$DBUSER -p$DBPASS iexec -se "SELECT count(*) FROM hosts WHERE lastAlive >= (NOW() - INTERVAL 5 MINUTE) AND marketorderUID IS NULL AND contributionstatus='UNAVAILABLE';")
+    availableWorkers=$(mysql -h db -u$DBUSER -p$DBPASS iexec -se "SELECT count(*) FROM hosts WHERE lastAlive >= (NOW() - INTERVAL 5 MINUTE) AND marketorderUID IS NULL AND contributionstatus='UNAVAILABLE';")
 
-	if ! [[ $ordersToPublish =~ ^[0-9]+$ ]]; then
+	if ! [[ $availableWorkers =~ ^[0-9]+$ ]]; then
 	    echo "mysql request failed"
 		continue
 	fi
 
-	if [ $ordersToPublish -le 0 ]; then
+	if [ $availableWorkers -le 0 ]; then
 		echo "No orders to publish"
 		continue
 	fi
 
+
+	if [ $TRUST -eq 0 ]; then
+		ordersToPublish=$availableWorkers
+	elif [ $TRUST -gt 0 ] && [ $TRUST -lt 25 ]; then
+		ordersToPublish=$((availableWorkers/2))	
+	elif [ $TRUST -ge 25 ] && [ $TRUST -lt 50 ]; then
+		ordersToPublish=$((availableWorkers/3))	
+	elif [ $TRUST -ge 50 ] && [ $TRUST -lt 100 ]; then
+		ordersToPublish=$((availableWorkers/4))	
+	elif [ $TRUST -eq 100 ]; then
+		ordersToPublish=$((availableWorkers/5))	
+	fi
+
 	echo "Need to pusblish "$ordersToPublish
 
+
 	######## TODO - REMOVE - But now needed
-	ordersToPublish=1
-	echo "But pusblish only "$ordersToPublish" - XW bug"
+	#ordersToPublish=1
+	#echo "But pusblish only "$ordersToPublish" - XW bug"
 	########
+	
 
 	for i in $(seq 1 $ordersToPublish)
 	do
 		category=$(shuf -i 3-5 -n 1)
 		price=$(shuf -i 8-16 -n 1)
 		pool='scheduler'
-		echo 'POST /sendmarketorder?pool='$pool'&category='$category'&price='$price'&trust=$TRUST'
-		curl --request GET --insecure --user $ADMINLOGIN':'$ADMINPASSWORD --url 'https://'$pool':443/sendmarketorder?XMLDESC=<marketorder><direction>ASK</direction><categoryid>'$category'</categoryid><trust>$TRUST</trust><price>'$price'</price><volume>1</volume></marketorder>'
+		echo 'POST /sendmarketorder?pool='$pool'&category='$category'&price='$price'&trust='$TRUST
+		request='https://'$pool':443/sendmarketorder?XMLDESC=<marketorder><direction>ASK</direction><categoryid>'$category'</categoryid><trust>'$TRUST'</trust><price>'$price'</price><volume>1</volume></marketorder>'
+		echo $request
+		curl --request GET --insecure --user $ADMINLOGIN':'$ADMINPASSWORD --url $request
 		echo
 		sleep 10
 	done
