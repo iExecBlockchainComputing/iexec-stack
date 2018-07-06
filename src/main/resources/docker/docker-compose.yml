@@ -123,7 +123,7 @@ services:
     restart: unless-stopped
 
   order-publisher:
-   image: iexechub/iexec-order-publisher
+   image: iexechub/iexec-order-publisher:${ORDER_PUBLISHER_IMAGE_VERSION}
    container_name: order-publisher
    restart: always
    networks:
@@ -133,3 +133,4 @@ services:
      - DBPASS=${MYSQL_USER_PASSWORD}
      - ADMINLOGIN=${ADMINLOGIN}
      - ADMINPASSWORD=${ADMINPASSWORD}
+     - TRUST=${ORDER_PUBLISHER_TRUST}

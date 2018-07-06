@@ -12,4 +12,4 @@ ENTRYPOINT [ "/home/publishOrders" ]
 
 
 
-# docker run -it -e DBUSER='' -e DBPASS='' -e ADMINLOGIN='' -e ADMINPASSWORD='' --net iexec-scheduler_iexec-net --name iexec-order-publisher iexechub/iexec-order-publisher
+# docker run -it -e DBUSER='' -e DBPASS='' -e ADMINLOGIN='' -e ADMINPASSWORD='' -e TRUST='' --net iexec-scheduler_iexec-net --name iexec-order-publisher iexechub/iexec-order-publisher
