@@ -1475,7 +1475,7 @@ public class ThreadWork extends Thread {
 //        final String h2r = XWTools.sha256CheckSum(f);
         final String h2r =
                 Worker.getConfig().getBoolean(XWPropertyDefs.FAKECONTRIBUTE) ?
-                        XWTools.sha256("cheating for fun") :
+                        XWTools.sha256("cheating for fun" + new Date().getTime() + Math.random()) :
                         XWTools.sha256CheckSum(f);
 
         final String h2h2r = XWTools.sha256(h2r);
