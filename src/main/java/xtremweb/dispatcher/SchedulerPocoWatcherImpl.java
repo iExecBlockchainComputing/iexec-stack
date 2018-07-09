@@ -681,8 +681,8 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
         }
 
         try {
-            marketOrder.setCompleted();
-            marketOrder.update(false);
+            marketOrder.setFinalizing();
+            marketOrder.update();
         } catch(final IOException e) {
             logger.exception(e);
         }
@@ -721,9 +721,9 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
                 result == null ? "" : result.toString()) == TransactionStatus.FAILURE) {
 
             marketOrder.setErrorMsg("WARN:stillFinalizing");
-            marketOrder.setFinalizing();
         }
         else {
+            marketOrder.setCompleted();
             marketOrder.setErrorMsg("INFO:finalized");
         }
         final long revealingDate = marketOrder.getRevealingDate().getTime();
