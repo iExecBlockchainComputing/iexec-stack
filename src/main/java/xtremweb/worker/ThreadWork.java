@@ -1463,18 +1463,27 @@ public class ThreadWork extends Thread {
 	}
 
     /**
-     * This marks the current work as contributing and calculates h2h2r and h2r
+     * This marks the current work as contributing and calculates h2h2r and h2r.
+     * This set a wrong contribution if XWPropertyDefs.FAKECONTRIBUTE==true; this is for testing only
      * @param f is the result file
      * @return StatusEnum.CONTRIBUTING
      * @throws NoSuchAlgorithmException
      * @throws IOException
+     * @see XWPropertyDefs#FAKECONTRIBUTE
      */
 	private StatusEnum contribute(final File f) throws NoSuchAlgorithmException, IOException{
-        final String h2r = XWTools.sha256CheckSum(f);
+//        final String h2r = XWTools.sha256CheckSum(f);
+        final String h2r =
+                Worker.getConfig().getBoolean(XWPropertyDefs.FAKECONTRIBUTE) ?
+                        XWTools.sha256("cheating for fun") :
+                        XWTools.sha256CheckSum(f);
+
         final String h2h2r = XWTools.sha256(h2r);
+
         logger.debug("ThreadWork#zipResult() shasum (" + f + ") = " + h2r);
+        logger.debug("ThreadWork#zipResult() currentWork.H2r(" + h2r + ") "
+                + "[testing=" + Worker.getConfig().getBoolean(XWPropertyDefs.FAKECONTRIBUTE)+ "]");
         logger.debug("ThreadWork#zipResult() currentWork.setH2h2r(" + h2h2r + ")");
-        logger.debug("ThreadWork#zipResult() currentWork.H2r(" + h2r + ")");
         currentWork.setH2h2r(h2h2r);
         currentWork.setHiddenH2r(h2r);
         currentWork.setContributing();

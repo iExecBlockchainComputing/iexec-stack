@@ -1277,12 +1277,10 @@ public final class CommManager extends Thread {
             	             System.out.println("ActuatorService.getInstance().contribute(" + theWork.getWorkOrderId() + ", "
                 	                 + theWork.getH2h2r() + ")");
                     	     status = ActuatorService.getInstance().contribute(theWork.getWorkOrderId(),
-                        	         Worker.getConfig().getBoolean(XWPropertyDefs.FAKECONTRIBUTE)
-                            	             ? XWTools.sha256("cheating for fun")
-                                	         : theWork.getH2h2r(),
-                                 	BigInteger.ZERO,
-                                 	"0",
-                                 	"0");
+                                     theWork.getH2h2r(),
+                                     BigInteger.ZERO,
+                                     "0",
+                                     "0");
                          	if (status == TransactionStatus.SUCCESS){
                             	 break;
 	                         }
@@ -1315,11 +1313,6 @@ public final class CommManager extends Thread {
             logger.exception("CommManager#uploadResults", e);
             theWork.setFailed(e.getMessage());
             throw e;
-        } catch (final NoSuchAlgorithmException e) {
-            logger.exception("CommManager#uploadResults", e);
-            theWork.setStatus(StatusEnum.DATAREQUEST);
-            theWork.setErrorMsg(e.getMessage());
-            throw new IOException(e);
         } catch (final Exception e) {
             logger.exception("CommManager#uploadResults", e);
             theWork.setStatus(StatusEnum.DATAREQUEST);
