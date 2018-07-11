@@ -72,7 +72,7 @@ public final class DBInterface {
 	 *
 	 * @since 9.1.0
 	 */
-	EmailSender emailSender;
+	private EmailSender emailSender;
 
 	/**
 	 * Constants that define some fixed dirnames These are not considered as
@@ -88,7 +88,7 @@ public final class DBInterface {
 
 	private static DBInterface instance = null;
 
-	public static final DBInterface getInstance() {
+	public static DBInterface getInstance() {
 		return instance;
 	}
 
@@ -102,7 +102,7 @@ public final class DBInterface {
 	/**
 	 * This inserts an object to both DB and cache
 	 *
-	 * @throws IOException
+	 * @throws IOException on error
 	 * @since 9.0.0
 	 */
 	private <T extends Table> void insert(final T row) throws IOException, URISyntaxException {
@@ -115,26 +115,26 @@ public final class DBInterface {
 	 * @since 7.4.0
 	 */
 	private Table getFromCache(final URI uri) {
-		return dbConnPool.getInstance().getFromCache(uri);
+		return DBConnPoolThread.getInstance().getFromCache(uri);
 	}
 
-	/**
-	 * This retrieves an object from cache
-	 *
-	 * @since 8.2.0
-	 */
-	private <T extends Table> T getFromCache(final URI uri, final T row) {
-		return dbConnPool.getInstance().getFromCache(uri, row);
-	}
-
-	/**
-	 * This retrieves an object from cache
-	 *
-	 * @since 7.4.0
-	 */
-	private <T extends Table> T getFromCache(final UID uid, final T row) {
-        return dbConnPool.getInstance().getFromCache(uid, row);
-	}
+//	/**
+//	 * This retrieves an object from cache
+//	 *
+//	 * @since 8.2.0
+//	 */
+//	private <T extends Table> T getFromCache(final URI uri, final T row) {
+//		return DBConnPoolThread.getInstance().getFromCache(uri, row);
+//	}
+//
+//	/**
+//	 * This retrieves an object from cache
+//	 *
+//	 * @since 7.4.0
+//	 */
+//	private <T extends Table> T getFromCache(final UID uid, final T row) {
+//        return DBConnPoolThread.getInstance().getFromCache(uid, row);
+//	}
 
 	/**
 	 * This retrieves an object interface from cache
@@ -169,7 +169,7 @@ public final class DBInterface {
 	 */
 	private <T extends Table> T getFromCache(final UserInterface u, final UID uid, final T row)
 			throws IOException, AccessControlException {
-        return dbConnPool.getInstance().getFromCache(u, uid, row);
+        return DBConnPoolThread.getInstance().getFromCache(u, uid, row);
 	}
 
 	/**
@@ -191,17 +191,17 @@ public final class DBInterface {
 	 * @since 7.4.0
 	 */
 	private void removeFromCache(final UID uid) {
-        dbConnPool.getInstance().removeFromCache(uid);
+        DBConnPoolThread.getInstance().removeFromCache(uid);
 	}
 
-	/**
-	 * This removes an object from cache
-	 *
-	 * @since 7.4.0
-	 */
-	private void removeFromCache(final URI uri) throws IOException {
-		dbConnPool.getInstance().removeFromCache(uri);
-	}
+//	/**
+//	 * This removes an object from cache
+//	 *
+//	 * @since 7.4.0
+//	 */
+//	private void removeFromCache(final URI uri) throws IOException {
+//        DBConnPoolThread.getInstance().removeFromCache(uri);
+//	}
 
 	/**
 	 * This instantiates a DBConnPoolThread, update application pools and set
@@ -251,7 +251,7 @@ public final class DBInterface {
 		}
 		try {
 			final String to = theClient.getEMail();
-			if ((to != null) || (to.length() > 1)) {
+			if ((to != null) && (to.length() > 1)) {
 				emailSender.send("XtremWeb-HEP@" + XWTools.getLocalHostName() + " : " + row.getUID(),
 						theClient.getEMail(),
 						msg + "\n" + row.toString(false, true) + "\n\n" + "https://" + XWTools.getLocalHostName() + ":"
@@ -264,16 +264,15 @@ public final class DBInterface {
 
 	/**
 	 * This inserts missing element from src to dest
-	 * @param src
-	 * @param dest
+	 * @param src is the source
+	 * @param dest is the destination
 	 * @return dest with missing elements from src
 	 */
 	private Collection<UID> mergeCollections(final Collection<UID> src, final Collection<UID> dest) {
 		if((src == null) || (dest == null)) {
 			return dest ;
 		}
-		for (final Iterator<UID> it = src.iterator(); it.hasNext();) {
-			final UID uid = it.next();
+		for (final UID uid : src) {
 			if(!dest.contains(uid)){
 				dest.add(uid);
 			}
@@ -328,8 +327,8 @@ public final class DBInterface {
 	 * @return a collection of TableInterface
 	 * @since 5.8.0
 	 */
-	protected <T extends Table> Collection<T> selectAll(final T row) throws IOException {
-		return selectAll(row, (String) null);
+	private <T extends Table> Collection<T> selectAll(final T row) throws IOException {
+		return selectAll(row, null);
 	}
 
 	/**
@@ -348,7 +347,7 @@ public final class DBInterface {
 	 * @return a Collection of public rows
 	 * @since 7.0.0
 	 */
-	public <T extends Table> Collection<T> selectAllPublic(final T row) throws IOException {
+	 <T extends Table> Collection<T> selectAllPublic(final T row) throws IOException {
 		if (row == null) {
 			logger.warn("selectAll : row is null ?!?!");
 			return null;
@@ -366,7 +365,7 @@ public final class DBInterface {
 	 * @return a Collection of found rows
 	 * @since 5.8.0
 	 */
-	protected <T extends Table> Collection<T> selectAll(final T row, final String conditions) throws IOException {
+	private <T extends Table> Collection<T> selectAll(final T row, final String conditions) throws IOException {
 		if (row == null) {
 			logger.warn("selectAll : row is null ?!?!");
 			return null;
@@ -438,8 +437,8 @@ public final class DBInterface {
 	 * @return a Collection of found UID
 	 * @since 5.8.0
 	 */
-	protected <T extends Table> Collection<UID> selectUID(final T row) throws IOException {
-		return selectUID(row, (String) null);
+	private <T extends Table> Collection<UID> selectUID(final T row) throws IOException {
+		return selectUID(row, null);
 	}
 
 	/**
@@ -452,7 +451,7 @@ public final class DBInterface {
 	 * @return a Collection of found UID
 	 * @since 5.8.0
 	 */
-	protected <T extends Table> Collection<UID> selectUID(final T row, final String conditions) throws IOException {
+	private <T extends Table> Collection<UID> selectUID(final T row, final String conditions) throws IOException {
 		if (row == null) {
 			logger.warn("selectUID : row is null ?!?!");
 			return null;
@@ -470,8 +469,8 @@ public final class DBInterface {
 	 * @return the first found row, or null
 	 * @since 5.8.0
 	 */
-	protected <T extends Table> T selectOne(final T row) throws IOException {
-		return selectOne(row, (String) null);
+	private <T extends Table> T selectOne(final T row) throws IOException {
+		return selectOne(row,  null);
 	}
 
 	/**
@@ -484,7 +483,7 @@ public final class DBInterface {
 	 * @return a Collection of found rows
 	 * @since 10.0.0
 	 */
-	protected <T extends Table> T selectOne(final T row, final String conditions) throws IOException {
+	 <T extends Table> T selectOne(final T row, final String conditions) throws IOException {
 		if (row == null) {
 			logger.warn("selectOne : row is null ?!?!");
 			return null;
@@ -712,7 +711,7 @@ public final class DBInterface {
 	 * @param command is the command to execute
 	 * @since 5.8.0
 	 * @return the application which uid is provided; null if uid is null
-	 * @throws InvalidKeyException 
+	 * @throws InvalidKeyException on authn/authz error
 	 */
 	public AppInterface app(final XMLRPCCommand command) throws IOException, InvalidKeyException {
 		final UID uid = command.getURI().getUID();
@@ -789,7 +788,7 @@ public final class DBInterface {
 	 * @return a Collection of UID
 	 * @since 5.8.0
 	 */
-	public Collection<UID> appsUID(final UserInterface u) throws IOException {
+	private Collection<UID> appsUID(final UserInterface u) throws IOException {
 		final AppInterface row = readableAppUID(u);
 		return selectUID(row);
 	}
@@ -848,7 +847,7 @@ public final class DBInterface {
 	 * then in DB. Data access rights are checked.
 	 *
 	 * @param command is the command to execute
-	 * @throws InvalidKeyException 
+	 * @throws InvalidKeyException on authn/authz error
 	 * @since 5.8.0
 	 */
 	protected DataInterface data(final XMLRPCCommand command) throws IOException, AccessControlException, InvalidKeyException {
@@ -874,7 +873,7 @@ public final class DBInterface {
 	 * @return a Collection of UID
 	 * @since 5.8.0
 	 */
-	public Collection<UID> datasUID(final UserInterface user) throws IOException {
+	private Collection<UID> datasUID(final UserInterface user) throws IOException {
 		final DataInterface row = readableDataUID(user);
 		return selectUID(row);
 	}
@@ -887,7 +886,7 @@ public final class DBInterface {
 	 * @return a Collection of UID
 	 * @since 7.0.0
 	 */
-	public Collection<UID> ownerDatasUID(final UserInterface user) throws IOException {
+	private Collection<UID> ownerDatasUID(final UserInterface user) throws IOException {
 		final DataInterface row = readableDataUID(user);
 		return selectUID(row, "maintable.owneruid='" + user.getUID() + "'");
 	}
@@ -967,7 +966,7 @@ public final class DBInterface {
 	/**
 	 * This retrieves a category
 	 *
-	 * @param command
+	 * @param command is the requesting command
 	 * @return a category interface
 	 * @since 13.0.0
 	 */
@@ -1053,8 +1052,8 @@ public final class DBInterface {
      * @return a Collection of UID
      * @since 13.0.0
      */
-    protected Collection<UID> categoriesUID(final UserInterface u) throws IOException {
-        return categoriesUID(u, (String) null);
+    private Collection<UID> categoriesUID(final UserInterface u) throws IOException {
+        return categoriesUID(u, null);
     }
 
     /**
@@ -1066,7 +1065,7 @@ public final class DBInterface {
      * @return a Collection of UID
      * @since 13.0.0
      */
-    protected Collection<UID> categoriesUID(final UserInterface u, final String criterias) throws IOException {
+    private Collection<UID> categoriesUID(final UserInterface u, final String criterias) throws IOException {
         final CategoryInterface row = readableCategoryUID(u);
         return selectUID(row, criterias);
     }
@@ -1079,7 +1078,7 @@ public final class DBInterface {
      * @return how many category exist
      * @since 13.0.0
      */
-    protected int categorieSize(final UserInterface u) throws IOException {
+    protected int categorieSize(final UserInterface u)  {
         try {
             categoriesUID(u).size();
         } catch (final Exception e) {
@@ -1131,7 +1130,7 @@ public final class DBInterface {
 	 *            is the UID of the readable market to retrieve
 	 * @since 13.1.0
 	 */
-	protected MarketOrderInterface marketOrder(final UserInterface u, final UID uid)
+	private MarketOrderInterface marketOrder(final UserInterface u, final UID uid)
 			throws IOException, AccessControlException {
 
 		if (uid == null) {
@@ -1149,11 +1148,11 @@ public final class DBInterface {
 	/**
 	 * This retrieves a market order
 	 *
-	 * @param command
+	 * @param command is the command to execute
 	 * @return a market order interface
 	 * @since 13.1.0
 	 */
-	protected MarketOrderInterface marketOrder(final XMLRPCCommand command) throws InvalidKeyException, IOException, AccessControlException {
+	private MarketOrderInterface marketOrder(final XMLRPCCommand command) throws InvalidKeyException, IOException, AccessControlException {
 		final UID uid = command.getURI().getUID();
 		if (uid == null) {
 			return null;
@@ -1189,7 +1188,7 @@ public final class DBInterface {
      * @since 13.1.0
      * @see #marketOrderUnsatisfied(String)
      */
-    protected MarketOrderInterface marketOrderHavingNoResource(final String workerPoolAddr) throws IOException {
+    private MarketOrderInterface marketOrderHavingNoResource(final String workerPoolAddr) throws IOException {
 
         if(workerPoolAddr == null) {
             return null;
@@ -1209,7 +1208,7 @@ public final class DBInterface {
      * @since 13.1.0
      * @see #marketOrderUnsatisfied(String)
      */
-    protected MarketOrderInterface marketOrderLackingResources(final String workerPoolAddr) throws IOException {
+    private MarketOrderInterface marketOrderLackingResources(final String workerPoolAddr) throws IOException {
 
         if(workerPoolAddr == null) {
             return null;
@@ -1229,7 +1228,7 @@ public final class DBInterface {
      * @since 13.1.0
      * @see HashTaskSet#detectAbortedTasks()
      */
-    protected Collection<MarketOrderInterface> marketOrderLockingResources() throws IOException {
+     Collection<MarketOrderInterface> marketOrderLockingResources() throws IOException {
         final MarketOrderInterface row = new MarketOrderInterface();
         final int alivePeriod = Integer.parseInt(Dispatcher.getConfig().getProperty(XWPropertyDefs.ALIVEPERIOD.toString()));
 
@@ -1244,7 +1243,7 @@ public final class DBInterface {
      * @param request is the SQL request
      * @since 13.1.0
      */
-    protected MarketOrderInterface marketOrderUnsatisfied(final String request) throws IOException {
+    private MarketOrderInterface marketOrderUnsatisfied(final String request) throws IOException {
         return selectOne(new MarketOrderInterface(), request);
     }
     /**
@@ -1255,7 +1254,7 @@ public final class DBInterface {
      * @see #marketOrderLackingResources(String)
      * @see #marketOrderHavingNoResource(String)
      */
-    protected MarketOrderInterface marketOrderStarvingResources(final String workerPoolAddr) throws IOException {
+    private MarketOrderInterface marketOrderStarvingResources(final String workerPoolAddr) throws IOException {
         logger.debug("marketOrderStarvingResources(" + workerPoolAddr + ")");
         MarketOrderInterface marketOrder = marketOrderLackingResources(workerPoolAddr);
         if (marketOrder == null) {
@@ -1269,7 +1268,7 @@ public final class DBInterface {
      * @param idx is the market order
      * @since 13.1.0
      */
-    protected MarketOrderInterface marketOrderByIdx(final long idx) throws IOException {
+     MarketOrderInterface marketOrderByIdx(final long idx) throws IOException {
         return selectOne(new MarketOrderInterface(),
                 SQLRequest.MAINTABLEALIAS + "." + MarketOrderInterface .Columns.MARKETORDERIDX + "="
                         + idx);
@@ -1286,7 +1285,7 @@ public final class DBInterface {
      * @param uid is the market order uid
      * @since 13.1.0
      */
-    protected MarketOrderInterface marketOrder(final UID uid) throws IOException {
+     MarketOrderInterface marketOrder(final UID uid) throws IOException {
         return select(new MarketOrderInterface(), uid);
     }
 	/**
@@ -1310,8 +1309,8 @@ public final class DBInterface {
 	 * @return a Collection of UID
 	 * @since 13.1.0
 	 */
-	protected Collection<UID> marketOrdersUID(final UserInterface u) throws IOException {
-		return marketOrdersUID(u, (String) null);
+	private Collection<UID> marketOrdersUID(final UserInterface u) throws IOException {
+		return marketOrdersUID(u, null);
 	}
 
     /**
@@ -1323,7 +1322,7 @@ public final class DBInterface {
      * @return a Collection of UID
      * @since 13.1.0
      */
-    protected Collection<UID> marketOrdersUID(final UserInterface u, final String criterias) throws IOException {
+    private Collection<UID> marketOrdersUID(final UserInterface u, final String criterias) throws IOException {
         final MarketOrderInterface row = readableMarketOrderUID(u);
         return selectUID(row, criterias);
     }
@@ -1344,7 +1343,7 @@ public final class DBInterface {
      * @return a Collection of UID
      * @since 13.1.0
      */
-    protected Collection<MarketOrderInterface> revealingOrFinalizingMarketOrders() throws IOException {
+     Collection<MarketOrderInterface> revealingOrFinalizingMarketOrders() throws IOException {
         final MarketOrderInterface row = new MarketOrderInterface();
         return selectAll(row,
                 MarketOrderInterface .Columns.STATUS + "='" + StatusEnum.REVEALING + "' OR " +
@@ -1370,7 +1369,7 @@ public final class DBInterface {
      * @param marketOrder is the market order
      * @since 13.1.0
      */
-    protected Collection<WorkInterface> marketOrderWorks(final MarketOrderInterface marketOrder) throws IOException {
+     Collection<WorkInterface> marketOrderWorks(final MarketOrderInterface marketOrder) throws IOException {
         if(marketOrder == null || marketOrder.getUID() == null){
             return null;
         }
@@ -1458,8 +1457,8 @@ public final class DBInterface {
 	 * @return a Collection of UID
 	 * @since 5.8.0
 	 */
-	public Collection<UID> groupsUID(final UserInterface u) throws IOException {
-		return groupsUID(u, (String) null);
+	private Collection<UID> groupsUID(final UserInterface u) throws IOException {
+		return groupsUID(u, null);
 	}
 
 	/**
@@ -1473,7 +1472,7 @@ public final class DBInterface {
 	 * @return a Collection of UID
 	 * @since 5.8.0
 	 */
-	public Collection<UID> groupsUID(final UserInterface u, final String criterias) throws IOException {
+	private Collection<UID> groupsUID(final UserInterface u, final String criterias) throws IOException {
 		final GroupInterface row = readableGroupUID(u);
 		return selectUID(row, criterias);
 	}
@@ -1675,8 +1674,8 @@ public final class DBInterface {
 	 * @return a Collection of UID
 	 * @since 5.8.0
 	 */
-	public Collection<UID> hostsUID(final UserInterface u) throws IOException {
-		return hostsUID(u, (String) null);
+	private Collection<UID> hostsUID(final UserInterface u) throws IOException {
+		return hostsUID(u, null);
 	}
 
 	/**
@@ -1690,7 +1689,7 @@ public final class DBInterface {
 	 * @return a Collection of UID
 	 * @since 5.9.0
 	 */
-	public Collection<UID> hostsUID(final UserInterface u, final String conditions) throws IOException {
+    private Collection<UID> hostsUID(final UserInterface u, final String conditions) throws IOException {
 		final HostInterface row = readableHostUID(u);
 		return selectUID(row, conditions);
 	}
@@ -1702,7 +1701,7 @@ public final class DBInterface {
 	 *            is the requesting user
 	 * @since 5.8.0
 	 */
-	public int hostSize(final UserInterface u) throws IOException {
+    private int hostSize(final UserInterface u) throws IOException {
 		try {
 			hostsUID(u).size();
 		} catch (final Exception e) {
@@ -1824,8 +1823,8 @@ public final class DBInterface {
 	 * @return a Collection of UID
 	 * @since 5.8.0
 	 */
-	protected Collection<UID> sessionsUID(final UserInterface u) throws IOException {
-		return sessionsUID(u, (String) null);
+	private Collection<UID> sessionsUID(final UserInterface u) throws IOException {
+		return sessionsUID(u, null);
 	}
 
 	/**
@@ -1837,7 +1836,7 @@ public final class DBInterface {
 	 * @return a Collection of UID
 	 * @since 5.8.0
 	 */
-	protected Collection<UID> sessionsUID(final UserInterface u, final String criterias) throws IOException {
+    private Collection<UID> sessionsUID(final UserInterface u, final String criterias) throws IOException {
 		final SessionInterface row = readableSessionUID(u);
 		return selectUID(row, criterias);
 	}
@@ -1949,7 +1948,7 @@ public final class DBInterface {
 	 * @return a task or null
 	 * @since 8.0.0
 	 */
-	protected TaskInterface computingTask(final WorkInterface work, final HostInterface host) throws IOException {
+	 TaskInterface computingTask(final WorkInterface work, final HostInterface host) throws IOException {
 		if ((work == null) || (work.getUID() == null) || (host == null)) {
 			return null;
 		}
@@ -1985,7 +1984,7 @@ public final class DBInterface {
 	 * @return a task or null
 	 * @since 8.0.0
 	 */
-	protected TaskInterface computingTask(final WorkInterface work) throws IOException {
+	 TaskInterface computingTask(final WorkInterface work) throws IOException {
 		if ((work == null) || (work.getUID() == null)) {
 			return null;
 		}
@@ -2082,7 +2081,7 @@ public final class DBInterface {
 	 * @return a Collection of UID
 	 * @since 5.8.0
 	 */
-	protected Collection<UID> tasksUID(final UserInterface u) throws IOException {
+	 Collection<UID> tasksUID(final UserInterface u) throws IOException {
 		final TaskInterface row = readableTaskUID(u);
 		return selectUID(row);
 	}
@@ -2219,7 +2218,7 @@ public final class DBInterface {
 	 * @return a Collection of UID
 	 * @since 5.8.0
 	 */
-	protected Collection<UID> tracesUID(final UserInterface u) throws IOException {
+	 Collection<UID> tracesUID(final UserInterface u) throws IOException {
 		final TraceInterface row = readableTraceUID(u);
 		return selectUID(row);
 	}
@@ -2349,7 +2348,7 @@ public final class DBInterface {
 	 * @return a Collection of UID
 	 * @since 5.8.0
 	 */
-	protected Collection<UID> usergroupsUID(final UserInterface u) throws IOException {
+	 Collection<UID> usergroupsUID(final UserInterface u) throws IOException {
 		final UserGroupInterface row = readableUserGroupUID(u);
 		return selectUID(row);
 	}
@@ -2479,7 +2478,7 @@ public final class DBInterface {
 	 * @return a Collection of UID
 	 * @since 5.8.0
 	 */
-	protected Collection<UID> usersUID(final UserInterface u) throws IOException {
+	 Collection<UID> usersUID(final UserInterface u) throws IOException {
 		return usersUID(u, (String) null);
 	}
 
@@ -2494,7 +2493,7 @@ public final class DBInterface {
 	 * @return a Collection of UID
 	 * @since 5.8.0
 	 */
-	protected Collection<UID> usersUID(final UserInterface u, final String criterias) throws IOException {
+	 Collection<UID> usersUID(final UserInterface u, final String criterias) throws IOException {
 		final UserInterface row = readableUserUID(u);
 		return selectUID(row, criterias);
 	}
@@ -2654,7 +2653,7 @@ public final class DBInterface {
 	/**
 	 * This retrieves readable works for the given user
 	 *
-	 * @param command
+	 * @param command is the command to execute
 	 * @return a work interface
 	 * @since 11.4.0
 	 */

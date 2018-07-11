@@ -283,7 +283,7 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
 
         logger.debug("createWork() : " + marketOrder.toXml());
 
-        if(marketOrder.getWorkerPoolAddr().compareTo(workModel.getWorkerpool()) != 0) {
+        if((marketOrder.getWorkerPoolAddr() != null) && marketOrder.getWorkerPoolAddr().compareTo(workModel.getWorkerpool()) != 0) {
             logger.error("createWork() : worker pool mismatch : "
                     + marketOrder.getWorkerPoolAddr() + " != "
                     + workModel.getWorkerpool());
@@ -403,7 +403,7 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
                 return;
             }
 
-            final ArrayList<String> wallets = new ArrayList();
+            final ArrayList<String> wallets = new ArrayList<>();
             for(final HostInterface worker : workers ) {
                 logger.error("onWorkOrderActivated() : worker: " + worker);
                 worker.setPending();
@@ -437,16 +437,16 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
                                                             final HostInterface worker)
             throws IOException{
 
-/**
+/*
  * ```BigInteger contributionStatus = WorkerPoolService.getInstance().getWorkerContributionModelByWorkOrderId(workOrderId, worker).getStatus();
  * if (contributionStatus.equals(BigInteger.ZERO)){//0:UNSET, 1:AUTHORIZED, 2:CONTRIBUTED, 3:PROVED, 4:REJECTED
  *     status = ActuatorService.getInstance().allowWorkersToContribute(workOrderId, Arrays.asList(worker) , "0" );
  * }```
  */
         System.out.println("allowWorkerToContribute(" + workOrderId + "," +
-                marketOrder == null ? "null" : marketOrder.getUID() + "," +
-                wallet == null ? "null" : wallet.getAddress() + "," +
-                worker == null ? "null" : worker.getUID() + ")");
+                (marketOrder == null ? "null" : marketOrder.getUID()) + "," +
+                (wallet == null ? "null" : wallet.getAddress()) + "," +
+                (worker == null ? "null" : worker.getUID()) + ")");
         if((wallet == null) || (wallet.getAddress() == null)) {
             System.out.println("allowWorkerToContribute() : no wallet");
             return;
@@ -458,7 +458,7 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
             return;
         }
 
-        final ArrayList<String> wallets = new ArrayList();
+        final ArrayList<String> wallets = new ArrayList<>();
         final Collection<HostInterface> workers = new ArrayList<>();
         wallets.add(wallet.getAddress());
         workers.add(worker);
@@ -480,7 +480,7 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
 
         TransactionStatus txStatus = null;
         int contributeTry;
-        for(contributeTry = 0; contributeTry < 3 && txStatus == null; contributeTry++) {
+        for(contributeTry = 0; contributeTry < 3; contributeTry++) {
 
             txStatus = actuatorService.allowWorkersToContribute(workOrderId, wallets, "0");
 
@@ -666,8 +666,18 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
                                      final Collection<WorkInterface> works,
                                      final Logger logger) {
 
+        logger.debug("doFinalize(" + woid + ", "
+                + result + ", "
+                + marketOrder.getUID() +", "
+                + (works == null ? "null" : works.size()) + ")");
+
+        if(works == null)
+            return;
+
         for(final WorkInterface work : works ) {
             try {
+                logger.debug("doFinalize() : " + work.getUID());
+
                 final TaskInterface theWorkTask = DBInterface.getInstance().computingTask(work);
                 final HostInterface theHost = DBInterface.getInstance().host(theWorkTask.getHost());
 
@@ -725,9 +735,11 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
                 "",
                 result == null ? "" : result.toString()) == TransactionStatus.FAILURE) {
 
+            logger.debug("doFinalize() : WARN:stillFinalizing");
             marketOrder.setErrorMsg("WARN:stillFinalizing");
         }
         else {
+            logger.debug("doFinalize() : INFO:finalized");
             marketOrder.setCompleted();
             marketOrder.setErrorMsg("INFO:finalized");
         }
@@ -737,6 +749,7 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
                 * Dispatcher.getConfig().getTimeout())) {
             marketOrder.setError();
             marketOrder.setErrorMsg("ERROR:finalizationTimeOut");
+            logger.debug("doFinalize() : ERROR:finalizationTimeOut");
         }
         try {
             marketOrder.update();
