@@ -41,7 +41,7 @@ import xtremweb.communications.URI;
 
 public class HashTaskSet extends TaskSet {
 
-	public HashTaskSet() {
+	protected HashTaskSet() {
 		super();
 	}
 
@@ -62,23 +62,16 @@ public class HashTaskSet extends TaskSet {
 
 			getLogger().debug("refill size = " + works.size());
 
-			for (final Iterator<WorkInterface> worksEnum = works.iterator(); worksEnum.hasNext();) {
+			for (final WorkInterface theWork  : works) {
 
 				try {
-					final WorkInterface theWork = worksEnum.next();
-					if (theWork == null) {
-						continue;
-					}
-
 					getLogger().debug("refill = " + theWork.getUID());
 
 					theWork.setPending();
 
 					final Collection<TaskInterface> tasks = db.tasks(theWork);
 					if (tasks != null) {
-						for (final Iterator<TaskInterface> tasksEnum = tasks.iterator(); tasksEnum.hasNext();) {
-							final TaskInterface theTask = tasksEnum.next();
-
+						for (final TaskInterface theTask : tasks) {
 							theTask.setError();
 							theTask.setRemovalDate(now);
 							theTask.update();
@@ -193,7 +186,7 @@ public class HashTaskSet extends TaskSet {
 
 		private final StatusEnum status;
 
-		private abortedStatus(final StatusEnum s) {
+		abortedStatus(final StatusEnum s) {
 			status = s;
 		}
 
@@ -217,11 +210,7 @@ public class HashTaskSet extends TaskSet {
 				final Collection<TaskInterface> tasks = db.tasks(s.getStatus());
 				getLogger().debug("detectAbortedTasks " + s + " = " + (tasks == null ? "null" : tasks.size()));
 				if (tasks != null) {
-					for (final Iterator<TaskInterface> enumeration = tasks.iterator(); enumeration.hasNext();) {
-						final TaskInterface theTask = enumeration.next();
-						if (theTask == null) {
-							continue;
-						}
+					for (final TaskInterface theTask : tasks) {
 						detectAbortedTask(theTask);
 					}
 				}
@@ -278,27 +267,42 @@ public class HashTaskSet extends TaskSet {
                 getLogger().debug("detectAbortedTasks revealingOrFinalizingMarketOrders " + marketOrder.toXml());
 
                 final Collection<WorkInterface> works = db.marketOrderWorks(marketOrder);
-                getLogger().debug("detectAbortedTasks revealingOrFinalizingMarketOrders, market orders has " + works.size());
+                final long expectedContributions = marketOrder.getExpectedWorkers();
+                getLogger().debug("detectAbortedTasks revealingOrFinalizingMarketOrders, ["
+                        + marketOrder.getUID() + "] ("
+                        + works.size()
+                        + ") : " + expectedContributions);
 
-                boolean doComplete = works.size() > 0;
+                long totalCompleted = 0L;
 
                 for (WorkInterface work : works) {
 
-                    getLogger().debug("detectAbortedTasks revealingOrFinalizingMarketOrders " + work.toXml());
+                    getLogger().debug("detectAbortedTasks revealingOrFinalizingMarketOrders, ["
+                            + marketOrder.getUID() + "] ("
+                            + works.size()
+                            + ") : " + work.toXml());
 
 //                    if (work.getStatus() == StatusEnum.ERROR) {
 //                       //reopen?
 //                    }
 
                     if (work.getStatus() != StatusEnum.COMPLETED) {
-                        doComplete = false;
-                    } else {
+                        totalCompleted++;
                         woid = work.getWorkOrderId();
                         result = work.getResult();
                     }
                 }
 
-                if (doComplete) {
+                getLogger().debug("detectAbortedTasks revealingOrFinalizingMarketOrders, ["
+                        + marketOrder.getUID() + "] ("
+                        + works.size()
+                        + ") : " + totalCompleted + "/" + expectedContributions);
+
+                if (totalCompleted >= expectedContributions) {
+                    getLogger().debug("detectAbortedTasks revealingOrFinalizingMarketOrders, ["
+                            + marketOrder.getUID() + "] ("
+                            + works.size()
+                            + ") : finalizing");
                     try {
                         SchedulerPocoWatcherImpl.doFinalize(woid, result, marketOrder, works, getLogger());
                     } catch(Exception e) {
@@ -308,6 +312,12 @@ public class HashTaskSet extends TaskSet {
                     for (HostInterface worker : workers) {
                         worker.leaveMarketOrder(marketOrder);
                     }
+                }
+                else {
+                    getLogger().debug("detectAbortedTasks revealingOrFinalizingMarketOrders, ["
+                            + marketOrder.getUID() + "] ("
+                            + works.size()
+                            + ") : not finalizing yet");
                 }
             }
 
