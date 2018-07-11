@@ -679,6 +679,10 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
                 logger.debug("doFinalize() : " + work.getUID());
 
                 final TaskInterface theWorkTask = DBInterface.getInstance().computingTask(work);
+                if(theWorkTask == null) {
+                    logger.debug("doFinalize() can't find any running task for the work " + work.getUID());
+                    continue;
+                }
                 final HostInterface theHost = DBInterface.getInstance().host(theWorkTask.getHost());
 
                 if(theHost == null) {
