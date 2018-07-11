@@ -743,14 +743,14 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
             marketOrder.setCompleted();
             marketOrder.setErrorMsg("INFO:finalized");
         }
-        final long revealingDate = marketOrder.getRevealingDate().getTime();
-        final long now = new Date().getTime();
-        if(now - revealingDate > (Dispatcher.getConfig().getInt(XWPropertyDefs.REVEALTIMEOUTMULTIPLICATOR)
-                * Dispatcher.getConfig().getTimeout())) {
-            marketOrder.setError();
-            marketOrder.setErrorMsg("ERROR:finalizationTimeOut");
-            logger.debug("doFinalize() : ERROR:finalizationTimeOut");
-        }
+//        final long revealingDate = marketOrder.getRevealingDate().getTime();
+//        final long now = new Date().getTime();
+//        if(now - revealingDate > (Dispatcher.getConfig().getInt(XWPropertyDefs.REVEALTIMEOUTMULTIPLICATOR)
+//                * Dispatcher.getConfig().getTimeout())) {
+//            marketOrder.setError();
+//            marketOrder.setErrorMsg("ERROR:finalizationTimeOut");
+//            logger.debug("doFinalize() : ERROR:finalizationTimeOut");
+//        }
         try {
             marketOrder.update();
         } catch(final IOException e) {
