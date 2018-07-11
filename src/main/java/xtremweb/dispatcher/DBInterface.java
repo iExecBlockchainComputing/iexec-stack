@@ -5480,19 +5480,20 @@ public final class DBInterface {
 
                             replicatedWork.incTotalReplica();
                         }
-                        replicatedWork.setReplicating();
+//                        replicatedWork.setReplicating();
                         if (currentReplications >= replicatedWork.getTotalReplica()) {
                             replicatedWork.setCompleted();
                         }
                         replicatedWork.update();
                     }
-                } else {
-                    final long expectedReplications = theWork.getExpectedReplications();
-                    final long currentReplications = theWork.getTotalReplica();
-                    if ((currentReplications < expectedReplications) || (expectedReplications < 0)) {
-                        theWork.setReplicating();
-                    }
                 }
+//                else {
+//                    final long expectedReplications = theWork.getExpectedReplications();
+//                    final long currentReplications = theWork.getTotalReplica();
+//                    if ((currentReplications < expectedReplications) || (expectedReplications < 0)) {
+//                        theWork.setReplicating();
+//                    }
+//                }
 
                 break;
                 case ERROR:
@@ -5629,7 +5630,8 @@ public final class DBInterface {
      * This is replaces the blockchain event watcher automatically called on worker contribution.
      * The scheduler must ask to reveal to all workers as soon as the consensus us reached
      */
-    public synchronized void checkContribution(final WorkInterface theWork, MarketOrderInterface marketOrder) {
+    public synchronized void checkContribution(final WorkInterface theWork,
+                                               final MarketOrderInterface marketOrder) {
         try {
             if (theWork == null)
                 return;
@@ -5652,7 +5654,8 @@ public final class DBInterface {
             final long expectedContributions = marketOrder.getExpectedWorkers();
 			logger.debug("checkContribution() : expectedContributions: " + expectedContributions + "/" + works.size());
             long totalContributions = 0L;
-            long consensusCounter = 0;
+            long consensusCounter = 0L;
+            final Hashtable<String, Integer> contributionCounters = new Hashtable<>();
             for (final WorkInterface work : works) {
 
 				logger.debug("checkContribution() : for work: " + work);
@@ -5660,10 +5663,18 @@ public final class DBInterface {
                 if (work.hasContributed()) {
 
                     totalContributions++;
-
-                    if (work.getH2h2r().compareTo(theWork.getH2h2r()) == 0) {
-                        consensusCounter++;
+                    final String h2h2r = work.getH2h2r();
+                    if(h2h2r != null) {
+                        final Integer counter = contributionCounters.get(h2h2r) != null ?
+                                contributionCounters.get(h2h2r) + 1 :
+                                1;
+                        contributionCounters.put(h2h2r, counter);
+                        if(counter >= expectedContributions) {
+                            consensusCounter = expectedContributions;
+                            break;
+                        }
                     }
+
                 }
             }
 			logger.debug("checkContribution() : totalContributions: " + totalContributions);
@@ -5681,13 +5692,15 @@ public final class DBInterface {
 
                     logger.debug("checkContribution() : work must be revealed " + contributingWork.toXml());
                     try {
-                        contributingWork.setRevealing();
-                        contributingWork.update();
+                        if(contributingWork.hasContributed()) {
+                            contributingWork.setRevealing();
+                            contributingWork.update();
 
-                        final TaskInterface contributingTask = DBInterface.getInstance().computingTask(contributingWork);
-                        if (contributingTask != null) {
-                            contributingTask.setRevealing();
-                            contributingTask.update();
+                            final TaskInterface contributingTask = DBInterface.getInstance().computingTask(contributingWork);
+                            if (contributingTask != null) {
+                                contributingTask.setRevealing();
+                                contributingTask.update();
+                            }
                         }
                     } catch (final IOException e) {
                         logger.exception(e);
@@ -5732,20 +5745,50 @@ public final class DBInterface {
                         logger.exception(e);
                     }
                 }
-                else {
-                    marketOrder.setRevealingDate();
-                }
-
-                marketOrder.update();
-
+//                else {
+//                    marketOrder.setRevealingDate();
+//                }
             }
             else {
                 if (totalContributions < expectedContributions) {
                     logger.debug("checkContribution() : not enough contributions");
                 }
                 else {
+                    // we need one more worker and one more work
+                    marketOrder.incExpectedWorkers();
+                    marketOrder.setErrorMsg("Warn: need more workers");
+
+//                    final UID originalUid = theWork.getReplicatedUid();
+                    final UID originalUid = theWork.getReplicatedUid() != null ? theWork.getReplicatedUid() : theWork.getUID();
+//                    if (originalUid != null) {
+                        final WorkInterface replicatedWork = work(originalUid);
+                        final long expectedReplications = replicatedWork.getExpectedReplications();
+                        final long currentReplications = replicatedWork.getTotalReplica();
+                        logger.warn("need more replicas : " + originalUid);
+                        final WorkInterface newWork = new WorkInterface(replicatedWork);
+                        newWork.setUID(new UID());
+                        newWork.replicate(originalUid);
+                        newWork.insert();
+                        final AppInterface theApp = app(theWork.getApplication());
+                        final UserInterface jobOwner = user(theWork.getOwner());
+                        if(theApp != null) {
+                            theApp.incPendingJobs();
+                            theApp.update();
+                        }
+                        if(jobOwner != null) {
+                            jobOwner.incPendingJobs();
+                            jobOwner.update();
+                        }
+                        replicatedWork.setExpectedReplications(replicatedWork.getExpectedReplications() + 1);
+                        replicatedWork.incTotalReplica();
+                        replicatedWork.setErrorMsg("Warn: need more replicas for market order");
+                        replicatedWork.update();
+//                    }
                 }
             }
+
+            marketOrder.update();
+
         } catch (final Exception e) {
             logger.exception(e);
         }
@@ -6135,8 +6178,8 @@ public final class DBInterface {
         }
 
         final EthereumWallet workerWalletAddr = new EthereumWallet(theHost.getEthWalletAddr());
-        if (!theHost.canContribute()) {
-            logger.info("hostContribution(" + workerWalletAddr + ") : don't want to contribute");
+        if (!theHost.canJoinMarketOrder()) {
+            logger.info("hostContribution(" + workerWalletAddr + ") : cannot join marketorder");
             return theHost;
         }
         logger.debug("hostContribution(" + workerWalletAddr + ") : " + theHost.toXml());
@@ -6166,7 +6209,7 @@ public final class DBInterface {
                 ahost.update(false);
             }
         }
-        if (theHost.canContribute()) {
+        if (theHost.canJoinMarketOrder()) {
             logger.debug("hostContribution(" + workerWalletAddr + ") : joins market order "
                     + marketOrder.getUID());
 

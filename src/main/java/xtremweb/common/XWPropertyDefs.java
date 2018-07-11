@@ -814,6 +814,28 @@ public enum XWPropertyDefs {
 		}
 	},
 	/**
+	 * Server : how many wallclocktime before requiring more workers?
+	 * Property type : integer
+	 * Default : 10
+	 */
+	CONTRIBUTETIMEOUTMULTIPLICATOR {
+		@Override
+		public String defaultValue() {
+			return "5";
+		}
+	},
+	/**
+	 * Server : how many wallclocktime before giving up a market order?
+	 * Property type : integer
+	 * Default : 10
+	 */
+	REVEALTIMEOUTMULTIPLICATOR {
+		@Override
+		public String defaultValue() {
+			return "10";
+		}
+	},
+	/**
 	 * Worker : this tells how long to wait when there is no job to compute
 	 * If the worker receive no job within this delay, it shuts down This is
 	 * especially helpful when deploying workers on a cluster; this ensures we

@@ -115,12 +115,7 @@ public final class MarketOrderInterface extends Table {
         },
         /**
          * Trust level for this order.
-         * This defines ExpectedWorkers as follow:
-         * trust >= 75 : 5 workers
-         * trust < 75  : 4 workers
-         * trust < 50  : 3 workers
-         * trust < 25  : 2 workers
-         * trust == 0  : 1 worker
+         * This defines ExpectedWorkers as : trust / 10
          * @see #setTrust(long)
          */
 		TRUST {
@@ -846,6 +841,25 @@ public final class MarketOrderInterface extends Table {
      */
     private boolean setExpectedWorkers(final long e)  {
         return setValue(Columns.EXPECTEDWORKERS, Long.valueOf(e < 0 ? 0 : e));
+    }
+	/**
+	 * This increments the amount of needed workers to safely reach the trust.
+	 * @return true
+	 */
+    public boolean incExpectedWorkers()  {
+        return addExpectedWorkers(1);
+    }
+
+    /**
+     * This adds nbWorkers to the amount of needed workers to safely reach the trust.
+     * @param nbWorkers is the amount of workers to add
+     * @return true if value has changed, false otherwise
+     */
+    public boolean addExpectedWorkers(final long nbWorkers)  {
+        if (nbWorkers < 0) {
+            return false;
+        }
+        return setExpectedWorkers(getExpectedWorkers() + nbWorkers);
     }
     /**
      * This sets the amount of booked workers to reach the trust

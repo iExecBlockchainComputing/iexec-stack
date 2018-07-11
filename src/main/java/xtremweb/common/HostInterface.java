@@ -1144,22 +1144,38 @@ public final class HostInterface extends Table {
             return null;
         }
     }
-    /**
-     * This checks if this worker can contribute to a market order
-     *
-     * @return (getMarketOrderUid() == null) && (getEthWalletAddr() != null) && (getWorkerPoolAddr() != null)
-     * @since 13.1.0
-     */
-    public boolean canContribute() {
-        try {
-            return ((getMarketOrderUid() == null) &&
+	/**
+	 * This checks if this worker can joins a market order
+	 *
+	 * @return (getMarketOrderUid() == null) && (getEthWalletAddr() != null) && (getWorkerPoolAddr() != null) && (getContributionStatus() == StatusEnum.UNAVAILABLE)
+	 * @since 13.1.0
+	 */
+	public boolean canJoinMarketOrder() {
+		try {
+			return ((getMarketOrderUid() == null) &&
 					(getEthWalletAddr() != null)  &&
 					(getWorkerPoolAddr() != null) &&
-                    (getContributionStatus() == StatusEnum.UNAVAILABLE));
-        } catch (final Exception e) {
-            return false;
-        }
-    }
+					(getContributionStatus() == StatusEnum.UNAVAILABLE));
+		} catch (final Exception e) {
+			return false;
+		}
+	}
+	/**
+	 * This checks if this worker can contribute to the given market order
+	 *
+	 * @return (getMarketOrderUid().equals(marketOrder.getUID()) && (getEthWalletAddr() != null) && (getWorkerPoolAddr() != null)  && (getContributionStatus() == StatusEnum.PENDING)
+	 * @since 13.1.0
+	 */
+	public boolean canContribute(final MarketOrderInterface marketOrder) {
+		try {
+			return ((getMarketOrderUid().equals(marketOrder.getUID())) &&
+					(getEthWalletAddr() != null)  &&
+					(getWorkerPoolAddr() != null) &&
+					(getContributionStatus() == StatusEnum.PENDING));
+		} catch (final Exception e) {
+			return false;
+		}
+	}
 	/**
 	 * This retrieves the download bandwidth usage
 	 *

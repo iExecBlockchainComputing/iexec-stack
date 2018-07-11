@@ -116,7 +116,7 @@ public class HashTaskSet extends TaskSet {
 					.parseInt(Dispatcher.getConfig().getProperty(XWPropertyDefs.ALIVETIMEOUT.toString()));
 			aliveTimeOut *= 1000;
 
-			System.out.println("detectAbortedTask : " + theTask.toXml());
+			getLogger().debug("detectAbortedTask : " + theTask.toXml());
 
 			if (theTask.isUnderProcess() && (delay > aliveTimeOut)) {
 
@@ -146,7 +146,7 @@ public class HashTaskSet extends TaskSet {
                         theHost.leaveMarketOrder(marketOrder);
 						theHost.update();
 						if(marketOrder != null) {
-                            marketOrder.setErrorMsg("WARN:workerLost");
+//                            marketOrder.setErrorMsg("WARN:workerLost");
                             marketOrder.update();
                         }
 					}
@@ -168,7 +168,7 @@ public class HashTaskSet extends TaskSet {
 					}
 				}
 
-				System.out.println("detectAbortedTask aborted :     " + theTask.toXml());
+				getLogger().debug("detectAbortedTask aborted :     " + theTask.toXml());
 
 				theWork.update();
 				theTask.update();
@@ -261,7 +261,7 @@ public class HashTaskSet extends TaskSet {
             getLogger().exception(e);
         }
 
-        getLogger().debug("detectAbortedTasks : checking market orders");
+        getLogger().debug("detectAbortedTasks : checking revealingOrFinalizingMarketOrders");
 		try {
             final Collection<MarketOrderInterface> marketOrders = db.revealingOrFinalizingMarketOrders();
             if ((marketOrders == null) || (marketOrders.size() == 0)) {
@@ -269,22 +269,22 @@ public class HashTaskSet extends TaskSet {
                 return;
             }
 
-            getLogger().debug("detectAbortedTasks : checking market orders " + marketOrders.size());
+            getLogger().debug("detectAbortedTasks : checking revealingOrFinalizingMarketOrders " + marketOrders.size());
 
             URI result = null;
             String woid = null;
 
             for (final MarketOrderInterface marketOrder : marketOrders) {
-                getLogger().debug("detectAbortedTasks checking market orders " + marketOrder.toXml());
+                getLogger().debug("detectAbortedTasks revealingOrFinalizingMarketOrders " + marketOrder.toXml());
 
                 final Collection<WorkInterface> works = db.marketOrderWorks(marketOrder);
-                getLogger().debug("detectAbortedTasks market orders has " + works.size());
+                getLogger().debug("detectAbortedTasks revealingOrFinalizingMarketOrders, market orders has " + works.size());
 
                 boolean doComplete = works.size() > 0;
 
                 for (WorkInterface work : works) {
 
-                    getLogger().debug("detectAbortedTasks " + work.toXml());
+                    getLogger().debug("detectAbortedTasks revealingOrFinalizingMarketOrders " + work.toXml());
 
 //                    if (work.getStatus() == StatusEnum.ERROR) {
 //                       //reopen?

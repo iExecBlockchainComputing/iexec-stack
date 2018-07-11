@@ -443,13 +443,18 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
  *     status = ActuatorService.getInstance().allowWorkersToContribute(workOrderId, Arrays.asList(worker) , "0" );
  * }```
  */
+        System.out.println("allowWorkerToContribute(" + workOrderId + "," +
+                marketOrder == null ? "null" : marketOrder.getUID() + "," +
+                wallet == null ? "null" : wallet.getAddress() + "," +
+                worker == null ? "null" : worker.getUID() + ")");
         if((wallet == null) || (wallet.getAddress() == null)) {
+            System.out.println("allowWorkerToContribute() : no wallet");
             return;
         }
         final ContributionModel contribution = WorkerPoolService.getInstance().getWorkerContributionModelByWorkOrderId(workOrderId,
                 wallet.getAddress());
         if((contribution != null) && (contribution.getStatus() != BigInteger.ZERO)) {
-            System.out.println(wallet.getAddress() + " already contributing to " + workOrderId);
+            System.out.println("allowWorkerToContribute() : " + wallet.getAddress() + " already contributing to " + workOrderId);
             return;
         }
 
@@ -728,7 +733,8 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
         }
         final long revealingDate = marketOrder.getRevealingDate().getTime();
         final long now = new Date().getTime();
-        if(now - revealingDate > (10 * Dispatcher.getConfig().getTimeout())) {
+        if(now - revealingDate > (Dispatcher.getConfig().getInt(XWPropertyDefs.REVEALTIMEOUTMULTIPLICATOR)
+                * Dispatcher.getConfig().getTimeout())) {
             marketOrder.setError();
             marketOrder.setErrorMsg("ERROR:finalizationTimeOut");
         }
