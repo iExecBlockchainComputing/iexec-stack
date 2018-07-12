@@ -190,10 +190,31 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
                 return null;
             }
 
+            final UID clientGroup = appOwner.getGroup();
+
             newApp.setOwner(appOwner.getUID());
             newApp.setName(appModel.getId());
             newApp.setPrice(appModel.getPrice().longValue());
-            newApp.setAccessRights(new XWAccessRights(XWAccessRights.USERALL.value() | XWAccessRights.STICKYBIT_INT));
+            newApp.setAccessRights(null);
+
+            if (appOwner.getRights().lowerThan(UserRightEnum.ADVANCED_USER)) {
+                logger.debug("set app AR to USERALL " + new XWAccessRights(XWAccessRights.USERALL.value() | XWAccessRights.STICKYBIT_INT));
+                newApp.setAccessRights(new XWAccessRights(XWAccessRights.USERALL.value() | XWAccessRights.STICKYBIT_INT));
+            }
+            if (appOwner.getRights().doesEqual(UserRightEnum.SUPER_USER)) {
+                if (newApp.getAccessRights() == null) {
+                    logger.debug("set app AR to DEFAULT " + new XWAccessRights(XWAccessRights.DEFAULT.value()));
+                    newApp.setAccessRights(new XWAccessRights(XWAccessRights.DEFAULT.value()));
+                }
+                else {
+                    logger.debug("keeping app AR " + newApp.getAccessRights());
+                }
+            } else {
+                if ((appOwner.getRights().higherOrEquals(UserRightEnum.INSERTAPP)) && (clientGroup != null)) {
+                    logger.debug("set app AR to OWNERGROUP " + new XWAccessRights(XWAccessRights.OWNERGROUP.value()));
+                    newApp.setAccessRights(new XWAccessRights(XWAccessRights.OWNERGROUP.value()));
+                }
+            }
 
             final String appParams = appModel.getParams();
             if(appParams != null) {
@@ -296,8 +317,8 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
                     + workModel.getApp());
             return null;
         }
-        final AppInterface app = getApp(appModel);
-        if(app == null) {
+        final AppInterface theApp = getApp(appModel);
+        if(theApp == null) {
             logger.error ("createWork() : can't add/retrieve app " + appModel.getName());
             return null;
         }
@@ -313,7 +334,7 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
             work.setUID(new UID());
             work.setMarketOrderUid(marketOrder.getUID());
             work.setOwner(requester.getUID());
-            work.setApplication(app.getUID());
+            work.setApplication(theApp.getUID());
             work.setDataset(workModel.getDataset());
             work.setBeneficiary(workModel.getBeneficiary());
             work.setWorkerPool(workModel.getWorkerpool());
@@ -339,7 +360,7 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
             work.setStatus(StatusEnum.PENDING);
             work.setExpectedReplications(marketOrder.getExpectedWorkers());
             work.setReplicaSetSize(marketOrder.getExpectedWorkers());
-            work.setAccessRights(new XWAccessRights(XWAccessRights.USERALL.value() | XWAccessRights.STICKYBIT_INT));
+            work.setAccessRights(theApp.getAccessRights());
             final XMLRPCCommandSendWork cmd =
                     new XMLRPCCommandSendWork(XWTools.newURI(work.getUID()),
                             administrator,
