@@ -145,7 +145,7 @@ ETHWALLETPASSWORD=whatever
 #
 # Initial deposit of RLC
 #
-RLCDEPOSIT=100
+RLCDEPOSIT=0
 
 #
 # Internode communications needs a running SmartSockets hub; this may also denote a hub network<br />

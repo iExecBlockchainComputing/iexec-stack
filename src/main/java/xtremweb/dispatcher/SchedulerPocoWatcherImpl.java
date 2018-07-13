@@ -45,7 +45,7 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
         } catch (IOException e) {
             e.printStackTrace();
         }
-        actuatorService.depositRlc();
+        //actuatorService.depositRlc();
         iexecHubService.registerIexecHubWatcher(this);
         workerPoolService.registerWorkerPoolWatcher(this);
 

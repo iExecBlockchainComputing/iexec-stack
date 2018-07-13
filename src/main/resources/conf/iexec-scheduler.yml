@@ -1,7 +1,7 @@
 walletConfig:
   path: "../wallet/wallet_scheduler.json"
   password: "whatever"
-  rlcDeposit: 100
+  rlcDeposit: 0
 commonConfiguration:
   nodeConfig:
     clientAddress: http://localhost:8545 #default
@@ -15,7 +15,7 @@ commonConfiguration:
       address:  #leave blank will create a new workerpool (else plug scheduler to existing one)
       name: "myWorkerPool"              #unchangeable after creation
       subscriptionLockStakePolicy: 0    #unchangeable after creation
-      subscriptionMinimumStakePolicy: 10
+      subscriptionMinimumStakePolicy: 0
       subscriptionMinimumScorePolicy: 0
       stakeRatioPolicy: 30
       schedulerRewardRatioPolicy: 1
