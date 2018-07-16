@@ -42,6 +42,10 @@ sed -i "s/rlcAddress:.*/rlcAddress: $RLCCONTRACT/g"                 $iexecSchedu
 sed -i "s/iexecHubAddress:.*/iexecHubAddress: $IEXECHUBCONTRACT/g"  $iexecSchedulerYmlFile
 sed -i "s/address:.*/address: $WORKERPOOLADDRESS/g"  				$iexecSchedulerYmlFile
 
+sed -i "s/subscriptionMinimumStakePolicy:.*/subscriptionMinimumStakePolicy: $SUBSCRIPTION_MINIMIM_STAKE_POLICY/g"  	$iexecSchedulerYmlFile
+sed -i "s/stakeRatioPolicy:.*/stakeRatioPolicy: $STAKE_RATIO_POLICY/g"  											$iexecSchedulerYmlFile
+sed -i "s/schedulerRewardRatioPolicy:.*/schedulerRewardRatioPolicy: $SCHEDULER_REWARD_RATIO_POLICY/g"  				$iexecSchedulerYmlFile
+
 replace_commented_var_in_conf () {
   varName=$1;
   eval varValue=\$$varName
