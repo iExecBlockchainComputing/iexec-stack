@@ -1,5 +1,9 @@
 #!/bin/sh
 
+scriptDir=$(dirname $0)
+
+cd $scriptDir
+
 for dir in client scheduler worker1 worker2 worker3 worker4 worker5; do
 	echo "****  "$dir"  ****"
 	echo
@@ -9,4 +13,3 @@ for dir in client scheduler worker1 worker2 worker3 worker4 worker5; do
 	echo 
 	cd ..
 done
-
