@@ -46,13 +46,13 @@ dependencies {
 
 
 def pocoJsonFiles = [
-        'PoCo/build/contracts/IexecHub.json',
-        'PoCo/build/contracts/WorkerPool.json',
-        'PoCo/build/contracts/Marketplace.json',
-        'PoCo/build/contracts/WorkOrder.json',
-        'PoCo/build/contracts/App.json',
-        'PoCo/build/contracts/Dataset.json',
-        'PoCo/build/contracts/WorkerPoolHub.json',
+        'PoCo/deployed/contracts/IexecHub.json',
+        'PoCo/deployed/contracts/WorkerPool.json',
+        'PoCo/deployed/contracts/Marketplace.json',
+        'PoCo/deployed/contracts/WorkOrder.json',
+        'PoCo/deployed/contracts/App.json',
+        'PoCo/deployed/contracts/Dataset.json',
+        'PoCo/deployed/contracts/WorkerPoolHub.json',
         'rlc-faucet-contract/build/contracts/RLC.json',
 ]
 
