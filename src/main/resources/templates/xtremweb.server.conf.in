@@ -118,6 +118,11 @@ DELEGATEDREGISTRATION=true
 #
 BLOCKCHAINETHENABLED=true
 
+
+# CHANGE THIS VALUE TO INFURA NODE IN PRODUCTION
+# https://rinkeby.infura.io/a9tEbbFvksK9cqseXGp0
+WORKERETHNODEADDRESS=http://localhost:8545
+
 #
 # All : ethereum wallet path
 # Property type : string

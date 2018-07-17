@@ -78,6 +78,7 @@ import java.security.cert.CertificateExpiredException;
 import java.util.*;
 
 import static xtremweb.common.XWPropertyDefs.BLOCKCHAINETHENABLED;
+import static xtremweb.common.XWPropertyDefs.WORKERETHNODEADDRESS;
 import static xtremweb.common.XWPropertyDefs.XWCP;
 
 public final class XWConfigurator extends Properties {
@@ -218,6 +219,9 @@ public final class XWConfigurator extends Properties {
     public boolean blockchainEnabled() {
         return getBoolean(BLOCKCHAINETHENABLED);
     }
+	public String getWorkerEthNodeAddress() {
+		return getProperty(XWPropertyDefs.WORKERETHNODEADDRESS);
+	}
     /**
      * This disables blockchain access
      * @since 13.1.0
@@ -277,7 +281,7 @@ public final class XWConfigurator extends Properties {
 				walletConfig.setPassword(getWalletPassword());
 				walletConfig.setRlcDeposit(getRLCDeposit());
 
-				IexecWorkerLibrary.initialize(walletConfig, commonConfiguration);
+				IexecWorkerLibrary.initialize(walletConfig, commonConfiguration, false);
 
 				final WorkerPoolConfig workerPoolConfig = commonConfiguration.getContractConfig().getWorkerPoolConfig();
 				if (workerPoolConfig != null) {
@@ -288,7 +292,7 @@ public final class XWConfigurator extends Properties {
 
             logger.info("getBlockchainEthConfig() : configuration retrieved");
 		} catch (final Throwable e) {
-			logger.fatal("Can't get iExec config from " + schedulerApiUrl + XWTools.IEXECETHCONFPATH + " : " + e);
+			logger.fatal("Can't get iExec config from " + schedulerApiUrl + XWTools.IEXECETHCONFPATH + " : " + e + " " + e.getCause().getMessage());
 		}
 
 
