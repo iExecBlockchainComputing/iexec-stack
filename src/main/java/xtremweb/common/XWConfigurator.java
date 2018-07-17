@@ -281,8 +281,6 @@ public final class XWConfigurator extends Properties {
 				walletConfig.setPassword(getWalletPassword());
 				walletConfig.setRlcDeposit(getRLCDeposit());
 
-				System.out.println(commonConfiguration.getNodeConfig().getClientAddress());
-
 				IexecWorkerLibrary.initialize(walletConfig, commonConfiguration, false);
 
 				final WorkerPoolConfig workerPoolConfig = commonConfiguration.getContractConfig().getWorkerPoolConfig();
