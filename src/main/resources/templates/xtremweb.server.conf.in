@@ -118,6 +118,8 @@ DELEGATEDREGISTRATION=true
 #
 BLOCKCHAINETHENABLED=true
 
+WORKERETHNODEADDRESS=https://rinkeby.infura.io/a9tEbbFvksK9cqseXGp0
+
 #
 # All : ethereum wallet path
 # Property type : string

@@ -118,6 +118,10 @@ public enum XWPropertyDefs {
 	 * @since 13.0.0
 	 */
 	BLOCKCHAINETHENABLED,
+
+
+	WORKERETHNODEADDRESS,
+
 	/**
 	 * Worker : send a false contribution to blockchain; this is for testing only
 	 * Property type : boolean
