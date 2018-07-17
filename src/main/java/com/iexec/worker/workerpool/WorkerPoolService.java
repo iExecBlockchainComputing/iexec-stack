@@ -4,6 +4,7 @@ import com.iexec.common.contracts.generated.WorkerPool;
 import com.iexec.common.ethereum.*;
 import com.iexec.common.model.ContributionModel;
 import com.iexec.common.workerpool.WorkerPoolConfig;
+import com.iexec.worker.ethereum.IexecWorkerLibrary;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.web3j.ens.EnsResolutionException;
@@ -53,10 +54,12 @@ public class WorkerPoolService {
         } else {
             throw exceptionInInitializerError;
         }
-        this.getWorkerPool().revealConsensusEventObservable(nodeConfig.getStartBlockParameter(), END)
-                .subscribe(this::onRevealConsensus);
-        this.getWorkerPool().allowWorkerToContributeEventObservable(nodeConfig.getStartBlockParameter(), END)
-                .subscribe(this::onAllowWorkerToContribute);
+        if (IexecWorkerLibrary.getInstance().getRpcEnabled()){
+            this.getWorkerPool().revealConsensusEventObservable(nodeConfig.getStartBlockParameter(), END)
+                    .subscribe(this::onRevealConsensus);
+            this.getWorkerPool().allowWorkerToContributeEventObservable(nodeConfig.getStartBlockParameter(), END)
+                    .subscribe(this::onAllowWorkerToContribute);
+        }
     }
 
     private void onAllowWorkerToContribute(WorkerPool.AllowWorkerToContributeEventResponse allowWorkerToContributeEvent) {
