@@ -1,13 +1,14 @@
 #!/bin/bash
 # Usage : ./v3WalletToSdkEnvironment 1_UTC--2018-02-14T08-32-12.500000000Z--8bd535d49b095ef648cd85ea827867d358872809.json whatever
 
-sdkDir='sdk-env'
 walletFile=$1
 walletPassword=$2
 
-echo "Converting wallet(v3) to SDK environment"
+walletDir=$(dirname $walletFile)
 
-cd $(dirname walletFile)
+sdkDir=$walletDir/'sdk-env'
+
+echo "Converting wallet(v3) to SDK environment"
 
 rm -rf $sdkDir
 mkdir $sdkDir
