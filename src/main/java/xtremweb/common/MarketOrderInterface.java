@@ -907,13 +907,14 @@ public final class MarketOrderInterface extends Table {
      * @return true
      */
     public boolean removeWorker(final HostInterface host)  {
-        if(host != null) {
-            final UID hostMoUid = host.getMarketOrderUid();
-            if((hostMoUid == null) || (!hostMoUid.equals(this.getUID()))) {
-                return false;
-            }
-            host.leaveMarketOrder();
-        }
+        if(host == null) {
+			return false;
+		}
+		final UID hostMoUid = host.getMarketOrderUid();
+		if((hostMoUid == null) || (!hostMoUid.equals(this.getUID()))) {
+			return false;
+		}
+		host.leaveMarketOrder();
         decNbWorkers();
         return true;
     }

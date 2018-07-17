@@ -219,6 +219,39 @@ public class HashTaskSet extends TaskSet {
 			}
 		}
 
+
+        getLogger().debug("detectAbortedTasks : checking PENDING jobs with lost resource");
+        try {
+            final Collection<WorkInterface> works = db.marketOrderLostPendingWorks();
+            if ((works != null) && (works.size() > 0)) {
+
+                getLogger().debug("detectAbortedTasks : market orders lost pending works " + works.size());
+
+                for (final WorkInterface work : works) {
+                    getLogger().debug("detectAbortedTasks market orders lost pending works " + work.toXml());
+
+                    final HostInterface expectedHost = db.host(work.getExpectedHost());
+                    if(expectedHost != null) {
+                        getLogger().debug("detectAbortedTasks market orders lost pending works " + expectedHost.toXml());
+                        final MarketOrderInterface marketOrder = db.marketOrder(expectedHost.getMarketOrderUid());
+                        marketOrder.removeWorker(expectedHost);
+                        marketOrder.update();
+                        expectedHost.decPendingJobs();
+                        expectedHost.update();
+                    }
+                    work.setExpectedHost(null);
+                    work.update();
+                }
+            }
+            else {
+                getLogger().debug("detectAbortedTasks : no market order locking resource");
+            }
+
+        }
+        catch (Exception e) {
+            getLogger().exception(e);
+        }
+
         getLogger().debug("detectAbortedTasks : checking computing resource dead locks between market orders");
         try {
             final Collection<MarketOrderInterface> marketOrders = db.marketOrderLockingResources();
@@ -286,7 +319,7 @@ public class HashTaskSet extends TaskSet {
 //                       //reopen?
 //                    }
 
-                    if (work.getStatus() != StatusEnum.COMPLETED) {
+                    if (work.getStatus() == StatusEnum.COMPLETED) {
                         totalCompleted++;
                         woid = work.getWorkOrderId();
                         result = work.getResult();
@@ -307,10 +340,6 @@ public class HashTaskSet extends TaskSet {
                         SchedulerPocoWatcherImpl.doFinalize(woid, result, marketOrder, works, getLogger());
                     } catch(Exception e) {
                         getLogger().exception(e);
-                    }
-                    final Collection<HostInterface> workers = db.hosts(marketOrder);
-                    for (HostInterface worker : workers) {
-                        worker.leaveMarketOrder(marketOrder);
                     }
                 }
                 else {

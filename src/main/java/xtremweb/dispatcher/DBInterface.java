@@ -1364,17 +1364,33 @@ public final class DBInterface {
 		}
 		return 0;
 	}
-    /**
-     * This retrieves all works the the given market order, bypassing access rights
-     * @param marketOrder is the market order
-     * @since 13.1.0
-     */
-     Collection<WorkInterface> marketOrderWorks(final MarketOrderInterface marketOrder) throws IOException {
-        if(marketOrder == null || marketOrder.getUID() == null){
-            return null;
-        }
-        return selectAll(new WorkInterface(), "maintable.MARKETORDERUID='" + marketOrder.getUID() + "'");
-    }
+	/**
+	 * This retrieves all works the the given market order, bypassing access rights
+	 * @param marketOrder is the market order
+	 * @since 13.1.0
+	 */
+	Collection<WorkInterface> marketOrderWorks(final MarketOrderInterface marketOrder) throws IOException {
+		if(marketOrder == null || marketOrder.getUID() == null){
+			return null;
+		}
+		return selectAll(new WorkInterface(), "maintable.MARKETORDERUID='" + marketOrder.getUID() + "'");
+	}
+	/**
+	 * This retrieves all PENDING works the the given market order, having a "lost" worker
+     * (a worker expected but no alive)
+	 * This is done bypassing access rights
+	 * @since 13.1.0
+	 */
+	Collection<WorkInterface> marketOrderLostPendingWorks() throws IOException {
+		int aliveTimeOut = Integer
+				.parseInt(Dispatcher.getConfig().getProperty(XWPropertyDefs.ALIVETIMEOUT.toString()));
+
+		final String query = "select works.* from works,hosts where not isnull(works.marketorderuid) and"
+				+ " not isnull(works.expectedhostuid) and works.expectedhostuid=hosts.uid and "
+				+ WorkInterface.Columns.STATUS +"='" + StatusEnum.PENDING+ "'"
+				+ "and (unix_timestamp(now())-unix_timestamp(hosts.lastalive)) > " + aliveTimeOut;
+		return DBConnPoolThread.getInstance().executeQuery(query, new WorkInterface());
+ 	}
 
 	/**
 	 * This creates a new readable group to retrieve from DB

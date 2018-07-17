@@ -14,5 +14,14 @@
       "type": "DOCKER",
       "envvars": "XWDOCKERIMAGE=hello-world"
     }
+  },
+  "order": {
+    "buy": {
+      "app": "0x88f29bef874957012ed55fd4968c296c9e4ec69e",
+      "dataset": "0x0000000000000000000000000000000000000000",
+      "params": {
+        "cmdline": "--help"
+      }
+    }
   }
 }
