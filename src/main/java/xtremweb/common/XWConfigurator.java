@@ -283,7 +283,7 @@ public final class XWConfigurator extends Properties {
 
 				System.out.println(commonConfiguration.getNodeConfig().getClientAddress());
 
-				IexecWorkerLibrary.initialize(walletConfig, commonConfiguration);
+				IexecWorkerLibrary.initialize(walletConfig, commonConfiguration, false);
 
 				final WorkerPoolConfig workerPoolConfig = commonConfiguration.getContractConfig().getWorkerPoolConfig();
 				if (workerPoolConfig != null) {
