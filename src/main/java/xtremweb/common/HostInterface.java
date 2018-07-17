@@ -141,7 +141,12 @@ public final class HostInterface extends Table {
 		/**
 		 * This is the column index of the host name
 		 */
-		NAME,
+		NAME {
+			@Override
+			public String fromString(final String v) {
+				return v == null ? v : v.replaceAll("[\\n\\s\'\"]+", "");
+			}
+		},
 		/**
 		 * This is the column index of the percentage of CPU usable by the worker
 		 *
