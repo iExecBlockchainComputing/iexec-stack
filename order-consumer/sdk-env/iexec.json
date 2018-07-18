@@ -1,0 +1,13 @@
+{
+  "order": {
+    "buy": {
+      "app": "0x1AbF4493a0b5fd92e3c8cD902e705f129bA461cd",
+      "dataset": "0x0000000000000000000000000000000000000000",
+      "params": {
+        "cmdline": "iexec/iexec-rlc.blend",
+        "dirinuri":
+          "https://github.com/iExecBlockchainComputing/iexec-dapp-samples/raw/blender/apps/iexec-rlc.blend"
+      }
+    }
+  }
+}

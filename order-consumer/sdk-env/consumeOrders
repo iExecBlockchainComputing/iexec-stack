@@ -1,0 +1,135 @@
+#!/bin/bash
+#
+# Needs iexec-sdk & jq
+# Copy consumeOrders script in folder where "iexec init" has been made
+#
+# npm install -g iexec
+# curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.2/install.sh | bash
+# apt install jq
+#
+# mkdir sdk-env && cd sdk-env/
+# iexec init
+# iexec account deposit 200
+#./consumeOrders  --chain=rinkeby --category=5 --owner='0x68ba0fC5E52e540778069113507507A012362cfD' --period=60
+#
+#
+# Usage : ./consumeOrders  --chain=rinkeby --category=5 --owner='0x68ba0fC5E52e540778069113507507A012362cfD' --period=60
+
+scriptDir=$(dirname $0)
+
+cd $scriptDir
+
+if [ ! -f $scriptDir/iexec.json ]; then
+    echo "iexec.json file missing"
+    exit
+fi
+
+
+for i in "$@"
+do
+case $i in
+    -c=*|--chain=*)
+    CHAIN_NAME="${i#*=}"
+    shift
+    ;;
+    -cat=*|--category=*)
+    CATEGORY="${i#*=}"
+    shift
+    ;;
+    -o=*|--owner=*)
+    WORKERPOOL_OWNER="${i#*=}"
+    shift
+    ;;
+    -p=*|--period=*)
+    PUBLISH_PERIOD="${i#*=}"
+    shift
+    ;;
+    *)
+          # unknown option
+    ;;
+esac
+done
+
+
+case $CHAIN_NAME in
+dev)
+    CHAIN_ID=1337
+    ;;
+ropsten)
+    CHAIN_ID=3
+    ;;
+rinkeby)
+    CHAIN_ID=4
+    ;;
+kovan)
+    CHAIN_ID=42
+    ;;
+mainnet)
+    CHAIN_ID=1
+    ;;
+*)
+    echo "Chain name unknown"
+    exit
+;;
+esac
+
+
+if [ -z $CHAIN_ID ]; then
+	echo "Chain ID missing"
+	exit
+fi
+
+if [ -z $CHAIN_NAME ]; then
+	echo "Chain name missing"
+	exit
+fi
+
+if [ -z $CATEGORY ]; then
+	echo "Category missing"
+	exit
+fi
+
+if [ -z $WORKERPOOL_OWNER ]; then
+	echo "Workerpool owner missing"
+	exit
+fi
+
+if [ -z $PUBLISH_PERIOD ]; then
+	echo "Publish period missing"
+	exit
+fi
+
+
+while true
+do 
+    echo "**************** Account Balance *******************"  
+    iexec account show --chain $CHAIN_NAME
+
+    echo "**************** Find Orders To Buy ****************"  
+    request="https://gateway.iex.ec/orderbook?chainID=$CHAIN_ID&category=$CATEGORY"
+    echo "GET "$request
+	orders=$(curl --request GET --url $request | jq ".orders[] | select(.workerpoolOwner==\"$WORKERPOOL_OWNER\")" | jq -r '.marketorderIdx')
+    echo "Found orders: "$orders
+	for i in $orders
+	do	
+        echo
+        echo "**************** Buy Order $i *******************"
+		echo "iexec order fill $i --chain $CHAIN_NAME --force"
+        iexec order fill $i --chain $CHAIN_NAME --force
+	done
+    echo
+    echo "****************** Waiting **********************"
+	echo "Waiting $PUBLISH_PERIOD sec"
+	sleep $PUBLISH_PERIOD
+done
+
+
+
+
+
+
+
+
+
+
+
