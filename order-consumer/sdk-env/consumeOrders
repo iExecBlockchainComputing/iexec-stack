@@ -3,8 +3,9 @@
 # Needs iexec-sdk & jq
 # Copy consumeOrders script in folder where "iexec init" has been made
 #
-# npm install -g iexec
 # curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.2/install.sh | bash
+# nvm install v8.6.0
+# npm install -g iexec
 # apt install jq
 #
 # mkdir sdk-env && cd sdk-env/
