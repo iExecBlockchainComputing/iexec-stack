@@ -223,14 +223,14 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
                     final String envvars = XWTools.jsonValueFromString(appModel.getParams(), "envvars");
                     newApp.setEnvVars(envvars);
                 } catch (final JSONException e) {
-                    logger.warn(e.getMessage());
+                    logger.info("Can't retreive app envvars : " + e.getMessage());
                 }
                 try {
                     final String appTypeStr = XWTools.jsonValueFromString(appModel.getParams(), "type");
                     final AppTypeEnum appType = AppTypeEnum.valueOf(appTypeStr);
                     newApp.setType(appType);
                 } catch(final JSONException e) {
-                    logger.warn(e.getMessage());
+                    logger.error("Can't retreive app type : " + e.getMessage());
                     return null;
                 }
             }
@@ -345,12 +345,13 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
                 work.setCmdLine(cmdline);
             } catch(final JSONException e) {
                 logger.debug(e.getMessage());
+                logger.info("Can't retreive task cmdline : " + e.getMessage());
             }
             try {
                 final String dirinuri = XWTools.jsonValueFromString(workModel.getParams(), "dirinuri");
                 work.setDirin(new URI(dirinuri));
             } catch(final JSONException e) {
-                logger.debug(e.getMessage());
+                logger.info("Can't retreive task dirinuri : " + e.getMessage());
             }
 
             work.setCallback(workModel.getCallback());
@@ -435,6 +436,7 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
                 }
             }
             marketOrder.setPending();
+            marketOrder.setWorkOrderId(workOrderId);
             marketOrder.update();
 
             allowWorkersToContribute(workOrderId, marketOrder, wallets, workers);
