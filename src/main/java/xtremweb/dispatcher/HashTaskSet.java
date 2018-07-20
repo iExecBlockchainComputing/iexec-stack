@@ -234,8 +234,10 @@ public class HashTaskSet extends TaskSet {
                     if(expectedHost != null) {
                         getLogger().debug("detectAbortedTasks market orders lost pending works " + expectedHost.toXml());
                         final MarketOrderInterface marketOrder = db.marketOrder(expectedHost.getMarketOrderUid());
-                        marketOrder.removeWorker(expectedHost);
-                        marketOrder.update();
+                        if(marketOrder != null) {
+                            marketOrder.removeWorker(expectedHost);
+                            marketOrder.update();
+                        }
                         expectedHost.decPendingJobs();
                         expectedHost.update();
                     }
