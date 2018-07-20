@@ -301,6 +301,10 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
                     + workModel.getMarketorderIdx().longValue());
             return null;
         }
+        if (marketOrder.getStatus() != StatusEnum.AVAILABLE) {
+            logger.error("createWork() : market order status error : " + marketOrder.getStatus());
+            return marketOrder;
+        }
 
         logger.debug("createWork() : " + marketOrder.toXml());
 
@@ -414,6 +418,10 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
                 logger.error("onWorkOrderActivated() : can't create work for workOrderId " + workOrderId);
                 return;
             }
+            if (marketOrder.getStatus() != StatusEnum.AVAILABLE) {
+                logger.error("onWorkOrderActivated() : market order status error : " + marketOrder.getStatus());
+                return;
+            }
 
             logger.info("onWorkOrderActivated() : marketOrder " + marketOrder);
             final Collection<HostInterface> workers = DBInterface.getInstance().hosts(marketOrder);
@@ -436,7 +444,6 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
                 }
             }
             marketOrder.setPending();
-            marketOrder.setWorkOrderId(workOrderId);
             marketOrder.update();
 
             allowWorkersToContribute(workOrderId, marketOrder, wallets, workers);
