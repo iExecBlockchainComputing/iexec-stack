@@ -238,6 +238,9 @@ public class HashTaskSet extends TaskSet {
                             marketOrder.removeWorker(expectedHost);
                             marketOrder.update();
                         }
+                        else {
+                            expectedHost.leaveMarketOrder();
+                        }
                         expectedHost.decPendingJobs();
                         expectedHost.update();
                     }
