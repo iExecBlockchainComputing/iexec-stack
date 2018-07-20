@@ -234,8 +234,13 @@ public class HashTaskSet extends TaskSet {
                     if(expectedHost != null) {
                         getLogger().debug("detectAbortedTasks market orders lost pending works " + expectedHost.toXml());
                         final MarketOrderInterface marketOrder = db.marketOrder(expectedHost.getMarketOrderUid());
-                        marketOrder.removeWorker(expectedHost);
-                        marketOrder.update();
+                        if(marketOrder != null) {
+                            marketOrder.removeWorker(expectedHost);
+                            marketOrder.update();
+                        }
+                        else {
+                            expectedHost.leaveMarketOrder();
+                        }
                         expectedHost.decPendingJobs();
                         expectedHost.update();
                     }
@@ -265,13 +270,15 @@ public class HashTaskSet extends TaskSet {
                     final Collection<HostInterface> workers = db.hosts(marketOrder);
                     getLogger().debug("detectAbortedTasks market orders locking resources has " + workers.size());
 
-                    for (HostInterface worker : workers) {
+                    if (workers != null) {
+                        for (HostInterface worker : workers) {
 
-                        getLogger().debug("detectAbortedTasks market order unlocks resource " + worker.toXml());
-                        worker.leaveMarketOrder(marketOrder);
-                        worker.update();
+                            getLogger().debug("detectAbortedTasks market order unlocks resource " + worker.toXml());
+                            worker.leaveMarketOrder(marketOrder);
+                            worker.update();
+                        }
+                        marketOrder.update();
                     }
-                    marketOrder.update();
                 }
             }
             else {
@@ -307,25 +314,25 @@ public class HashTaskSet extends TaskSet {
                         + ") : " + expectedContributions);
 
                 long totalCompleted = 0L;
+                if(works != null) {
+                    for (WorkInterface work : works) {
 
-                for (WorkInterface work : works) {
-
-                    getLogger().debug("detectAbortedTasks revealingOrFinalizingMarketOrders, ["
-                            + marketOrder.getUID() + "] ("
-                            + works.size()
-                            + ") : " + work.toXml());
+                        getLogger().debug("detectAbortedTasks revealingOrFinalizingMarketOrders, ["
+                                + marketOrder.getUID() + "] ("
+                                + works.size()
+                                + ") : " + work.toXml());
 
 //                    if (work.getStatus() == StatusEnum.ERROR) {
 //                       //reopen?
 //                    }
 
-                    if (work.getStatus() == StatusEnum.COMPLETED) {
-                        totalCompleted++;
-                        woid = work.getWorkOrderId();
-                        result = work.getResult();
+                        if (work.getStatus() == StatusEnum.COMPLETED) {
+                            totalCompleted++;
+                            woid = work.getWorkOrderId();
+                            result = work.getResult();
+                        }
                     }
                 }
-
                 getLogger().debug("detectAbortedTasks revealingOrFinalizingMarketOrders, ["
                         + marketOrder.getUID() + "] ("
                         + works.size()
