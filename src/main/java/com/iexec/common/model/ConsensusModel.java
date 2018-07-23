@@ -1,5 +1,7 @@
 package com.iexec.common.model;
 
+import org.web3j.utils.Numeric;
+
 import java.math.BigInteger;
 import java.util.Arrays;
 
@@ -94,7 +96,7 @@ public class ConsensusModel {
         return "ConsensusModel{" +
                 "poolReward=" + poolReward +
                 ", stakeAmount=" + stakeAmount +
-                ", consensus=" + Arrays.toString(consensus) +
+                ", consensus=" + Numeric.toHexString(consensus) +
                 ", revealDate=" + revealDate +
                 ", revealCounter=" + revealCounter +
                 ", consensusTimeout=" + consensusTimeout +

@@ -1,5 +1,7 @@
 package com.iexec.common.model;
 
+import org.web3j.utils.Numeric;
+
 import java.math.BigInteger;
 import java.util.Arrays;
 
@@ -73,8 +75,8 @@ public class ContributionModel {
     public String toString() {
         return "ContributionModel{" +
                 "status=" + status +
-                ", resultHash=" + Arrays.toString(resultHash) +
-                ", resultSign=" + Arrays.toString(resultSign) +
+                ", resultHash=" + Numeric.toHexString(resultHash) +
+                ", resultSign=" + Numeric.toHexString(resultSign) +
                 ", enclaveChallenge='" + enclaveChallenge + '\'' +
                 ", score=" + score +
                 ", weight=" + weight +
