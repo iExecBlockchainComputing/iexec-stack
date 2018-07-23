@@ -1,6 +1,7 @@
 package com.iexec.common.model;
 
 import java.math.BigInteger;
+import java.util.Arrays;
 
 public class ConsensusModel {
 
@@ -86,5 +87,19 @@ public class ConsensusModel {
 
     public void setWorkerpoolOwner(String workerpoolOwner) {
         this.workerpoolOwner = workerpoolOwner;
+    }
+
+    @Override
+    public String toString() {
+        return "ConsensusModel{" +
+                "poolReward=" + poolReward +
+                ", stakeAmount=" + stakeAmount +
+                ", consensus=" + Arrays.toString(consensus) +
+                ", revealDate=" + revealDate +
+                ", revealCounter=" + revealCounter +
+                ", consensusTimeout=" + consensusTimeout +
+                ", winnerCount=" + winnerCount +
+                ", workerpoolOwner='" + workerpoolOwner + '\'' +
+                '}';
     }
 }
