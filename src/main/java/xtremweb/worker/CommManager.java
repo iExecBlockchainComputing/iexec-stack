@@ -1271,8 +1271,8 @@ public final class CommManager extends Thread {
 
                     if (theWork.getHiddenH2r() != null) {
                         logger.debug("the work can contribute " + theWork.toXml());
-                        dumpContributionStatus(Worker.getConfig().getHost().getEthWalletAddr(),
-                                theWork.getWorkOrderId());
+                        //dumpContributionStatus(Worker.getConfig().getHost().getEthWalletAddr(),
+                                //theWork.getWorkOrderId());
 
     	                TransactionStatus status = TransactionStatus.FAILURE;
 
@@ -1288,8 +1288,8 @@ public final class CommManager extends Thread {
                             	 break;
 	                         }
 
-							 dumpContributionStatus(Worker.getConfig().getHost().getEthWalletAddr(),
-									 theWork.getWorkOrderId());
+							 //dumpContributionStatus(Worker.getConfig().getHost().getEthWalletAddr(),
+									 //theWork.getWorkOrderId());
                 	        try {
                     	        logger.debug("contribute failure ; sleeping 1s " + tries);
                         	    Thread.sleep(1000);
