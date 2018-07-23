@@ -311,7 +311,7 @@ PASSWORD=@XWVWORKERPASSWORD@
 # This is in milliseconds
 # Default is 15000
 #
-TIMEOUT=1000
+TIMEOUT=15000
 
 #
 # This is the socket timeout
