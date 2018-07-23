@@ -46,6 +46,9 @@ import java.util.Hashtable;
 import java.util.Iterator;
 
 import com.iexec.common.ethereum.TransactionStatus;
+import com.iexec.common.model.ContributionModel;
+import com.iexec.scheduler.database.ContributionService;
+import com.iexec.scheduler.workerpool.WorkerPoolService;
 import com.iexec.worker.actuator.ActuatorService;
 import org.xml.sax.SAXException;
 
@@ -1342,10 +1345,8 @@ public final class CommManager extends Thread {
 	}
 
 	public static void dumpContributionStatus(final String ethWalletAddr, final String workOrderId) {
-
-        final String urlStr = "http://localhost:3030/api/workorders/" +
-                workOrderId + "/contribution?worker=" + ethWalletAddr;
-        XWTools.dumpUrlContent(urlStr);
+		ContributionModel contribution = WorkerPoolService.getInstance().getWorkerContributionModelByWorkOrderId(workOrderId, ethWalletAddr);
+		XWTools.debug(contribution.toString());
 	}
 
 	/**

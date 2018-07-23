@@ -25,6 +25,10 @@ package xtremweb.worker;
 
 import com.iexec.common.ethereum.TransactionStatus;
 import com.iexec.common.model.ContributionModel;
+import com.iexec.common.model.MarketOrderModel;
+import com.iexec.common.model.ModelService;
+import com.iexec.common.model.WorkOrderModel;
+import com.iexec.scheduler.marketplace.MarketplaceService;
 import com.iexec.worker.actuator.ActuatorService;
 import com.iexec.worker.workerpool.WorkerPoolService;
 import org.xml.sax.SAXException;
@@ -395,7 +399,7 @@ public class ThreadAlive extends Thread {
                         logger.error("reveal transaction error; will retry later " + theWork.getUID());
                         theWork.incRevealCalls();
                         CommManager.getInstance().getPoolWork().saveWork(theWork);
-                        dumpMarketOrderStatus(theWork.getWorkOrderId());
+                        dumpInfosByWorkOrderId(theWork.getWorkOrderId());
                     }
                 }
             }
@@ -509,10 +513,11 @@ public class ThreadAlive extends Thread {
         }
     }
 
-    private void dumpMarketOrderStatus(final String workOrderId) {
-
-        final String urlStr = "http://localhost:3030/api/marketorders/" + workOrderId;
-        XWTools.dumpUrlContent(urlStr);
+    private void dumpInfosByWorkOrderId(final String workOrderId) {
+        WorkOrderModel workOrder = ModelService.getInstance().getWorkOrderModel(workOrderId);
+        MarketOrderModel marketOrder = MarketplaceService.getInstance().getMarketOrderModel(workOrder.getMarketorderIdx());
+        XWTools.debug(workOrder.toString());
+        XWTools.debug(marketOrder.toString());
     }
 
     /**

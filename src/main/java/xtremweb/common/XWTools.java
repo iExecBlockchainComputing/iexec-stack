@@ -422,6 +422,12 @@ public class XWTools {
 		logger.fatal(logDateFormat.format(new Date()) + " Fatal : " + s);
 	}
 
+	public static void debug(final String s) {
+
+		final SimpleDateFormat logDateFormat = new SimpleDateFormat("[dd/MMM/yyyy:HH:mm:ss Z]", Locale.US);
+		logger.debug(logDateFormat.format(new Date()) + " DEBUG : " + s);
+	}
+
 	/**
 	 * Restart error: cause the program to exit and restart
 	 */
