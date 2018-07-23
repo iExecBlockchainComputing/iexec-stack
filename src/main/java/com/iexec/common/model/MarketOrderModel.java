@@ -90,4 +90,18 @@ public class MarketOrderModel {
     public void setWorkerpoolOwner(String workerpoolOwner) {
         this.workerpoolOwner = workerpoolOwner;
     }
+
+    @Override
+    public String toString() {
+        return "MarketOrderModel{" +
+                "direction=" + direction +
+                ", category=" + category +
+                ", trust=" + trust +
+                ", value=" + value +
+                ", volume=" + volume +
+                ", remaining=" + remaining +
+                ", workerpool='" + workerpool + '\'' +
+                ", workerpoolOwner='" + workerpoolOwner + '\'' +
+                '}';
+    }
 }

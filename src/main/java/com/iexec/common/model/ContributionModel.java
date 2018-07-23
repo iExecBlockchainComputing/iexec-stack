@@ -1,6 +1,7 @@
 package com.iexec.common.model;
 
 import java.math.BigInteger;
+import java.util.Arrays;
 
 public class ContributionModel {
 
@@ -66,5 +67,17 @@ public class ContributionModel {
 
     public void setWeight(BigInteger weight) {
         this.weight = weight;
+    }
+
+    @Override
+    public String toString() {
+        return "ContributionModel{" +
+                "status=" + status +
+                ", resultHash=" + Arrays.toString(resultHash) +
+                ", resultSign=" + Arrays.toString(resultSign) +
+                ", enclaveChallenge='" + enclaveChallenge + '\'' +
+                ", score=" + score +
+                ", weight=" + weight +
+                '}';
     }
 }
