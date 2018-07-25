@@ -533,13 +533,13 @@ USERCERTDIR=
 # This is the max simultaneous incoming connections
 # Default is 200
 #
-#MAXCONNECTIONS=200
+MAXCONNECTIONS=1000
 
 #
 # This is the max simultaneous connections to DB
 # Default is 60
 #
-#DBCONNECTIONS=60
+DBCONNECTIONS=400
 
 #
 # This is a very special case and should usually not be used
