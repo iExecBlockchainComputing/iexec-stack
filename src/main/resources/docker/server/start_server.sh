@@ -32,6 +32,8 @@ replace_predefined_var_in_conf WORKERUID
 replace_predefined_var_in_conf LOGGERLEVEL
 replace_predefined_var_in_conf BLOCKCHAINETHENABLED
 replace_predefined_var_in_conf WORKERETHNODEADDRESS
+replace_predefined_var_in_conf MAXCONNECTIONS
+replace_predefined_var_in_conf DBCONNECTIONS
 
 
 iexecSchedulerYmlFile=/iexec/conf/iexec-scheduler.yml
