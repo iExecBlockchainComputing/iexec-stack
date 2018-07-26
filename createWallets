@@ -1,0 +1,136 @@
+#!/bin/bash
+
+# ./createWallets --wallet=2 --password=whatever --chain=dev --sendETH=0 --sendRLC=0
+
+
+cd $(dirname $0)
+
+for i in "$@"
+do
+case $i in
+    -w=*|--wallet=*)
+    WALLET_NUMBER="${i#*=}"
+    shift
+    ;;
+    -p=*|--password=*)
+    WALLET_PASSWORD="${i#*=}"
+    shift
+    ;;
+    -c=*|--chain=*)
+    CHAIN="${i#*=}"
+    shift
+    ;;
+    -eth=*|--sendETH=*)
+    SEND_ETH="${i#*=}"
+    shift
+    ;;
+    -rlc=*|--sendRLC=*)
+    SEND_RLC="${i#*=}"
+    shift
+    ;;
+    *)
+          # unknown option
+    ;;
+esac
+done
+
+
+if [[ -z $WALLET_NUMBER ]]; then
+	echo "Empty number of wallet (--wallet=10)" 
+	exit
+fi
+
+if [[ -z $WALLET_PASSWORD ]]; then
+	#echo "Empty wallet password (--password=whatever)"
+	#echo "Default wallet password '$WALLET_PASSWORD' set"
+	WALLET_PASSWORD="whatever"
+fi
+
+if [[ -z $CHAIN ]]; then
+	echo "Empty chain (--chain=dev)" 
+	exit
+fi
+
+
+if [[ -z $SEND_ETH ]]; then
+	echo "Empty sendETH amount (--sendETH=0)" 
+	exit
+fi
+
+if [[ -z $SEND_RLC ]]; then
+	echo "Empty sendRLC amount (--sendRLC=0) [nRLC]" 
+	exit
+fi
+
+
+walletAddresses=()
+
+
+for i in $(seq 1 $WALLET_NUMBER); do
+	walletFolder="wallet$i"
+	mkdir -p $walletFolder
+	cd $walletFolder
+	if [[ ! -f wallet.json ]]; then
+		echo "-- Wallet $i (new)-- "
+		iexec init
+		#iexec wallet create
+		iexec wallet encrypt --password $WALLET_PASSWORD
+	else 
+		echo "-- Wallet $i (ok) -- "
+	fi
+	walletAddress=$(jq -r '.address' wallet.json)
+	walletAddresses[$i]=$walletAddress
+	cd ..
+done
+
+accountsFile=accounts.txt
+rm -f $accountsFile
+i=0
+for walletAddress in ${walletAddresses[@]}; do
+	let "i++"
+	echo $i:$walletAddress >> $accountsFile
+done
+echo
+echo "-- Wallets -- "
+cat $accountsFile
+echo
+
+
+mkdir -p richman
+cd richman
+
+if [[ ! -f iexec.json ]]; then
+	echo "To load funds on wallets, please setup an iexec SDK environment in /richman folder (iexec init) then load funds on it" 
+	exit
+fi
+
+i=0
+for walletAddress in ${walletAddresses[@]}; do
+	let "i++"
+
+	if  (( $(echo "$SEND_ETH > 0" | bc -l) )); then
+		echo "-- Send ETH to wallet $i -- "
+		iexec wallet sendETH $SEND_ETH --to $walletAddress --force
+	fi
+
+	if [[ $SEND_RLC -gt 0 ]]; then
+
+		echo "-- Send RLC to wallet $i -- "
+		if [[ $CHAIN -eq "dev" ]]; then
+			iexec wallet sendRLC $SEND_RLC --to $walletAddress --force
+		else
+			rlcFaucetCall="https://api.faucet.iex.ec/getRLC?chainName=$CHAIN&address=$walletAddress"
+			echo $rlcFaucetCall
+			curl --request GET --url $rlcFaucetCall
+		fi
+
+	fi
+	
+done
+
+
+
+#ethFaucetCall="http://faucet.ropsten.be:3001/donate/$walletAddress"
+#echo $ethFaucetCall
+#curl --request GET --url $ethFaucetCall
+
