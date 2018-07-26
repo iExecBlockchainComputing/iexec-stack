@@ -110,14 +110,14 @@ for walletAddress in ${walletAddresses[@]}; do
 
 	if  (( $(echo "$SEND_ETH > 0" | bc -l) )); then
 		echo "-- Send ETH to wallet $i -- "
-		iexec wallet sendETH $SEND_ETH --to $walletAddress --force
+		iexec wallet sendETH $SEND_ETH --to $walletAddress --force --chain $CHAIN
 	fi
 
 	if [[ $SEND_RLC -gt 0 ]]; then
 
 		echo "-- Send RLC to wallet $i -- "
 		if [[ $CHAIN -eq "dev" ]]; then
-			iexec wallet sendRLC $SEND_RLC --to $walletAddress --force
+			iexec wallet sendRLC $SEND_RLC --to $walletAddress --force --chain $CHAIN
 		else
 			rlcFaucetCall="https://api.faucet.iex.ec/getRLC?chainName=$CHAIN&address=$walletAddress"
 			echo $rlcFaucetCall
