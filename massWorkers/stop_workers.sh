@@ -8,10 +8,7 @@ CURRENT_FOLDER=$PWD
 
 for i in $(eval echo "{$START..$NB_WORKERS}")
 do
-	cd worker$i
+	cd workers/worker$i
 	docker-compose down
 	cd $CURRENT_FOLDER
 done
-
-
-
