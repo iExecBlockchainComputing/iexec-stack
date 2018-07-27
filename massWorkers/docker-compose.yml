@@ -1,0 +1,25 @@
+version: '3.4'
+
+services:
+  worker:
+    image: iexechub/worker:${WORKER_DOCKER_IMAGE_VERSION}
+    restart: always
+    container_name: ${WORKER_HOSTNAME}
+    hostname: ${WORKER_HOSTNAME}
+    environment:
+      - SCHEDULER_DOMAIN=${SCHEDULER_DOMAIN}
+      - SCHEDULER_IP=${SCHEDULER_IP}
+      - LOGIN=${WORKER_LOGIN}
+      - PASSWORD=${WORKER_PASSWORD}
+      - LOGGERLEVEL=${WORKER_LOGGERLEVEL}
+      - SHAREDPACKAGES=${WORKER_SHAREDPACKAGES}
+      - SHAREDAPPS=${WORKER_SHAREDAPPS}
+      - TMPDIR=${WORKER_TMPDIR}
+      - SANDBOXENABLED=${WORKER_SANDBOX_ENABLED}
+      - WALLETPASSWORD=${WORKERWALLETPASSWORD}
+      - BLOCKCHAINETHENABLED=${BLOCKCHAINETHENABLED}
+    volumes:
+      - ${WORKERWALLETPATH}:/iexec/wallet/wallet_worker.json
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ${WORKER_TMPDIR}:${WORKER_TMPDIR}
+
