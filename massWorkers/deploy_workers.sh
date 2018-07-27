@@ -1,6 +1,24 @@
 #!/bin/bash
+# ./deploy_workers.sh --workers=10
 
-NB_WORKERS=3
+
+cd $(dirname $0)
+
+for i in "$@"
+do
+case $i in
+    -w=*|--workers=*)
+    NB_WORKERS="${i#*=}"
+    shift
+    ;;
+esac
+done
+
+
+if [[ -z $NB_WORKERS ]]; then
+	echo "Empty number of workers (--workers=10)" 
+	exit
+fi
 
 
 START=1
