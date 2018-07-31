@@ -1,0 +1,5 @@
+# HOSTNAME HOST USER SSH_KEY SSH_PORT WORKER_TAG FROM_WORKER TO_WORKER
+dev-pool-worker1 54.219.150.90 ubuntu ~/.ssh/worker-pool.pem 22 none 1 30
+dev-pool-worker2 13.57.193.2 ubuntu ~/.ssh/worker-pool.pem 22 none 31 60
+dev-pool-worker3 52.53.252.1 ubuntu ~/.ssh/worker-pool.pem 22 none 61 90
+
