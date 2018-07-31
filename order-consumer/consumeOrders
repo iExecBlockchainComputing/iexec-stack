@@ -100,7 +100,7 @@ do
 	for i in $orders
 	do	
 		echo "iexec order fill $i --chain $CHAIN_NAME --force"
-        #iexec order fill $i --chain $CHAIN_NAME --force
+        iexec order fill $i --chain $CHAIN_NAME --force
         break
 	done
 	echo "Waiting $PERIOD sec"
