@@ -1,11 +1,10 @@
-#FROM ubuntu:16.04
-FROM ubuntu-16.04-updated
+FROM iexechub/ubuntu:16.04
 
 ADD publishOrders /home/publishOrders
 
 WORKDIR /home
 
-RUN apt-get update && export DEBIAN_FRONTEND=noninteractive && apt-get install -y curl mysql-client
+RUN apt-get install -y curl mysql-client
 
 RUN chmod +x /home/publishOrders
 
