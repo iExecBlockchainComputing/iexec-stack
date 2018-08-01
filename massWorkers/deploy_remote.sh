@@ -62,7 +62,7 @@ deploy_workers() {
 		# create the worker repo
 		mkdir -p workers/worker$i
 		cp $HOME_FOLDER/docker-compose.yml workers/worker$i/
-		cp $HOME_FOLDER/.env workers/worker$i/
+		cp $HOME_FOLDER/.env.template workers/worker$i/.env
 		cd workers/worker$i
 		sed -i "s/WORKER_HOSTNAME=.*/WORKER_HOSTNAME=$HOSTNAME\_worker$i/g" .env
 		sed -i "s/WORKER_TMPDIR=.*/WORKER_TMPDIR=\/tmp\/worker$i/g" .env
