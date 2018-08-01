@@ -1,20 +1,24 @@
 #!/bin/bash
-# ./mass_workers.sh --workers=10 --start/--stop
+# ./deploy_local.sh --start/--stop --from=1 --to=10 
 
 START_WORKERS=false
 STOP_WORKERS=false
-
 
 cd $(dirname $0)
 
 for i in "$@"
 do
 case $i in
-    -w=*|--workers=*)
-    NB_WORKERS="${i#*=}"
+    --from=*)
+    FROM_WORKER="${i#*=}"
     shift
     ;;
 	
+	--to=*)
+    TO_WORKER="${i#*=}"
+    shift
+    ;;
+
 	--start)
     START_WORKERS=true
     shift
@@ -27,19 +31,21 @@ case $i in
 esac
 done
 
-
-if [[ -z $NB_WORKERS ]]; then
-	echo "Empty number of workers (--workers=10)" 
+if [[ -z $FROM_WORKER ]]; then
+	echo "Empty FROM_WORKER" 
 	exit
 fi
 
-START=1
+if [[ -z $TO_WORKER ]]; then
+	echo "Empty TO_WORKER" 
+	exit
+fi
+
 CURRENT_FOLDER=$PWD
 HOSTNAME=`hostname`
 
-
 start_workers () {
-	for i in $(eval echo "{$START..$NB_WORKERS}")
+	for i in $(eval echo "{$FROM_WORKER..$TO_WORKER}")
 	do
 		mkdir -p workers/worker$i
 		cp $CURRENT_FOLDER/docker-compose.yml workers/worker$i/
