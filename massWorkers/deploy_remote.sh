@@ -42,7 +42,7 @@ deploy_workers() {
 
 	# Remove previous stuff
 	echo "sudo rm -rf $DEST_FOLDER && mkdir -p $DEST_FOLDER && sudo chown -R ubuntu:ubuntu $DEST_FOLDER && sudo chmod -R 775 $DEST_FOLDER"  > tmp 
-	ssh -i $SSH_KEY -p $SSH_PORT $REMOTE_HOST "sudo bash -s" < tmp
+	ssh -o "StrictHostKeyChecking no" -i $SSH_KEY -p $SSH_PORT $REMOTE_HOST "sudo bash -s" < tmp
 	
 	# prepare all files locally
 	cd $HOME_FOLDER/deployWorkers
@@ -78,7 +78,7 @@ deploy_workers() {
 
 	# start the docker compose for that worker
 	echo "cd $DEST_FOLDER && tar -xvf $HOSTNAME.tar && cd $HOSTNAME && ./start_workers.sh --start --from=$FROM_WORKER --to=$TO_WORKER " > tmp
-	ssh -i $SSH_KEY -p $SSH_PORT $REMOTE_HOST "sudo bash -s" < tmp
+	ssh -o "StrictHostKeyChecking no" -i $SSH_KEY -p $SSH_PORT $REMOTE_HOST "sudo bash -s" < tmp
 	
 	rm tmp
 }
