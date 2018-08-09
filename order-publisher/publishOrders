@@ -18,6 +18,8 @@ fi
 
 expectedWorkers=$(($TRUST/10))
 
+CATEGORYSEND=$CATEGORY
+PRICESEND=$PRICE
 
 echo 'Starting publishing orders if necessary with trust='$TRUST
 while true
@@ -52,14 +54,14 @@ do
 	for i in $(seq 1 $ordersToPublish)
 	do
 		if [ -z $CATEGORY ]; then
-			CATEGORY=$(shuf -i 3-5 -n 1)
+			CATEGORYSEND=$(shuf -i 3-5 -n 1)
 		fi
 		if [ -z $PRICE ]; then
-			PRICE=$(shuf -i 8-16 -n 1)
+			PRICESEND=$(shuf -i 8-16 -n 1)
 		fi
 		pool='scheduler'
-		echo 'POST /sendmarketorder?pool='$pool'&category='$CATEGORY'&price='$PRICE'&trust='$TRUST
-		request='https://'$pool':443/sendmarketorder?XMLDESC=<marketorder><direction>ASK</direction><categoryid>'$CATEGORY'</categoryid><trust>'$TRUST'</trust><price>'$PRICE'</price><volume>1</volume></marketorder>'
+		echo 'POST /sendmarketorder?pool='$pool'&category='$CATEGORYSEND'&price='$PRICESEND'&trust='$TRUST
+		request='https://'$pool':443/sendmarketorder?XMLDESC=<marketorder><direction>ASK</direction><categoryid>'$CATEGORYSEND'</categoryid><trust>'$TRUST'</trust><price>'$PRICESEND'</price><volume>1</volume></marketorder>'
 		echo $request
 		curl --request GET --insecure --user $ADMINLOGIN':'$ADMINPASSWORD --url $request
 		echo
