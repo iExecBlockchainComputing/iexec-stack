@@ -1077,6 +1077,7 @@ public final class CommManager extends Thread {
 						logger.exception(e);
 					}
 					close();
+					close();
 
 					sleeping(SleepEvent.WORKREQUEST, e.toString());
 
@@ -1139,7 +1140,7 @@ public final class CommManager extends Thread {
                 } finally {
 					close();
 
-					if (newWork != null) {
+					if ((newWork != null) && (newWork.isCompleted() || newWork.isError())){
 						sendResult(newWork);
 					} else {
 						logger.error("Downloading error : newWork = null ?!?!");
