@@ -427,7 +427,7 @@ public class ThreadAlive extends Thread {
                 logger.info("Downloading new keystore");
                 try {
                     CommManager.getInstance().downloadData(keystoreUri, XWPostParams.MAXUPLOADSIZE, false);
-                } catch (final XWCommException e) {
+                } catch (final XWCategoryException e) {
                     logger.exception(e);
                 }
                 final File newKeystoreFile = CommManager.getInstance().commClient(keystoreUri)

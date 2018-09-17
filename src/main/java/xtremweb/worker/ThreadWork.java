@@ -1292,7 +1292,7 @@ public class ThreadWork extends Thread {
 			final File err = new File(currentWork.getScratchDir(), XWTools.STDERR);
 
 			//
-			// since 13.1.0 the consensus is calculated on XWTools.CONSENSUSFILENAME
+			// since 13.1.0 the consensus may be calculated on XWTools.CONSENSUSFILENAME
 			//
 			boolean contribution = false;
 			String currentDir = currentWork.getScratchDirName();
@@ -1436,12 +1436,18 @@ public class ThreadWork extends Thread {
 			currentWork.setError(e.getMessage());
 			logger.exception(e);
 			killed = true;
-			processReturnCode = XWReturnCode.WALLCLOCKTIME.ordinal();
+			processReturnCode = XWReturnCode.FATAL.ordinal();
 		} catch (final ExecutorWallClockTimeException wcte) {
-			currentWork.setFailed("wall clock time reached");
+			currentWork.setErrorMsg("wall clock time reached");
+			currentWork.setCompleted();
 			logger.exception(wcte);
-			killed = true;
+			killed = false;
 			processReturnCode = XWReturnCode.WALLCLOCKTIME.ordinal();
+            try (final FileOutputStream out = new FileOutputStream(new File(scratchDir, XWTools.STDERR));
+                 final PrintWriter wout = new PrintWriter(out, true)) {
+                wout.print("iExec Warning : WallClockTime reached");
+            }
+
 		} finally {
 			exec = null;
 		}

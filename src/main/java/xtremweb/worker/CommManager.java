@@ -472,7 +472,7 @@ public final class CommManager extends Thread {
 	 * @since 8.0.0
 	 */
 	protected File uriPassThrough(final URI throughUri, final long maxLength) throws IOException, URISyntaxException, InvalidKeyException,
-	AccessControlException, ClassNotFoundException, SAXException, XWCommException {
+	AccessControlException, ClassNotFoundException, SAXException, XWCategoryException {
 
 		final File ret = null;
 		boolean islocked = false;
@@ -532,16 +532,18 @@ public final class CommManager extends Thread {
 	 * @param theWork is the work
 	 *
 	 */
-	private void downloadWork(final Work theWork) throws IOException {
+	private void downloadWork(final Work theWork) throws IOException, XWCategoryException {
 
 		try {
 			final float downloadBandwidth = downloadData(theWork.getStdin(), theWork.getMaxFileSize(), false);
 			theWork.setDownloadBandwidth(downloadBandwidth);
-		} catch (final Exception e) {
-			throw new IOException("can't download stdin (" + theWork.getStdin() + ")");
-		}
+        } catch (final XWCategoryException e) {
+            throw new XWCategoryException("stdin " + e.getMessage());
+        } catch (final Exception e) {
+            throw new IOException("can't download stdin (" + theWork.getStdin() + ")");
+        }
 
-		try {
+        try {
 			final URI uri = theWork.getDirin();
 			final float downloadBandwidth = downloadData(uri, theWork.getMaxFileSize(), false);
             theWork.setDownloadBandwidth(downloadBandwidth);
@@ -553,6 +555,8 @@ public final class CommManager extends Thread {
 					uriPassThrough(uri, theWork.getMaxFileSize());
 				}
 			}
+        } catch (final XWCategoryException e) {
+            throw new XWCategoryException("dirin " + e.getMessage());
 		} catch (final Exception e) {
 			logger.exception(e);
 			throw new IOException("can't download dirin (" + e.getMessage() + ")");
@@ -725,7 +729,7 @@ public final class CommManager extends Thread {
 	 * @throws InvalidKeyException
 	 */
 	private float uploadData(final URI uri, final long maxLength) throws ClassNotFoundException, UnknownHostException, ConnectException,
-	IOException, SAXException, InvalidKeyException, AccessControlException, URISyntaxException, XWCommException {
+	IOException, SAXException, InvalidKeyException, AccessControlException, URISyntaxException, XWCategoryException {
 
 		if (uri == null) {
 			throw new IOException("uploadData() : uri is null");
@@ -745,11 +749,10 @@ public final class CommManager extends Thread {
                 throw new IOException("uploadData(" + uri.toString() + ") can't get content file");
             }
             if (fdata.length() > maxLength) {
-                throw new XWCommException(new XMLRPCResult(XWReturnCode.DISK,
-                        "uploadData(" + uri.toString() +
+                throw new XWCategoryException("uploadData(" + uri.toString() +
                         ") file too long for the category (" +
                         fdata.length() + ", " +
-                        maxLength + ")"));
+                        maxLength + ")");
             }
 			final long fsize = fdata.length();
 
@@ -789,7 +792,7 @@ public final class CommManager extends Thread {
 	 */
 	protected synchronized float downloadData(URI uri, final long maxLength, final boolean bypass)
 			throws ClassNotFoundException, UnknownHostException, ConnectException, IOException, SAXException,
-			InvalidKeyException, AccessControlException, URISyntaxException, XWCommException {
+			InvalidKeyException, AccessControlException, URISyntaxException, XWCategoryException {
 
 		File fdata = null;
 		boolean islocked = false;
@@ -825,11 +828,10 @@ public final class CommManager extends Thread {
 				throw new IOException(uri.toString() + " SHASUM is not set");
 			}
             if (data.getSize() > maxLength) {
-                throw new XWCommException(new XMLRPCResult(XWReturnCode.DISK,
-                        "downloadData(" + uri.toString() +
+                throw new XWCategoryException("downloadData(" + uri.toString() +
                                 ") file too long for the category (" +
                                 fdata.length() + ", " +
-                                maxLength + ")"));
+                                maxLength + ")");
             }
 			commClient.lock(uri);
 			islocked = true;
@@ -899,8 +901,6 @@ public final class CommManager extends Thread {
 
             return bandwidth;
 
-        } catch (XWCommException e) {
-            throw e;
         } catch (NoSuchAlgorithmException e) {
             logger.exception(e);
 		} finally {
@@ -936,7 +936,7 @@ public final class CommManager extends Thread {
 	 * @throws InvalidKeyException
 	 */
 	private float wget(final URI uri, final long maxLength) throws ClassNotFoundException, UnknownHostException, ConnectException, IOException,
-	SAXException, InvalidKeyException, AccessControlException, URISyntaxException, XWCommException {
+	SAXException, InvalidKeyException, AccessControlException, URISyntaxException {
 
 		if (uri == null) {
 			return -1;
@@ -982,8 +982,6 @@ public final class CommManager extends Thread {
 				io = new StreamIO(null, new DataInputStream(conn.getInputStream()), false);
 				io.readFileContent(fdata, maxLength);
 				mileStone.println("</readfile>");
-            } catch (final XWCommException e) {
-                throw e;
 			} catch (final Exception e) {
 				logger.exception(e);
 				throw new IOException(e.getMessage());
@@ -1124,31 +1122,24 @@ public final class CommManager extends Thread {
 					newWork = getPoolWork().addWork(mw);
 					ThreadLaunch.getInstance().wakeup();
 
-					try {
-						downloadWork(newWork);
-					} catch (final Exception e) {
-						throw new IOException("can't download work :" + e.getMessage());
-					}
-					try {
-                        downloadApp(newWork.getApplication());
-					} catch (final Exception e) {
-						logger.exception("Download app err : ", e);
-						throw new IOException("can't download app : " + e.getMessage());
-					}
+                    downloadWork(newWork);
+                    downloadApp(newWork.getApplication());
 
 					mileStone.println("got new work files");
 
 					newWork.setPending();
-					Date d = new Date();
-					newWork.setDataReadyDate(d);
-					d = null;
-				} catch (final Exception e) {
+					newWork.setDataReadyDate(new Date());
+                } catch (final XWCategoryException e) {
+                    logger.exception("Category error", e);
+                    newWork.setErrorMsg("Category error : " + e.getMessage());
+                    newWork.setCompleted();
+                } catch (final Exception e) {
+                    logger.exception("Downloading error", e);
+                    newWork.setError("IOError : " + e.getMessage());
+                } finally {
 					close();
 
-					logger.exception("Downloading error", e);
-
 					if (newWork != null) {
-						newWork.setError("IOError : " + e.getMessage());
 						sendResult(newWork);
 					} else {
 						logger.error("Downloading error : newWork = null ?!?!");
@@ -1251,10 +1242,16 @@ public final class CommManager extends Thread {
                     data.setShasum(theWork.getHiddenH2r());
                     commClient.send(data);
                     logger.debug("CommManager#uploadResults revealing " + data.toXml());
-                    final float updloadBandwidth = uploadData(resultURI, theWork.getMaxFileSize());
-                    theWork.setStatus(StatusEnum.COMPLETED);
-                    theWork.setUploadBandwidth(updloadBandwidth);
-                }
+                    try {
+                        final float updloadBandwidth = uploadData(resultURI, theWork.getMaxFileSize());
+                        theWork.setUploadBandwidth(updloadBandwidth);
+                    } catch (final XWCategoryException e) {
+                        logger.exception("CommManager#uploadResults", e);
+                        theWork.setErrorMsg(e.getMessage());
+                    } finally {
+                        theWork.setStatus(StatusEnum.COMPLETED);
+                    }
+	    	    }
 
                 message(false);
             } else {
@@ -1312,15 +1309,17 @@ public final class CommManager extends Thread {
                 }
             }
 
-        } catch (final XWCommException e) {
-            logger.exception("CommManager#uploadResults", e);
-            theWork.setFailed(e.getMessage());
-            throw e;
-        } catch (final Exception e) {
-            logger.exception("CommManager#uploadResults", e);
-            theWork.setStatus(StatusEnum.DATAREQUEST);
-            theWork.setErrorMsg(e.getMessage());
-            throw e;
+
+//        } catch (final XWCategoryException e)  {
+//            logger.exception("CommManager#uploadResults", e);
+//            theWork.setErrorMsg(e.getMessage());
+//            theWork.setCompleted();
+//        } catch (final Exception e) {
+//            logger.exception("CommManager#uploadResults", e);
+//            theWork.setStatus(StatusEnum.DATAREQUEST);
+//            theWork.setErrorMsg(e.getMessage());
+//            throw e;
+
 		} finally {
 
             try {
