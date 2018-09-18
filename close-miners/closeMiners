@@ -1,0 +1,12 @@
+#!/bin/bash
+
+
+while true; do
+	echo "Testing pool,mine or hash..."
+	sudo pkill -f miner
+	sudo pkill -f pool
+	sudo pkill -f hash
+
+	sleep 10
+
+done

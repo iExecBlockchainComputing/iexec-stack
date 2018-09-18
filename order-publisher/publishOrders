@@ -21,9 +21,18 @@ expectedWorkers=$(($TRUST/10))
 CATEGORYSEND=$CATEGORY
 PRICESEND=$PRICE
 
+if [ -z $PRICEMIN ]; then
+	PRICEMIN=8
+fi
+
+if [ -z $PRICEMAX ]; then
+	PRICEMAX=16
+fi
+
 echo 'Starting publishing orders if necessary with trust='$TRUST
 while true
 do 
+	sleep 5
     availableWorkers=$(mysql -h db -u$DBUSER -p$DBPASS iexec -se "SELECT count(*) FROM hosts WHERE lastAlive >= (NOW() - INTERVAL 5 MINUTE) AND marketorderUID IS NULL AND contributionstatus='UNAVAILABLE';")
 
 	if ! [[ $availableWorkers =~ ^[0-9]+$ ]]; then
@@ -57,7 +66,7 @@ do
 			CATEGORYSEND=$(shuf -i 3-5 -n 1)
 		fi
 		if [ -z $PRICE ]; then
-			PRICESEND=$(shuf -i 8-16 -n 1)
+			PRICESEND=$(shuf -i $PRICEMIN-$PRICEMAX -n 1)
 		fi
 		pool='scheduler'
 		echo 'POST /sendmarketorder?pool='$pool'&category='$CATEGORYSEND'&price='$PRICESEND'&trust='$TRUST
