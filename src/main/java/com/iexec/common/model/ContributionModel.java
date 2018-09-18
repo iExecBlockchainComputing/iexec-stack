@@ -3,18 +3,17 @@ package com.iexec.common.model;
 import org.web3j.utils.Numeric;
 
 import java.math.BigInteger;
-import java.util.Arrays;
 
 public class ContributionModel {
 
-    private BigInteger status;
+    private ContributionStatusEnum status;
     private byte[] resultHash;
     private byte[] resultSign;
     private String enclaveChallenge;
     private BigInteger score;
     private BigInteger weight;
 
-    public ContributionModel(BigInteger status, byte[] resultHash, byte[] resultSign, String enclaveChallenge, BigInteger score, BigInteger weight) {
+    public ContributionModel(ContributionStatusEnum status, byte[] resultHash, byte[] resultSign, String enclaveChallenge, BigInteger score, BigInteger weight) {
         this.status = status;
         this.resultHash = resultHash;
         this.resultSign = resultSign;
@@ -23,11 +22,11 @@ public class ContributionModel {
         this.weight = weight;
     }
 
-    public BigInteger getStatus() {
+    public ContributionStatusEnum getStatus() {
         return status;
     }
 
-    public void setStatus(BigInteger status) {
+    public void setStatus(ContributionStatusEnum status) {
         this.status = status;
     }
 
@@ -82,4 +81,5 @@ public class ContributionModel {
                 ", weight=" + weight +
                 '}';
     }
+
 }
