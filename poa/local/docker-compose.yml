@@ -1,0 +1,30 @@
+version: '2.0'
+services:
+   host1:
+       container_name: host1
+       ports:
+       - 8080:8080
+       - 8180:8180
+       - 8545:8545
+       - 8546:8546
+       - 30303:30303 
+       image: parity/parity:stable
+       volumes:
+       - ./deployment/chain/spec.json:/parity/spec.json:ro
+       - ./deployment/chain/reserved_peers:/parity/reserved_peers:ro
+       - ./deployment/1/password:/parity/password:ro
+       - ./deployment/1/authority.toml:/parity/authority.toml:ro
+       - ./deployment/1/${NETWORK_NAME}:/parity/data/keys/${NETWORK_NAME}
+       - ./deployment/1/key.priv:/parity/data/network/key
+       - ./data/1:/parity/data
+       command: --chain /parity/spec.json --config /parity/authority.toml -d /parity/data  
+   monitor:
+      image: buythewhale/ethstats_monitor
+      volumes:
+      - ./monitor/app.json:/home/ethnetintel/eth-net-intelligence-api/app.json:ro
+   dashboard:
+      image: buythewhale/ethstats
+      volumes:
+      - ./dashboard/ws_secret.json:/eth-netstats/ws_secret.json:ro
+      ports:
+      - 3001:3000
