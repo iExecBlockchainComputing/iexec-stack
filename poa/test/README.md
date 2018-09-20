@@ -15,6 +15,12 @@ chmod +x bootpoatestnet.sh
 ./bootpoatestnet.sh --name tototest --nodes 2
 
 ```
+exemple creation homechain et foreign chain to test bridge between 2 poa
+```
+./bootpoatestnet.sh --name homechain --nodes 1
+./bootpoatestnet.sh --name foreignchain --nodes 1
+
+```
 
 # script usage
 ```
