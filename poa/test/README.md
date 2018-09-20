@@ -11,6 +11,7 @@ chmod +x bootstrap-ubuntu-aws.sh
 ```
 git clone https://github.com/iExecBlockchainComputing/iexec-deploy.git
 cd iexec-deploy/poa/test/
+chmod +x bootpoatestnet.sh 
 ./bootpoatestnet.sh --name tototest --nodes 2
 
 ```
