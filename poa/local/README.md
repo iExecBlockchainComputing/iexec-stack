@@ -63,7 +63,7 @@ sed -i 's/0/4/g' migrations/2_deploy_contracts.js
 cp truffle.js truffle.ori
 ```
 
-create a truffle.js
+create a truffle.js and replace with richman private key
 
 ```
 const HDWalletProvider = require("truffle-hdwallet-provider-privkey");
