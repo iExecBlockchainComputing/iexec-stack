@@ -1,9 +1,9 @@
 
 ## JUST USE IT
-We generate a local chain with 1 peer with PoCo contract already deployed. For local dev purpose.
+We have generated a local chain with 1 peer with PoCo (V2) contract already deployed. For local dev purpose.
 
 
-You can use is with :
+You can use it with :
 ```
 docker-compose up -d
 ```
