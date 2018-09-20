@@ -1,10 +1,14 @@
-We generate a local chain with 1 peer with PoCo contrac already deployed. For local dev purpose.
+
+## JUST USE IT
+We generate a local chain with 1 peer with PoCo contract already deployed. For local dev purpose.
 
 
 You can use is with :
 ```
 docker-compose up -d
 ```
+
+## DIY if you want a different config
 Here steps have been done to generate this config :
 ubuntu prerequiste:
 
@@ -162,8 +166,6 @@ Saving artifacts...
 give money to 200 accounts
 
 ```
-sudo apt-get install -y jq
-sudo apt-get install -y bc
 git clone https://github.com/iExecBlockchainComputing/wallets.git
 cd wallets
 # set the right IexecHub find in PoCo/build/contracts/IexecHub.json contract address
