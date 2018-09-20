@@ -18,6 +18,9 @@ wget https://raw.githubusercontent.com/branciard/blockchain-dev-env/master/boots
 chmod +x bootstrap-ubuntu-aws.sh
 ./bootstrap-ubuntu-aws.sh
 ```
+The next commands are basiccaly done by this [bootpoatestnet.sh](https://github.com/iExecBlockchainComputing/iexec-deploy/blob/master/poa/test/bootpoatestnet.sh)
+See more [testnet readme bootstrap](https://github.com/iExecBlockchainComputing/iexec-deploy/blob/master/poa/test/README.md)
+
 git clone parity-deploy repo
 ```
 su - ubuntu
