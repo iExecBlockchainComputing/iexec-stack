@@ -173,3 +173,7 @@ sed -i 's/1337/17/g' richman/chain.json
 ./topUpWallets --from=1 --to=200 --minETH=10 --maxETH=10 --chain=dev --minRLC=1000
 
 ```
+check balance :
+```
+curl --data '{"jsonrpc":"2.0","method":"eth_getBalance","params":["0x0513425AE000f5bAEaD0ed485ED8c36E737e3586", "latest"],"id":1}' -H "Content-Type: application/json" -X POST localhost:8545
+```
