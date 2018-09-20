@@ -7,7 +7,7 @@ chmod +x bootstrap-ubuntu-aws.sh
 ./bootstrap-ubuntu-aws.sh
 ```
 
-# git clone
+# config and launch
 ```
 su - ubuntu
 git clone https://github.com/iExecBlockchainComputing/iexec-deploy.git
@@ -22,6 +22,7 @@ exemple creation homechain et foreign chain to test bridge between 2 poa
 ./bootpoatestnet.sh --name foreignchain --nodes 1
 
 ```
+# check on IP:3001 dashborad
 
 # script usage
 ```
