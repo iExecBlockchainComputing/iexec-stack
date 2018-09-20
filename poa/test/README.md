@@ -31,3 +31,12 @@ OPTIONAL:
       -h | --help
 "
 ```
+# multiple instances aws test chain deploiement :
+
+deploy on multiple instance :
+-  generate  config  on one server and zip it. zip parity-deploy.
+- copy all parity-deploy.zip on all instances.
+- open 30303 port on aws nodes instances
+- check and replace public IP information in parity-deploy/deployment/chain/reserved_peers
+- remove in docker-compose to start only nodes you want (host1, host2 etc ..)
+- docker-compose up again on all servers and check thaht you see peers connected to each others. peers =! 0 in logs.
