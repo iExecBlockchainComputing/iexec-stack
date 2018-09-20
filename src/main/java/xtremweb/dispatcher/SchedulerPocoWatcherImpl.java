@@ -4,10 +4,7 @@ import com.iexec.common.contracts.generated.WorkerPool;
 import com.iexec.common.ethereum.IexecConfigurationService;
 import com.iexec.common.ethereum.TransactionStatus;
 import com.iexec.common.ethereum.Web3jService;
-import com.iexec.common.model.AppModel;
-import com.iexec.common.model.ContributionModel;
-import com.iexec.common.model.ModelService;
-import com.iexec.common.model.WorkOrderModel;
+import com.iexec.common.model.*;
 import com.iexec.scheduler.actuator.ActuatorService;
 import com.iexec.scheduler.iexechub.IexecHubService;
 import com.iexec.scheduler.iexechub.IexecHubWatcher;
@@ -483,7 +480,7 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
         }
         final ContributionModel contribution = WorkerPoolService.getInstance().getWorkerContributionModelByWorkOrderId(workOrderId,
                 wallet.getAddress());
-        if((contribution != null) && (contribution.getStatus() != BigInteger.ZERO)) {
+        if((contribution != null) && (contribution.getStatus() != ContributionStatusEnum.UNSET)) {
             System.out.println("allowWorkerToContribute() : " + wallet.getAddress() + " already contributing to " + workOrderId);
             return;
         }
