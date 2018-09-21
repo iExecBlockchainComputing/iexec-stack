@@ -1,0 +1,16 @@
+version: '3.4'
+
+services:
+  worker:
+    image: iexechub/iexec-order-consumer
+    restart: always
+    container_name: order-consumer
+    hostname: order-consumer
+    environment:
+      - CHAIN_NAME=dev
+      - CATEGORY=5
+      - WORKERPOOL_OWNER=doesntmatter
+      - PERIOD=360
+    volumes:
+      - ./sdk-env:/home/sdk-env
+      - /var/run/docker.sock:/var/run/docker.sock

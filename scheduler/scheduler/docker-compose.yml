@@ -12,8 +12,8 @@ volumes:
 services:
   scheduler:
     image: iexechub/server:${SCHEDULER_DOCKER_IMAGE_VERSION}
-    container_name: iexecscheduler
-    hostname: iexecscheduler
+    container_name: scheduler
+    hostname: scheduler
     ports:
       - 4321:4321
       - 4322:4322
@@ -47,6 +47,13 @@ services:
       - WALLETPATH=${SCHEDULERWALLETPATH}
       - WALLETPASSWORD=${SCHEDULERWALLETPASSWORD}
       - WORKERPOOLADDRESS=${WORKERPOOLADDRESS}
+      - SUBSCRIPTION_MINIMIM_STAKE_POLICY=${SUBSCRIPTION_MINIMIM_STAKE_POLICY}
+      - STAKE_RATIO_POLICY=${STAKE_RATIO_POLICY}
+      - SCHEDULER_REWARD_RATIO_POLICY=${SCHEDULER_REWARD_RATIO_POLICY}
+      - WORKERETHNODEADDRESS=${WORKERETHNODEADDRESS}
+      - ALIVEPERIOD=${ALIVEPERIOD}
+      - MAXCONNECTIONS=${MAXCONNECTIONS}
+      - DBCONNECTIONS=${DBCONNECTIONS}
     networks:
       - iexec-net
     restart: unless-stopped
@@ -101,3 +108,4 @@ services:
       - 8080:8080
     networks:
       - iexec-net
+      

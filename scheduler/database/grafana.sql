@@ -1,6 +1,6 @@
 DROP USER IF EXISTS 'grafana';
 
-CREATE USER 'grafana'@'%' IDENTIFIED BY 'grafanap';
+CREATE USER 'grafana'@'%' IDENTIFIED BY 'grafanapassword';
 
 GRANT SELECT(cpunb,cpuspeed,totalmem,isdeleted,lastalive,uid,name,os,cputype,nbjobs,pendingjobs,runningjobs,errorjobs) ON iexec.hosts TO 'grafana'@'%';
 GRANT SELECT(cpunb,cpuspeed,totalmem,isdeleted,lastalive,uid,name,os,cputype,nbjobs,pendingjobs,runningjobs,errorjobs) ON iexec.hosts_history TO 'grafana'@'%';
