@@ -1,0 +1,22 @@
+version: '3.4'
+services:
+  worker:
+    image: iexechub/worker:latest
+    hostname: worker1-docker
+    restart: always
+    environment:
+      - SCHEDULER_DOMAIN=xxxxxx
+      - SCHEDULER_IP=xxxxxx
+      - LOGIN=vworker
+      - PASSWORD=xxxxx
+      - LOGGERLEVEL=DEBUG
+      - SHAREDPACKAGES=
+      - SHAREDAPPS=docker
+      - TMPDIR=/tmp/worker-pool
+      - SANDBOXENABLED=true
+      - WALLETPASSWORD=whatever
+      - BLOCKCHAINETHENABLED=true
+    volumes:
+      - ./wallet/wallet.json:/iexec/wallet/wallet_worker.json
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /tmp/worker-pool:/tmp/worker-pool
