@@ -1,0 +1,111 @@
+version: '3.4'
+
+networks:
+  iexec-net:
+    driver: bridge
+
+volumes:
+  grafana-data:
+  grafana-logs:
+  grafana-etc:
+
+services:
+  scheduler:
+    image: iexechub/server:${SCHEDULER_DOCKER_IMAGE_VERSION}
+    container_name: scheduler
+    hostname: scheduler
+    ports:
+      - 4321:4321
+      - 4322:4322
+      - 4323:4323
+      - 443:443
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ${CERTIFICATE_AND_PRIVATE_KEYS_REPO}:/iexec/keystore
+      - ${SCHEDULER_PERSISTING_FOLDER}:/var/xwhep
+      - ${SCHEDULERWALLETPATH}:/iexec/wallet/wallet_scheduler.json
+    environment:
+      - DBHOST=${DBHOST}
+      - DBNAME=${MYSQL_DB_NAME}
+      - DBUSER=${MYSQL_USER_LOGIN}
+      - DBPASS=${MYSQL_USER_PASSWORD}
+      - ADMINLOGIN=${ADMINLOGIN}
+      - ADMINPASSWORD=${ADMINPASSWORD}
+      - ADMINUID=${ADMINUID}
+      - WORKERLOGIN=${WORKERLOGIN}
+      - WORKERPASSWORD=${WORKERPASSWORD}
+      - WORKERUID=${WORKERUID}
+      - LOGGERLEVEL=${LOGGERLEVEL}
+      - JWTETHISSUER=${JWTETHISSUER}
+      - JWTETHSECRET=${JWTETHSECRET}
+      - DELEGATEDREGISTRATION=${DELEGATEDREGISTRATION}
+      - MAXFILESIZE=${MAXFILESIZE}
+      - BLOCKCHAINETHENABLED=${BLOCKCHAINETHENABLED}
+      - ETHNODE=${ETHNODE}
+      - RLCCONTRACT=${RLCCONTRACT}
+      - IEXECHUBCONTRACT=${IEXECHUBCONTRACT}
+      - WALLETPATH=${SCHEDULERWALLETPATH}
+      - WALLETPASSWORD=${SCHEDULERWALLETPASSWORD}
+      - WORKERPOOLADDRESS=${WORKERPOOLADDRESS}
+      - SUBSCRIPTION_MINIMIM_STAKE_POLICY=${SUBSCRIPTION_MINIMIM_STAKE_POLICY}
+      - STAKE_RATIO_POLICY=${STAKE_RATIO_POLICY}
+      - SCHEDULER_REWARD_RATIO_POLICY=${SCHEDULER_REWARD_RATIO_POLICY}
+      - WORKERETHNODEADDRESS=${WORKERETHNODEADDRESS}
+      - ALIVEPERIOD=${ALIVEPERIOD}
+      - MAXCONNECTIONS=${MAXCONNECTIONS}
+      - DBCONNECTIONS=${DBCONNECTIONS}
+    networks:
+      - iexec-net
+    restart: unless-stopped
+
+  db:
+    image: mysql:5.7
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ADMIN_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DB_NAME}
+      MYSQL_USER: ${MYSQL_USER_LOGIN}
+      MYSQL_PASSWORD: ${MYSQL_USER_PASSWORD}
+    volumes:
+      - ${MYSQLDATA_FOLDER}:/var/lib/mysql
+      - ${DATABASE_FOLDER}:/docker-entrypoint-initdb.d
+    networks:
+      - iexec-net
+    restart: unless-stopped
+
+  grafana:
+    image: iexechub/grafana:${GRAFANA_DOCKER_IMAGE_VERSION}
+    container_name: iexecgrafana
+    ports:
+      - "3000:3000"
+    environment:
+      - DBHOST=db
+      - MYSQL_DB_NAME=${MYSQL_DB_NAME}
+      - MYSQL_USER=${GRAFANA_SQL_LOGIN}
+      - MYSQL_PASSWORD=${GRAFANA_SQL_PASSWORD}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD}
+      - GRAFANA_HOST=${GRAFANA_HOST}
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_NAME=ViewerOrg
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Viewer
+      - GF_ALLOW_SIGN_UP=false
+      - GRAFANA_HOME_NAME=${GRAFANA_HOME_NAME}
+      - GRAFANA_HOME_LOGO_WIDTH=${GRAFANA_HOME_LOGO_WIDTH}
+      - GRAFANA_HOME_LOGO_HEIGHT=${GRAFANA_HOME_LOGO_HEIGHT}
+      - GRAFANA_HOME_LOGO_PATH=${GRAFANA_HOME_LOGO_PATH}
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - grafana-logs:/var/log/grafana
+      - grafana-etc:/etc/grafana
+    networks:
+      - iexec-net
+    restart: unless-stopped
+
+  db-viewer:
+    image: adminer:4.6.2
+    restart: always
+    ports:
+      - 8080:8080
+    networks:
+      - iexec-net
+      

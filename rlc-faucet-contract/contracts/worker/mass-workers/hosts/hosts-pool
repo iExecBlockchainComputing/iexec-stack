@@ -1,0 +1,5 @@
+# HOSTNAME HOST USER SSH_KEY SSH_PORT WORKER_TAG
+pool-worker1 x.x.x.x iexec ~/.ssh/id_rsa 22 none
+pool-worker2 x.x.x.x iexec ~/.ssh/id_rsa 22 none
+
+
