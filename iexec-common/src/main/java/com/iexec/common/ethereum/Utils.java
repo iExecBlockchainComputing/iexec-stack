@@ -2,10 +2,7 @@ package com.iexec.common.ethereum;
 
 import com.iexec.common.contracts.generated.IexecHub;
 import com.iexec.common.contracts.generated.RLC;
-import com.iexec.common.model.ConsensusModel;
-import com.iexec.common.model.ContributionModel;
-import com.iexec.common.model.MarketOrderModel;
-import com.iexec.common.model.StateHistoryModel;
+import com.iexec.common.model.*;
 import org.slf4j.Logger;
 import org.web3j.crypto.Hash;
 import org.web3j.protocol.Web3j;
@@ -91,7 +88,7 @@ public final class Utils {
 
     public static ContributionModel tuple2ContributionModel(Tuple6<BigInteger, byte[], byte[], String, BigInteger, BigInteger> contribution) {
         if (contribution != null) {
-            return new ContributionModel(contribution.getValue1(), contribution.getValue2(), contribution.getValue3(), contribution.getValue4(), contribution.getValue5(), contribution.getValue6());
+            return new ContributionModel(ContributionStatusEnum.values()[contribution.getValue1().intValue()], contribution.getValue2(), contribution.getValue3(), contribution.getValue4(), contribution.getValue5(), contribution.getValue6());
         }
         return null;
     }
