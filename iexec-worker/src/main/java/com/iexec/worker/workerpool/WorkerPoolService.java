@@ -2,8 +2,10 @@ package com.iexec.worker.workerpool;
 
 import com.iexec.common.contracts.generated.WorkerPool;
 import com.iexec.common.ethereum.*;
+import com.iexec.common.model.ConsensusModel;
 import com.iexec.common.model.ContributionModel;
 import com.iexec.common.workerpool.WorkerPoolConfig;
+import com.iexec.worker.ethereum.IexecWorkerLibrary;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.web3j.ens.EnsResolutionException;
@@ -11,6 +13,7 @@ import org.web3j.tx.Contract;
 import org.web3j.tx.ManagedTransaction;
 
 import static com.iexec.common.ethereum.Utils.END;
+import static com.iexec.common.ethereum.Utils.tuple2ConsensusModel;
 import static com.iexec.common.ethereum.Utils.tuple2ContributionModel;
 
 
@@ -53,10 +56,12 @@ public class WorkerPoolService {
         } else {
             throw exceptionInInitializerError;
         }
-        this.getWorkerPool().revealConsensusEventObservable(nodeConfig.getStartBlockParameter(), END)
-                .subscribe(this::onRevealConsensus);
-        this.getWorkerPool().allowWorkerToContributeEventObservable(nodeConfig.getStartBlockParameter(), END)
-                .subscribe(this::onAllowWorkerToContribute);
+        if (IexecWorkerLibrary.getInstance().getRpcEnabled()){
+            this.getWorkerPool().revealConsensusEventObservable(nodeConfig.getStartBlockParameter(), END)
+                    .subscribe(this::onRevealConsensus);
+            this.getWorkerPool().allowWorkerToContributeEventObservable(nodeConfig.getStartBlockParameter(), END)
+                    .subscribe(this::onAllowWorkerToContribute);
+        }
     }
 
     private void onAllowWorkerToContribute(WorkerPool.AllowWorkerToContributeEventResponse allowWorkerToContributeEvent) {
@@ -92,6 +97,19 @@ public class WorkerPoolService {
         log.info("GetContributionModel [workOrderId:{}, transactionStatus:{}] ",
                workOrderId, transactionStatus);
         return contributionModel;
+    }
+
+    public ConsensusModel getConsensusModelByWorkOrderId(String workOrderId) {
+        ConsensusModel consensusModel = null;
+        TransactionStatus transactionStatus = TransactionStatus.SUCCESS;
+        try {
+            consensusModel = tuple2ConsensusModel(workerPool.getConsensusDetails(workOrderId).send());
+        } catch (Exception e) {
+            transactionStatus = TransactionStatus.FAILURE;
+        }
+        log.info("GetConsensusModel [workOrderId:{}, transactionStatus:{}] ",
+                workOrderId, transactionStatus);
+        return consensusModel;
     }
 
 }

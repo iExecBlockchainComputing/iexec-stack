@@ -3,11 +3,18 @@ package com.iexec.worker.iexechub;
 import com.iexec.common.contracts.generated.IexecHub;
 import com.iexec.common.ethereum.*;
 import com.iexec.common.workerpool.WorkerPoolConfig;
+import com.iexec.worker.ethereum.IexecWorkerLibrary;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.web3j.crypto.CipherException;
+import org.web3j.crypto.WalletUtils;
 import org.web3j.ens.EnsResolutionException;
+import org.web3j.protocol.Web3j;
+import org.web3j.protocol.http.HttpService;
 import org.web3j.tx.Contract;
 import org.web3j.tx.ManagedTransaction;
+
+import java.io.IOException;
 
 import static com.iexec.common.ethereum.Utils.END;
 
@@ -50,22 +57,24 @@ public class IexecHubService {
         } else {
             throw exceptionInInitializerError;
         }
-        this.iexecHub.workOrderCompletedEventObservable(nodeConfig.getStartBlockParameter(), END).subscribe(workOrderCompletedEvent -> {
-            if (workOrderCompletedEvent.workerPool.equals(workerPoolConfig.getAddress()) && iexecHubWatcher != null) {
-                log.info("Received WorkOrderCompletedEvent [workOrderId:{}]", workOrderCompletedEvent.woid);
-                iexecHubWatcher.onWorkOrderCompleted(workOrderCompletedEvent.woid);
-            }
-        });
-        this.iexecHub.rewardEventObservable(nodeConfig.getStartBlockParameter(), END).subscribe(rewardEvent -> {
-            if (rewardEvent.user.equals(credentialsService.getCredentials().getAddress())) {
-                log.info("Received RewardEvent [amount:{}]", rewardEvent.amount);
-            }
-        });
-        this.iexecHub.seizeEventObservable(nodeConfig.getStartBlockParameter(), END).subscribe(seizeEvent -> {
-            if (seizeEvent.user.equals(credentialsService.getCredentials().getAddress())) {
-                log.info("Received SeizeEvent [amount:{}]", seizeEvent.amount);
-            }
-        });
+        if (IexecWorkerLibrary.getInstance().getRpcEnabled()){
+            this.iexecHub.workOrderCompletedEventObservable(nodeConfig.getStartBlockParameter(), END).subscribe(workOrderCompletedEvent -> {
+                if (workOrderCompletedEvent.workerPool.equals(workerPoolConfig.getAddress()) && iexecHubWatcher != null) {
+                    log.info("Received WorkOrderCompletedEvent [workOrderId:{}]", workOrderCompletedEvent.woid);
+                    iexecHubWatcher.onWorkOrderCompleted(workOrderCompletedEvent.woid);
+                }
+            });
+            this.iexecHub.rewardEventObservable(nodeConfig.getStartBlockParameter(), END).subscribe(rewardEvent -> {
+                if (rewardEvent.user.equals(credentialsService.getCredentials().getAddress())) {
+                    log.info("Received RewardEvent [amount:{}]", rewardEvent.amount);
+                }
+            });
+            this.iexecHub.seizeEventObservable(nodeConfig.getStartBlockParameter(), END).subscribe(seizeEvent -> {
+                if (seizeEvent.user.equals(credentialsService.getCredentials().getAddress())) {
+                    log.info("Received SeizeEvent [amount:{}]", seizeEvent.amount);
+                }
+            });
+        }
     }
 
     public IexecHub getIexecHub() {
@@ -75,5 +84,6 @@ public class IexecHubService {
     public void registerIexecHubWatcher(IexecHubWatcher iexecHubWatcher) {
         this.iexecHubWatcher = iexecHubWatcher;
     }
+
 
 }

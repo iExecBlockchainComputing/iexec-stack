@@ -12,20 +12,22 @@ import java.io.File;
 public class IexecWorkerLibrary {
 
     private static IexecWorkerLibrary instance;
+    private Boolean rpcEnabled;
     private String configPath;
     private WorkerConfiguration workerConfiguration;
 
     private IexecWorkerLibrary() {
     }
 
-    private static IexecWorkerLibrary getInstance() {
+    public static IexecWorkerLibrary getInstance() {
         if (instance == null) {
             instance = new IexecWorkerLibrary();
         }
         return instance;
     }
 
-    public static void initialize(String configurationFilePath, CommonConfigurationGetter commonConfigurationGetter) {
+    public static void initialize(String configurationFilePath, CommonConfigurationGetter commonConfigurationGetter, boolean rpcEnabled) {
+        IexecWorkerLibrary.getInstance().setRpcEnabled(rpcEnabled);
         if (configurationFilePath != null) {
             getInstance().setConfigPath(configurationFilePath);
             WorkerConfiguration workerConfiguration = IexecWorkerLibrary.getInstance().getWorkerConfiguration();
@@ -37,12 +39,21 @@ public class IexecWorkerLibrary {
         }
     }
 
-    public static void initialize(WalletConfig walletConfig, CommonConfiguration commonConfiguration) {
+    public static void initialize(WalletConfig walletConfig, CommonConfiguration commonConfiguration, boolean rpcEnabled) {
+        IexecWorkerLibrary.getInstance().setRpcEnabled(rpcEnabled);
         if (walletConfig != null && commonConfiguration != null) {
             IexecConfigurationService.initialize(walletConfig, commonConfiguration);
         } else {
             throw new ExceptionInInitializerError("Unable to initialize IexecWorkerLibrary (walletConfig or commonConfiguration is null)");
         }
+    }
+
+    public boolean getRpcEnabled() {
+        return rpcEnabled;
+    }
+
+    private void setRpcEnabled(boolean rpcEnabled) {
+        this.rpcEnabled = rpcEnabled;
     }
 
     private WorkerConfiguration getWorkerConfiguration() {
