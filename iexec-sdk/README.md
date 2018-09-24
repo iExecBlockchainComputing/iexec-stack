@@ -7,7 +7,7 @@
 
 The iExec SDK is a CLI and a JS library that allows developers to interact with iExec decentralized marketplace in order to run off-chain computations.
 
-## Ressources
+## Resources
 
 - The iExec Dapp Store: https://dapps.iex.ec
 - The iExec Marketplace: https://market.iex.ec
@@ -39,9 +39,9 @@ Requirements: [Docker](https://docs.docker.com/install/).
 
 ```bash
 # For Linux users
-echo 'alias iexec='"'"'docker run -e DEBUG=$DEBUG --interactive --tty --rm -v $(pwd):/iexec-project -w /iexec-project iexechub/iexec-sdk'"'"'' >> ~/.bashrc && source ~/.bashrc
+echo 'alias iexec='"'"'docker run -e DEBUG=$DEBUG --interactive --tty --rm -v /tmp:/tmp -v $(pwd):/iexec-project -w /iexec-project iexechub/iexec-sdk'"'"'' >> ~/.bashrc && source ~/.bashrc
 # For Mac OSX users
-echo 'alias iexec='"'"'docker run -e DEBUG=$DEBUG --interactive --tty --rm -v $(pwd):/iexec-project -w /iexec-project iexechub/iexec-sdk'"'"'' >> ~/.bash_profile && source ~/.bash_profile
+echo 'alias iexec='"'"'docker run -e DEBUG=$DEBUG --interactive --tty --rm -v /tmp:/tmp -v $(pwd):/iexec-project -w /iexec-project iexechub/iexec-sdk'"'"'' >> ~/.bash_profile && source ~/.bash_profile
 ```
 
 Now run `iexec --version` to check all is working.
@@ -103,8 +103,10 @@ iexec work show --watch --download # watch progress of the submitted work, and d
 ## Help
 
 ```bash
-iexec --help
 iexec --version
+iexec --help
+iexec app --help
+iexec orderbook --help
 ```
 
 ## init
@@ -203,6 +205,7 @@ iexec orderbook show --category 5 # show orderbook for category 5
 # --hub <address>
 # --sell
 # --buy
+# --force
 iexec order init --buy # init new buy order
 iexec order init --sell # init new sell order
 iexec order place # place an order at limit price
@@ -288,6 +291,7 @@ The `chains.json` file, located in every iExec project, describes the parameters
 
 ```json
 {
+  "default": "kovan",
   "chains": {
     "development": {
       "host": "localhost",
@@ -568,3 +572,20 @@ iExec SDK can be imported in your code as a library/module, and it's compatible 
 ```js
 // hub.countObj
 ```
+
+# iExec SDK CLI fork/spawn
+
+If your program is not written in javascript, your last option to use the SDK would be to spawn it as a seperate process (sometimes called FORK operation). After each SDK run you should check the exit code returned by the SDK to know if the operation was sucessfull or not `echo $?`:
+
+- 0 = successful
+- 1 = error
+
+Finally, you could choose to parse the SDK stdout/stderr to access more information. ex:
+
+- `iexec orderbook show &> out.txt`
+- `iexec orderbook show |& grep .`
+
+Warning:
+
+- The stdout/stderr is subject to changes (this is what makes this solution brittle)
+- The node and docker version have some slight differences in their stdout/stderr
