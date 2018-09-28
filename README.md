@@ -27,7 +27,7 @@ Enter your pool folder, and run the below command to check its config:
 Once the validation is successful, you can commit & push your pool config.
 
 - `git add iexec.json deployed.json logo.png README.md`
-- `git commit -m 'adding my Vanitygen app'`
+- `git commit -m 'adding my MainPool workerpool'`
 - `git push`
 
 ## 5. Github Pull Request
