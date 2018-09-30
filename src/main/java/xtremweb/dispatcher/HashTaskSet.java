@@ -110,13 +110,14 @@ public class HashTaskSet extends TaskSet {
 				return;
 			}
 
-			final int delay = (int) (System.currentTimeMillis() - theTask.getLastAlive().getTime());
+			final long delay = System.currentTimeMillis() - theTask.getLastAlive().getTime();
 
-			int aliveTimeOut = Integer
-					.parseInt(Dispatcher.getConfig().getProperty(XWPropertyDefs.ALIVETIMEOUT.toString()));
+			long aliveTimeOut = Long
+					.parseLong(Dispatcher.getConfig().getProperty(XWPropertyDefs.ALIVETIMEOUT.toString()));
 			aliveTimeOut *= 1000;
 
-			getLogger().debug("detectAbortedTask : " + theTask.toXml());
+            getLogger().debug("detectAbortedTask : delay = " + delay + "; aliveTimeOut = ");
+            getLogger().debug("detectAbortedTask : " + theTask.toXml());
 
 			if (theTask.isUnderProcess() && (delay > aliveTimeOut)) {
 
