@@ -847,6 +847,17 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 							final StatusEnum workStatus = theWork.getStatus();
 
 							debug(command, "workAlive job = " + theWork.toXml());
+
+							final TaskInterface theTask = DBInterface.getInstance().computingTask(theWork, theHost);
+							try {
+								final StatusEnum status = theTask.getStatus();
+								theTask.setAlive(_host.getUID());
+								theTask.setStatus(status);
+								theTask.update();
+							} catch (final Exception e) {
+								error(command, e);
+							}
+
 							if ((resultURI != null) && (resultURI.isXtremWeb())) {
 								final UID resultUID = resultURI.getUID();
 								final DataInterface workResult = DBInterface.getInstance().data(resultUID);
@@ -864,7 +875,6 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 							switch (workStatus) {
 							case CONTRIBUTED:
 							case CONTRIBUTING:
-								final TaskInterface theTask = DBInterface.getInstance().computingTask(theWork, theHost);
 
 								if (theTask == null) {
 									break;
@@ -876,14 +886,6 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 									theTask.setErrorMsg("host is inactive");
 								}
 
-								try {
-								    final StatusEnum status = theTask.getStatus();
-									theTask.setAlive(_host.getUID());
-									theTask.setStatus(status);
-									theTask.update();
-								} catch (final Exception e) {
-									error(command, e);
-								}
 								break;
 							case ERROR:
 							case COMPLETED:
