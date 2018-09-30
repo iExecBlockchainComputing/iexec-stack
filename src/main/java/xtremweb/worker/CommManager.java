@@ -1263,77 +1263,8 @@ public final class CommManager extends Thread {
                 	data.setShasum(null);
                 	data.setStatus(StatusEnum.UNAVAILABLE);
 					commClient.send(data);
-/*
-					logger.debug("CommManager#uploadResults contributing " + data.toXml());
-
-                    if (theWork.getHiddenH2r() == null) {
-						theWork.setError("CommManager#uploadResults : can't contribute; H2R is null");
-						return;
-					}
-					final ContributionStatusEnum contributionStatus =
-							XWTools.workerContributionStatus(new EthereumWallet(Worker.getConfig().getHost().getEthWalletAddr()),
-								theWork.getWorkOrderId());
-
-					if((contributionStatus == null) || (contributionStatus != ContributionStatusEnum.AUTHORIZED)) {
-						theWork.setError("CommManager#uploadResults : contribution status error : " + contributionStatus);
-						return;
-					}
-
-					logger.debug("CommManager#uploadResults : the work can contribute " + theWork.toXml());
-                        //dumpWorkerContribution(Worker.getConfig().getHost().getEthWalletAddr(),
-                                //theWork.getWorkOrderId());
-
-					XWTools.dumpWorkerContribution(new EthereumWallet(Worker.getConfig().getHost().getEthWalletAddr()),
-							theWork.getWorkOrderId());
-
-					TransactionStatus status = TransactionStatus.FAILURE;
-
-					// for(int tries = 0 ; tries < 2; tries++) {
-						 logger.debug("ActuatorService.getInstance().contribute(" + theWork.getWorkOrderId() + ", "
-								 + theWork.getH2h2r() + ")");
-						 status = ActuatorService.getInstance().contribute(theWork.getWorkOrderId(),
-								 theWork.getH2h2r(),
-								 BigInteger.ZERO,
-								 "0",
-								 "0");
-//						if (status == TransactionStatus.SUCCESS){
-//							 break;
-//						 }
-
-//						try {
-//							logger.debug("CommManager#uploadResults : contribute failure ; sleeping 1s " + tries);
-//							Thread.sleep(1000);
-//						} catch(final Exception e) {
-//						}
-					//}
-
-					logger.debug("CommManager#uploadResults : the work contribution sattus " + status);
-					if (status == TransactionStatus.SUCCESS) {
-						 theWork.setContributed();
-						 Worker.getConfig().getHost().setContributed();
-					 } else {
-						if (theWork.stopTryingContribCall()) {
-							logger.error("CommManager#uploadResults : contribute transaction error: " + theWork.getUID());
-							theWork.setError("CommManager#uploadResults : contribute transation error");
-						}
-						theWork.incContribCalls();
-						sendResult(theWork);
-					}
-*/
 				}
 			}
-
-
-
-//        } catch (final XWCategoryException e)  {
-//            logger.exception("CommManager#uploadResults", e);
-//            theWork.setErrorMsg(e.getMessage());
-//            theWork.setCompleted();
-//        } catch (final Exception e) {
-//            logger.exception("CommManager#uploadResults", e);
-//            theWork.setStatus(StatusEnum.DATAREQUEST);
-//            theWork.setErrorMsg(e.getMessage());
-//            throw e;
 
 		} finally {
 
