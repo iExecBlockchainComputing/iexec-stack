@@ -147,6 +147,7 @@ public enum StatusEnum {
 	 * @since 13.1.0
 	 */
 	REVEALING,
+	REVEALED,
 	/**
 	 * This denotes a MO to be finalized
 	 * @since 13.1.0

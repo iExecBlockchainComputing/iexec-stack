@@ -23,10 +23,17 @@
 
 package xtremweb.dispatcher;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Hashtable;
 import java.util.Iterator;
 
+import com.iexec.common.ethereum.TransactionStatus;
+import com.iexec.common.ethereum.Utils;
+import com.iexec.common.model.ConsensusModel;
+import com.iexec.common.model.ContributionStatusEnum;
+import com.iexec.scheduler.actuator.ActuatorService;
 import xtremweb.common.*;
 import xtremweb.communications.URI;
 
@@ -249,7 +256,7 @@ public class HashTaskSet extends TaskSet {
                 }
             }
             else {
-                getLogger().debug("detectAbortedTasks : no market order locking resource");
+                getLogger().debug("detectAbortedTasks : no market with lost pending work");
             }
 
         }
@@ -290,11 +297,18 @@ public class HashTaskSet extends TaskSet {
             getLogger().exception(e);
         }
 
+        checkContributingMarketOrders();
+        checkRevealingOrFinalizingMarketOrders();
+
+	}
+
+    private void checkRevealingOrFinalizingMarketOrders(){
+        final DBInterface db = DBInterface.getInstance();
         getLogger().debug("detectAbortedTasks : checking revealingOrFinalizingMarketOrders");
-		try {
+        try {
             final Collection<MarketOrderInterface> marketOrders = db.revealingOrFinalizingMarketOrders();
             if ((marketOrders == null) || (marketOrders.size() == 0)) {
-                getLogger().debug("detectAbortedTasks : no market orders ");
+                getLogger().debug("detectAbortedTasks : no revealingOrFinalizing market orders ");
                 return;
             }
 
@@ -359,11 +373,173 @@ public class HashTaskSet extends TaskSet {
 
         }
         catch (Exception e) {
+            getLogger().exception(e);
+        }
+
+    }
+	private void checkContributingMarketOrders() {
+
+        final DBInterface db = DBInterface.getInstance();
+        getLogger().debug("detectAbortedTasks : checking contributingMarketOrders");
+
+		try {
+            final Collection<MarketOrderInterface> marketOrders = db.contributingMarketOrders();
+            if ((marketOrders == null) || (marketOrders.size() == 0)) {
+                getLogger().debug("detectAbortedTasks : no contributing market orders ");
+                return;
+            }
+
+            getLogger().debug("detectAbortedTasks : checking contributingMarketOrders " + marketOrders.size());
+
+            URI result = null;
+            String woid = null;
+
+            for (final MarketOrderInterface marketOrder : marketOrders) {
+                getLogger().debug("detectAbortedTasks contributingMarketOrders " + marketOrder.toXml());
+
+                if(marketOrder.getStatus() == StatusEnum.REVEALING) {
+                    getLogger().debug("detectAbortedTasks contributingMarketOrders mo is revealing " + marketOrder.getUID());
+                    continue;
+                }
+                final long expectedContributions = marketOrder.getExpectedWorkers();
+                final Collection<WorkInterface> works = db.marketOrderWorks(marketOrder);
+                getLogger().debug("detectAbortedTasks : expectedContributions: " + expectedContributions + "/" + works.size());
+                long totalContributions = 0L;
+                long consensusCounter = 0L;
+                final Hashtable<String, Integer> contributionCounters = new Hashtable<>();
+                WorkInterface theWork = null;
+
+                for (final WorkInterface work : works) {
+
+                    final TaskInterface task = DBInterface.getInstance().computingTask(work);
+                    if (task == null) {
+                        getLogger().error("detectAbortedTasks : can't retrieve any task for work : " + work.getUID());
+                        return;
+                    }
+                    final HostInterface host = DBInterface.getInstance().host(task.getHost());
+                    if (host == null) {
+                        getLogger().error("detectAbortedTasks : can't retrieve any host for work : " + work.getUID());
+                        return;
+                    }
+                    getLogger().debug("detectAbortedTasks for work : " + work.toXml() +
+                            " by worker " + host.getEthWalletAddr());
+
+                    final ContributionStatusEnum contributionStatus =
+                            XWTools.workerContributionStatus(new EthereumWallet(host.getEthWalletAddr()),
+                                    work.getWorkOrderId());
+
+                    if(contributionStatus != ContributionStatusEnum.CONTRIBUTED) {
+                        getLogger().debug("detectAbortedTasks : not contributed " + work + "; " + contributionStatus);
+                        continue;
+                    }
+
+                    totalContributions++;
+                    final String h2h2r = work.getH2h2r();
+                    if(h2h2r != null) {
+                        final Integer counter = contributionCounters.get(h2h2r) != null ?
+                                contributionCounters.get(h2h2r) + 1 :
+                                1;
+                        contributionCounters.put(h2h2r, counter);
+                        getLogger().debug("detectAbortedTasks : counter(" + h2h2r + ") = " + counter);
+                        if(counter >= expectedContributions) {
+                            getLogger().debug("detectAbortedTasks : counter(" + h2h2r + ") = expectedContributions " +
+                                    " (" + expectedContributions + ")");
+                            consensusCounter = expectedContributions;
+                            theWork = work;
+                            break;
+                        }
+
+                    }
+                }
+                getLogger().debug("detectAbortedTasks : expectedContributions : " + expectedContributions);
+                getLogger().debug("detectAbortedTasks : totalContributions    : " + totalContributions);
+                getLogger().debug("detectAbortedTasks : consensusCounter      : " + consensusCounter);
+                if (consensusCounter >= expectedContributions) {
+                    getLogger().debug("detectAbortedTasks : enough contributions");
+
+                    for (final WorkInterface contributingWork : works) {
+
+                        getLogger().debug("detectAbortedTasks : work must be revealed " + contributingWork.toXml());
+                        try {
+
+                            if(contributingWork.hasContributed()) {
+                                contributingWork.setRevealing();
+                                contributingWork.update();
+
+                                final TaskInterface contributingTask = DBInterface.getInstance().computingTask(contributingWork);
+                                if (contributingTask != null) {
+                                    contributingTask.setRevealing();
+                                    contributingTask.update();
+                                }
+                            }
+                        } catch (final IOException e) {
+                            getLogger().exception(e);
+                        }
+                    }
+
+                    final TransactionStatus txStatus = ActuatorService.getInstance().revealConsensus(theWork.getWorkOrderId(), Utils.hashResult(theWork.getH2h2r()));
+                    if ((txStatus == null) || (txStatus == TransactionStatus.FAILURE)) {
+                        getLogger().debug("detectAbortedTasks : revealConsensus error; will retry later");
+                    }
+                    else {
+
+                        marketOrder.setRevealing();
+                        getLogger().debug("detectAbortedTasks : market order has been setRevealing: " + marketOrder);
+                        try {
+                            marketOrder.update();
+                        } catch (final IOException e) {
+                            getLogger().exception(e);
+                        }
+                    }
+                }
+                else {
+                    if (totalContributions < expectedContributions) {
+                        getLogger().debug("detectAbortedTasks : not enough contributions");
+                    }
+                    else {
+                        // we need one more worker and one more work
+                        marketOrder.incExpectedWorkers();
+                        marketOrder.setErrorMsg("Warn: need more workers");
+
+//                    final UID originalUid = theWork.getReplicatedUid();
+                        final UID originalUid = theWork.getReplicatedUid() != null ? theWork.getReplicatedUid() : theWork.getUID();
+//                    if (originalUid != null) {
+                        final WorkInterface replicatedWork = db.work(originalUid);
+                        final long expectedReplications = replicatedWork.getExpectedReplications();
+                        final long currentReplications = replicatedWork.getTotalReplica();
+                        getLogger().warn("need more replicas : " + originalUid);
+                        final WorkInterface newWork = new WorkInterface(replicatedWork);
+                        newWork.setUID(new UID());
+                        newWork.replicate(originalUid);
+                        newWork.insert();
+                        final AppInterface theApp = db.app(theWork.getApplication());
+                        final UserInterface jobOwner = db.user(theWork.getOwner());
+                        if(theApp != null) {
+                            theApp.incPendingJobs();
+                            theApp.update();
+                        }
+                        if(jobOwner != null) {
+                            jobOwner.incPendingJobs();
+                            jobOwner.update();
+                        }
+                        replicatedWork.setExpectedReplications(replicatedWork.getExpectedReplications() + 1);
+                        replicatedWork.incTotalReplica();
+                        replicatedWork.setErrorMsg("Warn: need more replicas for market order");
+                        replicatedWork.update();
+//                    }
+                    }
+                }
+
+                marketOrder.update();
+            }
+
+        }
+        catch (Exception e) {
 		    getLogger().exception(e);
         }
-	}
+    }
 
-	/**
+    /**
 	 * This converts this object to string
 	 */
 	@Override

@@ -106,6 +106,7 @@ public final class Work extends WorkInterface {
 
 		dataPackageName = null;
 		revealCalls = 0;
+		contribCalls = 0;
 		if (dir) {
 			prepareDir();
 		} else {
@@ -269,10 +270,23 @@ public final class Work extends WorkInterface {
 	}
 
 	private int revealCalls;
-    public void incRevealCalls() {
-        revealCalls++;
-    }
-    public int getRevealCalls() {
-        return revealCalls;
-    }
+	public void incRevealCalls() {
+		revealCalls++;
+	}
+	public int getRevealCalls() {
+		return revealCalls;
+	}
+	public boolean stopTryingRevealCall() {
+		return revealCalls > 3;
+	}
+	private int contribCalls;
+	public void incContribCalls() {
+		contribCalls++;
+	}
+	public int getContribCalls() {
+		return contribCalls;
+	}
+	public boolean stopTryingContribCall() {
+		return contribCalls > 3;
+	}
 }

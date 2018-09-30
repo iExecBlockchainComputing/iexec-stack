@@ -2198,6 +2198,7 @@ public class WorkInterface extends Table {
      * @since 13.1.0
      */
     public void setContributed() {
+    	Thread.currentThread().dumpStack();
         if (getWorkOrderId() != null)
             setStatus(StatusEnum.CONTRIBUTED);
     }
@@ -2227,11 +2228,17 @@ public class WorkInterface extends Table {
      * This marks this work as ready to reveal contribution, if this.getWorkOrderId() != null
      * @since 13.1.0
      */
-    public void setRevealing() {
-        if (getWorkOrderId() != null) {
+	public void setRevealing() {
+		Thread.currentThread().dumpStack();
+		if (getWorkOrderId() != null) {
 			setStatus(StatusEnum.REVEALING);
 		}
-    }
+	}
+	public void setRevealed() {
+		if (getWorkOrderId() != null) {
+			setStatus(StatusEnum.REVEALED);
+		}
+	}
     /**
      * This marks this work as ready to reveal contribution, if this.getWorkOrderId() != null
      * @since 13.1.0

@@ -279,25 +279,36 @@ public class PoolWork {
 	}
 
 	/**
-	 * This retrieves works being computed
+	 * This retrieves running or participating works
 	 *
 	 * @return a vector containing the saving being computed
 	 * @since v1r2-rc0(RPC-V)
 	 */
 	public synchronized Vector<Work> getAliveWork() {
 		Vector<Work> worksAlive = new Vector<Work>();
-		final Enumeration<Work> theEnumeration = poolWorks.elements();
+		final Enumeration<Work> runngingWorksEnum = poolWorks.elements();
 
-		while (theEnumeration.hasMoreElements()) {
-			final Work w = theEnumeration.nextElement();
-			logger.debug("PoolWork::getAliveWork() w.getResult() = " + w.getResult());
-			logger.debug("PoolWork::getAliveWork() " + w.getUID() + " is " + w.getStatus().toString());
+		while (runngingWorksEnum.hasMoreElements()) {
+			final Work w = runngingWorksEnum.nextElement();
+			logger.debug("PoolWork::getAliveWork() running work " + w.getUID() + " is " + w.getStatus());
 			if (w.isAlive()) {
 				worksAlive.addElement(w);
 			}
 		}
 
-		logger.debug("PoolWork::getAliveWork()  worksAlive size = " + worksAlive.size());
+		logger.debug("PoolWork::getAliveWork()  running works size = " + worksAlive.size());
+
+		final Enumeration<Work> savedWorkEnum = savingWorks.elements();
+
+		while (savedWorkEnum.hasMoreElements()) {
+			final Work w = savedWorkEnum.nextElement();
+			logger.debug("PoolWork::getAliveWork() saved work " + w.getUID() + " is " + w.getStatus());
+			if (w.isAlive()) {
+				worksAlive.addElement(w);
+			}
+		}
+
+		logger.debug("PoolWork::getAliveWork()  alive works size = " + worksAlive.size());
 		return worksAlive;
 	}
 
@@ -309,9 +320,9 @@ public class PoolWork {
 	 * @return the saving work or null if not found
 	 * @since 8.2.0
 	 */
-	public synchronized Work getAliveWork(final UID uid) {
-		return poolWorks.get(uid);
-	}
+//	public synchronized Work getAliveWork(final UID uid) {
+//		return poolWorks.get(uid);
+//	}
 
 	/**
 	 * This retrieves the next available work to compute This returns only when

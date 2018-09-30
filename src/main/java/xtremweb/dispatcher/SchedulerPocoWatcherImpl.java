@@ -430,20 +430,18 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
                 return;
             }
 
-            final ArrayList<String> wallets = new ArrayList<>();
             for(final HostInterface worker : workers ) {
                 logger.error("onWorkOrderActivated() : worker: " + worker);
                 worker.setPending();
                 worker.update();
                 if (worker.getEthWalletAddr() != null) {
-                    wallets.add(worker.getEthWalletAddr());
                     logger.debug("onWorkOrderActivated(" + workOrderId +") : allowing " + worker.getEthWalletAddr());
                 }
+                allowWorkerToContribute(workOrderId, marketOrder, worker);
             }
+
             marketOrder.setPending();
             marketOrder.update();
-
-            allowWorkersToContribute(workOrderId, marketOrder, wallets, workers);
 
         } catch(final Exception e) {
             logger.exception(e);
@@ -455,67 +453,45 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
      * This allows one worker to contribute
      * @param workOrderId
      * @param marketOrder
-     * @param wallet
      * @param worker
      */
     public static synchronized void allowWorkerToContribute(final String workOrderId,
                                                             final MarketOrderInterface marketOrder,
-                                                            final EthereumWallet wallet,
                                                             final HostInterface worker)
             throws IOException{
 
-/*
- * ```BigInteger contributionStatus = WorkerPoolService.getInstance().getWorkerContributionModelByWorkOrderId(workOrderId, worker).getStatus();
- * if (contributionStatus.equals(BigInteger.ZERO)){//0:UNSET, 1:AUTHORIZED, 2:CONTRIBUTED, 3:PROVED, 4:REJECTED
- *     status = ActuatorService.getInstance().allowWorkersToContribute(workOrderId, Arrays.asList(worker) , "0" );
- * }```
- */
-        System.out.println("allowWorkerToContribute(" + workOrderId + "," +
-                (marketOrder == null ? "null" : marketOrder.getUID()) + "," +
-                (wallet == null ? "null" : wallet.getAddress()) + "," +
-                (worker == null ? "null" : worker.getUID()) + ")");
-        if((wallet == null) || (wallet.getAddress() == null)) {
+        if(worker.getEthWalletAddr() == null) {
             System.out.println("allowWorkerToContribute() : no wallet");
             return;
         }
+        final Date now = new Date();
+        final EthereumWallet wallet = new EthereumWallet(worker.getEthWalletAddr());
+        System.out.println("[" + now + "] allowWorkerToContribute(" + workOrderId + "," +
+                (marketOrder == null ? "null" : marketOrder.getUID()) + "," +
+                (wallet == null ? "null" : wallet.getAddress()) + "," +
+                (worker == null ? "null" : worker.getUID()) + ")");
+
         final ContributionModel contribution = WorkerPoolService.getInstance().getWorkerContributionModelByWorkOrderId(workOrderId,
                 wallet.getAddress());
         if((contribution != null) && (contribution.getStatus() != ContributionStatusEnum.UNSET)) {
-            System.out.println("allowWorkerToContribute() : " + wallet.getAddress() + " already contributing to " + workOrderId);
+            System.out.println("[" + now + "] allowWorkerToContribute() : " + wallet.getAddress()
+                    + " cannot contribute to " + workOrderId
+                    + " (" + contribution.getStatus() + ")");
             return;
         }
 
         final ArrayList<String> wallets = new ArrayList<>();
-        final Collection<HostInterface> workers = new ArrayList<>();
         wallets.add(wallet.getAddress());
-        workers.add(worker);
-        allowWorkersToContribute(workOrderId, marketOrder, wallets, workers);
-    }
 
-    /**
-     * This allows a list of workers to contribute
-     * @param workOrderId
-     * @param marketOrder
-     * @param wallets
-     * @param workers
-     */
-    public static synchronized void allowWorkersToContribute(final String workOrderId,
-                                                             final MarketOrderInterface marketOrder,
-                                                             final ArrayList<String> wallets,
-                                                             final Collection<HostInterface> workers)
-            throws IOException{
-
-        TransactionStatus txStatus = null;
         int contributeTry;
         for(contributeTry = 0; contributeTry < 3; contributeTry++) {
 
-            txStatus = actuatorService.allowWorkersToContribute(workOrderId, wallets, "0");
+            final TransactionStatus txStatus = actuatorService.allowWorkersToContribute(workOrderId, wallets, "0");
 
             if ((txStatus == null) || (txStatus == TransactionStatus.FAILURE)) {
                 try {
-                    System.out.println("allowWorkersToContribute; will retry in 10s " + txStatus);
-                    txStatus = null;
-                    Thread.sleep(10000);
+                    System.out.println("[" + now + "] allowWorkersToContribute; will retry in 1s " + txStatus);
+                    Thread.sleep(1000);
                 } catch (final InterruptedException e) {
                 }
             }
@@ -525,7 +501,8 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
         }
 
         if (contributeTry >= 3) {
-            for (final HostInterface worker : workers) {
+            final Collection<HostInterface> workers = DBInterface.getInstance().hosts(marketOrder);
+            for (final HostInterface w : workers) {
                 marketOrder.removeWorker(worker);
                 worker.update();
             }
@@ -533,9 +510,21 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
             marketOrder.setError();
             marketOrder.update();
         }
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
+    }
+
+    /**
+     * This allows a list of workers to contribute
+     * @param workOrderId
+     * @param marketOrder
+     * @param workers
+     */
+    public static synchronized void allowWorkersToContribute(final String workOrderId,
+                                                             final MarketOrderInterface marketOrder,
+                                                             final Collection<HostInterface> workers)
+            throws IOException{
+
+        for (final HostInterface worker : workers) {
+            allowWorkerToContribute(workOrderId,marketOrder, worker);
         }
     }
     /**
@@ -701,6 +690,24 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
         if(works == null)
             return;
 
+
+        final ConsensusModel theConsensusModel = XWTools.getConsensusModel(woid);
+        final Date revealDate = new Date(theConsensusModel.getRevealDate().longValue());
+        final long winnerCount = theConsensusModel.getWinnerCount().longValue();
+        final long revealCounter = theConsensusModel.getRevealCounter().longValue();
+        final Date now = new Date();
+        logger.debug("doFinalize() : consensModel.revealCounter = " + revealCounter);
+        logger.debug("doFinalize() : consensModel.revealDate  = " + revealDate +
+                " (now is " + now + ")");
+
+        final boolean canFinalize = (revealCounter > 0 && revealDate.compareTo(now) >= 0) ||
+                (revealCounter == winnerCount);
+
+        logger.debug("doFinalize() : canFinalize = " + canFinalize);
+
+        if(!canFinalize)
+            return;
+
         for(final WorkInterface work : works ) {
             try {
                 logger.debug("doFinalize() : " + work.getUID());
@@ -732,34 +739,6 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
         } catch(final IOException e) {
             logger.exception(e);
         }
-
-//        int maxTry = 3;
-//        for(int i = 0; i < maxTry; i++) {
-//            if (actuatorService.finalizeWork(woid,
-//                    "",
-//                    "",
-//                    result == null ? "" : result.toString()) == TransactionStatus.FAILURE) {
-//
-//                if (i == maxTry-1){
-//                    marketOrder.setErrorMsg("transaction error:finalizeWork");
-//                    marketOrder.setError();
-//                    try {
-//                        marketOrder.update();
-//                    } catch(final IOException e) {
-//                        logger.exception(e);
-//                    }
-//                    break;
-//                }
-//
-//                try {
-//                    logger.error("finalizeWork; will retry in 10s ");
-//                    Thread.sleep(10000);
-//                } catch (final InterruptedException e) {
-//                }
-//            } else {
-//                break;
-//            }
-//        }
 
         if (actuatorService.finalizeWork(woid,
                 "",

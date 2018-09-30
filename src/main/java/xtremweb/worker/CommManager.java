@@ -46,9 +46,7 @@ import java.util.Hashtable;
 import java.util.Iterator;
 
 import com.iexec.common.ethereum.TransactionStatus;
-import com.iexec.common.model.ContributionModel;
-import com.iexec.scheduler.database.ContributionService;
-import com.iexec.scheduler.workerpool.WorkerPoolService;
+import com.iexec.common.model.ContributionStatusEnum;
 import com.iexec.worker.actuator.ActuatorService;
 import org.xml.sax.SAXException;
 
@@ -1214,7 +1212,7 @@ public final class CommManager extends Thread {
 	URISyntaxException, InvalidKeyException, AccessControlException, XWCommException {
 
 		if (theWork == null) {
-			logger.error("uploadResults : theWork is null");
+			logger.error("CommManager#uploadResults : theWork is null");
 			return;
 		}
 
@@ -1233,7 +1231,7 @@ public final class CommManager extends Thread {
 		final CommClient commClient = commClient(resultURI);
 		try {
 		    if(theWork.canReveal()) {
-		        logger.debug("the work can reveal " + theWork.toXml());
+		        logger.debug("CommManager#uploadResults : the work can reveal " + theWork.toXml());
                 final File content = commClient.getContentFile(resultURI);
                 logger.debug("CommManager#uploadResults " + content);
                 if (content.exists()) {
@@ -1256,7 +1254,7 @@ public final class CommManager extends Thread {
 
                 message(false);
             } else {
-                logger.debug("the work can not reveal " + theWork.toXml());
+                logger.debug("CommManager#uploadResults : the work can not reveal " + theWork.toXml());
                 if(theWork.isContributing()) {
 
                 	// we must send data now to comply to xtremweb workflow
@@ -1265,50 +1263,66 @@ public final class CommManager extends Thread {
                 	data.setShasum(null);
                 	data.setStatus(StatusEnum.UNAVAILABLE);
 					commClient.send(data);
+/*
 					logger.debug("CommManager#uploadResults contributing " + data.toXml());
 
-                    if (theWork.getHiddenH2r() != null) {
-                        logger.debug("the work can contribute " + theWork.toXml());
-                        //dumpContributionStatus(Worker.getConfig().getHost().getEthWalletAddr(),
+                    if (theWork.getHiddenH2r() == null) {
+						theWork.setError("CommManager#uploadResults : can't contribute; H2R is null");
+						return;
+					}
+					final ContributionStatusEnum contributionStatus =
+							XWTools.workerContributionStatus(new EthereumWallet(Worker.getConfig().getHost().getEthWalletAddr()),
+								theWork.getWorkOrderId());
+
+					if((contributionStatus == null) || (contributionStatus != ContributionStatusEnum.AUTHORIZED)) {
+						theWork.setError("CommManager#uploadResults : contribution status error : " + contributionStatus);
+						return;
+					}
+
+					logger.debug("CommManager#uploadResults : the work can contribute " + theWork.toXml());
+                        //dumpWorkerContribution(Worker.getConfig().getHost().getEthWalletAddr(),
                                 //theWork.getWorkOrderId());
 
-    	                TransactionStatus status = TransactionStatus.FAILURE;
+					XWTools.dumpWorkerContribution(new EthereumWallet(Worker.getConfig().getHost().getEthWalletAddr()),
+							theWork.getWorkOrderId());
 
-        	             for(int tries = 0 ; tries < 2; tries++) {
-            	             System.out.println("ActuatorService.getInstance().contribute(" + theWork.getWorkOrderId() + ", "
-                	                 + theWork.getH2h2r() + ")");
-                    	     status = ActuatorService.getInstance().contribute(theWork.getWorkOrderId(),
-                                     theWork.getH2h2r(),
-                                     BigInteger.ZERO,
-                                     "0",
-                                     "0");
-                         	if (status == TransactionStatus.SUCCESS){
-                            	 break;
-	                         }
+					TransactionStatus status = TransactionStatus.FAILURE;
 
-							 //dumpContributionStatus(Worker.getConfig().getHost().getEthWalletAddr(),
-									 //theWork.getWorkOrderId());
-                	        try {
-                    	        logger.debug("contribute failure ; sleeping 1s " + tries);
-                        	    Thread.sleep(1000);
-	                        } catch(final Exception e) {
-    	                    }
-        	            }
+					// for(int tries = 0 ; tries < 2; tries++) {
+						 logger.debug("ActuatorService.getInstance().contribute(" + theWork.getWorkOrderId() + ", "
+								 + theWork.getH2h2r() + ")");
+						 status = ActuatorService.getInstance().contribute(theWork.getWorkOrderId(),
+								 theWork.getH2h2r(),
+								 BigInteger.ZERO,
+								 "0",
+								 "0");
+//						if (status == TransactionStatus.SUCCESS){
+//							 break;
+//						 }
 
-	                    if (status == TransactionStatus.SUCCESS) {
-    	                     theWork.setContributed();
-        	                 Worker.getConfig().getHost().setContributed();
-            	         } else {
-                	         logger.error("contribute transaction error: " + theWork.getUID());
-                    	     theWork.setError("contribute transation error");
-                        	 sendResult(theWork);
-                        }
+//						try {
+//							logger.debug("CommManager#uploadResults : contribute failure ; sleeping 1s " + tries);
+//							Thread.sleep(1000);
+//						} catch(final Exception e) {
+//						}
+					//}
 
-                    } else {
-                        theWork.setError("can't contribute");
-                    }
-                }
-            }
+					logger.debug("CommManager#uploadResults : the work contribution sattus " + status);
+					if (status == TransactionStatus.SUCCESS) {
+						 theWork.setContributed();
+						 Worker.getConfig().getHost().setContributed();
+					 } else {
+						if (theWork.stopTryingContribCall()) {
+							logger.error("CommManager#uploadResults : contribute transaction error: " + theWork.getUID());
+							theWork.setError("CommManager#uploadResults : contribute transation error");
+						}
+						theWork.incContribCalls();
+						sendResult(theWork);
+					}
+*/
+				}
+			}
+
 
 
 //        } catch (final XWCategoryException e)  {
@@ -1342,11 +1356,6 @@ public final class CommManager extends Thread {
 
         }
         mileStone.println("</uploadResults>");
-	}
-
-	public static void dumpContributionStatus(final String ethWalletAddr, final String workOrderId) {
-		ContributionModel contribution = WorkerPoolService.getInstance().getWorkerContributionModelByWorkOrderId(workOrderId, ethWalletAddr);
-		XWTools.debug(contribution.toString());
 	}
 
 	/**

@@ -24,10 +24,7 @@
 package xtremweb.worker;
 
 import com.iexec.common.ethereum.TransactionStatus;
-import com.iexec.common.model.ContributionModel;
-import com.iexec.common.model.MarketOrderModel;
-import com.iexec.common.model.ModelService;
-import com.iexec.common.model.WorkOrderModel;
+import com.iexec.common.model.*;
 import com.iexec.scheduler.marketplace.MarketplaceService;
 import com.iexec.worker.actuator.ActuatorService;
 import com.iexec.worker.workerpool.WorkerPoolService;
@@ -185,6 +182,101 @@ public class ThreadAlive extends Thread {
             logger.debug("ThreadAlive::checkJob() : theJob = null");
             return;
         }
+        logger.debug("ThreadAlive::checkJob() : theJob = " + theJob.toXml());
+
+        final ContributionStatusEnum contributionStatus =
+                XWTools.workerContributionStatus(new EthereumWallet(Worker.getConfig().getHost().getEthWalletAddr()),
+                        theJob.getWorkOrderId());
+
+        logger.debug("ThreadAlive()::checkJob() : Contribution status : " + contributionStatus);
+
+        if(contributionStatus != null) {
+
+            switch (contributionStatus) {
+                case AUTHORIZED:
+                    if(!theJob.isContributing()) {
+                        logger.debug("ThreadAlive::checkJob() : authorized but not contributing");
+                        break;
+                    }
+
+                    if (theJob.getHiddenH2r() == null) {
+                        theJob.setError("ThreadAlive() : can't contribute; H2R is null");
+                        break;
+                    }
+
+                    logger.debug("ThreadAlive() : the work can contribute " + theJob.toXml());
+
+                    XWTools.dumpWorkerContribution(new EthereumWallet(Worker.getConfig().getHost().getEthWalletAddr()),
+                            theJob.getWorkOrderId());
+
+                    logger.debug("ThreadAlive() : ActuatorService.getInstance().contribute(" + theJob.getWorkOrderId() + ", "
+                            + theJob.getH2h2r() + ")");
+
+                    final TransactionStatus statusContribute =
+                            ActuatorService.getInstance().contribute(theJob.getWorkOrderId(),
+                                    theJob.getH2h2r(),
+                                    BigInteger.ZERO,
+                                    "0",
+                                    "0");
+
+                    if (statusContribute == TransactionStatus.SUCCESS) {
+                        theJob.setContributed();
+                        Worker.getConfig().getHost().setContributed();
+                        CommManager.getInstance().getPoolWork().saveWork(theJob);
+                    } else {
+                        if (theJob.stopTryingContribCall()) {
+                            logger.error("ThreadAlive() : contribute transaction error: " + theJob.getUID());
+                            theJob.setError("ThreadAlive() : contribute transation error");
+                        }
+                        theJob.incContribCalls();
+                    }
+                    CommManager.getInstance().sendWork(theJob);
+
+                    break;
+                case CONTRIBUTED:
+                    if(!theJob.canReveal()) {
+                        logger.debug("ThreadAlive::checkJob() : contributed but cant reveal");
+                        break;
+                    }
+                    if (theJob.getH2h2r() == null) {
+                        theJob.setError("can't reveal : h2h2r is null");
+                        logger.debug("can't reveal " + theJob.toXml());
+                        break;
+                    }
+
+                    logger.debug("ThreadAlive() : the work can reveal " + theJob.toXml());
+
+                    final TransactionStatus statusReveal =
+                            ActuatorService.getInstance().reveal(theJob.getWorkOrderId(),
+                                    theJob.getH2h2r());
+
+                    if ((statusReveal == TransactionStatus.SUCCESS) || (theJob.stopTryingRevealCall())
+                            || Worker.getConfig().getBoolean(XWPropertyDefs.FAKEREVEAL)) {
+                        if ((theJob.stopTryingRevealCall()) || Worker.getConfig().getBoolean(XWPropertyDefs.FAKEREVEAL)) {
+                            logger.debug("reveal error ; giving up " + theJob.getUID());
+                            theJob.setError("reveal error ; giving up");
+                        } else {
+                            logger.debug("revealed " + theJob.getUID());
+//                            CommManager.getInstance().getPoolWork().saveWork(theJob);
+//                            CommManager.getInstance().sendWork(theJob);
+                            CommManager.getInstance().sendResult(theJob);
+                        }
+                    } else {
+                        logger.error("reveal transaction error; will retry later " + theJob.getUID());
+                        theJob.incRevealCalls();
+                        CommManager.getInstance().getPoolWork().saveWork(theJob);
+                        dumpInfosByWorkOrderId(theJob.getWorkOrderId());
+                    }
+
+                    break;
+                case PROVED:
+//                    theJob.setCompleted();
+//                    CommManager.getInstance().getPoolWork().saveWork(theJob);
+                    break;
+            }
+
+        }
+
 
         Hashtable rmiResults = null;
 
@@ -356,54 +448,14 @@ public class ThreadAlive extends Thread {
 
                 final UID uid = (UID) li.next().getValue();
                 final Work theWork = CommManager.getInstance().getPoolWork().getSavingWork(uid);
-
-                if (theWork != null) {
-                    TransactionStatus status = TransactionStatus.FAILURE;
-                    if (theWork.getH2h2r() != null) {
-                        for (int tries = 0; tries < 2; tries++) {
-                            ContributionModel contribution = WorkerPoolService.getInstance().getWorkerContributionModelByWorkOrderId(theWork.getWorkOrderId());
-                            if (contribution != null) {
-                                logger.debug("Contribution status : " + contribution.getStatus());
-                                if (contribution.getStatus().equals(BigInteger.valueOf(2L))) {//CONTRIBUTED
-                                    System.out.println("ActuatorService.getInstance().reveal(" + theWork.getWorkOrderId() + ", "
-                                            + theWork.getH2h2r() + ")");
-                                    status = ActuatorService.getInstance().reveal(theWork.getWorkOrderId(), theWork.getH2h2r());
-                                    if (status == TransactionStatus.SUCCESS)
-                                        break;
-                                }
-                            }
-                            try {
-                                logger.debug("reveal failure ; sleeping 1s " + tries);
-                                Thread.sleep(1000);
-                            } catch (final Exception e) {
-                            }
-                        }
-                    } else {
-                        theWork.setError("can't reveal : h2h2r is null");
-                        logger.debug("can't reveal " + theWork.toXml());
-                    }
-
-                    if ((status == TransactionStatus.SUCCESS) || (theWork.getRevealCalls() > 3)
-                            || Worker.getConfig().getBoolean(XWPropertyDefs.FAKEREVEAL)) {
-                        if ((theWork.getRevealCalls() > 3) || Worker.getConfig().getBoolean(XWPropertyDefs.FAKEREVEAL)) {
-                            logger.debug("reveal error ; giving up " + theWork.getUID());
-                            theWork.setError("reveal error ; giving up");
-                        } else {
-                            logger.debug("revealed " + theWork.getUID());
-                            theWork.setRevealing();
-                        }
-                        CommManager.getInstance().getPoolWork().saveRevealedWork(theWork);
-                        CommManager.getInstance().sendWork(theWork);
-                        CommManager.getInstance().sendResult(theWork);
-                    } else {
-                        logger.error("reveal transaction error; will retry later " + theWork.getUID());
-                        theWork.incRevealCalls();
-                        CommManager.getInstance().getPoolWork().saveWork(theWork);
-                        dumpInfosByWorkOrderId(theWork.getWorkOrderId());
-                    }
-                }
+                if(theWork == null)
+                    continue;
+                theWork.setRevealing();
+                CommManager.getInstance().getPoolWork().saveWork(theWork);
             }
+
         }
+
 
         //
         // Retrieve new server key

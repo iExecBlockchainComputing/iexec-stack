@@ -847,6 +847,7 @@ public final class MarketOrderInterface extends Table {
 	 * @return true
 	 */
     public boolean incExpectedWorkers()  {
+		Thread.currentThread().dumpStack();
         return addExpectedWorkers(1);
     }
 
@@ -923,7 +924,8 @@ public final class MarketOrderInterface extends Table {
      * @return true if getExpectedWorkers() <= getNbWorkers() && getMarketOrderIdx() <= 0
      */
     public boolean canBeCreated()  {
-        return getExpectedWorkers() <= getNbWorkers()
+        return getStatus() != StatusEnum.ERROR &&
+				getExpectedWorkers() <= getNbWorkers()
                 && getMarketOrderIdx() <= 0;
     }
 	/**

@@ -51,6 +51,10 @@ import javax.net.SocketFactory;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 
+import com.iexec.common.model.ConsensusModel;
+import com.iexec.common.model.ContributionModel;
+import com.iexec.common.model.ContributionStatusEnum;
+import com.iexec.scheduler.workerpool.WorkerPoolService;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
@@ -1089,6 +1093,39 @@ public class XWTools {
 		  }
 */
 	  }
+
+	/**
+	 * This retrieves contribution status
+	 * @param ethWalletAddr is the ethereum wallet
+	 * @param workOrderId is the work order id
+	 */
+	public static ContributionStatusEnum workerContributionStatus(final EthereumWallet ethWalletAddr, final String workOrderId) {
+
+		final ContributionModel contribution = WorkerPoolService.getInstance().getWorkerContributionModelByWorkOrderId(workOrderId,
+				ethWalletAddr.getAddress());
+
+		return contribution == null ? null : contribution.getStatus();
+	}
+
+	/**
+	 * This retrieves consensus status
+	 * @param workOrderId is the work order id
+	 */
+	public static ConsensusModel getConsensusModel(final String workOrderId) {
+		return WorkerPoolService.getInstance().getConsensusModelByWorkOrderId(workOrderId);
+	}
+
+    /**
+     * This dumps contribution status
+     * @param ethWalletAddr is the ethereum wallet
+     * @param workOrderId is the work order id
+     */
+    public static void dumpWorkerContribution(final EthereumWallet ethWalletAddr, final String workOrderId) {
+        final ContributionModel contribution = WorkerPoolService.getInstance().getWorkerContributionModelByWorkOrderId(workOrderId,
+                ethWalletAddr.getAddress());
+        XWTools.debug("[Contribution Model ] " + contribution.toString());
+//        XWTools.debug("[Contribution Status] " + contribution.getStatus());
+    }
 
     /**
 	 * This is for testing only
