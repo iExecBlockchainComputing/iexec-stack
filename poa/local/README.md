@@ -1,14 +1,10 @@
-
-## JUST USE IT
-We have generated a local chain with 1 peer with PoCo (V2) contract already deployed. For local dev purpose.
+We generate a local chain with 1 peer with PoCo contrac already deployed. For local dev purpose.
 
 
-You can use it with :
+You can use is with :
 ```
 docker-compose up -d
 ```
-
-## DIY if you want a different config
 Here steps have been done to generate this config :
 ubuntu prerequiste:
 
@@ -18,15 +14,12 @@ wget https://raw.githubusercontent.com/branciard/blockchain-dev-env/master/boots
 chmod +x bootstrap-ubuntu-aws.sh
 ./bootstrap-ubuntu-aws.sh
 ```
-The next commands are basiccaly done by this [bootpoatestnet.sh](https://github.com/iExecBlockchainComputing/iexec-deploy/blob/master/poa/test/bootpoatestnet.sh)
-See more [testnet readme bootstrap](https://github.com/iExecBlockchainComputing/iexec-deploy/blob/master/poa/test/README.md)
-
 git clone parity-deploy repo
 ```
 su - ubuntu
 git clone https://github.com/branciard/parity-deploy.git
 cd parity-deploy
-git checkout pwdgen-script-proposal
+git checkout dev
 ```
 
 generate password for one node
@@ -66,7 +59,7 @@ sed -i 's/0/4/g' migrations/2_deploy_contracts.js
 cp truffle.js truffle.ori
 ```
 
-create a truffle.js and replace with richman private key
+create a truffle.js
 
 ```
 const HDWalletProvider = require("truffle-hdwallet-provider-privkey");
@@ -169,6 +162,8 @@ Saving artifacts...
 give money to 200 accounts
 
 ```
+sudo apt-get install -y jq
+sudo apt-get install -y bc
 git clone https://github.com/iExecBlockchainComputing/wallets.git
 cd wallets
 # set the right IexecHub find in PoCo/build/contracts/IexecHub.json contract address
@@ -177,8 +172,4 @@ sed -i 's/1337/17/g' richman/chain.json
 
 ./topUpWallets --from=1 --to=200 --minETH=10 --maxETH=10 --chain=dev --minRLC=1000
 
-```
-check balance :
-```
-curl --data '{"jsonrpc":"2.0","method":"eth_getBalance","params":["0x0513425AE000f5bAEaD0ed485ED8c36E737e3586", "latest"],"id":1}' -H "Content-Type: application/json" -X POST localhost:8545
 ```

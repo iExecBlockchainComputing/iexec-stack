@@ -119,7 +119,7 @@ git clone https://github.com/iExecBlockchainComputing/PoCo.git
 
 git clone https://github.com/branciard/parity-deploy.git
 cd parity-deploy
-git checkout pwdgen-script-proposal
+git checkout dev
 echo "generate pwd"
 
 ./config/utils/pwdgen.sh -n ${CHAIN_NODES} -l ${PASSWORD_LENGTH}
