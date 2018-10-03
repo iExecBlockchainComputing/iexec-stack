@@ -116,7 +116,7 @@ public class HashTaskSet extends TaskSet {
 					.parseLong(Dispatcher.getConfig().getProperty(XWPropertyDefs.ALIVETIMEOUT.toString()));
 			aliveTimeOut *= 1000;
 
-            getLogger().debug("detectAbortedTask : delay = " + delay + "; aliveTimeOut = ");
+            getLogger().debug("detectAbortedTask : delay = " + delay + "; aliveTimeOut = " + aliveTimeOut);
             getLogger().debug("detectAbortedTask : " + theTask.toXml());
 
 			if (theTask.isUnderProcess() && (delay > aliveTimeOut)) {

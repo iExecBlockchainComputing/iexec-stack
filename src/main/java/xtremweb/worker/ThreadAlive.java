@@ -318,7 +318,7 @@ public class ThreadAlive extends Thread {
 
                 ThreadLaunch.getInstance().raz();
             } else {
-                logger.debug(msg + " ok");
+                logger.debug(msg + " keep working");
             }
         }
     }

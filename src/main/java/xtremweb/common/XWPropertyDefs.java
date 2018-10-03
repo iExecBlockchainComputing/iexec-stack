@@ -1293,7 +1293,7 @@ public enum XWPropertyDefs {
 		/**
 		 * This retrieves the String representation of the default value
 		 *
-		 * @return "" + (Integer.parseInt(ALIVEPERIOD.defaultValue()) * 3)
+		 * @return "" + (Integer.parseInt(ALIVEPERIOD.defaultValue()) * 5)
 		 */
 		@Override
 		public String defaultValue() {

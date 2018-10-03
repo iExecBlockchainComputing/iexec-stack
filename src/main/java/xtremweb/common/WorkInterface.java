@@ -2267,6 +2267,7 @@ public class WorkInterface extends Table {
 	 * This marks this work as completed
 	 */
 	public void setCompleted() {
+        Thread.currentThread().dumpStack();
 
 		setStatus(StatusEnum.COMPLETED);
 

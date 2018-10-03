@@ -40,28 +40,11 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.iexec.common.model.ContributionStatusEnum;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
 
-import xtremweb.common.DataInterface;
-import xtremweb.common.HostInterface;
-import xtremweb.common.Logger;
-import xtremweb.common.MileStone;
-import xtremweb.common.StatusEnum;
-import xtremweb.common.TaskInterface;
-import xtremweb.common.UID;
-import xtremweb.common.UserInterface;
-import xtremweb.common.UserRightEnum;
-import xtremweb.common.Version;
-import xtremweb.common.WorkInterface;
-import xtremweb.common.WorkerParameters;
-import xtremweb.common.XMLHashtable;
-import xtremweb.common.XMLValue;
-import xtremweb.common.XMLVector;
-import xtremweb.common.XMLable;
-import xtremweb.common.XWConfigurator;
-import xtremweb.common.XWPropertyDefs;
-import xtremweb.common.XWReturnCode;
+import xtremweb.common.*;
 import xtremweb.communications.*;
 
 /**
@@ -872,6 +855,17 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 								}
 							}
 
+							final ContributionStatusEnum contributionStatus =
+									XWTools.workerContributionStatus(new EthereumWallet(theHost.getEthWalletAddr()),
+											theWork.getWorkOrderId());
+							debug(command, "workAlive (" + _host.getName() + ") : " + workUID + "- " + workStatus + " ; " + contributionStatus);
+/*
+        logger.debug("ThreadAlive()::checkJob() : Contribution status : " + contributionStatus);
+
+        if(contributionStatus != null) {
+
+            switch (contributionStatus) {
+*/
 							switch (workStatus) {
 							case CONTRIBUTED:
 							case CONTRIBUTING:
@@ -882,8 +876,10 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 
 								if (!isActive) {
 									theWork.unlockWork();
+                                    theWork.update();
 									theTask.setError();
 									theTask.setErrorMsg("host is inactive");
+                                    theTask.update();
 								}
 
 								break;
@@ -893,7 +889,7 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 								finishedTasks.add(workUID);
 								break;
                             case REVEALING:
-								debug(command, "workAlive (" + _host.getName() + ") : worker must reveal " + resultURI);
+								debug(command, "workAlive (" + _host.getName() + ") : worker must reveal " + workUID);
 								revealingTasks.add(workUID);
 								break;
 							}

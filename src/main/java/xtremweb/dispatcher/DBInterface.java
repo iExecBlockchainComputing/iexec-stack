@@ -1232,12 +1232,12 @@ public final class DBInterface {
      */
      Collection<MarketOrderInterface> marketOrderLockingResources() throws IOException {
         final MarketOrderInterface row = new MarketOrderInterface();
-        final int alivePeriod = Integer.parseInt(Dispatcher.getConfig().getProperty(XWPropertyDefs.ALIVEPERIOD.toString()));
+        final int aliveTimeout = Integer.parseInt(Dispatcher.getConfig().getProperty(XWPropertyDefs.ALIVETIMEOUT.toString()));
 
         return selectAll(row,SQLRequest.MAINTABLEALIAS + "." + MarketOrderInterface .Columns.NBWORKERS + "<"
                 + MarketOrderInterface .Columns.EXPECTEDWORKERS
                 + " AND " + MarketOrderInterface .Columns.NBWORKERS + ">0"
-                + " AND date_add(" + MarketOrderInterface.Columns.ARRIVALDATE + ", interval " + alivePeriod + " second) < now()"
+                + " AND date_add(" + MarketOrderInterface.Columns.ARRIVALDATE + ", interval " + aliveTimeout + " second) < now()"
                 + " AND " + MarketOrderInterface .Columns.STATUS + "='" + StatusEnum.WAITING + "'");
     }
     /**
@@ -5428,35 +5428,61 @@ public final class DBInterface {
                     }
                 }
                 break;
-            case CONTRIBUTED:
-                if(marketOrder == null) {
-                    final String msg = "work cannot be a contribution without market order";
-                    theWork.setError(msg);
+                case CONTRIBUTING:
+                    if(marketOrder == null) {
+                        final String msg = "work cannot becontributing without market order";
+                        theWork.setError(msg);
+                        if(theTask != null) {
+                            theTask.setErrorMsg(msg);
+                        }
+                        if (theHost != null) {
+                            theHost.incErrorJobs();
+                            theHost.decRunningJobs();
+                        }
+                        theApp.decRunningJobs();
+                        theApp.incErrorJobs();
+                        jobOwner.incErrorJobs();
+                        jobOwner.decRunningJobs();
+                        break;
+                    }
                     if(theTask != null) {
-                        theTask.setErrorMsg(msg);
+                        theTask.setContributing();
                     }
                     if (theHost != null) {
-                        theHost.incErrorJobs();
-                        theHost.decRunningJobs();
+                        theHost.setContributing();
                     }
-                    theApp.decRunningJobs();
-                    theApp.incErrorJobs();
-                    jobOwner.incErrorJobs();
-                    jobOwner.decRunningJobs();
+                    theWork.update(false);
+                    marketOrder.setContributing();
                     break;
-                }
-                if(theTask != null) {
-                    theTask.setContributed();
-                }
-                if (theHost != null) {
-                    theHost.setContributed();
-                }
-				theWork.update(false);
-//				checkContribution(theWork, marketOrder);
-                marketOrder.setContributing();
-                break;
 
-			case REVEALING:
+                case CONTRIBUTED:
+                    if(marketOrder == null) {
+                        final String msg = "work cannot be a contribution without market order";
+                        theWork.setError(msg);
+                        if(theTask != null) {
+                            theTask.setErrorMsg(msg);
+                        }
+                        if (theHost != null) {
+                            theHost.incErrorJobs();
+                            theHost.decRunningJobs();
+                        }
+                        theApp.decRunningJobs();
+                        theApp.incErrorJobs();
+                        jobOwner.incErrorJobs();
+                        jobOwner.decRunningJobs();
+                        break;
+                    }
+                    if(theTask != null) {
+                        theTask.setContributed();
+                    }
+                    if (theHost != null) {
+                        theHost.setContributed();
+                    }
+                    theWork.update(false);
+                    marketOrder.setContributing();
+                    break;
+
+                case REVEALING:
 				if(marketOrder == null) {
 					final String msg = "work cannot revealed without market order";
 					theWork.setError(msg);
@@ -5500,6 +5526,7 @@ public final class DBInterface {
                         theApp.incAvgExecTime(exectime);
                     }
                     theTask.setCompleted();
+                    theTask.update(false);
                 }
                 final UID originalUid = theWork.getReplicatedUid();
                 if (originalUid != null) {
@@ -5668,203 +5695,6 @@ public final class DBInterface {
 		}
 
 		return theWork;
-	}
-
-	/**
-	 * This is replaces the blockchain event watcher automatically called on worker contribution.
-	 * The scheduler must ask to reveal to all workers as soon as the consensus us reached
-	 */
-	public synchronized void checkContribution(final WorkInterface theWork,
-												   final MarketOrderInterface marketOrder) {
-//		try {
-//			if (theWork == null)
-//				return;
-//
-//			final Collection<WorkInterface> works = marketOrderWorks(marketOrder);
-//
-//			if (works == null) {
-//				logger.error("checkContribution() : can't retrieve any work for market order : "
-//						+ marketOrder.getUID());
-//				return;
-//			}
-//
-//			final TaskInterface theWorkTask = DBInterface.getInstance().computingTask(theWork);
-//
-//			if (theWorkTask == null) {
-//				logger.error("checkContribution() : can't retrieve any task for the work : " + theWork.getUID());
-//				return;
-//			}
-//            final HostInterface theHost = DBInterface.getInstance().host(theWorkTask.getHost());
-//			if (theHost == null) {
-//				logger.error("checkContribution() : can't retrieve any host for the work : " + theWork.getUID());
-//				return;
-//			}
-//			logger.debug("checkContribution() for the work : " + theWork.toXml() +
-//					" by the worker " + theHost.getEthWalletAddr());
-//
-//			final ContributionStatusEnum theContributionStatus =
-//					XWTools.workerContributionStatus(new EthereumWallet(theHost.getEthWalletAddr()),
-//							theWork.getWorkOrderId());
-//
-//			if((theContributionStatus == null) || (theContributionStatus != ContributionStatusEnum.CONTRIBUTED)) {
-//				logger.debug("checkContribution() : not contributed " + theWork + "; " + theContributionStatus);
-//				return;
-//			}
-//			theHost.setContributed();
-//			theHost.update();
-//			theWork.setContributed();
-//			theWork.update();
-//			theWorkTask.setContributed();
-//			theWorkTask.update();
-//
-//			marketOrder.setContributing();
-//			marketOrder.update();
-/*
-//            final long expectedContributions = marketOrder.getExpectedWorkers();
-//			logger.debug("checkContribution() : expectedContributions: " + expectedContributions + "/" + works.size());
-//			long totalContributions = 0L;
-//			long consensusCounter = 0L;
-//			final Hashtable<String, Integer> contributionCounters = new Hashtable<>();
-//			for (final WorkInterface work : works) {
-//
-//				final TaskInterface task = DBInterface.getInstance().computingTask(work);
-//				if (task == null) {
-//					logger.error("checkContribution() : can't retrieve any task for work : " + theWork.getUID());
-//					return;
-//				}
-//                final HostInterface host = DBInterface.getInstance().host(task.getHost());
-//				if (host == null) {
-//					logger.error("checkContribution() : can't retrieve any host for work : " + theWork.getUID());
-//					return;
-//				}
-//				logger.debug("checkContribution() for work : " + work.toXml() +
-//						" by worker " + host.getEthWalletAddr());
-//
-//				final ContributionStatusEnum contributionStatus =
-//						XWTools.workerContributionStatus(new EthereumWallet(host.getEthWalletAddr()),
-//								work.getWorkOrderId());
-//
-//				if(contributionStatus != ContributionStatusEnum.CONTRIBUTED) {
-//					logger.debug("checkContribution() : not contributed " + work + "; " + contributionStatus);
-//					continue;
-//				}
-//
-//				totalContributions++;
-//				final String h2h2r = work.getH2h2r();
-//				if(h2h2r != null) {
-//					final Integer counter = contributionCounters.get(h2h2r) != null ?
-//							contributionCounters.get(h2h2r) + 1 :
-//							1;
-//					contributionCounters.put(h2h2r, counter);
-//                    logger.debug("checkContribution() : counter(" + h2h2r + ") = " + counter);
-//                    if(counter >= expectedContributions) {
-//                        logger.debug("checkContribution() : counter(" + h2h2r + ") = expectedContributions " +
-//                                " (" + expectedContributions + ")");
-//						consensusCounter = expectedContributions;
-//						break;
-//					}
-//
-//				}
-//			}
-//            logger.debug("checkContribution() : expectedContributions : " + expectedContributions);
-//            logger.debug("checkContribution() : totalContributions    : " + totalContributions);
-//            logger.debug("checkContribution() : consensusCounter      : " + consensusCounter);
-//			if (consensusCounter >= expectedContributions) {
-//				logger.debug("checkContribution() : enough contributions");
-//
-//                final ConsensusModel consensusModel =
-//                        XWTools.getConsensusModel(theWork.getWorkOrderId());
-//                final Date revealDate = new Date(consensusModel.getRevealDate().longValue());
-//                final long winnerCount = consensusModel.getWinnerCount().longValue();
-//                final Date now = new Date();
-//                logger.debug("doFinalize() : consensModel.winnerCount = " + winnerCount);
-//                logger.debug("doFinalize() : consensModel.revealDate  = " + revealDate +
-//                        " (now is " + now + ")");
-//
-//                final boolean canReveal = winnerCount > 0 && revealDate.compareTo(now) >= 0;
-//                if(!canReveal) {
-//                    logger.debug("checkContribution() : can not reveal yet");
-//                    return;
-//                }
-//
-//                logger.debug("checkContribution() : can reveal");
-//
-//                for (final WorkInterface contributingWork : works) {
-//
-//					logger.debug("checkContribution() : work must be revealed " + contributingWork.toXml());
-//					try {
-//
-//						if(contributingWork.hasContributed()) {
-//							contributingWork.setRevealing();
-//							contributingWork.update();
-//
-//							final TaskInterface contributingTask = DBInterface.getInstance().computingTask(contributingWork);
-//							if (contributingTask != null) {
-//								contributingTask.setRevealing();
-//								contributingTask.update();
-//							}
-//						}
-//					} catch (final IOException e) {
-//						logger.exception(e);
-//					}
-//				}
-//
-//				marketOrder.setRevealing();
-//				logger.debug("checkContribution() : market order has been setRevealing: " + marketOrder);
-//				try {
-//					marketOrder.update();
-//				} catch (final IOException e) {
-//					logger.exception(e);
-//				}
-//
-//				final TransactionStatus txStatus = ActuatorService.getInstance().revealConsensus(theWork.getWorkOrderId(), Utils.hashResult(theWork.getH2h2r()));
-//                if ((txStatus == null) || (txStatus == TransactionStatus.FAILURE)) {
-//                    logger.debug("checkContribution() : revealConsensus error");
-//                }
-//			}
-//			else {
-//				if (totalContributions < expectedContributions) {
-//					logger.debug("checkContribution() : not enough contributions");
-//				}
-//				else {
-//					// we need one more worker and one more work
-//					marketOrder.incExpectedWorkers();
-//					marketOrder.setErrorMsg("Warn: need more workers");
-//
-////                    final UID originalUid = theWork.getReplicatedUid();
-//					final UID originalUid = theWork.getReplicatedUid() != null ? theWork.getReplicatedUid() : theWork.getUID();
-////                    if (originalUid != null) {
-//					final WorkInterface replicatedWork = work(originalUid);
-//					final long expectedReplications = replicatedWork.getExpectedReplications();
-//					final long currentReplications = replicatedWork.getTotalReplica();
-//					logger.warn("need more replicas : " + originalUid);
-//					final WorkInterface newWork = new WorkInterface(replicatedWork);
-//					newWork.setUID(new UID());
-//					newWork.replicate(originalUid);
-//					newWork.insert();
-//					final AppInterface theApp = app(theWork.getApplication());
-//					final UserInterface jobOwner = user(theWork.getOwner());
-//					if(theApp != null) {
-//						theApp.incPendingJobs();
-//						theApp.update();
-//					}
-//					if(jobOwner != null) {
-//						jobOwner.incPendingJobs();
-//						jobOwner.update();
-//					}
-//					replicatedWork.setExpectedReplications(replicatedWork.getExpectedReplications() + 1);
-//					replicatedWork.incTotalReplica();
-//					replicatedWork.setErrorMsg("Warn: need more replicas for market order");
-//					replicatedWork.update();
-////                    }
-//				}
-//			}
-//
-//			marketOrder.update();
-*/
-//		} catch (final Exception e) {
-//			logger.exception(e);
-//		}
 	}
 
     /**

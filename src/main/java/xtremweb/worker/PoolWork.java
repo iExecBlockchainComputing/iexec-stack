@@ -168,6 +168,7 @@ public class PoolWork {
 			// this may happen on communication failure
 			// then, work has already been saved, and we retry to upload result
 			logger.debug(uid.toString() + " already saved");
+			Thread.currentThread().dumpStack();
 			if (poolWorks.remove(uid) != null) {
 				logger.error(uid.toString() + " still in poolWorks???");
 			}
@@ -248,6 +249,7 @@ public class PoolWork {
 
 		final Work ret = savingWorks.remove(uid);
 		logger.debug("PoolWork::removeWork(" + uid + ") : work " + (ret == null ? "not" : "") + " found in savings");
+        Thread.currentThread().dumpStack();
 
 		if (ret != null) {
 			ret.clean(false);
@@ -267,6 +269,7 @@ public class PoolWork {
 
 		Work ret = savingWorks.remove(uid);
 		logger.debug("PoolWork::removeWork(" + uid + ") : work " + (ret == null ? "not" : "") + " found in savings");
+        Thread.currentThread().dumpStack();
 		//
 		// maybe job has been killed then it has not been saved
 		//
