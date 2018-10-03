@@ -34,7 +34,6 @@ package xtremweb.worker;
  */
 
 import java.io.*;
-import java.math.BigInteger;
 import java.net.*;
 import java.security.AccessControlException;
 import java.security.InvalidKeyException;
@@ -45,9 +44,6 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
 
-import com.iexec.common.ethereum.TransactionStatus;
-import com.iexec.common.model.ContributionStatusEnum;
-import com.iexec.worker.actuator.ActuatorService;
 import org.xml.sax.SAXException;
 
 import xtremweb.common.*;
@@ -168,7 +164,7 @@ public final class CommManager extends Thread {
 		firstWorkRequest = -1;
 
 		setPoolWork(new PoolWork());
-		final Hashtable<UID, Work> sWorks = getPoolWork().getSavingWork();
+		final Hashtable<UID, Work> sWorks = getPoolWork().getCompletedWorks();
 
 		if (sWorks != null) {
 			final Enumeration<Work> theEnumeration = sWorks.elements();
@@ -1220,8 +1216,8 @@ public final class CommManager extends Thread {
 
 		if (resultURI == null) {
 			logger.debug("uploadResults : no result to upload");
-			workSend(theWork);
-			getPoolWork().saveWork(theWork);
+//			workSend(theWork);
+//			getPoolWork().saveCompletedWork(theWork);
 			return;
 		}
 
@@ -1275,7 +1271,7 @@ public final class CommManager extends Thread {
                 logger.exception(e);
             }
 
-            getPoolWork().saveWork(theWork);
+//            getPoolWork().saveWork(theWork);
 
             if (Worker.getConfig().stopComputing()) {
                 System.err.println("XWHEP Worker (" + Version.currentVersion.full() + ") [" + new Date()

@@ -27,7 +27,6 @@ import com.iexec.common.ethereum.TransactionStatus;
 import com.iexec.common.model.*;
 import com.iexec.scheduler.marketplace.MarketplaceService;
 import com.iexec.worker.actuator.ActuatorService;
-import com.iexec.worker.workerpool.WorkerPoolService;
 import org.xml.sax.SAXException;
 import xtremweb.common.*;
 import xtremweb.communications.*;
@@ -144,17 +143,15 @@ public class ThreadAlive extends Thread {
                 logger.config("Sleep until the next alive (" + alivePeriod + " seconds)");
                 java.lang.Thread.sleep(alivePeriod * 1000);
 
-                final Vector<Work> wal = CommManager.getInstance().getPoolWork().getAliveWork();
+                final Hashtable<UID, Work> wal = CommManager.getInstance().getPoolWork().getAliveWorks();
                 if (wal == null) {
                     continue;
                 }
 
                 logger.debug(" wal size = " + wal.size());
 
-                for (int i = 0; i < wal.size(); i++) {
-
-                    final Work w = wal.elementAt(i);
-                    logger.finest("ThreadAlive  calling checkJob()");
+                for (final Work w : wal.values()) {
+                    logger.finest("ThreadAlive  calling checkJob(" + w.getUID() + ")");
                     checkJob(w);
                 }
                 wal.clear();
@@ -222,7 +219,6 @@ public class ThreadAlive extends Thread {
                     if (statusContribute == TransactionStatus.SUCCESS) {
                         theJob.setContributed();
                         Worker.getConfig().getHost().setContributed();
-                        CommManager.getInstance().getPoolWork().saveWork(theJob);
                     } else {
                         if (theJob.stopTryingContribCall()) {
                             logger.error("ThreadAlive() : contribute transaction error: " + theJob.getUID());
@@ -230,6 +226,10 @@ public class ThreadAlive extends Thread {
                         }
                         theJob.incContribCalls();
                     }
+
+                    if(!theJob.isError())
+                        CommManager.getInstance().getPoolWork().saveWorkUnderProcess(theJob);
+
                     CommManager.getInstance().sendWork(theJob);
 
                     break;
@@ -241,6 +241,7 @@ public class ThreadAlive extends Thread {
                     if (theJob.getH2h2r() == null) {
                         theJob.setError("can't reveal : h2h2r is null");
                         logger.debug("can't reveal " + theJob.toXml());
+                        CommManager.getInstance().sendWork(theJob);
                         break;
                     }
 
@@ -255,23 +256,24 @@ public class ThreadAlive extends Thread {
                         if ((theJob.stopTryingRevealCall()) || Worker.getConfig().getBoolean(XWPropertyDefs.FAKEREVEAL)) {
                             logger.debug("reveal error ; giving up " + theJob.getUID());
                             theJob.setError("reveal error ; giving up");
+                            CommManager.getInstance().sendWork(theJob);
                         } else {
                             logger.debug("revealed " + theJob.getUID());
-//                            CommManager.getInstance().getPoolWork().saveWork(theJob);
-//                            CommManager.getInstance().sendWork(theJob);
                             CommManager.getInstance().sendResult(theJob);
+                            CommManager.getInstance().getPoolWork().saveWorkUnderProcess(theJob);
                         }
                     } else {
-                        logger.error("reveal transaction error; will retry later " + theJob.getUID());
+                        logger.warn("reveal transaction error; will retry later " + theJob.getUID());
                         theJob.incRevealCalls();
-                        CommManager.getInstance().getPoolWork().saveWork(theJob);
+                        CommManager.getInstance().getPoolWork().saveWorkUnderProcess(theJob);
                         dumpInfosByWorkOrderId(theJob.getWorkOrderId());
                     }
 
                     break;
                 case PROVED:
-//                    theJob.setCompleted();
-//                    CommManager.getInstance().getPoolWork().saveWork(theJob);
+                    theJob.setCompleted();
+                    CommManager.getInstance().sendWork(theJob);
+                    CommManager.getInstance().getPoolWork().saveCompletedWork(theJob);
                     break;
             }
 
@@ -351,7 +353,7 @@ public class ThreadAlive extends Thread {
         // retrieve stored job results
         //
         final Vector<UID> jobResults = new Vector<>();
-        final Hashtable<UID, Work> savingWorks = CommManager.getInstance().getPoolWork().getSavingWork();
+        final Hashtable<UID, Work> savingWorks = CommManager.getInstance().getPoolWork().getAllRunningWorks();
 
         final Enumeration<Work> theEnumeration = savingWorks.elements();
 
@@ -430,7 +432,7 @@ public class ThreadAlive extends Thread {
 
             while (li.hasNext()) {
                 final UID uid = (UID) li.next().getValue();
-                CommManager.getInstance().sendResult(CommManager.getInstance().getPoolWork().getSavingWork(uid));
+                CommManager.getInstance().sendResult(CommManager.getInstance().getPoolWork().getCompletedWork(uid));
             }
         }
 
@@ -447,11 +449,11 @@ public class ThreadAlive extends Thread {
             while (li.hasNext()) {
 
                 final UID uid = (UID) li.next().getValue();
-                final Work theWork = CommManager.getInstance().getPoolWork().getSavingWork(uid);
+                final Work theWork = CommManager.getInstance().getPoolWork().getWorkUnderProcess(uid);
                 if(theWork == null)
                     continue;
                 theWork.setRevealing();
-                CommManager.getInstance().getPoolWork().saveWork(theWork);
+                CommManager.getInstance().getPoolWork().saveWorkUnderProcess(theWork);
             }
 
         }

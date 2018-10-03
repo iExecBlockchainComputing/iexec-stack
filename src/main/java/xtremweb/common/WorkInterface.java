@@ -2294,9 +2294,9 @@ public class WorkInterface extends Table {
 
 	public boolean isAlive() {
 		return isRunning()
-				|| isRevealing()
 				|| isContributing()
-				|| hasContributed();
+				|| hasContributed()
+                || isRevealing();
 	}
 
     /**

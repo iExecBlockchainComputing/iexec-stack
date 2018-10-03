@@ -1357,10 +1357,11 @@ public final class DBInterface {
      * @return a Collection of UID
      * @since 13.1.0
      */
-    Collection<MarketOrderInterface> contributingMarketOrders() throws IOException {
+    Collection<MarketOrderInterface> contributingOrContributedMarketOrders() throws IOException {
         final MarketOrderInterface row = new MarketOrderInterface();
         return selectAll(row,
-                MarketOrderInterface .Columns.STATUS + "='" + StatusEnum.CONTRIBUTING+ "'");
+                MarketOrderInterface .Columns.STATUS + "='" + StatusEnum.CONTRIBUTING + "' OR " +
+                        MarketOrderInterface .Columns.STATUS + "='" + StatusEnum.CONTRIBUTED + "'");
     }
     /**
 	 * This retrieves the number of market order

@@ -31,7 +31,6 @@ import java.util.Iterator;
 
 import com.iexec.common.ethereum.TransactionStatus;
 import com.iexec.common.ethereum.Utils;
-import com.iexec.common.model.ConsensusModel;
 import com.iexec.common.model.ContributionStatusEnum;
 import com.iexec.scheduler.actuator.ActuatorService;
 import xtremweb.common.*;
@@ -381,25 +380,25 @@ public class HashTaskSet extends TaskSet {
 	private void checkContributingMarketOrders() {
 
         final DBInterface db = DBInterface.getInstance();
-        getLogger().debug("detectAbortedTasks : checking contributingMarketOrders");
+        getLogger().debug("detectAbortedTasks : checking contributingOrContributedMarketOrders");
 
 		try {
-            final Collection<MarketOrderInterface> marketOrders = db.contributingMarketOrders();
+            final Collection<MarketOrderInterface> marketOrders = db.contributingOrContributedMarketOrders();
             if ((marketOrders == null) || (marketOrders.size() == 0)) {
                 getLogger().debug("detectAbortedTasks : no contributing market orders ");
                 return;
             }
 
-            getLogger().debug("detectAbortedTasks : checking contributingMarketOrders " + marketOrders.size());
+            getLogger().debug("detectAbortedTasks : checking contributingOrContributedMarketOrders " + marketOrders.size());
 
             URI result = null;
             String woid = null;
 
             for (final MarketOrderInterface marketOrder : marketOrders) {
-                getLogger().debug("detectAbortedTasks contributingMarketOrders " + marketOrder.toXml());
+                getLogger().debug("detectAbortedTasks contributingOrContributedMarketOrders " + marketOrder.toXml());
 
                 if(marketOrder.getStatus() == StatusEnum.REVEALING) {
-                    getLogger().debug("detectAbortedTasks contributingMarketOrders mo is revealing " + marketOrder.getUID());
+                    getLogger().debug("detectAbortedTasks contributingOrContributedMarketOrders mo is revealing " + marketOrder.getUID());
                     continue;
                 }
                 final long expectedContributions = marketOrder.getExpectedWorkers();
