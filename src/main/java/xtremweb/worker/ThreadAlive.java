@@ -259,8 +259,9 @@ public class ThreadAlive extends Thread {
                             CommManager.getInstance().sendWork(theJob);
                         } else {
                             logger.debug("revealed " + theJob.getUID());
+                            theJob.setCompleted();
                             CommManager.getInstance().sendResult(theJob);
-                            CommManager.getInstance().getPoolWork().saveWorkUnderProcess(theJob);
+                            CommManager.getInstance().getPoolWork().saveCompletedWork(theJob);
                         }
                     } else {
                         logger.warn("reveal transaction error; will retry later " + theJob.getUID());
