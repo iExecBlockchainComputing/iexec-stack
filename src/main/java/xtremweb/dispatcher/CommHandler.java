@@ -881,7 +881,7 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 									theTask.setErrorMsg("host is inactive");
                                     theTask.update();
 								}
-
+                                revealingTasks.add(workUID);
 								break;
 							case ERROR:
 							case COMPLETED:
@@ -889,9 +889,9 @@ public abstract class CommHandler extends Thread implements xtremweb.communicati
 								finishedTasks.add(workUID);
 								break;
                             case REVEALING:
-								debug(command, "workAlive (" + _host.getName() + ") : worker must reveal " + workUID);
-								revealingTasks.add(workUID);
-								break;
+								debug(command, "workAlive (" + _host.getName() + ") : worker is revealing " + workUID);
+                                revealingTasks.add(workUID);
+                                break;
 							}
 						}
 					}
