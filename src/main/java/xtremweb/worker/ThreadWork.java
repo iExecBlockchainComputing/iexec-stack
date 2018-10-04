@@ -337,8 +337,8 @@ public class ThreadWork extends Thread {
 					} catch (final Exception ioe) {
 						logger.exception(ioe);
 					}
+					CommManager.getInstance().workRequest();
 				}
-				CommManager.getInstance().workRequest();
 
 				exec = null;
 				currentWork = null;
