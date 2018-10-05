@@ -111,7 +111,14 @@ public class XWTools {
 	 * @since 13.1.0
 	 */
 	public static final String CONSENSUSFILENAME = "consensus.iexec";
-    /**
+	/**
+	 * This is the name of the file containing SGX params
+	 * @ref https://iexecproject.atlassian.net/browse/IEXPROD-406
+	 * @since 13.1.0
+	 */
+	public static final String ENCLAVESIGFILENAME = "enclaveSig.iexec";
+
+	/**
      * This is the launchscript header name
      * @since 13.0.0
      */
