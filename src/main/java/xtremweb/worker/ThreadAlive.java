@@ -226,7 +226,7 @@ public class ThreadAlive extends Thread {
                     final TransactionStatus statusContribute =
                             ActuatorService.getInstance().contribute(theJob.getWorkOrderId(),
                                     theJob.getH2h2r(),
-                                    new BigInteger(contributeV, 0),
+                                    new BigInteger(contributeV, 10),
                                     contributeR,
                                     contributeS);
 
