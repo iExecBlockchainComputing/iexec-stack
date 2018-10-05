@@ -39,14 +39,14 @@ import java.math.BigInteger;
 import java.net.ConnectException;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.rmi.RemoteException;
 import java.security.AccessControlException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.Vector;
+import java.util.*;
 
 /**
  * This uses xtremweb.communications.HTTPClient as communication layer since RMI
@@ -209,12 +209,26 @@ public class ThreadAlive extends Thread {
                     logger.debug("ThreadAlive() : ActuatorService.getInstance().contribute(" + theJob.getWorkOrderId() + ", "
                             + theJob.getH2h2r() + ")");
 
+                    final String enclaveFileName = XWTools.ENCLAVESIGFILENAME;
+                    final File enclaveFile = new File(enclaveFileName);
+                    String contributeV = "0";
+                    String contributeR = "0";
+                    String contributeS = "0";
+                    if(enclaveFile.exists()) {
+                        List<String> lines = Files.readAllLines(Paths.get(enclaveFileName), Charset.defaultCharset());
+                        contributeV = lines.get(2);
+                        contributeR = lines.get(3);
+                        contributeS = lines.get(4);
+                        logger.info("SGXEnclave : " + contributeV + " " + contributeR + " " + contributeS);
+                    } else
+                        logger.info("SGXEnclave : '" + enclaveFileName + "' not found");
+
                     final TransactionStatus statusContribute =
                             ActuatorService.getInstance().contribute(theJob.getWorkOrderId(),
                                     theJob.getH2h2r(),
-                                    BigInteger.ZERO,
-                                    "0",
-                                    "0");
+                                    new BigInteger(contributeV, 0),
+                                    contributeR,
+                                    contributeS);
 
                     if (statusContribute == TransactionStatus.SUCCESS) {
                         theJob.setContributed();
