@@ -26,6 +26,8 @@ public interface Actuator {
 
     TransactionStatus finalizeWork(String workOrderId, String stdout, String stderr, String uri);
 
+    TransactionStatus triggerWorkOrderCallback(String workOrderId, String stdout, String stderr, String uri);
+
     List<IexecHub.CreateCategoryEventResponse> getCategories();
 
     BigInteger getWorkerScore(String worker);

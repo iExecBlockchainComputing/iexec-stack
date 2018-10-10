@@ -140,6 +140,23 @@ public class ActuatorService implements Actuator {
     }
 
     @Override
+    public TransactionStatus triggerWorkOrderCallback(String workOrderId, String stdout, String stderr, String uri) {
+        try {
+            TransactionReceipt triggerCallbackReceipt = marketplaceService.getMarketplace().workOrderCallback(workOrderId,
+                    stdout,
+                    stderr,
+                    uri).send();
+            List<Marketplace.WorkOrderCallbackProofEventResponse> triggerCallbackEvents =  marketplaceService.getMarketplace().getWorkOrderCallbackProofEvents(triggerCallbackReceipt);
+            log.info("TriggerWorkOrderCallback [workOrderId:{}, stdout:{}, stderr:{}, uri:{}, transactionHash:{}, transactionStatus:{}] ",
+                    workOrderId, stdout, stderr, uri, triggerCallbackReceipt.getTransactionHash(), getTransactionStatusFromEvents(triggerCallbackEvents));
+            return getTransactionStatusFromEvents(triggerCallbackEvents);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return TransactionStatus.FAILURE;
+    }
+
+    @Override
     public List<IexecHub.CreateCategoryEventResponse> getCategories() {
         List<IexecHub.CreateCategoryEventResponse> categoryEvents = new ArrayList<>();
         try {
