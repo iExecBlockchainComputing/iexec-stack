@@ -17,7 +17,7 @@ services:
        - ./deployment/1/${NETWORK_NAME}:/parity/data/keys/${NETWORK_NAME}
        - ./deployment/1/key.priv:/parity/data/network/key
        - ./data/1:/parity/data
-       command: --chain /parity/spec.json --config /parity/authority.toml -d /parity/data  
+       command: --chain /parity/spec.json --config /parity/authority.toml -d /parity/data --geth  
    monitor:
       image: buythewhale/ethstats_monitor
       volumes:
