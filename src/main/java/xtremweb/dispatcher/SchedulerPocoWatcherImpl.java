@@ -741,6 +741,25 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
         } catch(final IOException e) {
             logger.exception(e);
         }
+/*
+        if (actuatorService.finalizeWork(woid,
+                "",
+                "",
+                result == null ? "" : result.toString()) == TransactionStatus.FAILURE) {
+
+            logger.debug("doFinalize() : WARN:stillFinalizing");
+            marketOrder.setErrorMsg("WARN:stillFinalizing");
+        }
+        else {
+            WorkOrderModel workOrderModel = ModelService.getInstance().getWorkOrderModel(woid);
+            if (!workOrderModel.getBeneficiary().equals("0x")){ // check beneficiary is set
+                ActuatorService.getInstance().triggerWorkOrderCallback(woid,"","", result.toString());
+            }
+            logger.debug("doFinalize() : INFO:finalized");
+            marketOrder.setCompleted();
+            marketOrder.setErrorMsg("INFO:finalized");
+        }
+*/
 
         if (actuatorService.finalizeWork(woid,
                 "",
