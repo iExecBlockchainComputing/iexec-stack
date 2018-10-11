@@ -429,7 +429,7 @@ public class HashTaskSet extends TaskSet {
                                     work.getWorkOrderId());
 
                     if(contributionStatus != ContributionStatusEnum.CONTRIBUTED) {
-                        getLogger().debug("detectAbortedTasks : not contributed " + work + "; " + contributionStatus);
+                        getLogger().debug("detectAbortedTasks : not contributed " + work.toXml() + "; " + contributionStatus);
                         continue;
                     }
 
