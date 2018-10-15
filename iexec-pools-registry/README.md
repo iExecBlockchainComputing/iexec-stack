@@ -6,56 +6,33 @@ Once you created and deployed your iExec WorkerPool using the [iExec SDK](https:
 
 ## 1. Github Fork this repo
 
-clic on the github "Fork" button
+clic on the github "Fork" button and `git clone` the **forked** repository on your local machine.
 
 [![github fork](./github-fork.png)](https://github.com/iExecBlockchainComputing/iexec-pools-registry/tree/v2#fork-destination-box)
 
 ## 2. Create 2 new folders
 
-* **One** personal folder at the root **[MUST match your github user or organization name]**. Ex: `/iExecBlockchainComputing`.
+- **One** organization folder at the root **[MUST match your github user or github org name]**. Ex: `/iExecBlockchainComputing`.
 
-* **One** folder for your pool **[MUST match your pool name]**. Ex: `/iExecBlockchainComputing/MainPool`.
+- **One** folder for your pool inside your org folder **[MUST match your pool name]**. Ex: `/iExecBlockchainComputing/MainPool`.
 
-## 3. Commit `iexec.json`
+## 3. Validate
 
-Check that `iexec.json` respects below format:
+Enter your pool folder, and run the below command to check its config:
 
-* **description**: Must be at least 150 letters long
-* **logo.png**: Must be 180px by 180px, square shape
+- `iexec registry validate workerpool`
 
-```json
-{
-  "description": "Pool description should be at least 150 letters long",
-  "social": {
-    "website": "ex: https://super.pool.io"
-  },
-  "logo": "ex: logo.png [must be 180px by 180px, square shape]",
-  "workerPool": {
-    "description": "iexec-main-pool",
-    "subscriptionLockStakePolicy": 100,
-    "subscriptionMinimumStakePolicy": 100,
-    "subscriptionMinimumScorePolicy": 100
-  }
-}
-```
+## 4. Commit
 
-## 4. Commit `deployed.json`
+Once the validation is successful, you can commit & push your pool config.
 
-Check that `deployed.json` respects below format:
-
-* **Kovan ID only => "42"**
-
-```json
-{
-  "workerPool": {
-    "42": "0xfd3753bc4e4c5624a5fbc41c2632bd731d7e96fb"
-  }
-}
-```
+- `git add iexec.json deployed.json logo.png README.md`
+- `git commit -m 'adding my MainPool workerpool'`
+- `git push`
 
 ## 5. Github Pull Request
 
-clic on this button to create a Pull Request:
+clic on this button to create a Pull Request (from your **forked master branch** TO **iexec-pools-registry master branch**):
 
 [![github pull request](./github-pr.png)](https://github.com/iExecBlockchainComputing/iexec-pools-registry/compare)
 
