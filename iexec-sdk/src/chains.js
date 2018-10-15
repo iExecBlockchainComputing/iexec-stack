@@ -1,5 +1,4 @@
 const Debug = require('debug');
-const Promise = require('bluebird');
 const EthJS = require('ethjs');
 const SignerProvider = require('ethjs-custom-signer');
 const createIExecContracts = require('iexec-contracts-js-client');
@@ -37,12 +36,10 @@ const createChains = (
       chains[name].name = name;
       chains[name].ethjs = new EthJS(ethProvider);
       chains[name].EthJS = EthJS;
-      if (chain.scheduler) {
-        chains[name].iexec = createIExecClient({
-          server: chain.scheduler,
-          authURL: chainsConf.auth,
-        });
-      }
+      chains[name].iexec = createIExecClient({
+        server: chain.scheduler,
+        authURL: chainsConf.auth,
+      });
       chains[name].contracts = createIExecContracts({
         eth: chains[name].ethjs,
         chainID: chains[name].id,

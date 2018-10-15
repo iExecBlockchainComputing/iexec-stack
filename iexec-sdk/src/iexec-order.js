@@ -45,7 +45,11 @@ cli
       const address = deployedObj[chain.id];
       const overwrite = address ? { [deployedName]: address } : {};
       const { saved, fileName } = await initOrder(side, overwrite);
-      spinner.succeed(`Saved default ${objName} in "${fileName}", you can edit it:${pretty(saved)}`);
+      spinner.succeed(
+        `Saved default ${objName} in "${fileName}", you can edit it:${pretty(
+          saved,
+        )}`,
+      );
     } catch (error) {
       handleError(error, cli);
     }
@@ -67,7 +71,9 @@ cli
       const hubAddress = cmd.hub || chain.hub;
 
       if (!(objName in iexecConf) || !('sell' in iexecConf[objName])) {
-        throw Error('Missing sell order. You probably forgot to run "iexec order init --sell"');
+        throw Error(
+          'Missing sell order. You probably forgot to run "iexec order init --sell"',
+        );
       }
       const sellLimitOrder = iexecConf[objName].sell;
       debug('sellLimitOrder', sellLimitOrder);
@@ -125,7 +131,9 @@ cli
       const hubAddress = cmd.hub || chain.hub;
 
       if (!(objName in iexecConf) || !('buy' in iexecConf[objName])) {
-        throw Error('Missing buy order. You probably forgot to run "iexec order init --buy"');
+        throw Error(
+          'Missing buy order. You probably forgot to run "iexec order init --buy"',
+        );
       }
       const buyMarketOrder = iexecConf[objName].buy;
       debug('buyMarketOrder', buyMarketOrder);
@@ -134,9 +142,36 @@ cli
       debug('workParams', workParams);
 
       spinner.start(info.filling(objName));
-      const marketplaceAddress = await chain.contracts.fetchMarketplaceAddress({
-        hub: hubAddress,
-      });
+
+      // fault detection
+      const [marketplaceAddress, appHubAddress] = await Promise.all([
+        chain.contracts.fetchMarketplaceAddress({
+          hub: hubAddress,
+        }),
+        chain.contracts.fetchAppHubAddress({
+          hub: hubAddress,
+        }),
+      ]);
+
+      const [countRPC, isAppRegistered] = await Promise.all([
+        chain.contracts
+          .getMarketplaceContract({ at: marketplaceAddress })
+          .m_orderCount(),
+        chain.contracts
+          .getAppHubContract({ at: appHubAddress })
+          .isAppRegistered(buyMarketOrder.app),
+      ]);
+
+      if (!isAppRegistered[0]) {
+        throw Error(
+          `no iExec app deployed at address ${buyMarketOrder.app} [${
+            chain.name
+          }]`,
+        );
+      }
+      if (parseInt(orderID, 10) > parseInt(countRPC[0].toString(), 10)) throw Error(`${objName} with ID ${orderID} does not exist`);
+      // fault detection
+
       const [orderRPC, appPriceRPC, balanceRLC] = await Promise.all([
         chain.contracts
           .getMarketplaceContract({ at: marketplaceAddress })
@@ -158,16 +193,28 @@ cli
       debug('appPriceRPC', appPriceRPC);
       debug('balanceRLC', balanceRLC);
 
+      if (orderRPC.direction.toString() !== '2') {
+        throw Error(
+          `${objName} with ID ${orderID} is already closed and so cannot be filled. You could run "iexec order show ${orderID}" for more details`,
+        );
+      }
+
       const total = appPriceRPC[0].add(orderRPC.value);
       if (balanceRLC.stake.lt(total)) {
-        throw Error(`total work price ${total} nRLC is higher than your iExec account balance ${
-          balanceRLC.stake
-        } nRLC. You should probably run "iexec wallet deposit"`);
+        throw Error(
+          `total work price ${total} nRLC is higher than your iExec account balance ${
+            balanceRLC.stake
+          } nRLC. You should probably run "iexec wallet deposit"`,
+        );
       }
-      spinner.info(`app price: ${appPriceRPC[0]} nRLC for app ${buyMarketOrder.app}`);
-      spinner.info(`workerpool price: ${orderRPC.value} nRLC for workerpool ${
-        orderRPC.workerpool
-      }`);
+      spinner.info(
+        `app price: ${appPriceRPC[0]} nRLC for app ${buyMarketOrder.app}`,
+      );
+      spinner.info(
+        `workerpool price: ${orderRPC.value} nRLC for workerpool ${
+          orderRPC.workerpool
+        }`,
+      );
       spinner.info(`work parameters: ${pretty(buyMarketOrder.params)}`);
 
       if (!cmd.force) {
@@ -194,9 +241,11 @@ cli
       const events = chain.contracts.decodeHubLogs(txReceipt.logs);
       debug('events', events);
       spinner.succeed(`Filled ${objName} with ID ${orderID}`);
-      spinner.succeed(`New work at ${events[0].woid} submitted to workerpool ${
-        events[0].workerPool
-      }`);
+      spinner.succeed(
+        `New work at ${events[0].woid} submitted to workerpool ${
+          events[0].workerPool
+        }`,
+      );
       await saveDeployedObj('work', chain.id, events[0].woid);
     } catch (error) {
       handleError(error, cli);
@@ -218,6 +267,23 @@ cli
       const marketplaceAddress = await chain.contracts.fetchMarketplaceAddress({
         hub: hubAddress,
       });
+
+      const countRPC = await chain.contracts
+        .getMarketplaceContract({ at: marketplaceAddress })
+        .m_orderCount();
+
+      if (parseInt(orderID, 10) > parseInt(countRPC[0].toString(), 10)) throw Error(`${objName} with ID ${orderID} does not exist`);
+
+      const orderRPC = await chain.contracts
+        .getMarketplaceContract({ at: marketplaceAddress })
+        .getMarketOrder(orderID);
+
+      if (orderRPC.direction.toString() !== '2') {
+        throw Error(
+          `${objName} with ID ${orderID} is already closed and so cannot be cancelled. You could run "iexec order show ${orderID}" for more details`,
+        );
+      }
+
       const txHash = await chain.contracts
         .getMarketplaceContract({ at: marketplaceAddress })
         .closeMarketOrder(orderID);
@@ -246,10 +312,19 @@ cli
       const marketplaceAddress = await chain.contracts.fetchMarketplaceAddress({
         hub: hubAddress,
       });
+      const countRPC = await chain.contracts
+        .getMarketplaceContract({ at: marketplaceAddress })
+        .m_orderCount();
+
+      if (parseInt(orderID, 10) > parseInt(countRPC[0].toString(), 10)) throw Error(`${objName} with ID ${orderID} does not exist`);
+
       const orderRPC = await chain.contracts
         .getMarketplaceContract({ at: marketplaceAddress })
         .getMarketOrder(orderID);
-      spinner.succeed(`${objName} with ID ${orderID} details:${prettyRPC(orderRPC)}`);
+
+      spinner.succeed(
+        `${objName} with ID ${orderID} details:${prettyRPC(orderRPC)}`,
+      );
     } catch (error) {
       handleError(error, cli);
     }

@@ -11,43 +11,16 @@ const {
   desc,
   option,
   Spinner,
-  prettyRPC,
   info,
 } = require('./cli-helper');
+const keystore = require('./keystore');
 const { loadDeployedObj, loadAccountConf } = require('./fs');
 const { loadChain } = require('./chains.js');
+const { decodeJWTForPrint } = require('./utils');
+const work = require('./work');
 
 const debug = Debug('iexec:iexec-work');
 const objName = 'work';
-
-const statusMap = {
-  0: 'UNSET',
-  1: 'ACTIVE',
-  2: 'REVEALING',
-  3: 'CLAIMED',
-  4: 'COMPLETED',
-};
-const FETCH_INTERVAL = 5000;
-const sleep = ms => new Promise(res => setTimeout(res, ms));
-
-const waitForWorkStatus = async (getWorkStatusFn, prevStatus, counter = 0) => {
-  try {
-    const workStatus = await getWorkStatusFn();
-    debug('workStatus', workStatus);
-    const workStatusName = statusMap[workStatus[0].toString()];
-    debug('workStatusName', workStatusName);
-    if (workStatusName === 'COMPLETED') return workStatusName;
-    if (workStatusName === 'CLAIMED') return workStatusName;
-    if (workStatusName !== prevStatus) {
-      console.log('new status change', workStatusName);
-    }
-    await sleep(FETCH_INTERVAL);
-    return waitForWorkStatus(getWorkStatusFn, workStatusName, counter + 1);
-  } catch (error) {
-    debug('waitForWorkStatus()', error);
-    throw error;
-  }
-};
 
 cli
   .command('show [address]')
@@ -58,10 +31,11 @@ cli
   .action(async (address, cmd) => {
     const spinner = Spinner();
     try {
-      const [chain, deployedObj, { jwtoken }] = await Promise.all([
+      const [chain, deployedObj, { jwtoken }, userWallet] = await Promise.all([
         loadChain(cmd.chain),
         loadDeployedObj(objName),
         loadAccountConf(),
+        keystore.load(),
       ]);
       debug('cmd.watch', cmd.watch);
       debug('cmd.download', cmd.download);
@@ -70,41 +44,33 @@ cli
 
       if (!objAddress) throw Error(info.missingAddress(objName));
 
-      spinner.start(info.showing(objName));
-      let obj = await chain.contracts.getObjProps(objName)(objAddress);
-      debug('obj', obj);
-      let workStatusName = statusMap[obj.m_status.toString()];
-      debug('workStatusName', workStatusName);
+      const workResult = await work.show(chain.contracts, objAddress, cmd);
 
-      obj.m_statusName = workStatusName;
-      spinner.succeed(`${objName} ${objAddress} status is ${workStatusName}, details:${prettyRPC(obj)}`);
-
-      if (cmd.watch && !['COMPLETED', 'CLAIMED'].includes(workStatusName)) {
-        spinner.start(info.watching(objName));
-        workStatusName = await waitForWorkStatus(
-          chain.contracts.getWorkContract({ at: objAddress }).m_status,
-          workStatusName,
-        );
-        obj = await chain.contracts.getObjProps(objName)(objAddress);
-        obj.m_statusName = workStatusName;
-        spinner.succeed(`${objName} ${objAddress} status is ${workStatusName}, details:${prettyRPC(obj)}`);
-      }
       if (cmd.download) {
-        if (workStatusName === 'COMPLETED') {
-          const server = 'https://'.concat(obj.m_uri.split('/')[2]);
+        const jwtForPrint = decodeJWTForPrint(jwtoken);
+
+        if (
+          userWallet.address.toLowerCase() !== jwtForPrint.address.toLowerCase()
+        ) {
+          spinner.warn(
+            info.tokenAndWalletDiffer(userWallet.address, jwtForPrint.address),
+          );
+        }
+
+        if (workResult.m_statusName === 'COMPLETED') {
+          const server = 'https://'.concat(workResult.m_uri.split('/')[2]);
           debug('server', server);
           const scheduler = createIExecClient({ server });
           await scheduler.getCookieByJWT(jwtoken);
 
-          const resultUID = scheduler.uri2uid(obj.m_uri);
+          const resultUID = scheduler.uri2uid(workResult.m_uri);
           debug('resultUID', resultUID);
           const resultObj = await scheduler.getByUID(resultUID);
           const extension = scheduler
             .getFieldValue(resultObj, 'type')
             .toLowerCase();
 
-          const fileName =
-            typeof cmd.download === 'string' ? cmd.download : objAddress;
+          const fileName = typeof cmd.download === 'string' ? cmd.download : objAddress;
           const resultPath = path.join(
             process.cwd(),
             fileName.concat('.', extension),
@@ -113,9 +79,58 @@ cli
           await scheduler.downloadStream(resultUID, resultStream);
           spinner.succeed(info.downloaded(resultPath));
         } else {
-          spinner.info('--download option ignored because work status is not COMPLETED');
+          spinner.info(
+            '--download option ignored because work status is not "COMPLETED"',
+          );
         }
       }
+      if (['ACTIVE', 'REVEALING'].includes(workResult.m_statusName)) {
+        const workerPoolContract = await chain.contracts.getWorkerPoolContract({
+          at: workResult.m_workerpool,
+        });
+        const consensuDetails = await workerPoolContract.getConsensusDetails(
+          objAddress,
+        );
+
+        const consensusTimeout = consensuDetails.c_consensusTimeout.toNumber();
+        const consensusTimeoutDate = new Date(consensusTimeout * 1000);
+
+        const now = Math.floor(Date.now() / 1000);
+        if (now < consensusTimeout) {
+          spinner.info(
+            `if work is not "COMPLETED" after ${consensusTimeoutDate} you can claim the work to get a full refund using "iexec work claim"`,
+          );
+        } else {
+          spinner.info(
+            `consensus timeout date ${consensusTimeoutDate} exceeded but consensus not reached. You can claim the work to get a full refund using "iexec work claim"`,
+          );
+        }
+      }
+    } catch (error) {
+      handleError(error, cli);
+    }
+  });
+
+cli
+  .command('claim [address]')
+  .option(...option.chain())
+  .option(...option.hub())
+  .description(desc.claimObj(objName))
+  .action(async (address, cmd) => {
+    try {
+      const [chain, deployedObj, wallet] = await Promise.all([
+        loadChain(cmd.chain),
+        loadDeployedObj(objName),
+        keystore.load(),
+      ]);
+      const hubAddress = cmd.hub || chain.hub;
+      const objAddress = address || deployedObj[chain.id];
+
+      if (!objAddress) throw Error(info.missingAddress(objName));
+
+      await work.claim(chain.contracts, objAddress, wallet.address, {
+        hub: hubAddress,
+      });
     } catch (error) {
       handleError(error, cli);
     }
