@@ -104,6 +104,9 @@ public final class Work extends WorkInterface {
 
 		super(job);
 
+        contributeV = "0";
+        contributeR = "0";
+        contributeS = "0";
 		dataPackageName = null;
 		revealCalls = 0;
 		contribCalls = 0;
@@ -261,7 +264,38 @@ public final class Work extends WorkInterface {
 		return scratchDir.getAbsolutePath();
 	}
 
-	private String hiddenh2r;
+	/**
+     * This used by the SGX enclave challenge. This is optional ; default is "0"
+     */
+    private String contributeV;
+    public String getContributeV(){
+        return contributeV;
+    }
+    public void setContributeV(final String v) {
+        contributeV = v;
+    }
+    /**
+     * This used by the SGX enclave challenge. This is optional ; default is "0"
+     */
+    private String contributeR;
+    public String getContributeR(){
+        return contributeR;
+    }
+    public void setContributeR(final String r) {
+        contributeR = r;
+    }
+    /**
+     * This used by the SGX enclave challenge. This is optional ; default is "0"
+     */
+    private String contributeS;
+    public String getContributeS(){
+        return contributeS;
+    }
+    public void setContributeS(final String s) {
+        contributeS = s;
+    }
+
+    private String hiddenh2r;
 	public void setHiddenH2r(final String h2r) {
 		hiddenh2r = h2r;
 	}

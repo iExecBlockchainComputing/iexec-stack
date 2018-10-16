@@ -39,9 +39,6 @@ import java.math.BigInteger;
 import java.net.ConnectException;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.rmi.RemoteException;
 import java.security.AccessControlException;
 import java.security.InvalidKeyException;
@@ -207,28 +204,17 @@ public class ThreadAlive extends Thread {
                             theJob.getWorkOrderId());
 
                     logger.debug("ThreadAlive() : ActuatorService.getInstance().contribute(" + theJob.getWorkOrderId() + ", "
-                            + theJob.getH2h2r() + ")");
-
-                    final String enclaveFileName = XWTools.ENCLAVESIGFILENAME;
-                    final File enclaveFile = new File(enclaveFileName);
-                    String contributeV = "0";
-                    String contributeR = "0";
-                    String contributeS = "0";
-                    if(enclaveFile.exists()) {
-                        List<String> lines = Files.readAllLines(Paths.get(enclaveFileName), Charset.defaultCharset());
-                        contributeV = lines.get(2);
-                        contributeR = lines.get(3);
-                        contributeS = lines.get(4);
-                        logger.info("SGXEnclave : " + contributeV + " " + contributeR + " " + contributeS);
-                    } else
-                        logger.info("SGXEnclave : '" + enclaveFileName + "' not found");
+                            + theJob.getH2h2r() + ", " +
+                            theJob.getContributeV() + ", " +
+                            theJob.getContributeR() + ", " +
+                            theJob.getContributeS() + ")");
 
                     final TransactionStatus statusContribute =
                             ActuatorService.getInstance().contribute(theJob.getWorkOrderId(),
                                     theJob.getH2h2r(),
-                                    new BigInteger(contributeV, 10),
-                                    contributeR,
-                                    contributeS);
+                                    new BigInteger(theJob.getContributeV(), 10),
+                                    theJob.getContributeR(),
+                                    theJob.getContributeS());
 
                     if (statusContribute == TransactionStatus.SUCCESS) {
                         theJob.setContributed();
