@@ -122,7 +122,8 @@ public class ActuatorService implements Actuator {
         try {
             TransactionReceipt contributeReceipt = workerPoolService.getWorkerPool().contribute(workOrderId, hashResultBytes, hashSignBytes, contributeV, r, s).send();
             List<WorkerPool.ContributeEventResponse> contributeEvents = workerPoolService.getWorkerPool().getContributeEvents(contributeReceipt);
-            log.info("Contribute [workOrderId:{}, hashResult:{}, signResult:{}, transactionHash:{}, transactionStatus:{}]", workOrderId, hashResult, signResult, contributeReceipt.getTransactionHash(), getTransactionStatusFromEvents(contributeEvents));
+            log.info("Contribute [workOrderId:{}, hashResult:{}, signResult:{}, contributeV:{}, contributeR:{}, contributeS:{}, transactionHash:{}, transactionStatus:{}]",
+                    workOrderId, hashResult, signResult, contributeV, contributeR, contributeS, contributeReceipt.getTransactionHash(), getTransactionStatusFromEvents(contributeEvents));
             return getTransactionStatusFromEvents(contributeEvents);
         } catch (Exception e) {
             e.printStackTrace();
