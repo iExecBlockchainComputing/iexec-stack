@@ -17,9 +17,8 @@ chmod +x bootstrap-ubuntu-aws.sh
 git clone parity-deploy repo
 ```
 su - ubuntu
-git clone https://github.com/branciard/parity-deploy.git
+git clone https://github.com/paritytech/parity-deploy.git
 cd parity-deploy
-git checkout dev
 ```
 
 generate password for one node
