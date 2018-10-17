@@ -29,7 +29,7 @@ public final class Utils {
     }
 
     public static String signByteResult(String result, String address) {
-        String resultHash = Hash.sha3String(result);
+        String resultHash = Hash.sha3(result);
         String addressHash = Hash.sha3(address);
         String xor = HEX_PREFIX;
         for (int i = 2; i < 66; i++) {
@@ -41,7 +41,7 @@ public final class Utils {
     }
 
     public static String hashResult(String result) {
-        return Hash.sha3(Hash.sha3String(result));
+        return Hash.sha3(Hash.sha3(result));
     }
 
     public static String web3Sha3(Web3j web3j, String preimage) throws IOException {
