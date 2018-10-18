@@ -9,6 +9,7 @@ import com.iexec.worker.workerpool.WorkerPoolService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.web3j.crypto.Hash;
+import org.web3j.crypto.WalletUtils;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.utils.Numeric;
 
@@ -118,12 +119,11 @@ public class ActuatorService implements Actuator {
         byte[] hashSignBytes = Numeric.hexStringToByteArray(signResult);
         byte[] r = Numeric.hexStringToByteArray(contributeR);
         byte[] s = Numeric.hexStringToByteArray(contributeS);
-
         try {
             TransactionReceipt contributeReceipt = workerPoolService.getWorkerPool().contribute(workOrderId, hashResultBytes, hashSignBytes, contributeV, r, s).send();
             List<WorkerPool.ContributeEventResponse> contributeEvents = workerPoolService.getWorkerPool().getContributeEvents(contributeReceipt);
-            log.info("Contribute [workOrderId:{}, hashResult:{}, signResult:{}, contributeV:{}, contributeR:{}, contributeS:{}, transactionHash:{}, transactionStatus:{}]",
-                    workOrderId, hashResult, signResult, contributeV, contributeR, contributeS, contributeReceipt.getTransactionHash(), getTransactionStatusFromEvents(contributeEvents));
+            log.info("Contribute [workOrderId:{}, workerResult:{}, hashResult:{}, signResult:{}, contributeV:{}, contributeR:{}, contributeS:{}, transactionHash:{}, transactionStatus:{}]",
+                    workOrderId, workerResult, hashResult, signResult, contributeV, contributeR, contributeS, contributeReceipt.getTransactionHash(), getTransactionStatusFromEvents(contributeEvents));
             return getTransactionStatusFromEvents(contributeEvents);
         } catch (Exception e) {
             e.printStackTrace();
@@ -133,13 +133,12 @@ public class ActuatorService implements Actuator {
 
     @Override
     public TransactionStatus reveal(String workOrderId, String workerResult) {
-        String shaResult = Hash.sha3String(workerResult);
-        byte[] result = Numeric.hexStringToByteArray(shaResult);
+        byte[] result = Numeric.hexStringToByteArray(workerResult);
         TransactionReceipt revealReceipt = null;
         try {
             revealReceipt = workerPoolService.getWorkerPool().reveal(workOrderId, result).send();
             List<WorkerPool.RevealEventResponse> revealEvents = workerPoolService.getWorkerPool().getRevealEvents(revealReceipt);
-            log.info("Reveal [workOrderId:{}, hashResult:{}, transactionHash:{}, transactionStatus:{}]", workOrderId, shaResult, revealReceipt.getTransactionHash(), getTransactionStatusFromEvents(revealEvents));
+            log.info("Reveal [workOrderId:{}, workerResult:{}, transactionHash:{}, transactionStatus:{}]", workOrderId, workerResult, revealReceipt.getTransactionHash(), getTransactionStatusFromEvents(revealEvents));
             return getTransactionStatusFromEvents(revealEvents);
         } catch (Exception e) {
             e.printStackTrace();
