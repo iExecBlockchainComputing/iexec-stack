@@ -14,7 +14,7 @@ public interface Actuator {
 
     TransactionStatus unsubscribeFromPool();
 
-    TransactionStatus contribute(String workOrderId, String workerResult, BigInteger contributeV, String contributeR, String contributeS);
+    TransactionStatus contribute(String workOrderId, String hashResult, String signResult, BigInteger contributeV, String contributeR, String contributeS);
 
     TransactionStatus reveal(String workOrderId, String workerResult);
 

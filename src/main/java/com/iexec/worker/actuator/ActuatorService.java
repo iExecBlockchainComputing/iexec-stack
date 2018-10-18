@@ -8,19 +8,19 @@ import com.iexec.worker.iexechub.IexecHubService;
 import com.iexec.worker.workerpool.WorkerPoolService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.web3j.crypto.Hash;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.utils.Numeric;
 
 import java.math.BigInteger;
 import java.util.List;
 
-import static com.iexec.common.ethereum.Utils.*;
+import static com.iexec.common.ethereum.Utils.getTransactionStatusFromEvents;
 
 
 public class ActuatorService implements Actuator {
 
     private static final Logger log = LoggerFactory.getLogger(ActuatorService.class);
+    private static final String ZEROS = "0x0000000000000000000000000000000000000000000000000000000000000000";
     private final static IexecHubService iexecHubService = IexecHubService.getInstance();
     private final static WorkerPoolService workerPoolService = WorkerPoolService.getInstance();
     private final static RlcService rlcService = RlcService.getInstance();
@@ -110,15 +110,25 @@ public class ActuatorService implements Actuator {
     }
 
     @Override
-    public TransactionStatus contribute(String workOrderId, String workerResult, BigInteger contributeV, String contributeR, String contributeS) {
-        String hashResult = hashResult(workerResult);
-        String signResult = signByteResult(workerResult, credentialsService.getCredentials().getAddress());
+    public TransactionStatus contribute(String workOrderId, String hashResult, String signResult, BigInteger contributeV, String contributeR, String contributeS) {
+        if (hashResult.isEmpty()|| signResult.isEmpty()){
+            log.info("hashResult and signResult should not be empty for contribute [workOrderId:{}, hashResult:{}, signResult:{}]",
+                    workOrderId, hashResult, signResult);
+            return TransactionStatus.FAILURE;
+        }
+
+        if (contributeR.isEmpty() || contributeR.equals("0")){
+            contributeR = ZEROS;
+        }
+
+        if (contributeS.isEmpty() || contributeS.equals("0")){
+            contributeS = ZEROS;
+        }
 
         byte[] hashResultBytes = Numeric.hexStringToByteArray(hashResult);
         byte[] hashSignBytes = Numeric.hexStringToByteArray(signResult);
         byte[] r = Numeric.hexStringToByteArray(contributeR);
         byte[] s = Numeric.hexStringToByteArray(contributeS);
-
         try {
             TransactionReceipt contributeReceipt = workerPoolService.getWorkerPool().contribute(workOrderId, hashResultBytes, hashSignBytes, contributeV, r, s).send();
             List<WorkerPool.ContributeEventResponse> contributeEvents = workerPoolService.getWorkerPool().getContributeEvents(contributeReceipt);
@@ -132,14 +142,13 @@ public class ActuatorService implements Actuator {
     }
 
     @Override
-    public TransactionStatus reveal(String workOrderId, String workerResult) {
-        String shaResult = Hash.sha3String(workerResult);
-        byte[] result = Numeric.hexStringToByteArray(shaResult);
+    public TransactionStatus reveal(String workOrderId, String result) {
+        byte[] resultByte = Numeric.hexStringToByteArray(result);
         TransactionReceipt revealReceipt = null;
         try {
-            revealReceipt = workerPoolService.getWorkerPool().reveal(workOrderId, result).send();
+            revealReceipt = workerPoolService.getWorkerPool().reveal(workOrderId, resultByte).send();
             List<WorkerPool.RevealEventResponse> revealEvents = workerPoolService.getWorkerPool().getRevealEvents(revealReceipt);
-            log.info("Reveal [workOrderId:{}, hashResult:{}, transactionHash:{}, transactionStatus:{}]", workOrderId, shaResult, revealReceipt.getTransactionHash(), getTransactionStatusFromEvents(revealEvents));
+            log.info("Reveal [workOrderId:{}, workerResult:{}, transactionHash:{}, transactionStatus:{}]", workOrderId, resultByte, revealReceipt.getTransactionHash(), getTransactionStatusFromEvents(revealEvents));
             return getTransactionStatusFromEvents(revealEvents);
         } catch (Exception e) {
             e.printStackTrace();
