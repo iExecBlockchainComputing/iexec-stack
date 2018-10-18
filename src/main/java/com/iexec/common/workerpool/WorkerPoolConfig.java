@@ -1,8 +1,6 @@
 package com.iexec.common.workerpool;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
 
 
 public class WorkerPoolConfig {
