@@ -20,6 +20,7 @@ import static com.iexec.common.ethereum.Utils.getTransactionStatusFromEvents;
 public class ActuatorService implements Actuator {
 
     private static final Logger log = LoggerFactory.getLogger(ActuatorService.class);
+    private static final String ZEROS = "0x0000000000000000000000000000000000000000000000000000000000000000";
     private final static IexecHubService iexecHubService = IexecHubService.getInstance();
     private final static WorkerPoolService workerPoolService = WorkerPoolService.getInstance();
     private final static RlcService rlcService = RlcService.getInstance();
@@ -110,6 +111,20 @@ public class ActuatorService implements Actuator {
 
     @Override
     public TransactionStatus contribute(String workOrderId, String hashResult, String signResult, BigInteger contributeV, String contributeR, String contributeS) {
+        if (hashResult.isEmpty()|| signResult.isEmpty()){
+            log.info("hashResult and signResult should not be empty for contribute [workOrderId:{}, hashResult:{}, signResult:{}]",
+                    workOrderId, hashResult, signResult);
+            return TransactionStatus.FAILURE;
+        }
+
+        if (contributeR.isEmpty() || contributeR.equals("0")){
+            contributeR = ZEROS;
+        }
+
+        if (contributeS.isEmpty() || contributeS.equals("0")){
+            contributeS = ZEROS;
+        }
+
         byte[] hashResultBytes = Numeric.hexStringToByteArray(hashResult);
         byte[] hashSignBytes = Numeric.hexStringToByteArray(signResult);
         byte[] r = Numeric.hexStringToByteArray(contributeR);
