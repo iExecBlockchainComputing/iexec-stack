@@ -146,7 +146,7 @@ public class ActuatorService implements Actuator {
                     stdout,
                     stderr,
                     uri).send();
-            List<Marketplace.WorkOrderCallbackProofEventResponse> triggerCallbackEvents =  marketplaceService.getMarketplace().getWorkOrderCallbackProofEvents(triggerCallbackReceipt);
+            List<Marketplace.WorkOrderCallbackProofEventResponse> triggerCallbackEvents = marketplaceService.getMarketplace().getWorkOrderCallbackProofEvents(triggerCallbackReceipt);
             log.info("TriggerWorkOrderCallback [workOrderId:{}, stdout:{}, stderr:{}, uri:{}, transactionHash:{}, transactionStatus:{}] ",
                     workOrderId, stdout, stderr, uri, triggerCallbackReceipt.getTransactionHash(), getTransactionStatusFromEvents(triggerCallbackEvents));
             return getTransactionStatusFromEvents(triggerCallbackEvents);
