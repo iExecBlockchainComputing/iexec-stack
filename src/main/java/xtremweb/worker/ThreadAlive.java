@@ -23,7 +23,9 @@
 
 package xtremweb.worker;
 
+import com.iexec.common.ethereum.CredentialsService;
 import com.iexec.common.ethereum.TransactionStatus;
+import com.iexec.common.ethereum.Utils;
 import com.iexec.common.model.*;
 import com.iexec.scheduler.marketplace.MarketplaceService;
 import com.iexec.worker.actuator.ActuatorService;
@@ -203,8 +205,10 @@ public class ThreadAlive extends Thread {
                     XWTools.dumpWorkerContribution(new EthereumWallet(Worker.getConfig().getHost().getEthWalletAddr()),
                             theJob.getWorkOrderId());
 
-                    logger.debug("ThreadAlive() : ActuatorService.getInstance().contribute(" + theJob.getWorkOrderId() + ", "
-                            + theJob.getH2h2r() + ", " +
+                    logger.debug("ThreadAlive() : ActuatorService.getInstance().contribute(" + theJob.getWorkOrderId() + ", " +
+                            theJob.getH2h2r() + ", " +
+                            theJob.getHiddenH2r() + ", " +
+                            theJob.getH2r() + ", " +
                             theJob.getContributeV() + ", " +
                             theJob.getContributeR() + ", " +
                             theJob.getContributeS() + ")");
@@ -212,6 +216,8 @@ public class ThreadAlive extends Thread {
                     final TransactionStatus statusContribute =
                             ActuatorService.getInstance().contribute(theJob.getWorkOrderId(),
                                     theJob.getH2h2r(),
+                                    Utils.signResult(theJob.getHiddenH2r(),
+                                            CredentialsService.getInstance().getCredentials().getAddress()),
                                     new BigInteger(theJob.getContributeV(), 10),
                                     theJob.getContributeR(),
                                     theJob.getContributeS());
@@ -249,7 +255,7 @@ public class ThreadAlive extends Thread {
 
                     final TransactionStatus statusReveal =
                             ActuatorService.getInstance().reveal(theJob.getWorkOrderId(),
-                                    theJob.getH2h2r());
+                                    theJob.getHiddenH2r());
 
                     if ((statusReveal == TransactionStatus.SUCCESS) || (theJob.stopTryingRevealCall())
                             || Worker.getConfig().getBoolean(XWPropertyDefs.FAKEREVEAL)) {

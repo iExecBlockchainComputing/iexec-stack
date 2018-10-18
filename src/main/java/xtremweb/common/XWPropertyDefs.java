@@ -127,6 +127,7 @@ public enum XWPropertyDefs {
 	 * @since 13.1.0
 	 */
 	ENCLAVECHALLENGE,
+    IEXECWORKERPUBLICADDR,
 	/**
 	 * Worker : send a false contribution to blockchain; this is for testing only
 	 * Property type : boolean

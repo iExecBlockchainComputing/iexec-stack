@@ -38,6 +38,8 @@ import java.util.*;
 
 import javax.net.SocketFactory;
 
+import com.iexec.common.ethereum.CredentialsService;
+import com.iexec.common.ethereum.Utils;
 import org.xml.sax.SAXException;
 
 import xtremweb.common.*;
@@ -790,7 +792,7 @@ public class ThreadWork extends Thread {
 			happ.clear();
 		}
 
-		final String[] ret = new String[envvars.size() + Worker.getConfig().getBaseEnvVars().length];
+		final String[] ret = new String[envvars.size() + Worker.getConfig().getBaseEnvVars().length + 1];
 
 		int i = 0;
 
@@ -808,6 +810,12 @@ public class ThreadWork extends Thread {
 			ret[i++] = tuple;
 			logger.debug("envvars[" + i + "] = " + tuple);
 		}
+
+        final String walletPublicAddr = CredentialsService.getInstance().getCredentials().getAddress();
+        final String key = XWPropertyDefs.IEXECWORKERPUBLICADDR.toString();
+        final String value = walletPublicAddr == null ? "" : walletPublicAddr;
+        final String tuple = key + "=" + value;
+        ret[i++] = tuple;
 
 		return ret;
 	}
@@ -1295,11 +1303,12 @@ public class ThreadWork extends Thread {
 			boolean contribution = false;
 			String currentDir = currentWork.getScratchDirName();
 			logger.debug("ThreadWork#zipResult : currentDir : " + currentDir );
-/*
+
             final File fileCurrentDir = new File (currentDir);
             File[] filesList = fileCurrentDir.listFiles();
             for (File file : filesList) {
                 if (file.isFile()) {
+                    logger.debug("*****************************  DUMPING " + file.getName());
                     logger.debug(file.getName());
                     BufferedReader reader = new BufferedReader(new FileReader(file.getPath()));
                     final StringBuilder stringBuilder = new StringBuilder();
@@ -1311,7 +1320,7 @@ public class ThreadWork extends Thread {
                     logger.debug("*****************************");
                 }
             }
-*/
+
             final File consensusFile = new File (currentDir + "/" + XWTools.CONSENSUSFILENAME);
 			if (consensusFile.exists() && (consensusFile.length() != 0)) {
 				logger.info("ThreadWork#zipResult : consensus file found");
@@ -1519,7 +1528,8 @@ public class ThreadWork extends Thread {
                         XWTools.sha256("cheating for fun" + new Date().getTime() + Math.random()) :
                         XWTools.sha256CheckSum(f);
 
-        final String h2h2r = XWTools.sha256(h2r);
+//        final String h2h2r = XWTools.sha256(h2r);
+        final String h2h2r = Utils.hashResult(h2r);
 
         logger.debug("ThreadWork#zipResult() shasum (" + f + ") = " + h2r);
         logger.debug("ThreadWork#zipResult() currentWork.H2r(" + h2r + ") "
