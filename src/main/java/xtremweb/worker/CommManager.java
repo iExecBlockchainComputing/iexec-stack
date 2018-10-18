@@ -1226,7 +1226,7 @@ public final class CommManager extends Thread {
         final DataInterface data = getData(resultURI, false);
 		final CommClient commClient = commClient(resultURI);
 		try {
-		    if(theWork.canReveal()) {
+		    if(theWork.isRevealed()) {
 		        logger.debug("CommManager#uploadResults : the work can reveal " + theWork.toXml());
                 final File content = commClient.getContentFile(resultURI);
                 logger.debug("CommManager#uploadResults " + content);

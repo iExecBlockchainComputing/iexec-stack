@@ -466,10 +466,6 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
         }
         final Date now = new Date();
         final EthereumWallet wallet = new EthereumWallet(worker.getEthWalletAddr());
-        System.out.println("[" + now + "] allowWorkerToContribute(" + workOrderId + "," +
-                (marketOrder == null ? "null" : marketOrder.getUID()) + "," +
-                (wallet == null ? "null" : wallet.getAddress()) + "," +
-                (worker == null ? "null" : worker.getUID()) + ")");
 
         final ContributionModel contribution = WorkerPoolService.getInstance().getWorkerContributionModelByWorkOrderId(workOrderId,
                 wallet.getAddress());
@@ -483,10 +479,23 @@ public class SchedulerPocoWatcherImpl implements IexecHubWatcher, WorkerPoolWatc
         final ArrayList<String> wallets = new ArrayList<>();
         wallets.add(wallet.getAddress());
 
+        final String enclageChallengeValue = Dispatcher.getConfig().getProperty(XWPropertyDefs.ENCLAVECHALLENGE);
+        final String enclaveChallenge = enclageChallengeValue == null || enclageChallengeValue.length() < 1 ?
+                "0" : enclageChallengeValue;
+
+        System.out.println("[" + now + "] allowWorkerToContribute(" + workOrderId + "," +
+                (marketOrder == null ? "null" : marketOrder.getUID()) + "," +
+                (wallet == null ? "null" : wallet.getAddress()) + "," +
+                (worker == null ? "null" : worker.getUID()) + ") " +
+                "enclaveChallenge = " + enclaveChallenge);
+
         int contributeTry;
         for(contributeTry = 0; contributeTry < 3; contributeTry++) {
 
-            final TransactionStatus txStatus = actuatorService.allowWorkersToContribute(workOrderId, wallets, "0");
+            final TransactionStatus txStatus =
+                    actuatorService.allowWorkersToContribute(workOrderId,
+                            wallets,
+                            enclaveChallenge);
 
             if ((txStatus == null) || (txStatus == TransactionStatus.FAILURE)) {
                 try {

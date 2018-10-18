@@ -23,7 +23,9 @@
 
 package xtremweb.worker;
 
+import com.iexec.common.ethereum.CredentialsService;
 import com.iexec.common.ethereum.TransactionStatus;
+import com.iexec.common.ethereum.Utils;
 import com.iexec.common.model.*;
 import com.iexec.scheduler.marketplace.MarketplaceService;
 import com.iexec.worker.actuator.ActuatorService;
@@ -39,9 +41,6 @@ import java.math.BigInteger;
 import java.net.ConnectException;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.rmi.RemoteException;
 import java.security.AccessControlException;
 import java.security.InvalidKeyException;
@@ -206,29 +205,22 @@ public class ThreadAlive extends Thread {
                     XWTools.dumpWorkerContribution(new EthereumWallet(Worker.getConfig().getHost().getEthWalletAddr()),
                             theJob.getWorkOrderId());
 
-                    logger.debug("ThreadAlive() : ActuatorService.getInstance().contribute(" + theJob.getWorkOrderId() + ", "
-                            + theJob.getH2h2r() + ")");
-
-                    final String enclaveFileName = XWTools.ENCLAVESIGFILENAME;
-                    final File enclaveFile = new File(enclaveFileName);
-                    String contributeV = "0";
-                    String contributeR = "0";
-                    String contributeS = "0";
-                    if(enclaveFile.exists()) {
-                        List<String> lines = Files.readAllLines(Paths.get(enclaveFileName), Charset.defaultCharset());
-                        contributeV = lines.get(2);
-                        contributeR = lines.get(3);
-                        contributeS = lines.get(4);
-                        logger.info("SGXEnclave : " + contributeV + " " + contributeR + " " + contributeS);
-                    } else
-                        logger.info("SGXEnclave : '" + enclaveFileName + "' not found");
+                    logger.debug("ThreadAlive() : ActuatorService.getInstance().contribute(" + theJob.getWorkOrderId() + ", " +
+                            theJob.getH2h2r() + ", " +
+                            theJob.getHiddenH2r() + ", " +
+                            theJob.getH2r() + ", " +
+                            theJob.getContributeV() + ", " +
+                            theJob.getContributeR() + ", " +
+                            theJob.getContributeS() + ")");
 
                     final TransactionStatus statusContribute =
                             ActuatorService.getInstance().contribute(theJob.getWorkOrderId(),
                                     theJob.getH2h2r(),
-                                    new BigInteger(contributeV, 10),
-                                    contributeR,
-                                    contributeS);
+                                    Utils.signResult(theJob.getHiddenH2r(),
+                                            CredentialsService.getInstance().getCredentials().getAddress()),
+                                    new BigInteger(theJob.getContributeV(), 10),
+                                    theJob.getContributeR(),
+                                    theJob.getContributeS());
 
                     if (statusContribute == TransactionStatus.SUCCESS) {
                         theJob.setContributed();
@@ -263,7 +255,7 @@ public class ThreadAlive extends Thread {
 
                     final TransactionStatus statusReveal =
                             ActuatorService.getInstance().reveal(theJob.getWorkOrderId(),
-                                    theJob.getH2h2r());
+                                    theJob.getHiddenH2r());
 
                     if ((statusReveal == TransactionStatus.SUCCESS) || (theJob.stopTryingRevealCall())
                             || Worker.getConfig().getBoolean(XWPropertyDefs.FAKEREVEAL)) {
@@ -273,7 +265,7 @@ public class ThreadAlive extends Thread {
                             CommManager.getInstance().sendWork(theJob);
                         } else {
                             logger.debug("revealed " + theJob.getUID());
-                            theJob.setCompleted();
+                            theJob.setRevealed();
                             CommManager.getInstance().sendResult(theJob);
                             CommManager.getInstance().getPoolWork().saveCompletedWork(theJob);
                         }

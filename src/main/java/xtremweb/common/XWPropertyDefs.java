@@ -118,10 +118,16 @@ public enum XWPropertyDefs {
 	 * @since 13.0.0
 	 */
 	BLOCKCHAINETHENABLED,
-
-
+	/**
+	 *
+	 */
 	WORKERETHNODEADDRESS,
-
+	/**
+	 * This is the challenge public address
+	 * @since 13.1.0
+	 */
+	ENCLAVECHALLENGE,
+    IEXECWORKERPUBLICADDR,
 	/**
 	 * Worker : send a false contribution to blockchain; this is for testing only
 	 * Property type : boolean

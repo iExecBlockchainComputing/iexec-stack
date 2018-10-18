@@ -477,7 +477,7 @@ public class HashTaskSet extends TaskSet {
                         }
                     }
 
-                    final TransactionStatus txStatus = ActuatorService.getInstance().revealConsensus(theWork.getWorkOrderId(), Utils.hashResult(theWork.getH2h2r()));
+                    final TransactionStatus txStatus = ActuatorService.getInstance().revealConsensus(theWork.getWorkOrderId(), theWork.getH2h2r());
                     if ((txStatus == null) || (txStatus == TransactionStatus.FAILURE)) {
                         getLogger().debug("detectAbortedTasks : revealConsensus error; will retry later");
                     }

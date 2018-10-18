@@ -60,7 +60,6 @@ import org.json.JSONObject;
 import org.json.JSONTokener;
 import xtremweb.communications.URI;
 
-
 /**
  *
  * Some utilities
@@ -1022,29 +1021,29 @@ public class XWTools {
 	}
 
 	public static String sha256CheckSum(final File data) throws NoSuchAlgorithmException, IOException
-    {
-        final MessageDigest md = MessageDigest.getInstance("SHA-256");
-        try (final FileInputStream fis = new FileInputStream(data)) {
+	{
+		final MessageDigest md = MessageDigest.getInstance("SHA-256");
+		try (final FileInputStream fis = new FileInputStream(data)) {
 
-        	final byte[] dataBytes = new byte[1024];
+			final byte[] dataBytes = new byte[1024];
 
-        	int nread = 0;
-	        while ((nread = fis.read(dataBytes)) != -1) {
-	          md.update(dataBytes, 0, nread);
-	        };
-	        final byte[] digest = md.digest();
+			int nread = 0;
+			while ((nread = fis.read(dataBytes)) != -1) {
+				md.update(dataBytes, 0, nread);
+			};
+			final byte[] digest = md.digest();
 
-	        return String.format( "%064x", new BigInteger( 1, digest ) );
-        } 
-    }
+			return String.format( "%064x", new BigInteger( 1, digest ) );
+		}
+	}
 
-    public static String sha256(final String data) throws NoSuchAlgorithmException {
-        final MessageDigest md = MessageDigest.getInstance( "SHA-256" );
-        // Change this to UTF-16 if needed
-        md.update( data.getBytes( StandardCharsets.UTF_8 ) );
-        final byte[] digest = md.digest();
-        return String.format( "%064x", new BigInteger( 1, digest ) );
-      }
+	public static String sha256(final String data) throws NoSuchAlgorithmException {
+		final MessageDigest md = MessageDigest.getInstance( "SHA-256" );
+		// Change this to UTF-16 if needed
+		md.update( data.getBytes( StandardCharsets.UTF_8 ) );
+		final byte[] digest = md.digest();
+		return String.format( "%064x", new BigInteger( 1, digest ) );
+	}
 
       public static void dumpUrlContent(final String urlStr) {
 
@@ -1165,8 +1164,12 @@ public class XWTools {
 			if (argv.length > 1) {
 				logger.info("sha256  (\"" + argv[1] + "\") = " + sha256(argv[1]));
 				File f = new File(argv[1]);
-				if(f.exists())
-					logger.info("sha256CheckSum  (" + argv[1] + ") = " + sha256CheckSum(f));
+				if(f.exists()) {
+					final String h2r = sha256CheckSum(f);
+					final String h2h2r = sha256(h2r);
+					logger.info("  h2r = sha256CheckSum(" + argv[1] + ") = " + h2r);
+					logger.info("h2h2r = ha256(" + h2r + ") = " + h2h2r);
+				}
 			}
 
 		} catch (final Exception e) {

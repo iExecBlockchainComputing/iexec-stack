@@ -28,18 +28,18 @@ import java.net.ConnectException;
 import java.net.Socket;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.security.AccessControlException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.Vector;
+import java.util.*;
 
 import javax.net.SocketFactory;
 
+import com.iexec.common.ethereum.CredentialsService;
+import com.iexec.common.ethereum.Utils;
 import org.xml.sax.SAXException;
 
 import xtremweb.common.*;
@@ -792,13 +792,13 @@ public class ThreadWork extends Thread {
 			happ.clear();
 		}
 
-		final String[] ret = new String[envvars.size() + Worker.getConfig().getBaseEnvVars().length];
+		final String[] ret = new String[envvars.size() + Worker.getConfig().getBaseEnvVars().length + 1];
 
 		int i = 0;
 
 		logger.debug("Worker.getConfig().getBaseEnvVars().length = " + Worker.getConfig().getBaseEnvVars().length);
 		for (int bevi = 0; bevi < Worker.getConfig().getBaseEnvVars().length; bevi++) {
-			logger.finest("tuple[" + i + "] = " + Worker.getConfig().getBaseEnvVars()[bevi]);
+			logger.debug("Worker.getConfig().getBaseEnvVars[" + i + "] = " + Worker.getConfig().getBaseEnvVars()[bevi]);
 			ret[i++] = Worker.getConfig().getBaseEnvVars()[bevi];
 		}
 
@@ -808,8 +808,14 @@ public class ThreadWork extends Thread {
 			final String value = envvars.get(key);
 			final String tuple = key + "=" + value;
 			ret[i++] = tuple;
-			logger.finest("tuple[" + i + "] = " + tuple);
+			logger.debug("envvars[" + i + "] = " + tuple);
 		}
+
+        final String walletPublicAddr = CredentialsService.getInstance().getCredentials().getAddress();
+        final String key = XWPropertyDefs.IEXECWORKERPUBLICADDR.toString();
+        final String value = walletPublicAddr == null ? "" : walletPublicAddr;
+        final String tuple = key + "=" + value;
+        ret[i++] = tuple;
 
 		return ret;
 	}
@@ -1296,9 +1302,26 @@ public class ThreadWork extends Thread {
 			//
 			boolean contribution = false;
 			String currentDir = currentWork.getScratchDirName();
-			logger.info("ThreadWork#zipResult : currentDir : " + currentDir );
-			final File consensusFile = new File (currentDir + "/" + XWTools.CONSENSUSFILENAME);
-			logger.info("ThreadWork#zipResult : consensusFile.getPath() : " + consensusFile.getPath() );
+			logger.debug("ThreadWork#zipResult : currentDir : " + currentDir );
+
+            final File fileCurrentDir = new File (currentDir);
+            File[] filesList = fileCurrentDir.listFiles();
+            for (File file : filesList) {
+                if (file.isFile()) {
+                    logger.debug("*****************************  DUMPING " + file.getName());
+                    logger.debug(file.getName());
+                    BufferedReader reader = new BufferedReader(new FileReader(file.getPath()));
+                    final StringBuilder stringBuilder = new StringBuilder();
+
+                    String line = null;
+                    while ((line = reader.readLine()) != null) {
+                        logger.debug(line);
+                    }
+                    logger.debug("*****************************");
+                }
+            }
+
+            final File consensusFile = new File (currentDir + "/" + XWTools.CONSENSUSFILENAME);
 			if (consensusFile.exists() && (consensusFile.length() != 0)) {
 				logger.info("ThreadWork#zipResult : consensus file found");
 				try {
@@ -1308,8 +1331,29 @@ public class ThreadWork extends Thread {
                     throw new IOException("contribution error " + e.getMessage());
 				}
 			} else {
-                logger.info("ThreadWork#zipResult : no consensus file found");
+                logger.info("ThreadWork#zipResult : consensus file  not found '" + consensusFile.getPath() + "'");
             }
+
+
+            final File enclaveFile = new File (currentDir + "/" + XWTools.ENCLAVESIGFILENAME);
+            if(enclaveFile.exists()) {
+                logger.info("ThreadWork#zipResult : enclave file found");
+                List<String> lines = Files.readAllLines(Paths.get(enclaveFile.getPath()), Charset.defaultCharset());
+                final String contributeV = lines.get(3);
+                final String contributeR = lines.get(4);
+                final String contributeS = lines.get(5);
+                if((contributeV != null) && (contributeV.length() > 0))
+                    currentWork.setContributeV(contributeV);
+                if((contributeR != null) && (contributeR.length() > 0))
+                    currentWork.setContributeR(contributeR);
+                if((contributeS != null) && (contributeS.length() > 0))
+                    currentWork.setContributeS(contributeS);
+                logger.info("ThreadWork#zipResult : SGXEnclave - v=" + currentWork.getContributeV() + ", r=" +
+                        currentWork.getContributeR() + ", s=" +
+                        currentWork.getContributeS());
+            } else
+                logger.info("ThreadWork#zipResult : SGXEnclave file not found '" + enclaveFile.getPath() + "'");
+
 
             logger.debug("ThreadWork#zipResult : resultFile " + resultFilePath);
 
@@ -1484,7 +1528,8 @@ public class ThreadWork extends Thread {
                         XWTools.sha256("cheating for fun" + new Date().getTime() + Math.random()) :
                         XWTools.sha256CheckSum(f);
 
-        final String h2h2r = XWTools.sha256(h2r);
+//        final String h2h2r = XWTools.sha256(h2r);
+        final String h2h2r = Utils.hashResult(h2r);
 
         logger.debug("ThreadWork#zipResult() shasum (" + f + ") = " + h2r);
         logger.debug("ThreadWork#zipResult() currentWork.H2r(" + h2r + ") "
