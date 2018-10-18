@@ -35,9 +35,9 @@ public final class Utils {
         return "";
     }
 
-    public static String signByteResult(String result, String address) {
+    public static String signResult(String result, String address) {
         result = getHexaStringWithPrefix(result);
-        
+
         if (!result.isEmpty()) {
             String addressHash = Hash.sha3(address);
             String xor = HEX_PREFIX;
