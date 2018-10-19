@@ -24,7 +24,7 @@ configurations {
 }
 
 ext {
-    web3jVersion = '3.3.1'
+    web3jVersion = '3.6.0'
     logbackVersion = '1.2.3'
     junitVersion = '4.12'
     springBootVersion = '1.5.9.RELEASE'
@@ -60,7 +60,7 @@ task buildContracts() {
     pocoJsonFiles.each{ pocoJsonFile ->
         exec{
             args pocoJsonFile
-            commandLine 'sh', '-c', './extlib/web3j-3.3.1/bin/web3j truffle generate '+ args.first() +' -p com.iexec.common.contracts.generated -o src/main/java/'
+            commandLine 'sh', '-c', './extlib/web3j-3.6.0/bin/web3j truffle generate '+ args.first() +' -p com.iexec.common.contracts.generated -o src/main/java/'
         }
     }
 }
