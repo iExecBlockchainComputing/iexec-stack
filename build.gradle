@@ -30,8 +30,6 @@ configurations {
 }
 
 ext {
-    web3jVersion = '3.3.1'
-    web3jSpringBootVersion = '1.5.0'
     logbackVersion = '1.2.3'
     junitVersion = '4.12'
 }
@@ -39,9 +37,6 @@ ext {
 dependencies {
 	compile "com.iexec.common:iexec-common:$iexecCommonVersion"
     //compile files('../iexec-common/build/libs/iexec-common-0.1.0-SNAPSHOT.jar')
-
-	// web3j dependencies
-    compile "org.web3j:core:$web3jVersion"
 
     testCompile "junit:junit:$junitVersion"
 
