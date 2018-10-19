@@ -7,7 +7,7 @@
 
 # Package Files #
 *.jar
-!/extlib/web3j-3.3.1/lib/*.jar
+!/extlib/web3j-3.6.0/lib/*.jar
 *.war
 *.ear
 
