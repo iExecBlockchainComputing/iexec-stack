@@ -57,10 +57,10 @@ def pocoJsonFiles = [
 ]
 
 task buildContracts() {
-    pocoJsonFiles.each{ pocoJsonFile ->
-        exec{
+    pocoJsonFiles.each { pocoJsonFile ->
+        exec {
             args pocoJsonFile
-            commandLine 'sh', '-c', './extlib/web3j-3.6.0/bin/web3j truffle generate '+ args.first() +' -p com.iexec.common.contracts.generated -o src/main/java/'
+            commandLine 'sh', '-c', './extlib/web3j-3.6.0/bin/web3j truffle generate ' + args.first() + ' -p com.iexec.common.contracts.generated -o src/main/java/'
         }
     }
 }
