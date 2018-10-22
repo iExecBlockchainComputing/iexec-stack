@@ -117,9 +117,8 @@ echo "git clone ..."
 git clone https://github.com/iExecBlockchainComputing/wallets.git
 git clone https://github.com/iExecBlockchainComputing/PoCo.git
 
-git clone https://github.com/branciard/parity-deploy.git
+git clone https://github.com/paritytech/parity-deploy.git
 cd parity-deploy
-git checkout dev
 echo "generate pwd"
 
 ./config/utils/pwdgen.sh -n ${CHAIN_NODES} -l ${PASSWORD_LENGTH}
