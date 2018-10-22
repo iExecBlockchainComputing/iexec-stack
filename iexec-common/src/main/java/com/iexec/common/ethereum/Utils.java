@@ -28,20 +28,37 @@ public final class Utils {
         throw new IllegalAccessError("Utility class");
     }
 
-    public static String signByteResult(String result, String address) {
-        String resultHash = Hash.sha3String(result);
-        String addressHash = Hash.sha3(address);
-        String xor = HEX_PREFIX;
-        for (int i = 2; i < 66; i++) {
-            Integer temp = Integer.parseInt(String.valueOf(resultHash.charAt(i)), 16) ^ Integer.parseInt(String.valueOf(addressHash.charAt(i)), 16);
-            xor += Integer.toHexString(temp);
+    public static String hashResult(String result) {
+        if (!result.isEmpty()) {
+            return Hash.sha3(result);
         }
-        String sign = Hash.sha3(xor);
-        return sign;
+        return "";
     }
 
-    public static String hashResult(String result) {
-        return Hash.sha3(Hash.sha3String(result));
+    public static String signResult(String result, String address) {
+        result = getHexaStringWithPrefix(result);
+
+        if (!result.isEmpty()) {
+            String addressHash = Hash.sha3(address);
+            String xor = HEX_PREFIX;
+            for (int i = 2; i < 66; i++) {
+                Integer temp = Integer.parseInt(String.valueOf(result.charAt(i)), 16) ^ Integer.parseInt(String.valueOf(addressHash.charAt(i)), 16);
+                xor += Integer.toHexString(temp);
+            }
+            return Hash.sha3(xor);
+        }
+        return "";
+    }
+
+    private static String getHexaStringWithPrefix(String result) {
+        if (!result.isEmpty()) {
+            if (result.length() == 66) {
+                return result;
+            } else if (result.length() == 64) {
+                return HEX_PREFIX + result;
+            }
+        }
+        return "";
     }
 
     public static String web3Sha3(Web3j web3j, String preimage) throws IOException {
@@ -100,7 +117,7 @@ public final class Utils {
         return null;
     }
 
-    public static TransactionStatus depositRlc(BigInteger rlcDepositRequested, RLC rlc ,IexecHub iexecHub, Logger log) {
+    public static TransactionStatus depositRlc(BigInteger rlcDepositRequested, RLC rlc, IexecHub iexecHub, Logger log) {
         try {
             Tuple2<BigInteger, BigInteger> lastStakeAndLocked = iexecHub.checkBalance(CredentialsService.getInstance().getCredentials().getAddress()).send();
             BigInteger lastStake = lastStakeAndLocked.getValue1();
