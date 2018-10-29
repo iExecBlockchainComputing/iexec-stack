@@ -1,0 +1,14 @@
+{
+  "description":
+    "The iExec SGX End-to-end solution Worker Pool.",
+  "social": {
+    "website": "https://sgx-pool.iex.ec"
+  },
+  "logo": "logo.jpg",
+  "workerPool": {
+    "description": "sgx-pool-1",
+    "subscriptionLockStakePolicy": 0,
+    "subscriptionMinimumStakePolicy": 0,
+    "subscriptionMinimumScorePolicy": 0
+  }
+}
