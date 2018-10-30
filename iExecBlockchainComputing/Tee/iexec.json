@@ -1,0 +1,13 @@
+{
+  "description": "The iExec Trusted Execution End-to-end solution Worker Pool.",
+  "social": {
+    "website": "https://tee-pool.iex.ec"
+  },
+  "logo": "logo.jpg",
+  "workerPool": {
+    "description": "tee-pool-1",
+    "subscriptionLockStakePolicy": 0,
+    "subscriptionMinimumStakePolicy": 0,
+    "subscriptionMinimumScorePolicy": 0
+  }
+}
