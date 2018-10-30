@@ -1,6 +1,5 @@
 {
-  "description":
-    "The iExec SGX End-to-end solution Worker Pool.",
+  "description": "The iExec Intel SGX End-to-end solution Worker Pool. Intel Software Guard Extensions (SGX) is a set of central processing unit (CPU) instruction codes from Intel that allows user-level code to allocate private regions of memory, called enclaves, that are protected from processes running at higher privilege levels.",
   "social": {
     "website": "https://sgx-pool.iex.ec"
   },
