@@ -2,8 +2,8 @@ DROP USER IF EXISTS 'grafana';
 
 CREATE USER 'grafana'@'%' IDENTIFIED BY 'grafanapassword';
 
-GRANT SELECT(cpunb,cpuspeed,totalmem,isdeleted,lastalive,uid,name,os,cputype,nbjobs,pendingjobs,runningjobs,errorjobs) ON iexec.hosts TO 'grafana'@'%';
-GRANT SELECT(cpunb,cpuspeed,totalmem,isdeleted,lastalive,uid,name,os,cputype,nbjobs,pendingjobs,runningjobs,errorjobs) ON iexec.hosts_history TO 'grafana'@'%';
+GRANT SELECT(cpunb,cpuspeed,totalmem,isdeleted,lastalive,uid,name,os,cputype,nbjobs,pendingjobs,runningjobs,errorjobs,marketorderUID) ON iexec.hosts TO 'grafana'@'%';
+GRANT SELECT(cpunb,cpuspeed,totalmem,isdeleted,lastalive,uid,name,os,cputype,nbjobs,pendingjobs,runningjobs,errorjobs,marketorderUID) ON iexec.hosts_history TO 'grafana'@'%';
 
 GRANT SELECT ON iexec.tasks TO 'grafana'@'%';
 GRANT SELECT ON iexec.tasks_history TO 'grafana'@'%';
