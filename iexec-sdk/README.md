@@ -74,7 +74,7 @@ required steps before following any other workflow.
 iexec init # create all required files
 iexec wallet getETH # ask faucet for ETH
 iexec wallet getRLC # ask iExec faucet for RLC
-iexec account deposit 200 # deposit RLC on your iExec account, so you can buy orders
+iexec account deposit 200 # deposit nRLC on your iExec account, so you can buy orders
 iexec wallet show
 iexec account show
 ```
@@ -224,6 +224,23 @@ iexec order count # count marketplace total number of order
 # --watch
 # --download [fileName]
 iexec work show [address] --watch --download # show a work, watch its status changes and download it when completed
+```
+
+## tee
+
+```bash
+# OPTIONS
+# --chain <chainName>
+# --application <appName | app0xAddress>
+# --keysFolderPath <path>
+# --inputsFolderPath <path>
+# --encryptedOutputsFolder <path>
+# --outputsFolderPath <path>
+# --secretManagementService <hostname/IP>
+# --remoteFileSystem <serviceName>
+iexec tee init # init the TEE folders tree structure
+iexec tee encryptedpush --application iexechub/sgx-scone:blender # encrypt work input data + upload it to file hosting service
+iexec tee decrypt # decrypt work result
 ```
 
 ## category

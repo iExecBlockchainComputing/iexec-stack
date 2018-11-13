@@ -127,6 +127,8 @@ async function main() {
 
   cli.command('work', 'manage iExec works');
 
+  cli.command('tee', 'interact with Trusted Execution Environment');
+
   cli.command('registry', 'interact with iExec registry');
 
   cli
