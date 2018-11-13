@@ -1,0 +1,13 @@
+{
+  "description": "The iExec Trusted Execution End-to-end solution Worker Pool. A trusted execution environment (TEE) is a secure area of a main processor. It guarantees code and data loaded inside to be protected with respect to confidentiality and integrity",
+  "social": {
+    "website": "https://tee-pool.iex.ec"
+  },
+  "logo": "logo.jpg",
+  "workerPool": {
+    "description": "tee-pool-1",
+    "subscriptionLockStakePolicy": 0,
+    "subscriptionMinimumStakePolicy": 0,
+    "subscriptionMinimumScorePolicy": 0
+  }
+}
