@@ -1,1 +1,0 @@
-They must be rewritten to correctly manage the 10.x database structure.
