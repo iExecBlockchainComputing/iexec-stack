@@ -1,0 +1,16 @@
+; test.def : Declares the module parameters for the DLL.
+
+;/**
+; * This has been extracted from boinc
+; * http://boinc.berkeley.edu/
+; */
+
+
+LIBRARY      "boinc"
+DESCRIPTION  'boinc Windows Dynamic Link Library'
+
+EXPORTS
+    ; Explicit exports can go here
+	IdleTrackerInit
+	IdleTrackerTerm
+	IdleTrackerGetLastTickCount

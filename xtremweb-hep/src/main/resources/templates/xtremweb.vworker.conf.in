@@ -1,0 +1,703 @@
+#
+# Copyrights     : CNRS
+# Author         : Oleg Lodygensky
+# Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
+# Web            : http://www.xtremweb-hep.org
+# 
+#      This file is part of XtremWeb-HEP.
+#
+#    XtremWeb-HEP is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    XtremWeb-HEP is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with XtremWeb-HEP.  If not, see <http://www.gnu.org/licenses/>.
+#
+#
+
+
+#
+# Sept 16th, 2014
+#   Variable names must be in uppercase (it works in lowercase, but may introduce
+#   some missbehaviour under certain circumstances)
+# The script "xtremwebconf.sh" uses perl to force upper cases;
+# but it may happen that perl is not installed... 
+#
+
+# Simple Host Configuration File
+
+# Next defines the role as worker
+# This is used by the launcher 
+ROLE=worker
+
+# Next is used for group worker only
+# A group worker is worker connecting with WORKER_USER user rights
+# which identity is defined in a user group
+# Such a worker can then not only compute public applications, but also
+# its own group ones
+# Next variable may contains the worker group label (and its group only)
+# this tells that the worker does not accept public jobs, but its own group ones only
+# (if this is empty or not defined, group worker accept public jobs too)
+#PROJECT=
+
+# Next defines URL where launcher can find XtremWeb binary
+# Default : n/a
+LAUNCHERURL=@XWUPGRADEURL@
+
+
+####### XtremWeb dispatcher
+# There put the location of the root XtremWeb server
+DISPATCHERS=@XWSERVER@
+# Next line shows how to set several servers (names must be delimited by space or tabulation)
+#DISPATCHERS=host1 host2 host 3
+
+####### Data servers
+# There put the location of the data sever
+# Default is XtremWeb dispatchers
+#DATASERVERS=@DATASERVERS@
+# Next line shows how to set several servers (names must be delimited by space or tabulation)
+#DATASERVERS=host1 host2 host 3
+
+# next is TCP port
+# default value : 4321
+## TCPPORT=4321
+
+# next is ssl TCP port
+# default value : 4322
+## TCPSPORT=4322
+
+# next is UDP port
+# DEFAULT VALUE = 4323
+## UDPPORT=4323
+
+# next is the worker HTTP port
+# the worker may listen (See server.http property) to display its status
+# default value : 4324
+## HTTPWORKERPORT=4324
+
+# next is the server HTTP port
+# default value : 80
+## HTTPPORT=80
+
+# next is server HTTPS port
+# default value : 443
+## HTTPSPORT=443
+
+# next is XML RPC port listened by the client shell
+# default value : 4327
+## XMLRPCPORT=4327
+
+# next is Sun RPC port
+# default value : 4328
+## SUNRPCPORT=4328
+
+# next is proxy port
+# default value : -1 (means don't used)
+## PROXYPORT=-1
+
+#
+# This is the proxy resolved name
+# default : null
+# Since 7.3.0
+#PROXYSERVER=
+
+#
+# Do we try to connect to Ethereum blockchain
+# @since 13.0.0
+#
+BLOCKCHAINETHENABLED=true
+
+#
+# This tells if the worker must send a false contribution
+# This is for testing only
+# @since 13.1.0
+#
+#FAKECONTRIBUTE=false
+
+#
+# This tells if the worker must simulate a reveal error
+# This is for testing only
+# @since 13.1.0
+#
+#FAKEREVEAL=false
+
+#
+# All : ethereum wallet path
+# Property type : string
+# Since 12.2.7
+#
+ETHWALLETPATH=../wallet/wallet_worker.json
+#
+#All : ethereum wallet password
+#
+# Property type : string
+#
+# Since 12.2.7
+#
+ETHWALLETPASSWORD=whatever
+
+#
+# Initial deposit of RLC
+#
+RLCDEPOSIT=0
+
+#
+# Internode communications needs a running SmartSockets hub; this may also denote a hub network<br />
+# Property name : "smartsocketshubaddr"<br />
+# Property type : string<br />
+# Default value : null
+# @since 8.3.2
+#
+#SMARTSOCKETSHUBADDR=
+
+#
+# This tells if this host accepts to run job that listen for incoming connections
+# Property name : "incomingconnections"
+# Property type : boolean
+# Default value : false
+# @since 8.0.0
+#
+INCOMINGCONNECTIONS=true
+
+#
+# This contains the max amount of entries in local cache
+# Default : 10000
+#cachesize
+
+# Login and password to connect to the server (required)
+LOGIN=@XWVWORKERLOGIN@
+PASSWORD=@XWVWORKERPASSWORD@
+
+#
+# Following are two ACL variables
+# They must contains regular expression (regexp)
+#
+# Regexp examples
+#  - accept all incoming connection                : .*
+#  - accept incoming connection from '168.192.*.*' : 168\.192\..*
+#  - accept incoming connection from '*.in2P3.fr'  : .*\.in2p3\.fr
+#  - reject incoming connection from '168.192.*.*' : -168\.192\..*
+#  - reject incoming connection from '*.in2P3.fr'  : -.*\.in2p3\.fr
+#
+# Communication Access Control List (ACL)
+# By default you can only access the server from localhost.
+# This may contains several comma separated regexp
+# Example
+# SERVERCOMMACL=.*
+
+#
+# ACL to server status and administration
+# XWHEP parts accept incoming connection to display their status and allow
+# some configuration modification
+# By default you can only access the server from localhost.
+# This may contains several comma separated regexp
+# Example
+# SERVERSTATACL=168\.192\..*
+
+
+# next defines whether to use NIO
+# default value : true
+# this is forced to false, if using HTTPClient
+## JAVANIO=true
+
+
+#####
+# How many jobs a worker may compute simultaneously
+# default is the number of detected CPUs, automatically set at runtime
+# minimum is 1
+# WORKPOOLSIZE=-1
+#####
+
+
+#
+# This starts or not the http server
+# This HTTP server is intended to configure the worker on the fly
+# So that any volunteer PC owner can interact with its worker
+# Default is true
+#
+#STARTSERVERHTTP=false
+
+##### Name of the class to use as an activator (default is AlwaysActive) 
+# The activator controls which ressources can be used at a given time
+# currently, only the CPU is handled
+#
+
+# This activator turns the worker always on (the worker always computes)
+## ACTIVATORCLASS=xtremweb.worker.AlwaysActive
+
+# use this activator if you want XtremWeb to monitor 
+# mouse and keyboard activity to know if it can start a computation
+# (currently only supperted under Linux)
+## ACTIVATORDELAY=20
+
+# Duration in minutes before launching a computation when no
+# keyboard or mouse activity was detected
+## ACTIVATORCLASS=xtremweb.worker.TCPActivator
+
+# simple shell to set the activity mask. The activity 
+# mask determine which activity are allowed, see source code
+# of xtremweb.worker.activator for more details. 
+# For example, TCPActivator can be used with netcat to easily control
+# the worker from a shell script.
+# something like
+# % echo 0 | nc -q 0 localhost 10000
+# will stop computation, while
+# % echo 1 | nc -q localhost 10000
+# will start the computaion if some jobs are available
+
+
+#
+# NOTE -- *          Decembre 2005         *
+# NOTE -- **********************************
+# NOTE -- *                                *
+# NOTE -- *          CPUACTIVATOR          *
+# NOTE -- *                                *
+# NOTE -- *       has been disabled        *
+# NOTE -- *          due to bugs :(        *
+# NOTE -- **********************************
+#
+# OS : linux     this is automatically replaced by xtremweb.worker.AlwaysActive
+#                (under Linux, the provided startup scripts nice processes to 10)
+# OS : win32     this is automatically replaced by xtremweb.worker.WinSaverActivator
+# OS : Mac OS X  this is automatically replaced by xtremweb.worker.DateActivator
+#
+#ACTIVATORCLASS=xtremweb.worker.CpuActivator
+
+#
+# cpuLoad aims to determine computation time accordingly to the machine CPU loads.
+# It is only used with the CpuActivator activator
+#
+# Here's how it works :
+#   If more than cpuLoad is requiered by the host for any job but the XW xorker,
+#   the worker stops computing.
+#   This test must be true for up to 1.5s so that the worker stops computing
+#   only if the CPU seems "seriously" required by its owner
+#
+# Default is 50
+#
+#CPULOAD=50
+
+#
+# computing.jobs tells how many jobs a worker should computing and die
+#
+# Default is -1 : the worker will never dy
+#
+#COMPUTINGJOBS=-1
+
+#
+# This timeout value has a different meaning for worker and for client
+#
+# Worker
+# ------
+# This is the timeout to wait between to work requests in milliseconds
+# This timeout is multiplicated by 2  between two unsuccessfull requests (work
+# request returned no job) up to 4 times so that the maximum delay between
+# to requests is (4 * timeout)
+# Setting less than 10 is a very special case: the worker then does not
+# write all files to disk. Hence if it crashes, it will not be able to
+# recover all informations
+#
+# Client
+# ------
+# This is the time to wait for a each job to complete
+#
+# -----------------------
+# This is in milliseconds
+# Default is 15000
+#
+TIMEOUT=15000
+
+#
+# This is the socket timeout
+# This is in milliseconds
+# Default is 60000
+# Setting it to zero means wait for ever; it is at your own risk, keep in mind that Zero may block the worker for ever
+#
+#SOTIMEOUT=0
+
+#
+# This defines how many times we keep trying on socket timeout
+# Default is 50
+# This is forced to default value, if < 1
+#
+#SORETRIES=1
+
+#
+# This is the max timeout to wait for a job; after this timeout the worker dies.
+# This is expecially usefull to deploy workers over Grids, so that we don't use
+# a machine for nothing.
+# A VALUE <= 0 means wait forever
+#
+# This is in seconds
+# Default is -1
+#
+#NOOPTIMEOUT=-1
+
+#
+# This contains class names to get time stamps for
+# Note : substrings are allowed
+# (*) "SimpleScheduler" matches "SimpleScheduler" only
+#     but "Scheduler" matches "SimpleScheduler", "MatchingScheduler" etc.
+# (*) "CommHandler" matches "CommHandler" only
+#     but "Handler" matches "TCPHandler", "UDPHandler", "CommHandler" etc.
+# (*) "xtremweb" matches all classes
+# (*) etc.
+#
+# Default is "" (turned off)
+#
+#MILESTONES=xtremweb
+
+#
+# commLayer is a String determining the communication layer to use
+# Possible values : 
+#   - xtremweb.communications.TCPClient   (this is the default)
+#   - xtremweb.communications.HTTPClient
+#   - xtremweb.communications.UDPFTClient  (UDP is a very special case and should only be used with care)
+#   - xtremweb.communications.XMLRPCClient (this does not work yet)
+#
+# Octobre 2005 :
+#     UDP **ONLY** support minimalistic transfers (size < 16KB)
+#     This is still a prototype :)
+#     (conterpoint : if you are sure transfers are < 16KB, everything works just fine)
+#     (transfers include app binary, job params etc.)
+#
+# Default is xtremweb.communications.TCPClient
+#
+#COMMLAYER=xtremweb.communications.HTTPClient
+
+#
+# commHandlers is a String determining the communication handlers
+# This contains a comma separated list of colon separated tuples
+#
+# Example : 
+#       xw:xtremweb.communications.TCPClient,http:xtremweb.communications.HTTPClient
+#
+# Default is xw:<commLayer value>,http:xtremweb.communications.HTTPClient
+# This automatically always includes default values
+# Values provided here are then added to handlers
+#
+# See commLayer
+#
+# Since June 2009, XWHEP also accepts ADICS P2P data platform by Cardiff University
+# See http://www.p2p-adics.org/
+#
+COMMHANDLERS=attic:xtremweb.communications.HTTPClient
+
+#
+# sharedapps is a String determining the local applications the worker wants to share.
+# This contains a comma separated list of application types. 
+# See xtremweb.common.ApplicationType
+#
+# Example : 
+#  SHAREDAPPS=virtualbox,vmware,vlc
+#
+# Default is null
+#
+SHAREDAPPS=docker
+
+#
+# sharedpackages is a String determining local packages
+# This contains a comma separated list of packages
+# The name here must be the name of the needed packages for the registered application
+#
+# Example : 
+#  SHAREDPACKAGES=root,geant4
+#
+# Default is null
+#
+#SHAREDPACKAGES=
+
+#
+# shareddatas is a String determining local data
+# This contains a comma separated list of data names
+#
+# Example : 
+#  SHAREDDATAS=dataset1,dataset2
+#
+# Default is null
+#
+#SHAREDDATAS=
+
+#
+# shareddataspath is a String determining local paths where the worker can find data
+# It must be in the same order as SHAREDDATAS
+#  If set, the worker uses these paths as current working directory of works processing these data
+#  If set, the worker does not send result to the XWHEP server.
+#  If set, the worker does delete data processing result; it is the responsibility of the data owner.
+#
+# Example : 
+#  SHAREDDATASPATH=/path/one,/path/two
+#
+#  If SHAREDDATAS=dataset1,dataset2
+#  Then the worker find dataset1 content in /path/one
+#  and dataset2 content in /path/two
+#
+# Since 10.0.0
+#
+# Default is null
+#
+#SHAREDDATASPATH=
+
+
+#
+# connectionLess tells to communicate in connectionless mode
+# (i.e. connect, send message, disconnect)
+# If set to false, we use connected communication mode
+# (i.e. connect once forever at warm up, and disconnect only at shut down)
+#
+# This has only a sense for TCP communications
+#
+# Default is true
+#
+#CONNECTIONLESS=true
+
+#
+# multipleInstances tells whether multiple workers may run on a single host
+# Allowing may overbook CPU
+#
+# Default is false
+#
+#MULTIPLEINSTANCES=false
+
+#
+# optimizeZip tells to optimze zipping process or not
+# Zip optimization is quite brutal : we just don't zip if there is only 
+# one tiny file to zip since zipping has a huge CPU cost
+# Otherwise, if there is more than one file, or if this one but huge file
+# we do zip
+#
+# Default is true
+#
+#OPTIMIZEZIP=true
+
+#
+# optimizeNetwork to try to optimize network traffic
+#
+# Default is true
+#
+#OPTIMIZENETWORK=true
+
+
+#
+# This contains the maximum disk space a job can use
+# This is in megabytes
+# Here 30 kilobytes of megabytes is 30 gigabytes
+# Since 9.1.0
+# Default is 30 Gb
+#
+#MAXDISKSPACE=30720
+
+#
+# This contains the maximum RAM space a job can use
+# This is in kilobytes
+# Here one megabytes of kilobytes is one gigabytes
+# Since 9.1.0
+# Default is 1Gb
+#
+#MAXRAMSPACE=1048576
+
+#
+# javaExec tells how to launch native applications; either with xtremweb.exec.Executor
+# which is the default, or with standard java Runtime.exec()
+# Be aware that if you use java Runtime, stdin, stdout and stderr are not managed! 
+# Default is false
+#
+#JAVARUNTIME=false
+
+# Use DateActivator if you want to define gaps usage for XtremWeb
+# This works 'a la' crontab.
+#
+# OS : all
+#
+# This uses activator.date to define gaps.
+# Several comma separated gaps may be provided.
+# Be aware that defining days with no hours, defines full days (e.g. 24 hours)
+# Field grammar:
+# - '*'   :  every possible values
+# - <x>   :  a unic value
+# - <x-y> :  a couple of values separated by an hyphen ('-') defining a gap from x to y
+#
+# Two fields are allowed :
+#   - 1st field defines days of week
+#     - '*' for every day
+#     - '1', 'Sun' or 'Sunday'
+#     - '2', 'Mon' or 'Monday'
+#     - ...
+#     - '7', 'Sat' or 'Saturday'
+#     - <N-M> a couple (of integers or Strings) defining days from N to M
+#   - 2nd field defines hours
+#     - '*'    every hour
+#     - <N>    AN INTEGER DEFINING A COMPLETE HOUR (0 <= N <= 23)
+#     - <N-M>  A COUPLE OF INTEGERS DEFINING HOURS FROM N:00 TO M:59 (0,0 <= N,M <= 23,23)
+#
+# Examples:
+#   - *        *      : every days, full day
+#   - *        1      : every days, from 1:00AM  to 1:59AM
+#   - *        11-17  : every days, from 11:00AM to 5:59PM
+#   - 1        *      : every sunday
+#   - Thu      *      : every thursday
+#   - 2-Thu    *      : from tuesday  to thursday
+#   - 4-2      *      : from thursday to tuesday
+#   - Thu-Tue  18-3   : from thursday to tuesday, from 6:00PM to 3:59AM
+#   - Thu-Tue  18-3, Sat-Sun *   : from thursday to tuesday, from 6:00PM to 3:59AM  
+#                                  **AND**  every week ends, full day
+#
+#ACTIVATORCLASS=xtremweb.worker.DateActivator
+#
+# Next is the DateActivator parameter which tells when to compute as described above
+# Default is to compute nightly
+ACTIVATIONDATE=* 20-7
+
+
+# activator that wait for the screensaver to start before allowing 
+# the worker to compute.
+# OS : win32
+## ACTIVATORCLASS=xtremweb.worker.WinSaverActivator
+
+
+# activator that wait for the screensaver to start before allowing 
+# the worker to compute.
+# OS : Mac OS X
+## ACTIVATORCLASS=xtremweb.worker.MacSaverActivator
+
+
+#### Location of temporary directories
+# XtremWeb needs to use some disk space to store temporary files.
+# If you need to use an other directory uncomment this line and specify your own
+#
+# Default is /tmp
+# Note : please use full path; don't use ~ or any variable (e.g. $HOME)
+#        they are not correctly interpreted
+#
+TMPDIR=/tmp
+####
+
+
+####
+# This tells whether worker accepts binary and Java (.JAR) applications
+# If this is set to false, worker accepts xtremweb.services.* method calls only
+# as well as jobs for localapps
+# Default is true
+# ACCEPTBIN=true
+
+#### Configuration of the Sandbox tools.
+# The Sandbox is a security program that permits a better security
+# level of the computing resource by being protected from the application
+# If you wish to use a sand box tool set sandbox.enable to "true" else set
+# it to "false" or comment it.
+# If true, you must set sandbox.path and sandbox.start.args below
+
+# Default is false
+# SANDBOXENABLED=true
+#  SANDBOXPATH=
+#  SANDBOXSTARTARGS=
+SANDBOXENABLED=true
+SANDBOXPATH=docker
+SANDBOXSTARTARGS=ubuntu
+
+# Since 12.1.0 Docker can be used as sandbox.
+# You must configure as follow:
+#  SANDBOXENABLED=true
+#  SANDBOXPATH=docker
+#  SANDBOXSTARTARGS=ubuntu
+
+# give here the full path and name of the sandbox system and the
+# command line arguments without quotes
+#
+# UNDER MAC OS >= 10.5 you can use
+# SANDBOXPATH=/usr/bin/sandbox-exec
+# SANDBOXSTARTARGS=-f /usr/share/sandbox/xgridagentd_task_nobody.sb
+#
+# SANDBOXPATH=/path_to_sandbox/bin
+# SANDBOXSTARTARGS=
+####
+
+#### worker keystore
+# SSL requires a file to store the certificate provided by the XtremWeb Server
+# by default it uses the certificate bundled with the software
+SSLKEYSTORE=@SSLTRUSTSTORE@
+SSLKEYPASSWORD=@SSLTRUSTSTOREPASSWORD@
+
+
+#
+# This tells if XWHEP worker is a Pilot Job running on an SG ressource (e.g. EGEE)
+# This is set by the bridge
+# This is deprecated; SGID is better : it is automatically set at runtime
+# Property name : "pilotjob"
+# Property type : boolean
+# Default : false
+#
+#PILOTJOB=false
+
+#
+# This is the pilot job SG identifier
+# This can not be set by hand; this is automatically set by the worker from its environment
+# Property name : sgid
+# Property type : string
+# Default : System.getenv("GLITE_WMS_JOBID")
+#
+#SGID=
+
+
+#
+# This is the expected job URI
+# This is for SpeQuLoS (EDGI/JRA2)
+# This is a one shot attribute : the worker will ask this job first.
+# Whatever is the result of the job request using this attribute,
+# this is automatically set to null so that the worker tries only once
+# and then acts as usual.
+#
+# Property name : jobid
+# Property type : URI
+#
+#JOBID=
+
+#
+# This is the expected group job URI
+# This is for SpeQuLoS (EDGI/JRA2)
+# If this attributes is set, the worker will compute jobs submitted within
+# this group only
+# This attribute should never be set, except in the very specific context of 
+# quality of service as defined by SpeQuLoS
+#
+# Property name : batchid
+# Property type : URI
+#
+#BATCHID=
+
+
+#### Trace collector
+# Comment this to disable the Traces Collector. This system records
+# some activity of your computer and send it to the server. This is
+# only usefull for research work.
+#TRACES=false
+#####
+
+#
+# this inserts a system tray icon
+SYSTEMTRAY=true
+
+##### Logging 
+
+#
+# 15 avril 2008 : we don't use log4j any more since we suspect memory leaks
+# we have developped our own little logger
+# Available logging levels :     
+#  FINEST
+#  DEBUG
+#  CONFIG
+#  INFO
+#  WARN
+#  ERROR
+LOGGERLEVEL=DEBUG
+
+
+#####
+##### End of File
+#####

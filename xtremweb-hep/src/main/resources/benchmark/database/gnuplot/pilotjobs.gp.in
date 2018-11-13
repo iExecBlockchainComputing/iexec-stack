@@ -1,0 +1,46 @@
+# Copyrights     : CNRS
+# Author         : Oleg Lodygensky
+# Acknowledgment : XtremWeb-HEP is based on XtremWeb 1.8.0 by inria : http://www.xtremweb.net/
+# Web            : http://www.xtremweb-hep.org
+#
+#      This file is part of XtremWeb-HEP.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#     http://www.apache.org/licenses/LICENSE-2.0
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+set title "XWHEP : Pilot Jobs per day\nTITLE"
+set xlabel "Days"
+set ylabel "Jobs"
+set encoding iso_8859_1
+set key outside
+#set key 80, 535
+#set key 1,3
+#set size 2,1.5
+set key spacing 1.5
+set key width 1.5
+#set logscale y
+set xdata time
+set timefmt "%Y-%m-%d"
+set format x "%b '%y"
+set xtics rotate
+
+#set yrange[-5000:35000]
+
+#set terminal postscript	eps
+#set output 'linear_FILEOUTps'
+
+#plot 'FILEINcsv' using 1 with impulses title 'Delai'
+
+
+set terminal png
+set output 'FILEOUT_pilotjobs.png'
+
+plot 'FILEIN_pilotjobs.csv' using 1:2 with impulses  lt 2  lw 2 title 'Pilot Jobs'

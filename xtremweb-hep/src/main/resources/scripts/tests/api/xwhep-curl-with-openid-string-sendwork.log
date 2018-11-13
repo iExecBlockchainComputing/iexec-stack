@@ -1,0 +1,33 @@
+
+#-----#  curl  https://xwservpub.lal.in2p3.fr:4326/getapps   #-----#
+
+Lookup the name of each application in order to find 'ls'
+..
+
+#-----#  curl  --data-binary XMLDESC=<xwhep> <work uid="b0b34aac-213a-11e3-8542-00145edd761d" appuid="da6ec799-1d7f-4093-9712-556c4b2d3b73"/> </xwhep>                https://xwservpub.lal.in2p3.fr:4326/sendwork  #-----#
+
+Looping on the status of the work.   You can interrupt the loop with (ctrl)C if you wish so.
+
+Work b0b34aac-213a-11e3-8542-00145edd761d :  PENDING............
+Work b0b34aac-213a-11e3-8542-00145edd761d :  RUNNING.......
+Work b0b34aac-213a-11e3-8542-00145edd761d :  COMPLETED
+
+XW_RESULT_UID='148d35f1-f2c9-42c0-b048-2fa5926efea7'
+
+#-----#  curl  https://xwservpub.lal.in2p3.fr:4326/downloaddata/148d35f1-f2c9-42c0-b048-2fa5926efea7   #-----#
+
+stderr.txt
+stdout.txt
+
+#-----#  curl  https://xwservpub.lal.in2p3.fr:4326/remove/b0b34aac-213a-11e3-8542-00145edd761d   #-----#
+<?xml version='1.0' encoding='UTF-8'?><xwhep>
+<XMLVector SIZE="0"
+  ></XMLVector>
+</xwhep>
+
+#-----#  curl  https://xwservpub.lal.in2p3.fr:4326/get/b0b34aac-213a-11e3-8542-00145edd761d   #-----#
+<?xml version='1.0' encoding='UTF-8'?><xwhep>
+<XMLVector SIZE="0"
+  ></XMLVector>
+</xwhep>
+

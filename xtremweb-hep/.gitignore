@@ -1,0 +1,16 @@
+.project
+.clasppath
+.sonar/
+.settings/
+/out/
+*.class
+build/
+/target/
+.DS_Store
+/.gradle/
+/.idea/
+*.iml
+/src/main/java/xtremweb/common/CommonVersion.java
+/src/main/javascript/client/node_modules/
+*.pem
+trustedcerts.txt
